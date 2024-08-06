@@ -1,0 +1,19 @@
+(lang dune 3.3)
+
+(authors "Jonathan Laurent")
+(maintainers "jonathan.laurent@cs.cmu.edu")
+
+(package
+ (name why3py)
+ (allow_empty) ; the project contains no library, just a *.so
+ (synopsis "The Why3 Gym interface")
+ (description
+  "\| A Why3 RL environment.
+ )
+ (depends
+  (ppx_jane (>= 0.15))
+  (ppx_import (>= 1.10.0))
+  (why3 (>= 1.6.0))
+  (python-libgen (>= 0.1.0))
+  (fmt (>= 0.9))
+ ))

@@ -1,0 +1,20 @@
+# delphyne-command
+
+command: run_strategy
+args:
+  strategy: annotate_invariants_incrementally
+  args:
+    prog: |
+      use int.Int
+
+      let main () diverges =
+        let ref x = 1 in
+        let ref y = 0 in
+        while y < 100000 do
+          x <- x + y;
+          y <- y + 1
+        done;
+        assert { x >= y }
+  params: {}
+  budget:
+    num_requests: 60

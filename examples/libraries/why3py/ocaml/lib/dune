@@ -1,0 +1,14 @@
+(library
+  (name why3py)
+  (preprocess (staged_pps
+    ppx_import
+    visitors.ppx
+    ppx_jane
+    ppx_let
+    ppx_deriving.eq
+    ppx_deriving.show
+    ppx_deriving.enum
+    python-libgen.ppx
+    ppx_python))
+  (inline_tests (flags -verbose))
+  (libraries base fmt pyml why3))

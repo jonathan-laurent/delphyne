@@ -1,0 +1,46 @@
+Here is the original program that had to be annotated:
+
+```mlw
+{{ query.prog|trim }}
+```
+
+The following annotations were proposed:
+
+```mlw
+{{ query.annotated|trim }}
+```
+
+However, Why3 did not succeed in proving some of these annotations.
+
+{% if query.feedback.error %}
+Indeed, it output the following error:
+
+```
+{{ query.feedback.error }}
+```
+{% else %}
+Each section that follows details a failing proof obligation.
+
+{% for obl in query.feedback.obligations %}
+## {{ obl.name }}
+
+Goal that failed to prove:
+
+```
+{{ obl.goal }}
+```
+
+Available assumptions:
+
+```
+{{ obl.context }}
+```
+
+Below, we show for each line of the program whether it contributed to a premise and/or a goal in the obligation.
+
+```whyml
+{{ obl.annotated }}
+```
+
+{% endfor %}
+{% endif %}

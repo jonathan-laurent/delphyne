@@ -1,0 +1,9 @@
+(executable
+  (name why3py_ocaml)
+  (modules why3py_ocaml)
+  (libraries base pyml why3py)
+  (preprocess (staged_pps
+    python-libgen.ppx
+    ppx_python))
+  (flags :standard -linkall)
+  (modes (native shared_object) native))

@@ -1,0 +1,120 @@
+{
+  "$defs": {
+    "Answer": {
+      "properties": {
+        "answer": {
+          "title": "Answer",
+          "type": "string"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label"
+        },
+        "example": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Example"
+        }
+      },
+      "required": [
+        "answer"
+      ],
+      "title": "Answer",
+      "type": "object"
+    },
+    "DemoQuery": {
+      "properties": {
+        "query": {
+          "title": "Query",
+          "type": "string"
+        },
+        "args": {
+          "title": "Args",
+          "type": "object"
+        },
+        "answers": {
+          "items": {
+            "$ref": "#/$defs/Answer"
+          },
+          "title": "Answers",
+          "type": "array"
+        }
+      },
+      "required": [
+        "query",
+        "args",
+        "answers"
+      ],
+      "title": "DemoQuery",
+      "type": "object"
+    },
+    "Demonstration": {
+      "properties": {
+        "strategy": {
+          "title": "Strategy",
+          "type": "string"
+        },
+        "args": {
+          "title": "Args",
+          "type": "object"
+        },
+        "tests": {
+          "items": {
+            "$ref": "#/$defs/TestCommandString"
+          },
+          "title": "Tests",
+          "type": "array"
+        },
+        "queries": {
+          "items": {
+            "$ref": "#/$defs/DemoQuery"
+          },
+          "title": "Queries",
+          "type": "array"
+        },
+        "demonstration": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Demonstration"
+        }
+      },
+      "required": [
+        "strategy",
+        "args",
+        "tests"
+      ],
+      "title": "Demonstration",
+      "type": "object"
+    },
+    "TestCommandString": {
+      "type": "string"
+    }
+  },
+  "items": {
+    "$ref": "#/$defs/Demonstration"
+  },
+  "type": "array",
+  "title": "Delphyne Demo File"
+}

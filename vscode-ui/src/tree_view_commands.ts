@@ -1,0 +1,175 @@
+//////
+/// Tree View Commands
+//////
+
+import * as vscode from "vscode";
+import {
+  NodeViewItem,
+  QueryKey,
+  TreeView,
+  demoQueryKey,
+  PropertyItem,
+  queryKey,
+  AnswerItem,
+  copiableValue,
+} from "./tree_view";
+import { DemosManager } from "./demos_manager";
+import {
+  DemoFeedback,
+  Query,
+  TraceAnswerId,
+  TraceNodeId,
+} from "./stubs/feedback";
+import { log } from "./logging";
+import { getEditorForUri, insertYamlListElement } from "./edit_utils";
+import { prettyYaml } from "./yaml_utils";
+import { Demonstration } from "./stubs/demos";
+import { Element } from "./elements";
+import { gotoCommandResultAnswer } from "./commands";
+
+export function registerTreeViewCommands(
+  context: vscode.ExtensionContext,
+  treeView: TreeView,
+  demosManager: DemosManager,
+) {
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "delphyne.addQuery",
+      (arg: NodeViewItem) => {
+        const prop_item = arg as PropertyItem;
+        const query = prop_item.prop as Query;
+        addQuery(query, demosManager, treeView);
+      },
+    ),
+    vscode.commands.registerCommand(
+      "delphyne.gotoQuery",
+      (arg: NodeViewItem) => {
+        const prop_item = arg as PropertyItem;
+        const query = prop_item.prop as Query;
+        gotoQuery(query, demosManager, treeView);
+      },
+    ),
+    vscode.commands.registerCommand(
+      "delphyne.gotoAnswer",
+      (arg: NodeViewItem) => {
+        const answer_item = arg as AnswerItem;
+        gotoAnswer(answer_item.answer_id, demosManager, treeView);
+      },
+    ),
+    vscode.commands.registerCommand(
+      "delphyne.viewNode",
+      (arg: { node_id: TraceNodeId }) => {
+        viewNode(arg.node_id, treeView);
+      },
+    ),
+    vscode.commands.registerCommand(
+      "delphyne.copyArgValue",
+      async (arg: any) => {
+        const toCopy = copiableValue(arg);
+        await vscode.env.clipboard.writeText(toCopy);
+      },
+    ),
+  );
+}
+
+function getDemoInfoForTreeView(
+  demosManager: DemosManager,
+  treeView: TreeView,
+): [Demonstration, DemoFeedback, vscode.TextEditor] | undefined {
+  const origin = treeView.getPointedTree()?.tree.origin;
+  if (!origin || origin.kind !== "demo") {
+    log.error("delphyne.addQuery: the tree view is not attached to a demo.");
+    return;
+  }
+  const demonstration = demosManager.getDemonstration(origin.uri, origin.demo);
+  if (!demonstration) {
+    log.error("delphyne.addQuery: failed to obtain demonstration.");
+    return;
+  }
+  const feedback = demosManager.getFeedback(origin.uri, origin.demo);
+  if (!feedback) {
+    log.error("delphyne.addQuery: failed to obtain feedback.");
+    return;
+  }
+  const editor = getEditorForUri(origin.uri);
+  if (!editor) {
+    log.warn("No editor associated with", origin.uri);
+    return;
+  }
+  return [demonstration, feedback, editor];
+}
+
+function addQuery(
+  query: Query,
+  demosManager: DemosManager,
+  treeView: TreeView,
+) {
+  const demoInfo = getDemoInfoForTreeView(demosManager, treeView);
+  if (!demoInfo) {
+    return;
+  }
+  const [demonstration, _, editor] = demoInfo;
+  const listRange = demonstration.__loc__queries;
+  const originalListEmpty = demonstration.queries.length === 0;
+  const newItem = { query: query.name, args: query.args, answers: [] };
+  const newYamlElement = prettyYaml(newItem);
+  const parentIndentLevel = 1;
+  const newCursorPosition = insertYamlListElement(
+    editor,
+    listRange,
+    originalListEmpty,
+    newYamlElement,
+    parentIndentLevel,
+  );
+  editor.selection = new vscode.Selection(newCursorPosition, newCursorPosition);
+  editor.revealRange(new vscode.Range(newCursorPosition, newCursorPosition));
+}
+
+function queryIndex(key: QueryKey, demo: Demonstration): number {
+  return demo.queries.findIndex((q) => demoQueryKey(q) === key);
+}
+
+function gotoQuery(
+  query: Query,
+  demosManager: DemosManager,
+  treeView: TreeView,
+) {
+  const demoInfo = getDemoInfoForTreeView(demosManager, treeView);
+  if (!demoInfo) {
+    return;
+  }
+  const [demonstration, _, editor] = demoInfo;
+  const idx = queryIndex(queryKey(query), demonstration);
+  if (idx < 0) {
+    log.error("Failed to find the query index to jump to.");
+    return;
+  }
+  const range = demonstration.__loc_items__queries[idx];
+  editor.selection = new vscode.Selection(range.start, range.end);
+  editor.revealRange(range);
+}
+
+function gotoAnswer(
+  answer: TraceAnswerId,
+  demosManager: DemosManager,
+  treeView: TreeView,
+) {
+  if (treeView.getPointedTree()?.tree.origin?.kind === "command") {
+    const origin = treeView.getPointedTree()?.tree.origin as Element;
+    gotoCommandResultAnswer(origin.uri, answer);
+    return;
+  }
+  const demoInfo = getDemoInfoForTreeView(demosManager, treeView);
+  if (!demoInfo) {
+    return;
+  }
+  const [demonstration, feedback, editor] = demoInfo;
+  const [queryIdx, answerIdx] = feedback.answer_refs[answer];
+  const range = demonstration.queries[queryIdx].__loc_items__answers[answerIdx];
+  editor.selection = new vscode.Selection(range.start, range.end);
+  editor.revealRange(range);
+}
+
+function viewNode(node_id: TraceNodeId, treeView: TreeView) {
+  treeView.setSelectedNode(node_id);
+}

@@ -1,0 +1,358 @@
+#####
+##### Finding invariants with Why3
+#####
+
+
+- strategy: annotate_invariants_with_single_prompt
+  args:
+    prog: &example1 |
+      use int.Int
+
+      let example1 () diverges =
+        let ref x = any int in
+        let ref y = 3 in
+        let ref z = 0 in
+        assume { x < 0 };
+        while x < 10 do
+          x <- x + 1;
+          z <- z - 1;
+          if z < 0 then y <- y + 1
+        done;
+        assert { x <> y }
+  tests:
+    - run | success
+    - run 'wrong_diff' | failure
+  queries:
+    - query: ProposeAnnotations
+      args:
+        prog: *example1
+      answers:
+        - answer: |
+            To prove that the postcondition `x <> y` is preserved by the loop body, it suffices to observe that the conditional statement is always executed, meaning that x and y are always incremented together. The fact that the conditional statement is always executed follows from the fact that `z <= 0` is also a loop invariant.
+
+            ```mlw
+            use int.Int
+
+            let example1 () diverges =
+              let ref x = any int in
+              let ref y = 3 in
+              let ref z = 0 in
+              assume { x < 0 };
+              while x < 10 do
+                invariant { z <= 0 }
+                invariant { x <> y }
+                x <- x + 1;
+                z <- z - 1;
+                if z < 0 then y <- y + 1
+              done;
+              assert { x <> y }
+            ```
+        - label: wrong_diff
+          answer: |
+            ```mlw
+            let x = 0;
+            ```
+
+
+- strategy: annotate_invariants_with_single_prompt
+  args:
+    prog: &example2 |
+      use int.Int
+
+      let example2 () diverges =
+        let ref y = any int in
+        let ref x = 0 in
+        while x < 10 do
+          y <- x;
+          x <- x + 1
+        done;
+        assert { y > 0 }
+  tests:
+    - run | success
+  queries:
+    - query: ProposeAnnotations
+      args:
+        prog: *example2
+      answers:
+      - answer: |
+          The postcondition `y > 0` does not necessarily hold before the loop. However, it is made true by running the loop body. Thus, we need an invariant that says that either the postcondition hold, or at least one more loop iteration will happen.
+
+          ```mlw
+          use int.Int
+
+          let example2 () diverges =
+            let ref y = any int in
+            let ref x = 0 in
+            while x < 10 do
+              invariant { x < 10 || y > 0 }
+              y <- x;
+              x <- x + 1
+            done;
+            assert { y > 0 }
+          ```
+
+
+- strategy: annotate_invariants_with_single_prompt
+  args:
+    prog: &example3 |
+      use int.Int
+
+      let example3 () diverges =
+        let n = any int in
+        let ref x = 0 in
+        while x < n do
+          x <- x + 1
+        done;
+        if (n > 0) then assert { x = n }
+  tests:
+    - run | success
+  queries:
+    - query: ProposeAnnotations
+      args:
+        prog: *example3
+      answers:
+      - answer: |
+          From the loop guard alone, we know that `x >= n` after the loop. So we want to establish `x <= n`. However, `x <= n` is not an invariant since it does not hold initially. Still, since `n` is not modified in the loop, we can simply prove `n > 0 -> x <= n` as an invariant.
+
+          ```mlw
+          use int.Int
+
+          let example3 () diverges =
+            let n = any int in
+            let ref x = 0 in
+            while x < n do
+              invariant {n > 0 -> x <= n}
+              x <- x + 1
+            done;
+            if (n > 0) then assert { x = n }
+          ```
+
+##### Propose and repair
+
+- strategy: annotate_invariants_with_propose_and_repair
+  args:
+    prog: *example1
+  tests:
+    - run | success
+  queries:
+    - query: ProposeAnnotations
+      args:
+        prog: *example1
+      answers:
+      # We do not provide a justification here since this will not serve as an example...
+      - answer: |
+          ```mlw
+          use int.Int
+
+          let example1 () diverges =
+            let ref x = any int in
+            let ref y = 3 in
+            let ref z = 0 in
+            assume { x < 0 };
+            while x < 10 do
+              invariant { x <> y }
+              x <- x + 1;
+              z <- z - 1;
+              if z < 0 then y <- y + 1
+            done;
+            assert { x <> y }
+          ```
+        example: false
+    - query: FixAnnotations
+      args:
+        prog: |
+          use int.Int
+
+          let example1 () diverges =
+            let ref x = any int in
+            let ref y = 3 in
+            let ref z = 0 in
+            assume { x < 0 };
+            while x < 10 do
+              x <- x + 1;
+              z <- z - 1;
+              if z < 0 then y <- y + 1
+            done;
+            assert { x <> y }
+        annotated: |
+          use int.Int
+
+          let example1 () diverges =
+            let ref x = any int in
+            let ref y = 3 in
+            let ref z = 0 in
+            assume { x < 0 };
+            while x < 10 do
+              invariant { x <> y }
+              x <- x + 1;
+              z <- z - 1;
+              if z < 0 then y <- y + 1
+            done;
+            assert { x <> y }
+        feedback:
+          error: null
+          obligations:
+            - name: VC for example1 (loop invariant preservation)
+              annotated: |-
+                use int.Int
+
+                let example1 () diverges =  (* GOAL *)
+                  let ref x = any int in  (* premise *)
+                  let ref y = 3 in
+                  let ref z = 0 in
+                  assume { x < 0 };  (* premise *)
+                  while x < 10 do  (* premise *)
+                    invariant { x <> y }  (* GOAL, premise *)
+                    x <- x + 1;  (* premise *)
+                    z <- z - 1;  (* premise *)
+                    if z < 0 then y <- y + 1  (* premise *)
+                  done;
+                  assert { x <> y }
+              context: |-
+                constant o : int
+
+                axiom Assume : o < 0
+
+                constant z : int
+
+                constant y : int
+
+                constant x : int
+
+                axiom LoopInvariant : not x = y
+
+                axiom H1 : x < 10
+
+                axiom H2 : not (z - 1) < 0
+              goal: "goal example1'vc3 : not (x + 1) = y"
+              message: |-
+                Unknown (unknown)
+                (0.01s, 12 steps)
+      answers:
+      - answer: |
+          The first unproved proof obligation (VC for example1 (loop invariant preservation)) is about proving that the invariant candidate is preserved in the case where the conditional statement is not executed (which corresponds to assumption H2). However, looking at the program, the conditional statement must always be executed, since `z <= 0` is always true. Adding this as an additional invariant will enable proving the remaining proof obligation, by contradicting H2.
+
+          Thus, we suggest adding `z <= 0` as an invariant.
+
+          ```mlw
+          use int.Int
+
+          let example1 () diverges =
+            let ref x = any int in
+            let ref y = 3 in
+            let ref z = 0 in
+            assume { x < 0 };
+            while x < 10 do
+              invariant { z <= 0 }
+              invariant { x <> y }
+              x <- x + 1;
+              z <- z - 1;
+              if z < 0 then y <- y + 1
+            done;
+            assert { x <> y }
+          ```
+
+
+##### Tests
+
+
+- strategy: annotate_invariants_with_propose_and_repair
+  args:
+    prog: &test_example |
+      use int.Int
+
+      let main () diverges =
+        let ref x = any int in
+        let ref y = any int in
+        x <- 1;
+        y <- 0;
+        while y < 100000 do
+          x <- x + y;
+          y <- y + 1
+        done;
+        assert { x >= y }
+  tests:
+    - run
+  queries:
+    - query: ProposeAnnotations
+      args:
+        prog: *test_example
+      answers:
+      - answer: |
+          ```mlw
+          use int.Int
+          let main () diverges =
+            let ref x = any int in
+            let ref y = any int in
+            x <- 1;
+            y <- 0;
+            while y < 100000 do
+              invariant { x >= y }
+              x <- x + y;
+              y <- y + 1
+            done;
+            assert { x >= y }
+          ```
+        example: false
+    - query: FixAnnotations
+      args:
+        prog: |
+          use int.Int
+
+          let main () diverges =
+            let ref x = any int in
+            let ref y = any int in
+            x <- 1;
+            y <- 0;
+            while y < 100000 do
+              x <- x + y;
+              y <- y + 1
+            done;
+            assert { x >= y }
+        annotated: |
+          use int.Int
+          let main () diverges =
+            let ref x = any int in
+            let ref y = any int in
+            x <- 1;
+            y <- 0;
+            while y < 100000 do
+              invariant { x >= y }
+              x <- x + y;
+              y <- y + 1
+            done;
+            assert { x >= y }
+        feedback:
+          error: null
+          obligations:
+            - name: VC for main (loop invariant preservation)
+              annotated: |-
+                use int.Int
+                let main () diverges =  (* GOAL *)
+                  let ref x = any int in
+                  let ref y = any int in
+                  x <- 1;  (* premise *)
+                  y <- 0;  (* premise *)
+                  while y < 100000 do  (* premise *)
+                    invariant { x >= y }  (* premise, GOAL *)
+                    x <- x + y;  (* premise *)
+                    y <- y + 1  (* premise *)
+                  done;
+                  assert { x >= y }
+              context: |-
+                constant o1 : int
+
+                constant o2 : int
+
+                constant y : int
+
+                constant x : int
+
+                axiom LoopInvariant : x >= y
+
+                axiom H : y < 100000
+              goal: "goal main'vc : (x + y) >= (y + 1)"
+              message: |-
+                Unknown (unknown)
+                (0.01s, 12 steps)
+      answers: []

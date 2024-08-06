@@ -1,0 +1,7 @@
+_build
+*.bak
+*.xml
+*.gz
+*.so
+
+why3shapes

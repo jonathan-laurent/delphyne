@@ -1,0 +1,17 @@
+{
+    "demo": {
+        "prefix": "demo",
+        "body": ["- strategy: ${1:strategy_name}", "  args:", "    $0", "  tests:", "    - run", "  queries: []"],
+        "description": "Code snippet for an unlabeled demonstration."
+    },
+    "answer": {
+        "prefix": "answer",
+        "body": ["- answer: |", "    $0"],
+        "description": "Code snippet for an answer."
+    },
+    "lanswer": {
+        "prefix": "lanswer",
+        "body": ["- label: ${1:label}", "  answer: |", "    $0"],
+        "description": "Code snippet for a labeled answer."
+    }
+}

@@ -1,0 +1,34 @@
+{
+    "version": "0.2.0",
+    "configurations": [{
+            "name": "Python: Profile Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "cProfile",
+            "args": [
+                "-o", "/tmp/prof", "${file}"
+            ]
+        },
+        {
+            "name": "Debug Server Test",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "tests/test_server.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Debug Search Test",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "tests/test_search.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Debug Server",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "delphyne.server",
+            "console": "integratedTerminal"
+        }
+    ]
+}

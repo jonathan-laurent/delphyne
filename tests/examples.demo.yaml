@@ -1,0 +1,53 @@
+#####
+##### Providing examples
+#####
+
+- strategy: run_example_prompt
+  args:
+    "n": 1
+    "s": hello
+    "d": {}
+  tests:
+    - run | success
+  queries:
+    - query: ExamplePrompt
+      args:
+        n: 1
+        s: hello
+        d: {}
+      answers:
+      - answer: '[42]'
+
+- demonstration: strategy_fun_example
+  strategy: synthetize_fun
+  args:
+    vars: ["x", "y"]
+    prop: [["a", "b"], "F(a, b) == F(b, a) and F(0, 1) == 2"]
+  tests:
+    - run
+  queries:
+    - query: ConjectureExpr
+      args:
+        vars: [x, y]
+        prop:
+          - [a, b]
+          - F(a, b) == F(b, a) and F(0, 1) == 2
+      answers:
+      - answer: 2*(x + y)
+
+
+- demonstration: strategy_fun_test
+  strategy: synthetize_fun
+  args:
+    vars: ["x", "y"]
+    prop: [["a"], "F(a, a) == 0 and F(0, 0) == 0 and F(1, 0) > 0"]
+  tests:
+    - run
+  queries:
+    - query: ConjectureExpr
+      args:
+        vars: [x, y]
+        prop:
+          - [a]
+          - F(a, a) == 0 and F(0, 0) == 0 and F(1, 0) > 0
+      answers: []

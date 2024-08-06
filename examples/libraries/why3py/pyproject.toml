@@ -1,0 +1,27 @@
+[project]
+name = "why3py"
+version = "0.1.0"
+description = ""
+authors = [{name="Jonathan Laurent", email="jonathan.laurent@cs.cmu.edu"}]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"*" = ["*.so", "*.md", "*.mlw", "*.jinja", "*.txt", "py.typed"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.isort]
+profile = "black"
+lines_after_imports = 2
+
+[tool.black]
+line-length = 79
+
+[tool.pyright]

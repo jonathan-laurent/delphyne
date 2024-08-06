@@ -1,0 +1,332 @@
+//////
+/// Commands
+//////
+
+import * as vscode from "vscode";
+import * as YAML from "yaml";
+import * as path from "path";
+
+import { log } from "./logging";
+import { DelphyneServer } from "./server";
+import { Diagnostic, Trace, TraceAnswerId } from "./stubs/feedback";
+import { PointedTree, TreeInfo, TreeView } from "./tree_view";
+import { CommandElement, SerializedCommand } from "./elements";
+import {
+  parseYamlWithLocInfo,
+  prettyYaml,
+  serializeWithoutLocInfo,
+} from "./yaml_utils";
+import { getCommandExecutionContext } from "./execution_contexts";
+import { ROOT_ID } from "./common";
+import { getEditorForUri } from "./edit_utils";
+
+const DEFAULT_COMMAND = { command: null, args: {} };
+const EXECUTE_COMMAND_ENDPOINT = "execute-command";
+
+// TODO: this is hardcoded for now
+function taskOptions(name: string, args: { [key: string]: any }) {
+  return {
+    sync_period_ms: 100,
+    sync_by_default:
+      name === "test_command" ||
+      (name === "answer_query" && args["completions"] === 1),
+  };
+}
+
+//////
+/// Command Definition
+//////
+
+// TODO: do proper validation
+
+export interface CommandResultFromServer {
+  diagnostics: Diagnostic[];
+  result: any;
+}
+
+type CommandStatus = "pending" | "completed" | "interrupted";
+
+export interface CommandOutcome {
+  status: CommandStatus;
+  diagnostics: Diagnostic[];
+  result: any;
+}
+
+export interface CommandSpec {
+  command: string;
+  args: { [key: string]: any };
+}
+
+export interface CommandFile extends CommandSpec {
+  outcome?: CommandOutcome;
+}
+
+//////
+/// Commands Manager
+//////
+
+const DELPHYNE_COMMAND_HEADER = "delphyne-command";
+
+export class CommandsManager implements vscode.CodeActionProvider {
+  constructor(
+    private treeView: TreeView,
+    private server: DelphyneServer,
+  ) {
+    this.register();
+  }
+  private running = new Set<vscode.Uri>();
+
+  private register() {
+    vscode.commands.registerCommand(
+      "delphyne.createCommandBuffer",
+      (cmd: CommandSpec | null, execute) =>
+        createCommandBuffer(cmd ?? DEFAULT_COMMAND, execute),
+    );
+    vscode.commands.registerCommand("delphyne.runStrategy", runStrategy);
+    vscode.commands.registerCommand(
+      "delphyne.executeCommand",
+      this.executeCommand,
+      this,
+    );
+    vscode.commands.registerCommand(
+      "delphyne.clearOutput",
+      this.clearOutput,
+      this,
+    );
+    vscode.commands.registerCommand("delphyne.showTrace", this.showTrace, this);
+    vscode.languages.registerCodeActionsProvider("yaml", this);
+  }
+
+  public provideCodeActions(
+    document: vscode.TextDocument,
+    range: vscode.Range,
+  ): vscode.CodeAction[] | undefined {
+    if (!isCommandFile(document)) {
+      return [];
+    }
+    // If the command is not launched, we can execute it.
+    // We cannot execute it if it is running already.
+    // We can also clone the command.
+    const executeCommand = new vscode.CodeAction(
+      "Execute Command",
+      vscode.CodeActionKind.Empty,
+    );
+    executeCommand.command = {
+      command: "delphyne.executeCommand",
+      title: "Execute Command",
+      arguments: [document],
+    };
+    const clearOutput = new vscode.CodeAction(
+      "Clear Output",
+      vscode.CodeActionKind.Empty,
+    );
+    clearOutput.command = {
+      command: "delphyne.clearOutput",
+      title: "Clear Output",
+      arguments: [document],
+    };
+    const all: (vscode.CodeAction | null)[] = [
+      this.showTraceAction(document),
+      executeCommand,
+      clearOutput,
+    ];
+    return all.filter((a): a is vscode.CodeAction => a !== null);
+  }
+
+  async executeCommand(document: vscode.TextDocument) {
+    const uri = document.uri;
+    if (this.running.has(uri)) {
+      vscode.window.showInformationMessage(
+        "The command in this file is already running. You can cancel it and try again.",
+      );
+      log.info(`Command ${uri} already running`);
+      return;
+    }
+    this.running.add(uri);
+    const context = getCommandExecutionContext();
+    const parsed = YAML.parse(document.getText()) as CommandFile;
+    const name = parsed.command;
+    const arg = uriBase(uri);
+    const origin: CommandElement = {
+      kind: "command",
+      uri: uri,
+      command: serializeCommand(parsed),
+    };
+    const query = EXECUTE_COMMAND_ENDPOINT;
+    const payload = { spec: parsed, context: context };
+
+    const updateEditor = async (
+      result: CommandResultFromServer | null,
+      status: CommandStatus,
+    ) => {
+      let outcome: CommandOutcome;
+      if (result === null) {
+        outcome = {
+          status,
+          diagnostics: [],
+          result: null,
+        };
+      } else {
+        outcome = {
+          status,
+          diagnostics: result.diagnostics,
+          result: result.result,
+        };
+      }
+      const edit = new vscode.WorkspaceEdit();
+      // This is needed in case the document is closed and reopened, in which case the old
+      // document object becomes invalid.
+      const document = await vscode.workspace.openTextDocument(uri);
+      const fullRange = new vscode.Range(
+        document.positionAt(0),
+        document.positionAt(document.getText().length),
+      );
+      const newContent: CommandFile = {
+        command: parsed.command,
+        args: parsed.args,
+        outcome: outcome,
+      };
+      const newText =
+        `# ${DELPHYNE_COMMAND_HEADER}\n\n` + prettyYaml(newContent); // TODO: more robust
+      edit.replace(document.uri, fullRange, newText);
+      await vscode.workspace.applyEdit(edit);
+    };
+    await updateEditor(null, "pending");
+    const task = this.server.launchTask(
+      { name, arg, origin },
+      {
+        ...taskOptions(parsed.command, parsed.args),
+        handle_result: async (r: CommandResultFromServer) =>
+          updateEditor(r, "pending"),
+      },
+      query,
+      payload,
+    );
+    const outcome = await task.outcome;
+    const status = outcome.cancelled ? "interrupted" : "completed";
+    await updateEditor(outcome.result, status);
+    this.running.delete(uri);
+  }
+
+  async clearOutput(document: vscode.TextDocument) {
+    // Remove all the lines in the document, starting with the line that is equal to
+    // "outcome:"
+    const lines = document.getText().split("\n");
+    const idx = lines.findIndex((line) => line.trim() === "outcome:");
+    if (idx === -1) {
+      return;
+    }
+    const edit = new vscode.WorkspaceEdit();
+    const fullRange = new vscode.Range(
+      document.positionAt(0),
+      document.positionAt(document.getText().length),
+    );
+    edit.replace(document.uri, fullRange, lines.slice(0, idx).join("\n"));
+    await vscode.workspace.applyEdit(edit);
+  }
+
+  showTraceAction(document: vscode.TextDocument): vscode.CodeAction | null {
+    try {
+      const parsed = YAML.parse(document.getText()) as any;
+      const trace = parsed.outcome.result.browsable_trace as Trace;
+      if (!trace) {
+        return null;
+      }
+      const serialized = serializeWithoutLocInfo({
+        command: parsed.command,
+        args: parsed.args,
+      });
+      const action = new vscode.CodeAction(
+        "Show Trace",
+        vscode.CodeActionKind.Empty,
+      );
+      action.command = {
+        command: "delphyne.showTrace",
+        title: "Show Trace",
+        arguments: [document, trace, serialized],
+      };
+      return action;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  showTrace(document: vscode.TextDocument, trace: Trace, serialized: string) {
+    const origin: CommandElement = {
+      kind: "command",
+      uri: document.uri,
+      command: serialized,
+    };
+    const treeInfo = new TreeInfo(trace, origin);
+    this.treeView.setPointedTree(new PointedTree(treeInfo, ROOT_ID));
+  }
+}
+
+function uriBase(uri: vscode.Uri): string {
+  const fileName = path.basename(uri.fsPath);
+  if (uri.scheme === "untitled") {
+    return fileName;
+  }
+  const baseName = fileName.split(".")[0];
+  return baseName;
+}
+
+function serializeCommand(cmd: CommandSpec): SerializedCommand {
+  return serializeWithoutLocInfo(cmd);
+}
+
+async function createCommandBuffer(cmd: unknown, execute: boolean = false) {
+  // Creates a new tab with the template
+  const document = await vscode.workspace.openTextDocument({
+    content: "# " + DELPHYNE_COMMAND_HEADER + "\n\n" + prettyYaml(cmd),
+    language: "yaml",
+  });
+  await vscode.window.showTextDocument(document, {
+    viewColumn: vscode.ViewColumn.Beside,
+  });
+  if (execute) {
+    await vscode.commands.executeCommand("delphyne.executeCommand", document);
+  }
+}
+
+function isCommandFile(document: vscode.TextDocument) {
+  return document.getText().startsWith("# " + DELPHYNE_COMMAND_HEADER);
+}
+
+async function runStrategy() {
+  const cmd = {
+    command: "run_strategy",
+    args: {
+      strategy: "<strategy_name>",
+      args: {},
+      params: {},
+      budget: { num_requests: null },
+    },
+  };
+  await createCommandBuffer(cmd);
+}
+
+export function gotoCommandResultAnswer(
+  uri: vscode.Uri,
+  answerIndex: TraceAnswerId,
+) {
+  const editor = getEditorForUri(uri);
+  if (!editor) {
+    return;
+  }
+  const parsed = parseYamlWithLocInfo(editor.document.getText()) as any;
+  try {
+    const queries = parsed.outcome.result.raw_trace.queries;
+    for (const q of queries) {
+      const key = String(answerIndex);
+      if (q.answers.hasOwnProperty(key)) {
+        const range = q.answers[`__loc__${key}`];
+        if (range) {
+          editor.selection = new vscode.Selection(range.start, range.end);
+          editor.revealRange(range);
+          return;
+        }
+      }
+    }
+  } catch (e) {}
+}

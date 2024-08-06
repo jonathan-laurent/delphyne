@@ -1,0 +1,307 @@
+{
+  "name": "delphyne",
+  "displayName": "Delphyne",
+  "description": "Language support for Delphyne in VSCode",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.89.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "yamlValidation": [
+      {
+        "fileMatch": "*.demo.yaml",
+        "url": "./resources/demo-schema.json"
+      }
+    ],
+    "snippets": [
+      {
+          "language": "yaml",
+          "path": "./snippets.json"
+      }
+    ],
+    "keybindings": [
+      {
+        "key": "cmd+d cmd+z",
+        "command": "delphyne.undoTreeNavigationAction"
+    }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "delphyneContainer",
+          "title": "Delphyne",
+          "icon": "media/logo/converted/delphyne-22.png"
+        }
+      ]
+    },
+    "views": {
+      "delphyneContainer": [
+        {
+          "id": "delphyne.tree.path",
+          "name": "Tree"
+        },
+        {
+          "id": "delphyne.tree.node",
+          "name": "Node"
+        },
+        {
+          "id": "delphyne.tree.actions",
+          "name": "Actions"
+        },
+        {
+          "id": "delphyne.tasks",
+          "name": "Tasks"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "delphyne.tasks",
+        "contents": "No task is running."
+      },
+      {
+        "view": "delphyne.tree.path",
+        "contents": "Evaluate a demonstration to explore the associated tree.\n[Open Documentation](command:delphyne.openDocumentation)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "delphyne.evaluateAllDemos",
+          "when": "delphyne.isDemoFile",
+          "group": "navigation"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "delphyne.undoTreeNavigationAction",
+          "when": "view == delphyne.tree.path && delphyne.isDisplayingTree",
+          "group": "navigation@1"
+        },
+        {
+          "command": "delphyne.closeTreeView",
+          "when": "view == delphyne.tree.path && delphyne.isDisplayingTree",
+          "group": "navigation@2"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "delphyne.addQuery",
+          "when": "view == delphyne.tree.node && viewItem =~ /^query/ && viewItem =~ /exists-false/",
+          "group": "inline"
+        },
+        {
+          "command": "delphyne.gotoQuery",
+          "when": "view == delphyne.tree.node && viewItem =~ /^query/ && viewItem =~ /exists-true/",
+          "group": "inline"
+        },
+        {
+          "command": "delphyne.copyArgValue",
+          "when": "viewItem == copiable",
+          "group": "inline"
+        },
+        {
+          "command": "delphyne.gotoAnswer",
+          "when": "view == delphyne.tree.node && viewItem == answer",
+          "group": "inline"
+        },
+        {
+          "command": "delphyne.viewNode",
+          "when": "(view == delphyne.tree.node || view == delphyne.tree.actions || view == delphyne.tree.path) && viewItem == node",
+          "group": "inline"
+        },
+        {
+          "command": "delphyne.viewTaskInfo",
+          "when": "view == delphyne.tasks && viewItem =~ /status-false/",
+          "group": "inline@1"
+        },
+        {
+          "command": "delphyne.hideTaskInfo",
+          "when": "view == delphyne.tasks && viewItem =~ /status-true/",
+          "group": "inline@1"
+        },
+        {
+          "command": "delphyne.goToTaskLocation",
+          "when": "view == delphyne.tasks",
+          "group": "inline@2"
+        },
+        {
+          "command": "delphyne.notifyTaskCompleted",
+          "when": "view == delphyne.tasks && viewItem =~ /notify-false/",
+          "group": "inline@3"
+        },
+        {
+          "command": "delphyne.undoNotifyTaskCompleted",
+          "when": "view == delphyne.tasks && viewItem =~ /notify-true/",
+          "group": "inline@3"
+        },
+        {
+          "command": "delphyne.updateTaskSource",
+          "when": "view == delphyne.tasks",
+          "group": "inline@4"
+        },
+        {
+          "command": "delphyne.enableTaskSync",
+          "when": "view == delphyne.tasks && viewItem =~ /sync-false/",
+          "group": "inline@5"
+        },
+        {
+          "command": "delphyne.disableTaskSync",
+          "when": "view == delphyne.tasks && viewItem =~ /sync-true/",
+          "group": "inline@5"
+        },
+        {
+          "command": "delphyne.cancelTask",
+          "when": "view == delphyne.tasks",
+          "group": "inline@6"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "delphyne.evaluateAllDemos",
+        "title": "Delphyne: Evaluate All Demonstrations in File",
+        "icon": "$(run-all)"
+      },
+      {
+        "command": "delphyne.dev.runTestCommand",
+        "title": "Delphyne Dev: Run Test Command"
+      },
+      {
+        "command": "delphyne.dev.showCursorPosition",
+        "title": "Delphyne Dev: Show Cursor Position"
+      },
+      {
+        "command": "delphyne.createCommandBuffer",
+        "title": "Delphyne: New Command Buffer"
+      },
+      {
+        "command": "delphyne.runStrategy",
+        "title": "Delphyne: Run Strategy..."
+      },
+      {
+        "command": "delphyne.evaluateDemo",
+        "title": "Evaluate Demonstration"
+      },
+      {
+        "command": "delphyne.openPointedTree",
+        "title": "Open Pointed Tree"
+      },
+      {
+        "command": "delphyne.closeTreeView",
+        "title": "Close Tree View",
+        "icon": "$(close)"
+      },
+      {
+        "command": "delphyne.undoTreeNavigationAction",
+        "title": "Undo Navigation Action",
+        "icon": "$(discard)"
+      },
+      {
+        "command": "delphyne.openDocumentation",
+        "title": "Open Documentation"
+      },
+      {
+        "command": "delphyne.addQuery",
+        "title": "Insert Query in File",
+        "icon": "$(add)"
+      },
+      {
+        "command": "delphyne.gotoQuery",
+        "title": "Jump to Query",
+        "icon": "$(go-to-file)"
+      },
+      {
+        "command": "delphyne.copyArgValue",
+        "title": "Copy Value",
+        "icon": "$(files)"
+      },
+      {
+        "command": "delphyne.gotoAnswer",
+        "title": "Jump to Answer",
+        "icon": "$(go-to-file)"
+      },
+      {
+        "command": "delphyne.viewNode",
+        "title": "View Node",
+        "icon": "$(arrow-circle-right)"
+      },
+      {
+        "command": "delphyne.viewTaskInfo",
+        "title": "Show Progress in Status Bar",
+        "icon": "$(eye)"
+      },
+      {
+        "command": "delphyne.hideTaskInfo",
+        "title": "Hide Progress",
+        "icon": "$(eye-closed)"
+      },
+      {
+        "command": "delphyne.goToTaskLocation",
+        "title": "Go To Location",
+        "icon": "$(go-to-file)"
+      },
+      {
+        "command": "delphyne.notifyTaskCompleted",
+        "title": "Notify",
+        "icon": "$(bell)"
+      },
+      {
+        "command": "delphyne.undoNotifyTaskCompleted",
+        "title": "Undo Notify",
+        "icon": "$(bell-slash)"
+      },
+      {
+        "command": "delphyne.updateTaskSource",
+        "title": "Update Source",
+        "icon": "$(pencil)"
+      },
+      {
+        "command": "delphyne.enableTaskSync",
+        "title": "Enable Source Sync",
+        "icon": "$(sync)"
+      },
+      {
+        "command": "delphyne.disableTaskSync",
+        "title": "Disable Source Sync",
+        "icon": "$(sync-ignored)"
+      },
+      {
+        "command": "delphyne.cancelTask",
+        "title": "Cancel Task",
+        "icon": "$(trashcan)"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.89.0",
+    "@typescript-eslint/eslint-plugin": "^7.7.1",
+    "@typescript-eslint/parser": "^7.7.1",
+    "@vscode/test-cli": "^0.0.9",
+    "@vscode/test-electron": "^2.3.9",
+    "eslint": "^8.57.0",
+    "prettier": "3.2.5",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "ajv": "^8.14.0",
+    "axios": "^1.6.8",
+    "deasync": "^0.1.29",
+    "yaml": "^2.4.2"
+  }
+}

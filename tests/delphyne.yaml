@@ -1,0 +1,5 @@
+# Delphyne configuration
+
+strategy_dirs: ["."]
+modules: ["test_strategies", "test_prompts"]
+demo_files: ["examples"]

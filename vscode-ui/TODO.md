@@ -1,0 +1,77 @@
+# TODO
+
+- [x] Node exploration
+  - [x] Try something better for the "Node" bar title
+  - [x] Add icons for the node view
+  - [x] Properly display data
+    - [x] Design tree items to avoid duplication
+    - [x] Add icons for those (and special icon for opaque values)
+  - [x] Add arguments/answers/results distinction
+  - [x] Display answers for queries
+  - [x] Have a go to answer button
+  - [x] Display results for subtrees
+  - [x] Show actions in action view
+  - [o] Add "Leaves" view
+  - [x] Show failure and success nodes, with different icons.
+  - [x] When clicking on leaf, go to leaf.
+  - [x] When clicking on an action, we go to the associated node.
+  - [x] Undo tree navigation action
+  - [x] Populate the path view
+    - [x] Populate subtrees
+    - [x] Black dot for current node (circ-filled)
+    - [x] Get default expansion right
+    - [x] Add jump actions for nodes in the path view
+    - [o] Add the ability to navigate with double clicks
+- [x] Add code actions
+  - [x] Jump to test node
+  - [x] Add strategy snippet?
+  - [x] Add answer snippet?
+- [x] Add support for running command
+- [x] Add support for running completion
+  - [x] Create prompt, assembling examples
+  - [x] Write code using the OpenAI API to stream the answer
+- [x] Finish the toy synthesis example
+  - [x] Modify the Gen protocol
+  - [x] Implement ExecuteQuery
+  - [x] Implement BasicConfig
+  - [x] Support for Jinja prompts
+  - [x] Standardize parsing
+  - [x] Mock testing (passing queries to allow cheating)
+  - [x] Handle examples
+  - [x] Improve the prompts for the synthesis example
+  - [x] Write `run` command
+- [x] Visualize trees
+  - [x] Add code action to view tree
+  - [x] Adapt tree view for this case
+    - [x] Jump to answer
+- [x] Improve adapters and generalize DFS
+  - [x] Add generator adapters
+  - [x] Add a `.using` method to WrappedStrategy
+  - [x] Add a `.using` method to StructuredQuery
+  - [x] Add a `max_depth` parameter to `dfs`
+- [x] Flag unreachable queries
+- [x] Display answer numbers
+- [x] Show number of children with each action
+- [x] Better errors for when invalid subs are selected
+- [x] Allow navigating to subtrees
+- [ ] Design a loop invariant example
+  - [x] Single prompt example
+  - [ ] Propose and fix
+  - [ ] BFS and abduction
+- [ ] Better error message when a demo fails to be loaded. Right now, making a small mistake in a demo (e.g. writing `no` instead of `"no"`) loads to a pydantic error loading `params`, which is confusing.
+- [ ] Investigate the ParseError that are stored in the trace. For this, sabotage the parser for the add_incremental example.
+- [ ] What happens when you add a field to a query? Can we repair?
+- [ ] `run_strategy` terminates early and silently when Jinja template error
+- [ ] Do we need to check budget explicitly in search algorithms?
+- [ ] Improvements
+  - [ ] Do not stop an `at` if some hints are left?
+  - [ ] Exclude some examples from consideration
+  - [ ] Ask for several answers with streaming
+  - [ ] Cache LLM answers to have more tests and make the demo deterministic
+  - [ ] Trace prompts
+  - [ ] Implement eager mode
+  - [ ] Fail gracefully when strategies are nondeterministic
+  - [ ] Ensure that provers use deterministic timeouts
+  - [ ] Allow including examples from other queries?
+  - [ ] Evaluate full demo file
+- [ ] Updating pyright from v1.1.369 -> v1.1.373 causes some errors
