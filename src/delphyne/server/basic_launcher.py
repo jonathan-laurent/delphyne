@@ -47,7 +47,7 @@ class BasicLauncher(tasks.TaskLauncher):
     ) -> AsyncGenerator[str, None]:  # fmt: skip
         context = _BasicTaskContext[T]()
         background = asyncio.create_task(task(context, *args, **kwargs))
-        adapter = pydantic.TypeAdapter(TaskMessage[type])
+        adapter = pydantic.TypeAdapter[TaskMessage[type]](TaskMessage[type])
         try:
             while not background.done():
                 if request is not None and await request.is_disconnected():
