@@ -43,7 +43,6 @@ class LightObligation:
     annotated: str
     context: str
     goal: str
-    message: str
 
     @staticmethod
     def from_why3(obl: why3.Obligation) -> "LightObligation":
@@ -51,8 +50,10 @@ class LightObligation:
             name=obl.name,
             annotated=obl.annotated,
             context=obl.context,
-            goal=obl.goal,
-            message=obl.prover_answer,
+            # Right now, the feedback is nondeterministic because
+            # `obl.goal` has the form "goal ...vc<i>: ..." where i is an
+            # internal counter. Thus, we get rid of this part.
+            goal=extract_goal_formula(obl.goal),
         )
 
 
@@ -92,6 +93,15 @@ def check_proposal(prog: why3.File, original: why3.File | None) -> bool:
         isinstance(res, why3.Obligations)
         and len(feedback.obligations) <= MAX_OPEN_OBLIGATIONS
     )
+
+
+def extract_goal_formula(goal: str) -> str:
+    """
+    From a string of the form "goal ...: <fml>", extract fml.
+    """
+    start = goal.index(":") + 1
+    return goal[start:].strip()
+
 
 
 #####
@@ -172,7 +182,6 @@ MAX_OPEN_OBLIGATIONS = 1
 
 @dataclass
 class ProposeInvariant(std.StructuredQuery[Params, Formula]):
-
     prog: why3.File
     feedback: LightFeedback
     proposed_already: list[Formula]
@@ -186,7 +195,6 @@ type ConfidenceScore = Literal[1, 2, 3, 4, 5]
 
 @dataclass
 class EvaluateInvariantProposal(std.StructuredQuery[Params, ConfidenceScore]):
-
     prog: why3.File
     inv: Formula
 

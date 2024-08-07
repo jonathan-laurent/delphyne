@@ -74,13 +74,14 @@ def highlight_diff(edited: str, diffs: list[Update]) -> str:
 
 def comment_locations(src: str, comments: list[tuple[Loc, str]]) -> str:
     lines = src.splitlines()
-    added = defaultdict(set)
+    # we should not use sets to avoid nondeterminism
+    added: dict[int, dict[str, None]] = defaultdict(dict)
     for loc, comment in comments:
         bl, _, el, _ = loc
         for l in range(bl, el + 1):
-            added[l].add(comment)
+            added[l][comment] = None
     for l, to_add in added.items():
-        lines[l - 1] += "  (* " + ", ".join(to_add) + " *)"
+        lines[l - 1] += "  (* " + ", ".join(to_add.keys()) + " *)"
     return "\n".join(lines)
 
 

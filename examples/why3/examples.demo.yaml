@@ -224,10 +224,7 @@
                 axiom H1 : x < 10
 
                 axiom H2 : not (z - 1) < 0
-              goal: "goal example1'vc3 : not (x + 1) = y"
-              message: |-
-                Unknown (unknown)
-                (0.01s, 12 steps)
+              goal: "not (x + 1) = y"
       answers:
       - answer: |
           The first unproved proof obligation (VC for example1 (loop invariant preservation)) is about proving that the invariant candidate is preserved in the case where the conditional statement is not executed (which corresponds to assumption H2). However, looking at the program, the conditional statement must always be executed, since `z <= 0` is always true. Adding this as an additional invariant will enable proving the remaining proof obligation, by contradicting H2.
@@ -334,7 +331,7 @@
                   x <- 1;  (* premise *)
                   y <- 0;  (* premise *)
                   while y < 100000 do  (* premise *)
-                    invariant { x >= y }  (* premise, GOAL *)
+                    invariant { x >= y }  (* GOAL, premise *)
                     x <- x + y;  (* premise *)
                     y <- y + 1  (* premise *)
                   done;
@@ -351,8 +348,5 @@
                 axiom LoopInvariant : x >= y
 
                 axiom H : y < 100000
-              goal: "goal main'vc : (x + y) >= (y + 1)"
-              message: |-
-                Unknown (unknown)
-                (0.01s, 12 steps)
+              goal: "(x + y) >= (y + 1)"
       answers: []

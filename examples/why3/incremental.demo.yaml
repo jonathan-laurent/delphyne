@@ -69,10 +69,7 @@
                 constant x : int
 
                 axiom H : not x < 10
-              goal: "goal example1'vc : not x = y"
-              message: |-
-                Unknown (unknown)
-                (0.01s, 8 steps)
+              goal: "not x = y"
         proposed_already: []
       answers:
       - answer: |
@@ -134,10 +131,7 @@
                 axiom H1 : x < 10
 
                 axiom H2 : not (z - 1) < 0
-              goal: "goal example1'vc1 : not (x + 1) = y"
-              message: |-
-                Unknown (unknown)
-                (0.01s, 12 steps)
+              goal: "not (x + 1) = y"
         proposed_already: []
       answers:
       - answer: |
@@ -202,10 +196,7 @@
                 constant x : int
 
                 axiom H : not x < n
-              goal: "goal main'vc : x = n"
-              message: |-
-                Unknown (unknown)
-                (0.01s, 7 steps)
+              goal: "x = n"
         proposed_already: []
       answers:
       - answer: |
