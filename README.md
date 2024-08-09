@@ -6,6 +6,13 @@
 pip install -e .
 ```
 
+To build the documentation:
+
+```sh
+pip install mkdocs mkdocstrings[python] mkdocs-autolinks-plugin
+mkdocs serve
+```
+
 ## Tricks
 
 To create a test notebook:

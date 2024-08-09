@@ -1,4 +1,4 @@
-.PHONY: clean clean-ignored test full-clean all examples schemas stubs install
+.PHONY: clean clean-ignored test full-clean all examples schemas stubs install doc-logo
 
 TO_CLEAN := \
 	-name '__pycache__' -o \
@@ -60,3 +60,9 @@ all: install
 
 examples: all
 	make -C examples/libraries/why3py install
+
+
+doc-logo:
+	convert docs/assets/logos/delphyne.png \
+	    -channel RGB -negate +channel \
+		docs/assets/logos/delphyne-white.png
