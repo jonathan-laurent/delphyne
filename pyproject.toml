@@ -5,7 +5,18 @@ description = ""
 authors = [{name="Jonathan Laurent", email="jonathan.laurent@cs.cmu.edu"}]
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "fastapi>=0.111",
+    "Jinja2>=3.1",
+    "numpy>=2.0",
+    "openai>=1.40",
+    "parsy>=2.1",
+    "pyaml>=24.4",
+    "pydantic>=2.8",
+    "pytest>=8.2",
+    "setuptools>=68.2",
+    "uvicorn>=0.30",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
