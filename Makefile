@@ -62,7 +62,9 @@ examples: all
 	make -C examples/libraries/why3py install
 
 
-doc-logo:
-	convert docs/assets/logos/delphyne.png \
-	    -channel RGB -negate +channel \
-		docs/assets/logos/delphyne-white.png
+LOGOS_DIR := docs/assets/logos
+BLACK_LOGOS := $(wildcard $(LOGOS_DIR)/black/*.png)
+WHITE_LOGOS := $(subst /black/,/white/,$(BLACK_LOGOS))
+$(LOGOS_DIR)/white/%.png: $(LOGOS_DIR)/black/%.png
+	convert $< -fill black -colorize 100% -channel RGB -negate +channel $@
+doc-logo: $(WHITE_LOGOS)

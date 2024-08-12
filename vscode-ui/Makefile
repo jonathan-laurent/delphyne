@@ -9,5 +9,4 @@ install:
 	npm install
 
 extension:
-	npm install -g vsce
 	vsce package

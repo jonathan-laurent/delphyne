@@ -6,6 +6,7 @@ To install all dependencies:
 
 ```sh
 npm install
+npm install -g @vscode/vsce
 ```
 
 Then, start the extension in debugging mode using `F5`.

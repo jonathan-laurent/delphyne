@@ -5,7 +5,7 @@
 
 LOGOS_DIR=$(dirname "$0")
 
-for file in $LOGOS_DIR/raw/*.webp; do
+for file in $LOGOS_DIR/raw/*.webp $LOGOS_DIR/raw/*.png; do
     new_file=$(basename -- "$file")
     new_file="${new_file%.*}.png"
     new_file="$LOGOS_DIR/converted/$new_file"

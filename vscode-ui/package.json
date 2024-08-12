@@ -2,6 +2,7 @@
   "name": "delphyne",
   "displayName": "Delphyne",
   "description": "Language support for Delphyne in VSCode",
+  "publisher": "jonathan-laurent",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.89.0"
@@ -20,22 +21,22 @@
     ],
     "snippets": [
       {
-          "language": "yaml",
-          "path": "./snippets.json"
+        "language": "yaml",
+        "path": "./snippets.json"
       }
     ],
     "keybindings": [
       {
         "key": "cmd+d cmd+z",
         "command": "delphyne.undoTreeNavigationAction"
-    }
+      }
     ],
     "viewsContainers": {
       "activitybar": [
         {
           "id": "delphyneContainer",
           "title": "Delphyne",
-          "icon": "media/logo/converted/delphyne-22.png"
+          "icon": "media/logo/converted/delphyne-simple.png"
         }
       ]
     },
@@ -288,7 +289,7 @@
   },
   "devDependencies": {
     "@types/mocha": "^10.0.6",
-    "@types/node": "18.x",
+    "@types/node": "20.x",
     "@types/vscode": "^1.89.0",
     "@typescript-eslint/eslint-plugin": "^7.7.1",
     "@typescript-eslint/parser": "^7.7.1",
