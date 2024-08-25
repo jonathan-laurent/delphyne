@@ -16,5 +16,6 @@
     "python.analysis.autoImportCompletions": true,
     "isort.args": [
         "--settings-path=${workspaceFolder}/pyproject.toml"
-    ]
+    ],
+    "makefile.configureOnOpen": false
 }

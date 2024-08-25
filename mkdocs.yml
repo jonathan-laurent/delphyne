@@ -2,8 +2,8 @@ site_name: Delphyne
 theme:
   name: material
   favicon: null
-  # favicon: assets/logos/black/17.png
-  logo: assets/logos/white/20.png
+  # favicon: assets/logos/black/21.png
+  logo: assets/logos/white/21.png
   palette:
     # Palette toggle for light mode
     - scheme: default
