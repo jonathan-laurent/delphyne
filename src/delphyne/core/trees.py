@@ -6,7 +6,7 @@ import functools
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Generator, Sequence
 from dataclasses import dataclass
-from typing import Any, Iterable, Never, cast
+from typing import Any, Iterable, cast
 
 from delphyne.core.queries import Query
 from delphyne.core.refs import ChoiceArgRef, ChoiceRef, NodeId
@@ -157,8 +157,11 @@ class FiniteChoice[T]:
     qualified_hints_only: bool = True
 
 
+# TODO: We use `Query[Any, ...]` instead of `Query[Never, ...]` since
+# pyright does not handle `Never` very well.
+# https://github.com/microsoft/pyright/issues/9056
 type ChoiceSource[T] = (
-    Query[Never, T] | StrategyInstance[Node, T] | FiniteChoice[T]
+    Query[Any, T] | StrategyInstance[Node, T] | FiniteChoice[T]
 )
 
 
