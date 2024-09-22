@@ -178,8 +178,9 @@ class RefResolver:
             case trees.StrategyInstance():
                 spawned = tree.spawn(source.strategy, origin)
                 final, hints = self.follow_hints(spawned, hints)
-                assert isinstance(final.node, Success)
-                return final.node.success, hints
+                success = cast(Success[Any], final.node)
+                assert isinstance(success, Success)
+                return success.success, hints
             case trees.FiniteChoice():
                 assert False
 

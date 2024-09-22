@@ -168,7 +168,10 @@ type Synth[P, T] = Strategy[Conjecture[P, Any] | Run[P] | Failure, T]
 handle_synth = compose(handle_conjecture, compose(handle_run, handle_failure))
 
 
-@strategy(composed_policy(handle_synth))
+# TODO: pyright still has trouble with composed policies...
+@strategy(
+    composed_policy(handle_synth)
+)  # pyright: ignore [reportArgumentType]
 def synthetize_fun(vars: Vars, prop: IntPred) -> Synth[Params, IntFun]:
     """
     The goal is to synthetize the body of a function f that respects
@@ -194,7 +197,9 @@ def conjecture_expr(vars: Vars, prop: IntPred) -> Branching[Params, Expr]:
     return expr
 
 
-@strategy(composed_policy(compose(handle_run, handle_failure)))
+@strategy(
+    composed_policy(compose(handle_run, handle_failure))
+)  # pyright: ignore [reportArgumentType]
 def find_counterexample(
     vars: Vars, prop: IntPred, expr: Expr
 ) -> Strategy[Run[Params] | Failure, None]:

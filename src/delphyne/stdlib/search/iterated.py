@@ -52,7 +52,9 @@ async def search_iterated[P, T](
             break
 
 
-@strategy(search_iterated)
+# TODO: pyright has a hard time here since what we would like to infer is
+# \forall P. WrappedParametricStrategy[P, ...]
+@strategy(search_iterated)  # pyright: ignore [reportArgumentType]
 def iterated[P: HasSearchEnv, T](
     next: Callable[[Sequence[T]], GeneratorConvertible[P, T]]
 ) -> Strategy[Iterated[P, T], T]:  # fmt: skip
