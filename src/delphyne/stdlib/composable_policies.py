@@ -1,5 +1,9 @@
 """
-Composable search policies
+Composable search policies.
+
+Status: this is an ongoing experiment. Existing typecheckers are still
+too conservative to typecheck a lot of code that uses composable
+policies.
 """
 
 from collections.abc import Callable
@@ -73,11 +77,11 @@ def compose[P, N: Node, M: Node](
         guardr, visitr = cpr(params)
         def guard(node: object) -> TypeGuard[N | M]:
             return guardl(node) or guardr(node)
-        def visit[T](
+        def visit[L: Node, T](
             env: GenEnv,
             node: N | M, tree:
-            Tree[N | M, T], recurse:
-            _Recursor[N | M, T]
+            Tree[L, T], recurse:
+            _Recursor[L, T]
         ) -> GenRet[T]:
             if guardl(node):
                 return visitl(env, node, tree, recurse)
