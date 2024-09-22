@@ -13,6 +13,14 @@ pip install mkdocs mkdocstrings[python] mkdocs-autolinks-plugin
 mkdocs serve
 ```
 
+Current pyright version: 1.1.378
+To check the pyright version used by pylance, check "Output / Python Language Server" and look for "pyright".
+
+```sh
+pip install pyright==1.1.378  # For the one in sync with pylance
+pip install pyright -U  # for the latest one
+```
+
 ## Tricks
 
 To create a test notebook:
