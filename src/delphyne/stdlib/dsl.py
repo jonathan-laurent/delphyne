@@ -98,7 +98,9 @@ def strategy[**A, P, N: Node, T](
 ) -> _StrategyDecorator[A, P, N, T]:
     ...
 
-def strategy[**A, P, N: Node, T](
+# TODO: spurious pyright error here:
+# https://github.com/microsoft/pyright/issues/9054
+def strategy[**A, P, N: Node, T]( # pyright: ignore [reportInconsistentOverload]
     search_policy: SearchPolicy[P, N] | None = None
 ) -> _StrategyDecorator[A, P, N, T]:  # fmt: skip
     return lambda f: WrappedParametricStrategy(f, search_policy)

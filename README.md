@@ -21,6 +21,8 @@ pip install pyright==1.1.378  # For the one in sync with pylance
 pip install pyright -U  # for the latest one
 ```
 
+The vscode "Black Formatter" extension is needed for the `"editor.defaultFormatter": "ms-python.black-formatter"` setting to work. Same for the `isort` extension.
+
 ## Tricks
 
 To create a test notebook:
