@@ -1,4 +1,4 @@
-# The Delphyne Framework for Few-Shot Programming
+# The Delphyne Framework for Oracular Programming
 
 ## Install
 
