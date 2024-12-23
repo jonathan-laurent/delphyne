@@ -18,13 +18,10 @@ class SpaceName:
     indices: tuple[int | str, ...]
 
 
-@dataclass(frozen=True)
-class AnswerModeName:
-    """
-    A name for an answer mode, or `None` for the default mode.
-    """
-
-    name: str | None
+type AnswerModeName = str | None
+"""
+A name for an answer mode, or `None` for the default mode.
+"""
 
 
 type ValueRef = Assembly[SpaceElementRef]
