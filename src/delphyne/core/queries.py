@@ -16,7 +16,7 @@ class ParseError:
     error: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class AnswerMode[T]:
     name: AnswerModeName
     parse: Callable[[str], T | ParseError]

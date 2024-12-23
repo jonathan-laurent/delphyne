@@ -37,14 +37,11 @@ An S-expression whose atoms have type `T`.
 """
 
 
-@dataclass(frozen=True)
-class NodePath:
-    """
-    Encodes a sequence of actions leading to a node with respect to a
-    given root.
-    """
-
-    actions: tuple[ValueRef, ...]
+type NodePath = tuple[ValueRef, ...]
+"""
+Encodes a sequence of actions leading to a node with respect to a
+given root.
+"""
 
 
 @dataclass(frozen=True)
@@ -124,14 +121,7 @@ class SpaceElementRef:
     element: AnswerRef | NodeRef
 
 
-type NonEmptyTuple[T] = tuple[tuple[T, ...], T]
-"""
-A nonempty tuple of elements. The leftmost element can always be
-accessed directly.
-"""
-
-
-type GlobalNodePath = NonEmptyTuple[tuple[SpaceRef, NodePath]]
+type GlobalNodePath = tuple[tuple[SpaceRef, NodePath], ...]
 """
 Path to a node from the global origin, as a sequence of (space to enter,
 path to follow) instruction pairs.

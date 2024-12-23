@@ -5,10 +5,10 @@ The core tree datastructure.
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Generator, Iterable, Sequence
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
-from delphyne.core import inspect
-from delphyne.core.queries import AbstractQuery
+from delphyne.core import inspect, refs
+from delphyne.core.queries import AbstractQuery, ParseError
 from delphyne.core.refs import Assembly, GlobalNodePath, ValueRef
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
@@ -41,6 +41,22 @@ A dynamic assembly of tracked values.
 """
 
 
+def value_ref(v: Value) -> refs.ValueRef:
+    match v:
+        case Tracked(_, ref):
+            return ref
+        case tuple():
+            return tuple(value_ref(o) for o in v)
+
+
+def drop_refs(v: Value) -> object:
+    match v:
+        case Tracked(value):
+            return value
+        case tuple():
+            return tuple(drop_refs(o) for o in v)
+
+
 ####
 #### Choices
 ####
@@ -62,12 +78,18 @@ class Space[T](ABC):
         pass
 
     @abstractmethod
-    def source(self) -> "StrategyComp[Any, T] | AbstractQuery[Any, T]":
+    def source(self) -> "StrategyComp[Any, T] | AttachedQuery[T]":
         pass
 
     @abstractmethod
     def element_type(self) -> TypeAnnot[T] | NoTypeInfo:
         pass
+
+
+@dataclass(frozen=True)
+class AttachedQuery[T]:
+    query: AbstractQuery[Any, Any]
+    answer: Callable[[refs.AnswerModeName, str], Tracked[T] | ParseError]
 
 
 ####
@@ -154,7 +176,11 @@ class Success[T](Node):
 #### The Tree Type
 ####
 
-type Strategy[N: Node, P, T] = Generator[N, object, T]
+
+type NodeBuilder[N: Node] = Callable[[_NonEmptyGlobalPath], N]
+
+
+type Strategy[N: Node, P, T] = Generator[NodeBuilder[N], object, T]
 
 
 @dataclass
@@ -200,10 +226,123 @@ class Tree[N: Node, T]:
     ref: GlobalNodePath
 
 
+@dataclass
+class StrategyException(Exception):
+    """
+    Raised when a strategy encounters an internal error (e.g. a failed
+    assertion or an index-out-of-bounds error).
+    """
+
+    exn: Exception
+
+
 ####
 #### Reifying Strategies into Trees
 ####
 
 
+# How will nodes be spawned? Using _reify
+
+
 def _reify[N: Node, T](strategy: StrategyComp[N, T]) -> Tree[N, T]:
-    assert False
+
+    def aux(
+        strategy: StrategyComp[N, T],
+        actions: Sequence[object],
+        ref: _NonEmptyGlobalPath,
+        node: N | Success[T],
+        cur_generator: Strategy[N, Any, T],
+    ) -> Tree[N, T]:
+
+        generator_valid = True
+
+        def child(action: Value) -> Tree[N, T]:
+            action_raw = drop_refs(action)
+            action_ref = value_ref(action)
+            del action
+            assert node.valid_action(action_raw), (
+                "Invalid action for node of type "
+                + f"{type(node)}: {action_raw}."
+            )
+            # If `child` has never been called before, the generator
+            # that yielded the current node is still valid and can be
+            # reused. For subsequent calls, `self._cur_generator` is
+            # None and the strategy is resimulated from scratch
+            # following `self._path`.
+            nonlocal generator_valid
+            new_actions = (*actions, action_raw)
+            if generator_valid:
+                pre_node = _send_action(cur_generator, action_raw)
+                new_gen = cur_generator
+                generator_valid = False
+                assert False
+            else:
+                pre_node, new_gen = _recompute(strategy, new_actions)
+            gr, cr, nr = ref
+            new_ref = (gr, cr, (*nr, action_ref))
+            ret_type = strategy.return_type()
+            new_node = _finalize_node(pre_node, new_ref, ret_type)
+            return aux(strategy, new_actions, new_ref, new_node, new_gen)
+            assert False
+
+        return Tree(node, child, global_path_from_nonempty(ref))
+
+    init_ref = ((), refs.MAIN_SPACE, ())
+    pre_node, gen = _recompute(strategy, ())
+    node = _finalize_node(pre_node, init_ref, strategy.return_type())
+    return aux(strategy, (), init_ref, node, gen)
+
+
+@dataclass
+class _PreSuccess[T]:
+    value: T
+
+
+type _PreNode[N: Node, T] = NodeBuilder[N] | _PreSuccess[T]
+
+
+type _NonEmptyGlobalPath = tuple[GlobalNodePath, refs.SpaceRef, refs.NodePath]
+"""
+Encodes a non-empty global node path.
+
+More precisely, `(gr, sr, nr)` encodes `(*gr, (sr, nr))`
+"""
+
+
+def global_path_from_nonempty(ref: _NonEmptyGlobalPath) -> GlobalNodePath:
+    (gr, sr, nr) = ref
+    return (*gr, (sr, nr))
+
+
+def _send_action[N: Node, T](
+    gen: Strategy[N, Any, T], action: object
+) -> _PreNode[N, T]:  # fmt: skip
+    try:
+        return gen.send(action)
+    except StopIteration as e:
+        v = cast(T, e.value)
+        return _PreSuccess(v)
+    except Exception as e:
+        raise StrategyException(e)
+
+
+def _recompute[N: Node, T](
+    strategy: StrategyComp[N, T], actions: Sequence[object],
+) -> tuple[_PreNode[N, T], Strategy[N, Any, T]]:  # fmt: skip
+    gen = strategy()
+    mknode = _send_action(gen, None)
+    for a in actions:
+        mknode = _send_action(gen, a)
+    return mknode, gen
+
+
+def _finalize_node[N: Node, T](
+    pre_node: _PreNode[N, T],
+    ref: _NonEmptyGlobalPath,
+    type: TypeAnnot[T] | NoTypeInfo
+) -> N | Success[T]:  # fmt: skip
+    if not isinstance(pre_node, _PreSuccess):
+        return pre_node(ref)
+    (gr, sr, nr) = ref
+    ser = refs.SpaceElementRef(sr, nr)
+    return Success(Tracked(pre_node.value, ser, gr, type))
