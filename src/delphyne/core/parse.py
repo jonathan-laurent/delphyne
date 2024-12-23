@@ -4,8 +4,6 @@ Parser for references and test commands
 
 # pyright: basic
 
-from math import e
-
 import parsy as ps
 import yaml  # pyright: ignore[reportMissingTypeStubs]
 
