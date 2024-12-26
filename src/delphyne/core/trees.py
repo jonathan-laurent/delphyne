@@ -92,6 +92,11 @@ class AttachedQuery[T]:
     answer: Callable[[refs.AnswerModeName, str], Tracked[T] | ParseError]
 
 
+@dataclass(frozen=True)
+class Embedded:
+    pass
+
+
 ####
 #### Nodes
 ####

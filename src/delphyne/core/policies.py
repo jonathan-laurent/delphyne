@@ -76,3 +76,12 @@ class Spent:
 @dataclass
 class Barrier:
     budget: Budget
+
+
+#####
+##### Policy
+#####
+
+# The execution monad takes as an argument a general context that
+# contains: the path to the templates, some demonstrations and the path
+# to data.

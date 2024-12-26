@@ -15,7 +15,7 @@ class SpaceName:
     """
 
     name: str
-    indices: tuple[int | str, ...]
+    indices: tuple[int, ...]
 
 
 type AnswerModeName = str | None
