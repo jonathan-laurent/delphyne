@@ -111,14 +111,43 @@ A reference to a query answer.
 """
 
 
+type HintValue = str
+"""
+A string that hints at a query answer.
+"""
+
+
+@dataclass(frozen=True)
+class Hint:
+    """A hint for selecting a query answer.
+
+    The hint can be conditioned on a specific query.
+    """
+
+    query_name: str | None
+    hint: HintValue
+
+
+@dataclass
+class Hints:
+    """
+    References a local space element via a sequence of hints.
+    """
+
+    hints: tuple[Hint, ...]
+
+
 @dataclass(frozen=True)
 class SpaceElementRef:
     """
     A reference to an element of a local space.
+
+    When the `space` field is `None`, the primary field is considered
+    instead (if it exists).
     """
 
-    space: SpaceRef
-    element: AnswerRef | NodeRef
+    space: SpaceRef | None
+    element: AnswerRef | NodeRef | Hints
 
 
 type GlobalNodePath = tuple[tuple[SpaceRef, NodePath], ...]

@@ -7,7 +7,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from delphyne.core.refs import ChoiceRef, Hint
+from delphyne.core.refs import Hints, SpaceRef
 
 
 type TestCommandString = str
@@ -16,6 +16,7 @@ type TestCommandString = str
 @dataclass
 class Answer:
     answer: str
+    mode: str | None = None
     label: str | None = None
     example: bool | None = None
 
@@ -44,13 +45,13 @@ type NodeLabel = str
 
 @dataclass
 class Run:
-    hints: Sequence[Hint]
+    hints: Hints
     until: NodeLabel | None
 
 
 @dataclass
-class SelectSub:
-    subchoice: ChoiceRef
+class SelectSpace:
+    space: SpaceRef
     expects_query: bool
 
 
@@ -74,7 +75,7 @@ class Load:
     name: str
 
 
-type TestStep = Run | SelectSub | IsSuccess | IsFailure | Save | Load
+type TestStep = Run | SelectSpace | IsSuccess | IsFailure | Save | Load
 
 
 type TestCommand = Sequence[TestStep]
