@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from typing import Any, Protocol
 
 from delphyne.core.environment import PolicyEnv
-from delphyne.core.trees import Node, Tracked, Tree
+from delphyne.core.trees import AttachedQuery, Node, Tracked, Tree
 
 
 #####
@@ -82,22 +82,19 @@ class Barrier:
     budget: Budget
 
 
-#####
-##### Policies
-#####
-
-# The execution monad takes as an argument a general context that
-# contains: the path to the templates, some demonstrations and the path
-# to data.
-
-# Do we need a `search_policy` decorator? It is nice when policies can
-# be composed nicely.
-
-
 type StreamRet[T] = AsyncGenerator[Yield[Tracked[T]] | Spent | Barrier]
 
 
-class ParametricSearchPolicyFn[N: Node, **P](Protocol):
+#####
+##### Search Policies
+#####
+
+
+class TreeTransformer[N: Node, M: Node](Protocol):
+    def __call__[T](self, tree: Tree[N, T]) -> Tree[M, T]: ...
+
+
+class _ParametricSearchPolicyFn[N: Node, **P](Protocol):
     # fmt: off
     def __call__[T](
         self,
@@ -111,7 +108,7 @@ class ParametricSearchPolicyFn[N: Node, **P](Protocol):
         ...
 
 
-class SearchPolicyFn[N: Node](Protocol):
+class _SearchPolicyFn[N: Node](Protocol):
     # fmt: off
     def __call__[T](
         self,
@@ -123,13 +120,9 @@ class SearchPolicyFn[N: Node](Protocol):
         ...
 
 
-class TreeTransformer[N: Node, M: Node](Protocol):
-    def __call__[T](self, tree: Tree[N, T]) -> Tree[M, T]: ...
-
-
 @dataclass
 class SearchPolicy[N: Node]:
-    fn: SearchPolicyFn[N]
+    fn: _SearchPolicyFn[N]
 
     # fmt: off
     def __call__[T](
@@ -154,7 +147,7 @@ class SearchPolicy[N: Node]:
     # fmt: on
 
 
-class ParametricSearchPolicy[N: Node, **P](Protocol):
+class _ParametricSearchPolicy[N: Node, **P](Protocol):
     def __call__(
         self, *args: P.args, **kwargs: P.kwargs
     ) -> SearchPolicy[N]: ...
@@ -162,13 +155,14 @@ class ParametricSearchPolicy[N: Node, **P](Protocol):
 
 # fmt: off
 def search_policy[N: Node, **P](
-    fn: ParametricSearchPolicyFn[N, P]
-) -> ParametricSearchPolicy[N, P]:
+    fn: _ParametricSearchPolicyFn[N, P]
+) -> _ParametricSearchPolicy[N, P]:
     """
     Wraps a search policy into a callable objects with additional helper
     features (such as the `@` operator for composing with tree
     transformers).
     """
+
     def parametric(*args: P.args, **kwargs: P.kwargs) -> SearchPolicy[N]:
 
         def policy[T](
@@ -179,4 +173,70 @@ def search_policy[N: Node, **P](
         return SearchPolicy(policy)
 
     return parametric
-# fnt: on
+# fmt: on
+
+
+#####
+##### Prompting Policies
+#####
+
+
+class _PromptingPolicyFn(Protocol):
+    # fmt: off
+    def __call__[T](
+        self,
+        query: AttachedQuery[T],
+        env: PolicyEnv,
+        policy: Any
+    ) -> StreamRet[T]:
+    # fmt: on
+        ...
+
+
+class _ParametricPromptingPolicyFn[**P](Protocol):
+    # fmt: off
+    def __call__[T](
+        self,
+        query: AttachedQuery[T],
+        env: PolicyEnv,
+        policy: Any,
+        *args: P.args,
+        **kwargs: P.kwargs
+    ) -> StreamRet[T]: ...
+    # fmt: on
+
+
+@dataclass
+class PromptingPolicy:
+    fn: _PromptingPolicyFn
+
+    # fmt: off
+    def __call__[T](
+        self, query: AttachedQuery[T], env: PolicyEnv, policy: Any
+    ) -> StreamRet[T]:
+    # fmt: on
+        return self.fn(query, env, policy)
+
+
+class _ParametricPromptingPolicy[**P](Protocol):
+    def __call__(
+        self, *args: P.args, **kwargs: P.kwargs
+    ) -> PromptingPolicy: ...
+
+
+# fmt: off
+def prompting_policy[**P](
+    fn: _ParametricPromptingPolicyFn[P]
+) -> _ParametricPromptingPolicy[P]:
+
+    def parametric(*args: P.args, **kwargs: P.kwargs) -> PromptingPolicy:
+
+        def policy[T](
+            query: AttachedQuery[T], env: PolicyEnv, policy: Any
+        ) -> StreamRet[T]:
+            return fn(query, env, policy, *args, **kwargs)
+
+        return PromptingPolicy(policy)
+
+    return parametric
+# fmt: on
