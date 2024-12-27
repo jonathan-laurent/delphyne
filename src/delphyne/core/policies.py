@@ -3,8 +3,12 @@ Defining Policies for Delphyne
 """
 
 import math
-from collections.abc import Mapping
+from collections.abc import AsyncGenerator, Mapping
 from dataclasses import dataclass
+from typing import Any, Protocol
+
+from delphyne.core.environment import PolicyEnv
+from delphyne.core.trees import Node, Tracked, Tree
 
 
 #####
@@ -79,9 +83,77 @@ class Barrier:
 
 
 #####
-##### Policy
+##### Policies
 #####
 
 # The execution monad takes as an argument a general context that
 # contains: the path to the templates, some demonstrations and the path
 # to data.
+
+# Do we need a `search_policy` decorator? It is nice when policies can
+# be composed nicely.
+
+
+type StreamRet[T] = AsyncGenerator[Yield[Tracked[T]] | Spent | Barrier]
+
+
+class SearchPolicyFn[N: Node, **P](Protocol):
+    # fmt: off
+    def __call__[T](
+        self,
+        tree: Tree[N, T],
+        env: PolicyEnv,
+        policy: Any,
+        *args: P.args,
+        **kwargs: P.kwargs
+    ) -> StreamRet[T]:
+    # fmt: on
+        ...
+
+
+class TreeTransformer[N: Node, M: Node](Protocol):
+    def __call__[T](self, tree: Tree[N, T]) -> Tree[M, T]: ...
+
+
+@dataclass
+class SearchPolicy[N: Node, **P]:
+    fn: SearchPolicyFn[N, P]
+
+    # fmt: off
+    def __call__[T](
+        self,
+        tree: Tree[N, T],
+        env: PolicyEnv,
+        policy: Any,
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> StreamRet[T]:
+    # fmt: on
+        return self.fn(tree, env, policy, *args, **kwargs)
+
+    # fmt: off
+    def __matmul__[M: Node](
+        self,
+        tree_transformer: TreeTransformer[M, N]
+    ) -> "SearchPolicy[M, P]":
+
+        def fn[T](
+            tree: Tree[M, T], env: PolicyEnv, policy: Any,
+            *args: P.args, **kwargs: P.kwargs
+        ) -> StreamRet[T]:
+            new_tree = tree_transformer(tree)
+            return self.fn(new_tree, env, policy, *args, **kwargs)
+
+        return SearchPolicy(fn)
+    # fmt: on
+
+
+# fmt: off
+def search_policy[N: Node, **P](fn: SearchPolicyFn[N, P]) -> SearchPolicy[N, P]:
+    """
+    Wraps a search policy into a callable objects with additional helper
+    features (such as the `@` operator for composing with tree
+    transformers).
+    """
+    return SearchPolicy(fn)
+# fnt: on
