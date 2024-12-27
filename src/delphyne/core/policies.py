@@ -97,7 +97,7 @@ class Barrier:
 type StreamRet[T] = AsyncGenerator[Yield[Tracked[T]] | Spent | Barrier]
 
 
-class SearchPolicyFn[N: Node, **P](Protocol):
+class ParametricSearchPolicyFn[N: Node, **P](Protocol):
     # fmt: off
     def __call__[T](
         self,
@@ -111,49 +111,72 @@ class SearchPolicyFn[N: Node, **P](Protocol):
         ...
 
 
-class TreeTransformer[N: Node, M: Node](Protocol):
-    def __call__[T](self, tree: Tree[N, T]) -> Tree[M, T]: ...
-
-
-@dataclass
-class SearchPolicy[N: Node, **P]:
-    fn: SearchPolicyFn[N, P]
-
+class SearchPolicyFn[N: Node](Protocol):
     # fmt: off
     def __call__[T](
         self,
         tree: Tree[N, T],
         env: PolicyEnv,
-        policy: Any,
-        *args: P.args,
-        **kwargs: P.kwargs,
+        policy: Any
     ) -> StreamRet[T]:
     # fmt: on
-        return self.fn(tree, env, policy, *args, **kwargs)
+        ...
+
+
+class TreeTransformer[N: Node, M: Node](Protocol):
+    def __call__[T](self, tree: Tree[N, T]) -> Tree[M, T]: ...
+
+
+@dataclass
+class SearchPolicy[N: Node]:
+    fn: SearchPolicyFn[N]
+
+    # fmt: off
+    def __call__[T](
+        self, tree: Tree[N, T], env: PolicyEnv, policy: Any,
+    ) -> StreamRet[T]:
+    # fmt: on
+        return self.fn(tree, env, policy)
 
     # fmt: off
     def __matmul__[M: Node](
         self,
         tree_transformer: TreeTransformer[M, N]
-    ) -> "SearchPolicy[M, P]":
+    ) -> "SearchPolicy[M]":
 
         def fn[T](
             tree: Tree[M, T], env: PolicyEnv, policy: Any,
-            *args: P.args, **kwargs: P.kwargs
         ) -> StreamRet[T]:
             new_tree = tree_transformer(tree)
-            return self.fn(new_tree, env, policy, *args, **kwargs)
+            return self.fn(new_tree, env, policy)
 
         return SearchPolicy(fn)
     # fmt: on
 
 
+class ParametricSearchPolicy[N: Node, **P](Protocol):
+    def __call__(
+        self, *args: P.args, **kwargs: P.kwargs
+    ) -> SearchPolicy[N]: ...
+
+
 # fmt: off
-def search_policy[N: Node, **P](fn: SearchPolicyFn[N, P]) -> SearchPolicy[N, P]:
+def search_policy[N: Node, **P](
+    fn: ParametricSearchPolicyFn[N, P]
+) -> ParametricSearchPolicy[N, P]:
     """
     Wraps a search policy into a callable objects with additional helper
     features (such as the `@` operator for composing with tree
     transformers).
     """
-    return SearchPolicy(fn)
+    def parametric(*args: P.args, **kwargs: P.kwargs) -> SearchPolicy[N]:
+
+        def policy[T](
+            tree: Tree[N, T], env: PolicyEnv, policy: Any
+        ) -> StreamRet[T]:
+            return fn(tree, env, policy, *args, **kwargs)
+
+        return SearchPolicy(policy)
+
+    return parametric
 # fnt: on
