@@ -5,7 +5,7 @@ The core tree datastructure.
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Generator, Iterable, Sequence
 from dataclasses import dataclass
-from typing import Any, cast
+from typing import Any, Protocol, cast
 
 from delphyne.core import inspect, refs
 from delphyne.core.node_fields import NodeFields, detect_node_structure
@@ -164,6 +164,10 @@ class Node(ABC):
     def summary_message(self) -> str | None:
         return None
 
+    @classmethod
+    def spawn[T](cls: type[T], **kwargs: Any) -> T:
+        assert False
+
 
 type Navigation = Generator[Space[Any], Tracked[Any], Value]
 """
@@ -233,6 +237,78 @@ class EmbeddedTree[T]:
         assert False
 
 
+type _NonEmptyGlobalPath = tuple[GlobalNodePath, refs.SpaceRef, refs.NodePath]
+"""
+Encodes a non-empty global node path.
+
+More precisely, `(gr, sr, nr)` encodes `(*gr, (sr, nr))`
+"""
+
+
+def global_path_from_nonempty(ref: _NonEmptyGlobalPath) -> GlobalNodePath:
+    (gr, sr, nr) = ref
+    return (*gr, (sr, nr))
+
+
+@dataclass(frozen=True)
+class GeneralSpawner:
+    """
+    Allows spawning arbitrary parametric subspaces at a given node.
+    """
+
+    ref: _NonEmptyGlobalPath
+
+    # fmt: off
+    def tree[N: Node, T](
+        self,
+        space_name: refs.SpaceName,
+        parametric_strategy: Callable[..., StrategyComp[N, T]],
+        args: tuple[Tracked[Any], ...],
+    ) -> "Tree[N, T]":  # fmt: on
+        args_raw = [drop_refs(arg) for arg in args]
+        args_ref = tuple(value_ref(arg) for arg in args)
+        strategy = parametric_strategy(*args_raw)
+        gr = global_path_from_nonempty(self.ref)
+        sr = refs.SpaceRef(space_name, args_ref)
+        return _reify(strategy, (gr, sr, ()))
+
+    # fmt: off
+    def query[T](
+        self,
+        space_name: refs.SpaceName,
+        parametric_query: Callable[..., AbstractQuery[Any, T]],
+        args: tuple[Tracked[Any], ...],
+    ) -> "AttachedQuery[T]":  # fmt: on
+        args_raw = [drop_refs(arg) for arg in args]
+        args_ref = tuple(value_ref(arg) for arg in args)
+        _query = parametric_query(*args_raw)
+        _gr = global_path_from_nonempty(self.ref)
+        _sr = refs.SpaceRef(space_name, args_ref)
+        # TODO: return attached query
+        assert False
+
+
+# fmt: off
+class TreeSpawner(Protocol):
+    def __call__[N: Node, T](
+        self, strategy: "StrategyComp[N, T]"
+    ) -> "Tree[N, T]":
+        ...
+# fmt: on
+
+
+# fmt: off
+class QuerySpawner(Protocol):
+    def __call__[T](
+        self, query: AbstractQuery[Any, T]
+    ) -> "AttachedQuery[T]":
+        ...
+# fmt: on
+
+
+type Builder[S] = Callable[[TreeSpawner, QuerySpawner], S]
+
+
 @dataclass(frozen=True)
 class Tree[N: Node, T]:
     node: N | Success[T]
@@ -258,7 +334,11 @@ class StrategyException(Exception):
 # How will nodes be spawned? Using _reify
 
 
-def _reify[N: Node, T](strategy: StrategyComp[N, T]) -> Tree[N, T]:
+# fmt: off
+def _reify[N: Node, T](
+    strategy: StrategyComp[N, T],
+    root_ref: _NonEmptyGlobalPath | None = None,
+) -> Tree[N, T]:  # fmt: on
 
     def aux(
         strategy: StrategyComp[N, T],
@@ -301,10 +381,11 @@ def _reify[N: Node, T](strategy: StrategyComp[N, T]) -> Tree[N, T]:
 
         return Tree(node, child, global_path_from_nonempty(ref))
 
-    init_ref = ((), refs.MAIN_SPACE, ())
+    if root_ref is None:
+        root_ref = ((), refs.MAIN_SPACE, ())
     pre_node, gen = _recompute(strategy, ())
-    node = _finalize_node(pre_node, init_ref, strategy.return_type())
-    return aux(strategy, (), init_ref, node, gen)
+    node = _finalize_node(pre_node, root_ref, strategy.return_type())
+    return aux(strategy, (), root_ref, node, gen)
 
 
 @dataclass
@@ -313,19 +394,6 @@ class _PreSuccess[T]:
 
 
 type _PreNode[N: Node, T] = NodeBuilder[N] | _PreSuccess[T]
-
-
-type _NonEmptyGlobalPath = tuple[GlobalNodePath, refs.SpaceRef, refs.NodePath]
-"""
-Encodes a non-empty global node path.
-
-More precisely, `(gr, sr, nr)` encodes `(*gr, (sr, nr))`
-"""
-
-
-def global_path_from_nonempty(ref: _NonEmptyGlobalPath) -> GlobalNodePath:
-    (gr, sr, nr) = ref
-    return (*gr, (sr, nr))
 
 
 def _send_action[N: Node, T](
