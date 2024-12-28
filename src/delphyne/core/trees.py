@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from typing import Any, cast
 
 from delphyne.core import inspect, refs
+from delphyne.core.node_fields import NodeFields, detect_node_structure
 from delphyne.core.queries import AbstractQuery, ParseError
 from delphyne.core.refs import Assembly, GlobalNodePath, ValueRef
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
@@ -116,6 +117,14 @@ class Node(ABC):
 
     def effect_name(self) -> str:
         return self.__class__.__name__
+
+    def fields(self) -> NodeFields:
+        cls = self.__class__
+        f = detect_node_structure(cls, embedded_class=int, space_class=Space)
+        if f is None:
+            msg = f"Impossible to autodetect the structure of {cls}"
+            assert False, msg
+        return f
 
     def valid_action(self, action: object) -> bool:
         """
