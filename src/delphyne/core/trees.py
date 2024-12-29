@@ -10,7 +10,7 @@ from typing import Any, Protocol, cast
 from delphyne.core import inspect, refs
 from delphyne.core.node_fields import NodeFields, detect_node_structure
 from delphyne.core.queries import AbstractQuery, ParseError
-from delphyne.core.refs import Assembly, GlobalNodePath, ValueRef
+from delphyne.core.refs import Assembly, GlobalNodePath, SpaceName, ValueRef
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
 
@@ -262,43 +262,36 @@ class _GeneralSpawner:
 
     def parametric[S](
         self,
+        space_name: SpaceName,
         parametric_builder: Callable[..., Builder[S]],
     ) -> Callable[..., S]:
-        assert False
+        def run_builder(*args: Any) -> S:
+            args_raw = [drop_refs(arg) for arg in args]
+            args_ref = tuple(value_ref(arg) for arg in args)
+            builder = parametric_builder(*args_raw)
+            gr = global_path_from_nonempty(self._ref)
+            sr = refs.SpaceRef(space_name, args_ref)
 
-    def parametric_tree[N: Node, T](
-        self,
-        space_name: refs.SpaceName,
-        parametric_strategy: Callable[..., StrategyComp[N, T]],
-        args: tuple[Tracked[Any], ...],
-    ) -> "Tree[N, T]":
-        args_raw = [drop_refs(arg) for arg in args]
-        args_ref = tuple(value_ref(arg) for arg in args)
-        strategy = parametric_strategy(*args_raw)
-        gr = global_path_from_nonempty(self._ref)
-        sr = refs.SpaceRef(space_name, args_ref)
-        return _reify(strategy, (gr, sr, ()), self._node_hook)
+            def spawn_tree(strategy: StrategyComp[Any, Any]) -> Tree[Any, Any]:
+                return _reify(strategy, (gr, sr, ()), self._node_hook)
 
-    def parametric_query[T](
-        self,
-        space_name: refs.SpaceName,
-        parametric_query: Callable[..., AbstractQuery[Any, T]],
-        args: tuple[Tracked[Any], ...],
-    ) -> "AttachedQuery[T]":
-        args_raw = [drop_refs(arg) for arg in args]
-        args_ref = tuple(value_ref(arg) for arg in args)
-        _query = parametric_query(*args_raw)
-        _gr = global_path_from_nonempty(self._ref)
-        _sr = refs.SpaceRef(space_name, args_ref)
-        # TODO: return attached query
-        assert False
+            def spawn_query(
+                query: AbstractQuery[Any, Any],
+            ) -> AttachedQuery[Any]:
+                def answer(
+                    mode: refs.AnswerModeName, text: str
+                ) -> Tracked[Any]:
+                    ref = refs.SpaceElementRef(sr, refs.Answer(mode, text))
+                    return Tracked(answer, ref, gr, query.answer_type())
 
-    def tree[N: Node, T](
-        self,
-        space_name: refs.SpaceName,
-        strategy: StrategyComp[N, T],
-    ) -> "Tree[N, T]":
-        return self.parametric_tree(space_name, lambda: strategy, ())
+                return AttachedQuery(query, (gr, sr), answer)
+
+            return builder(spawn_tree, spawn_query)
+
+        return run_builder
+
+    def nonparametric[S](self, name: SpaceName, builder: Builder[S]) -> S:
+        return self.parametric(name, lambda: builder)()
 
 
 #####
