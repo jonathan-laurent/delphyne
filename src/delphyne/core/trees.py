@@ -226,10 +226,29 @@ class EmbeddedTree[T](Space[T]):
     def tags(self) -> Sequence[Tag]:
         return self._comp.tags()
 
+    @staticmethod
+    def builder(comp: StrategyComp[Any, T]) -> "Builder[EmbeddedTree[T]]":
+        return lambda spawn, _: EmbeddedTree(comp, lambda: spawn(comp))
+
 
 #####
 ##### Builders and Spawners
 #####
+
+
+class _TreeSpawner(Protocol):
+    def __call__[N: Node, T](
+        self, strategy: "StrategyComp[N, T]"
+    ) -> "Tree[N, T]": ...
+
+
+class _QuerySpawner(Protocol):
+    def __call__[T](
+        self, query: AbstractQuery[Any, T]
+    ) -> "AttachedQuery[T]": ...
+
+
+type Builder[S] = Callable[[_TreeSpawner, _QuerySpawner], S]
 
 
 @dataclass(frozen=True)
@@ -241,13 +260,18 @@ class _GeneralSpawner:
     _ref: "_NonEmptyGlobalPath"
     _node_hook: "Callable[[Tree[Any, Any]], None] | None"
 
-    # fmt: off
-    def tree[N: Node, T](
+    def parametric[S](
+        self,
+        parametric_builder: Callable[..., Builder[S]],
+    ) -> Callable[..., S]:
+        assert False
+
+    def parametric_tree[N: Node, T](
         self,
         space_name: refs.SpaceName,
         parametric_strategy: Callable[..., StrategyComp[N, T]],
         args: tuple[Tracked[Any], ...],
-    ) -> "Tree[N, T]":  # fmt: on
+    ) -> "Tree[N, T]":
         args_raw = [drop_refs(arg) for arg in args]
         args_ref = tuple(value_ref(arg) for arg in args)
         strategy = parametric_strategy(*args_raw)
@@ -255,13 +279,12 @@ class _GeneralSpawner:
         sr = refs.SpaceRef(space_name, args_ref)
         return _reify(strategy, (gr, sr, ()), self._node_hook)
 
-    # fmt: off
-    def query[T](
+    def parametric_query[T](
         self,
         space_name: refs.SpaceName,
         parametric_query: Callable[..., AbstractQuery[Any, T]],
         args: tuple[Tracked[Any], ...],
-    ) -> "AttachedQuery[T]":  # fmt: on
+    ) -> "AttachedQuery[T]":
         args_raw = [drop_refs(arg) for arg in args]
         args_ref = tuple(value_ref(arg) for arg in args)
         _query = parametric_query(*args_raw)
@@ -270,26 +293,12 @@ class _GeneralSpawner:
         # TODO: return attached query
         assert False
 
-
-# fmt: off
-class TreeSpawner(Protocol):
-    def __call__[N: Node, T](
-        self, strategy: "StrategyComp[N, T]"
+    def tree[N: Node, T](
+        self,
+        space_name: refs.SpaceName,
+        strategy: StrategyComp[N, T],
     ) -> "Tree[N, T]":
-        ...
-# fmt: on
-
-
-# fmt: off
-class QuerySpawner(Protocol):
-    def __call__[T](
-        self, query: AbstractQuery[Any, T]
-    ) -> "AttachedQuery[T]":
-        ...
-# fmt: on
-
-
-type Builder[S] = Callable[[TreeSpawner, QuerySpawner], S]
+        return self.parametric_tree(space_name, lambda: strategy, ())
 
 
 #####
@@ -346,13 +355,11 @@ def global_path_from_nonempty(ref: _NonEmptyGlobalPath) -> GlobalNodePath:
     return (*gr, (sr, nr))
 
 
-# fmt: off
 def _reify[N: Node, T](
     strategy: StrategyComp[N, T],
     root_ref: _NonEmptyGlobalPath | None,
     node_hook: Callable[[Tree[Any, Any]], None] | None,
-) -> Tree[N, T]:  # fmt: on
-
+) -> Tree[N, T]:
     def aux(
         strategy: StrategyComp[N, T],
         actions: Sequence[object],
@@ -360,7 +367,6 @@ def _reify[N: Node, T](
         node: N | Success[T],
         cur_generator: Strategy[N, Any, T],
     ) -> Tree[N, T]:
-
         generator_valid = True
 
         def child(action: Value) -> Tree[N, T]:
@@ -415,7 +421,7 @@ type _PreNode[N: Node, T] = NodeBuilder[N] | _PreSuccess[T]
 
 def _send_action[N: Node, T](
     gen: Strategy[N, Any, T], action: object
-) -> _PreNode[N, T]:  # fmt: skip
+) -> _PreNode[N, T]:
     try:
         return gen.send(action)
     except StopIteration as e:
@@ -426,8 +432,9 @@ def _send_action[N: Node, T](
 
 
 def _recompute[N: Node, T](
-    strategy: StrategyComp[N, T], actions: Sequence[object],
-) -> tuple[_PreNode[N, T], Strategy[N, Any, T]]:  # fmt: skip
+    strategy: StrategyComp[N, T],
+    actions: Sequence[object],
+) -> tuple[_PreNode[N, T], Strategy[N, Any, T]]:
     gen = strategy()
     mknode = _send_action(gen, None)
     for a in actions:
@@ -439,8 +446,8 @@ def _finalize_node[N: Node, T](
     pre_node: _PreNode[N, T],
     ref: _NonEmptyGlobalPath,
     type: TypeAnnot[T] | NoTypeInfo,
-    node_hook: Callable[[Tree[Any, Any]], None] | None
-) -> N | Success[T]:  # fmt: skip
+    node_hook: Callable[[Tree[Any, Any]], None] | None,
+) -> N | Success[T]:
     if not isinstance(pre_node, _PreSuccess):
         return pre_node(_GeneralSpawner(ref, node_hook))
     (gr, sr, nr) = ref
