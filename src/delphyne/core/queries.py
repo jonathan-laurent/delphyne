@@ -39,10 +39,6 @@ class AbstractQuery[P, T](ABC):
         pass
 
     @abstractmethod
-    def name(self) -> str:
-        pass
-
-    @abstractmethod
     def serialize_args(self) -> dict[str, object]:
         pass
 
@@ -58,3 +54,9 @@ class AbstractQuery[P, T](ABC):
     @abstractmethod
     def param_type(self) -> TypeAnnot[P]:
         pass
+
+    def name(self) -> str:
+        return self.__class__.__name__
+
+    def tags(self) -> Sequence[str]:
+        return [self.name()]

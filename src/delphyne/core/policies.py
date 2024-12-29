@@ -3,6 +3,7 @@ Defining Policies for Delphyne
 """
 
 import math
+from abc import ABC, abstractmethod
 from collections.abc import AsyncGenerator, Mapping
 from dataclasses import dataclass
 from typing import Any, Protocol
@@ -49,7 +50,7 @@ class Budget:
         return True
 
 
-@dataclass
+@dataclass(frozen=True)
 class BudgetLimit:
     """
     An immutable datastructure for representing a budget limit as an
@@ -67,17 +68,17 @@ class BudgetLimit:
 #####
 
 
-@dataclass
+@dataclass(frozen=True)
 class Yield[T]:
     value: T
 
 
-@dataclass
+@dataclass(frozen=True)
 class Spent:
     budget: Budget
 
 
-@dataclass
+@dataclass(frozen=True)
 class Barrier:
     budget: Budget
 
@@ -99,7 +100,7 @@ class _ParametricSearchPolicyFn[N: Node, **P](Protocol):
         self,
         tree: Tree[N, T],
         env: PolicyEnv,
-        policy: Any,
+        policy: "Policy[Any]",
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> StreamRet[T]: ...
@@ -107,11 +108,11 @@ class _ParametricSearchPolicyFn[N: Node, **P](Protocol):
 
 class _SearchPolicyFn[N: Node](Protocol):
     def __call__[T](
-        self, tree: Tree[N, T], env: PolicyEnv, policy: Any
+        self, tree: Tree[N, T], env: PolicyEnv, policy: "Policy[Any]"
     ) -> StreamRet[T]: ...
 
 
-@dataclass
+@dataclass(frozen=True)
 class SearchPolicy[N: Node]:
     fn: _SearchPolicyFn[N]
 
@@ -119,7 +120,7 @@ class SearchPolicy[N: Node]:
         self,
         tree: Tree[N, T],
         env: PolicyEnv,
-        policy: Any,
+        policy: "Policy[Any]",
     ) -> StreamRet[T]:
         return self.fn(tree, env, policy)
 
@@ -129,7 +130,7 @@ class SearchPolicy[N: Node]:
         def fn[T](
             tree: Tree[M, T],
             env: PolicyEnv,
-            policy: Any,
+            policy: "Policy[Any]",
         ) -> StreamRet[T]:
             new_tree = tree_transformer(tree)
             return self.fn(new_tree, env, policy)
@@ -154,7 +155,7 @@ def search_policy[N: Node, **P](
 
     def parametric(*args: P.args, **kwargs: P.kwargs) -> SearchPolicy[N]:
         def policy[T](
-            tree: Tree[N, T], env: PolicyEnv, policy: Any
+            tree: Tree[N, T], env: PolicyEnv, policy: "Policy[Any]"
         ) -> StreamRet[T]:
             return fn(tree, env, policy, *args, **kwargs)
 
@@ -170,7 +171,7 @@ def search_policy[N: Node, **P](
 
 class _PromptingPolicyFn(Protocol):
     def __call__[T](
-        self, query: AttachedQuery[T], env: PolicyEnv, policy: Any
+        self, query: AttachedQuery[T], env: PolicyEnv
     ) -> StreamRet[T]: ...
 
 
@@ -179,20 +180,19 @@ class _ParametricPromptingPolicyFn[**P](Protocol):
         self,
         query: AttachedQuery[T],
         env: PolicyEnv,
-        policy: Any,
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> StreamRet[T]: ...
 
 
-@dataclass
+@dataclass(frozen=True)
 class PromptingPolicy:
     fn: _PromptingPolicyFn
 
     def __call__[T](
-        self, query: AttachedQuery[T], env: PolicyEnv, policy: Any
+        self, query: AttachedQuery[T], env: PolicyEnv
     ) -> StreamRet[T]:
-        return self.fn(query, env, policy)
+        return self.fn(query, env)
 
 
 class _ParametricPromptingPolicy[**P](Protocol):
@@ -205,11 +205,20 @@ def prompting_policy[**P](
     fn: _ParametricPromptingPolicyFn[P],
 ) -> _ParametricPromptingPolicy[P]:
     def parametric(*args: P.args, **kwargs: P.kwargs) -> PromptingPolicy:
-        def policy[T](
-            query: AttachedQuery[T], env: PolicyEnv, policy: Any
-        ) -> StreamRet[T]:
-            return fn(query, env, policy, *args, **kwargs)
+        def policy[T](query: AttachedQuery[T], env: PolicyEnv) -> StreamRet[T]:
+            return fn(query, env, *args, **kwargs)
 
         return PromptingPolicy(policy)
 
     return parametric
+
+
+#####
+##### Policies
+#####
+
+
+class Policy[N: Node](ABC):
+    @abstractmethod
+    def toplevel(self) -> SearchPolicy[N]:
+        pass

@@ -87,6 +87,9 @@ class AttachedQuery[T]:
     ref: refs.GlobalSpaceRef
     answer: Callable[[refs.AnswerModeName, str], Tracked[T] | ParseError]
 
+    def tags(self) -> "Sequence[Tag]":
+        return self.query.tags()
+
 
 type Tag = str
 """
