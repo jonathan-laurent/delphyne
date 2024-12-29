@@ -155,3 +155,15 @@ type GlobalNodePath = tuple[tuple[SpaceRef, NodePath], ...]
 Path to a node from the global origin, as a sequence of (space to enter,
 path to follow) instruction pairs.
 """
+
+
+type GlobalNodeRef = NodeId | GlobalNodePath
+"""
+A global node reference, either as an ID or as a global path.
+"""
+
+
+type GlobalSpaceRef = tuple[GlobalNodeRef, SpaceRef]
+"""
+A global space reference.
+"""
