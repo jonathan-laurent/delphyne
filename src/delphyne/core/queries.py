@@ -26,7 +26,6 @@ type AnyQuery = AbstractQuery[Any, Any]
 
 
 class AbstractQuery[P, T](ABC):
-
     @abstractmethod
     def modes(self) -> Sequence[AnswerMode[T]]:
         pass

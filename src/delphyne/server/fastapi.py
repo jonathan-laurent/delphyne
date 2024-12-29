@@ -21,7 +21,6 @@ from delphyne.server.evaluate_demo import ExecutionContext, evaluate_demo
 
 
 def make_server(launcher: tasks.TaskLauncher):
-
     app = FastAPI()
 
     @app.get("/ping-delphyne")

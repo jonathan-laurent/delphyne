@@ -33,6 +33,9 @@ lines_after_imports = 2
 [tool.black]
 line-length = 79
 
+[tool.ruff]
+line-length = 79
+
 [tool.pyright]
 typeCheckingMode = "strict"
 include = ["src/**", "tests/**"]

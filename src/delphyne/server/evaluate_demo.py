@@ -234,9 +234,7 @@ def _check_valid_json(obj: object) -> bool:
             return False
 
 
-def _value_repr[T](
-    obj: T, typ: TypeAnnot[T] | NoTypeInfo
-) -> fb.ValueRepr:  # fmt: skip
+def _value_repr[T](obj: T, typ: TypeAnnot[T] | NoTypeInfo) -> fb.ValueRepr:
     short = pprint.pformat(obj, compact=True, sort_dicts=False)
     long = pprint.pformat(obj, compact=False, sort_dicts=False)
     value = fb.ValueRepr(short, long, False, None)
@@ -253,7 +251,6 @@ def _value_repr[T](
 
 
 class _TraceTranslator:
-
     def __init__(
         self,
         tree: NavigationTree[Node, Any],
@@ -332,7 +329,7 @@ class _TraceTranslator:
     ) -> tuple[fb.Reference, fb.NodeProperty]:
         tree = self.tree.goto(id)
         choice = tree.basic_resolver().resolve_subchoice_ref(tree, ref)
-        match (source := choice.source()):
+        match source := choice.source():
             case trees.StrategyInstance():
                 pty = self.translate_strategy_instance(tree, ref, source)
             case trees.Query():

@@ -95,56 +95,46 @@ class TreeTransformer[N: Node, M: Node](Protocol):
 
 
 class _ParametricSearchPolicyFn[N: Node, **P](Protocol):
-    # fmt: off
     def __call__[T](
         self,
         tree: Tree[N, T],
         env: PolicyEnv,
         policy: Any,
         *args: P.args,
-        **kwargs: P.kwargs
-    ) -> StreamRet[T]:
-    # fmt: on
-        ...
+        **kwargs: P.kwargs,
+    ) -> StreamRet[T]: ...
 
 
 class _SearchPolicyFn[N: Node](Protocol):
-    # fmt: off
     def __call__[T](
-        self,
-        tree: Tree[N, T],
-        env: PolicyEnv,
-        policy: Any
-    ) -> StreamRet[T]:
-    # fmt: on
-        ...
+        self, tree: Tree[N, T], env: PolicyEnv, policy: Any
+    ) -> StreamRet[T]: ...
 
 
 @dataclass
 class SearchPolicy[N: Node]:
     fn: _SearchPolicyFn[N]
 
-    # fmt: off
     def __call__[T](
-        self, tree: Tree[N, T], env: PolicyEnv, policy: Any,
+        self,
+        tree: Tree[N, T],
+        env: PolicyEnv,
+        policy: Any,
     ) -> StreamRet[T]:
-    # fmt: on
         return self.fn(tree, env, policy)
 
-    # fmt: off
     def __matmul__[M: Node](
-        self,
-        tree_transformer: TreeTransformer[M, N]
+        self, tree_transformer: TreeTransformer[M, N]
     ) -> "SearchPolicy[M]":
-
         def fn[T](
-            tree: Tree[M, T], env: PolicyEnv, policy: Any,
+            tree: Tree[M, T],
+            env: PolicyEnv,
+            policy: Any,
         ) -> StreamRet[T]:
             new_tree = tree_transformer(tree)
             return self.fn(new_tree, env, policy)
 
         return SearchPolicy(fn)
-    # fmt: on
 
 
 class _ParametricSearchPolicy[N: Node, **P](Protocol):
@@ -153,9 +143,8 @@ class _ParametricSearchPolicy[N: Node, **P](Protocol):
     ) -> SearchPolicy[N]: ...
 
 
-# fmt: off
 def search_policy[N: Node, **P](
-    fn: _ParametricSearchPolicyFn[N, P]
+    fn: _ParametricSearchPolicyFn[N, P],
 ) -> _ParametricSearchPolicy[N, P]:
     """
     Wraps a search policy into a callable objects with additional helper
@@ -164,7 +153,6 @@ def search_policy[N: Node, **P](
     """
 
     def parametric(*args: P.args, **kwargs: P.kwargs) -> SearchPolicy[N]:
-
         def policy[T](
             tree: Tree[N, T], env: PolicyEnv, policy: Any
         ) -> StreamRet[T]:
@@ -173,7 +161,6 @@ def search_policy[N: Node, **P](
         return SearchPolicy(policy)
 
     return parametric
-# fmt: on
 
 
 #####
@@ -182,39 +169,29 @@ def search_policy[N: Node, **P](
 
 
 class _PromptingPolicyFn(Protocol):
-    # fmt: off
     def __call__[T](
-        self,
-        query: AttachedQuery[T],
-        env: PolicyEnv,
-        policy: Any
-    ) -> StreamRet[T]:
-    # fmt: on
-        ...
+        self, query: AttachedQuery[T], env: PolicyEnv, policy: Any
+    ) -> StreamRet[T]: ...
 
 
 class _ParametricPromptingPolicyFn[**P](Protocol):
-    # fmt: off
     def __call__[T](
         self,
         query: AttachedQuery[T],
         env: PolicyEnv,
         policy: Any,
         *args: P.args,
-        **kwargs: P.kwargs
+        **kwargs: P.kwargs,
     ) -> StreamRet[T]: ...
-    # fmt: on
 
 
 @dataclass
 class PromptingPolicy:
     fn: _PromptingPolicyFn
 
-    # fmt: off
     def __call__[T](
         self, query: AttachedQuery[T], env: PolicyEnv, policy: Any
     ) -> StreamRet[T]:
-    # fmt: on
         return self.fn(query, env, policy)
 
 
@@ -224,13 +201,10 @@ class _ParametricPromptingPolicy[**P](Protocol):
     ) -> PromptingPolicy: ...
 
 
-# fmt: off
 def prompting_policy[**P](
-    fn: _ParametricPromptingPolicyFn[P]
+    fn: _ParametricPromptingPolicyFn[P],
 ) -> _ParametricPromptingPolicy[P]:
-
     def parametric(*args: P.args, **kwargs: P.kwargs) -> PromptingPolicy:
-
         def policy[T](
             query: AttachedQuery[T], env: PolicyEnv, policy: Any
         ) -> StreamRet[T]:
@@ -239,4 +213,3 @@ def prompting_policy[**P](
         return PromptingPolicy(policy)
 
     return parametric
-# fmt: on

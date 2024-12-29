@@ -44,7 +44,7 @@ class BasicLauncher(tasks.TaskLauncher):
         task: StreamingTask[P, T],
         *args: P.args,
         **kwargs: P.kwargs,
-    ) -> AsyncGenerator[str, None]:  # fmt: skip
+    ) -> AsyncGenerator[str, None]:
         context = _BasicTaskContext[T]()
         background = asyncio.create_task(task(context, *args, **kwargs))
         adapter = pydantic.TypeAdapter[TaskMessage[type]](TaskMessage[type])

@@ -70,9 +70,7 @@ class TaskLauncher(Protocol):
     computations.
     """
 
-    # fmt: off
     async def __call__[**P, T](
-    # fmt: on
         self,
         request: Request,
         type: type[T] | Any,

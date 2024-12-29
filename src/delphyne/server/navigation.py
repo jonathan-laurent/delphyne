@@ -352,7 +352,7 @@ class NavigationTree[N: Node, T](Tree[N, T]):
 
     def spawn[L: Node, U](
         self, strategy: trees.StrategyComp[L, U], origin: ChoiceRef
-    ) -> "NavigationTree[L, U]":  # fmt: skip
+    ) -> "NavigationTree[L, U]":
         spawned = None
         self_id = self.tree.node_id
         if (cid := self._rev_map.subtrees[self_id].get(origin)) is not None:

@@ -103,7 +103,6 @@ def extract_goal_formula(goal: str) -> str:
     return goal[start:].strip()
 
 
-
 #####
 ##### Single prompt version
 #####

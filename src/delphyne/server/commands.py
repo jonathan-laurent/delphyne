@@ -106,8 +106,8 @@ class AnswerQueryResponse:
 def load_params[P: HasSearchEnv](
     exe: CommandExecutionContext,
     type: TypeAnnot[P],
-    serialized: dict[str, object]
-) -> P:  # fmt: skip
+    serialized: dict[str, object],
+) -> P:
     serialized |= {
         "env": {
             "demo_paths": exe.demo_files,
