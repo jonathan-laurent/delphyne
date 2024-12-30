@@ -13,7 +13,6 @@ from delphyne.core.queries import AbstractQuery, ParseError
 from delphyne.core.refs import Assembly, GlobalNodePath, SpaceName, ValueRef
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
-
 #####
 ##### Tracked values
 #####
@@ -83,7 +82,7 @@ class AttachedQuery[T]:
     Wrapper for a query attached to a specific space.
     """
 
-    query: AbstractQuery[Any, T]
+    query: AbstractQuery[T]
     ref: refs.GlobalSpaceRef
     answer: Callable[[refs.AnswerModeName, str], Tracked[T] | ParseError]
 
@@ -246,9 +245,7 @@ class _TreeSpawner(Protocol):
 
 
 class _QuerySpawner(Protocol):
-    def __call__[T](
-        self, query: AbstractQuery[Any, T]
-    ) -> "AttachedQuery[T]": ...
+    def __call__[T](self, query: AbstractQuery[T]) -> "AttachedQuery[T]": ...
 
 
 type Builder[S] = Callable[[_TreeSpawner, _QuerySpawner], S]
@@ -279,7 +276,7 @@ class _GeneralSpawner:
                 return _reify(strategy, (gr, sr, ()), self._node_hook)
 
             def spawn_query(
-                query: AbstractQuery[Any, Any],
+                query: AbstractQuery[Any],
             ) -> AttachedQuery[Any]:
                 def answer(
                     mode: refs.AnswerModeName, text: str

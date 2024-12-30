@@ -22,20 +22,24 @@ class AnswerMode[T]:
     parse: Callable[[str], T | ParseError]
 
 
-type AnyQuery = AbstractQuery[Any, Any]
+type AnyQuery = AbstractQuery[Any]
 
 
-class AbstractQuery[P, T](ABC):
+class AbstractQuery[T](ABC):
     @abstractmethod
     def modes(self) -> Sequence[AnswerMode[T]]:
         pass
 
     @abstractmethod
-    def system_prompt(self, param: P, mode: AnswerModeName) -> str:
+    def system_prompt(
+        self, mode: AnswerModeName, params: dict[str, object]
+    ) -> str:
         pass
 
     @abstractmethod
-    def instance_prompt(self, param: P, mode: AnswerModeName) -> str:
+    def instance_prompt(
+        self, mode: AnswerModeName, params: dict[str, object]
+    ) -> str:
         pass
 
     @abstractmethod
@@ -49,10 +53,6 @@ class AbstractQuery[P, T](ABC):
 
     @abstractmethod
     def answer_type(self) -> TypeAnnot[T] | NoTypeInfo:
-        pass
-
-    @abstractmethod
-    def param_type(self) -> TypeAnnot[P]:
         pass
 
     def name(self) -> str:

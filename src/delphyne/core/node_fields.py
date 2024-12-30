@@ -5,10 +5,9 @@ Internal utilities to detect node fields.
 import inspect
 import types
 import typing
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, is_dataclass
 from typing import Any
-
 
 ####
 #### Fields
