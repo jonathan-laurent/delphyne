@@ -3,14 +3,12 @@ Defining Policies for Delphyne
 """
 
 import math
-from abc import ABC, abstractmethod
 from collections.abc import AsyncGenerator, Mapping
 from dataclasses import dataclass
 from typing import Any, Protocol
 
 from delphyne.core.environment import PolicyEnv
 from delphyne.core.trees import AttachedQuery, Node, Tracked, Tree
-
 
 #####
 ##### Budget
@@ -100,7 +98,7 @@ class _ParametricSearchPolicyFn[N: Node, **P](Protocol):
         self,
         tree: Tree[N, T],
         env: PolicyEnv,
-        policy: "Policy[Any]",
+        policy: Any,
         *args: P.args,
         **kwargs: P.kwargs,
     ) -> StreamRet[T]: ...
@@ -108,7 +106,7 @@ class _ParametricSearchPolicyFn[N: Node, **P](Protocol):
 
 class _SearchPolicyFn[N: Node](Protocol):
     def __call__[T](
-        self, tree: Tree[N, T], env: PolicyEnv, policy: "Policy[Any]"
+        self, tree: Tree[N, T], env: PolicyEnv, policy: Any
     ) -> StreamRet[T]: ...
 
 
@@ -120,7 +118,7 @@ class SearchPolicy[N: Node]:
         self,
         tree: Tree[N, T],
         env: PolicyEnv,
-        policy: "Policy[Any]",
+        policy: Any,
     ) -> StreamRet[T]:
         return self.fn(tree, env, policy)
 
@@ -130,7 +128,7 @@ class SearchPolicy[N: Node]:
         def fn[T](
             tree: Tree[M, T],
             env: PolicyEnv,
-            policy: "Policy[Any]",
+            policy: Any,
         ) -> StreamRet[T]:
             new_tree = tree_transformer(tree)
             return self.fn(new_tree, env, policy)
@@ -155,7 +153,7 @@ def search_policy[N: Node, **P](
 
     def parametric(*args: P.args, **kwargs: P.kwargs) -> SearchPolicy[N]:
         def policy[T](
-            tree: Tree[N, T], env: PolicyEnv, policy: "Policy[Any]"
+            tree: Tree[N, T], env: PolicyEnv, policy: Any
         ) -> StreamRet[T]:
             return fn(tree, env, policy, *args, **kwargs)
 
@@ -211,14 +209,3 @@ def prompting_policy[**P](
         return PromptingPolicy(policy)
 
     return parametric
-
-
-#####
-##### Policies
-#####
-
-
-class Policy[N: Node](ABC):
-    @abstractmethod
-    def toplevel(self) -> SearchPolicy[N]:
-        pass

@@ -5,7 +5,7 @@ The core tree datastructure.
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Generator, Iterable, Sequence
 from dataclasses import dataclass
-from typing import Any, Protocol, cast
+from typing import Any, Generic, Protocol, TypeVar, cast
 
 from delphyne.core import inspect, refs
 from delphyne.core.node_fields import NodeFields, detect_node_structure
@@ -72,7 +72,7 @@ class Space[T](ABC):
         pass
 
     @abstractmethod
-    def source(self) -> "StrategyComp[Any, T] | AttachedQuery[T]":
+    def source(self) -> "StrategyComp[Any, Any, T] | AttachedQuery[T]":
         pass
 
 
@@ -179,24 +179,43 @@ corresponding outcomes until it outputs an action.
 ####
 
 
-type Strategy[N: Node, P, T] = Generator[NodeBuilder[N], object, T]
+type Strategy[N: Node, P, T] = Generator[StrategyMessage[N, P], object, T]
+"""
+The return type for strategies.
+"""
+
+
+# We provide manual variance annotations since `P` is a phantom type
+# that would be inferred both variant and covariant otherwise.
+N = TypeVar("N", bound=Node, covariant=True, contravariant=False)
+P = TypeVar("P", covariant=False, contravariant=True)
+T = TypeVar("T", covariant=True, contravariant=False)
+
+
+@dataclass(frozen=True)
+class StrategyMessage(Generic[N, P]):
+    node_builder: "NodeBuilder[N]"
 
 
 type NodeBuilder[N: Node] = Callable[[_GeneralSpawner], N]
+"""
+Strategies do not directly yield nodes since building a node requires
+knowing its reference.
+"""
 
 
-@dataclass
-class StrategyComp[N: Node, T]:
+@dataclass(frozen=True)
+class StrategyComp[N: Node, P, T]:
     """
     A strategy computation also stores metadata for navigation and
     debugging.
     """
 
-    comp: Callable[..., Strategy[N, Any, T]]
+    comp: Callable[..., Strategy[N, P, T]]
     args: list[Any]
     kwargs: dict[str, Any]
 
-    def __call__(self) -> Strategy[N, Any, T]:
+    def __call__(self) -> Strategy[N, P, T]:
         return self.comp(*self.args, **self.kwargs)
 
     def strategy_name(self) -> str | None:
@@ -219,17 +238,17 @@ class StrategyComp[N: Node, T]:
 
 @dataclass(frozen=True)
 class EmbeddedTree[T](Space[T]):
-    _comp: StrategyComp[Any, T]
+    _comp: StrategyComp[Any, Any, T]
     spawn_tree: "Callable[[], Tree[Any, T]]"
 
-    def source(self) -> StrategyComp[Any, T]:
+    def source(self) -> StrategyComp[Any, Any, T]:
         return self._comp
 
     def tags(self) -> Sequence[Tag]:
         return self._comp.tags()
 
     @staticmethod
-    def builder(comp: StrategyComp[Any, T]) -> "Builder[EmbeddedTree[T]]":
+    def builder(comp: StrategyComp[Any, Any, T]) -> "Builder[EmbeddedTree[T]]":
         return lambda spawn, _: EmbeddedTree(comp, lambda: spawn(comp))
 
 
@@ -240,7 +259,7 @@ class EmbeddedTree[T](Space[T]):
 
 class _TreeSpawner(Protocol):
     def __call__[N: Node, T](
-        self, strategy: "StrategyComp[N, T]"
+        self, strategy: "StrategyComp[N, Any, T]"
     ) -> "Tree[N, T]": ...
 
 
@@ -272,7 +291,9 @@ class _GeneralSpawner:
             gr = global_path_from_nonempty(self._ref)
             sr = refs.SpaceRef(space_name, args_ref)
 
-            def spawn_tree(strategy: StrategyComp[Any, Any]) -> Tree[Any, Any]:
+            def spawn_tree(
+                strategy: StrategyComp[Any, Any, Any],
+            ) -> Tree[Any, Any]:
                 return _reify(strategy, (gr, sr, ()), self._node_hook)
 
             def spawn_query(
@@ -349,12 +370,12 @@ def global_path_from_nonempty(ref: _NonEmptyGlobalPath) -> GlobalNodePath:
 
 
 def _reify[N: Node, T](
-    strategy: StrategyComp[N, T],
+    strategy: StrategyComp[N, Any, T],
     root_ref: _NonEmptyGlobalPath | None,
     node_hook: Callable[[Tree[Any, Any]], None] | None,
 ) -> Tree[N, T]:
     def aux(
-        strategy: StrategyComp[N, T],
+        strategy: StrategyComp[N, Any, T],
         actions: Sequence[object],
         ref: _NonEmptyGlobalPath,
         node: N | Success[T],
@@ -416,7 +437,7 @@ def _send_action[N: Node, T](
     gen: Strategy[N, Any, T], action: object
 ) -> _PreNode[N, T]:
     try:
-        return gen.send(action)
+        return gen.send(action).node_builder
     except StopIteration as e:
         v = cast(T, e.value)
         return _PreSuccess(v)
@@ -425,7 +446,7 @@ def _send_action[N: Node, T](
 
 
 def _recompute[N: Node, T](
-    strategy: StrategyComp[N, T],
+    strategy: StrategyComp[N, Any, T],
     actions: Sequence[object],
 ) -> tuple[_PreNode[N, T], Strategy[N, Any, T]]:
     gen = strategy()
