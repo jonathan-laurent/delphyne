@@ -239,7 +239,7 @@ class StrategyComp[N: Node, P, T]:
 @dataclass(frozen=True)
 class EmbeddedTree[T](Space[T]):
     _comp: StrategyComp[Any, Any, T]
-    spawn_tree: "Callable[[], Tree[Any, T]]"
+    spawn_tree: "Callable[[], Tree[Any, Any, T]]"
 
     def source(self) -> StrategyComp[Any, Any, T]:
         return self._comp
@@ -260,7 +260,7 @@ class EmbeddedTree[T](Space[T]):
 class _TreeSpawner(Protocol):
     def __call__[N: Node, T](
         self, strategy: "StrategyComp[N, Any, T]"
-    ) -> "Tree[N, T]": ...
+    ) -> "Tree[N, Any, T]": ...
 
 
 class _QuerySpawner(Protocol):
@@ -277,7 +277,7 @@ class _GeneralSpawner:
     """
 
     _ref: "_NonEmptyGlobalPath"
-    _node_hook: "Callable[[Tree[Any, Any]], None] | None"
+    _node_hook: "Callable[[Tree[Any, Any, Any]], None] | None"
 
     def parametric[S](
         self,
@@ -293,7 +293,7 @@ class _GeneralSpawner:
 
             def spawn_tree(
                 strategy: StrategyComp[Any, Any, Any],
-            ) -> Tree[Any, Any]:
+            ) -> Tree[Any, Any, Any]:
                 return _reify(strategy, (gr, sr, ()), self._node_hook)
 
             def spawn_query(
@@ -321,9 +321,9 @@ class _GeneralSpawner:
 
 
 @dataclass(frozen=True)
-class Tree[N: Node, T]:
+class Tree(Generic[N, P, T]):
     node: "N | Success[T]"
-    child: "Callable[[Value], Tree[N, T]]"
+    child: "Callable[[Value], Tree[N, P, T]]"
     ref: GlobalNodePath
 
 
@@ -372,18 +372,18 @@ def global_path_from_nonempty(ref: _NonEmptyGlobalPath) -> GlobalNodePath:
 def _reify[N: Node, T](
     strategy: StrategyComp[N, Any, T],
     root_ref: _NonEmptyGlobalPath | None,
-    node_hook: Callable[[Tree[Any, Any]], None] | None,
-) -> Tree[N, T]:
+    node_hook: Callable[[Tree[Any, Any, Any]], None] | None,
+) -> Tree[N, Any, T]:
     def aux(
         strategy: StrategyComp[N, Any, T],
         actions: Sequence[object],
         ref: _NonEmptyGlobalPath,
         node: N | Success[T],
         cur_generator: Strategy[N, Any, T],
-    ) -> Tree[N, T]:
+    ) -> Tree[N, Any, T]:
         generator_valid = True
 
-        def child(action: Value) -> Tree[N, T]:
+        def child(action: Value) -> Tree[N, Any, T]:
             action_raw = drop_refs(action)
             action_ref = value_ref(action)
             del action
@@ -460,7 +460,7 @@ def _finalize_node[N: Node, T](
     pre_node: _PreNode[N, T],
     ref: _NonEmptyGlobalPath,
     type: TypeAnnot[T] | NoTypeInfo,
-    node_hook: Callable[[Tree[Any, Any]], None] | None,
+    node_hook: Callable[[Tree[Any, Any, Any]], None] | None,
 ) -> N | Success[T]:
     if not isinstance(pre_node, _PreSuccess):
         return pre_node(_GeneralSpawner(ref, node_hook))
