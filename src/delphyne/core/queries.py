@@ -3,7 +3,7 @@ Delphyne Queries.
 """
 
 from abc import ABC, abstractmethod
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Self
 
@@ -18,7 +18,6 @@ class ParseError:
 
 @dataclass(frozen=True)
 class AnswerMode[T]:
-    name: AnswerModeName
     parse: Callable[[str], T | ParseError]
 
 
@@ -26,8 +25,9 @@ type AnyQuery = AbstractQuery[Any]
 
 
 class AbstractQuery[T](ABC):
+    @property
     @abstractmethod
-    def modes(self) -> Sequence[AnswerMode[T]]:
+    def modes(self) -> Mapping[AnswerModeName, AnswerMode[T]]:
         pass
 
     @abstractmethod

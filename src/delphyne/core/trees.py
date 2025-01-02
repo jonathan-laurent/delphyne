@@ -237,9 +237,9 @@ class StrategyComp[N: Node, P, T]:
 
 
 @dataclass(frozen=True)
-class EmbeddedTree[T](Space[T]):
-    _comp: StrategyComp[Any, Any, T]
-    spawn_tree: "Callable[[], Tree[Any, Any, T]]"
+class EmbeddedTree[N: Node, P, T](Space[T]):
+    _comp: StrategyComp[N, P, T]
+    spawn_tree: "Callable[[], Tree[N, P, T]]"
 
     def source(self) -> StrategyComp[Any, Any, T]:
         return self._comp
@@ -248,7 +248,9 @@ class EmbeddedTree[T](Space[T]):
         return self._comp.tags()
 
     @staticmethod
-    def builder(comp: StrategyComp[Any, Any, T]) -> "Builder[EmbeddedTree[T]]":
+    def builder(
+        comp: StrategyComp[N, P, T],
+    ) -> "Builder[EmbeddedTree[N, P, T]]":
         return lambda spawn, _: EmbeddedTree(comp, lambda: spawn(comp))
 
 
@@ -258,9 +260,9 @@ class EmbeddedTree[T](Space[T]):
 
 
 class _TreeSpawner(Protocol):
-    def __call__[N: Node, T](
-        self, strategy: "StrategyComp[N, Any, T]"
-    ) -> "Tree[N, Any, T]": ...
+    def __call__[N: Node, P, T](
+        self, strategy: "StrategyComp[N, P, T]"
+    ) -> "Tree[N, P, T]": ...
 
 
 class _QuerySpawner(Protocol):
@@ -291,19 +293,22 @@ class _GeneralSpawner:
             gr = global_path_from_nonempty(self._ref)
             sr = refs.SpaceRef(space_name, args_ref)
 
-            def spawn_tree(
-                strategy: StrategyComp[Any, Any, Any],
-            ) -> Tree[Any, Any, Any]:
+            def spawn_tree[N: Node, P, T](
+                strategy: StrategyComp[N, P, T],
+            ) -> Tree[N, P, T]:
                 return _reify(strategy, (gr, sr, ()), self._node_hook)
 
-            def spawn_query(
-                query: AbstractQuery[Any],
-            ) -> AttachedQuery[Any]:
+            def spawn_query[T](
+                query: AbstractQuery[T],
+            ) -> AttachedQuery[T]:
                 def answer(
                     mode: refs.AnswerModeName, text: str
-                ) -> Tracked[Any]:
+                ) -> Tracked[T] | ParseError:
                     ref = refs.SpaceElementRef(sr, refs.Answer(mode, text))
-                    return Tracked(answer, ref, gr, query.answer_type())
+                    parsed = query.modes[mode].parse(text)
+                    if isinstance(parsed, ParseError):
+                        return parsed
+                    return Tracked(parsed, ref, gr, query.answer_type())
 
                 return AttachedQuery(query, (gr, sr), answer)
 
@@ -369,21 +374,21 @@ def global_path_from_nonempty(ref: _NonEmptyGlobalPath) -> GlobalNodePath:
     return (*gr, (sr, nr))
 
 
-def _reify[N: Node, T](
-    strategy: StrategyComp[N, Any, T],
+def _reify[N: Node, P, T](
+    strategy: StrategyComp[N, P, T],
     root_ref: _NonEmptyGlobalPath | None,
     node_hook: Callable[[Tree[Any, Any, Any]], None] | None,
-) -> Tree[N, Any, T]:
+) -> Tree[N, P, T]:
     def aux(
-        strategy: StrategyComp[N, Any, T],
+        strategy: StrategyComp[N, P, T],
         actions: Sequence[object],
         ref: _NonEmptyGlobalPath,
         node: N | Success[T],
-        cur_generator: Strategy[N, Any, T],
-    ) -> Tree[N, Any, T]:
+        cur_generator: Strategy[N, P, T],
+    ) -> Tree[N, P, T]:
         generator_valid = True
 
-        def child(action: Value) -> Tree[N, Any, T]:
+        def child(action: Value) -> Tree[N, P, T]:
             action_raw = drop_refs(action)
             action_ref = value_ref(action)
             del action
@@ -445,10 +450,10 @@ def _send_action[N: Node, T](
         raise StrategyException(e)
 
 
-def _recompute[N: Node, T](
-    strategy: StrategyComp[N, Any, T],
+def _recompute[N: Node, P, T](
+    strategy: StrategyComp[N, P, T],
     actions: Sequence[object],
-) -> tuple[_PreNode[N, T], Strategy[N, Any, T]]:
+) -> tuple[_PreNode[N, T], Strategy[N, P, T]]:
     gen = strategy()
     mknode = _send_action(gen, None)
     for a in actions:
