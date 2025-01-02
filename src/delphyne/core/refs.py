@@ -3,6 +3,9 @@ References to nodes, values, spaces and space elements.
 """
 
 from dataclasses import dataclass
+from typing import Any
+
+from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
 
 @dataclass(frozen=True)
@@ -167,3 +170,47 @@ type GlobalSpaceRef = tuple[GlobalNodeRef, SpaceRef]
 """
 A global space reference.
 """
+
+
+#####
+##### Tracked values
+#####
+
+
+@dataclass
+class Tracked[T]:
+    """
+    A tracked value, which associates a value with a reference.
+
+    The `node` field does not appear in Orakell and is a global path
+    (from the global origin) to the node the value is attached too.
+    Having this field is useful to check at runtime that a tracked value
+    passed as an argument to `child` is attached to the current node.
+    """
+
+    value: T
+    ref: ValueRef
+    node: GlobalNodePath
+    type_annot: TypeAnnot[T] | NoTypeInfo
+
+
+type Value = Assembly[Tracked[Any]]
+"""
+A dynamic assembly of tracked values.
+"""
+
+
+def value_ref(v: Value) -> ValueRef:
+    match v:
+        case Tracked(_, ref):
+            return ref
+        case tuple():
+            return tuple(value_ref(o) for o in v)
+
+
+def drop_refs(v: Value) -> object:
+    match v:
+        case Tracked(value):
+            return value
+        case tuple():
+            return tuple(drop_refs(o) for o in v)

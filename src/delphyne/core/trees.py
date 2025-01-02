@@ -8,54 +8,12 @@ from dataclasses import dataclass
 from typing import Any, Generic, Protocol, TypeVar, cast
 
 from delphyne.core import inspect, refs
+from delphyne.core.environment import PolicyEnv
 from delphyne.core.node_fields import NodeFields, detect_node_structure
 from delphyne.core.queries import AbstractQuery, ParseError
-from delphyne.core.refs import Assembly, GlobalNodePath, SpaceName, ValueRef
+from delphyne.core.refs import GlobalNodePath, SpaceName, Tracked, Value
+from delphyne.core.streams import StreamRet
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
-
-#####
-##### Tracked values
-#####
-
-
-@dataclass
-class Tracked[T]:
-    """
-    A tracked value, which associates a value with a reference.
-
-    The `node` field does not appear in Orakell and is a global path
-    (from the global origin) to the node the value is attached too.
-    Having this field is useful to check at runtime that a tracked value
-    passed as an argument to `child` is attached to the current node.
-    """
-
-    value: T
-    ref: ValueRef
-    node: GlobalNodePath
-    type_annot: TypeAnnot[T] | NoTypeInfo
-
-
-type Value = Assembly[Tracked[Any]]
-"""
-A dynamic assembly of tracked values.
-"""
-
-
-def value_ref(v: Value) -> refs.ValueRef:
-    match v:
-        case Tracked(_, ref):
-            return ref
-        case tuple():
-            return tuple(value_ref(o) for o in v)
-
-
-def drop_refs(v: Value) -> object:
-    match v:
-        case Tracked(value):
-            return value
-        case tuple():
-            return tuple(drop_refs(o) for o in v)
-
 
 #####
 ##### Spaces
@@ -232,6 +190,63 @@ class StrategyComp[N: Node, P, T]:
 
 
 #####
+##### Search and Prompting Policies
+#####
+
+
+class TreeTransformer[N: Node, M: Node](Protocol):
+    def __call__[T, P](self, tree: "Tree[N, P, T]") -> "Tree[M, P, T]": ...
+
+
+class _SearchPolicyFn[N: Node](Protocol):
+    def __call__[P, T](
+        self, tree: "Tree[N, P, T]", env: PolicyEnv, policy: P
+    ) -> StreamRet[T]: ...
+
+
+@dataclass(frozen=True)
+class SearchPolicy[N: Node]:
+    fn: _SearchPolicyFn[N]
+
+    def __call__[P, T](
+        self,
+        tree: "Tree[N, P, T]",
+        env: PolicyEnv,
+        policy: P,
+    ) -> StreamRet[T]:
+        return self.fn(tree, env, policy)
+
+    def __matmul__[M: Node](
+        self, tree_transformer: TreeTransformer[M, N]
+    ) -> "SearchPolicy[M]":
+        def fn[P, T](
+            tree: Tree[M, P, T],
+            env: PolicyEnv,
+            policy: P,
+        ) -> StreamRet[T]:
+            new_tree = tree_transformer(tree)
+            return self.fn(new_tree, env, policy)
+
+        return SearchPolicy(fn)
+
+
+class _PromptingPolicyFn(Protocol):
+    def __call__[T](
+        self, query: AttachedQuery[T], env: PolicyEnv
+    ) -> StreamRet[T]: ...
+
+
+@dataclass(frozen=True)
+class PromptingPolicy:
+    fn: _PromptingPolicyFn
+
+    def __call__[T](
+        self, query: AttachedQuery[T], env: PolicyEnv
+    ) -> StreamRet[T]:
+        return self.fn(query, env)
+
+
+#####
 ##### Embedded Trees
 #####
 
@@ -287,8 +302,8 @@ class _GeneralSpawner:
         parametric_builder: Callable[..., Builder[S]],
     ) -> Callable[..., S]:
         def run_builder(*args: Any) -> S:
-            args_raw = [drop_refs(arg) for arg in args]
-            args_ref = tuple(value_ref(arg) for arg in args)
+            args_raw = [refs.drop_refs(arg) for arg in args]
+            args_ref = tuple(refs.value_ref(arg) for arg in args)
             builder = parametric_builder(*args_raw)
             gr = global_path_from_nonempty(self._ref)
             sr = refs.SpaceRef(space_name, args_ref)
@@ -389,8 +404,8 @@ def _reify[N: Node, P, T](
         generator_valid = True
 
         def child(action: Value) -> Tree[N, P, T]:
-            action_raw = drop_refs(action)
-            action_ref = value_ref(action)
+            action_raw = refs.drop_refs(action)
+            action_ref = refs.value_ref(action)
             del action
             assert node.valid_action(action_raw), (
                 "Invalid action for node of type "

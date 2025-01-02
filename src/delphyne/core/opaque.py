@@ -6,7 +6,8 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from delphyne.core.policies import PolicyEnv, StreamRet
+from delphyne.core.environment import PolicyEnv
+from delphyne.core.streams import StreamRet
 from delphyne.core.trees import AttachedQuery, Space, StrategyComp, Tag
 
 
