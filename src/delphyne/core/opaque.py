@@ -11,11 +11,11 @@ from delphyne.core.trees import AttachedQuery, Space, StrategyComp, Tag
 
 
 @dataclass
-class OpaqueSpace[T](Space[T]):
-    stream: Callable[[PolicyEnv, Any], StreamRet[T]]
-    _source: "StrategyComp[Any, Any, T] | AttachedQuery[T]"
+class OpaqueSpace[P, T](Space[T]):
+    stream: Callable[[PolicyEnv, P], StreamRet[T]]
+    _source: "StrategyComp[Any, P, T] | AttachedQuery[T]"
 
-    def source(self) -> "StrategyComp[Any, Any, T] | AttachedQuery[T]":
+    def source(self) -> "StrategyComp[Any, P, T] | AttachedQuery[T]":
         return self._source
 
     def tags(self) -> Sequence[Tag]:

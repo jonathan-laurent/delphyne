@@ -438,8 +438,8 @@ class _PreSuccess[T]:
 type _PreNode[N: Node, T] = NodeBuilder[N] | _PreSuccess[T]
 
 
-def _send_action[N: Node, T](
-    gen: Strategy[N, Any, T], action: object
+def _send_action[N: Node, P, T](
+    gen: Strategy[N, P, T], action: object
 ) -> _PreNode[N, T]:
     try:
         return gen.send(action).node_builder
