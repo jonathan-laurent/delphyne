@@ -167,7 +167,7 @@ class StrategyMessage(Generic[N, P]):
 type NodeBuilder[N: Node] = Callable[[_GeneralSpawner], N]
 """
 Strategies do not directly yield nodes since building a node requires
-knowing its reference.
+knowing its reference along with the associated hooks.
 """
 
 
