@@ -5,7 +5,7 @@ Decorators and shortcuts for the Delphyne DSL.
 from typing import Any, Protocol
 
 from delphyne.core.environment import PolicyEnv
-from delphyne.core.streams import StreamRet
+from delphyne.core.streams import Stream
 from delphyne.core.trees import (
     AttachedQuery,
     Node,
@@ -27,7 +27,7 @@ class _ParametricSearchPolicyFn[N: Node, **A](Protocol):
         policy: P,
         *args: A.args,
         **kwargs: A.kwargs,
-    ) -> StreamRet[T]: ...
+    ) -> Stream[T]: ...
 
 
 class _ParametricSearchPolicy[N: Node, **A](Protocol):
@@ -48,7 +48,7 @@ def search_policy[N: Node, **A](
     def parametric(*args: A.args, **kwargs: A.kwargs) -> SearchPolicy[N]:
         def policy[T](
             tree: Tree[N, Any, T], env: PolicyEnv, policy: Any
-        ) -> StreamRet[T]:
+        ) -> Stream[T]:
             return fn(tree, env, policy, *args, **kwargs)
 
         return SearchPolicy(policy)
@@ -68,7 +68,7 @@ class _ParametricPromptingPolicyFn[**A](Protocol):
         env: PolicyEnv,
         *args: A.args,
         **kwargs: A.kwargs,
-    ) -> StreamRet[T]: ...
+    ) -> Stream[T]: ...
 
 
 class _ParametricPromptingPolicy[**A](Protocol):
@@ -81,7 +81,7 @@ def prompting_policy[**A](
     fn: _ParametricPromptingPolicyFn[A],
 ) -> _ParametricPromptingPolicy[A]:
     def parametric(*args: A.args, **kwargs: A.kwargs) -> PromptingPolicy:
-        def policy[T](query: AttachedQuery[T], env: PolicyEnv) -> StreamRet[T]:
+        def policy[T](query: AttachedQuery[T], env: PolicyEnv) -> Stream[T]:
             return fn(query, env, *args, **kwargs)
 
         return PromptingPolicy(policy)

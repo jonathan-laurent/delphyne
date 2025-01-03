@@ -79,4 +79,4 @@ class Barrier:
     budget: Budget
 
 
-type StreamRet[T] = AsyncGenerator[Yield[Tracked[T]] | Spent | Barrier]
+type Stream[T] = AsyncGenerator[Yield[Tracked[T]] | Spent | Barrier]

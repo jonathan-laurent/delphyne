@@ -12,7 +12,7 @@ from delphyne.core.environment import PolicyEnv
 from delphyne.core.node_fields import NodeFields, detect_node_structure
 from delphyne.core.queries import AbstractQuery, ParseError
 from delphyne.core.refs import GlobalNodePath, SpaceName, Tracked, Value
-from delphyne.core.streams import StreamRet
+from delphyne.core.streams import Stream
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
 #####
@@ -210,7 +210,7 @@ class TreeTransformer[N: Node, M: Node](Protocol):
 class _SearchPolicyFn[N: Node](Protocol):
     def __call__[P, T](
         self, tree: "Tree[N, P, T]", env: PolicyEnv, policy: P
-    ) -> StreamRet[T]: ...
+    ) -> Stream[T]: ...
 
 
 @dataclass(frozen=True)
@@ -222,7 +222,7 @@ class SearchPolicy[N: Node]:
         tree: "Tree[N, P, T]",
         env: PolicyEnv,
         policy: P,
-    ) -> StreamRet[T]:
+    ) -> Stream[T]:
         return self.fn(tree, env, policy)
 
     def __matmul__[M: Node](
@@ -232,7 +232,7 @@ class SearchPolicy[N: Node]:
             tree: Tree[M, P, T],
             env: PolicyEnv,
             policy: P,
-        ) -> StreamRet[T]:
+        ) -> Stream[T]:
             new_tree = tree_transformer(tree)
             return self.fn(new_tree, env, policy)
 
@@ -242,7 +242,7 @@ class SearchPolicy[N: Node]:
 class _PromptingPolicyFn(Protocol):
     def __call__[T](
         self, query: AttachedQuery[T], env: PolicyEnv
-    ) -> StreamRet[T]: ...
+    ) -> Stream[T]: ...
 
 
 @dataclass(frozen=True)
@@ -251,7 +251,7 @@ class PromptingPolicy:
 
     def __call__[T](
         self, query: AttachedQuery[T], env: PolicyEnv
-    ) -> StreamRet[T]:
+    ) -> Stream[T]:
         return self.fn(query, env)
 
 
@@ -285,7 +285,7 @@ class EmbeddedTree[N: Node, P, T](Space[T]):
 
 @dataclass
 class OpaqueSpace[P, T](Space[T]):
-    stream: Callable[[PolicyEnv, P], StreamRet[T]]
+    stream: Callable[[PolicyEnv, P], Stream[T]]
     _source: "StrategyComp[Any, P, T] | AttachedQuery[T]"
 
     def source(self) -> "StrategyComp[Any, P, T] | AttachedQuery[T]":
