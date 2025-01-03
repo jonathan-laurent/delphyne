@@ -13,12 +13,8 @@ from delphyne.core.environment import TemplatesManager
 from delphyne.core.inspect import first_parameter_of_base_class
 from delphyne.core.queries import AbstractQuery, AnswerModeName, ParseError
 from delphyne.core.trees import Builder, OpaqueSpace, PromptingPolicy
-from delphyne.utils.typing import (
-    TypeAnnot,
-    ValidationError,
-    pydantic_dump,
-    pydantic_load,
-)
+from delphyne.utils import typing as dpty
+from delphyne.utils.typing import TypeAnnot, ValidationError
 
 #####
 ##### Standard Queries
@@ -53,11 +49,11 @@ class Query[T](AbstractQuery[T]):
         return env.prompt("instance", self.name(), args)
 
     def serialize_args(self) -> dict[str, object]:
-        return cast(dict[str, object], pydantic_dump(type(self), self))
+        return cast(dict[str, object], dpty.pydantic_dump(type(self), self))
 
     @classmethod
     def parse(cls, args: dict[str, object]) -> Self:
-        return pydantic_load(cls, args)
+        return dpty.pydantic_load(cls, args)
 
     def answer_type(self) -> TypeAnnot[T]:
         return first_parameter_of_base_class(type(self))
@@ -83,7 +79,7 @@ def _no_prompt_manager_error() -> str:
 def raw_yaml[T](type: TypeAnnot[T], res: str) -> T | ParseError:
     try:
         parsed = yaml.safe_load(res)
-        return pydantic_load(type, parsed)
+        return dpty.pydantic_load(type, parsed)
     except ValidationError as e:
         return ParseError(str(e))
     except yaml.parser.ParserError as e:
