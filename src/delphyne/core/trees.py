@@ -30,7 +30,7 @@ class Space[T](ABC):
         pass
 
     @abstractmethod
-    def source(self) -> "StrategyComp[Any, Any, T] | AttachedQuery[T]":
+    def source(self) -> "NestedTree[Any, Any, T] | AttachedQuery[T]":
         pass
 
 
@@ -261,21 +261,24 @@ class PromptingPolicy:
 
 
 @dataclass(frozen=True)
-class EmbeddedTree[N: Node, P, T](Space[T]):
+class NestedTree[N: Node, P, T](Space[T]):
     _comp: StrategyComp[N, P, T]
     spawn_tree: "Callable[[], Tree[N, P, T]]"
 
-    def source(self) -> StrategyComp[Any, Any, T]:
-        return self._comp
+    def source(self) -> "NestedTree[Any, Any, T]":
+        return self
 
     def tags(self) -> Sequence[Tag]:
         return self._comp.tags()
 
+
+@dataclass(frozen=True)
+class EmbeddedTree[N: Node, P, T](NestedTree[N, P, T]):
     @staticmethod
     def builder(
         comp: StrategyComp[N, P, T],
-    ) -> "Builder[EmbeddedTree[N, P, T]]":
-        return lambda spawn, _: EmbeddedTree(comp, lambda: spawn(comp))
+    ) -> "Builder[NestedTree[N, P, T]]":
+        return lambda spawn, _: NestedTree(comp, lambda: spawn(comp))
 
 
 #####
@@ -286,21 +289,41 @@ class EmbeddedTree[N: Node, P, T](Space[T]):
 @dataclass
 class OpaqueSpace[P, T](Space[T]):
     stream: Callable[[PolicyEnv, P], Stream[T]]
-    _source: "StrategyComp[Any, P, T] | AttachedQuery[T]"
+    _source: "NestedTree[Any, Any, T] | AttachedQuery[T]"
 
-    def source(self) -> "StrategyComp[Any, P, T] | AttachedQuery[T]":
+    def source(self) -> "NestedTree[Any, Any, T] | AttachedQuery[T]":
         return self._source
 
     def tags(self) -> Sequence[Tag]:
         return self._source.tags()
 
     @staticmethod
-    def from_query():
-        assert False
+    def from_query(
+        query: AbstractQuery[T], get_policy: Callable[[P], PromptingPolicy]
+    ) -> "Builder[OpaqueSpace[P, T]]":
+        def build(spawner: _QuerySpawner) -> OpaqueSpace[P, T]:
+            attached = spawner(query)
+            return OpaqueSpace(
+                (lambda env, pol: get_policy(pol)(attached, env)), attached
+            )
+
+        return lambda _, spawner: build(spawner)
 
     @staticmethod
-    def from_strategy():
-        assert False
+    def from_strategy[N: Node, P2](
+        strategy: StrategyComp[N, P2, T],
+        get_policy: Callable[[P], tuple[SearchPolicy[N], P2]],
+    ) -> "Builder[OpaqueSpace[P, T]]":
+        def build(spawner: _TreeSpawner) -> OpaqueSpace[P, T]:
+            def stream(env: PolicyEnv, policy: P) -> Stream[T]:
+                tree = spawner(strategy)
+                search_pol, inner_pol = get_policy(policy)
+                return search_pol(tree, env, inner_pol)
+
+            nested = NestedTree(strategy, lambda: spawner(strategy))
+            return OpaqueSpace(stream, nested)
+
+        return lambda spawner, _: build(spawner)
 
 
 #####
