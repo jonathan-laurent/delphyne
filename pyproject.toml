@@ -25,13 +25,13 @@ where = ["src"]
 "delphyne" = ["py.typed"]
 
 
-[tool.isort]
-profile = "black"
-line_length = 79
-lines_after_imports = 2
+# [tool.isort]
+# profile = "black"
+# line_length = 79
+# lines_after_imports = 2
 
-[tool.black]
-line-length = 79
+# [tool.black]
+# line-length = 79
 
 [tool.ruff]
 line-length = 79
