@@ -3,16 +3,30 @@ Standard queries and building blocks for prompting policies.
 """
 
 import re
-from collections.abc import Callable
-from typing import Self, cast
+from collections.abc import Callable, Sequence
+from typing import Any, Self, cast
 
 import yaml
 import yaml.parser
 
-from delphyne.core.environment import TemplatesManager
+from delphyne.core.environment import (
+    ExampleDatabase,
+    PolicyEnv,
+    TemplatesManager,
+)
 from delphyne.core.inspect import first_parameter_of_base_class
 from delphyne.core.queries import AbstractQuery, AnswerModeName, ParseError
-from delphyne.core.trees import Builder, OpaqueSpace, PromptingPolicy
+from delphyne.core.refs import Answer
+from delphyne.core.streams import Barrier, Spent, Yield
+from delphyne.core.trees import (
+    AttachedQuery,
+    Builder,
+    OpaqueSpace,
+    PromptingPolicy,
+    Stream,
+)
+from delphyne.stdlib.dsl import prompting_policy
+from delphyne.stdlib.models import LLM, Chat, ChatMessage
 from delphyne.utils import typing as dpty
 from delphyne.utils.typing import TypeAnnot, ValidationError
 
@@ -129,3 +143,63 @@ def extract_final_block(s: str) -> str | None:
 #####
 ##### Prompting Policies
 #####
+
+
+def find_all_examples(
+    database: ExampleDatabase, query: AbstractQuery[Any]
+) -> Sequence[tuple[AbstractQuery[Any], Answer]]:
+    raw = database.examples(query.name())
+    return [(query.parse(args), ans) for args, ans in raw]
+
+
+def system_message(content: str) -> ChatMessage:
+    return {"role": "system", "content": content}
+
+
+def user_message(content: str) -> ChatMessage:
+    return {"role": "user", "content": content}
+
+
+def assistant_message(content: str) -> ChatMessage:
+    return {"role": "assistant", "content": content}
+
+
+def create_prompt(
+    query: AbstractQuery[Any],
+    examples: Sequence[tuple[AbstractQuery[Any], Answer]],
+    params: dict[str, object],
+    env: TemplatesManager | None = None,
+) -> Chat:
+    msgs: list[ChatMessage] = []
+    msgs.append(system_message(query.system_prompt(None, params, env)))
+    for q, ans in examples:
+        msgs.append(user_message(q.instance_prompt(ans.mode, params, env)))
+        msgs.append(assistant_message(ans.text))
+    msgs.append(user_message(query.instance_prompt(None, params, env)))
+    return msgs
+
+
+@prompting_policy
+async def few_shot[T](
+    query: AttachedQuery[T],
+    env: PolicyEnv,
+    model: LLM,
+) -> Stream[T]:
+    """
+    The standard few-shot prompting sequential prompting policy.
+
+    TODO: have an example limit and randomly sample examples.
+    TODO: we are not using any prompt param.
+    """
+    examples = find_all_examples(env.examples, query.query)
+    prompt = create_prompt(query.query, examples, {})
+    options: dict[str, Any] = {}
+    cost_estimate = model.estimate_budget(prompt, options)
+    while True:
+        yield Barrier(cost_estimate)
+        answers, budget, _meta = await model.send_request(prompt, 1, options)
+        answer = answers[0]
+        element = query.answer(None, answer)
+        yield Spent(budget)
+        if not isinstance(element, ParseError):
+            yield Yield(element)

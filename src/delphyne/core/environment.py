@@ -26,8 +26,7 @@ type QueryArgs = dict[str, Any]
 @dataclass
 class ExampleDatabase:
     """
-    A simple example database. Examples are stored as JSON strings. We
-    do not need to create explicit.
+    A simple example database. Examples are stored as JSON strings.
 
     TODO: add provenance info for better error messages.
     """
