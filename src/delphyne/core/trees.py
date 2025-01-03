@@ -64,32 +64,7 @@ class Node(ABC):
     Abstract type for a node.
     """
 
-    def extra_tags(self) -> Sequence[Tag]:
-        return []
-
-    def tags(self) -> Sequence[Tag]:
-        # TODO
-        return self.extra_tags()
-
-    def effect_name(self) -> str:
-        return self.__class__.__name__
-
-    def fields(self) -> NodeFields:
-        cls = self.__class__
-        f = detect_node_structure(cls, embedded_class=int, space_class=Space)
-        if f is None:
-            msg = f"Impossible to autodetect the structure of {cls}"
-            assert False, msg
-        return f
-
-    def valid_action(self, action: object) -> bool:
-        """
-        This method can be implemented optionally to validate actions.
-        """
-        return True
-
-    def leaf_node(self) -> bool:
-        return False
+    # Methods that **must** be overriden
 
     @abstractmethod
     def navigate(self) -> "Navigation":
@@ -98,33 +73,71 @@ class Node(ABC):
         """
         pass
 
-    def primary_choice(self) -> "Space[object] | None":
-        """
-        Choice that is inferred by default in a choice outcome reference
-        (see `SpaceElementRef`). For example, `compare([cands{''},
-        cands{'foo bar'}])` can be abbreviated into `compare(['', 'foo
-        bar'])` if `cands` is the primary choice for the current node.
-        """
-        return None
+    # Methods that are _sometimes_ overriden
 
-    def base_choices(self) -> "Iterable[Space[object]]":
-        """
-        Choices that are always displayed in the UI, even if they do not
-        appear in the trace. By default, the primary choice is treated
-        as the only base choice (when specified).
-        """
-        if (choice := self.primary_choice()) is not None:
-            return (choice,)
-        return ()
+    def extra_tags(self) -> Sequence[Tag]:
+        return []
 
     def summary_message(self) -> str | None:
         return None
 
+    def leaf_node(self) -> bool:
+        return False
+
+    def primary_space(self) -> "Space[object] | None":
+        """
+        Space that is inferred by default in a space element reference
+        (see `SpaceElementRef`). For example, `compare([cands{''},
+        cands{'foo bar'}])` can be abbreviated into `compare(['', 'foo
+        bar'])` if `cands` is the primary space for the current node.
+        """
+        return None
+
+    def valid_action(self, action: object) -> bool:
+        """
+        This method can be implemented optionally to validate actions.
+        """
+        return True
+
+    # Method indicating the nature of the node's fields, which is
+    # typically inferred but can be manually specified when heuristics
+    # fail.
+
+    def fields(self) -> NodeFields:
+        cls = self.__class__
+        f = detect_node_structure(
+            cls, embedded_class=EmbeddedTree, space_class=Space
+        )
+        if f is None:
+            msg = f"Impossible to autodetect the structure of {cls}"
+            assert False, msg
+        return f
+
+    # Methods with a sensible default behavior that are _rarely_ overriden
+
+    def effect_name(self) -> str:
+        return self.__class__.__name__
+
+    def tags(self) -> Sequence[Tag]:
+        if (primary := self.primary_space()) is not None:
+            return [*primary.tags(), *self.extra_tags()]
+        return self.extra_tags()
+
+    def base_spaces(self) -> "Iterable[Space[object]]":
+        """
+        Spaces that are always displayed in the UI, even if they do not
+        appear in the trace. By default, the primary space is treated
+        as the only base space (when specified).
+        """
+        if (space := self.primary_space()) is not None:
+            return (space,)
+        return ()
+
 
 type Navigation = Generator[Space[Any], Tracked[Any], Value]
 """
-Nodes have a `navigate` method that yields choices and expects
-corresponding outcomes until it outputs an action.
+Nodes have a `navigate` method that yields spaces and expects
+corresponding elements in return until an action is generated.
 """
 
 
