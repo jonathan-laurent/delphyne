@@ -15,7 +15,6 @@ from delphyne.core.demos import Demonstration
 from delphyne.core.refs import Answer
 from delphyne.utils.typing import pydantic_load
 
-
 type QueryArgs = dict[str, Any]
 
 
@@ -64,7 +63,7 @@ SYSTEM_MESSAGE_SUFFIX = ""
 INSTANCE_MESSAGE_SUFFIX = ".instance"
 
 
-class JinjaPromptManager:
+class TemplatesManager:
     def __init__(self, strategy_dirs: Sequence[Path]):
         prompt_folders = [dir / PROMPT_DIR for dir in strategy_dirs]
         self.env = jinja2.Environment(
@@ -77,8 +76,11 @@ class JinjaPromptManager:
         self,
         type: Literal["system", "instance"],
         query_name: str,
-        query_args: QueryArgs,
-    ) -> str | None:
+        template_args: dict[str, Any],
+    ) -> str:
+        """
+        Raises `TemplateNotFound`.
+        """
         if type == "system":
             suffix = SYSTEM_MESSAGE_SUFFIX
         elif type == "instance":
@@ -86,9 +88,14 @@ class JinjaPromptManager:
         template_name = f"{query_name}{suffix}.jinja"
         try:
             template = self.env.get_template(template_name)
-        except jinja2.TemplateNotFound:
-            return None
-        return template.render({"query": query_args})
+        except jinja2.TemplateNotFound as e:
+            raise TemplateNotFound(e)
+        return template.render(template_args)
+
+
+@dataclass
+class TemplateNotFound(Exception):
+    exn: Exception
 
 
 ####
@@ -107,9 +114,9 @@ class PolicyEnv:
         example databases in particular.
 
         The `strategy_dirs` argument is used to deduce a directory for
-        prompts.
+        prompt templates.
         """
-        self.prompts = JinjaPromptManager(strategy_dirs)
+        self.templates = TemplatesManager(strategy_dirs)
         self.examples = ExampleDatabase()
         for path in demonstration_files:
             with path.open() as f:

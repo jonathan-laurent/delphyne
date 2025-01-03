@@ -55,3 +55,8 @@ def policy_type_of_strategy_type[T](st: Any) -> TypeAnnot[T] | NoTypeInfo:
     assert len(st_origin.__type_params__) == 3
     assert st_origin.__type_params__[1].__name__ == "P"
     return typing.get_args(st)[1]
+
+
+def first_parameter_of_base_class(cls: Any) -> Any:
+    base = cls.__orig_bases__[0]  # type: ignore
+    return typing.get_args(base)[1]

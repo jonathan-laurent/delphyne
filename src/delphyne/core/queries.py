@@ -7,6 +7,7 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Self
 
+from delphyne.core.environment import TemplatesManager
 from delphyne.core.refs import AnswerModeName
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
@@ -32,13 +33,19 @@ class AbstractQuery[T](ABC):
 
     @abstractmethod
     def system_prompt(
-        self, mode: AnswerModeName, params: dict[str, object]
+        self,
+        env: TemplatesManager,
+        mode: AnswerModeName,
+        params: dict[str, object],
     ) -> str:
         pass
 
     @abstractmethod
     def instance_prompt(
-        self, mode: AnswerModeName, params: dict[str, object]
+        self,
+        env: TemplatesManager,
+        mode: AnswerModeName,
+        params: dict[str, object],
     ) -> str:
         pass
 
