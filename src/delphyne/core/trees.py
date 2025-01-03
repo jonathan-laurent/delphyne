@@ -120,10 +120,6 @@ class Node(ABC):
     def summary_message(self) -> str | None:
         return None
 
-    @classmethod
-    def spawn[T](cls: type[T], **kwargs: Any) -> T:
-        assert False
-
 
 type Navigation = Generator[Space[Any], Tracked[Any], Value]
 """
@@ -447,7 +443,6 @@ def _reify[N: Node, P, T](
                 pre_node = _send_action(cur_generator, action_raw)
                 new_gen = cur_generator
                 generator_valid = False
-                assert False
             else:
                 pre_node, new_gen = _recompute(strategy, new_actions)
             gr, cr, nr = ref
@@ -455,7 +450,6 @@ def _reify[N: Node, P, T](
             ret_type = strategy.return_type()
             new_node = _finalize_node(pre_node, new_ref, ret_type, node_hook)
             return aux(strategy, new_actions, new_ref, new_node, new_gen)
-            assert False
 
         tree = Tree(node, child, global_path_from_nonempty(ref))
         if node_hook is not None:
