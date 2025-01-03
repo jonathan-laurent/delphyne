@@ -7,6 +7,7 @@ TO_CLEAN := \
 	-name '*.egg-info' -o \
 	-name '.pytest_cache' -o \
 	-name '_build' -o \
+	-name '.ruff_cache' -o \
 	-name '.DS_Store'
 
 SCHEMAS_FOLDER := vscode-ui/resources
