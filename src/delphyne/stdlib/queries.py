@@ -9,25 +9,16 @@ from typing import Any, Self, cast
 import yaml
 import yaml.parser
 
-from delphyne.core.environment import (
-    ExampleDatabase,
-    PolicyEnv,
-    TemplatesManager,
-)
+from delphyne.core import environment as en
+from delphyne.core import trees as tr
 from delphyne.core.inspect import first_parameter_of_base_class
 from delphyne.core.queries import AbstractQuery, AnswerModeName, ParseError
 from delphyne.core.refs import Answer
 from delphyne.core.streams import Barrier, Spent, Yield
-from delphyne.core.trees import (
-    AttachedQuery,
-    Builder,
-    OpaqueSpace,
-    PromptingPolicy,
-    Stream,
-)
+from delphyne.core.trees import AttachedQuery, OpaqueSpace, PromptingPolicy
 from delphyne.stdlib.dsl import prompting_policy
 from delphyne.stdlib.models import LLM, Chat, ChatMessage
-from delphyne.utils import typing as dpty
+from delphyne.utils import typing as ty
 from delphyne.utils.typing import TypeAnnot, ValidationError
 
 #####
@@ -40,7 +31,7 @@ class Query[T](AbstractQuery[T]):
         self,
         mode: AnswerModeName,
         params: dict[str, object],
-        env: TemplatesManager | None = None,
+        env: en.TemplatesManager | None = None,
     ) -> str:
         """
         Raises `TemplateNotFound`.
@@ -53,7 +44,7 @@ class Query[T](AbstractQuery[T]):
         self,
         mode: AnswerModeName,
         params: dict[str, object],
-        env: TemplatesManager | None = None,
+        env: en.TemplatesManager | None = None,
     ) -> str:
         """
         Raises `TemplateNotFound`.
@@ -63,18 +54,18 @@ class Query[T](AbstractQuery[T]):
         return env.prompt("instance", self.name(), args)
 
     def serialize_args(self) -> dict[str, object]:
-        return cast(dict[str, object], dpty.pydantic_dump(type(self), self))
+        return cast(dict[str, object], ty.pydantic_dump(type(self), self))
 
     @classmethod
     def parse(cls, args: dict[str, object]) -> Self:
-        return dpty.pydantic_load(cls, args)
+        return ty.pydantic_load(cls, args)
 
     def answer_type(self) -> TypeAnnot[T]:
         return first_parameter_of_base_class(type(self))
 
     def __getitem__[P](
         self, get_policy: Callable[[P], PromptingPolicy]
-    ) -> Builder[OpaqueSpace[P, T]]:
+    ) -> tr.Builder[OpaqueSpace[P, T]]:
         return OpaqueSpace[P, T].from_query(self, get_policy)
 
 
@@ -93,7 +84,7 @@ def _no_prompt_manager_error() -> str:
 def raw_yaml[T](type: TypeAnnot[T], res: str) -> T | ParseError:
     try:
         parsed = yaml.safe_load(res)
-        return dpty.pydantic_load(type, parsed)
+        return ty.pydantic_load(type, parsed)
     except ValidationError as e:
         return ParseError(str(e))
     except yaml.parser.ParserError as e:
@@ -146,7 +137,7 @@ def extract_final_block(s: str) -> str | None:
 
 
 def find_all_examples(
-    database: ExampleDatabase, query: AbstractQuery[Any]
+    database: en.ExampleDatabase, query: AbstractQuery[Any]
 ) -> Sequence[tuple[AbstractQuery[Any], Answer]]:
     raw = database.examples(query.name())
     return [(query.parse(args), ans) for args, ans in raw]
@@ -168,7 +159,7 @@ def create_prompt(
     query: AbstractQuery[Any],
     examples: Sequence[tuple[AbstractQuery[Any], Answer]],
     params: dict[str, object],
-    env: TemplatesManager | None = None,
+    env: en.TemplatesManager | None = None,
 ) -> Chat:
     msgs: list[ChatMessage] = []
     msgs.append(system_message(query.system_prompt(None, params, env)))
@@ -182,9 +173,9 @@ def create_prompt(
 @prompting_policy
 async def few_shot[T](
     query: AttachedQuery[T],
-    env: PolicyEnv,
+    env: en.PolicyEnv,
     model: LLM,
-) -> Stream[T]:
+) -> tr.Stream[T]:
     """
     The standard few-shot prompting sequential prompting policy.
 
