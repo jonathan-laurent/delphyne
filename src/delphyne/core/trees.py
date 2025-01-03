@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from typing import Any, Generic, Protocol, TypeVar, cast
 
 from delphyne.core import inspect, refs
+from delphyne.core import node_fields as nf
 from delphyne.core.environment import PolicyEnv
 from delphyne.core.node_fields import NodeFields, detect_node_structure
 from delphyne.core.queries import AbstractQuery, ParseError
@@ -103,8 +104,8 @@ class Node(ABC):
     # typically inferred but can be manually specified when heuristics
     # fail.
 
-    def fields(self) -> NodeFields:
-        cls = self.__class__
+    @classmethod
+    def fields(cls) -> NodeFields:
         f = detect_node_structure(
             cls, embedded_class=EmbeddedTree, space_class=Space
         )
@@ -132,6 +133,44 @@ class Node(ABC):
         if (space := self.primary_space()) is not None:
             return (space,)
         return ()
+
+    # Utility methods that should not be overriden
+
+    @classmethod
+    def spawn(cls, spawner: "_GeneralSpawner", **args: Any):
+        def convert(
+            name: refs.SpaceName, field: nf.FieldType, obj: Any
+        ) -> Any:
+            match field:
+                case nf.SpaceF():
+                    # Expected: Builder[Space]
+                    return spawner.nonparametric(name, obj)
+                case nf.ParametricF(nf.SpaceF()):
+                    return spawner.parametric(name, obj)
+                case nf.EmbeddedF():
+                    # Expected: StrategyComp
+                    return spawner.nonparametric(
+                        name, EmbeddedTree[Any, Any, Any].builder(obj)
+                    )
+                case nf.ParametricF(nf.EmbeddedF()):
+                    return spawner.parametric(
+                        name,
+                        EmbeddedTree[Any, Any, Any].parametric_builder(obj),
+                    )
+                case nf.DataF():
+                    return obj
+                case nf.SequenceF(_sub):
+                    assert False
+                case nf.OptionalF(_sub):
+                    assert False
+                case _:
+                    assert False
+
+        args_new = {
+            fname: convert(refs.SpaceName(fname, ()), fkind, args[fname])
+            for fname, fkind in cls.fields().items()
+        }
+        return cls(**args_new)
 
 
 type Navigation = Generator[Space[Any], Tracked[Any], Value]
@@ -276,9 +315,17 @@ class NestedTree[N: Node, P, T](Space[T]):
 class EmbeddedTree[N: Node, P, T](NestedTree[N, P, T]):
     @staticmethod
     def builder(
-        comp: StrategyComp[N, P, T],
+        strategy: StrategyComp[N, P, T],
     ) -> "Builder[NestedTree[N, P, T]]":
-        return lambda spawn, _: NestedTree(comp, lambda: spawn(comp))
+        return lambda spawn, _: NestedTree(strategy, lambda: spawn(strategy))
+
+    @staticmethod
+    def parametric_builder[A](
+        parametric_strategy: Callable[[A], StrategyComp[N, P, T]],
+    ) -> "Callable[[A], Builder[NestedTree[N, P, T]]]":
+        return lambda arg: EmbeddedTree[N, P, T].builder(
+            parametric_strategy(arg)
+        )
 
 
 #####

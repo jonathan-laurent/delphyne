@@ -62,9 +62,10 @@ class OptionalF:
     element: "FieldType"
 
 
-type FieldType = (
-    SpaceF | EmbeddedF | DataF | ParametricF | SequenceF | OptionalF
-)
+type LeafFieldType = SpaceF | EmbeddedF | DataF | ParametricF
+
+
+type FieldType = LeafFieldType | SequenceF | OptionalF
 
 
 type NodeFields = dict[str, FieldType]

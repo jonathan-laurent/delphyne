@@ -20,6 +20,9 @@ class SpaceName:
     name: str
     indices: tuple[int, ...]
 
+    def __getitem__(self, index: int) -> "SpaceName":
+        return SpaceName(self.name, (*self.indices, index))
+
 
 type AnswerModeName = str | None
 """
