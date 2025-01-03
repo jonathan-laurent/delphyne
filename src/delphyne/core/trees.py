@@ -179,7 +179,7 @@ class StrategyComp[N: Node, P, T]:
     """
 
     comp: Callable[..., Strategy[N, P, T]]
-    args: list[Any]
+    args: tuple[Any, ...]
     kwargs: dict[str, Any]
 
     def __call__(self) -> Strategy[N, P, T]:
