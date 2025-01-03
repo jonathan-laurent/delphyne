@@ -17,9 +17,12 @@ class ParseError:
     error: str
 
 
+type Parser[T] = Callable[[TypeAnnot[T], str], T | ParseError]
+
+
 @dataclass(frozen=True)
 class AnswerMode[T]:
-    parse: Callable[[str], T | ParseError]
+    parse: Parser[T]
 
 
 type AnyQuery = AbstractQuery[Any]
