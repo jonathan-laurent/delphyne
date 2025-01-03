@@ -1,5 +1,5 @@
 """
-Standard queries, backed by Jinja templates
+Standard queries and building blocks for prompting policies.
 """
 
 from collections.abc import Callable
@@ -14,6 +14,10 @@ from delphyne.utils.typing import (
     pydantic_dump,
     pydantic_load,
 )
+
+#####
+##### Standard Queries
+#####
 
 
 class Query[T](AbstractQuery[T]):
@@ -64,3 +68,13 @@ def _no_prompt_manager_error() -> str:
         "Please provide an explicit prompt manager "
         + " or override the `system_prompt` and `instance_prompt` functions."
     )
+
+
+#####
+##### Parsers
+#####
+
+
+#####
+##### Parsers
+#####

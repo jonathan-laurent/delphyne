@@ -31,6 +31,11 @@ class Budget:
             vals[k] = self[k] + v
         return Budget(vals)
 
+    def __rmul__(self, const: float) -> "Budget":
+        assert const >= 0
+        values = {k: const * v for k, v in self.values.items()}
+        return Budget(values)
+
     def __le__(self, limit: "BudgetLimit") -> bool:
         assert isinstance(limit, BudgetLimit)
         for k, v in limit.values.items():
