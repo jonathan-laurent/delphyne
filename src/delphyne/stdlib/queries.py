@@ -19,25 +19,27 @@ from delphyne.utils.typing import (
 class Query[T](AbstractQuery[T]):
     def system_prompt(
         self,
-        env: TemplatesManager,
         mode: AnswerModeName,
         params: dict[str, object],
+        env: TemplatesManager | None = None,
     ) -> str:
         """
         Raises `TemplateNotFound`.
         """
+        assert env is not None, _no_prompt_manager_error()
         args = {"query": self, "mode": mode, "params": params}
         return env.prompt("system", self.name(), args)
 
     def instance_prompt(
         self,
-        env: TemplatesManager,
         mode: AnswerModeName,
         params: dict[str, object],
+        env: TemplatesManager | None = None,
     ) -> str:
         """
         Raises `TemplateNotFound`.
         """
+        assert env is not None, _no_prompt_manager_error()
         args = {"query": self, "mode": mode, "params": params}
         return env.prompt("instance", self.name(), args)
 
@@ -55,3 +57,10 @@ class Query[T](AbstractQuery[T]):
         self, get_policy: Callable[[P], PromptingPolicy]
     ) -> Builder[OpaqueSpace[P, T]]:
         return OpaqueSpace[P, T].from_query(self, get_policy)
+
+
+def _no_prompt_manager_error() -> str:
+    return (
+        "Please provide an explicit prompt manager "
+        + " or override the `system_prompt` and `instance_prompt` functions."
+    )

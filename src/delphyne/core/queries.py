@@ -34,18 +34,18 @@ class AbstractQuery[T](ABC):
     @abstractmethod
     def system_prompt(
         self,
-        env: TemplatesManager,
         mode: AnswerModeName,
         params: dict[str, object],
+        env: TemplatesManager | None = None,
     ) -> str:
         pass
 
     @abstractmethod
     def instance_prompt(
         self,
-        env: TemplatesManager,
         mode: AnswerModeName,
         params: dict[str, object],
+        env: TemplatesManager | None = None,
     ) -> str:
         pass
 
