@@ -76,9 +76,6 @@ class Node(ABC):
 
     # Methods that are _sometimes_ overriden
 
-    def extra_tags(self) -> Sequence[Tag]:
-        return []
-
     def summary_message(self) -> str | None:
         return None
 
@@ -119,10 +116,15 @@ class Node(ABC):
     def effect_name(self) -> str:
         return self.__class__.__name__
 
-    def tags(self) -> Sequence[Tag]:
+    def get_extra_tags(self) -> Sequence[Tag]:
+        if hasattr(self, "extra_tags"):
+            return getattr(self, "extra_tags")
+        return []
+
+    def get_tags(self) -> Sequence[Tag]:
         if (primary := self.primary_space()) is not None:
-            return [*primary.tags(), *self.extra_tags()]
-        return self.extra_tags()
+            return [*primary.tags(), *self.get_extra_tags()]
+        return self.get_extra_tags()
 
     def base_spaces(self) -> "Iterable[Space[object]]":
         """
@@ -180,7 +182,7 @@ corresponding elements in return until an action is generated.
 ####
 
 
-type Strategy[N: Node, P, T] = Generator[StrategyMessage[N, P], object, T]
+type Strategy[N: Node, P, T] = Generator[NodeBuilder[N, P], object, T]
 """
 The return type for strategies.
 """
@@ -194,11 +196,16 @@ T = TypeVar("T", covariant=True, contravariant=False)
 
 
 @dataclass(frozen=True)
-class StrategyMessage(Generic[N, P]):
-    node_builder: "NodeBuilder[N]"
+class NodeBuilder(Generic[N, P]):
+    """
+    Wrapping `_NodeBuilder` to add a phantom type `P` for tracking a
+    strategy's inner policy type.
+    """
+
+    node_builder: "_NodeBuilder[N]"
 
 
-type NodeBuilder[N: Node] = Callable[[_GeneralSpawner], N]
+type _NodeBuilder[N: Node] = Callable[[_GeneralSpawner], N]
 """
 Strategies do not directly yield nodes since building a node requires
 knowing its reference along with the associated hooks.
@@ -546,7 +553,7 @@ class _PreSuccess[T]:
     value: T
 
 
-type _PreNode[N: Node, T] = NodeBuilder[N] | _PreSuccess[T]
+type _PreNode[N: Node, T] = _NodeBuilder[N] | _PreSuccess[T]
 
 
 def _send_action[N: Node, P, T](

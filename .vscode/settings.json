@@ -18,16 +18,11 @@
     //     "--settings-path=${workspaceFolder}/pyproject.toml"
     // ],
     "makefile.configureOnOpen": false,
-    // "python.analysis.include": [
-    //     "${workspaceFolder:src}"
-    // ],
-    "python.analysis.extraPaths": [
-        "${workspaceFolder}/src"
-    ],
     "python.analysis.packageIndexDepths": [
         {
             "name": "delphyne",
             "depth": 2,
+            "includeAllSymbols": true
         },
         {
             "name": "fastapi",
