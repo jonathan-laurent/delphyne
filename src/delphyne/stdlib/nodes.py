@@ -9,4 +9,5 @@ from delphyne.core.trees import Node
 
 @dataclass
 class Branch(Node):
-    cands: ...
+    pass
+    # cands: OpaqueSpace[Any, Any]
