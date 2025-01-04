@@ -50,6 +50,10 @@ class Budget:
                 return False
         return True
 
+    @staticmethod
+    def zero() -> "Budget":
+        return Budget({})
+
 
 @dataclass(frozen=True)
 class BudgetLimit:
