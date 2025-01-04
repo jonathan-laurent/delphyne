@@ -143,26 +143,21 @@ class Node(ABC):
         ) -> Any:
             match field:
                 case nf.SpaceF():
-                    # Expected: Builder[Space]
                     return spawner.nonparametric(name, obj)
                 case nf.ParametricF(nf.SpaceF()):
                     return spawner.parametric(name, obj)
                 case nf.EmbeddedF():
-                    # Expected: StrategyComp
-                    return spawner.nonparametric(
-                        name, EmbeddedTree[Any, Any, Any].builder(obj)
-                    )
+                    builder = EmbeddedTree.builder(obj)
+                    return spawner.nonparametric(name, builder)
                 case nf.ParametricF(nf.EmbeddedF()):
-                    return spawner.parametric(
-                        name,
-                        EmbeddedTree[Any, Any, Any].parametric_builder(obj),
-                    )
+                    parametric_builder = EmbeddedTree.parametric_builder(obj)
+                    return spawner.parametric(name, parametric_builder)
                 case nf.DataF():
                     return obj
-                case nf.SequenceF(_sub):
-                    assert False
-                case nf.OptionalF(_sub):
-                    assert False
+                case nf.SequenceF(f):
+                    return [convert(name, f, x)[i] for i, x in enumerate(obj)]
+                case nf.OptionalF(f):
+                    assert convert(name, f, obj) if obj is not None else None
                 case _:
                     assert False
 
@@ -314,18 +309,16 @@ class NestedTree[N: Node, P, T](Space[T]):
 @dataclass(frozen=True)
 class EmbeddedTree[N: Node, P, T](NestedTree[N, P, T]):
     @staticmethod
-    def builder(
-        strategy: StrategyComp[N, P, T],
-    ) -> "Builder[NestedTree[N, P, T]]":
+    def builder[N1: Node, P1, T1](
+        strategy: StrategyComp[N1, P1, T1],
+    ) -> "Builder[NestedTree[N1, P1, T1]]":
         return lambda spawn, _: NestedTree(strategy, lambda: spawn(strategy))
 
     @staticmethod
-    def parametric_builder[A](
-        parametric_strategy: Callable[[A], StrategyComp[N, P, T]],
-    ) -> "Callable[[A], Builder[NestedTree[N, P, T]]]":
-        return lambda arg: EmbeddedTree[N, P, T].builder(
-            parametric_strategy(arg)
-        )
+    def parametric_builder[A, N1: Node, P1, T1](
+        parametric_strategy: Callable[[A], StrategyComp[N1, P1, T1]],
+    ) -> "Callable[[A], Builder[NestedTree[N1, P1, T1]]]":
+        return lambda arg: EmbeddedTree.builder(parametric_strategy(arg))
 
 
 #####
