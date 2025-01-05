@@ -154,6 +154,10 @@ class _Unrecognized(Exception):
     pass
 
 
+class _DataFieldDetected(Exception):
+    pass
+
+
 @dataclass
 class _SpecialClasses:
     space: type[Any]
@@ -162,12 +166,12 @@ class _SpecialClasses:
 
 def _field_leaf_structure(
     annot: Any, classes: _SpecialClasses
-) -> SpaceF | EmbeddedF | DataF:
+) -> SpaceF | EmbeddedF:
     if _type_annot_compatible(annot, classes.embedded):
         return EmbeddedF()
     if _type_annot_compatible(annot, classes.space):
         return SpaceF()
-    return DataF()
+    raise _DataFieldDetected()
 
 
 def _field_structure(annot: Any, classes: _SpecialClasses) -> FieldType:
@@ -175,14 +179,12 @@ def _field_structure(annot: Any, classes: _SpecialClasses) -> FieldType:
     TODO: detect `Tracked more robustly`.
     """
     if (opt := _decompose_optional_annot(annot)) is not None:
-        return OptionalF(_field_leaf_structure(opt[0], classes))
+        return OptionalF(_field_structure(opt[0], classes))
     if (seq := _decompose_sequence_annot(annot)) is not None:
-        return SequenceF(_field_leaf_structure(seq[0], classes))
+        return SequenceF(_field_structure(seq[0], classes))
     if (call := _decompose_callable_annot(annot)) is not None:
-        elt = _field_leaf_structure(call[1], classes)
-        if not isinstance(elt, DataF):
-            return ParametricF(elt)
-    return DataF()
+        return ParametricF(_field_leaf_structure(call[1], classes))
+    return _field_leaf_structure(annot, classes)
 
 
 def detect_node_structure(
@@ -197,7 +199,10 @@ def detect_node_structure(
     classes = _SpecialClasses(space=space_class, embedded=embedded_class)
     try:
         for f, annot in typing.get_type_hints(cls).items():
-            ft = _field_structure(annot, classes)
+            try:
+                ft = _field_structure(annot, classes)
+            except _DataFieldDetected:
+                ft = DataF()
             res[f] = ft
         return res
     except _Unrecognized:
