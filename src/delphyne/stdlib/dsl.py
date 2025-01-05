@@ -27,10 +27,20 @@ from delphyne.core.trees import (
 
 @dataclass(frozen=True)
 class StrategyInstance[N: Node, P, T](StrategyComp[N, P, T]):
-    def __getitem__[P2](
-        self, get_policy: Callable[[P2], tuple[SearchPolicy[N], P]]
+    def using[P2](
+        self,
+        get_policy: Callable[[P2], tuple[SearchPolicy[N], P]],
+        inner_policy_type: type[P2] | None = None,
     ) -> Builder[OpaqueSpace[P2, T]]:
         return OpaqueSpace[P2, T].from_strategy(self, get_policy)
+
+    # Pyright seems to be treating __getitem__ differently and does
+    # worse inference than for using. Same for operators like &, @...
+
+    # def __getitem__[P2](
+    #     self, get_policy: Callable[[P2], tuple[SearchPolicy[N], P]]
+    # ) -> Builder[OpaqueSpace[P2, T]]:
+    #     return self.using(get_policy)
 
 
 def strategy[**A, N: Node, P, T](

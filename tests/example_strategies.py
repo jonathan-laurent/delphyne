@@ -37,7 +37,8 @@ def make_sum(
     allowed: list[int], goal: int
 ) -> dp.Strategy[dp.Branch | dp.Failure, MakeSumIP, list[int]]:
     xs = yield from dp.branch(
-        cands=MakeSum(allowed, goal).using(lambda p: p.make_sum, MakeSumIP),
+        cands=MakeSum(allowed, goal).using(lambda p: p.make_sum),
+        inner_policy_type=MakeSumIP,
     )
     yield from dp.ensure(all(x in allowed for x in xs), "forbidden-num")
     yield from dp.ensure(sum(xs) == goal, "wrong-sum")
@@ -51,23 +52,26 @@ def make_sum(
 
 @dataclass(frozen=True)
 class Conjecture(dp.Node):
-    candidate: dp.OpaqueSpace[Any, Any]
+    cands: dp.OpaqueSpace[Any, Any]
     disprove: Callable[[dp.Tracked[Any]], dp.OpaqueSpace[Any, None]]
     aggregate: Callable[
         [tuple[dp.Tracked[Any], ...]], dp.OpaqueSpace[Any, Sequence[Any]]
     ]
 
     def navigate(self) -> dp.Navigation:
-        return (yield self.candidate)
+        return (yield self.cands)
 
 
 def make_conjecture[P, T](
-    candidate: dp.OpaqueSpace[P, T],
-    disprove: Callable[[T], dp.OpaqueSpace[P, None]],
-    aggregate: Callable[[tuple[T, ...]], dp.OpaqueSpace[P, Sequence[T]]],
+    cands: dp.Builder[dp.OpaqueSpace[P, T]],
+    disprove: Callable[[T], dp.Builder[dp.OpaqueSpace[P, None]]],
+    aggregate: Callable[
+        [tuple[T, ...]], dp.Builder[dp.OpaqueSpace[P, Sequence[T]]]
+    ],
+    inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Conjecture, P, T]:
     cand = yield dp.spawn_node(
-        Conjecture, candidate=candidate, disprove=disprove, aggregate=aggregate
+        Conjecture, cands=cands, disprove=disprove, aggregate=aggregate
     )
     return cast(T, cand)
 
@@ -119,21 +123,36 @@ IntPred: TypeAlias = Fun
 State: TypeAlias = dict[str, int]
 
 
-# @dp.strategy
-# def synthetize_fun(
-#     vars: Vars, prop: IntPred
-# ) -> dp.Strategy[Conjecture, ..., IntFun]:
-#     """
-#     The goal is to synthetize the body of a function f that respects
-#     properties for all inputs.
-#     """
-#     res = yield from make_conjecture(
-#         conjecture_expr(vars, prop),
-#         disprove=partial(find_counterexample, vars, prop),
-#         aggregate=RemoveDuplicates,
-#     )
-#     # TODO: prove correctness!
-#     return (vars, res)
+@dataclass
+class SynthetizeFunIP:
+    conjecture: dp.Policy[dp.Failure | dp.Branch, OnePP]
+    disprove: dp.Policy[dp.Failure | dp.Branch, OnePP]
+    aggregate: dp.PromptingPolicy
+
+
+v: Any = 3
+
+
+@dp.strategy
+def synthetize_fun(
+    vars: Vars, prop: IntPred
+) -> dp.Strategy[Conjecture, SynthetizeFunIP, IntFun]:
+    """
+    The goal is to synthetize the body of a function f that respects
+    properties for all inputs.
+    """
+    res = yield from make_conjecture(
+        cands=conjecture_expr(vars, prop).using(lambda p: p.conjecture),
+        disprove=lambda conj: (
+            find_counterexample(vars, prop, conj).using(lambda p: p.disprove)
+        ),
+        aggregate=lambda conjs: (
+            RemoveDuplicates(conjs).using(lambda p: p.aggregate)
+        ),
+        inner_policy_type=SynthetizeFunIP,
+    )
+    # TODO: prove correctness!
+    return (vars, res)
 
 
 @dp.strategy

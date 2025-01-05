@@ -86,16 +86,6 @@ class Query[T](AbstractQuery[T]):
     ) -> tr.Builder[OpaqueSpace[P, T]]:
         return OpaqueSpace[P, T].from_query(self, get_policy)
 
-    def __getitem__[P](
-        self,
-        get_policy: Callable[[P], PromptingPolicy]
-        | tuple[Callable[[P], PromptingPolicy], type[P]],
-    ) -> tr.Builder[OpaqueSpace[P, T]]:
-        if isinstance(get_policy, tuple):
-            return self.using(get_policy[0], inner_policy_type=get_policy[1])
-        else:
-            return self.using(get_policy)
-
 
 def _no_prompt_manager_error() -> str:
     return (

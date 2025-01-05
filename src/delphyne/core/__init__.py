@@ -38,6 +38,7 @@ from delphyne.core.trees import (
     Node,
     NodeBuilder,
     OpaqueSpace,
+    Policy,
     PromptingPolicy,
     SearchPolicy,
     Space,

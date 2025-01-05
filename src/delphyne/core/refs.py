@@ -200,7 +200,7 @@ class NestedTreeOf:
 #####
 
 
-@dataclass
+@dataclass(frozen=True)
 class Tracked[T]:
     """
     A tracked value, which associates a value with a reference.
