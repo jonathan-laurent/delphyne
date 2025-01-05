@@ -176,6 +176,26 @@ A global space reference.
 
 
 #####
+##### Node Origins
+#####
+
+
+type NodeOrigin = ChildOf | NestedTreeOf
+
+
+@dataclass(frozen=True)
+class ChildOf:
+    node: NodeId
+    action: ValueRef
+
+
+@dataclass(frozen=True)
+class NestedTreeOf:
+    node: NodeId
+    space: SpaceRef
+
+
+#####
 ##### Tracked Values
 #####
 

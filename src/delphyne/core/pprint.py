@@ -82,6 +82,14 @@ def space_element_ref(ser: refs.SpaceElementRef) -> str:
     return f"{space_ref(ser.space)}{{{value}}}"
 
 
+def node_origin(no: refs.NodeOrigin) -> str:
+    match no:
+        case refs.ChildOf(node, action):
+            return f"child({node.id}, {value_ref(action)})"
+        case refs.NestedTreeOf(node, choice):
+            return f"nested({node.id}, {space_ref(choice)})"
+
+
 class CmdNames:
     RUN = "run"
     RUN_UNTIL = "at"

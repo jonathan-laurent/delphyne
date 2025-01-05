@@ -59,13 +59,13 @@ _seref = _seref_hints | _seref_long
 # ValueRef
 _vref.become(_tuple(_vref) | _seref)
 
-# Node origin
-# _naked_nid = _num.map(refs.NodeId)
-# _child = ps.seq(_naked_nid, _comma >> _vref).combine(refs.ChildOf)
-# _child = _s("child(") >> _child << _s(")")
-# _subtree = ps.seq(_naked_nid, _comma >> _cref).combine(refs.SubtreeOf)
-# _subtree = _s("subtree(") >> _subtree << _s(")")
-# _node_origin = _child | _subtree
+# NodeOrigin
+_naked_nid = _num.map(refs.NodeId)
+_child = ps.seq(_naked_nid, _comma >> _vref).combine(refs.ChildOf)
+_child = _s("child(") >> _child << _s(")")
+_nested = ps.seq(_naked_nid, _comma >> _sref).combine(refs.NestedTreeOf)
+_nested = _s("subtree(") >> _nested << _s(")")
+_node_origin = _child | _nested
 
 # Test commands
 _run = _s(CmdNames.RUN) >> _spopt >> _hints.optional(default=())
@@ -101,8 +101,8 @@ def space_ref(s: str) -> refs.SpaceRef:
     return _sref.parse(s)
 
 
-# def node_origin(s: str) -> refs.NodeOrigin:
-#     return _node_origin.parse(s)
+def node_origin(s: str) -> refs.NodeOrigin:
+    return _node_origin.parse(s)
 
 
 def test_command(s: str) -> demos.TestCommand:
