@@ -2,12 +2,9 @@
 Delphyne Core
 """
 
-# ruff: noqa
+# ruff: noqa: F401
 # pyright: reportUnusedImport=false
 
-from delphyne.core.refs import (
-    AnswerModeName,
-)
 from delphyne.core.environment import (
     ExampleDatabase,
     PolicyEnv,
@@ -19,6 +16,9 @@ from delphyne.core.queries import (
     AnswerMode,
     ParseError,
     Parser,
+)
+from delphyne.core.refs import (
+    AnswerModeName,
 )
 from delphyne.core.streams import (
     Barrier,
@@ -46,4 +46,5 @@ from delphyne.core.trees import (
     Tag,
     Tree,
     TreeTransformer,
+    reify,
 )

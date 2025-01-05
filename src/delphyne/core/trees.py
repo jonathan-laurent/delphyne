@@ -499,6 +499,14 @@ def _reify[N: Node, P, T](
     root_ref: _NonEmptyGlobalPath | None,
     node_hook: Callable[[Tree[Any, Any, Any]], None] | None,
 ) -> Tree[N, P, T]:
+    """
+    Reify a strategy into a tree.
+
+    This version is private because it exposes the `root_ref` argument.
+    Outside of these modules, trees can only be reified relative to the
+    global origin.
+    """
+
     def aux(
         strategy: StrategyComp[N, P, T],
         actions: Sequence[object],
@@ -590,3 +598,13 @@ def _finalize_node[N: Node, T](
     (gr, sr, nr) = ref
     ser = refs.SpaceElementRef(sr, nr)
     return Success(Tracked(pre_node.value, ser, gr, type))
+
+
+def reify[N: Node, P, T](
+    strategy: StrategyComp[N, P, T],
+    node_hook: Callable[[Tree[Any, Any, Any]], None] | None = None,
+) -> Tree[N, P, T]:
+    """
+    Reify a strategy into a tree.
+    """
+    return _reify(strategy, None, node_hook)

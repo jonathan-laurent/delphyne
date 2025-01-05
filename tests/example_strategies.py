@@ -21,7 +21,7 @@ class MakeSum(dp.Query[list[int]]):
 
     @classmethod
     def modes(cls) -> dp.Modes[list[int]]:
-        return {None: dp.AnswerMode(dp.yaml_from_last_block)}
+        return {None: dp.AnswerMode(dp.raw_yaml)}
 
 
 @dataclass
