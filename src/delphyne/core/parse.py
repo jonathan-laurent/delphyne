@@ -36,7 +36,7 @@ _answer_id = _s("@") >> _num.map(refs.AnswerId)
 _hintsel = _ident
 _hintsel_colon = _hintsel << _s(":")
 _hint = ps.seq(_hintsel_colon.optional(), _ident).combine(refs.Hint)
-_hints = _s("'") >> _hint.sep_by(_space).map(tuple) << _s("'")
+_hints = _s("'") >> _hint.sep_by(_space).map(tuple).map(refs.Hints) << _s("'")
 
 # SpaceName
 _sname_index = _s("[") >> _num << _s("]")
@@ -46,10 +46,10 @@ _sname = ps.seq(_ident, _sname_indexes.optional(())).combine(refs.SpaceName)
 # SpaceRef
 _vref = ps.forward_declaration()
 _sargs = _s("(") >> _vref.sep_by(_comma) << _s(")")
-_sref = ps.seq(_ident, _sargs.optional(()).map(tuple)).map(tuple)
+_sref = ps.seq(_sname, _sargs.optional(()).map(tuple)).combine(refs.SpaceRef)
 
 # SpaceElementRef
-_seref_hints_val = _hints.map(refs.Hints)
+_seref_hints_val = _hints
 _seref_val = _node_id | _answer_id | _seref_hints_val
 _seref_hints = _seref_hints_val.map(lambda hs: refs.SpaceElementRef(None, hs))
 _seref_long = ps.seq(_sref, _s("{") >> _seref_val << _s("}"))
@@ -64,7 +64,7 @@ _naked_nid = _num.map(refs.NodeId)
 _child = ps.seq(_naked_nid, _comma >> _vref).combine(refs.ChildOf)
 _child = _s("child(") >> _child << _s(")")
 _nested = ps.seq(_naked_nid, _comma >> _sref).combine(refs.NestedTreeOf)
-_nested = _s("subtree(") >> _nested << _s(")")
+_nested = _s("nested(") >> _nested << _s(")")
 _node_origin = _child | _nested
 
 # Test commands

@@ -134,7 +134,7 @@ class Hint:
     hint: HintValue
 
 
-@dataclass
+@dataclass(frozen=True)
 class Hints:
     """
     References a local space element via a sequence of hints.
