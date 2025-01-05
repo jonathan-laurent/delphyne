@@ -5,6 +5,9 @@ Delphyne Core
 # ruff: noqa
 # pyright: reportUnusedImport=false
 
+from delphyne.core.refs import (
+    AnswerModeName,
+)
 from delphyne.core.environment import (
     ExampleDatabase,
     PolicyEnv,

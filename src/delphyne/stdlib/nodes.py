@@ -37,8 +37,7 @@ class Branch(Node):
 def branch[P, T](
     cands: tr.Builder[OpaqueSpace[P, T]],
     extra_tags: Sequence[Tag] = (),
-    inner_policy_type: type[P] | None = None,
-) -> tr.Strategy[Branch, int, T]:
+) -> tr.Strategy[Branch, P, T]:
     ret = yield spawn_node(Branch, cands=cands, extra_tags=extra_tags)
     return cast(T, ret)
 
@@ -66,11 +65,11 @@ class Failure(Node):
         return self.message
 
 
-def fail(msg: str) -> tr.Strategy[Failure, Never, Never]:
+def fail(msg: str) -> tr.Strategy[Failure, object, Never]:
     yield spawn_node(Failure, msg=msg)
     assert False
 
 
-def ensure(prop: bool, msg: str = "") -> tr.Strategy[Failure, Never, None]:
+def ensure(prop: bool, msg: str = "") -> tr.Strategy[Failure, object, None]:
     if not prop:
         yield from fail(msg)

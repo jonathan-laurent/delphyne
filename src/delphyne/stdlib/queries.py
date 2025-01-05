@@ -3,13 +3,14 @@ Standard queries and building blocks for prompting policies.
 """
 
 import re
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from typing import Any, Self, cast
 
 import yaml
 import yaml.parser
 
 from delphyne.core import environment as en
+from delphyne.core import queries as qu
 from delphyne.core import trees as tr
 from delphyne.core.inspect import first_parameter_of_base_class
 from delphyne.core.queries import AbstractQuery, AnswerModeName, ParseError
@@ -63,10 +64,22 @@ class Query[T](AbstractQuery[T]):
     def answer_type(self) -> TypeAnnot[T]:
         return first_parameter_of_base_class(type(self))
 
-    def __getitem__[P](
-        self, get_policy: Callable[[P], PromptingPolicy]
+    def search[P](
+        self,
+        get_policy: Callable[[P], PromptingPolicy],
+        inner_policy_type: type[P] | None = None,
     ) -> tr.Builder[OpaqueSpace[P, T]]:
         return OpaqueSpace[P, T].from_query(self, get_policy)
+
+    def __getitem__[P](
+        self,
+        get_policy: Callable[[P], PromptingPolicy]
+        | tuple[Callable[[P], PromptingPolicy], type[P]],
+    ) -> tr.Builder[OpaqueSpace[P, T]]:
+        if isinstance(get_policy, tuple):
+            return self.search(get_policy[0], inner_policy_type=get_policy[1])
+        else:
+            return self.search(get_policy)
 
 
 def _no_prompt_manager_error() -> str:
@@ -74,6 +87,9 @@ def _no_prompt_manager_error() -> str:
         "Please provide an explicit prompt manager "
         + " or override the `system_prompt` and `instance_prompt` functions."
     )
+
+
+type Modes[T] = Mapping[AnswerModeName, qu.AnswerMode[T]]
 
 
 #####

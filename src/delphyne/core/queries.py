@@ -29,9 +29,9 @@ type AnyQuery = AbstractQuery[Any]
 
 
 class AbstractQuery[T](ABC):
-    @property
+    @classmethod
     @abstractmethod
-    def modes(self) -> Mapping[AnswerModeName, AnswerMode[T]]:
+    def modes(cls) -> Mapping[AnswerModeName, AnswerMode[T]]:
         pass
 
     @abstractmethod

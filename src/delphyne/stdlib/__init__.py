@@ -47,6 +47,7 @@ from delphyne.stdlib.queries import (
     string_from_last_block,
     trimmed_string_from_last_block,
     extract_final_block,
+    Modes,
 )
 
 from delphyne.stdlib.streams import (

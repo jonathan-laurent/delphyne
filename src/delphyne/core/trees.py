@@ -425,7 +425,7 @@ class _GeneralSpawner:
                 ) -> Tracked[T] | ParseError:
                     ref = refs.SpaceElementRef(sr, refs.Answer(mode, text))
                     atype = query.answer_type()
-                    parsed = query.modes[mode].parse(atype, text)
+                    parsed = query.modes()[mode].parse(atype, text)
                     if isinstance(parsed, ParseError):
                         return parsed
                     return Tracked(parsed, ref, gr, query.answer_type())
