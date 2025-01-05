@@ -59,4 +59,4 @@ def policy_type_of_strategy_type[T](st: Any) -> TypeAnnot[T] | NoTypeInfo:
 
 def first_parameter_of_base_class(cls: Any) -> Any:
     base = cls.__orig_bases__[0]  # type: ignore
-    return typing.get_args(base)[1]
+    return typing.get_args(base)[0]
