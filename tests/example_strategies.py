@@ -5,6 +5,8 @@ The strategies defined in this file are used to test `Tree` but also to
 test the server (see `test_server`).
 """
 
+# pyright: strict
+
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -130,9 +132,6 @@ class SynthetizeFunIP:
     aggregate: dp.PromptingPolicy
 
 
-v: Any = 3
-
-
 @dp.strategy
 def synthetize_fun(
     vars: Vars, prop: IntPred
@@ -192,8 +191,8 @@ class ConjectureExpr(dp.Query[Expr]):
 
 
 @dataclass
-class RemoveDuplicates(dp.Query[tuple[Expr, ...]]):
-    exprs: tuple[Expr, ...]
+class RemoveDuplicates(dp.Query[Sequence[Expr]]):
+    exprs: Sequence[Expr]
     __parser__: ClassVar = dp.raw_yaml
 
 
