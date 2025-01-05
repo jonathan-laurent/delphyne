@@ -36,7 +36,7 @@ def make_sum(
     allowed: list[int], goal: int
 ) -> dp.Strategy[dp.Branch | dp.Failure, MakeSumIP, list[int]]:
     xs = yield from dp.branch(
-        MakeSum(allowed, goal).search(lambda p: p.make_sum, MakeSumIP),
+        cands=MakeSum(allowed, goal).search(lambda p: p.make_sum, MakeSumIP),
     )
     yield from dp.ensure(all(x in allowed for x in xs), "forbidden-num")
     yield from dp.ensure(sum(xs) == goal, "wrong-sum")
@@ -69,3 +69,21 @@ def make_conjecture[P, T](
         Conjecture, candidate=candidate, disprove=disprove, aggregate=aggregate
     )
     return cast(T, cand)
+
+
+@dp.search_policy
+async def just_guess[P, T](
+    tree: dp.Tree[Conjecture, P, T], env: dp.PolicyEnv, policy: P
+) -> dp.Stream[T]:
+    """
+    Do a DFS, treating conjecture nodes as simple branching nodes.
+    """
+    match tree.node:
+        case dp.Success(x):
+            yield dp.Yield(x)
+        case Conjecture(candidate):
+            async for msg in dp.bind_stream(
+                candidate.stream(env, policy),
+                lambda y: just_guess()(tree.child(y), env, policy),
+            ):
+                yield msg

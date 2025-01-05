@@ -6,6 +6,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Protocol
 
+from delphyne.core import streams as st
 from delphyne.core import trees as tr
 from delphyne.core.environment import PolicyEnv
 from delphyne.core.streams import Barrier, Budget, BudgetLimit, Spent, Stream
@@ -54,7 +55,7 @@ def stream_transformer[**A](
 
 
 #####
-##### Utilities
+##### Standard Stream Transformers
 #####
 
 
@@ -77,3 +78,19 @@ def with_budget[T](stream: Stream[T], num_requests: int) -> Stream[T]:
     return _with_budget(
         BudgetLimit({NUM_REQUESTS_BUDGET: num_requests}), stream
     )
+
+
+#####
+##### Stream Utilities
+#####
+
+
+async def bind_stream[A, B](
+    stream: Stream[A], f: Callable[[tr.Tracked[A]], Stream[B]]
+) -> Stream[B]:
+    async for msg in stream:
+        if not isinstance(msg, st.Yield):
+            yield msg
+            continue
+        async for new_msg in f(msg.value):
+            yield new_msg

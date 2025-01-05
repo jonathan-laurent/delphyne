@@ -50,6 +50,7 @@ from delphyne.stdlib.search.dfs import (
 )
 from delphyne.stdlib.streams import (
     StreamTransformer,
+    bind_stream,
     stream_transformer,
     with_budget,
 )

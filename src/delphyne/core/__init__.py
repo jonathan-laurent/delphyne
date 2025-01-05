@@ -26,6 +26,7 @@ from delphyne.core.streams import (
     Budget,
     BudgetLimit,
     Spent,
+    Stream,
     Yield,
 )
 from delphyne.core.trees import (
