@@ -17,7 +17,7 @@ from delphyne.core.trees import Navigation, Node, OpaqueSpace, Tag
 def spawn_node[N: Node](
     node_type: type[N], **args: Any
 ) -> tr.NodeBuilder[Any, Any]:
-    return tr.NodeBuilder(lambda spawner: Branch.spawn(spawner, **args))
+    return tr.NodeBuilder(lambda spawner: node_type.spawn(spawner, **args))
 
 
 #####
@@ -65,11 +65,13 @@ class Failure(Node):
         return self.message
 
 
-def fail(msg: str) -> tr.Strategy[Failure, object, Never]:
-    yield spawn_node(Failure, msg=msg)
+def fail(message: str) -> tr.Strategy[Failure, object, Never]:
+    yield spawn_node(Failure, message=message)
     assert False
 
 
-def ensure(prop: bool, msg: str = "") -> tr.Strategy[Failure, object, None]:
+def ensure(
+    prop: bool, message: str = ""
+) -> tr.Strategy[Failure, object, None]:
     if not prop:
-        yield from fail(msg)
+        yield from fail(message)
