@@ -5,9 +5,10 @@ The strategies defined in this file are used to test `Tree` but also to
 test the server (see `test_server`).
 """
 
+import re
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Sequence, cast
+from typing import Any, ClassVar, Sequence, TypeAlias, cast
 
 import delphyne as dp
 
@@ -22,7 +23,7 @@ class MakeSum(dp.Query[list[int]]):
     goal: int
 
     @classmethod
-    def modes(cls) -> dp.Modes[list[int]]:
+    def modes(cls) -> dp.AnswerModes[list[int]]:
         return {None: dp.AnswerMode(dp.raw_yaml)}
 
 
@@ -36,7 +37,7 @@ def make_sum(
     allowed: list[int], goal: int
 ) -> dp.Strategy[dp.Branch | dp.Failure, MakeSumIP, list[int]]:
     xs = yield from dp.branch(
-        cands=MakeSum(allowed, goal).search(lambda p: p.make_sum, MakeSumIP),
+        cands=MakeSum(allowed, goal).using(lambda p: p.make_sum, MakeSumIP),
     )
     yield from dp.ensure(all(x in allowed for x in xs), "forbidden-num")
     yield from dp.ensure(sum(xs) == goal, "wrong-sum")
@@ -87,3 +88,128 @@ async def just_guess[P, T](
                 lambda y: just_guess()(tree.child(y), env, policy),
             ):
                 yield msg
+
+
+#####
+##### Utility: single prompting policy
+#####
+
+
+@dataclass
+class OnePP:
+    pp: dp.PromptingPolicy
+
+
+def one_pp(p: OnePP) -> dp.PromptingPolicy:
+    return p.pp
+
+
+#####
+##### A more complex strategy with counterexamples
+#####
+
+
+# Pydantic does not work with Python 3.12 `type` syntax here.
+# https://github.com/pydantic/pydantic/issues/8984
+Vars: TypeAlias = list[str]
+Expr: TypeAlias = str
+Fun: TypeAlias = tuple[Vars, Expr]
+IntFun: TypeAlias = Fun
+IntPred: TypeAlias = Fun
+State: TypeAlias = dict[str, int]
+
+
+# @dp.strategy
+# def synthetize_fun(
+#     vars: Vars, prop: IntPred
+# ) -> dp.Strategy[Conjecture, ..., IntFun]:
+#     """
+#     The goal is to synthetize the body of a function f that respects
+#     properties for all inputs.
+#     """
+#     res = yield from make_conjecture(
+#         conjecture_expr(vars, prop),
+#         disprove=partial(find_counterexample, vars, prop),
+#         aggregate=RemoveDuplicates,
+#     )
+#     # TODO: prove correctness!
+#     return (vars, res)
+
+
+@dp.strategy
+def conjecture_expr(
+    vars: Vars, prop: IntPred
+) -> dp.Strategy[dp.Branch | dp.Failure, OnePP, Expr]:
+    expr = yield from dp.branch(ConjectureExpr(vars, prop).using(one_pp))
+    yield from dp.ensure(expr_safe(expr), "Possibly unsafe expression")
+    try:
+        eval(expr, {v: 0 for v in vars})
+    except Exception:
+        yield from dp.fail("Invalid expression")
+    return expr
+
+
+@dp.strategy
+def find_counterexample(
+    vars: Vars, prop: IntPred, expr: Expr
+) -> dp.Strategy[dp.Branch | dp.Failure, OnePP, None]:
+    cand = yield from dp.branch(ProposeCex(prop, (vars, expr)).using(one_pp))
+    try:
+        yield from dp.ensure(
+            not check_prop((vars, expr), prop, cand), "Invalid counterexample."
+        )
+    # Note: it is important to catch Exception instead of having an
+    # unqualified `except`. Indeed, doing the former would cause runtime
+    # errors such as : "RuntimeError: generator ignored GeneratorExit".
+    except Exception:
+        yield from dp.fail("Failed to process counterexample.")
+
+
+@dataclass
+class ConjectureExpr(dp.Query[Expr]):
+    vars: Vars
+    prop: IntPred
+    __parser__: ClassVar = dp.raw_yaml
+
+
+@dataclass
+class RemoveDuplicates(dp.Query[tuple[Expr, ...]]):
+    exprs: tuple[Expr, ...]
+    __parser__: ClassVar = dp.raw_yaml
+
+
+@dataclass
+class ProposeCex(dp.Query[State]):
+    prop: IntPred
+    fun: IntFun
+    __parser__: ClassVar = dp.raw_yaml
+
+
+def expr_safe(expr: Expr) -> bool:
+    # Not very reliable! Do not run in production.
+    return re.match(r"^[^\._]+$", expr) is not None
+
+
+def fun_lambda(fun: Fun) -> str:
+    args, expr = fun
+    args_str = ", ".join(args)
+    return f"lambda {args_str}: {expr}"
+
+
+def check_prop(fun: Fun, prop: IntPred, state: State) -> bool:
+    to_eval = f"(lambda F: {prop[1]})({fun_lambda(fun)})"
+    return eval(to_eval, state.copy())
+
+
+def test_expr_safe():
+    assert expr_safe("x + y")
+    assert not expr_safe("sys.exit()")
+
+
+def test_check_prop():
+    prop: IntPred = (["a", "b"], "F(a, b) == F(b, a) and F(0, 0) == 0")
+    fun1: IntFun = (["x", "y"], "x + y")
+    fun2: IntFun = (["x", "y"], "x - y")
+    assert check_prop(fun1, prop, {"a": 1, "b": 2})
+    assert check_prop(fun2, prop, {"a": 0, "b": 0})
+    assert not check_prop(fun2, prop, {"a": 1, "b": -1})

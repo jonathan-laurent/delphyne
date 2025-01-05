@@ -28,6 +28,21 @@ from delphyne.utils.typing import TypeAnnot, ValidationError
 
 
 class Query[T](AbstractQuery[T]):
+    @classmethod
+    def modes(cls) -> "AnswerModes[T]":
+        __answer__ = "__answer__"
+        __parser__ = "__parser__"
+        if hasattr(cls, __answer__):
+            assert not hasattr(cls, __parser__)
+            return getattr(cls, __answer__)
+        elif hasattr(cls, __parser__):
+            assert not hasattr(cls, __answer__)
+            return single_parser(getattr(cls, __parser__))
+        assert False, (
+            "Please define the `modes` method "
+            + "or the `__answer__` class attribute."
+        )
+
     def system_prompt(
         self,
         mode: AnswerModeName,
@@ -64,7 +79,7 @@ class Query[T](AbstractQuery[T]):
     def answer_type(self) -> TypeAnnot[T]:
         return first_parameter_of_base_class(type(self))
 
-    def search[P](
+    def using[P](
         self,
         get_policy: Callable[[P], PromptingPolicy],
         inner_policy_type: type[P] | None = None,
@@ -77,9 +92,9 @@ class Query[T](AbstractQuery[T]):
         | tuple[Callable[[P], PromptingPolicy], type[P]],
     ) -> tr.Builder[OpaqueSpace[P, T]]:
         if isinstance(get_policy, tuple):
-            return self.search(get_policy[0], inner_policy_type=get_policy[1])
+            return self.using(get_policy[0], inner_policy_type=get_policy[1])
         else:
-            return self.search(get_policy)
+            return self.using(get_policy)
 
 
 def _no_prompt_manager_error() -> str:
@@ -89,7 +104,12 @@ def _no_prompt_manager_error() -> str:
     )
 
 
-type Modes[T] = Mapping[AnswerModeName, qu.AnswerMode[T]]
+type AnswerModes[T] = Mapping[AnswerModeName, qu.AnswerMode[T]]
+type Modes = AnswerModes[Any]
+
+
+def single_parser[T](parser: qu.Parser[T]) -> AnswerModes[T]:
+    return {None: qu.AnswerMode(parse=parser)}
 
 
 #####
