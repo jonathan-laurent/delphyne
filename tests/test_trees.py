@@ -1,6 +1,6 @@
-# """
-# Testing reification and the `Tree` datastructure
-# """
+"""
+Testing reification and the `Tree` datastructure
+"""
 
 from example_strategies import make_sum
 

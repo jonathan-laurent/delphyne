@@ -5,7 +5,9 @@ The strategies defined in this file are used to test `Tree` but also to
 test the server (see `test_server`).
 """
 
+from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any, Sequence, cast
 
 import delphyne as dp
 
@@ -39,3 +41,31 @@ def make_sum(
     yield from dp.ensure(all(x in allowed for x in xs), "forbidden-num")
     yield from dp.ensure(sum(xs) == goal, "wrong-sum")
     return xs
+
+
+#####
+##### Adding support for conjecture nodes
+#####
+
+
+@dataclass(frozen=True)
+class Conjecture(dp.Node):
+    candidate: dp.OpaqueSpace[Any, Any]
+    disprove: Callable[[dp.Tracked[Any]], dp.OpaqueSpace[Any, None]]
+    aggregate: Callable[
+        [tuple[dp.Tracked[Any], ...]], dp.OpaqueSpace[Any, Sequence[Any]]
+    ]
+
+    def navigate(self) -> dp.Navigation:
+        return (yield self.candidate)
+
+
+def make_conjecture[P, T](
+    candidate: dp.OpaqueSpace[P, T],
+    disprove: Callable[[T], dp.OpaqueSpace[P, None]],
+    aggregate: Callable[[tuple[T, ...]], dp.OpaqueSpace[P, Sequence[T]]],
+) -> dp.Strategy[Conjecture, P, T]:
+    cand = yield dp.spawn_node(
+        Conjecture, candidate=candidate, disprove=disprove, aggregate=aggregate
+    )
+    return cast(T, cand)
