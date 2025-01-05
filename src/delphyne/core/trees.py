@@ -409,7 +409,7 @@ class _GeneralSpawner:
             args_raw = [refs.drop_refs(arg) for arg in args]
             args_ref = tuple(refs.value_ref(arg) for arg in args)
             builder = parametric_builder(*args_raw)
-            gr = global_path_from_nonempty(self._ref)
+            gr = _global_path_from_nonempty(self._ref)
             sr = refs.SpaceRef(space_name, args_ref)
 
             def spawn_tree[N: Node, P, T](
@@ -489,7 +489,7 @@ More precisely, `(gr, sr, nr)` encodes `(*gr, (sr, nr))`
 """
 
 
-def global_path_from_nonempty(ref: _NonEmptyGlobalPath) -> GlobalNodePath:
+def _global_path_from_nonempty(ref: _NonEmptyGlobalPath) -> GlobalNodePath:
     (gr, sr, nr) = ref
     return (*gr, (sr, nr))
 
@@ -535,7 +535,7 @@ def _reify[N: Node, P, T](
             new_node = _finalize_node(pre_node, new_ref, ret_type, node_hook)
             return aux(strategy, new_actions, new_ref, new_node, new_gen)
 
-        tree = Tree(node, child, global_path_from_nonempty(ref))
+        tree = Tree(node, child, _global_path_from_nonempty(ref))
         if node_hook is not None:
             node_hook(tree)
         return tree

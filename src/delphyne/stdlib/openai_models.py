@@ -55,7 +55,7 @@ _TEST_PROMPT: Chat = [
 ]
 
 
-async def test_completion():
+async def _test_completion():
     model = openai_model("gpt-4o-mini")
     print(await model.send_request(_TEST_PROMPT, 2, {}))
 
@@ -64,4 +64,4 @@ if __name__ == "__main__":
     """
     To run the test: `python -m delphyne.stdlib.openai_models`
     """
-    asyncio.run(test_completion())
+    asyncio.run(_test_completion())
