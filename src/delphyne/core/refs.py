@@ -80,7 +80,7 @@ class SpaceRef:
     """
 
     name: SpaceName
-    arg: tuple[ValueRef, ...]
+    args: tuple[ValueRef, ...]
 
 
 MAIN_SPACE = SpaceRef(SpaceName("$main", ()), ())
@@ -176,7 +176,7 @@ A global space reference.
 
 
 #####
-##### Tracked values
+##### Tracked Values
 #####
 
 
