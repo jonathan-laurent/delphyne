@@ -3,14 +3,19 @@ Demonstration Interpreter.
 """
 
 import importlib
+import json
 import sys
 from collections.abc import Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import delphyne.core as dp
+from delphyne.analysis import feedback as fb
+from delphyne.analysis import navigation as nv
+from delphyne.core import demos as dm
+from delphyne.core import refs
 from delphyne.utils import typing as tp
 
 #####
@@ -72,9 +77,116 @@ class ObjectLoader:
         except Exception as e:
             raise StrategyLoadingError(str(e))
 
+    def load_query(
+        self, name: str, args: dict[str, Any]
+    ) -> dp.AbstractQuery[Any]:
+        q = cast(type[dp.AbstractQuery[Any]], self.find_object(name))
+        return q.parse(args)
+
 
 @contextmanager
 def _append_path(paths: Sequence[Path]):
     sys.path = [str(p) for p in paths] + sys.path
     yield
     sys.path = sys.path[len(paths) :]
+
+
+#####
+##### Demo Hint Resolver
+#####
+
+
+@dataclass(frozen=True)
+class SerializedQuery:
+    """
+    A representation of a query used as an index for the example cache.
+    """
+
+    name: str
+    args: str
+
+    @staticmethod
+    def make(query: dp.AbstractQuery[Any]) -> "SerializedQuery":
+        args = json.dumps(query.serialize_args())
+        return SerializedQuery(query.name(), args)
+
+
+class DemoHintResolver(nv.HintResolver):
+    def __init__(self, loader: ObjectLoader, demo: dm.Demonstration):
+        self.demo = demo
+        self.queries: list[SerializedQuery] = []
+        for i, q in enumerate(demo.queries):
+            try:
+                query = loader.load_query(q.query, q.args)
+                self.queries.append(SerializedQuery.make(query))
+            except Exception as e:
+                raise DemoHintResolver.InvalidQuery(i, e)
+            # We try to parse all answers in anticipation, to avoid
+            # an error later.
+            for j, a in enumerate(q.answers):
+                mode = query.modes().get(a.mode)
+                if mode is None:
+                    raise DemoHintResolver.InvalidAnswer(i, j, "Invalid mode.")
+                parsed = mode.parse(query.answer_type(), a.answer)
+                if isinstance(parsed, dp.ParseError):
+                    raise DemoHintResolver.InvalidAnswer(i, j, parsed.error)
+        # Used to populate `DemoFeedback.answer_refs`, which is needed
+        # to implement the `Jump to Answer` action in the UI tree view.
+        self.answer_refs: dict[nv.AnswerRef, fb.DemoAnswerId] = {}
+        # To keep track of what queries are reachable
+        self.query_used: list[bool] = [False] * len(self.queries)
+
+    def __call__(
+        self,
+        query: dp.AttachedQuery[Any],
+        hint: refs.HintValue | None,
+    ) -> refs.Answer | None:
+        serialized = SerializedQuery.make(query.query)
+        for i, q in enumerate(self.queries):
+            if q == serialized:
+                self.query_used[i] = True
+                answers = self.demo.queries[i].answers
+                if not answers:
+                    return None
+                if hint is None:
+                    answer_id = 0
+                else:
+                    for j, a in enumerate(answers):
+                        if a.label == hint:
+                            answer_id = j
+                            break
+                    else:
+                        return None
+                demo_answer = answers[answer_id]
+                answer = refs.Answer(demo_answer.mode, demo_answer.answer)
+                self.answer_refs[(query.ref, answer)] = (i, answer_id)
+                return answer
+        return None
+
+    def get_answer_refs(self) -> dict[nv.AnswerRef, fb.DemoAnswerId]:
+        return self.answer_refs
+
+    def set_reachability_diagnostics(self, feedback: fb.DemoFeedback):
+        for i, used in enumerate(self.query_used):
+            if not used:
+                msg = "Unreachable query."
+                feedback.query_diagnostics.append((i, ("warning", msg)))
+
+    def navigator(self) -> nv.Navigator:
+        return nv.Navigator(self)
+
+    @dataclass
+    class InvalidQuery(Exception):
+        id: int
+        exn: Exception
+
+    @dataclass
+    class InvalidAnswer(Exception):
+        query_id: int
+        answer_id: int
+        parse_error: str
+
+
+#####
+##### Interpreter
+#####
