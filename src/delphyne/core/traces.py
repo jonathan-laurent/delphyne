@@ -2,6 +2,7 @@
 Exporting and importing traces.
 """
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 
 from delphyne.core import refs
@@ -56,9 +57,7 @@ class QueryOrigin:
 
 
 class Trace:
-    """
-    By convention, `0` is the id of the global origin.
-    """
+    GLOBAL_ORIGIN_ID = refs.NodeId(0)
 
     def __init__(self):
         self.nodes: dict[refs.NodeId, refs.NodeOrigin] = {}
@@ -92,31 +91,72 @@ class Trace:
             self.answer_ids[origin][answer] = id
             return id
 
-    def convert_global_node_path(
-        self, path: refs.GlobalNodePath
-    ) -> refs.NodeId:
-        assert False
-
     def convert_node_path(
-        self, node: refs.NodeId, path: refs.NodePath
+        self, id: refs.NodeId, path: refs.NodePath
     ) -> refs.NodeId:
-        assert False
+        for a in path:
+            action_ref = self.convert_value_ref(id, a)
+            id = self.fresh_or_cached_node_id(refs.ChildOf(id, action_ref))
+        return id
 
     def convert_space_ref(
-        self, node: refs.NodeId, ref: refs.SpaceRef
+        self, id: refs.NodeId, ref: refs.SpaceRef
     ) -> refs.SpaceRef:
         """
         Convert an _explicit_ space reference into an _abbreviated_ one
         that features node and answer ids.
         """
-        assert False
+        args = tuple(self.convert_value_ref(id, a) for a in ref.args)
+        return refs.SpaceRef(ref.name, args)
 
     def convert_value_ref(
-        self, node: refs.NodeId, ref: refs.ValueRef
+        self, id: refs.NodeId, ref: refs.ValueRef
     ) -> refs.ValueRef:
-        assert False
+        if isinstance(ref, refs.SpaceElementRef):
+            return self.convert_space_element_ref(id, ref)
+        else:
+            return tuple(self.convert_value_ref(id, a) for a in ref)
 
     def convert_space_element_ref(
-        self, node: refs.NodeId, ref: refs.SpaceElementRef
+        self, id: refs.NodeId, ref: refs.SpaceElementRef
     ) -> refs.SpaceElementRef:
-        assert False
+        space = None
+        if ref.space is not None:
+            space = self.convert_space_ref(id, ref.space)
+        match ref.element:
+            case refs.Answer():
+                assert space is not None
+                origin = QueryOrigin(id, space)
+                element = self.fresh_or_cached_answer_id(ref.element, origin)
+            case refs.AnswerId() | refs.NodeId():
+                element = ref.element
+            case refs.Hints():
+                assert False
+            case tuple():
+                element = self.convert_node_path(id, ref.element)
+        return refs.SpaceElementRef(space, element)
+
+    def convert_global_node_path(
+        self, path: refs.GlobalNodePath
+    ) -> refs.NodeId:
+        id = Trace.GLOBAL_ORIGIN_ID
+        for space, node_path in path:
+            space_ref = self.convert_space_ref(id, space)
+            id = self.fresh_or_cached_node_id(refs.NestedTreeOf(id, space_ref))
+            id = self.convert_node_path(id, node_path)
+        return id
+
+    def convert_global_node_ref(self, ref: refs.GlobalNodeRef) -> refs.NodeId:
+        if isinstance(ref, refs.NodeId):
+            return ref
+        else:
+            return self.convert_global_node_path(ref)
+
+    def add_location(self, location: Location) -> None:
+        id = self.convert_global_node_ref(location.node)
+        if location.space is not None:
+            self.convert_space_ref(id, location.space)
+
+    def add_locations(self, locations: Iterable[Location]) -> None:
+        for location in locations:
+            self.add_location(location)
