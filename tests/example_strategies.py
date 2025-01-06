@@ -5,8 +5,6 @@ The strategies defined in this file are used to test `Tree` but also to
 test the server (see `test_server`).
 """
 
-# pyright: strict
-
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
