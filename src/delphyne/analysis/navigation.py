@@ -48,9 +48,19 @@ class NavTree:
         return NavTree(self.tree.child(action), self._cache)
 
     def nested(
-        self, space: refs.SpaceName, args: tuple[dp.Value, ...]
-    ) -> "NavTree":
-        assert False
+        self, space_name: refs.SpaceName, args: tuple[dp.Value, ...]
+    ) -> "NavTree | dp.AttachedQuery[Any]":
+        arg_refs = tuple(refs.value_ref(arg) for arg in args)
+        sref = refs.SpaceRef(space_name, arg_refs)
+        nref = refs.nested_ref(self.ref, sref)
+        if nref in self._cache:
+            return self._cache[nref]
+        space = self.node.nested_space(space_name, args)
+        source = space.source()
+        if isinstance(source, dp.NestedTree):
+            return NavTree(source.spawn_tree(), self._cache)
+        else:
+            return source
 
 
 #####

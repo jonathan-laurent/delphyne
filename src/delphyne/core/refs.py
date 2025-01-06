@@ -247,3 +247,7 @@ def child_ref(path: GlobalNodePath, action: ValueRef) -> GlobalNodePath:
     assert path
     *init, (space, node_path) = path
     return (*init, (space, (*node_path, action)))
+
+
+def nested_ref(path: GlobalNodePath, ref: SpaceRef) -> GlobalNodePath:
+    return (*path, (ref, ()))
