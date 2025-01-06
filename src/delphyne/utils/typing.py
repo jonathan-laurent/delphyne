@@ -1,5 +1,8 @@
-import pydantic
+import typing
+from collections.abc import Callable
+from typing import Any
 
+import pydantic
 
 type TypeAnnot[T] = type[T] | object
 """
@@ -40,3 +43,16 @@ def pydantic_load[T](type: TypeAnnot[T], s: object) -> T:
     """
     adapter = pydantic.TypeAdapter[T](type)
     return adapter.validate_python(s)
+
+
+def parse_function_args(
+    f: Callable[..., Any], args: dict[str, Any]
+) -> dict[str, Any]:
+    hints = typing.get_type_hints(f)
+    pargs: dict[str, Any] = {}
+    for k in args:
+        if k not in hints:
+            raise ValueError(f"Unknown argument: {k}")
+        T = pydantic.TypeAdapter(hints[k])
+        pargs[k] = T.validate_python(args[k])
+    return pargs
