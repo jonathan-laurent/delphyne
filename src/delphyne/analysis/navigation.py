@@ -66,6 +66,29 @@ class NavTree:
         else:
             return source
 
+    def _convert_nested(
+        self, nested: dp.NestedTree[Any, Any, Any]
+    ) -> "NavTree":
+        """
+        There are two ways that `NavTree` can help accessing nested
+        trees. The first way is by providing a space name and argument
+        values (`nested`). The second way is by directly providing a
+        space. This is necessary to work with `Node.navigate`.
+        """
+        assert nested.ref[0] == self.ref
+        nref = refs.nested_ref(self.ref, nested.ref[1])
+        if nref in self._cache:
+            return self._cache[nref]
+        return NavTree(nested.spawn_tree(), self._cache)
+
+    def space_source(
+        self, space: dp.Space[Any]
+    ) -> "NavTree | dp.AttachedQuery[Any]":
+        source = space.source()
+        if isinstance(source, dp.NestedTree):
+            return self._convert_nested(source)
+        return source
+
     def goto(self, ref: refs.GlobalNodeRef) -> "NavTree":
         """
         Go to a node from its id, assuming it is in the cache (which it
@@ -259,15 +282,14 @@ class Navigator:
         original_hints = hints
         navigator = tree.node.navigate()
         try:
-            space = next(navigator).source()
-            # while True:
-            #     elt, hints = self.space_element_from_hints(tree, space, hints)
-            #     choice = navigator.send(outcome)
+            space = tree.space_source(next(navigator))
+            while True:
+                elt, hints = self.space_element_from_hints(tree, space, hints)
+                space = tree.space_source(navigator.send(elt))
         except StopIteration as e:
-            # value = cast(Value, e.value)
-            # if self.info is not None:
-            #     used_hints = original_hints[: len(original_hints) - len(hints)]
-            #     key = (tree.node_id, value_ref(value))
-            #     self.info.hints_rev.actions[key] = used_hints
-            # return value, hints
-            assert False
+            value = cast(dp.Value, e.value)
+            if self.info is not None:
+                used_hints = original_hints[: len(original_hints) - len(hints)]
+                key = (tree.ref, refs.value_ref(value))
+                self.info.hints_rev.actions[key] = used_hints
+            return value, hints
