@@ -4,7 +4,7 @@ Resolving references within a trace.
 
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
-from typing import Any, Protocol
+from typing import Any, Protocol, cast
 
 import delphyne.core as dp
 from delphyne.core import refs
@@ -162,9 +162,9 @@ class AnswerParseError(Exception):
 
 
 @dataclass
-class InvalidSubchoice(Exception):
-    tree: refs.SpaceName
-    choice_label: str
+class InvalidSpace(Exception):
+    tree: NavTree
+    space_name: refs.SpaceName
 
 
 #####
@@ -179,7 +179,61 @@ class Navigator:
     hint-based references.
     """
 
-    node_resolver: Callable[[refs.GlobalNodeRef], NavTree]
     hint_resolver: HintResolver | None = None
     info: NavigationInfo | None = None
     interrupt: Callable[[NavTree], bool] | None = None
+
+    def resolve_value_ref(self, tree: NavTree, ref: refs.ValueRef) -> dp.Value:
+        if isinstance(ref, refs.SpaceElementRef):
+            return self.resolve_space_element_ref(tree, ref)
+        return tuple(self.resolve_value_ref(tree, r) for r in ref)
+
+    def resolve_space_ref(
+        self, tree: NavTree, ref: refs.SpaceRef
+    ) -> NavTree | dp.AttachedQuery[Any]:
+        args = tuple(self.resolve_value_ref(tree, r) for r in ref.args)
+        space = tree.nested(ref.name, args)
+        if space is None:
+            raise InvalidSpace(tree, ref.name)
+        return space
+
+    def resolve_space_element_ref(
+        self, tree: NavTree, ref: refs.SpaceElementRef
+    ) -> dp.Tracked[Any]:
+        # Use the primary space if no space name is provided.
+        if ref.space is None:
+            space_ref = tree.node.primary_space_ref()
+            assert (
+                space_ref is not None
+            ), f"Node {tree.node.effect_name()} has no primary space"
+        else:
+            space_ref = ref.space
+        space = self.resolve_space_ref(tree, space_ref)
+        # Only hint-based references are supported.
+        assert isinstance(ref.element, refs.Hints)
+        hints = ref.element.hints
+        # We treat queries and nested trees differently
+        match space:
+            case dp.AttachedQuery():
+                elt, rem = self.answer_from_hints(tree, space, hints)
+            case NavTree():
+                final, hints = self.follow_hints(space, hints)
+                success = cast(dp.Success[Any], final.node)
+                assert isinstance(success, dp.Success)
+                elt, rem = success.success, hints
+        if self.info is not None:
+            self.info.unused_hints += rem
+        return elt
+
+    def answer_from_hints(
+        self,
+        tree: NavTree,
+        query: dp.AttachedQuery[Any],
+        hints: Sequence[refs.Hint],
+    ) -> tuple[dp.Tracked[Any], Sequence[refs.Hint]]:
+        assert False
+
+    def follow_hints(
+        self, tree: NavTree, hints: Sequence[refs.Hint]
+    ) -> tuple[NavTree, Sequence[refs.Hint]]:
+        assert False

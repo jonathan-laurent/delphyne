@@ -4,7 +4,7 @@ Standard Nodes
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Never, cast
+from typing import Any, ClassVar, Never, cast
 
 from delphyne.core import trees as tr
 from delphyne.core.trees import Navigation, Node, OpaqueSpace, Tag
@@ -29,6 +29,8 @@ def spawn_node[N: Node](
 class Branch(Node):
     cands: OpaqueSpace[Any, Any]
     extra_tags: Sequence[Tag]
+
+    __primary__: ClassVar = "cands"
 
     def navigate(self) -> Navigation:
         return (yield self.cands)

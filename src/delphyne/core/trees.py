@@ -83,15 +83,6 @@ class Node(ABC):
     def leaf_node(self) -> bool:
         return False
 
-    def primary_space(self) -> "Space[object] | None":
-        """
-        Space that is inferred by default in a space element reference
-        (see `SpaceElementRef`). For example, `compare([cands{''},
-        cands{'foo bar'}])` can be abbreviated into `compare(['', 'foo
-        bar'])` if `cands` is the primary space for the current node.
-        """
-        return None
-
     def valid_action(self, action: object) -> bool:
         """
         This method can be implemented optionally to validate actions.
@@ -117,6 +108,21 @@ class Node(ABC):
     def effect_name(self) -> str:
         return self.__class__.__name__
 
+    def primary_space_name(self) -> refs.SpaceName | None:
+        """
+        Space that is inferred by default in a space element reference
+        (see `SpaceElementRef`). For example, `compare([cands{''},
+        cands{'foo bar'}])` can be abbreviated into `compare(['', 'foo
+        bar'])` if `cands` is the primary space for the current node.
+        """
+        if hasattr(self, "__primary__"):
+            name = getattr(self, "__primary__")
+            if name is None:
+                return None
+            assert isinstance(name, str)
+            return refs.SpaceName(name, ())
+        return None
+
     def get_extra_tags(self) -> Sequence[Tag]:
         if hasattr(self, "extra_tags"):
             return getattr(self, "extra_tags")
@@ -138,6 +144,18 @@ class Node(ABC):
         return ()
 
     # Methods that should not be overriden
+
+    def primary_space(self) -> "Space[object] | None":
+        name = self.primary_space_name()
+        if name is None:
+            return None
+        return self.nested_space(name, ())
+
+    def primary_space_ref(self) -> refs.SpaceRef | None:
+        name = self.primary_space_name()
+        if name is None:
+            return None
+        return refs.SpaceRef(name, ())
 
     def nested_space(
         self, name: refs.SpaceName, args: tuple[Value, ...]
