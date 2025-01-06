@@ -7,6 +7,7 @@ import textwrap
 from example_strategies import make_sum
 
 import delphyne as dp
+from delphyne.core import refs
 from delphyne.utils.yaml import dump_yaml
 
 
@@ -17,6 +18,9 @@ def test_make_sum():
     assert isinstance(root.node, dp.Branch)
     root_space = root.node.cands.source()
     assert isinstance(root_space, dp.AttachedQuery)
+    # Testing `nested_space`
+    cands_space = root.node.nested_space(refs.SpaceName("cands", ()), ())
+    assert isinstance(cands_space, dp.OpaqueSpace)
     # Testing to answer with the wrong sum
     wrong_sum_ans = root_space.answer(None, "[4, 6]")
     assert not isinstance(wrong_sum_ans, dp.ParseError)

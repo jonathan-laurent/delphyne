@@ -237,3 +237,13 @@ def drop_refs(v: Value) -> object:
             return value
         case tuple():
             return tuple(drop_refs(o) for o in v)
+
+
+def append_node_path(path: NodePath, v: ValueRef) -> NodePath:
+    return (*path, v)
+
+
+def child_ref(path: GlobalNodePath, action: ValueRef) -> GlobalNodePath:
+    assert path
+    *init, (space, node_path) = path
+    return (*init, (space, (*node_path, action)))

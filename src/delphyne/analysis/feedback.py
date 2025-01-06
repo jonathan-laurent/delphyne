@@ -17,7 +17,7 @@ type Diagnostic = tuple[DiagnosticType, str]
 
 
 #####
-##### Browsable trace
+##### Browsable Trace
 #####
 
 
