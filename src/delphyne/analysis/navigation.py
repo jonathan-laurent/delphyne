@@ -179,7 +179,8 @@ class Interrupted(Exception):
 
 @dataclass
 class AnswerParseError(Exception):
-    query: NavTree
+    tree: NavTree
+    query: dp.AttachedQuery[Any]
     answer: str
     error: str
 
@@ -202,7 +203,7 @@ class Navigator:
     hint-based references.
     """
 
-    hint_resolver: HintResolver | None = None
+    hint_resolver: HintResolver
     info: NavigationInfo | None = None
     interrupt: Callable[[NavTree], bool] | None = None
 
@@ -255,14 +256,6 @@ class Navigator:
                 assert isinstance(success, dp.Success)
                 return success.success, hints
 
-    def answer_from_hints(
-        self,
-        tree: NavTree,
-        query: dp.AttachedQuery[Any],
-        hints: Sequence[refs.Hint],
-    ) -> tuple[dp.Tracked[Any], Sequence[refs.Hint]]:
-        assert False
-
     def follow_hints(
         self, tree: NavTree, hints: Sequence[refs.Hint]
     ) -> tuple[NavTree, Sequence[refs.Hint]]:
@@ -293,3 +286,33 @@ class Navigator:
                 key = (tree.ref, refs.value_ref(value))
                 self.info.hints_rev.actions[key] = used_hints
             return value, hints
+
+    def answer_from_hints(
+        self,
+        tree: NavTree,
+        query: dp.AttachedQuery[Any],
+        hints: Sequence[refs.Hint],
+    ) -> tuple[dp.Tracked[Any], Sequence[refs.Hint]]:
+        # TODO: we ignore selectors because they should not work this way.
+        used_hint: refs.Hint | None = None
+        # We first try the first hint if there is one
+        if hints:
+            answer = self.hint_resolver(query, hints[0].hint)
+            if answer is not None:
+                used_hint = hints[0]
+                hints = hints[1:]
+        else:
+            answer = None
+        # If we could not use a hint, we try with the default answer
+        if answer is None:
+            answer = self.hint_resolver(query, None)
+        # If we still have no answer, we're stuck
+        if answer is None:
+            raise Stuck(tree, query.ref[1], hints)
+        parsed = query.answer(answer.mode, answer.text)
+        if isinstance(parsed, dp.ParseError):
+            raise AnswerParseError(tree, query, answer.text, parsed.error)
+        # We contribute to the hint reverse map
+        if self.info is not None:
+            self.info.hints_rev.answers[(query.ref, answer)] = used_hint
+        return parsed, hints
