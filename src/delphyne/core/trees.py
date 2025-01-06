@@ -7,6 +7,7 @@ from collections.abc import Callable, Generator, Iterable, Sequence
 from dataclasses import dataclass
 from typing import Any, Generic, Protocol, TypeVar, cast
 
+from delphyne.core import environment as en
 from delphyne.core import inspect, refs
 from delphyne.core import node_fields as nf
 from delphyne.core.environment import PolicyEnv
@@ -611,3 +612,7 @@ def reify[N: Node, P, T](
     Reify a strategy into a tree.
     """
     return _reify(strategy, None, node_hook)
+
+
+def tracer_hook(tracer: en.Tracer) -> Callable[[Tree[Any, Any, Any]], None]:
+    return lambda tree: tracer.trace_node(tree.ref)

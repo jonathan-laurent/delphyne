@@ -11,6 +11,7 @@ from typing import Any, Literal
 import jinja2
 import yaml
 
+from delphyne.core import refs, traces
 from delphyne.core.demos import Demonstration
 from delphyne.core.refs import Answer
 from delphyne.utils.typing import pydantic_load
@@ -98,6 +99,40 @@ class TemplateNotFound(Exception):
 
 
 ####
+#### Tracer
+####
+
+
+@dataclass(frozen=True)
+class LogMessage:
+    message: str
+    metadata: dict[str, Any] | None = None
+    location: traces.Location | None = None
+
+
+class Tracer:
+    def __init__(self):
+        self.trace = traces.Trace()
+        self.messages: list[LogMessage] = []
+
+    def trace_space(self, ref: refs.GlobalSpaceRef) -> None:
+        self.trace.add_location(traces.Location(ref[0], ref[1]))
+
+    def trace_node(self, node: refs.GlobalNodeRef) -> None:
+        self.trace.add_location(traces.Location(node, None))
+
+    def log(
+        self,
+        message: str,
+        metadata: dict[str, Any] | None = None,
+        location: traces.Location | None = None,
+    ):
+        if location is not None:
+            self.trace.add_location(location)
+        self.messages.append(LogMessage(message, metadata, location))
+
+
+####
 #### Policy Environment
 ####
 
@@ -117,6 +152,7 @@ class PolicyEnv:
         """
         self.templates = TemplatesManager(strategy_dirs)
         self.examples = ExampleDatabase()
+        self.tracer = Tracer()
         for path in demonstration_files:
             with path.open() as f:
                 demos = pydantic_load(list[Demonstration], yaml.safe_load(f))

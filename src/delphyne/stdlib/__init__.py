@@ -34,6 +34,7 @@ from delphyne.stdlib.openai_models import (
     OpenAIModel,
     openai_model,
 )
+from delphyne.stdlib.policies import log
 from delphyne.stdlib.queries import (
     AnswerModes,
     Modes,

@@ -7,9 +7,11 @@ Delphyne Core
 
 from delphyne.core.environment import (
     ExampleDatabase,
+    LogMessage,
     PolicyEnv,
     TemplateNotFound,
     TemplatesManager,
+    Tracer,
 )
 from delphyne.core.queries import (
     AbstractQuery,
@@ -28,6 +30,11 @@ from delphyne.core.streams import (
     Spent,
     Stream,
     Yield,
+)
+from delphyne.core.traces import (
+    ExportableTrace,
+    Location,
+    Trace,
 )
 from delphyne.core.trees import (
     AttachedQuery,
@@ -50,4 +57,5 @@ from delphyne.core.trees import (
     Tree,
     TreeTransformer,
     reify,
+    tracer_hook,
 )

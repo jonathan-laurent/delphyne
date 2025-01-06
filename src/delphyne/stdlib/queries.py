@@ -19,6 +19,7 @@ from delphyne.core.streams import Barrier, Spent, Yield
 from delphyne.core.trees import AttachedQuery, OpaqueSpace, PromptingPolicy
 from delphyne.stdlib.dsl import prompting_policy
 from delphyne.stdlib.models import LLM, Chat, ChatMessage
+from delphyne.stdlib.policies import log
 from delphyne.utils import typing as ty
 from delphyne.utils.typing import TypeAnnot, ValidationError
 
@@ -196,11 +197,28 @@ def create_prompt(
     return msgs
 
 
+def log_oracle_answer(
+    env: en.PolicyEnv,
+    query: AttachedQuery[Any],
+    mode: AnswerModeName,
+    answer: str,
+    parsed: object,
+    meta: dict[str, Any],
+):
+    info: dict[str, Any] = {"mode": mode, "answer": answer}
+    if isinstance(parsed, ParseError):
+        info["parse_error"] = parsed.error
+    if meta:
+        info["meta"] = meta
+    log(env, "Answer received", info, loc=query)
+
+
 @prompting_policy
 async def few_shot[T](
     query: AttachedQuery[T],
     env: en.PolicyEnv,
     model: LLM,
+    enable_logging: bool = True,
 ) -> tr.Stream[T]:
     """
     The standard few-shot prompting sequential prompting policy.
@@ -214,9 +232,11 @@ async def few_shot[T](
     cost_estimate = model.estimate_budget(prompt, options)
     while True:
         yield Barrier(cost_estimate)
-        answers, budget, _meta = await model.send_request(prompt, 1, options)
+        answers, budget, meta = await model.send_request(prompt, 1, options)
         answer = answers[0]
         element = query.answer(None, answer)
+        if enable_logging:
+            log_oracle_answer(env, query, None, answer, element, meta)
         yield Spent(budget)
         if not isinstance(element, ParseError):
             yield Yield(element)
