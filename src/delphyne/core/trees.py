@@ -230,6 +230,9 @@ class StrategyComp[N: Node, P, T]:
     def strategy_name(self) -> str | None:
         return inspect.function_name(self.comp)
 
+    def strategy_arguments(self) -> dict[str, Any]:
+        return inspect.function_args_dict(self.comp, self.args, self.kwargs)
+
     def tags(self) -> Sequence[Tag]:
         return [name] if (name := self.strategy_name()) is not None else []
 

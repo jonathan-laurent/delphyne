@@ -2,9 +2,10 @@
 Inspection utilities.s
 """
 
+import inspect
 import types
 import typing
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from typing import Any
 
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
@@ -60,3 +61,17 @@ def policy_type_of_strategy_type[T](st: Any) -> TypeAnnot[T] | NoTypeInfo:
 def first_parameter_of_base_class(cls: Any) -> Any:
     base = cls.__orig_bases__[0]  # type: ignore
     return typing.get_args(base)[0]
+
+
+def function_args_dict(
+    f: Callable[..., Any], args: Sequence[Any], kwargs: dict[str, Any]
+) -> dict[str, Any]:
+    """
+    Force fitting all arguments into a single dictionary, using a
+    signature to name positional arguments.
+    """
+    sig = inspect.signature(f)
+    ret: dict[str, Any] = {}
+    for a, p in zip(args, sig.parameters.keys()):
+        ret[p] = a
+    return ret | kwargs
