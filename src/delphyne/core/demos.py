@@ -9,7 +9,6 @@ from typing import Any
 
 from delphyne.core.refs import Hints, SpaceRef
 
-
 type TestCommandString = str
 
 
@@ -40,13 +39,13 @@ class Demonstration:
 type DemoFile = list[Demonstration]
 
 
-type NodeLabel = str
+type NodeTag = str
 
 
 @dataclass
 class Run:
     hints: Hints
-    until: NodeLabel | None
+    until: NodeTag | None
 
 
 @dataclass

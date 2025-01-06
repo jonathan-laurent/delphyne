@@ -5,6 +5,9 @@ Delphyne Core
 # ruff: noqa: F401
 # pyright: reportUnusedImport=false
 
+from delphyne.core import (
+    pprint,
+)
 from delphyne.core.environment import (
     ExampleDatabase,
     LogMessage,
