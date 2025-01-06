@@ -141,19 +141,22 @@ class Node(ABC):
 
     def nested_space(
         self, name: refs.SpaceName, args: tuple[Value, ...]
-    ) -> Space[Any]:
-        f: Any = getattr(self, name.name)
-        for i in name.indices:
-            f = f[i]
-        if not args:
-            # TODO: we could check that the field is not supposed to be
-            # parametric
-            assert isinstance(f, Space)
-            return cast(Space[Any], f)
-        else:
-            assert isinstance(f, Callable)
-            f = cast(Callable[..., Space[Any]], f)
-            return f(*args)
+    ) -> Space[Any] | None:
+        try:
+            f: Any = getattr(self, name.name)
+            for i in name.indices:
+                f = f[i]
+            if not args:
+                # TODO: we could check that the field is not supposed to be
+                # parametric
+                assert isinstance(f, Space)
+                return cast(Space[Any], f)
+            else:
+                assert isinstance(f, Callable)
+                f = cast(Callable[..., Space[Any]], f)
+                return f(*args)
+        except TypeError:
+            return None
 
     @classmethod
     def spawn(cls, spawner: "_GeneralSpawner", **args: Any):

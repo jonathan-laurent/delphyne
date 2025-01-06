@@ -15,6 +15,7 @@ def test_make_sum():
     # Reifying the strategy and inspecting the root
     tracer = dp.Tracer()
     root = dp.reify(make_sum([4, 6, 2, 9], 11), dp.tracer_hook(tracer))
+    assert root.ref == refs.MAIN_ROOT
     assert isinstance(root.node, dp.Branch)
     root_space = root.node.cands.source()
     assert isinstance(root_space, dp.AttachedQuery)

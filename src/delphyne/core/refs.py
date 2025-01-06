@@ -89,6 +89,8 @@ The global origin's special space that contains the main, top-level
 strategy tree.
 """
 
+MAIN_ROOT: "GlobalNodePath" = ((MAIN_SPACE, ()),)
+
 
 @dataclass(frozen=True)
 class Answer:
@@ -237,6 +239,11 @@ def drop_refs(v: Value) -> object:
             return value
         case tuple():
             return tuple(drop_refs(o) for o in v)
+
+
+#####
+##### Utilities
+#####
 
 
 def append_node_path(path: NodePath, v: ValueRef) -> NodePath:
