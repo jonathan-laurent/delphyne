@@ -5,7 +5,7 @@ Exporting and importing traces.
 from collections.abc import Iterable
 from dataclasses import dataclass
 
-from delphyne.core import refs
+from delphyne.core import pprint, refs
 
 
 @dataclass(frozen=True)
@@ -22,17 +22,11 @@ class Location:
 type NodeOriginStr = str
 
 
-@dataclass(frozen=True)
-class ExportableAnswer:
-    answer: str
-    mode: str | None = None
-
-
 @dataclass
 class ExportableQueryInfo:
     node: int
     ref: str
-    answers: dict[int, ExportableAnswer]
+    answers: dict[int, refs.Answer]
 
 
 @dataclass
@@ -160,3 +154,15 @@ class Trace:
     def add_locations(self, locations: Iterable[Location]) -> None:
         for location in locations:
             self.add_location(location)
+
+    def export(self) -> ExportableTrace:
+        nodes = {
+            id.id: pprint.node_origin(origin)
+            for id, origin in self.nodes.items()
+        }
+        queries: list[ExportableQueryInfo] = []
+        for q, a in self.answer_ids.items():
+            ref = pprint.space_ref(q.ref)
+            answers = {id.id: value for value, id in a.items()}
+            queries.append(ExportableQueryInfo(q.node.id, ref, answers))
+        return ExportableTrace(nodes, queries)
