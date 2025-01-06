@@ -212,18 +212,25 @@ class Navigator:
         # Only hint-based references are supported.
         assert isinstance(ref.element, refs.Hints)
         hints = ref.element.hints
-        # We treat queries and nested trees differently
+        elt, rem = self.space_element_from_hints(tree, space, hints)
+        if self.info is not None:
+            self.info.unused_hints += rem
+        return elt
+
+    def space_element_from_hints(
+        self,
+        tree: NavTree,
+        space: dp.AttachedQuery[Any] | NavTree,
+        hints: Sequence[refs.Hint],
+    ) -> tuple[dp.Tracked[Any], Sequence[refs.Hint]]:
         match space:
             case dp.AttachedQuery():
-                elt, rem = self.answer_from_hints(tree, space, hints)
+                return self.answer_from_hints(tree, space, hints)
             case NavTree():
                 final, hints = self.follow_hints(space, hints)
                 success = cast(dp.Success[Any], final.node)
                 assert isinstance(success, dp.Success)
-                elt, rem = success.success, hints
-        if self.info is not None:
-            self.info.unused_hints += rem
-        return elt
+                return success.success, hints
 
     def answer_from_hints(
         self,
@@ -236,4 +243,31 @@ class Navigator:
     def follow_hints(
         self, tree: NavTree, hints: Sequence[refs.Hint]
     ) -> tuple[NavTree, Sequence[refs.Hint]]:
-        assert False
+        if tree.node.leaf_node():
+            if isinstance(tree.node, dp.Success):
+                return tree, hints
+            else:
+                raise ReachedFailureNode(tree, hints)
+        if self.interrupt is not None and self.interrupt(tree):
+            raise Interrupted(tree, hints)
+        value, hints = self.action_from_hints(tree, hints)
+        return self.follow_hints(tree.child(value), hints)
+
+    def action_from_hints(
+        self, tree: NavTree, hints: Sequence[refs.Hint]
+    ) -> tuple[dp.Value, Sequence[refs.Hint]]:
+        original_hints = hints
+        navigator = tree.node.navigate()
+        try:
+            space = next(navigator).source()
+            # while True:
+            #     elt, hints = self.space_element_from_hints(tree, space, hints)
+            #     choice = navigator.send(outcome)
+        except StopIteration as e:
+            # value = cast(Value, e.value)
+            # if self.info is not None:
+            #     used_hints = original_hints[: len(original_hints) - len(hints)]
+            #     key = (tree.node_id, value_ref(value))
+            #     self.info.hints_rev.actions[key] = used_hints
+            # return value, hints
+            assert False

@@ -89,6 +89,15 @@ class Node(ABC):
         """
         return True
 
+    def primary_space(self) -> "Space[object] | None":
+        """
+        Space that is inferred by default in a space element reference
+        (see `SpaceElementRef`). For example, `compare([cands{''},
+        cands{'foo bar'}])` can be abbreviated into `compare(['', 'foo
+        bar'])` if `cands` is the primary space for the current node.
+        """
+        return None
+
     # Method indicating the nature of the node's fields, which is
     # typically inferred but can be manually specified when heuristics
     # fail.
@@ -107,21 +116,6 @@ class Node(ABC):
 
     def effect_name(self) -> str:
         return self.__class__.__name__
-
-    def primary_space_name(self) -> refs.SpaceName | None:
-        """
-        Space that is inferred by default in a space element reference
-        (see `SpaceElementRef`). For example, `compare([cands{''},
-        cands{'foo bar'}])` can be abbreviated into `compare(['', 'foo
-        bar'])` if `cands` is the primary space for the current node.
-        """
-        if hasattr(self, "__primary__"):
-            name = getattr(self, "__primary__")
-            if name is None:
-                return None
-            assert isinstance(name, str)
-            return refs.SpaceName(name, ())
-        return None
 
     def get_extra_tags(self) -> Sequence[Tag]:
         if hasattr(self, "extra_tags"):
@@ -145,17 +139,11 @@ class Node(ABC):
 
     # Methods that should not be overriden
 
-    def primary_space(self) -> "Space[object] | None":
-        name = self.primary_space_name()
-        if name is None:
-            return None
-        return self.nested_space(name, ())
-
     def primary_space_ref(self) -> refs.SpaceRef | None:
-        name = self.primary_space_name()
-        if name is None:
+        space = self.primary_space()
+        if space is None:
             return None
-        return refs.SpaceRef(name, ())
+        return space.source().ref[1]
 
     def nested_space(
         self, name: refs.SpaceName, args: tuple[Value, ...]
@@ -348,6 +336,7 @@ class PromptingPolicy:
 @dataclass(frozen=True)
 class NestedTree[N: Node, P, T](Space[T]):
     _comp: StrategyComp[N, P, T]
+    ref: refs.GlobalSpaceRef
     spawn_tree: "Callable[[], Tree[N, P, T]]"
 
     def source(self) -> "NestedTree[Any, Any, T]":
@@ -363,7 +352,7 @@ class EmbeddedTree[N: Node, P, T](NestedTree[N, P, T]):
     def builder[N1: Node, P1, T1](
         strategy: StrategyComp[N1, P1, T1],
     ) -> "Builder[NestedTree[N1, P1, T1]]":
-        return lambda spawn, _: NestedTree(strategy, lambda: spawn(strategy))
+        return lambda spawn, _: spawn(strategy)
 
     @staticmethod
     def parametric_builder[A, N1: Node, P1, T1](
@@ -406,12 +395,13 @@ class OpaqueSpace[P, T](Space[T]):
         get_policy: Callable[[P1], tuple[SearchPolicy[N], P2]],
     ) -> "Builder[OpaqueSpace[P1, T1]]":
         def build(spawner: _TreeSpawner) -> OpaqueSpace[P1, T1]:
+            nested = spawner(strategy)
+
             def stream(env: PolicyEnv, policy: P1) -> Stream[T1]:
-                tree = spawner(strategy)
+                tree = nested.spawn_tree()
                 search_pol, inner_pol = get_policy(policy)
                 return search_pol(tree, env, inner_pol)
 
-            nested = NestedTree(strategy, lambda: spawner(strategy))
             return OpaqueSpace(stream, nested)
 
         return lambda spawner, _: build(spawner)
@@ -425,7 +415,7 @@ class OpaqueSpace[P, T](Space[T]):
 class _TreeSpawner(Protocol):
     def __call__[N: Node, P, T](
         self, strategy: "StrategyComp[N, P, T]"
-    ) -> "Tree[N, P, T]": ...
+    ) -> "NestedTree[N, P, T]": ...
 
 
 class _QuerySpawner(Protocol):
@@ -458,8 +448,12 @@ class _GeneralSpawner:
 
             def spawn_tree[N: Node, P, T](
                 strategy: StrategyComp[N, P, T],
-            ) -> Tree[N, P, T]:
-                return _reify(strategy, (gr, sr, ()), self._node_hook)
+            ) -> NestedTree[N, P, T]:
+                return NestedTree(
+                    strategy,
+                    (gr, sr),
+                    lambda: _reify(strategy, (gr, sr, ()), self._node_hook),
+                )
 
             def spawn_query[T](
                 query: AbstractQuery[T],

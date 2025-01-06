@@ -4,10 +4,10 @@ Standard Nodes
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, ClassVar, Never, cast
+from typing import Any, Never, cast
 
 from delphyne.core import trees as tr
-from delphyne.core.trees import Navigation, Node, OpaqueSpace, Tag
+from delphyne.core.trees import Navigation, Node, OpaqueSpace, Space, Tag
 
 #####
 ##### Utilities
@@ -30,10 +30,11 @@ class Branch(Node):
     cands: OpaqueSpace[Any, Any]
     extra_tags: Sequence[Tag]
 
-    __primary__: ClassVar = "cands"
-
     def navigate(self) -> Navigation:
         return (yield self.cands)
+
+    def primary_space(self) -> Space[Any]:
+        return self.cands
 
 
 def branch[P, T](
