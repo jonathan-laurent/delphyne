@@ -10,7 +10,7 @@ def test_nodes():
         "extra_tags": nf.DataF(),
     }
     assert Conjecture.fields() == {
-        "candidate": nf.SpaceF(),
+        "cands": nf.SpaceF(),
         "disprove": nf.ParametricF(nf.SpaceF()),
         "aggregate": nf.ParametricF(nf.SpaceF()),
     }

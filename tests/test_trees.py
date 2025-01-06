@@ -2,14 +2,18 @@
 Testing reification and the `Tree` datastructure
 """
 
+import textwrap
+
 from example_strategies import make_sum
 
 import delphyne as dp
+from delphyne.utils.yaml import dump_yaml
 
 
 def test_make_sum():
     # Reifying the strategy and inspecting the root
-    root = dp.reify(make_sum([4, 6, 2, 9], 11))
+    tracer = dp.Tracer()
+    root = dp.reify(make_sum([4, 6, 2, 9], 11), dp.tracer_hook(tracer))
     assert isinstance(root.node, dp.Branch)
     root_space = root.node.cands.source()
     assert isinstance(root_space, dp.AttachedQuery)
@@ -34,3 +38,28 @@ def test_make_sum():
     success = root.child(success_ans)
     assert isinstance(success.node, dp.Success)
     assert success.node.success.value == [9, 2]
+    pretty_trace = dump_yaml(dp.ExportableTrace, tracer.trace.export())
+    expected = textwrap.dedent(
+        """
+        nodes:
+          1: nested(0, $main)
+          2: child(1, cands{@1})
+          3: child(1, cands{@2})
+          4: child(1, cands{@3})
+        queries:
+          - node: 1
+            space: cands
+            answers:
+              1:
+                mode:
+                text: '[4, 6]'
+              2:
+                mode:
+                text: '[4, 8]'
+              3:
+                mode:
+                text: '[9, 2]'
+        """
+    )
+    print(pretty_trace)
+    assert pretty_trace.strip() == expected.strip()

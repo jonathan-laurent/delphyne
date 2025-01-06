@@ -25,7 +25,7 @@ type NodeOriginStr = str
 @dataclass
 class ExportableQueryInfo:
     node: int
-    ref: str
+    space: str
     answers: dict[int, refs.Answer]
 
 
@@ -76,6 +76,8 @@ class Trace:
     def fresh_or_cached_answer_id(
         self, answer: refs.Answer, origin: QueryOrigin
     ) -> refs.AnswerId:
+        if origin not in self.answer_ids:
+            self.answer_ids[origin] = {}
         if answer in self.answer_ids[origin]:
             return self.answer_ids[origin][answer]
         else:
