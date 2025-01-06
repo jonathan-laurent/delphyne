@@ -1,4 +1,4 @@
-.PHONY: clean clean-ignored test full-clean all examples schemas stubs install doc-logo
+.PHONY: clean clean-ignored test full-clean all examples schemas stubs install doc-logo cloc
 
 TO_CLEAN := \
 	-name '__pycache__' -o \
@@ -69,3 +69,8 @@ WHITE_LOGOS := $(subst /black/,/white/,$(BLACK_LOGOS))
 $(LOGOS_DIR)/white/%.png: $(LOGOS_DIR)/black/%.png
 	convert $< -fill black -colorize 100% -channel RGB -negate +channel $@
 doc-logo: $(WHITE_LOGOS)
+
+
+# Count the number of lines of code
+cloc:
+	cloc . --exclude-dir=node_modules,out,.vscode-test --include-lang=python,typescript
