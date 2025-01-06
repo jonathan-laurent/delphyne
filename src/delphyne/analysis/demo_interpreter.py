@@ -251,3 +251,123 @@ def _interpret_test_run_step(
     except dp.StrategyException as e:
         _strategy_exn(diagnostics, e)
         return tree, "stop"
+
+
+def _interpret_test_select_step(
+    hint_resolver: DemoHintResolver,
+    hint_rev: nv.HintReverseMap,
+    diagnostics: list[fb.Diagnostic],
+    tree: nv.NavTree,
+    step: dm.SelectSpace,
+) -> tuple[nv.NavTree, Literal["stop", "continue"]]:
+    navigator = hint_resolver.navigator()
+    nav_info = nv.NavigationInfo(hint_rev)
+    navigator.info = nav_info
+    space_ref = step.space
+    choice_ref_pretty = dp.pprint.space_ref(space_ref)
+    try:
+        space = navigator.resolve_space_ref(tree, space_ref)
+        _unused_hints(diagnostics, nav_info.unused_hints)
+        if step.expects_query:
+            if not isinstance(space, dp.AttachedQuery):
+                msg = f"Not a query: {choice_ref_pretty}."
+                diagnostics.append(("error", msg))
+                return tree, "stop"
+            answer = hint_resolver(space, None)
+            if answer is None:
+                msg = f"Query not answered: {choice_ref_pretty}."
+                diagnostics.append(("error", msg))
+                return tree, "stop"
+            return tree, "continue"
+        else:
+            if not isinstance(space, nv.NavTree):
+                msg = f"Not a subtree: {choice_ref_pretty}."
+                diagnostics.append(("error", msg))
+                return tree, "stop"
+            tree = space
+            return tree, "continue"
+    except nv.ReachedFailureNode as e:
+        tree = e.tree
+        msg = f"Failed to reach: {choice_ref_pretty}"
+        diagnostics.append(("error", msg))
+        return tree, "stop"
+    except nv.Stuck as stuck:
+        tree = stuck.tree
+        _stuck_warning(diagnostics, stuck)
+        return tree, "stop"
+    except dp.StrategyException as e:
+        _strategy_exn(diagnostics, e)
+        return tree, "stop"
+    except nv.InvalidSpace as e:
+        tree = e.tree
+        name = dp.pprint.space_name(e.space_name)
+        msg = f"Invalid reference to subchoice '{name}'."
+        diagnostics.append(("error", msg))
+        return tree, "stop"
+
+
+def _interpret_test_step(
+    hint_resolver: DemoHintResolver,
+    hint_rev: nv.HintReverseMap,
+    diagnostics: list[fb.Diagnostic],
+    saved: SavedNodes,
+    tree: nv.NavTree,
+    step: dm.TestStep,
+) -> tuple[nv.NavTree, Literal["stop", "continue"]]:
+    match step:
+        case dm.Run():
+            return _interpret_test_run_step(
+                hint_resolver, hint_rev, diagnostics, tree, step
+            )
+        case dm.SelectSpace():
+            return _interpret_test_select_step(
+                hint_resolver, hint_rev, diagnostics, tree, step
+            )
+        case dm.IsSuccess():
+            if not isinstance(tree.node, dp.Success):
+                msg = "Success check failed."
+                diagnostics.append(("error", msg))
+                return tree, "stop"
+            else:
+                return tree, "continue"
+        case dm.IsFailure():
+            node = tree.node
+            if not (node.leaf_node() and not isinstance(node, dp.Success)):
+                msg = "Failure check failed."
+                diagnostics.append(("error", msg))
+                return tree, "stop"
+            else:
+                return tree, "continue"
+        case dm.Save():
+            saved[step.name] = tree
+            return tree, "continue"
+        case dm.Load():
+            if step.name not in saved:
+                msg = f"No saved node named: '{step.name}'."
+                diagnostics.append(("error", msg))
+                return tree, "stop"
+            return saved[step.name], "continue"
+
+
+def _evaluate_test(
+    root: nv.NavTree,
+    hint_resolver: DemoHintResolver,
+    hint_rev: nv.HintReverseMap,
+    saved: SavedNodes,
+    test_str: dm.TestCommandString,
+) -> tuple[list[fb.Diagnostic], refs.GlobalNodePath | None]:
+    diagnostics: list[fb.Diagnostic] = []
+    tree = root
+    try:
+        test = dp.parse.test_command(test_str)
+    except dp.parse.ParseError:
+        diagnostics = [("error", "Syntax error.")]
+        return (diagnostics, None)
+    for step in test:
+        tree, status = _interpret_test_step(
+            hint_resolver, hint_rev, diagnostics, saved, tree, step
+        )
+        if status == "stop":
+            break
+
+    return (diagnostics, tree.ref)

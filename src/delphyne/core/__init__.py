@@ -6,6 +6,7 @@ Delphyne Core
 # pyright: reportUnusedImport=false
 
 from delphyne.core import (
+    parse,
     pprint,
 )
 from delphyne.core.environment import (
