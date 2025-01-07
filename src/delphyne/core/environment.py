@@ -115,10 +115,10 @@ class Tracer:
         self.trace = traces.Trace()
         self.messages: list[LogMessage] = []
 
-    def trace_space(self, ref: refs.GlobalSpaceRef) -> None:
+    def trace_space(self, ref: refs.GlobalSpacePath) -> None:
         self.trace.add_location(traces.Location(ref[0], ref[1]))
 
-    def trace_node(self, node: refs.GlobalNodeRef) -> None:
+    def trace_node(self, node: refs.GlobalNodePath) -> None:
         self.trace.add_location(traces.Location(node, None))
 
     def log(

@@ -21,7 +21,7 @@ class NavTree:
     """
 
     tree: dp.Tree[Any, Any, Any]
-    _cache: "dict[refs.GlobalNodeRef, NavTree]"
+    _cache: "dict[refs.GlobalNodePath, NavTree]"
 
     def __post_init__(self):
         self._cache_current()
@@ -89,7 +89,7 @@ class NavTree:
             return self._convert_nested(source)
         return source
 
-    def goto(self, ref: refs.GlobalNodeRef) -> "NavTree":
+    def goto(self, ref: refs.GlobalNodePath) -> "NavTree":
         """
         Go to a node from its id, assuming it is in the cache (which it
         should be if it was reached before, and it must have been
@@ -105,7 +105,7 @@ class NavTree:
 
 
 type ActionRef = tuple[refs.GlobalNodePath, refs.ValueRef]
-type AnswerRef = tuple[refs.GlobalSpaceRef, refs.Answer]
+type AnswerRef = tuple[refs.GlobalSpacePath, refs.Answer]
 
 
 @dataclass

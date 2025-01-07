@@ -43,7 +43,7 @@ class AttachedQuery[T]:
     """
 
     query: AbstractQuery[T]
-    ref: refs.GlobalSpaceRef
+    ref: refs.GlobalSpacePath
     answer: Callable[[refs.AnswerModeName, str], Tracked[T] | ParseError]
 
     def tags(self) -> "Sequence[Tag]":
@@ -336,7 +336,7 @@ class PromptingPolicy:
 @dataclass(frozen=True)
 class NestedTree[N: Node, P, T](Space[T]):
     _comp: StrategyComp[N, P, T]
-    ref: refs.GlobalSpaceRef
+    ref: refs.GlobalSpacePath
     spawn_tree: "Callable[[], Tree[N, P, T]]"
 
     def source(self) -> "NestedTree[Any, Any, T]":

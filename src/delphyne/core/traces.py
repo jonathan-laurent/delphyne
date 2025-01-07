@@ -10,7 +10,7 @@ from delphyne.core import pprint, refs
 
 @dataclass(frozen=True)
 class Location:
-    node: refs.GlobalNodeRef
+    node: refs.GlobalNodePath
     space: refs.SpaceRef | None
 
 
@@ -87,6 +87,9 @@ class Trace:
             self.answer_ids[origin][answer] = id
             return id
 
+    # Convert full references into id-based references, registering ids
+    # on the fly as needed.
+
     def convert_node_path(
         self, id: refs.NodeId, path: refs.NodePath
     ) -> refs.NodeId:
@@ -142,14 +145,35 @@ class Trace:
             id = self.convert_node_path(id, node_path)
         return id
 
-    def convert_global_node_ref(self, ref: refs.GlobalNodeRef) -> refs.NodeId:
-        if isinstance(ref, refs.NodeId):
-            return ref
-        else:
-            return self.convert_global_node_path(ref)
+    # Reverse direction: expand id-based references into full ones.
+
+    def expand_node_path(
+        self, src: refs.NodeId, dst: refs.NodeId
+    ) -> refs.NodePath:
+        assert False
+
+    def expand_space_ref(
+        self, id: refs.NodeId, ref: refs.SpaceRef
+    ) -> refs.SpaceRef:
+        assert False
+
+    def expand_value_ref(
+        self, id: refs.NodeId, ref: refs.ValueRef
+    ) -> refs.ValueRef:
+        assert False
+
+    def expand_space_element_ref(
+        self, id: refs.NodeId, ref: refs.SpaceElementRef
+    ) -> refs.SpaceElementRef:
+        assert False
+
+    def expand_node_id(self, id: refs.NodeId) -> refs.GlobalNodePath:
+        assert False
+
+    # Utilities
 
     def add_location(self, location: Location) -> None:
-        id = self.convert_global_node_ref(location.node)
+        id = self.convert_global_node_path(location.node)
         if location.space is not None:
             self.convert_space_ref(id, location.space)
 

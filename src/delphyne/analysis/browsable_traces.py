@@ -2,18 +2,17 @@
 Generating Browsable Traces.
 """
 
-from collections.abc import Sequence
+import pprint
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
+from typing import cast
 
 import delphyne.core as dp
-
-# from delphyne.analysis import feedback as fb
+from delphyne.analysis import feedback as fb
 from delphyne.analysis import navigation as nv
-
-# from delphyne.core import demos as dm
+from delphyne.core import demos as dm
 from delphyne.core import refs
-
-# from delphyne.utils import typing as tp
+from delphyne.utils import typing as tp
 
 #####
 ##### Reference Simplification
@@ -109,5 +108,109 @@ class _RefSimplifier:
 
 
 #####
-##### Browsable traces
+##### Representing General Python Objects
 #####
+
+
+def _check_valid_json(obj: object) -> bool:
+    match obj:
+        case int() | float() | str() | bool() | None:
+            return True
+        case dict():
+            obj = cast(dict[object, object], obj)
+            return all(
+                isinstance(k, str) and _check_valid_json(v)
+                for k, v in obj.items()
+            )
+        case tuple() | list():
+            obj = cast(Sequence[object], obj)
+            return all(_check_valid_json(v) for v in obj)
+        case _:
+            return False
+
+
+def _value_repr[T](
+    obj: T, typ: tp.TypeAnnot[T] | tp.NoTypeInfo
+) -> fb.ValueRepr:
+    short = pprint.pformat(obj, compact=True, sort_dicts=False)
+    long = pprint.pformat(obj, compact=False, sort_dicts=False)
+    value = fb.ValueRepr(short, long, False, None)
+    if not isinstance(typ, tp.NoTypeInfo):
+        try:
+            json = tp.pydantic_dump(typ, obj)
+            assert _check_valid_json(json)
+            value.json = json
+            value.json_provided = True
+        except Exception:
+            pass
+    return value
+
+
+#####
+##### Origin Spaces
+#####
+
+
+# def _spaces_in_node_origin(
+#     origin: refs.NodeOrigin,
+# ) -> Iterable[refs.SpaceRef]:
+#     """
+#     From a `Trace`, we want to recover a list of all the spawned spaces
+#     for every encountered node. For this, we look at the origin of every node
+#     """
+#     match origin:
+#         case refs.ChildOf():
+#             yield from _choices_in_value_ref(origin.action)
+#         case refs.SubtreeOf():
+#             yield from _choices_in_choice_ref(origin.choice)
+
+
+# def _choices_in_value_ref(
+#     value: refs.ValueRef,
+# ) -> Iterable[refs.ChoiceRef]:
+#     if isinstance(value, refs.ChoiceOutcomeRef):
+#         if value.choice is not None:
+#             yield from _choices_in_choice_ref(value.choice)
+#     else:
+#         for v in value:
+#             yield from _choices_in_value_ref(v)
+
+
+# def _choices_in_choice_ref(ref: refs.ChoiceRef) -> Iterable[refs.ChoiceRef]:
+#     yield ref
+#     _, args = ref
+#     for a in args:
+#         if not isinstance(a, int):
+#             yield from _choices_in_value_ref(a)
+
+
+# def _outcomes_in_value_ref(
+#     value: refs.ValueRef,
+# ) -> Iterable[refs.ChoiceOutcomeRef]:
+#     if isinstance(value, refs.ChoiceOutcomeRef):
+#         yield value
+#         if value.choice is not None:
+#             yield from _outcomes_in_choice_ref(value.choice)
+#     else:
+#         for v in value:
+#             yield from _outcomes_in_value_ref(v)
+
+
+# def _outcomes_in_choice_ref(
+#     ref: refs.ChoiceRef,
+# ) -> Iterable[refs.ChoiceOutcomeRef]:
+#     _, args = ref
+#     for a in args:
+#         if not isinstance(a, int):
+#             yield from _outcomes_in_value_ref(a)
+
+
+#####
+##### Browsable Traces
+#####
+
+
+def compute_browsable_trace(
+    tree: nv.NavTree, simplifier: _RefSimplifier | None = None
+) -> fb.Trace:
+    return _TraceTranslator(tree, simplifier).translate_trace()
