@@ -410,6 +410,10 @@ class StrategyException(Exception):
     exn: Exception
 
 
+class TreeTransformer[N: Node, M: Node](Protocol):
+    def __call__[T, P](self, tree: "Tree[N, P, T]") -> "Tree[M, P, T]": ...
+
+
 #####
 ##### Reifying Strategies into Trees
 #####

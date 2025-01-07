@@ -22,7 +22,6 @@ from delphyne.core.policies import (
     Policy,
     PromptingPolicy,
     SearchPolicy,
-    TreeTransformer,
 )
 from delphyne.core.queries import (
     AbstractQuery,
@@ -64,6 +63,7 @@ from delphyne.core.trees import (
     TreeCache,
     TreeHook,
     TreeMonitor,
+    TreeTransformer,
     reify,
     tracer_hook,
 )

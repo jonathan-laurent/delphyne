@@ -24,10 +24,6 @@ handling `N` along with an inner policy object of type `P`.
 """
 
 
-class TreeTransformer[N: Node, M: Node](Protocol):
-    def __call__[T, P](self, tree: "Tree[N, P, T]") -> "Tree[M, P, T]": ...
-
-
 class _SearchPolicyFn[N: Node](Protocol):
     def __call__[P, T](
         self, tree: "Tree[N, P, T]", env: PolicyEnv, policy: P
@@ -47,7 +43,7 @@ class SearchPolicy[N: Node]:
         return self.fn(tree, env, policy)
 
     def __matmul__[M: Node](
-        self, tree_transformer: TreeTransformer[M, N]
+        self, tree_transformer: tr.TreeTransformer[M, N]
     ) -> "SearchPolicy[M]":
         def fn[P, T](
             tree: Tree[M, P, T],
