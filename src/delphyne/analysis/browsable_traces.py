@@ -147,62 +147,65 @@ def _value_repr[T](
 
 
 #####
-##### Origin Spaces
+##### Listing all local spaces and elements
 #####
 
 
-# def _spaces_in_node_origin(
-#     origin: refs.NodeOrigin,
-# ) -> Iterable[refs.SpaceRef]:
-#     """
-#     From a `Trace`, we want to recover a list of all the spawned spaces
-#     for every encountered node. For this, we look at the origin of every node
-#     """
-#     match origin:
-#         case refs.ChildOf():
-#             yield from _choices_in_value_ref(origin.action)
-#         case refs.SubtreeOf():
-#             yield from _choices_in_choice_ref(origin.choice)
+## Enumerating spaces
 
 
-# def _choices_in_value_ref(
-#     value: refs.ValueRef,
-# ) -> Iterable[refs.ChoiceRef]:
-#     if isinstance(value, refs.ChoiceOutcomeRef):
-#         if value.choice is not None:
-#             yield from _choices_in_choice_ref(value.choice)
-#     else:
-#         for v in value:
-#             yield from _choices_in_value_ref(v)
+def _spaces_in_node_origin(
+    origin: refs.NodeOrigin,
+) -> Iterable[refs.SpaceRef]:
+    """
+    From a `Trace`, we want to recover a list of all the spawned spaces
+    for every encountered node. For this, we compile a list of all local
+    space references.
+    """
+    match origin:
+        case refs.ChildOf():
+            yield from _spaces_in_value_ref(origin.action)
+        case refs.NestedTreeOf():
+            yield from _spaces_in_space_ref(origin.space)
 
 
-# def _choices_in_choice_ref(ref: refs.ChoiceRef) -> Iterable[refs.ChoiceRef]:
-#     yield ref
-#     _, args = ref
-#     for a in args:
-#         if not isinstance(a, int):
-#             yield from _choices_in_value_ref(a)
+def _spaces_in_value_ref(
+    value: refs.ValueRef,
+) -> Iterable[refs.SpaceRef]:
+    if isinstance(value, refs.SpaceElementRef):
+        if value.space is not None:
+            yield from _spaces_in_space_ref(value.space)
+    else:
+        for v in value:
+            yield from _spaces_in_value_ref(v)
 
 
-# def _outcomes_in_value_ref(
-#     value: refs.ValueRef,
-# ) -> Iterable[refs.ChoiceOutcomeRef]:
-#     if isinstance(value, refs.ChoiceOutcomeRef):
-#         yield value
-#         if value.choice is not None:
-#             yield from _outcomes_in_choice_ref(value.choice)
-#     else:
-#         for v in value:
-#             yield from _outcomes_in_value_ref(v)
+def _spaces_in_space_ref(ref: refs.SpaceRef) -> Iterable[refs.SpaceRef]:
+    yield ref
+    for a in ref.args:
+        yield from _spaces_in_value_ref(a)
 
 
-# def _outcomes_in_choice_ref(
-#     ref: refs.ChoiceRef,
-# ) -> Iterable[refs.ChoiceOutcomeRef]:
-#     _, args = ref
-#     for a in args:
-#         if not isinstance(a, int):
-#             yield from _outcomes_in_value_ref(a)
+## Enumerating space elements
+
+
+def _space_elements_in_value_ref(
+    value: refs.ValueRef,
+) -> Iterable[refs.SpaceElementRef]:
+    if isinstance(value, refs.SpaceElementRef):
+        yield value
+        if value.space is not None:
+            yield from _space_elements_in_space_ref(value.space)
+    else:
+        for v in value:
+            yield from _space_elements_in_value_ref(v)
+
+
+def _space_elements_in_space_ref(
+    ref: refs.SpaceRef,
+) -> Iterable[refs.SpaceElementRef]:
+    for a in ref.args:
+        yield from _space_elements_in_value_ref(a)
 
 
 #####
