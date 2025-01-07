@@ -11,9 +11,8 @@ import yaml.parser
 
 import delphyne.core as dp
 import delphyne.core.inspect as dpi
-from delphyne.stdlib.dsl import prompting_policy
 from delphyne.stdlib.models import LLM, Chat, ChatMessage
-from delphyne.stdlib.policies import log
+from delphyne.stdlib.policies import log, prompting_policy
 from delphyne.utils import typing as ty
 from delphyne.utils.typing import TypeAnnot, ValidationError
 
@@ -76,7 +75,7 @@ class Query[T](dp.AbstractQuery[T]):
 
     def using[P](
         self,
-        get_policy: Callable[[P], dp.PromptingPolicy],
+        get_policy: Callable[[P], dp.AbstractPromptingPolicy],
         inner_policy_type: type[P] | None = None,
     ) -> dp.Builder[dp.OpaqueSpace[P, T]]:
         return dp.OpaqueSpace[P, T].from_query(self, get_policy)

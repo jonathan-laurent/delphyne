@@ -17,59 +17,23 @@ from delphyne.core.trees import AttachedQuery, NestedTree, Node, Space, Tree
 #####
 
 
-type Policy[N: Node, P] = tuple[SearchPolicy[N], P]
+type Policy[N: Node, P] = tuple[AbstractSearchPolicy[N], P]
 """
 A policy for trees with effects `N` is a pair of a search policy
 handling `N` along with an inner policy object of type `P`.
 """
 
 
-class _SearchPolicyFn[N: Node](Protocol):
+class AbstractSearchPolicy[N: tr.Node](Protocol):
     def __call__[P, T](
         self, tree: "Tree[N, P, T]", env: PolicyEnv, policy: P
     ) -> Stream[T]: ...
 
 
-@dataclass(frozen=True)
-class SearchPolicy[N: Node]:
-    fn: _SearchPolicyFn[N]
-
-    def __call__[P, T](
-        self,
-        tree: "Tree[N, P, T]",
-        env: PolicyEnv,
-        policy: P,
-    ) -> Stream[T]:
-        return self.fn(tree, env, policy)
-
-    def __matmul__[M: Node](
-        self, tree_transformer: tr.TreeTransformer[M, N]
-    ) -> "SearchPolicy[M]":
-        def fn[P, T](
-            tree: Tree[M, P, T],
-            env: PolicyEnv,
-            policy: P,
-        ) -> Stream[T]:
-            new_tree = tree_transformer(tree)
-            return self.fn(new_tree, env, policy)
-
-        return SearchPolicy(fn)
-
-
-class _PromptingPolicyFn(Protocol):
+class AbstractPromptingPolicy(Protocol):
     def __call__[T](
         self, query: AttachedQuery[T], env: PolicyEnv
     ) -> Stream[T]: ...
-
-
-@dataclass(frozen=True)
-class PromptingPolicy:
-    fn: _PromptingPolicyFn
-
-    def __call__[T](
-        self, query: AttachedQuery[T], env: PolicyEnv
-    ) -> Stream[T]:
-        return self.fn(query, env)
 
 
 #####
@@ -90,7 +54,8 @@ class OpaqueSpace[P, T](Space[T]):
 
     @staticmethod
     def from_query[P1, T1](
-        query: AbstractQuery[T1], get_policy: Callable[[P1], PromptingPolicy]
+        query: AbstractQuery[T1],
+        get_policy: Callable[[P1], AbstractPromptingPolicy],
     ) -> "tr.Builder[OpaqueSpace[P1, T1]]":
         def build(spawner: tr.QuerySpawner) -> OpaqueSpace[P1, T1]:
             attached = spawner(query)
@@ -103,7 +68,7 @@ class OpaqueSpace[P, T](Space[T]):
     @staticmethod
     def from_strategy[N: Node, P1, P2, T1](
         strategy: tr.StrategyComp[N, P2, T1],
-        get_policy: Callable[[P1], tuple[SearchPolicy[N], P2]],
+        get_policy: Callable[[P1], tuple[AbstractSearchPolicy[N], P2]],
     ) -> "tr.Builder[OpaqueSpace[P1, T1]]":
         def build(spawner: tr.NestedTreeSpawner) -> OpaqueSpace[P1, T1]:
             nested = spawner(strategy)

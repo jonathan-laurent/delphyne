@@ -8,6 +8,7 @@ from typing import Protocol
 
 import delphyne.core as dp
 from delphyne.stdlib.models import NUM_REQUESTS_BUDGET
+from delphyne.stdlib.policies import SearchPolicy
 
 #####
 ##### Stream transformers
@@ -23,15 +24,15 @@ class StreamTransformer:
     trans: _StreamTransformerFn
 
     def __matmul__[N: dp.Node](
-        self, other: dp.SearchPolicy[N]
-    ) -> dp.SearchPolicy[N]:
+        self, other: SearchPolicy[N]
+    ) -> SearchPolicy[N]:
         def policy[P, T](
             tree: dp.Tree[N, P, T], env: dp.PolicyEnv, policy: P
         ) -> dp.Stream[T]:
             stream = other(tree, env, policy)
             return self.trans(stream)
 
-        return dp.SearchPolicy(policy)
+        return SearchPolicy(policy)
 
 
 class _ParametricStreamTransformerFn[**A](Protocol):

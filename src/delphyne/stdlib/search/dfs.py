@@ -5,8 +5,8 @@ Depth-First Search Algorithm
 from delphyne.core.environment import PolicyEnv
 from delphyne.core.streams import Stream, Yield
 from delphyne.core.trees import Success, Tree
-from delphyne.stdlib.dsl import search_policy
 from delphyne.stdlib.nodes import Branch, Failure
+from delphyne.stdlib.policies import search_policy
 
 
 @search_policy

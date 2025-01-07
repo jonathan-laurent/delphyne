@@ -18,10 +18,10 @@ from delphyne.core.environment import (
     Tracer,
 )
 from delphyne.core.policies import (
+    AbstractPromptingPolicy,
+    AbstractSearchPolicy,
     OpaqueSpace,
     Policy,
-    PromptingPolicy,
-    SearchPolicy,
 )
 from delphyne.core.queries import (
     AbstractQuery,

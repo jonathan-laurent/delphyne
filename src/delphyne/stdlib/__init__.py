@@ -5,12 +5,6 @@ Delphyne standard library.
 # ruff: noqa: F401
 # pyright: reportUnusedImport=false
 
-from delphyne.stdlib.dsl import (
-    StrategyInstance,
-    prompting_policy,
-    search_policy,
-    strategy,
-)
 from delphyne.stdlib.models import (
     LLM,
     NUM_REQUESTS_BUDGET,
@@ -34,7 +28,13 @@ from delphyne.stdlib.openai_models import (
     OpenAIModel,
     openai_model,
 )
-from delphyne.stdlib.policies import log
+from delphyne.stdlib.policies import (
+    PromptingPolicy,
+    SearchPolicy,
+    log,
+    prompting_policy,
+    search_policy,
+)
 from delphyne.stdlib.queries import (
     AnswerModes,
     Modes,
@@ -50,6 +50,10 @@ from delphyne.stdlib.queries import (
 )
 from delphyne.stdlib.search.dfs import (
     dfs,
+)
+from delphyne.stdlib.strategies import (
+    StrategyInstance,
+    strategy,
 )
 from delphyne.stdlib.streams import (
     StreamTransformer,
