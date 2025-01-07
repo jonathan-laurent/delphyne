@@ -3,7 +3,7 @@ Resolving references within a trace.
 """
 
 from collections.abc import Callable, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Protocol, cast
 
 import delphyne.core as dp
@@ -22,6 +22,7 @@ class NavTree:
 
     tree: dp.Tree[Any, Any, Any]
     _cache: "dict[refs.GlobalNodePath, NavTree]"
+    _spaces_cache: dict[refs.GlobalSpacePath, dp.Space[Any]]
 
     def __post_init__(self):
         self._cache_current()
@@ -32,7 +33,7 @@ class NavTree:
     @staticmethod
     def make(tree: dp.Tree[Any, Any, Any]) -> "NavTree":
         assert tree.ref == refs.MAIN_ROOT
-        return NavTree(tree, {})
+        return NavTree(tree, {}, {})
 
     @property
     def node(self) -> dp.Node | dp.Success[Any]:
@@ -47,46 +48,37 @@ class NavTree:
         cref = refs.child_ref(self.ref, aref)
         if cref in self._cache:
             return self._cache[cref]
-        return NavTree(self.tree.child(action), self._cache)
+        return replace(self, tree=self.tree.child(action))
 
-    def nested(
+    def nested_space(
         self, space_name: refs.SpaceName, args: tuple[dp.Value, ...]
-    ) -> "NavTree | dp.AttachedQuery[Any] | None":
+    ) -> dp.Space[Any] | None:
         arg_refs = tuple(refs.value_ref(arg) for arg in args)
         sref = refs.SpaceRef(space_name, arg_refs)
-        nref = refs.nested_ref(self.ref, sref)
-        if nref in self._cache:
-            return self._cache[nref]
+        gsref = (self.ref, sref)
+        if gsref in self._spaces_cache:
+            return self._spaces_cache[gsref]
         space = self.node.nested_space(space_name, args)
         if space is None:
             return None
-        source = space.source()
-        if isinstance(source, dp.NestedTree):
-            return NavTree(source.spawn_tree(), self._cache)
-        else:
-            return source
+        self._spaces_cache[gsref] = space
+        return space
 
-    def _convert_nested(
+    def _convert_nested_tree(
         self, nested: dp.NestedTree[Any, Any, Any]
     ) -> "NavTree":
-        """
-        There are two ways that `NavTree` can help accessing nested
-        trees. The first way is by providing a space name and argument
-        values (`nested`). The second way is by directly providing a
-        space. This is necessary to work with `Node.navigate`.
-        """
         assert nested.ref[0] == self.ref
         nref = refs.nested_ref(self.ref, nested.ref[1])
         if nref in self._cache:
             return self._cache[nref]
-        return NavTree(nested.spawn_tree(), self._cache)
+        return replace(self, tree=nested.spawn_tree())
 
     def space_source(
         self, space: dp.Space[Any]
     ) -> "NavTree | dp.AttachedQuery[Any]":
         source = space.source()
         if isinstance(source, dp.NestedTree):
-            return self._convert_nested(source)
+            return self._convert_nested_tree(source)
         return source
 
     def goto(self, ref: refs.GlobalNodePath) -> "NavTree":
@@ -97,6 +89,9 @@ class NavTree:
         main root -- see `NavTree.make`).
         """
         return self._cache[ref]
+
+    def goto_space(self, ref: refs.GlobalSpacePath) -> dp.Space[Any]:
+        return self._spaces_cache[ref]
 
 
 #####
@@ -216,10 +211,10 @@ class Navigator:
         self, tree: NavTree, ref: refs.SpaceRef
     ) -> NavTree | dp.AttachedQuery[Any]:
         args = tuple(self.resolve_value_ref(tree, r) for r in ref.args)
-        space = tree.nested(ref.name, args)
+        space = tree.nested_space(ref.name, args)
         if space is None:
             raise InvalidSpace(tree, ref.name)
-        return space
+        return tree.space_source(space)
 
     def resolve_space_element_ref(
         self, tree: NavTree, ref: refs.SpaceElementRef

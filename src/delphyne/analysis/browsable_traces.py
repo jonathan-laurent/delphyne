@@ -330,10 +330,12 @@ class _TraceTranslator:
             answers.append(fb.Answer(aid.id, hint_str, parsed_repr))
         return fb.Query("query", name, args, answers)
 
-    # def translate_choice(
-    #     self, id: NodeId, ref: refs.SpaceRef
+    # def translate_space(
+    #     self, id: refs.NodeId, ref: refs.SpaceRef
     # ) -> tuple[fb.Reference, fb.NodeProperty]:
-    #     tree = self.tree.goto(id)
+    #     full_node_ref = self.trace.expand_node_id(id)
+    #     full_space_ref = self.trace.expand_space_ref(id, ref)
+    #     tree = self.tree.goto(full_node_ref)
     #     choice = tree.basic_resolver().resolve_subchoice_ref(tree, ref)
     #     match source := choice.source():
     #         case trees.StrategyInstance():
