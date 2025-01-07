@@ -222,3 +222,8 @@ class Trace:
             answers = {id.id: value for value, id in a.items()}
             queries.append(ExportableQueryInfo(q.node.id, ref, answers))
         return ExportableTrace(nodes, queries)
+
+    def check_consistency(self) -> None:
+        for id in self.nodes:
+            expanded = self.expand_node_id(id)
+            assert id == self.convert_global_node_path(expanded)

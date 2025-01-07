@@ -43,6 +43,7 @@ def test_make_sum():
     success = root.child(success_ans)
     assert isinstance(success.node, dp.Success)
     assert success.node.success.value == [9, 2]
+    tracer.trace.check_consistency()
     pretty_trace = dump_yaml(dp.ExportableTrace, tracer.trace.export())
     expected = textwrap.dedent(
         """
