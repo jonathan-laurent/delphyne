@@ -268,7 +268,7 @@ class StrategyComp[N: Node, P, T]:
 
 @dataclass(frozen=True)
 class NestedTree[N: Node, P, T](Space[T]):
-    _comp: StrategyComp[N, P, T]
+    strategy: StrategyComp[N, P, T]
     ref: refs.GlobalSpacePath
     spawn_tree: "Callable[[], Tree[N, P, T]]"
 
@@ -276,7 +276,7 @@ class NestedTree[N: Node, P, T](Space[T]):
         return self
 
     def tags(self) -> Sequence[Tag]:
-        return self._comp.tags()
+        return self.strategy.tags()
 
 
 @dataclass(frozen=True)

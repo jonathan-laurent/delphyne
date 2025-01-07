@@ -234,6 +234,17 @@ def drop_refs(v: Value) -> object:
             return tuple(drop_refs(o) for o in v)
 
 
+def value_type(v: Value) -> TypeAnnot[Any] | NoTypeInfo:
+    match v:
+        case Tracked():
+            return v.type_annot
+        case tuple():
+            types = [value_type(o) for o in v]
+            if any(isinstance(t, NoTypeInfo) for t in types):
+                return NoTypeInfo()
+            return tuple[*types]  # type: ignore
+
+
 #####
 ##### Utilities
 #####
