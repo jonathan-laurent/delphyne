@@ -3,7 +3,7 @@ References to nodes, values, spaces and space elements.
 """
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Literal
 
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
@@ -258,3 +258,18 @@ def child_ref(path: GlobalNodePath, action: ValueRef) -> GlobalNodePath:
 
 def nested_ref(path: GlobalNodePath, ref: SpaceRef) -> GlobalNodePath:
     return (*path, (ref, ()))
+
+
+def global_path_origin(
+    path: GlobalNodePath,
+) -> (
+    Literal["global_origin"]
+    | tuple[Literal["child"], GlobalNodePath, ValueRef]
+    | tuple[Literal["nested"], GlobalNodePath, SpaceRef]
+):
+    if not path:
+        return "global_origin"
+    *init, (space, node_path) = path
+    if not node_path:
+        return "nested", (*init, (space, ())), space
+    return "child", (*init, (space, node_path[:-1])), node_path[-1]
