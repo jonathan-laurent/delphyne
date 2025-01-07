@@ -14,7 +14,9 @@ from delphyne.utils.yaml import dump_yaml
 def test_make_sum():
     # Reifying the strategy and inspecting the root
     tracer = dp.Tracer()
-    root = dp.reify(make_sum([4, 6, 2, 9], 11), dp.tracer_hook(tracer))
+    cache: dp.TreeCache = {}
+    monitor = dp.TreeMonitor(cache=cache, hooks=[dp.tracer_hook(tracer)])
+    root = dp.reify(make_sum([4, 6, 2, 9], 11), monitor)
     assert root.ref == refs.MAIN_ROOT
     assert isinstance(root.node, dp.Branch)
     root_space = root.node.cands.source()

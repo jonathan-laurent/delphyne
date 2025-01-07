@@ -432,7 +432,7 @@ class _GeneralSpawner:
     """
 
     _ref: "_NonEmptyGlobalPath"
-    _node_hook: "Callable[[Tree[Any, Any, Any]], None] | None"
+    _monitor: "TreeMonitor"
 
     def parametric[S](
         self,
@@ -443,17 +443,21 @@ class _GeneralSpawner:
             args_raw = [refs.drop_refs(arg) for arg in args]
             args_ref = tuple(refs.value_ref(arg) for arg in args)
             builder = parametric_builder(*args_raw)
-            gr = _global_path_from_nonempty(self._ref)
+            gr = _nonempty_path(self._ref)
             sr = refs.SpaceRef(space_name, args_ref)
 
             def spawn_tree[N: Node, P, T](
                 strategy: StrategyComp[N, P, T],
             ) -> NestedTree[N, P, T]:
-                return NestedTree(
-                    strategy,
-                    (gr, sr),
-                    lambda: _reify(strategy, (gr, sr, ()), self._node_hook),
-                )
+                def spawn() -> Tree[N, P, T]:
+                    new_ref = (gr, sr, ())
+                    if (cache := self._monitor.cache) is not None:
+                        cached = cache.get(_nonempty_path(new_ref))
+                        if cached is not None:
+                            return cached
+                    return _reify(strategy, new_ref, self._monitor)
+
+                return NestedTree(strategy, (gr, sr), spawn)
 
             def spawn_query[T](
                 query: AbstractQuery[T],
@@ -519,6 +523,29 @@ class StrategyException(Exception):
 #####
 
 
+type TreeCache = dict[refs.GlobalNodePath, Tree[Any, Any, Any]]
+"""
+A cache for never recomputing the same node twice.
+"""
+
+
+type TreeHook = Callable[[Tree[Any, Any, Any]], None]
+"""
+A function to be called every time a new tree node is created.
+"""
+
+
+@dataclass(frozen=True)
+class TreeMonitor:
+    """
+    When `reify` is called with a monitor, it makes sure that proper
+    hooks are called and proper caching is performed.
+    """
+
+    cache: TreeCache | TreeCache | None = None
+    hooks: Sequence[TreeHook] = ()
+
+
 type _NonEmptyGlobalPath = tuple[GlobalNodePath, refs.SpaceRef, refs.NodePath]
 """
 Encodes a non-empty global node path.
@@ -527,7 +554,7 @@ More precisely, `(gr, sr, nr)` encodes `(*gr, (sr, nr))`
 """
 
 
-def _global_path_from_nonempty(ref: _NonEmptyGlobalPath) -> GlobalNodePath:
+def _nonempty_path(ref: _NonEmptyGlobalPath) -> GlobalNodePath:
     (gr, sr, nr) = ref
     return (*gr, (sr, nr))
 
@@ -535,7 +562,7 @@ def _global_path_from_nonempty(ref: _NonEmptyGlobalPath) -> GlobalNodePath:
 def _reify[N: Node, P, T](
     strategy: StrategyComp[N, P, T],
     root_ref: _NonEmptyGlobalPath | None,
-    node_hook: Callable[[Tree[Any, Any, Any]], None] | None,
+    monitor: TreeMonitor,
 ) -> Tree[N, P, T]:
     """
     Reify a strategy into a tree.
@@ -562,6 +589,13 @@ def _reify[N: Node, P, T](
                 "Invalid action for node of type "
                 + f"{type(node)}: {action_raw}."
             )
+            # Compute new references and use the cache if necessary
+            gr, cr, nr = ref
+            new_ref = (gr, cr, (*nr, action_ref))
+            if monitor.cache is not None:
+                cached = monitor.cache.get(_nonempty_path(new_ref))
+                if cached is not None:
+                    return cached
             # If `child` has never been called before, the generator
             # that yielded the current node is still valid and can be
             # reused. For subsequent calls, `self._cur_generator` is
@@ -575,22 +609,22 @@ def _reify[N: Node, P, T](
                 generator_valid = False
             else:
                 pre_node, new_gen = _recompute(strategy, new_actions)
-            gr, cr, nr = ref
-            new_ref = (gr, cr, (*nr, action_ref))
             ret_type = strategy.return_type()
-            new_node = _finalize_node(pre_node, new_ref, ret_type, node_hook)
+            new_node = _finalize_node(pre_node, new_ref, ret_type, monitor)
             return aux(strategy, new_actions, new_ref, new_node, new_gen)
 
-        tree = Tree(node, child, _global_path_from_nonempty(ref))
-        if node_hook is not None:
-            node_hook(tree)
+        tree = Tree(node, child, _nonempty_path(ref))
+        if monitor.cache is not None:
+            monitor.cache[_nonempty_path(ref)] = tree
+        for hook in monitor.hooks:
+            hook(tree)
         return tree
 
     if root_ref is None:
         root_ref = ((), refs.MAIN_SPACE, ())
     pre_node, gen = _recompute(strategy, ())
     ret_type = strategy.return_type()
-    node = _finalize_node(pre_node, root_ref, ret_type, node_hook)
+    node = _finalize_node(pre_node, root_ref, ret_type, monitor)
     return aux(strategy, (), root_ref, node, gen)
 
 
@@ -629,10 +663,10 @@ def _finalize_node[N: Node, T](
     pre_node: _PreNode[N, T],
     ref: _NonEmptyGlobalPath,
     type: TypeAnnot[T] | NoTypeInfo,
-    node_hook: Callable[[Tree[Any, Any, Any]], None] | None,
+    monitor: TreeMonitor,
 ) -> N | Success[T]:
     if not isinstance(pre_node, _PreSuccess):
-        return pre_node(_GeneralSpawner(ref, node_hook))
+        return pre_node(_GeneralSpawner(ref, monitor))
     (gr, sr, nr) = ref
     ser = refs.SpaceElementRef(sr, nr)
     return Success(Tracked(pre_node.value, ser, gr, type))
@@ -640,12 +674,12 @@ def _finalize_node[N: Node, T](
 
 def reify[N: Node, P, T](
     strategy: StrategyComp[N, P, T],
-    node_hook: Callable[[Tree[Any, Any, Any]], None] | None = None,
+    monitor: TreeMonitor = TreeMonitor(),
 ) -> Tree[N, P, T]:
     """
     Reify a strategy into a tree.
     """
-    return _reify(strategy, None, node_hook)
+    return _reify(strategy, None, monitor)
 
 
 def tracer_hook(tracer: en.Tracer) -> Callable[[Tree[Any, Any, Any]], None]:
