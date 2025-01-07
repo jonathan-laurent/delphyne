@@ -146,29 +146,59 @@ class Trace:
         return id
 
     # Reverse direction: expand id-based references into full ones.
+    # For now, fail with an assertion error if the id-based ref is invalid.
 
-    def expand_node_path(
-        self, src: refs.NodeId, dst: refs.NodeId
-    ) -> refs.NodePath:
-        assert False
+    def recover_path(
+        self, dst: refs.NodeId
+    ) -> tuple[refs.NodeId, refs.SpaceRef, refs.NodePath]:
+        # Find the path from a direct nested tree of `id` to `dst`.
+        rev_path: list[refs.ValueRef] = []
+        while True:
+            dst_origin = self.nodes[dst]
+            match dst_origin:
+                case refs.ChildOf(before, action):
+                    rev_path.append(self.expand_value_ref(before, action))
+                    dst = before
+                case refs.NestedTreeOf(orig, space):
+                    space = self.expand_space_ref(orig, space)
+                    return orig, space, tuple(reversed(rev_path))
 
     def expand_space_ref(
         self, id: refs.NodeId, ref: refs.SpaceRef
     ) -> refs.SpaceRef:
-        assert False
+        args = tuple(self.expand_value_ref(id, a) for a in ref.args)
+        return refs.SpaceRef(ref.name, args)
 
     def expand_value_ref(
         self, id: refs.NodeId, ref: refs.ValueRef
     ) -> refs.ValueRef:
-        assert False
+        if isinstance(ref, refs.SpaceElementRef):
+            return self.expand_space_element_ref(id, ref)
+        else:
+            return tuple(self.expand_value_ref(id, a) for a in ref)
 
     def expand_space_element_ref(
         self, id: refs.NodeId, ref: refs.SpaceElementRef
     ) -> refs.SpaceElementRef:
-        assert False
+        assert ref.space is not None
+        space = self.expand_space_ref(id, ref.space)
+        match ref.element:
+            case refs.AnswerId():
+                _orig, ans = self.answers[ref.element]
+                element = ans
+            case refs.NodeId():
+                orig, _, element = self.recover_path(ref.element)
+                assert orig == id
+            case _:
+                assert False
+        return refs.SpaceElementRef(space, element)
 
     def expand_node_id(self, id: refs.NodeId) -> refs.GlobalNodePath:
-        assert False
+        rev_path: list[tuple[refs.SpaceRef, refs.NodePath]] = []
+        while id != Trace.GLOBAL_ORIGIN_ID:
+            id, space, path = self.recover_path(id)
+            rev_path.append((space, path))
+        return tuple(reversed(rev_path))
 
     # Utilities
 
