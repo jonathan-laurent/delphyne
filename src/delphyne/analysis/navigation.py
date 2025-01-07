@@ -3,96 +3,11 @@ Resolving references within a trace.
 """
 
 from collections.abc import Callable, Sequence
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field
 from typing import Any, Protocol, cast
 
 import delphyne.core as dp
-from delphyne.core import refs
-
-#####
-##### Navigation Trees
-#####
-
-
-@dataclass(frozen=True)
-class NavTree:
-    """
-    A tree wrapper that caches all the nodes it visits.
-    """
-
-    tree: dp.Tree[Any, Any, Any]
-    _cache: "dict[refs.GlobalNodePath, NavTree]"
-    _spaces_cache: dict[refs.GlobalSpacePath, dp.Space[Any]]
-
-    def __post_init__(self):
-        self._cache_current()
-
-    def _cache_current(self):
-        self._cache[self.tree.ref] = self
-
-    @staticmethod
-    def make(tree: dp.Tree[Any, Any, Any]) -> "NavTree":
-        assert tree.ref == refs.MAIN_ROOT
-        return NavTree(tree, {}, {})
-
-    @property
-    def node(self) -> dp.Node | dp.Success[Any]:
-        return self.tree.node
-
-    @property
-    def ref(self) -> refs.GlobalNodePath:
-        return self.tree.ref
-
-    def child(self, action: dp.Value) -> "NavTree":
-        aref = refs.value_ref(action)
-        cref = refs.child_ref(self.ref, aref)
-        if cref in self._cache:
-            return self._cache[cref]
-        return replace(self, tree=self.tree.child(action))
-
-    def nested_space(
-        self, space_name: refs.SpaceName, args: tuple[dp.Value, ...]
-    ) -> dp.Space[Any] | None:
-        arg_refs = tuple(refs.value_ref(arg) for arg in args)
-        sref = refs.SpaceRef(space_name, arg_refs)
-        gsref = (self.ref, sref)
-        if gsref in self._spaces_cache:
-            return self._spaces_cache[gsref]
-        space = self.node.nested_space(space_name, args)
-        if space is None:
-            return None
-        self._spaces_cache[gsref] = space
-        return space
-
-    def _convert_nested_tree(
-        self, nested: dp.NestedTree[Any, Any, Any]
-    ) -> "NavTree":
-        assert nested.ref[0] == self.ref
-        nref = refs.nested_ref(self.ref, nested.ref[1])
-        if nref in self._cache:
-            return self._cache[nref]
-        return replace(self, tree=nested.spawn_tree())
-
-    def space_source(
-        self, space: dp.Space[Any]
-    ) -> "NavTree | dp.AttachedQuery[Any]":
-        source = space.source()
-        if isinstance(source, dp.NestedTree):
-            return self._convert_nested_tree(source)
-        return source
-
-    def goto(self, ref: refs.GlobalNodePath) -> "NavTree":
-        """
-        Go to a node from its id, assuming it is in the cache (which it
-        should be if it was reached before, and it must have been
-        reached before since navigation trees can only be spawned at the
-        main root -- see `NavTree.make`).
-        """
-        return self._cache[ref]
-
-    def goto_space(self, ref: refs.GlobalSpacePath) -> dp.Space[Any]:
-        return self._spaces_cache[ref]
-
+from delphyne.core import AnyTree, refs
 
 #####
 ##### Navigator Utilities
@@ -155,26 +70,26 @@ class HintResolver(Protocol):
 
 @dataclass
 class Stuck(Exception):
-    tree: NavTree
+    tree: AnyTree
     choice_ref: refs.SpaceRef
     remaining_hints: Sequence[refs.Hint]
 
 
 @dataclass
 class ReachedFailureNode(Exception):
-    tree: NavTree
+    tree: AnyTree
     remaining_hints: Sequence[refs.Hint]
 
 
 @dataclass
 class Interrupted(Exception):
-    tree: NavTree
+    tree: AnyTree
     remaining_hints: Sequence[refs.Hint]
 
 
 @dataclass
 class AnswerParseError(Exception):
-    tree: NavTree
+    tree: AnyTree
     query: dp.AttachedQuery[Any]
     answer: str
     error: str
@@ -182,7 +97,7 @@ class AnswerParseError(Exception):
 
 @dataclass
 class InvalidSpace(Exception):
-    tree: NavTree
+    tree: AnyTree
     space_name: refs.SpaceName
 
 
@@ -200,24 +115,24 @@ class Navigator:
 
     hint_resolver: HintResolver
     info: NavigationInfo | None = None
-    interrupt: Callable[[NavTree], bool] | None = None
+    interrupt: Callable[[AnyTree], bool] | None = None
 
-    def resolve_value_ref(self, tree: NavTree, ref: refs.ValueRef) -> dp.Value:
+    def resolve_value_ref(self, tree: AnyTree, ref: refs.ValueRef) -> dp.Value:
         if isinstance(ref, refs.SpaceElementRef):
             return self.resolve_space_element_ref(tree, ref)
         return tuple(self.resolve_value_ref(tree, r) for r in ref)
 
     def resolve_space_ref(
-        self, tree: NavTree, ref: refs.SpaceRef
-    ) -> NavTree | dp.AttachedQuery[Any]:
+        self, tree: AnyTree, ref: refs.SpaceRef
+    ) -> dp.Space[Any]:
         args = tuple(self.resolve_value_ref(tree, r) for r in ref.args)
-        space = tree.nested_space(ref.name, args)
+        space = tree.node.nested_space(ref.name, args)
         if space is None:
             raise InvalidSpace(tree, ref.name)
-        return tree.space_source(space)
+        return space
 
     def resolve_space_element_ref(
-        self, tree: NavTree, ref: refs.SpaceElementRef
+        self, tree: AnyTree, ref: refs.SpaceElementRef
     ) -> dp.Tracked[Any]:
         # Use the primary space if no space name is provided.
         if ref.space is None:
@@ -238,22 +153,24 @@ class Navigator:
 
     def space_element_from_hints(
         self,
-        tree: NavTree,
-        space: dp.AttachedQuery[Any] | NavTree,
+        tree: AnyTree,
+        space: dp.Space[Any],
         hints: Sequence[refs.Hint],
     ) -> tuple[dp.Tracked[Any], Sequence[refs.Hint]]:
-        match space:
+        source = space.source()
+        match source:
             case dp.AttachedQuery():
-                return self.answer_from_hints(tree, space, hints)
-            case NavTree():
-                final, hints = self.follow_hints(space, hints)
+                return self.answer_from_hints(tree, source, hints)
+            case dp.NestedTree():
+                tree = source.spawn_tree()
+                final, hints = self.follow_hints(tree, hints)
                 success = cast(dp.Success[Any], final.node)
                 assert isinstance(success, dp.Success)
                 return success.success, hints
 
     def follow_hints(
-        self, tree: NavTree, hints: Sequence[refs.Hint]
-    ) -> tuple[NavTree, Sequence[refs.Hint]]:
+        self, tree: AnyTree, hints: Sequence[refs.Hint]
+    ) -> tuple[AnyTree, Sequence[refs.Hint]]:
         if tree.node.leaf_node():
             if isinstance(tree.node, dp.Success):
                 return tree, hints
@@ -265,15 +182,15 @@ class Navigator:
         return self.follow_hints(tree.child(value), hints)
 
     def action_from_hints(
-        self, tree: NavTree, hints: Sequence[refs.Hint]
+        self, tree: AnyTree, hints: Sequence[refs.Hint]
     ) -> tuple[dp.Value, Sequence[refs.Hint]]:
         original_hints = hints
         navigator = tree.node.navigate()
         try:
-            space = tree.space_source(next(navigator))
+            space = next(navigator)
             while True:
                 elt, hints = self.space_element_from_hints(tree, space, hints)
-                space = tree.space_source(navigator.send(elt))
+                space = navigator.send(elt)
         except StopIteration as e:
             value = cast(dp.Value, e.value)
             if self.info is not None:
@@ -284,7 +201,7 @@ class Navigator:
 
     def answer_from_hints(
         self,
-        tree: NavTree,
+        tree: AnyTree,
         query: dp.AttachedQuery[Any],
         hints: Sequence[refs.Hint],
     ) -> tuple[dp.Tracked[Any], Sequence[refs.Hint]]:

@@ -18,7 +18,8 @@ from typing import Any, cast
 import delphyne.core as dp
 from delphyne.analysis import feedback as fb
 from delphyne.analysis import navigation as nv
-from delphyne.core import demos as dm
+
+# from delphyne.core import demos as dm
 from delphyne.core import refs
 from delphyne.utils import typing as tp
 
@@ -31,9 +32,13 @@ from delphyne.utils import typing as tp
 class _RefSimplifier:
     """
     Transforms standard references into hint-based references.
+
+    A cache must be passed featuring all accessed nodes. The reason this
+    cache is needed is that we call `primary_space_ref` on individual
+    nodes to know whether or not space names can be elided.
     """
 
-    tree: nv.NavTree
+    cache: dp.TreeCache
     hint_rev_map: nv.HintReverseMap
 
     def action(
@@ -87,7 +92,7 @@ class _RefSimplifier:
         # We make the space reference implicit if we can ('foo bar'
         # instead of cands{'foo bar'}).
         assert isinstance(ref.element, refs.Hints)
-        tree = self.tree.goto(id)
+        tree = self.cache[id]
         node = tree.node
         assert isinstance(node, dp.Node)
         primary_ref = node.primary_space_ref()
@@ -225,7 +230,7 @@ def _space_elements_in_space_ref(
 
 
 def compute_browsable_trace(
-    tree: nv.NavTree, trace: dp.Trace, simplifier: _RefSimplifier | None = None
+    tree: dp.AnyTree, trace: dp.Trace, simplifier: _RefSimplifier | None = None
 ) -> fb.Trace:
     return _TraceTranslator(tree, trace, simplifier).translate_trace()
 
@@ -233,7 +238,7 @@ def compute_browsable_trace(
 class _TraceTranslator:
     def __init__(
         self,
-        tree: nv.NavTree,
+        tree: dp.AnyTree,
         trace: dp.Trace,
         simplifier: _RefSimplifier | None = None,
     ) -> None:

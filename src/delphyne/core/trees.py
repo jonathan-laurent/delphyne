@@ -370,5 +370,8 @@ class StrategyException(Exception):
     exn: Exception
 
 
+type AnyTree = Tree[Node, Any, Any]
+
+
 class TreeTransformer[N: Node, M: Node](Protocol):
     def __call__[T, P](self, tree: "Tree[N, P, T]") -> "Tree[M, P, T]": ...

@@ -53,6 +53,7 @@ from delphyne.core.traces import (
     TraceReverseMap,
 )
 from delphyne.core.trees import (
+    AnyTree,
     AttachedQuery,
     Builder,
     EmbeddedTree,

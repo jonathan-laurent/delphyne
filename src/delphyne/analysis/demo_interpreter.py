@@ -192,7 +192,7 @@ class DemoHintResolver(nv.HintResolver):
 #####
 
 
-def _until_node(label: dm.NodeTag) -> Callable[[nv.NavTree], bool]:
+def _until_node(label: dm.NodeTag) -> Callable[[dp.AnyTree], bool]:
     return lambda tree: label in tree.node.get_tags()
 
 
@@ -212,16 +212,16 @@ def _stuck_warning(diagnostics: list[fb.Diagnostic], exn: nv.Stuck):
     diagnostics.append(("warning", msg))
 
 
-type SavedNodes = dict[str, nv.NavTree]
+type SavedNodes = dict[str, dp.AnyTree]
 
 
 def _interpret_test_run_step(
     hint_resolver: DemoHintResolver,
     hint_rev: nv.HintReverseMap,
     diagnostics: list[fb.Diagnostic],
-    tree: nv.NavTree,
+    tree: dp.AnyTree,
     step: dm.Run,
-) -> tuple[nv.NavTree, Literal["stop", "continue"]]:
+) -> tuple[dp.AnyTree, Literal["stop", "continue"]]:
     try:
         navigator = hint_resolver.navigator()
         navigator.info = nv.NavigationInfo(hint_rev)
@@ -257,9 +257,9 @@ def _interpret_test_select_step(
     hint_resolver: DemoHintResolver,
     hint_rev: nv.HintReverseMap,
     diagnostics: list[fb.Diagnostic],
-    tree: nv.NavTree,
+    tree: dp.AnyTree,
     step: dm.SelectSpace,
-) -> tuple[nv.NavTree, Literal["stop", "continue"]]:
+) -> tuple[dp.AnyTree, Literal["stop", "continue"]]:
     navigator = hint_resolver.navigator()
     nav_info = nv.NavigationInfo(hint_rev)
     navigator.info = nav_info
@@ -280,11 +280,11 @@ def _interpret_test_select_step(
                 return tree, "stop"
             return tree, "continue"
         else:
-            if not isinstance(space, nv.NavTree):
+            if not isinstance(space, dp.NestedTree):
                 msg = f"Not a subtree: {choice_ref_pretty}."
                 diagnostics.append(("error", msg))
                 return tree, "stop"
-            tree = space
+            tree = space.spawn_tree()
             return tree, "continue"
     except nv.ReachedFailureNode as e:
         tree = e.tree
@@ -311,9 +311,9 @@ def _interpret_test_step(
     hint_rev: nv.HintReverseMap,
     diagnostics: list[fb.Diagnostic],
     saved: SavedNodes,
-    tree: nv.NavTree,
+    tree: dp.AnyTree,
     step: dm.TestStep,
-) -> tuple[nv.NavTree, Literal["stop", "continue"]]:
+) -> tuple[dp.AnyTree, Literal["stop", "continue"]]:
     match step:
         case dm.Run():
             return _interpret_test_run_step(
@@ -350,7 +350,7 @@ def _interpret_test_step(
 
 
 def _evaluate_test(
-    root: nv.NavTree,
+    root: dp.AnyTree,
     hint_resolver: DemoHintResolver,
     hint_rev: nv.HintReverseMap,
     saved: SavedNodes,
