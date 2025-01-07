@@ -7,7 +7,7 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Self
 
-from delphyne.core.environment import TemplatesManager
+from delphyne.core.environments import TemplatesManager
 from delphyne.core.refs import AnswerModeName
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 

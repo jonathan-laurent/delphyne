@@ -9,7 +9,7 @@ from delphyne.core import (
     parse,
     pprint,
 )
-from delphyne.core.environment import (
+from delphyne.core.environments import (
     ExampleDatabase,
     LogMessage,
     PolicyEnv,

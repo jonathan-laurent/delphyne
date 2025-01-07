@@ -7,7 +7,7 @@ from collections.abc import Callable, Generator, Iterable, Sequence
 from dataclasses import dataclass
 from typing import Any, Generic, Protocol, TypeVar, cast
 
-from delphyne.core import environment as en
+from delphyne.core import environments as en
 from delphyne.core import inspect, refs
 from delphyne.core import node_fields as nf
 from delphyne.core.node_fields import NodeFields, detect_node_structure

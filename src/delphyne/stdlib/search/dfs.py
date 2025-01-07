@@ -2,7 +2,7 @@
 Depth-First Search Algorithm
 """
 
-from delphyne.core.environment import PolicyEnv
+from delphyne.core.environments import PolicyEnv
 from delphyne.core.streams import Stream, Yield
 from delphyne.core.trees import Success, Tree
 from delphyne.stdlib.nodes import Branch, Failure

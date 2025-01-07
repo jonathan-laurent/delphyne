@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import Any, Protocol
 
 from delphyne.core import trees as tr
-from delphyne.core.environment import PolicyEnv
+from delphyne.core.environments import PolicyEnv
 from delphyne.core.queries import AbstractQuery
 from delphyne.core.streams import Stream
 from delphyne.core.trees import AttachedQuery, NestedTree, Node, Space, Tree
