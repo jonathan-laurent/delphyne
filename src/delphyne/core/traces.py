@@ -117,6 +117,15 @@ class Trace:
         else:
             return tuple(self.convert_value_ref(id, a) for a in ref)
 
+    def convert_answer_ref(
+        self, ref: tuple[refs.GlobalSpacePath, refs.Answer]
+    ) -> refs.AnswerId:
+        node_path, space = ref[0]
+        id = self.convert_global_node_path(node_path)
+        space = self.convert_space_ref(id, space)
+        origin = QueryOrigin(id, space)
+        return self.fresh_or_cached_answer_id(ref[1], origin)
+
     def convert_space_element_ref(
         self, id: refs.NodeId, ref: refs.SpaceElementRef
     ) -> refs.SpaceElementRef:

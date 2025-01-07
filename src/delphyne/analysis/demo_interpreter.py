@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any, Literal, cast
 
 import delphyne.core as dp
+from delphyne.analysis import browsable_traces as br
 from delphyne.analysis import feedback as fb
 from delphyne.analysis import navigation as nv
 from delphyne.core import demos as dm
@@ -188,7 +189,7 @@ class DemoHintResolver(nv.HintResolver):
 
 
 #####
-##### Interpreter
+##### Test Interpreter
 #####
 
 
@@ -351,18 +352,19 @@ def _interpret_test_step(
 
 def _evaluate_test(
     root: dp.AnyTree,
+    tracer: dp.Tracer,
     hint_resolver: DemoHintResolver,
     hint_rev: nv.HintReverseMap,
     saved: SavedNodes,
     test_str: dm.TestCommandString,
-) -> tuple[list[fb.Diagnostic], refs.GlobalNodePath | None]:
+) -> fb.TestFeedback:
     diagnostics: list[fb.Diagnostic] = []
     tree = root
     try:
         test = dp.parse.test_command(test_str)
     except dp.parse.ParseError:
         diagnostics = [("error", "Syntax error.")]
-        return (diagnostics, None)
+        return fb.TestFeedback(diagnostics, None)
     for step in test:
         tree, status = _interpret_test_step(
             hint_resolver, hint_rev, diagnostics, saved, tree, step
@@ -370,4 +372,70 @@ def _evaluate_test(
         if status == "stop":
             break
 
-    return (diagnostics, tree.ref)
+    ref = tracer.trace.convert_global_node_path(tree.ref)
+    return fb.TestFeedback(diagnostics, ref.id)
+
+
+#####
+##### Demo Evaluation
+#####
+
+
+def evaluate_demo_and_return_tree(
+    demo: dm.Demonstration, loader: ObjectLoader
+) -> tuple[fb.DemoFeedback, dp.AnyTree | None]:
+    feedback = fb.DemoFeedback(fb.Trace({}), {}, {}, [], [], [], [])
+    try:
+        strategy = loader.load_strategy_instance(demo.strategy, demo.args)
+    except Exception as e:
+        msg = f"Failed to instantiate strategy:\n{e}"
+        feedback.global_diagnostics.append(("error", msg))
+        return feedback, None
+    try:
+        cache: dp.TreeCache = {}
+        tracer = dp.Tracer()
+        trace = tracer.trace
+        monitor = dp.TreeMonitor(cache=cache, hooks=[dp.tracer_hook(tracer)])
+        tree = dp.reify(strategy, monitor)
+    except dp.StrategyException as e:
+        msg = f"Exception raised in strategy:\n{e}"
+        feedback.global_diagnostics.append(("error", msg))
+        return feedback, None
+    try:
+        hresolver = DemoHintResolver(loader, demo)
+    except DemoHintResolver.InvalidQuery as e:
+        msg = f"Failed to load query:\n{e.exn}"
+        feedback.query_diagnostics.append((e.id, ("error", msg)))
+        return feedback, tree
+    except DemoHintResolver.InvalidAnswer as e:
+        msg = f"Failed to parse answer:\n{e.parse_error}"
+        diag = ("error", msg)
+        feedback.answer_diagnostics.append(((e.query_id, e.answer_id), diag))
+        return feedback, tree
+    saved: SavedNodes = {}
+    rm: nv.HintReverseMap = nv.HintReverseMap()
+    for test_str in demo.tests:
+        test_feedback = _evaluate_test(
+            tree, tracer, hresolver, rm, saved, test_str
+        )
+        feedback.test_feedback.append(test_feedback)
+    feedback.saved_nodes = {
+        k: tracer.trace.convert_global_node_path(v.ref).id
+        for k, v in saved.items()
+    }
+    hresolver.set_reachability_diagnostics(feedback)
+    simplifier = br.RefSimplifier(cache, rm)
+    idr = br.IdentifierResolverFromCache(trace, cache)
+    feedback.trace = br.compute_browsable_trace(trace, idr, simplifier)
+    feedback.answer_refs = {
+        trace.convert_answer_ref(k).id: v
+        for k, v in hresolver.get_answer_refs().items()
+    }
+    return feedback, tree
+
+
+def evaluate_demo(
+    demo: dm.Demonstration, loader: ObjectLoader
+) -> fb.DemoFeedback:
+    feedback, _ = evaluate_demo_and_return_tree(demo, loader)
+    return feedback

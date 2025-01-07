@@ -29,7 +29,7 @@ from delphyne.utils import typing as tp
 
 
 @dataclass
-class _RefSimplifier:
+class RefSimplifier:
     """
     Transforms standard references into hint-based references.
 
@@ -240,7 +240,7 @@ class IdentifierResolverFromCache:
         for id in trace.nodes:
             self.cache[id] = cache[trace.expand_node_id(id)]
 
-    def resolve_node_id(self, id: refs.NodeId) -> dp.AnyTree:
+    def resolve_node(self, id: refs.NodeId) -> dp.AnyTree:
         return self.cache[id]
 
     def resolve_answer(self, id: refs.AnswerId) -> dp.Answer:
@@ -255,7 +255,7 @@ class IdentifierResolverFromCache:
 def compute_browsable_trace(
     trace: dp.Trace,
     id_resolver: nv.IdentifierResolver,
-    simplifier: _RefSimplifier | None = None,
+    simplifier: RefSimplifier | None = None,
 ) -> fb.Trace:
     """
     A simplifier is typically only available for demonstrations.
@@ -269,7 +269,7 @@ class _TraceTranslator:
         self,
         trace: dp.Trace,
         id_resolver: nv.IdentifierResolver,
-        simplifier: _RefSimplifier | None = None,
+        simplifier: RefSimplifier | None = None,
     ) -> None:
         self.trace = trace
         # The id resolver is necessary because we read a trace that has
