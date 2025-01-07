@@ -146,6 +146,13 @@ class Trace:
             id = self.convert_node_path(id, node_path)
         return id
 
+    def convert_global_space_path(
+        self, path: refs.GlobalSpacePath
+    ) -> refs.SpaceRef:
+        node_path, space_ref = path
+        id = self.convert_global_node_path(node_path)
+        return self.convert_space_ref(id, space_ref)
+
     # Reverse direction: expand id-based references into full ones.
     # For now, fail with an assertion error if the id-based ref is invalid.
 

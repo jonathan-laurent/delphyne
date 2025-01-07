@@ -271,8 +271,6 @@ class _TraceTranslator:
         id_resolver: nv.IdentifierResolver,
         simplifier: _RefSimplifier | None = None,
     ) -> None:
-        # We rely on the nodes in the trace being presented in
-        # topological order. TODO: how?
         self.trace = trace
         # The id resolver is necessary because we read a trace that has
         # references with ids.
@@ -294,9 +292,14 @@ class _TraceTranslator:
         self.action_ids: dict[
             tuple[refs.NodeId, refs.ValueRef], fb.TraceActionId
         ] = {}
+        # Both `self.space_prop_ids` and `self.action_ids` are populated
+        # when a node is translated and read later by `translate_origin`
+        # when processing a child node or a directly nested node.
 
     def translate_trace(self) -> fb.Trace:
         self.detect_spaces()
+        # We rely on the nodes in the trace being presented in
+        # topological order (see explanation in `translate_node`).
         ids = list(self.trace.nodes.keys())
         trace = fb.Trace({id.id: self.translate_node(id) for id in ids})
         return trace
@@ -314,6 +317,50 @@ class _TraceTranslator:
             id = origin.node
             for space in _spaces_in_space_ref(origin.ref):
                 self.spaces[id][space] = None
+
+    def translate_node(self, id: refs.NodeId) -> fb.Node:
+        # Computing the success value if any
+        tree = self.id_resolver.resolve_node(id)
+        node = cast(dp.Node, tree.node)
+        if isinstance(node, dp.Success):
+            node = cast(dp.Success[Any], node)
+            value = refs.drop_refs(node.success)
+            success = _value_repr(value, node.success.type_annot)
+        else:
+            success = None
+        # Computing properties. We show the base spaces in any case and
+        # then we add autodetected spaces.
+        prop_refs = {
+            self.trace.convert_global_space_path(c.source().ref): None
+            for c in node.base_spaces()
+        }
+        for sref in self.spaces[id]:
+            prop_refs[sref] = None
+        # We populate `self.space_prop_ids`. It is important that nodes
+        # are translated in topological order. Indeed, when a node is
+        # processed and its origin is translated (`translate_origin`),
+        # the property id of its originator is needed.
+        for i, ref in enumerate(prop_refs):
+            self.space_prop_ids[(id, ref)] = i
+        # Now we can translate properties
+        props = [self.translate_space(id, r) for r in prop_refs]
+        # Computing actions. The same reasoning than for property ids
+        # applies since `translate_origin` also reads action ids.
+        actions: list[fb.Action] = []
+        for i, (a, dst) in enumerate(self.rev_map.children[id].items()):
+            actions.append(self.translate_action(id, a, dst))
+            self.action_ids[(id, a)] = i
+        # Gather everything
+        return fb.Node(
+            kind=node.effect_name(),
+            success_value=success,
+            summary_message=node.summary_message(),
+            leaf_node=node.leaf_node(),
+            label="&".join(ts) if (ts := node.get_tags()) else None,
+            properties=props,
+            actions=actions,
+            origin=self.translate_origin(id),
+        )
 
     def translate_strategy_comp(
         self,
@@ -424,41 +471,13 @@ class _TraceTranslator:
             destination=dst.id,
         )
 
-    # def translate_origin(self, id: NodeId) -> fb.NodeOrigin:
-    #     if id == Tracer.ROOT_ID:
-    #         return "root"
-    #     match self.tree.tracer.nodes[id]:
-    #         case refs.ChildOf(parent, action):
-    #             action_id = self.action_ids[(parent, action)]
-    #             return ("child", parent.id, action_id)
-    #         case refs.SubtreeOf(parent, choice):
-    #             prop_id = self.choice_prop_ids[(parent, choice)]
-    #             return ("sub", parent.id, prop_id)
-
-    # def translate_node(self, id: NodeId) -> fb.Node:
-    #     tree = self.tree.goto(id)
-    #     node = cast(Node, tree.node)
-    #     if isinstance(node, Success):
-    #         node = cast(Success[Any], node)
-    #         value = drop_refs(node.success)
-    #         success = _value_repr(value, tree.return_type())
-    #     else:
-    #         success = None
-    #     kind = node.type_name()
-    #     summary = node.summary_message()
-    #     leaf = node.leaf_node()
-    #     label = node.get_label()
-    #     prop_refs = {c.get_origin(): None for c in node.base_choices()}
-    #     for cr in self.choices[id]:
-    #         prop_refs[cr] = None
-    #     for i, ref in enumerate(prop_refs):
-    #         self.choice_prop_ids[(id, ref)] = i
-    #     props = [self.translate_choice(id, r) for r in prop_refs]
-    #     actions: list[fb.Action] = []
-    #     for i, (a, dst) in enumerate(self.rev_map.children[id].items()):
-    #         actions.append(self.translate_action(id, a, dst))
-    #         self.action_ids[(id, a)] = i
-    #     origin = self.translate_origin(id)
-    #     return fb.Node(
-    #         kind, success, summary, leaf, label, props, actions, origin
-    #     )
+    def translate_origin(self, id: refs.NodeId) -> fb.NodeOrigin:
+        if id == dp.Trace.GLOBAL_ORIGIN_ID:
+            return "root"
+        match self.trace.nodes[id]:
+            case refs.ChildOf(parent, action):
+                action_id = self.action_ids[(parent, action)]
+                return ("child", parent.id, action_id)
+            case refs.NestedTreeOf(parent, choice):
+                prop_id = self.space_prop_ids[(parent, choice)]
+                return ("nested", parent.id, prop_id)
