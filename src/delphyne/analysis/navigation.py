@@ -110,10 +110,15 @@ class InvalidSpace(Exception):
 class Navigator:
     """
     Packages all information necessary to navigate a tree and resolve
-    hint-based references.
+    hint-based or id-based references.
     """
 
-    hint_resolver: HintResolver
+    # Needed to resolve hint-based references
+    hint_resolver: HintResolver | None = None
+    # Needed to resolve id-based references
+    node_resolver: Callable[[refs.NodeId], dp.AnyTree] | None = None
+    answer_resolver: Callable[[refs.AnswerId], dp.Answer] | None = None
+    # Misc
     info: NavigationInfo | None = None
     interrupt: Callable[[AnyTree], bool] | None = None
 
@@ -143,13 +148,30 @@ class Navigator:
         else:
             space_ref = ref.space
         space = self.resolve_space_ref(tree, space_ref)
-        # Only hint-based references are supported.
-        assert isinstance(ref.element, refs.Hints)
-        hints = ref.element.hints
-        elt, rem = self.space_element_from_hints(tree, space, hints)
-        if self.info is not None:
-            self.info.unused_hints += rem
-        return elt
+        match ref.element:
+            case refs.Hints():
+                hints = ref.element.hints
+                elt, rem = self.space_element_from_hints(tree, space, hints)
+                if self.info is not None:
+                    self.info.unused_hints += rem
+                return elt
+            case refs.AnswerId():
+                assert self.answer_resolver is not None
+                ans = self.answer_resolver(ref.element)
+                query = space.source()
+                assert isinstance(query, dp.AttachedQuery)
+                parsed = query.answer(ans.mode, ans.text)
+                if isinstance(parsed, dp.ParseError):
+                    raise AnswerParseError(tree, query, ans.text, parsed.error)
+                return parsed
+            case refs.NodeId():
+                assert self.node_resolver is not None
+                success = self.node_resolver(ref.element)
+                node = cast(dp.Success[object], success.node)
+                assert isinstance(success.node, dp.Success)
+                return node.success
+            case _:
+                assert False
 
     def space_element_from_hints(
         self,
@@ -205,6 +227,7 @@ class Navigator:
         query: dp.AttachedQuery[Any],
         hints: Sequence[refs.Hint],
     ) -> tuple[dp.Tracked[Any], Sequence[refs.Hint]]:
+        assert self.hint_resolver is not None
         # TODO: we ignore selectors because they should not work this way.
         used_hint: refs.Hint | None = None
         # We first try the first hint if there is one
