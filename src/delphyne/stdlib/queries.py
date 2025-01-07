@@ -9,14 +9,8 @@ from typing import Any, Self, cast
 import yaml
 import yaml.parser
 
-from delphyne.core import environment as en
-from delphyne.core import queries as qu
-from delphyne.core import trees as tr
-from delphyne.core.inspect import first_parameter_of_base_class
-from delphyne.core.queries import AbstractQuery, AnswerModeName, ParseError
-from delphyne.core.refs import Answer
-from delphyne.core.streams import Barrier, Spent, Yield
-from delphyne.core.trees import AttachedQuery, OpaqueSpace, PromptingPolicy
+import delphyne.core as dp
+import delphyne.core.inspect as dpi
 from delphyne.stdlib.dsl import prompting_policy
 from delphyne.stdlib.models import LLM, Chat, ChatMessage
 from delphyne.stdlib.policies import log
@@ -28,7 +22,7 @@ from delphyne.utils.typing import TypeAnnot, ValidationError
 #####
 
 
-class Query[T](AbstractQuery[T]):
+class Query[T](dp.AbstractQuery[T]):
     @classmethod
     def modes(cls) -> "AnswerModes[T]":
         __answer__ = "__answer__"
@@ -46,9 +40,9 @@ class Query[T](AbstractQuery[T]):
 
     def system_prompt(
         self,
-        mode: AnswerModeName,
+        mode: dp.AnswerModeName,
         params: dict[str, object],
-        env: en.TemplatesManager | None = None,
+        env: dp.TemplatesManager | None = None,
     ) -> str:
         """
         Raises `TemplateNotFound`.
@@ -59,9 +53,9 @@ class Query[T](AbstractQuery[T]):
 
     def instance_prompt(
         self,
-        mode: AnswerModeName,
+        mode: dp.AnswerModeName,
         params: dict[str, object],
-        env: en.TemplatesManager | None = None,
+        env: dp.TemplatesManager | None = None,
     ) -> str:
         """
         Raises `TemplateNotFound`.
@@ -78,14 +72,14 @@ class Query[T](AbstractQuery[T]):
         return ty.pydantic_load(cls, args)
 
     def answer_type(self) -> TypeAnnot[T]:
-        return first_parameter_of_base_class(type(self))
+        return dpi.first_parameter_of_base_class(type(self))
 
     def using[P](
         self,
-        get_policy: Callable[[P], PromptingPolicy],
+        get_policy: Callable[[P], dp.PromptingPolicy],
         inner_policy_type: type[P] | None = None,
-    ) -> tr.Builder[OpaqueSpace[P, T]]:
-        return OpaqueSpace[P, T].from_query(self, get_policy)
+    ) -> dp.Builder[dp.OpaqueSpace[P, T]]:
+        return dp.OpaqueSpace[P, T].from_query(self, get_policy)
 
 
 def _no_prompt_manager_error() -> str:
@@ -95,12 +89,12 @@ def _no_prompt_manager_error() -> str:
     )
 
 
-type AnswerModes[T] = Mapping[AnswerModeName, qu.AnswerMode[T]]
+type AnswerModes[T] = Mapping[dp.AnswerModeName, dp.AnswerMode[T]]
 type Modes = AnswerModes[Any]
 
 
-def single_parser[T](parser: qu.Parser[T]) -> AnswerModes[T]:
-    return {None: qu.AnswerMode(parse=parser)}
+def single_parser[T](parser: dp.Parser[T]) -> AnswerModes[T]:
+    return {None: dp.AnswerMode(parse=parser)}
 
 
 #####
@@ -108,48 +102,48 @@ def single_parser[T](parser: qu.Parser[T]) -> AnswerModes[T]:
 #####
 
 
-def raw_yaml[T](type: TypeAnnot[T], res: str) -> T | ParseError:
+def raw_yaml[T](type: TypeAnnot[T], res: str) -> T | dp.ParseError:
     try:
         parsed = yaml.safe_load(res)
         return ty.pydantic_load(type, parsed)
     except ValidationError as e:
-        return ParseError(str(e))
+        return dp.ParseError(str(e))
     except yaml.parser.ParserError as e:
-        return ParseError(str(e))
+        return dp.ParseError(str(e))
 
 
-def yaml_from_last_block[T](type: TypeAnnot[T], res: str) -> T | ParseError:
+def yaml_from_last_block[T](type: TypeAnnot[T], res: str) -> T | dp.ParseError:
     final = extract_final_block(res)
     if final is None:
-        return ParseError("No final code block found.")
+        return dp.ParseError("No final code block found.")
     return raw_yaml(type, final)
 
 
-def raw_string[T](typ: TypeAnnot[T], res: str) -> T | ParseError:
+def raw_string[T](typ: TypeAnnot[T], res: str) -> T | dp.ParseError:
     if isinstance(typ, type):  # if `typ` is a class
         return typ(res)  # type: ignore
     return res  # type: ignore  # TODO: assuming that `typ` is a string alias
 
 
-def trimmed_raw_string[T](typ: TypeAnnot[T], res: str) -> T | ParseError:
+def trimmed_raw_string[T](typ: TypeAnnot[T], res: str) -> T | dp.ParseError:
     return raw_string(typ, res.strip())
 
 
 def string_from_last_block[T](
     typ: TypeAnnot[T], res: str
-) -> T | ParseError:  # fmt: skip
+) -> T | dp.ParseError:  # fmt: skip
     final = extract_final_block(res)
     if final is None:
-        return ParseError("No final code block found.")
+        return dp.ParseError("No final code block found.")
     return raw_string(typ, final)
 
 
 def trimmed_string_from_last_block[T](
     typ: TypeAnnot[T], res: str
-) -> T | ParseError:  # fmt: skip
+) -> T | dp.ParseError:  # fmt: skip
     final = extract_final_block(res)
     if final is None:
-        return ParseError("No final code block found.")
+        return dp.ParseError("No final code block found.")
     return trimmed_raw_string(typ, final)
 
 
@@ -164,8 +158,8 @@ def extract_final_block(s: str) -> str | None:
 
 
 def find_all_examples(
-    database: en.ExampleDatabase, query: AbstractQuery[Any]
-) -> Sequence[tuple[AbstractQuery[Any], Answer]]:
+    database: dp.ExampleDatabase, query: dp.AbstractQuery[Any]
+) -> Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]]:
     raw = database.examples(query.name())
     return [(query.parse(args), ans) for args, ans in raw]
 
@@ -183,10 +177,10 @@ def assistant_message(content: str) -> ChatMessage:
 
 
 def create_prompt(
-    query: AbstractQuery[Any],
-    examples: Sequence[tuple[AbstractQuery[Any], Answer]],
+    query: dp.AbstractQuery[Any],
+    examples: Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]],
     params: dict[str, object],
-    env: en.TemplatesManager | None = None,
+    env: dp.TemplatesManager | None = None,
 ) -> Chat:
     msgs: list[ChatMessage] = []
     msgs.append(system_message(query.system_prompt(None, params, env)))
@@ -198,15 +192,15 @@ def create_prompt(
 
 
 def log_oracle_answer(
-    env: en.PolicyEnv,
-    query: AttachedQuery[Any],
-    mode: AnswerModeName,
+    env: dp.PolicyEnv,
+    query: dp.AttachedQuery[Any],
+    mode: dp.AnswerModeName,
     answer: str,
     parsed: object,
     meta: dict[str, Any],
 ):
     info: dict[str, Any] = {"mode": mode, "answer": answer}
-    if isinstance(parsed, ParseError):
+    if isinstance(parsed, dp.ParseError):
         info["parse_error"] = parsed.error
     if meta:
         info["meta"] = meta
@@ -215,11 +209,11 @@ def log_oracle_answer(
 
 @prompting_policy
 async def few_shot[T](
-    query: AttachedQuery[T],
-    env: en.PolicyEnv,
+    query: dp.AttachedQuery[T],
+    env: dp.PolicyEnv,
     model: LLM,
     enable_logging: bool = True,
-) -> tr.Stream[T]:
+) -> dp.Stream[T]:
     """
     The standard few-shot prompting sequential prompting policy.
 
@@ -231,12 +225,12 @@ async def few_shot[T](
     options: dict[str, Any] = {}
     cost_estimate = model.estimate_budget(prompt, options)
     while True:
-        yield Barrier(cost_estimate)
+        yield dp.Barrier(cost_estimate)
         answers, budget, meta = await model.send_request(prompt, 1, options)
         answer = answers[0]
         element = query.answer(None, answer)
         if enable_logging:
             log_oracle_answer(env, query, None, answer, element, meta)
-        yield Spent(budget)
-        if not isinstance(element, ParseError):
-            yield Yield(element)
+        yield dp.Spent(budget)
+        if not isinstance(element, dp.ParseError):
+            yield dp.Yield(element)

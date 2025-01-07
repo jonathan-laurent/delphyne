@@ -6,19 +6,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Protocol
 
-from delphyne.core.environment import PolicyEnv
-from delphyne.core.streams import Stream
-from delphyne.core.trees import (
-    AttachedQuery,
-    Builder,
-    Node,
-    OpaqueSpace,
-    PromptingPolicy,
-    SearchPolicy,
-    Strategy,
-    StrategyComp,
-    Tree,
-)
+import delphyne.core as dp
 
 #####
 ##### Strategy Instances `@strategy` Decorator
@@ -26,13 +14,13 @@ from delphyne.core.trees import (
 
 
 @dataclass(frozen=True)
-class StrategyInstance[N: Node, P, T](StrategyComp[N, P, T]):
+class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
     def using[P2](
         self,
-        get_policy: Callable[[P2], tuple[SearchPolicy[N], P]],
+        get_policy: Callable[[P2], tuple[dp.SearchPolicy[N], P]],
         inner_policy_type: type[P2] | None = None,
-    ) -> Builder[OpaqueSpace[P2, T]]:
-        return OpaqueSpace[P2, T].from_strategy(self, get_policy)
+    ) -> dp.Builder[dp.OpaqueSpace[P2, T]]:
+        return dp.OpaqueSpace[P2, T].from_strategy(self, get_policy)
 
     # Pyright seems to be treating __getitem__ differently and does
     # worse inference than for using. Same for operators like &, @...
@@ -43,8 +31,8 @@ class StrategyInstance[N: Node, P, T](StrategyComp[N, P, T]):
     #     return self.using(get_policy)
 
 
-def strategy[**A, N: Node, P, T](
-    f: Callable[A, Strategy[N, P, T]],
+def strategy[**A, N: dp.Node, P, T](
+    f: Callable[A, dp.Strategy[N, P, T]],
 ) -> Callable[A, StrategyInstance[N, P, T]]:
     def wrapped(
         *args: A.args, **kwargs: A.kwargs
@@ -59,24 +47,24 @@ def strategy[**A, N: Node, P, T](
 #####
 
 
-class _ParametricSearchPolicyFn[N: Node, **A](Protocol):
+class _ParametricSearchPolicyFn[N: dp.Node, **A](Protocol):
     def __call__[P, T](
         self,
-        tree: Tree[N, P, T],
-        env: PolicyEnv,
+        tree: dp.Tree[N, P, T],
+        env: dp.PolicyEnv,
         policy: P,
         *args: A.args,
         **kwargs: A.kwargs,
-    ) -> Stream[T]: ...
+    ) -> dp.Stream[T]: ...
 
 
-class _ParametricSearchPolicy[N: Node, **A](Protocol):
+class _ParametricSearchPolicy[N: dp.Node, **A](Protocol):
     def __call__(
         self, *args: A.args, **kwargs: A.kwargs
-    ) -> SearchPolicy[N]: ...
+    ) -> dp.SearchPolicy[N]: ...
 
 
-def search_policy[N: Node, **A](
+def search_policy[N: dp.Node, **A](
     fn: _ParametricSearchPolicyFn[N, A],
 ) -> _ParametricSearchPolicy[N, A]:
     """
@@ -85,13 +73,13 @@ def search_policy[N: Node, **A](
     transformers).
     """
 
-    def parametric(*args: A.args, **kwargs: A.kwargs) -> SearchPolicy[N]:
+    def parametric(*args: A.args, **kwargs: A.kwargs) -> dp.SearchPolicy[N]:
         def policy[T](
-            tree: Tree[N, Any, T], env: PolicyEnv, policy: Any
-        ) -> Stream[T]:
+            tree: dp.Tree[N, Any, T], env: dp.PolicyEnv, policy: Any
+        ) -> dp.Stream[T]:
             return fn(tree, env, policy, *args, **kwargs)
 
-        return SearchPolicy(policy)
+        return dp.SearchPolicy(policy)
 
     return parametric
 
@@ -104,26 +92,28 @@ def search_policy[N: Node, **A](
 class _ParametricPromptingPolicyFn[**A](Protocol):
     def __call__[T](
         self,
-        query: AttachedQuery[T],
-        env: PolicyEnv,
+        query: dp.AttachedQuery[T],
+        env: dp.PolicyEnv,
         *args: A.args,
         **kwargs: A.kwargs,
-    ) -> Stream[T]: ...
+    ) -> dp.Stream[T]: ...
 
 
 class _ParametricPromptingPolicy[**A](Protocol):
     def __call__(
         self, *args: A.args, **kwargs: A.kwargs
-    ) -> PromptingPolicy: ...
+    ) -> dp.PromptingPolicy: ...
 
 
 def prompting_policy[**A](
     fn: _ParametricPromptingPolicyFn[A],
 ) -> _ParametricPromptingPolicy[A]:
-    def parametric(*args: A.args, **kwargs: A.kwargs) -> PromptingPolicy:
-        def policy[T](query: AttachedQuery[T], env: PolicyEnv) -> Stream[T]:
+    def parametric(*args: A.args, **kwargs: A.kwargs) -> dp.PromptingPolicy:
+        def policy[T](
+            query: dp.AttachedQuery[T], env: dp.PolicyEnv
+        ) -> dp.Stream[T]:
             return fn(query, env, *args, **kwargs)
 
-        return PromptingPolicy(policy)
+        return dp.PromptingPolicy(policy)
 
     return parametric

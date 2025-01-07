@@ -17,17 +17,20 @@ from delphyne.core.environment import (
     TemplatesManager,
     Tracer,
 )
+from delphyne.core.policies import (
+    OpaqueSpace,
+    Policy,
+    PromptingPolicy,
+    SearchPolicy,
+    TreeTransformer,
+)
 from delphyne.core.queries import (
     AbstractQuery,
     AnswerMode,
     ParseError,
     Parser,
 )
-from delphyne.core.refs import (
-    AnswerModeName,
-    Tracked,
-    Value,
-)
+from delphyne.core.refs import Answer, AnswerModeName, Tracked, Value
 from delphyne.core.streams import (
     Barrier,
     Budget,
@@ -51,10 +54,6 @@ from delphyne.core.trees import (
     NestedTree,
     Node,
     NodeBuilder,
-    OpaqueSpace,
-    Policy,
-    PromptingPolicy,
-    SearchPolicy,
     Space,
     Strategy,
     StrategyComp,
@@ -65,7 +64,6 @@ from delphyne.core.trees import (
     TreeCache,
     TreeHook,
     TreeMonitor,
-    TreeTransformer,
     reify,
     tracer_hook,
 )

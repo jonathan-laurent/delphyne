@@ -10,11 +10,9 @@ from typing import Any, Generic, Protocol, TypeVar, cast
 from delphyne.core import environment as en
 from delphyne.core import inspect, refs
 from delphyne.core import node_fields as nf
-from delphyne.core.environment import PolicyEnv
 from delphyne.core.node_fields import NodeFields, detect_node_structure
 from delphyne.core.queries import AbstractQuery, ParseError
 from delphyne.core.refs import GlobalNodePath, SpaceName, Tracked, Value
-from delphyne.core.streams import Stream
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
 #####
@@ -269,66 +267,6 @@ class StrategyComp[N: Node, P, T]:
 
 
 #####
-##### Search and Prompting Policies
-#####
-
-
-type Policy[N: Node, P] = tuple[SearchPolicy[N], P]
-
-
-class TreeTransformer[N: Node, M: Node](Protocol):
-    def __call__[T, P](self, tree: "Tree[N, P, T]") -> "Tree[M, P, T]": ...
-
-
-class _SearchPolicyFn[N: Node](Protocol):
-    def __call__[P, T](
-        self, tree: "Tree[N, P, T]", env: PolicyEnv, policy: P
-    ) -> Stream[T]: ...
-
-
-@dataclass(frozen=True)
-class SearchPolicy[N: Node]:
-    fn: _SearchPolicyFn[N]
-
-    def __call__[P, T](
-        self,
-        tree: "Tree[N, P, T]",
-        env: PolicyEnv,
-        policy: P,
-    ) -> Stream[T]:
-        return self.fn(tree, env, policy)
-
-    def __matmul__[M: Node](
-        self, tree_transformer: TreeTransformer[M, N]
-    ) -> "SearchPolicy[M]":
-        def fn[P, T](
-            tree: Tree[M, P, T],
-            env: PolicyEnv,
-            policy: P,
-        ) -> Stream[T]:
-            new_tree = tree_transformer(tree)
-            return self.fn(new_tree, env, policy)
-
-        return SearchPolicy(fn)
-
-
-class _PromptingPolicyFn(Protocol):
-    def __call__[T](
-        self, query: AttachedQuery[T], env: PolicyEnv
-    ) -> Stream[T]: ...
-
-
-@dataclass(frozen=True)
-class PromptingPolicy:
-    fn: _PromptingPolicyFn
-
-    def __call__[T](
-        self, query: AttachedQuery[T], env: PolicyEnv
-    ) -> Stream[T]:
-        return self.fn(query, env)
-
-
-#####
 ##### Embedded Trees
 #####
 
@@ -362,67 +300,21 @@ class EmbeddedTree[N: Node, P, T](NestedTree[N, P, T]):
 
 
 #####
-##### Opaque Spaces
-#####
-
-
-@dataclass(frozen=True)
-class OpaqueSpace[P, T](Space[T]):
-    stream: Callable[[PolicyEnv, P], Stream[T]]
-    _source: "NestedTree[Any, Any, T] | AttachedQuery[T]"
-
-    def source(self) -> "NestedTree[Any, Any, T] | AttachedQuery[T]":
-        return self._source
-
-    def tags(self) -> Sequence[Tag]:
-        return self._source.tags()
-
-    @staticmethod
-    def from_query[P1, T1](
-        query: AbstractQuery[T1], get_policy: Callable[[P1], PromptingPolicy]
-    ) -> "Builder[OpaqueSpace[P1, T1]]":
-        def build(spawner: _QuerySpawner) -> OpaqueSpace[P1, T1]:
-            attached = spawner(query)
-            return OpaqueSpace(
-                (lambda env, pol: get_policy(pol)(attached, env)), attached
-            )
-
-        return lambda _, spawner: build(spawner)
-
-    @staticmethod
-    def from_strategy[N: Node, P1, P2, T1](
-        strategy: StrategyComp[N, P2, T1],
-        get_policy: Callable[[P1], tuple[SearchPolicy[N], P2]],
-    ) -> "Builder[OpaqueSpace[P1, T1]]":
-        def build(spawner: _TreeSpawner) -> OpaqueSpace[P1, T1]:
-            nested = spawner(strategy)
-
-            def stream(env: PolicyEnv, policy: P1) -> Stream[T1]:
-                tree = nested.spawn_tree()
-                search_pol, inner_pol = get_policy(policy)
-                return search_pol(tree, env, inner_pol)
-
-            return OpaqueSpace(stream, nested)
-
-        return lambda spawner, _: build(spawner)
-
-
-#####
 ##### Builders and Spawners
 #####
 
 
-class _TreeSpawner(Protocol):
+class NestedTreeSpawner(Protocol):
     def __call__[N: Node, P, T](
         self, strategy: "StrategyComp[N, P, T]"
     ) -> "NestedTree[N, P, T]": ...
 
 
-class _QuerySpawner(Protocol):
+class QuerySpawner(Protocol):
     def __call__[T](self, query: AbstractQuery[T]) -> "AttachedQuery[T]": ...
 
 
-type Builder[S] = Callable[[_TreeSpawner, _QuerySpawner], S]
+type Builder[S] = Callable[[NestedTreeSpawner, QuerySpawner], S]
 
 
 @dataclass(frozen=True)

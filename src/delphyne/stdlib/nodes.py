@@ -6,18 +6,17 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any, Never, cast
 
-from delphyne.core import trees as tr
-from delphyne.core.trees import Navigation, Node, OpaqueSpace, Space, Tag
+import delphyne.core as dp
 
 #####
 ##### Utilities
 #####
 
 
-def spawn_node[N: Node](
+def spawn_node[N: dp.Node](
     node_type: type[N], **args: Any
-) -> tr.NodeBuilder[Any, Any]:
-    return tr.NodeBuilder(lambda spawner: node_type.spawn(spawner, **args))
+) -> dp.NodeBuilder[Any, Any]:
+    return dp.NodeBuilder(lambda spawner: node_type.spawn(spawner, **args))
 
 
 #####
@@ -26,22 +25,22 @@ def spawn_node[N: Node](
 
 
 @dataclass(frozen=True)
-class Branch(Node):
-    cands: OpaqueSpace[Any, Any]
-    extra_tags: Sequence[Tag]
+class Branch(dp.Node):
+    cands: dp.OpaqueSpace[Any, Any]
+    extra_tags: Sequence[dp.Tag]
 
-    def navigate(self) -> Navigation:
+    def navigate(self) -> dp.Navigation:
         return (yield self.cands)
 
-    def primary_space(self) -> Space[Any]:
+    def primary_space(self) -> dp.Space[Any]:
         return self.cands
 
 
 def branch[P, T](
-    cands: tr.Builder[OpaqueSpace[P, T]],
-    extra_tags: Sequence[Tag] = (),
+    cands: dp.Builder[dp.OpaqueSpace[P, T]],
+    extra_tags: Sequence[dp.Tag] = (),
     inner_policy_type: type[P] | None = None,
-) -> tr.Strategy[Branch, P, T]:
+) -> dp.Strategy[Branch, P, T]:
     ret = yield spawn_node(Branch, cands=cands, extra_tags=extra_tags)
     return cast(T, ret)
 
@@ -52,7 +51,7 @@ def branch[P, T](
 
 
 @dataclass(frozen=True)
-class Failure(Node):
+class Failure(dp.Node):
     message: str
 
     def valid_action(self, action: object) -> bool:
@@ -61,7 +60,7 @@ class Failure(Node):
     def leaf_node(self) -> bool:
         return True
 
-    def navigate(self) -> Navigation:
+    def navigate(self) -> dp.Navigation:
         assert False
         yield
 
@@ -69,13 +68,13 @@ class Failure(Node):
         return self.message
 
 
-def fail(message: str) -> tr.Strategy[Failure, object, Never]:
+def fail(message: str) -> dp.Strategy[Failure, object, Never]:
     yield spawn_node(Failure, message=message)
     assert False
 
 
 def ensure(
     prop: bool, message: str = ""
-) -> tr.Strategy[Failure, object, None]:
+) -> dp.Strategy[Failure, object, None]:
     if not prop:
         yield from fail(message)
