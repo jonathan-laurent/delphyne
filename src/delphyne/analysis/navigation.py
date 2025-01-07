@@ -63,6 +63,12 @@ class HintResolver(Protocol):
         ...
 
 
+class IdentifierResolver(Protocol):
+    def resolve_node(self, id: refs.NodeId) -> dp.AnyTree: ...
+
+    def resolve_answer(self, id: refs.AnswerId) -> dp.Answer: ...
+
+
 #####
 ##### Navigator Exceptions
 #####
@@ -113,12 +119,8 @@ class Navigator:
     hint-based or id-based references.
     """
 
-    # Needed to resolve hint-based references
     hint_resolver: HintResolver | None = None
-    # Needed to resolve id-based references
-    node_resolver: Callable[[refs.NodeId], dp.AnyTree] | None = None
-    answer_resolver: Callable[[refs.AnswerId], dp.Answer] | None = None
-    # Misc
+    id_resolver: IdentifierResolver | None = None
     info: NavigationInfo | None = None
     interrupt: Callable[[AnyTree], bool] | None = None
 
@@ -156,8 +158,8 @@ class Navigator:
                     self.info.unused_hints += rem
                 return elt
             case refs.AnswerId():
-                assert self.answer_resolver is not None
-                ans = self.answer_resolver(ref.element)
+                assert self.id_resolver is not None
+                ans = self.id_resolver.resolve_answer(ref.element)
                 query = space.source()
                 assert isinstance(query, dp.AttachedQuery)
                 parsed = query.answer(ans.mode, ans.text)
@@ -165,8 +167,8 @@ class Navigator:
                     raise AnswerParseError(tree, query, ans.text, parsed.error)
                 return parsed
             case refs.NodeId():
-                assert self.node_resolver is not None
-                success = self.node_resolver(ref.element)
+                assert self.id_resolver is not None
+                success = self.id_resolver.resolve_node(ref.element)
                 node = cast(dp.Success[object], success.node)
                 assert isinstance(success.node, dp.Success)
                 return node.success

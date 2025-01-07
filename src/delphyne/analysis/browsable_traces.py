@@ -225,14 +225,41 @@ def _space_elements_in_space_ref(
 
 
 #####
+##### ID Resolver
+#####
+
+
+class IdentifierResolverFromCache:
+    def __init__(self, trace: dp.Trace, cache: dp.TreeCache) -> None:
+        self.trace = trace
+        # Index cached nodes by ids instead of full paths.
+        self.cache: dict[refs.NodeId, dp.AnyTree] = {}
+        for id in trace.nodes:
+            self.cache[id] = cache[trace.expand_node_id(id)]
+
+    def resolve_node_id(self, id: refs.NodeId) -> dp.AnyTree:
+        return self.cache[id]
+
+    def resolve_answer(self, id: refs.AnswerId) -> dp.Answer:
+        return self.trace.answers[id][1]
+
+
+#####
 ##### Browsable Traces
 #####
 
 
 def compute_browsable_trace(
-    tree: dp.AnyTree, trace: dp.Trace, simplifier: _RefSimplifier | None = None
+    tree: dp.AnyTree,
+    trace: dp.Trace,
+    id_resolver: nv.IdentifierResolver,
+    simplifier: _RefSimplifier | None = None,
 ) -> fb.Trace:
-    return _TraceTranslator(tree, trace, simplifier).translate_trace()
+    """
+    A simplifier is typically only available for demonstrations.
+    """
+    tr = _TraceTranslator(tree, trace, id_resolver, simplifier)
+    return tr.translate_trace()
 
 
 class _TraceTranslator:
@@ -240,12 +267,14 @@ class _TraceTranslator:
         self,
         tree: dp.AnyTree,
         trace: dp.Trace,
+        id_resolver: nv.IdentifierResolver,
         simplifier: _RefSimplifier | None = None,
     ) -> None:
         # We rely on the nodes in the trace being presented in
         # topological order. TODO: how?
         self.tree = tree
         self.trace = trace
+        self.id_resolver = id_resolver
         self.rev_map = dp.TraceReverseMap.make(trace)
         self.simplifier = simplifier
         # This maps all nodes to a set of local spaces. We do not use
