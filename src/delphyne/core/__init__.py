@@ -30,6 +30,13 @@ from delphyne.core.queries import (
     Parser,
 )
 from delphyne.core.refs import Answer, AnswerModeName, Tracked, Value
+from delphyne.core.reification import (
+    TreeCache,
+    TreeHook,
+    TreeMonitor,
+    reify,
+    tracer_hook,
+)
 from delphyne.core.streams import (
     Barrier,
     Budget,
@@ -60,10 +67,5 @@ from delphyne.core.trees import (
     Success,
     Tag,
     Tree,
-    TreeCache,
-    TreeHook,
-    TreeMonitor,
     TreeTransformer,
-    reify,
-    tracer_hook,
 )
