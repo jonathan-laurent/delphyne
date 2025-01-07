@@ -39,7 +39,9 @@ from delphyne.core.streams import (
 from delphyne.core.traces import (
     ExportableTrace,
     Location,
+    QueryOrigin,
     Trace,
+    TraceReverseMap,
 )
 from delphyne.core.trees import (
     AttachedQuery,

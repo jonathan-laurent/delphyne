@@ -2,8 +2,9 @@
 Exporting and importing traces.
 """
 
+from collections import defaultdict
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from delphyne.core import pprint, refs
 
@@ -227,3 +228,28 @@ class Trace:
         for id in self.nodes:
             expanded = self.expand_node_id(id)
             assert id == self.convert_global_node_path(expanded)
+
+
+#####
+##### Reverse Map
+#####
+
+
+@dataclass
+class TraceReverseMap:
+    # Useful to optimize calls to _child
+    children: dict[refs.NodeId, dict[refs.ValueRef, refs.NodeId]] = field(
+        default_factory=lambda: defaultdict(lambda: {}))  # fmt: skip
+    nested_trees: dict[refs.NodeId, dict[refs.SpaceRef, refs.NodeId]] = field(
+        default_factory=lambda: defaultdict(lambda: {}))  # fmt: skip
+
+    @staticmethod
+    def make(trace: Trace) -> "TraceReverseMap":
+        map = TraceReverseMap()
+        for child_id, origin in trace.nodes.items():
+            match origin:
+                case refs.ChildOf(parent_id, action):
+                    map.children[parent_id][action] = child_id
+                case refs.NestedTreeOf(parent_id, choice):
+                    map.nested_trees[parent_id][choice] = child_id
+        return map

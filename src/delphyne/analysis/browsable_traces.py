@@ -1,11 +1,19 @@
 """
 Generating Browsable Traces.
+
+Traces defined by `core.traces.Trace` contain all the information
+necessary to recompute a trace but are not easily manipulated by tools.
+In comparison, `analysis.feedback.Trace` contains a more redundant but
+also more explicit view. This module provides a way to convert a trace
+from the former format to the latter.
 """
 
 import pprint
+import typing
+from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import cast
+from typing import Any, cast
 
 import delphyne.core as dp
 from delphyne.analysis import feedback as fb
@@ -105,6 +113,9 @@ class _RefSimplifier:
     ) -> refs.SpaceRef:
         args = tuple(self.value_ref(id, a) for a in ref.args)
         return refs.SpaceRef(ref.name, args)
+
+    def answer(self, ref: nv.AnswerRef) -> refs.Hint | None:
+        return self.hint_rev_map.answers[ref]
 
 
 #####
@@ -214,6 +225,190 @@ def _space_elements_in_space_ref(
 
 
 def compute_browsable_trace(
-    tree: nv.NavTree, simplifier: _RefSimplifier | None = None
+    tree: nv.NavTree, trace: dp.Trace, simplifier: _RefSimplifier | None = None
 ) -> fb.Trace:
-    return _TraceTranslator(tree, simplifier).translate_trace()
+    return _TraceTranslator(tree, trace, simplifier).translate_trace()
+
+
+class _TraceTranslator:
+    def __init__(
+        self,
+        tree: nv.NavTree,
+        trace: dp.Trace,
+        simplifier: _RefSimplifier | None = None,
+    ) -> None:
+        # We rely on the nodes in the trace being presented in
+        # topological order. TODO: how?
+        self.tree = tree
+        self.trace = trace
+        self.rev_map = dp.TraceReverseMap.make(trace)
+        self.simplifier = simplifier
+        # This maps all nodes to a set of local spaces. We do not use
+        # Python sets but dicts instead since converting a set to a list
+        # is nondeterministic.
+        self.spaces: dict[refs.NodeId, dict[refs.SpaceRef, None]] = (
+            defaultdict(dict)
+        )
+        # Each local space is mapped to a property id. Note that local
+        # data can also consume such ids.
+        self.space_prop_ids: dict[
+            tuple[refs.NodeId, refs.SpaceRef], fb.TraceNodePropertyId
+        ] = {}
+        # For each node, we map action references to ids.
+        self.action_ids: dict[
+            tuple[refs.NodeId, refs.ValueRef], fb.TraceActionId
+        ] = {}
+
+    def translate_trace(self) -> fb.Trace:
+        self.detect_spaces()
+        ids = list(self.trace.nodes.keys())
+        trace = fb.Trace({id.id: self.translate_node(id) for id in ids})
+        return trace
+
+    def detect_spaces(self) -> None:
+        # We go through the node origin table of the trace to detect
+        # spaces and set `self.spaces`
+        for origin in self.trace.nodes.values():
+            id = origin.node
+            for space in _spaces_in_node_origin(origin):
+                self.spaces[id][space] = None
+        # The answer table also features query origin information, from
+        # which additional spaces can be extracted.
+        for origin in self.trace.answer_ids.keys():
+            id = origin.node
+            for space in _spaces_in_space_ref(origin.ref):
+                self.spaces[id][space] = None
+
+    def translate_strategy_comp(
+        self,
+        id: refs.NodeId,
+        ref: refs.SpaceRef,
+        strategy: dp.StrategyComp[Any, Any, Any],
+    ) -> fb.NodeProperty:
+        strategy_name = strategy.strategy_name()
+        if strategy_name is None:
+            strategy_name = "<anon>"
+        # We get the strategy instance arguments and use typing hints to
+        # render them properly.
+        args_raw = strategy.strategy_arguments()
+        hints = typing.get_type_hints(strategy.comp)
+        args = {a: _value_repr(v, hints[a]) for a, v in args_raw.items()}
+        # We obtain the root id of the nested tree, which can be `None`
+        # if the tree hasn't been explored.
+        root_id = self.rev_map.nested_trees[id].get(ref)
+        root_id_raw = root_id.id if root_id is not None else None
+        return fb.NestedTree("nested", strategy_name, args, root_id_raw)
+
+    def translate_query(
+        self,
+        id: refs.NodeId,
+        ref: refs.SpaceRef,
+        query: dp.AbstractQuery[Any],
+    ) -> fb.NodeProperty:
+        name = query.name()
+        args = query.serialize_args()
+        answers: list[fb.Answer] = []
+        origin = dp.QueryOrigin(id, ref)
+        for a, aid in self.trace.answer_ids.get(origin, {}).items():
+            parsed = query.modes()[a.mode].parse(query.answer_type(), a.text)
+            parsed_repr = _value_repr(parsed, query.answer_type())
+            hint_str: tuple[()] | tuple[str] | None = None
+            if self.simplifier is not None:
+                # If a simplifier is provided, the associated hint must
+                # be in the rev map. Note that we must compute an
+                # expanded reference to use the simplifier.
+                full_space_ref = (
+                    self.trace.expand_node_id(id),
+                    self.trace.expand_space_ref(id, ref),
+                )
+                full_ans_ref: nv.AnswerRef = (full_space_ref, a)
+                hint = self.simplifier.answer(full_ans_ref)
+                if hint is None:
+                    hint_str = ()
+                else:
+                    hint_str = (hint.hint,)
+            answers.append(fb.Answer(aid.id, hint_str, parsed_repr))
+        return fb.Query("query", name, args, answers)
+
+    # def translate_choice(
+    #     self, id: NodeId, ref: refs.SpaceRef
+    # ) -> tuple[fb.Reference, fb.NodeProperty]:
+    #     tree = self.tree.goto(id)
+    #     choice = tree.basic_resolver().resolve_subchoice_ref(tree, ref)
+    #     match source := choice.source():
+    #         case trees.StrategyInstance():
+    #             pty = self.translate_strategy_instance(tree, ref, source)
+    #         case trees.Query():
+    #             pty = self.translate_query(tree, choice, source)
+    #         case trees.FiniteChoice():
+    #             assert False
+    #     ref_str = fb.Reference(dpy_pprint.choice_ref(ref), None)
+    #     if self.simplifier is not None:
+    #         simplified = self.simplifier.choice_ref(id, ref)
+    #         ref_str.with_hints = dpy_pprint.choice_ref(simplified)
+    #     return (ref_str, pty)
+
+    # def translate_action(
+    #     self, src: NodeId, action: refs.ValueRef, dst: NodeId
+    # ) -> fb.Action:
+    #     ref_str = fb.Reference(dpy_pprint.value_ref(action), None)
+    #     hints_str: list[str] | None = None
+    #     if self.simplifier is not None:
+    #         hints = self.simplifier.action(src, action)
+    #         ref_str.with_hints = dpy_pprint.value_ref(action)
+    #         if hints is None:
+    #             hints_str = None
+    #         else:
+    #             hints_str = [dpy_pprint.hint(h) for h in hints]
+    #     successes: dict[fb.TraceNodeId, None] = {}
+    #     answers: dict[fb.TraceAnswerId, None] = {}
+    #     for out in _outcomes_in_value_ref(action):
+    #         if isinstance(out.value, NodeId):
+    #             successes[out.value.id] = None
+    #         elif isinstance(out.value, refs.AnswerId):
+    #             answers[out.value.id] = None
+    #     tree = self.tree.goto(src)
+    #     value = tree.basic_resolver().resolve_value_ref(tree, action)
+    #     repr = _value_repr(drop_refs(value), value_type(value))
+    #     return fb.Action(
+    #         ref_str, hints_str, list(successes), list(answers), repr, dst.id
+    #     )
+
+    # def translate_origin(self, id: NodeId) -> fb.NodeOrigin:
+    #     if id == Tracer.ROOT_ID:
+    #         return "root"
+    #     match self.tree.tracer.nodes[id]:
+    #         case refs.ChildOf(parent, action):
+    #             action_id = self.action_ids[(parent, action)]
+    #             return ("child", parent.id, action_id)
+    #         case refs.SubtreeOf(parent, choice):
+    #             prop_id = self.choice_prop_ids[(parent, choice)]
+    #             return ("sub", parent.id, prop_id)
+
+    # def translate_node(self, id: NodeId) -> fb.Node:
+    #     tree = self.tree.goto(id)
+    #     node = cast(Node, tree.node)
+    #     if isinstance(node, Success):
+    #         node = cast(Success[Any], node)
+    #         value = drop_refs(node.success)
+    #         success = _value_repr(value, tree.return_type())
+    #     else:
+    #         success = None
+    #     kind = node.type_name()
+    #     summary = node.summary_message()
+    #     leaf = node.leaf_node()
+    #     label = node.get_label()
+    #     prop_refs = {c.get_origin(): None for c in node.base_choices()}
+    #     for cr in self.choices[id]:
+    #         prop_refs[cr] = None
+    #     for i, ref in enumerate(prop_refs):
+    #         self.choice_prop_ids[(id, ref)] = i
+    #     props = [self.translate_choice(id, r) for r in prop_refs]
+    #     actions: list[fb.Action] = []
+    #     for i, (a, dst) in enumerate(self.rev_map.children[id].items()):
+    #         actions.append(self.translate_action(id, a, dst))
+    #         self.action_ids[(id, a)] = i
+    #     origin = self.translate_origin(id)
+    #     return fb.Node(
+    #         kind, success, summary, leaf, label, props, actions, origin
+    #     )
