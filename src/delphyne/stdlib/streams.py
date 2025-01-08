@@ -110,3 +110,10 @@ async def take_one[T](
             store.value = msg.value
             return
         yield msg
+
+
+async def take_first[T](stream: dp.Stream[T]) -> dp.Tracked[T] | None:
+    store = ElementStore[T]()
+    async for _ in take_one(stream, store):
+        pass
+    return store.value

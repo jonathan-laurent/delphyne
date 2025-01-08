@@ -102,16 +102,7 @@ async def just_guess[P, T](
 #####
 
 
-@dataclass
-class OnePP:
-    pp: dp.PromptingPolicy
-
-
-def one_pp(p: OnePP) -> dp.PromptingPolicy:
-    return p.pp
-
-
-def unique_pp(p: dp.PromptingPolicy) -> dp.PromptingPolicy:
+def one_pp(p: dp.PromptingPolicy) -> dp.PromptingPolicy:
     return p
 
 
@@ -132,8 +123,8 @@ State: TypeAlias = dict[str, int]
 
 @dataclass
 class SynthetizeFunIP:
-    conjecture: dp.Policy[dp.Failure | dp.Branch, OnePP]
-    disprove: dp.Policy[dp.Failure | dp.Branch, OnePP]
+    conjecture: dp.Policy[dp.Failure | dp.Branch, dp.PromptingPolicy]
+    disprove: dp.Policy[dp.Failure | dp.Branch, dp.PromptingPolicy]
     aggregate: dp.PromptingPolicy
 
 
@@ -163,7 +154,7 @@ def synthetize_fun(
 @dp.strategy
 def conjecture_expr(
     vars: Vars, prop: IntPred
-) -> dp.Strategy[dp.Branch | dp.Failure, OnePP, Expr]:
+) -> dp.Strategy[dp.Branch | dp.Failure, dp.PromptingPolicy, Expr]:
     expr = yield from dp.branch(ConjectureExpr(vars, prop).using(one_pp))
     yield from dp.ensure(expr_safe(expr), "Possibly unsafe expression")
     try:
@@ -176,7 +167,7 @@ def conjecture_expr(
 @dp.strategy
 def find_counterexample(
     vars: Vars, prop: IntPred, expr: Expr
-) -> dp.Strategy[dp.Branch | dp.Failure, OnePP, None]:
+) -> dp.Strategy[dp.Branch | dp.Failure, dp.PromptingPolicy, None]:
     cand = yield from dp.branch(ProposeCex(prop, (vars, expr)).using(one_pp))
     try:
         yield from dp.ensure(
@@ -257,7 +248,7 @@ def pick_boy_name(
     names: Sequence[str], picked_already: Sequence[str]
 ) -> dp.Strategy[dp.Branch | dp.Failure, dp.PromptingPolicy, str]:
     name = yield from dp.branch(
-        PickBoyName(list(names), list(picked_already)).using(unique_pp)
+        PickBoyName(list(names), list(picked_already)).using(one_pp)
     )
     yield from dp.ensure(name in names, "Unavailable name.")
     yield from dp.ensure(name not in picked_already, "Already picked.")
@@ -326,9 +317,8 @@ def num_confidence(
 def generate_pairs() -> (
     dp.Strategy[dp.BFS, dp.PromptingPolicy, tuple[int, int]]
 ):
-    IP = dp.PromptingPolicy
     x = yield from dp.bfs_branch(
-        PickPositiveInteger(None)(IP, lambda p: p),
+        PickPositiveInteger(None)(IP := dp.PromptingPolicy, lambda p: p),
         confidence_priors=lambda _: [1e-3, 1e-3, 0],
     )
     yield from dp.bfs_factor(
