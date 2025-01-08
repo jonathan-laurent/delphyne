@@ -275,5 +275,5 @@ def global_path_origin(
         return "global_origin"
     *init, (space, node_path) = path
     if not node_path:
-        return "nested", (*init, (space, ())), space
+        return "nested", tuple(init), space
     return "child", (*init, (space, node_path[:-1])), node_path[-1]
