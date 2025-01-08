@@ -158,7 +158,7 @@ class Node(ABC):
                 assert isinstance(f, Callable)
                 f = cast(Callable[..., Space[Any]], f)
                 return f(*args)
-        except TypeError:
+        except (TypeError, AttributeError):
             return None
 
     @classmethod

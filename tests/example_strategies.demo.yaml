@@ -302,8 +302,8 @@
     - run | success
     - run 'girl_name' | failure
     - run 'other_boy_name' | failure
-    - go gen | go next([])
-    - go gen | go next([next([]){'other_boy_name'}]) | run | success
+    - go cands | go next([])
+    - go cands | go next([next([]){'other_boy_name'}]) | run | success
   queries:
     - query: PickBoyName
       args:

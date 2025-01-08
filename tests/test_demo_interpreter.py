@@ -90,9 +90,8 @@ def load_demo(demo_label: str) -> DemoExpectTest:
         "invalid_arguments",
         "unknown_query",
         "invalid_answer",
-        # "synthetize_fun_demo",
-        # "invalid_answer",
-        # "test_iterated",
+        "synthetize_fun_demo",
+        "test_iterated",
     ],
 )
 def test_server(demo_label: str):
@@ -103,4 +102,4 @@ def test_server(demo_label: str):
 
 if __name__ == "__main__":
     # Entry point for the debugger (see "Debug Server Tests" configuration).
-    test_server("synthetize_fun_demo")
+    test_server("test_iterated")
