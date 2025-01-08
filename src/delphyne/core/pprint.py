@@ -63,13 +63,25 @@ def hints(hs: Sequence[refs.Hint]):
     return "'" + " ".join(hint(h) for h in hs) + "'"
 
 
+def answer(a: refs.Answer) -> str:
+    ret = repr(a.text)
+    if a.mode is not None:
+        ret = f"{a.mode}:{ret}"
+    return ret
+
+
+def node_path(p: refs.NodePath) -> str:
+    return "<" + ", ".join(value_ref(sr) for sr in p) + ">"
+
+
 def space_element_ref(ser: refs.SpaceElementRef) -> str:
     if ser.space is None:
         assert isinstance(ser.element, refs.HintsRef)
         return hints(ser.element.hints)
     match ser.element:
         case refs.Answer():
-            raise AnswerDetected()
+            # raise AnswerDetected()
+            value = answer(ser.element)
         case refs.AnswerId():
             value = answer_id(ser.element)
         case refs.NodeId():
@@ -78,8 +90,14 @@ def space_element_ref(ser: refs.SpaceElementRef) -> str:
             value = hints(ser.element.hints)
         case _:
             assert isinstance(ser.element, tuple)
-            raise PathDetected()
+            # raise PathDetected()
+            value = node_path(ser.element)
     return f"{space_ref(ser.space)}{{{value}}}"
+
+
+def global_node_path(p: refs.GlobalNodePath) -> str:
+    inner = "; ".join(f"{space_ref(sr)}, {node_path(np)}" for sr, np in p)
+    return "<" + inner + ">"
 
 
 def node_origin(no: refs.NodeOrigin) -> str:

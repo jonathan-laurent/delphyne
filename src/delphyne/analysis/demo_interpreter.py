@@ -422,6 +422,7 @@ def evaluate_demo_and_return_trace(
         k: tracer.trace.convert_global_node_path(v.ref).id
         for k, v in saved.items()
     }
+    trace.check_consistency()
     hresolver.set_reachability_diagnostics(feedback)
     simplifier = br.RefSimplifier(cache, rm)
     idr = br.IdentifierResolverFromCache(trace, cache)

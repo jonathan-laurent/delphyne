@@ -168,7 +168,7 @@ class Trace:
     def recover_path(
         self, dst: refs.NodeId
     ) -> tuple[refs.NodeId, refs.SpaceRef, refs.NodePath]:
-        # Find the path from a direct nested tree of `id` to `dst`.
+        # Find the node from which the tree containing `dst` originates.
         rev_path: list[refs.ValueRef] = []
         while True:
             dst_origin = self.nodes[dst]

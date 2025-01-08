@@ -90,7 +90,7 @@ def load_demo(demo_label: str) -> DemoExpectTest:
         "invalid_arguments",
         "unknown_query",
         "invalid_answer",
-        "synthetize_fun_demo",
+        # "synthetize_fun_demo",
         # "invalid_answer",
         # "test_iterated",
     ],

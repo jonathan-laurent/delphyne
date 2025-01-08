@@ -2,9 +2,12 @@
 Testing reification and the `Tree` datastructure
 """
 
+# pyright: basic
+
 import textwrap
 
-from example_strategies import make_sum
+import example_strategies as ex
+from example_strategies import make_sum, synthetize_fun
 
 import delphyne as dp
 from delphyne.core import refs
@@ -71,3 +74,32 @@ def test_make_sum():
     )
     print(pretty_trace)
     assert pretty_trace.strip() == expected.strip()
+
+
+# Useful for nested strategies.
+def test_synthetize_fun():
+    tracer = dp.Tracer()
+    cache: dp.TreeCache = {}
+    monitor = dp.TreeMonitor(cache=cache, hooks=[dp.tracer_hook(tracer)])
+    vars = ["x", "y"]
+    prop = (["a", "b"], "F(a, b) == F(b, a) and F(0, 1) == 2")
+    root = dp.reify(synthetize_fun(vars, prop), monitor)
+    assert isinstance(root.node, ex.Conjecture)
+    root_cands = root.node.cands.source()
+    assert isinstance(root_cands, dp.NestedTree)
+    conjecture_root = root_cands.spawn_tree()
+    assert isinstance(conjecture_root.node, dp.Branch)
+    query = conjecture_root.node.cands.source()
+    assert isinstance(query, dp.AttachedQuery)
+    answer = query.answer(None, "2*(x + y)")
+    assert not isinstance(answer, dp.ParseError)
+    inner_succ = conjecture_root.child(answer)
+    print(dp.pprint.global_node_path(inner_succ.ref))
+    assert isinstance(inner_succ.node, dp.Success)
+    # print(dp.pprint.space_element_ref(inner_succ.node.success.ref))
+    success = root.child(inner_succ.node.success)
+    assert isinstance(success.node, dp.Success)
+    print(dp.pprint.global_node_path(success.ref))
+    # tracer.trace.check_consistency()
+    pretty_trace = dump_yaml(dp.ExportableTrace, tracer.trace.export())
+    print(pretty_trace)
