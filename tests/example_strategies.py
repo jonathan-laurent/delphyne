@@ -108,6 +108,10 @@ def one_pp(p: OnePP) -> dp.PromptingPolicy:
     return p.pp
 
 
+def unique_pp(p: dp.PromptingPolicy) -> dp.PromptingPolicy:
+    return p
+
+
 #####
 ##### A more complex strategy with counterexamples
 #####
@@ -229,3 +233,48 @@ def test_check_prop():
     assert check_prop(fun1, prop, {"a": 1, "b": 2})
     assert check_prop(fun2, prop, {"a": 0, "b": 0})
     assert not check_prop(fun2, prop, {"a": 1, "b": -1})
+
+
+#####
+##### Iterated Strategies
+#####
+
+
+@dataclass
+class PickBoyName(dp.Query[str]):
+    # TODO: can we have sequences without causing serialization bugs?
+    names: list[str]
+    picked_already: list[str]
+    __parser__: ClassVar = dp.raw_yaml
+
+
+@dp.strategy
+def pick_boy_name(
+    names: Sequence[str], picked_already: Sequence[str]
+) -> dp.Strategy[dp.Branch | dp.Failure, dp.PromptingPolicy, str]:
+    name = yield from dp.branch(
+        PickBoyName(list(names), list(picked_already)).using(unique_pp)
+    )
+    yield from dp.ensure(name in names, "Unavailable name.")
+    yield from dp.ensure(name not in picked_already, "Already picked.")
+    return name
+
+
+@dp.strategy
+def pick_nice_boy_name(
+    names: Sequence[str],
+) -> dp.Strategy[dp.Branch | dp.Failure, "PickNiceBoyNameIP", str]:
+    name = yield from dp.branch(
+        dp.iterated(
+            lambda prev: pick_boy_name(names, prev).using(
+                lambda ip: ip.pick_boy_name, PickNiceBoyNameIP
+            )
+        )
+    )
+    yield from dp.ensure(name == "Jonathan", "You can do better.")
+    return name
+
+
+@dataclass
+class PickNiceBoyNameIP:
+    pick_boy_name: dp.Policy[dp.Branch | dp.Failure, dp.PromptingPolicy]

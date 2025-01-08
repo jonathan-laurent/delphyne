@@ -51,6 +51,9 @@ from delphyne.stdlib.queries import (
 from delphyne.stdlib.search.dfs import (
     dfs,
 )
+from delphyne.stdlib.search.iterated import (
+    iterated,
+)
 from delphyne.stdlib.strategies import (
     StrategyInstance,
     strategy,
