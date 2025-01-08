@@ -285,6 +285,71 @@ class PickNiceBoyNameIP:
 
 
 #####
+##### Testing BFS
+#####
+
+
+# We want to artificially create the following tree:
+# The confidences are annotated as costs: cost = -log_10(confidence).
+#
+#   @ -- (3) 1 -- @ -- (2) -- 11
+#   |             |
+#   |             + -- (3) -- 12
+#   |
+#   + -- (3) 0 -- @ -- (1) -- 21
+#                 |
+#                 + -- (2) -- 22
+#
+# Confidences in parentheses are priors.
+
+# Let's start with no penalty for creating children. The order in which
+# the elements should be found is: 11, 21, 22, 12. However, if we put a
+# strong penalty for discovering 12, it will not be discovered first
+# anymore.
+
+
+@dataclass
+class PickPositiveInteger(dp.Query[int]):
+    prev: int | None
+    __parser__: ClassVar = dp.raw_yaml
+
+
+@dp.strategy
+def num_confidence(
+    prev: int | None, new: int
+) -> dp.Strategy[Never, object, float]:
+    return 0.1 if (prev, new) == (None, 1) else 1
+    yield
+
+
+@dp.strategy
+def generate_pairs() -> (
+    dp.Strategy[dp.BFS, dp.PromptingPolicy, tuple[int, int]]
+):
+    # TODO: this is pretty verbose...
+    x = yield from dp.bfs_branch(
+        PickPositiveInteger(None).using(unique_pp),
+        confidence_priors=lambda _: [1e-3, 1e-3, 0],
+    )
+    yield from dp.bfs_factor(
+        num_confidence(None, x).using(lambda _: (dp.dfs(), ())),
+        inner_policy_type=dp.PromptingPolicy,
+    )
+    y = yield from dp.bfs_branch(
+        PickPositiveInteger(x).using(unique_pp),
+        confidence_priors=lambda _: (
+            [0.01, 0.001, 1e-8] if x == 1 else [0.1, 0.01, 1e-15]
+        ),
+        inner_policy_type=dp.PromptingPolicy,
+    )
+    yield from dp.bfs_factor(
+        num_confidence(x, y).using(lambda _: (dp.dfs(), ())),
+        inner_policy_type=dp.PromptingPolicy,
+    )
+    return (x, y)
+
+
+#####
 ##### Trivial strategy examples
 #####
 

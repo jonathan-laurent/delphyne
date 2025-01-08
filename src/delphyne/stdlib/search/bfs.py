@@ -51,6 +51,9 @@ class BFSBranch(dp.Node):
         return self.cands
 
 
+type BFS = BFSBranch | BFSFactor | Failure
+
+
 def bfs_branch[P, T](
     cands: dp.Builder[dp.OpaqueSpace[P, T]],
     *,
@@ -64,8 +67,9 @@ def bfs_branch[P, T](
 
 
 def bfs_factor[P](
-    confidence: dp.Builder[dp.OpaqueSpace[P, float]]
-) -> dp.Strategy[BFSFactor, P, float]:  # fmt: skip
+    confidence: dp.Builder[dp.OpaqueSpace[P, float]],
+    inner_policy_type: type[P] | None = None,
+) -> dp.Strategy[BFSFactor, P, float]:
     ret = yield spawn_node(BFSFactor, confidence=confidence)
     return cast(float, ret)
 

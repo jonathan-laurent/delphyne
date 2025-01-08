@@ -94,7 +94,6 @@ def test_synthetize_fun():
     answer = query.answer(None, "2*(x + y)")
     assert not isinstance(answer, dp.ParseError)
     inner_succ = conjecture_root.child(answer)
-    print(dp.pprint.global_node_path(inner_succ.ref))
     assert isinstance(inner_succ.node, dp.Success)
     success = root.child(inner_succ.node.success)
     assert isinstance(success.node, dp.Success)

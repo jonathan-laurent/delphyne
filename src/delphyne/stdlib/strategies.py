@@ -24,10 +24,10 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
     # Pyright seems to be treating __getitem__ differently and does
     # worse inference than for using. Same for operators like &, @...
 
-    # def __getitem__[P2](
-    #     self, get_policy: Callable[[P2], tuple[SearchPolicy[N], P]]
-    # ) -> Builder[OpaqueSpace[P2, T]]:
-    #     return self.using(get_policy)
+    def __getitem__[P2](
+        self, get_policy: Callable[[P2], tuple[dp.AbstractSearchPolicy[N], P]]
+    ) -> dp.Builder[dp.OpaqueSpace[P2, T]]:
+        return self.using(get_policy)
 
 
 def search[N: dp.Node, P, P2, T](
