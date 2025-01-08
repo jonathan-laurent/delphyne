@@ -61,6 +61,9 @@ class Conjecture(dp.Node):
     def navigate(self) -> dp.Navigation:
         return (yield self.cands)
 
+    def primary_space(self):
+        return self.cands
+
 
 def make_conjecture[P, T](
     cands: dp.Builder[dp.OpaqueSpace[P, T]],
