@@ -51,7 +51,7 @@ def branch[P, T](
 
 
 @dataclass(frozen=True)
-class Fail(dp.Node):
+class Failure(dp.Node):
     message: str
 
     def valid_action(self, action: object) -> bool:
@@ -68,11 +68,13 @@ class Fail(dp.Node):
         return self.message
 
 
-def fail(message: str) -> dp.Strategy[Fail, object, Never]:
-    yield spawn_node(Fail, message=message)
+def fail(message: str) -> dp.Strategy[Failure, object, Never]:
+    yield spawn_node(Failure, message=message)
     assert False
 
 
-def ensure(prop: bool, message: str = "") -> dp.Strategy[Fail, object, None]:
+def ensure(
+    prop: bool, message: str = ""
+) -> dp.Strategy[Failure, object, None]:
     if not prop:
         yield from fail(message)

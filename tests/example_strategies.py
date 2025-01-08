@@ -35,7 +35,7 @@ class MakeSumIP:
 @dp.strategy
 def make_sum(
     allowed: list[int], goal: int
-) -> dp.Strategy[dp.Branch | dp.Fail, MakeSumIP, list[int]]:
+) -> dp.Strategy[dp.Branch | dp.Failure, MakeSumIP, list[int]]:
     xs = yield from dp.branch(
         cands=MakeSum(allowed, goal).using(lambda p: p.make_sum),
         inner_policy_type=MakeSumIP,
@@ -129,8 +129,8 @@ State: TypeAlias = dict[str, int]
 
 @dataclass
 class SynthetizeFunIP:
-    conjecture: dp.Policy[dp.Fail | dp.Branch, OnePP]
-    disprove: dp.Policy[dp.Fail | dp.Branch, OnePP]
+    conjecture: dp.Policy[dp.Failure | dp.Branch, OnePP]
+    disprove: dp.Policy[dp.Failure | dp.Branch, OnePP]
     aggregate: dp.PromptingPolicy
 
 
@@ -160,7 +160,7 @@ def synthetize_fun(
 @dp.strategy
 def conjecture_expr(
     vars: Vars, prop: IntPred
-) -> dp.Strategy[dp.Branch | dp.Fail, OnePP, Expr]:
+) -> dp.Strategy[dp.Branch | dp.Failure, OnePP, Expr]:
     expr = yield from dp.branch(ConjectureExpr(vars, prop).using(one_pp))
     yield from dp.ensure(expr_safe(expr), "Possibly unsafe expression")
     try:
@@ -173,7 +173,7 @@ def conjecture_expr(
 @dp.strategy
 def find_counterexample(
     vars: Vars, prop: IntPred, expr: Expr
-) -> dp.Strategy[dp.Branch | dp.Fail, OnePP, None]:
+) -> dp.Strategy[dp.Branch | dp.Failure, OnePP, None]:
     cand = yield from dp.branch(ProposeCex(prop, (vars, expr)).using(one_pp))
     try:
         yield from dp.ensure(
@@ -252,7 +252,7 @@ class PickBoyName(dp.Query[str]):
 @dp.strategy
 def pick_boy_name(
     names: Sequence[str], picked_already: Sequence[str]
-) -> dp.Strategy[dp.Branch | dp.Fail, dp.PromptingPolicy, str]:
+) -> dp.Strategy[dp.Branch | dp.Failure, dp.PromptingPolicy, str]:
     name = yield from dp.branch(
         PickBoyName(list(names), list(picked_already)).using(unique_pp)
     )
@@ -264,7 +264,7 @@ def pick_boy_name(
 @dp.strategy
 def pick_nice_boy_name(
     names: Sequence[str],
-) -> dp.Strategy[dp.Branch | dp.Fail, "PickNiceBoyNameIP", str]:
+) -> dp.Strategy[dp.Branch | dp.Failure, "PickNiceBoyNameIP", str]:
     name = yield from dp.branch(
         dp.iterated(
             lambda prev: pick_boy_name(names, prev).using(
@@ -278,4 +278,4 @@ def pick_nice_boy_name(
 
 @dataclass
 class PickNiceBoyNameIP:
-    pick_boy_name: dp.Policy[dp.Branch | dp.Fail, dp.PromptingPolicy]
+    pick_boy_name: dp.Policy[dp.Branch | dp.Failure, dp.PromptingPolicy]

@@ -43,7 +43,7 @@
       nodes:
         1: {kind: Branch}
         2: {kind: Success}
-        3: {kind: Fail}
+        3: {kind: Failure}
         4: {kind: Success}
     test_feedback:
       - node_id: 2

@@ -18,7 +18,7 @@ from delphyne.stdlib.models import (
 )
 from delphyne.stdlib.nodes import (
     Branch,
-    Fail,
+    Failure,
     branch,
     ensure,
     fail,
