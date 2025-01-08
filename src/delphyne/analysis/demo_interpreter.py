@@ -371,7 +371,6 @@ def _evaluate_test(
         )
         if status == "stop":
             break
-
     ref = tracer.trace.convert_global_node_path(tree.ref)
     return fb.TestFeedback(diagnostics, ref.id)
 

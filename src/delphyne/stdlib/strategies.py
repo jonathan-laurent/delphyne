@@ -2,8 +2,11 @@
 Defining the `@strategy` decorator.
 """
 
+# pyright: basic
+
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any, Protocol, overload
 
 import delphyne.core as dp
 
@@ -26,12 +29,40 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
     #     return self.using(get_policy)
 
 
+class _StrategyDecorator(Protocol):
+    def __call__[**A, N: dp.Node, P, T](
+        self,
+        f: Callable[A, dp.Strategy[N, P, T]],
+    ) -> Callable[A, StrategyInstance[N, P, T]]: ...
+
+
+@overload
 def strategy[**A, N: dp.Node, P, T](
     f: Callable[A, dp.Strategy[N, P, T]],
-) -> Callable[A, StrategyInstance[N, P, T]]:
-    def wrapped(
-        *args: A.args, **kwargs: A.kwargs
-    ) -> StrategyInstance[N, P, T]:
-        return StrategyInstance(f, args, kwargs)
+) -> Callable[A, StrategyInstance[N, P, T]]: ...
 
-    return wrapped
+
+@overload
+def strategy(*, name: str | None) -> _StrategyDecorator: ...
+
+
+def strategy(*args: Any, **kwargs: Any) -> Any:
+    if not kwargs and len(args) == 1 and callable(args[0]):
+        f: Any = args[0]
+        return lambda *args, **kwargs: StrategyInstance(f, args, kwargs)
+    elif not args:
+        return lambda f: lambda *args, **kwargs: StrategyInstance(
+            f, args, kwargs, name=kwargs.get("name")
+        )
+    assert False, "Wrong use of @strategy."
+
+
+# def strategy[**A, N: dp.Node, P, T](
+#     f: Callable[A, dp.Strategy[N, P, T]],
+# ) -> Callable[A, StrategyInstance[N, P, T]]:
+#     def wrapped(
+#         *args: A.args, **kwargs: A.kwargs
+#     ) -> StrategyInstance[N, P, T]:
+#         return StrategyInstance(f, args, kwargs)
+
+#     return wrapped

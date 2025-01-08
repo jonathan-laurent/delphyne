@@ -241,11 +241,14 @@ class StrategyComp[N: Node, P, T]:
     comp: Callable[..., Strategy[N, P, T]]
     args: tuple[Any, ...]
     kwargs: dict[str, Any]
+    name: str | None = None
 
     def __call__(self) -> Strategy[N, P, T]:
         return self.comp(*self.args, **self.kwargs)
 
     def strategy_name(self) -> str | None:
+        if self.name is not None:
+            return self.name
         return inspect.function_name(self.comp)
 
     def strategy_arguments(self) -> dict[str, Any]:
