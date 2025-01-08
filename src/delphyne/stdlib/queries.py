@@ -80,6 +80,14 @@ class Query[T](dp.AbstractQuery[T]):
     ) -> dp.Builder[dp.OpaqueSpace[P, T]]:
         return dp.OpaqueSpace[P, T].from_query(self, get_policy)
 
+    # EXPERIMENTAL: a shorter, call-based syntax.
+    def __call__[P](
+        self,
+        inner_policy_type: type[P],
+        get_policy: Callable[[P], dp.AbstractPromptingPolicy],
+    ) -> dp.Builder[dp.OpaqueSpace[P, T]]:
+        return self.using(get_policy, inner_policy_type)
+
 
 def _no_prompt_manager_error() -> str:
     return (

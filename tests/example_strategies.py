@@ -326,25 +326,22 @@ def num_confidence(
 def generate_pairs() -> (
     dp.Strategy[dp.BFS, dp.PromptingPolicy, tuple[int, int]]
 ):
-    # TODO: this is pretty verbose...
+    IP = dp.PromptingPolicy
     x = yield from dp.bfs_branch(
-        PickPositiveInteger(None).using(unique_pp),
+        PickPositiveInteger(None)(IP, lambda p: p),
         confidence_priors=lambda _: [1e-3, 1e-3, 0],
     )
     yield from dp.bfs_factor(
-        num_confidence(None, x).using(lambda _: (dp.dfs(), ())),
-        inner_policy_type=dp.PromptingPolicy,
+        num_confidence(None, x)(IP, lambda _: (dp.dfs(), ()))
     )
     y = yield from dp.bfs_branch(
-        PickPositiveInteger(x).using(unique_pp),
+        PickPositiveInteger(x)(IP, lambda p: p),
         confidence_priors=lambda _: (
             [0.01, 0.001, 1e-8] if x == 1 else [0.1, 0.01, 1e-15]
         ),
-        inner_policy_type=dp.PromptingPolicy,
     )
     yield from dp.bfs_factor(
-        num_confidence(x, y).using(lambda _: (dp.dfs(), ())),
-        inner_policy_type=dp.PromptingPolicy,
+        num_confidence(x, y)(IP, lambda _: (dp.dfs(), ())),
     )
     return (x, y)
 

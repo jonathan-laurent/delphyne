@@ -243,7 +243,7 @@ class StrategyComp[N: Node, P, T]:
     kwargs: dict[str, Any]
     name: str | None = None
 
-    def __call__(self) -> Strategy[N, P, T]:
+    def run_generator(self) -> Strategy[N, P, T]:
         return self.comp(*self.args, **self.kwargs)
 
     def strategy_name(self) -> str | None:
