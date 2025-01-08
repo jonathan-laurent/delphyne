@@ -28,13 +28,13 @@ def test_make_sum():
     wrong_sum_ans = root_space.answer(None, "[4, 6]")
     assert not isinstance(wrong_sum_ans, dp.ParseError)
     wrong_sum = root.child(wrong_sum_ans)
-    assert isinstance(wrong_sum.node, dp.Failure)
+    assert isinstance(wrong_sum.node, dp.Fail)
     assert wrong_sum.node.message == "wrong-sum"
     # Trying to answer with a forbidden number
     forbidden_ans = root_space.answer(None, "[4, 8]")
     assert not isinstance(forbidden_ans, dp.ParseError)
     forbidden = root.child(forbidden_ans)
-    assert isinstance(forbidden.node, dp.Failure)
+    assert isinstance(forbidden.node, dp.Fail)
     assert forbidden.node.message == "forbidden-num"
     # Making a parse error
     parse_error = root_space.answer(None, "4, 8")
