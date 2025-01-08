@@ -142,7 +142,11 @@ class Trace:
             case refs.HintsRef():
                 assert False
             case tuple():
-                element = self.convert_node_path(id, ref.element)
+                assert space is not None
+                nested_root_orig = refs.NestedTreeOf(id, space)
+                nested_root = self.fresh_or_cached_node_id(nested_root_orig)
+                element = self.convert_node_path(nested_root, ref.element)
+                print(f"{pprint.node_path(ref.element)} -> {element}")
         return refs.SpaceElementRef(space, element)
 
     def convert_global_node_path(
