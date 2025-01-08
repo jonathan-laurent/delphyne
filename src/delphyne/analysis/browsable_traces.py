@@ -50,24 +50,21 @@ class RefSimplifier:
         return self.hint_rev_map.actions.get((node, action))
 
     def path_to(
-        self, src_id: refs.GlobalNodePath, dst_id: refs.GlobalNodePath
+        self, orig_id: refs.GlobalNodePath, dst_id: refs.GlobalNodePath
     ) -> Sequence[refs.Hint] | None:
-        # Compute a sequence of hints necessary to go from the source
-        # node __or the root of a directly nested tree__ to the destination.
-        if src_id == dst_id:
-            return ()
+        # Compute a sequence of hints necessary to go from the root of a
+        # tree directly nested within `orig` to the destination.
         match refs.global_path_origin(dst_id):
             case "global_origin":
                 assert False
             case ("nested", dst_origin, _):
-                if dst_origin == src_id:
-                    return ()
-                return None
+                assert dst_origin == orig_id
+                return ()
             case ("child", before, action):
                 action_hints = self.hint_rev_map.actions.get((before, action))
                 if action_hints is None:
                     return None
-                prefix = self.path_to(src_id, before)
+                prefix = self.path_to(orig_id, before)
                 if prefix is None:
                     return None
                 return tuple([*prefix] + [*action_hints])

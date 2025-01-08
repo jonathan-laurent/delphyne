@@ -235,15 +235,15 @@
     prop: &prop_1 [["a", "b"], "F(a, b) == F(b, a) and F(0, 1) == 2"]
   tests:
     - run | success
-    # - run 'invalid' | failure
-    # - at conjecture_expr | go disprove('wrong1') | save wrong1
-    # - load wrong1 | run | success
-    # - load wrong1 | run 'bad_cex' | failure
-    # - load wrong1 | run 'malformed_cex' | failure
-    # - at conjecture_expr | go aggregate(['', 'wrong1', 'wrong2'])
-    # - at conjecture_expr | go aggregate(['', 'unknown', 'wrong2'])
-    # - at conjecture_expr | answer aggregate(['wrong1', 'wrong2'])
-    # - at conjecture_expr | answer aggregate(['', 'wrong1', 'wrong2'])
+    - run 'invalid' | failure
+    - at conjecture_expr | go disprove('wrong1') | save wrong1
+    - load wrong1 | run | success
+    - load wrong1 | run 'bad_cex' | failure
+    - load wrong1 | run 'malformed_cex' | failure
+    - at conjecture_expr | go aggregate(['', 'wrong1', 'wrong2'])
+    - at conjecture_expr | go aggregate(['', 'unknown', 'wrong2'])
+    - at conjecture_expr | answer aggregate(['wrong1', 'wrong2'])
+    - at conjecture_expr | answer aggregate(['', 'wrong1', 'wrong2'])
   queries:
     - query: ConjectureExpr
       args: {vars: *vars_1, prop: *prop_1}
@@ -279,7 +279,7 @@
       - diagnostics: __empty__
       - diagnostics:
         - - "error"
-          - "Not a subtree: aggregate(['', 'wrong1', 'wrong2'])."
+          - "Not a nested tree: aggregate(['', 'wrong1', 'wrong2'])."
       - diagnostics:
         - - "warning"
           - "Unused hints: 'unknown'."
