@@ -41,18 +41,18 @@
   expect:
     trace:
       nodes:
-        0: {kind: Branch}
-        1: {kind: Success}
-        2: {kind: Failure}
-        3: {kind: Success}
+        1: {kind: Branch}
+        2: {kind: Success}
+        3: {kind: Fail}
+        4: {kind: Success}
     test_feedback:
-      - node_id: 1
-        diagnostics: __empty__
       - node_id: 2
+        diagnostics: __empty__
+      - node_id: 3
         diagnostics:
           - ["error", "Success check failed."]
-      - node_id: 3
+      - node_id: 4
         diagnostics: __empty__
-      - node_id: 0
+      - node_id: 1
         diagnostics:
           - ["error", "Failure check failed."]

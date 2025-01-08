@@ -53,7 +53,7 @@ class ObjectLoader:
         self.ctx = ctx
         self.modules: list[Any] = []
         with _append_path(self.ctx.strategy_dirs):
-            for module_name in self.modules:
+            for module_name in ctx.modules:
                 try:
                     module = __import__(module_name)
                     if reload:
@@ -229,7 +229,7 @@ def _interpret_test_run_step(
         if step.until is not None:
             navigator.interrupt = _until_node(step.until)
         try:
-            tree, rem = navigator.follow_hints(tree, step.hints.hints)
+            tree, rem = navigator.follow_hints(tree, step.hints)
         except nv.ReachedFailureNode as e:
             tree = e.tree
             rem = e.remaining_hints

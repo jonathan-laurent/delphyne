@@ -137,7 +137,7 @@ class Hint:
 
 
 @dataclass(frozen=True)
-class Hints:
+class HintsRef:
     """
     References a local space element via a sequence of hints.
     """
@@ -155,7 +155,7 @@ class SpaceElementRef:
     """
 
     space: SpaceRef | None
-    element: AnswerRef | NodeRef | Hints
+    element: AnswerRef | NodeRef | HintsRef
 
 
 type GlobalNodePath = tuple[tuple[SpaceRef, NodePath], ...]

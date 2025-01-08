@@ -78,23 +78,23 @@ class RefSimplifier:
         assert ref.space is not None
         # We start by converting the element answer ref or success path
         match ref.element:
-            case refs.Hints() | refs.AnswerId() | refs.NodeId():
+            case refs.HintsRef() | refs.AnswerId() | refs.NodeId():
                 assert False
             case refs.Answer():
                 aref: nv.AnswerRef = ((id, ref.space), ref.element)
                 if aref in self.hint_rev_map.answers:
                     hint = self.hint_rev_map.answers[aref]
-                    hints = refs.Hints((hint,) if hint is not None else ())
+                    hints = refs.HintsRef((hint,) if hint is not None else ())
                     ref = refs.SpaceElementRef(ref.space, hints)
             case tuple():  # Node path
                 gpath: refs.GlobalNodePath = (*id, (ref.space, ref.element))
                 hints_raw = self.path_to(id, gpath)
                 assert hints_raw is not None
                 hints = tuple(hints_raw)
-                ref = refs.SpaceElementRef(ref.space, refs.Hints(hints))
+                ref = refs.SpaceElementRef(ref.space, refs.HintsRef(hints))
         # We make the space reference implicit if we can ('foo bar'
         # instead of cands{'foo bar'}).
-        assert isinstance(ref.element, refs.Hints)
+        assert isinstance(ref.element, refs.HintsRef)
         tree = self.cache[id]
         node = tree.node
         assert isinstance(node, dp.Node)
@@ -472,12 +472,12 @@ class _TraceTranslator:
         )
 
     def translate_origin(self, id: refs.NodeId) -> fb.NodeOrigin:
-        if id == dp.Trace.GLOBAL_ORIGIN_ID:
-            return "root"
         match self.trace.nodes[id]:
             case refs.ChildOf(parent, action):
                 action_id = self.action_ids[(parent, action)]
                 return ("child", parent.id, action_id)
             case refs.NestedTreeOf(parent, choice):
+                if parent == dp.Trace.GLOBAL_ORIGIN_ID:
+                    return "root"
                 prop_id = self.space_prop_ids[(parent, choice)]
                 return ("nested", parent.id, prop_id)

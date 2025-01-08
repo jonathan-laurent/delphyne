@@ -36,7 +36,8 @@ _answer_id = _s("@") >> _num.map(refs.AnswerId)
 _hintsel = _ident
 _hintsel_colon = _hintsel << _s(":")
 _hint = ps.seq(_hintsel_colon.optional(), _ident).combine(refs.Hint)
-_hints = _s("'") >> _hint.sep_by(_space).map(tuple).map(refs.Hints) << _s("'")
+_hints = _s("'") >> _hint.sep_by(_space).map(tuple) << _s("'")
+_hints_ref = _hints.map(refs.HintsRef)
 
 # SpaceName
 _sname_index = _s("[") >> _num << _s("]")
@@ -49,7 +50,7 @@ _sargs = _s("(") >> _vref.sep_by(_comma) << _s(")")
 _sref = ps.seq(_sname, _sargs.optional(()).map(tuple)).combine(refs.SpaceRef)
 
 # SpaceElementRef
-_seref_hints_val = _hints
+_seref_hints_val = _hints_ref
 _seref_val = _node_id | _answer_id | _seref_hints_val
 _seref_hints = _seref_hints_val.map(lambda hs: refs.SpaceElementRef(None, hs))
 _seref_long = ps.seq(_sref, _s("{") >> _seref_val << _s("}"))

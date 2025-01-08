@@ -139,7 +139,7 @@ class Trace:
                 element = self.fresh_or_cached_answer_id(ref.element, origin)
             case refs.AnswerId() | refs.NodeId():
                 element = ref.element
-            case refs.Hints():
+            case refs.HintsRef():
                 assert False
             case tuple():
                 element = self.convert_node_path(id, ref.element)

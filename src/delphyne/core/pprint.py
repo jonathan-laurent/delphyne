@@ -65,7 +65,7 @@ def hints(hs: Sequence[refs.Hint]):
 
 def space_element_ref(ser: refs.SpaceElementRef) -> str:
     if ser.space is None:
-        assert isinstance(ser.element, refs.Hints)
+        assert isinstance(ser.element, refs.HintsRef)
         return hints(ser.element.hints)
     match ser.element:
         case refs.Answer():
@@ -74,7 +74,7 @@ def space_element_ref(ser: refs.SpaceElementRef) -> str:
             value = answer_id(ser.element)
         case refs.NodeId():
             value = node_id(ser.element)
-        case refs.Hints():
+        case refs.HintsRef():
             value = hints(ser.element.hints)
         case _:
             assert isinstance(ser.element, tuple)
@@ -106,12 +106,12 @@ def test_step(ts: demos.TestStep) -> str:
         case demos.Run(hs, None):
             if not hs:
                 return CmdNames.RUN
-            return f"{CmdNames.RUN} {hints(hs.hints)}"
+            return f"{CmdNames.RUN} {hints(hs)}"
         case demos.Run(hs, until):
             assert until is not None
             res = f"{CmdNames.RUN_UNTIL} {until}"
             if hs:
-                res += f" {hints(hs.hints)}"
+                res += f" {hints(hs)}"
             return res
         case demos.SelectSpace(ref):
             if ts.expects_query:

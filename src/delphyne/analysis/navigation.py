@@ -151,7 +151,7 @@ class Navigator:
             space_ref = ref.space
         space = self.resolve_space_ref(tree, space_ref)
         match ref.element:
-            case refs.Hints():
+            case refs.HintsRef():
                 hints = ref.element.hints
                 elt, rem = self.space_element_from_hints(tree, space, hints)
                 if self.info is not None:

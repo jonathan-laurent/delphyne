@@ -4,6 +4,7 @@ Defining the `@strategy` decorator.
 
 # pyright: basic
 
+import functools
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Protocol, overload
@@ -54,13 +55,19 @@ def strategy[**A, N: dp.Node, P, T](
 def strategy(*, name: str | None) -> _StrategyDecorator: ...
 
 
-def strategy(*args: Any, **kwargs: Any) -> Any:
-    if not kwargs and len(args) == 1 and callable(args[0]):
-        f: Any = args[0]
-        return lambda *args, **kwargs: StrategyInstance(f, args, kwargs)
-    elif not args:
-        return lambda f: lambda *args, **kwargs: StrategyInstance(
-            f, args, kwargs, name=kwargs.get("name")
+def strategy(*dec_args: Any, **dec_kwargs: Any) -> Any:
+    # Using functools.wraps is important so that the object loader can
+    # get the type hints to properly instantiate arguments.
+    if not dec_kwargs and len(dec_args) == 1 and callable(dec_args[0]):
+        f: Any = dec_args[0]
+        return functools.wraps(f)(
+            lambda *args, **kwargs: StrategyInstance(f, args, kwargs)
+        )
+    elif not dec_args:
+        return lambda f: functools.wraps(f)(
+            lambda *args, **kwargs: StrategyInstance(
+                f, args, kwargs, name=dec_kwargs.get("name")
+            )
         )
     assert False, "Wrong use of @strategy."
 

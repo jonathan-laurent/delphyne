@@ -10,10 +10,10 @@
             ]
         },
         {
-            "name": "Debug Server Test",
+            "name": "Debug Demo Interpreter Test",
             "type": "debugpy",
             "request": "launch",
-            "program": "tests/test_server.py",
+            "program": "tests/test_demo_interpreter.py",
             "console": "integratedTerminal"
         },
         {

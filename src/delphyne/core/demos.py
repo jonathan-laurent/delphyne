@@ -7,7 +7,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from delphyne.core.refs import Hints, SpaceRef
+from delphyne.core.refs import Hint, SpaceRef
 
 type TestCommandString = str
 
@@ -44,7 +44,7 @@ type NodeTag = str
 
 @dataclass
 class Run:
-    hints: Hints
+    hints: Sequence[Hint]
     until: NodeTag | None
 
 
