@@ -268,24 +268,25 @@ def _interpret_test_select_step(
     choice_ref_pretty = dp.pprint.space_ref(space_ref)
     try:
         space = navigator.resolve_space_ref(tree, space_ref)
+        source = space.source()
         _unused_hints(diagnostics, nav_info.unused_hints)
         if step.expects_query:
-            if not isinstance(space, dp.AttachedQuery):
+            if not isinstance(source, dp.AttachedQuery):
                 msg = f"Not a query: {choice_ref_pretty}."
                 diagnostics.append(("error", msg))
                 return tree, "stop"
-            answer = hint_resolver(space, None)
+            answer = hint_resolver(source, None)
             if answer is None:
                 msg = f"Query not answered: {choice_ref_pretty}."
                 diagnostics.append(("error", msg))
                 return tree, "stop"
             return tree, "continue"
         else:
-            if not isinstance(space, dp.NestedTree):
-                msg = f"Not a subtree: {choice_ref_pretty}."
+            if not isinstance(source, dp.NestedTree):
+                msg = f"Not a nested tree: {choice_ref_pretty}."
                 diagnostics.append(("error", msg))
                 return tree, "stop"
-            tree = space.spawn_tree()
+            tree = source.spawn_tree()
             return tree, "continue"
     except nv.ReachedFailureNode as e:
         tree = e.tree
