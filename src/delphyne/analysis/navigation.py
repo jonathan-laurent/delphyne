@@ -107,6 +107,11 @@ class InvalidSpace(Exception):
     space_name: refs.SpaceName
 
 
+@dataclass
+class NoPrimarySpace(Exception):
+    tree: AnyTree
+
+
 #####
 ##### Navigator
 #####
@@ -144,9 +149,8 @@ class Navigator:
         # Use the primary space if no space name is provided.
         if ref.space is None:
             space_ref = tree.node.primary_space_ref()
-            assert (
-                space_ref is not None
-            ), f"Node {tree.node.effect_name()} has no primary space"
+            if space_ref is None:
+                raise NoPrimarySpace(tree)
         else:
             space_ref = ref.space
         space = self.resolve_space_ref(tree, space_ref)
@@ -189,6 +193,8 @@ class Navigator:
                 tree = source.spawn_tree()
                 final, hints = self.follow_hints(tree, hints)
                 success = cast(dp.Success[Any], final.node)
+                # `follow_hints` raises an exception if a success is not
+                # reached.
                 assert isinstance(success, dp.Success)
                 return success.success, hints
 

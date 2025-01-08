@@ -305,6 +305,11 @@ def _interpret_test_select_step(
         msg = f"Invalid reference to subchoice '{name}'."
         diagnostics.append(("error", msg))
         return tree, "stop"
+    except nv.NoPrimarySpace as e:
+        tree = e.tree
+        msg = f"Node {tree.node.effect_name()} has no primary space"
+        diagnostics.append(("error", msg))
+        return tree, "stop"
 
 
 def _interpret_test_step(
