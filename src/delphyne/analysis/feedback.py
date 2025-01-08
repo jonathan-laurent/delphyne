@@ -128,6 +128,9 @@ class Action:
     building the action. Indeed, in the path view, we get a sequence of
     actions and for each of them the list of success paths that were
     involved in building that action.
+
+    Note that `hints` is not the same as `ref.with_hints`. Both could
+    plausibly be shown in the UI but the former is more concise.
     """
 
     ref: Reference

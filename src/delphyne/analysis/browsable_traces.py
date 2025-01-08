@@ -437,10 +437,15 @@ class _TraceTranslator:
         ref_str = fb.Reference(dp.pprint.value_ref(action), None)
         hints_str: list[str] | None = None
         if self.simplifier is not None:
+            # There are two ways actions could be shown in the UI using
+            # hints. See `feedback.Action`.
             full_src_ref = self.trace.expand_node_id(src)
             full_aref = self.trace.expand_value_ref(src, action)
             hints = self.simplifier.action(full_src_ref, full_aref)
-            ref_str.with_hints = dp.pprint.value_ref(action)
+            simplified_value_ref = self.simplifier.value_ref(
+                full_src_ref, full_aref
+            )
+            ref_str.with_hints = dp.pprint.value_ref(simplified_value_ref)
             if hints is None:
                 hints_str = None
             else:
