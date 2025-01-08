@@ -143,14 +143,15 @@ def synthetize_fun(
     properties for all inputs.
     """
     res = yield from make_conjecture(
-        cands=conjecture_expr(vars, prop).using(lambda p: p.conjecture),
-        disprove=lambda conj: (
-            find_counterexample(vars, prop, conj).using(lambda p: p.disprove)
+        cands=conjecture_expr(vars, prop).using(
+            lambda p: p.conjecture, SynthetizeFunIP
         ),
-        aggregate=lambda conjs: (
-            RemoveDuplicates(conjs).using(lambda p: p.aggregate)
+        disprove=lambda conj: find_counterexample(vars, prop, conj).using(
+            lambda p: p.disprove
         ),
-        inner_policy_type=SynthetizeFunIP,
+        aggregate=lambda conjs: RemoveDuplicates(conjs).using(
+            lambda p: p.aggregate
+        ),
     )
     # TODO: prove correctness!
     return (vars, res)

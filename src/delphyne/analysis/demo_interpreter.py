@@ -380,9 +380,9 @@ def _evaluate_test(
 #####
 
 
-def evaluate_demo_and_return_tree(
+def evaluate_demo_and_return_trace(
     demo: dm.Demonstration, loader: ObjectLoader
-) -> tuple[fb.DemoFeedback, dp.AnyTree | None]:
+) -> tuple[fb.DemoFeedback, dp.Trace | None]:
     feedback = fb.DemoFeedback(fb.Trace({}), {}, {}, [], [], [], [])
     try:
         strategy = loader.load_strategy_instance(demo.strategy, demo.args)
@@ -405,12 +405,12 @@ def evaluate_demo_and_return_tree(
     except DemoHintResolver.InvalidQuery as e:
         msg = f"Failed to load query:\n{e.exn}"
         feedback.query_diagnostics.append((e.id, ("error", msg)))
-        return feedback, tree
+        return feedback, trace
     except DemoHintResolver.InvalidAnswer as e:
         msg = f"Failed to parse answer:\n{e.parse_error}"
         diag = ("error", msg)
         feedback.answer_diagnostics.append(((e.query_id, e.answer_id), diag))
-        return feedback, tree
+        return feedback, trace
     saved: SavedNodes = {}
     rm: nv.HintReverseMap = nv.HintReverseMap()
     for test_str in demo.tests:
@@ -430,11 +430,11 @@ def evaluate_demo_and_return_tree(
         trace.convert_answer_ref(k).id: v
         for k, v in hresolver.get_answer_refs().items()
     }
-    return feedback, tree
+    return feedback, trace
 
 
 def evaluate_demo(
     demo: dm.Demonstration, loader: ObjectLoader
 ) -> fb.DemoFeedback:
-    feedback, _ = evaluate_demo_and_return_tree(demo, loader)
+    feedback, _ = evaluate_demo_and_return_trace(demo, loader)
     return feedback

@@ -1,0 +1,58 @@
+#####
+##### Simple unit tests for the server
+#####
+
+
+##### Used for testing the UI
+
+- strategy: make_sum
+  args:
+    allowed: [9, 6, 2]
+    goal: 11
+  tests:
+    - run
+  queries: []
+
+
+##### Testing make_sum
+
+
+- demonstration: make_sum_demo
+  strategy: make_sum
+  args:
+    allowed: [9, 6, 2]
+    goal: 11
+  tests:
+    - run | success
+    - run 'wrong_sum' | success  # error
+    - run 'alt_order'
+    - failure | run
+  queries:
+    - query: MakeSum
+      args:
+        allowed: [9, 6, 2]
+        goal: 11
+      answers:
+        - answer: "[9, 2]"
+        - label: "wrong_sum"
+          answer: "[9, 6]"
+        - label: "alt_order"
+          answer: "[2, 9]"
+  expect:
+    trace:
+      nodes:
+        0: {kind: Branch}
+        1: {kind: Success}
+        2: {kind: Failure}
+        3: {kind: Success}
+    test_feedback:
+      - node_id: 1
+        diagnostics: __empty__
+      - node_id: 2
+        diagnostics:
+          - ["error", "Success check failed."]
+      - node_id: 3
+        diagnostics: __empty__
+      - node_id: 0
+        diagnostics:
+          - ["error", "Failure check failed."]

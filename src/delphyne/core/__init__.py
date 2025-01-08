@@ -9,6 +9,9 @@ from delphyne.core import (
     parse,
     pprint,
 )
+from delphyne.core.demos import (
+    Demonstration,
+)
 from delphyne.core.environments import (
     ExampleDatabase,
     LogMessage,
@@ -29,7 +32,12 @@ from delphyne.core.queries import (
     ParseError,
     Parser,
 )
-from delphyne.core.refs import Answer, AnswerModeName, Tracked, Value
+from delphyne.core.refs import (
+    Answer,
+    AnswerModeName,
+    Tracked,
+    Value,
+)
 from delphyne.core.reification import (
     TreeCache,
     TreeHook,
