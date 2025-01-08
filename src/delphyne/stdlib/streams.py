@@ -4,7 +4,7 @@ Utilities to work with streams.
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Never, Protocol
 
 import delphyne.core as dp
 from delphyne.stdlib.models import NUM_REQUESTS_BUDGET
@@ -95,3 +95,18 @@ async def bind_stream[A, B](
             continue
         async for new_msg in f(msg.value):
             yield new_msg
+
+
+@dataclass
+class ElementStore[T](Exception):
+    value: dp.Tracked[T] | None = None
+
+
+async def take_one[T](
+    stream: dp.Stream[T], store: ElementStore[T]
+) -> dp.Stream[Never]:
+    async for msg in stream:
+        if isinstance(msg, dp.Yield):
+            store.value = msg.value
+            return
+        yield msg
