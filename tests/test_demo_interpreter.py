@@ -80,16 +80,17 @@ def load_demo(demo_label: str) -> DemoExpectTest:
     "demo_label",
     [
         "make_sum_demo",
-        # "make_sum_stuck",
-        # "make_sum_selectors",
-        # "make_sum_at",
-        # "make_sum_test_parse_error",
-        # "trivial_strategy",
-        # "buggy_strategy",
-        # "strategy_not_found",
-        # "invalid_arguments",
-        # "unknown_query",
-        # "synthetize_fun_demo",
+        "make_sum_selectors",
+        "make_sum_at",
+        "make_sum_stuck",
+        "make_sum_test_parse_error",
+        "trivial_strategy",
+        "buggy_strategy",
+        "strategy_not_found",
+        "invalid_arguments",
+        "unknown_query",
+        "invalid_answer",
+        "synthetize_fun_demo",
         # "invalid_answer",
         # "test_iterated",
     ],
@@ -102,4 +103,4 @@ def test_server(demo_label: str):
 
 if __name__ == "__main__":
     # Entry point for the debugger (see "Debug Server Tests" configuration).
-    test_server("make_sum_demo")
+    test_server("synthetize_fun_demo")

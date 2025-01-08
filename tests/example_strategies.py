@@ -8,7 +8,7 @@ test the server (see `test_server`).
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, ClassVar, Sequence, TypeAlias, cast
+from typing import Any, ClassVar, Never, Sequence, TypeAlias, cast
 
 import delphyne as dp
 
@@ -279,3 +279,20 @@ def pick_nice_boy_name(
 @dataclass
 class PickNiceBoyNameIP:
     pick_boy_name: dp.Policy[dp.Branch | dp.Failure, dp.PromptingPolicy]
+
+
+#####
+##### Trivial strategy examples
+#####
+
+
+@dp.strategy
+def trivial_strategy() -> dp.Strategy[Never, object, int]:
+    return 42
+    yield
+
+
+@dp.strategy
+def buggy_strategy() -> dp.Strategy[dp.Failure, object, int]:
+    yield from dp.ensure(True, "ok")
+    assert False
