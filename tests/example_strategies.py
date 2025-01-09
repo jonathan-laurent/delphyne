@@ -283,13 +283,13 @@ class PickNiceBoyNameIP:
 # We want to artificially create the following tree:
 # The confidences are annotated as costs: cost = -log_10(confidence).
 #
-#   @ -- (3) 1 -- @ -- (2) -- 11
+#   @ -- 1 (3) -- @ -- 0 (2) -- 11
 #   |             |
-#   |             + -- (3) -- 12
+#   |             + -- 0 (3) -- 12
 #   |
-#   + -- (3) 0 -- @ -- (1) -- 21
+#   + -- 0 (3) -- @ -- 0 (1) -- 21
 #                 |
-#                 + -- (2) -- 22
+#                 + -- 0 (2) -- 22
 #
 # Confidences in parentheses are priors.
 

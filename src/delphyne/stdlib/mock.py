@@ -3,18 +3,20 @@ Special prompting policies that rely on mock oracles, for debugging.
 """
 
 import json
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from typing import Any
 
 import delphyne as dp
 import delphyne.core.demos as dm
 import delphyne.core.refs as refs
 from delphyne.stdlib.models import NUM_REQUESTS_BUDGET
-from delphyne.stdlib.policies import PromptingPolicy
+from delphyne.stdlib.policies import PromptingPolicy, prompting_policy
 
 
 def demo_mock_oracle(
-    demo: dm.Demonstration, rev_search: bool = False
+    demo: dm.Demonstration,
+    rev_search: bool = False,
+    fail_on_missing: bool = True,
 ) -> PromptingPolicy:
     def find_answers(query: dp.AbstractQuery[Any]) -> Iterable[refs.Answer]:
         for q in demo.queries:
@@ -31,6 +33,10 @@ def demo_mock_oracle(
     ) -> dp.Stream[T]:
         answers = list(find_answers(query.query))
         i, n = 0, len(answers)
+        if n == 0:
+            if fail_on_missing:
+                raise ValueError(f"Missing answer for {query.query}")
+            return
         while True:
             answer = answers[n - 1 - i if rev_search else i]
             i = (i + 1) % n
@@ -42,3 +48,18 @@ def demo_mock_oracle(
                 yield dp.Yield(parsed)
 
     return PromptingPolicy(policy)
+
+
+@prompting_policy
+async def fixed_oracle[T](
+    query: dp.AttachedQuery[T],
+    env: dp.PolicyEnv,
+    oracle: Callable[[dp.AbstractQuery[Any]], Iterable[dp.Answer]],
+) -> dp.Stream[T]:
+    for answer in oracle(query.query):
+        budget = dp.Budget({NUM_REQUESTS_BUDGET: 1})
+        yield dp.Barrier(budget)
+        yield dp.Spent(budget)
+        parsed = query.answer(answer.mode, answer.text)
+        if not isinstance(parsed, dp.ParseError):
+            yield dp.Yield(parsed)
