@@ -21,6 +21,12 @@ vsce package
 code --install-extension *.vsix
 ```
 
+To typecheck everything:
+
+```sh
+npx tsc --noEmit
+```
+
 Instead of the last step, one can go to the "Extensions" menus, click on the three dots and select "Install from VSIX".
 
 
@@ -68,6 +74,11 @@ sudo lsof -t -i :8000
 sudo kill -9 $(sudo lsof -t -i :8000)
 ```
 
+If you are bothered by copilot actions:
+
+```json
+"github.copilot.editor.enableCodeActions": false
+```
 
 ## Useful VSCode Shortcuts
 

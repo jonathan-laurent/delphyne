@@ -1,0 +1,5 @@
+# Delphyne configuration
+
+strategy_dirs: ["."]
+modules: ["example_strategies"]
+demo_files: []

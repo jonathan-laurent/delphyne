@@ -12,7 +12,7 @@ import {
   ValueRepr,
   TraceAnswerId,
   TraceNodeId,
-  Subtree,
+  NestedTree,
 } from "./stubs/feedback";
 import { Element } from "./elements";
 import { DemoQuery, Demonstration } from "./stubs/demos";
@@ -36,7 +36,7 @@ const SUCCESS_ICON: "pass" | "check" = "pass";
 const FAILURE_ICON: "close" | "error" = "error";
 const MAYBE_SUCCESS_ICON = "question";
 const QUERY_ICON = "comment";
-const SUBTREE_ICON = "type-hierarchy-super";
+const NESTED_TREE_ICON = "type-hierarchy-super";
 const NODE_ICON = "circle-outline";
 const SELECTED_NODE_ICON = "circle-filled";
 
@@ -444,9 +444,9 @@ function collectDescendants(
   for (const action of node.actions) {
     collectDescendants(trace, action.destination, acc);
   }
-  for (const [_, subtree] of node.properties) {
-    if (subtree.kind === "subtree" && subtree.node_id !== null) {
-      collectDescendants(trace, subtree.node_id, acc);
+  for (const [_, nestedTree] of node.properties) {
+    if (nestedTree.kind === "nested" && nestedTree.node_id !== null) {
+      collectDescendants(trace, nestedTree.node_id, acc);
     }
   }
 }
@@ -598,10 +598,10 @@ class NodeView implements vscode.TreeDataProvider<NodeViewItem> {
               item.iconPath = new vscode.ThemeIcon("symbol-misc");
             }
             break;
-          case "subtree":
+          case "nested":
             item.description = element.prop.strategy;
             if (USE_PROPERTY_ICONS) {
-              item.iconPath = new vscode.ThemeIcon(SUBTREE_ICON);
+              item.iconPath = new vscode.ThemeIcon(NESTED_TREE_ICON);
             }
             if (NAME_FIRST) {
               item.label = item.description;
@@ -661,7 +661,7 @@ class NodeView implements vscode.TreeDataProvider<NodeViewItem> {
         ];
       }
       const children: PropertyItem[] = node.properties.map(([k, v]) => {
-        const node_id = v.kind === "subtree" ? v.node_id : null;
+        const node_id = v.kind === "nested" ? v.node_id : null;
         return {
           kind: "property",
           label: k.with_hints ?? k.with_ids,
@@ -673,7 +673,7 @@ class NodeView implements vscode.TreeDataProvider<NodeViewItem> {
     } else {
       switch (element.kind) {
         case "property": {
-          if (element.prop.kind === "subtree") {
+          if (element.prop.kind === "nested") {
             const trace = this.parent.getPointedTree()?.tree.trace;
             if (!trace || !node) {
               return [];
@@ -856,7 +856,7 @@ type PathViewNodeItem = {
 
 type PathViewSubtreeItem = {
   kind: "path_subtree";
-  subtree: Subtree;
+  subtree: NestedTree;
   path: PathViewNodeItem[];
   expanded: boolean;
 };
@@ -897,7 +897,7 @@ function treeItemOfPathViewSubtreeItem(
 ): vscode.TreeItem {
   const subtree = subtreeItem.subtree;
   const item = new vscode.TreeItem(subtree.strategy);
-  item.iconPath = new vscode.ThemeIcon(SUBTREE_ICON);
+  item.iconPath = new vscode.ThemeIcon(NESTED_TREE_ICON);
   item.id = uniquePathViewItemId();
   if (subtreeItem.path.length > 0) {
     item.collapsibleState = item.collapsibleState = subtreeItem.expanded
@@ -990,13 +990,13 @@ function computePath(
   if (dst.origin === "root") {
     throw Error("Invalid success path");
   }
-  if (dst.origin[0] === "sub") {
+  if (dst.origin[0] === "nested") {
     const [_, before_id, prop_id] = dst.origin;
     const sub_parent = trace.nodes[before_id];
     const path = computePath(trace, src_id, before_id);
     const subtree_item: PathViewSubtreeItem = {
       kind: "path_subtree",
-      subtree: sub_parent.properties[prop_id][1] as Subtree,
+      subtree: sub_parent.properties[prop_id][1] as NestedTree,
       path: singletonPath(dst_id, dst),
       expanded: false,
     };

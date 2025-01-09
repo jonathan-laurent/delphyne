@@ -3,7 +3,7 @@
   "displayName": "Delphyne",
   "description": "Language support for Delphyne in VSCode",
   "publisher": "jonathan-laurent",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.89.0"
   },
