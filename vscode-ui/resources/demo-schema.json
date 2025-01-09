@@ -6,6 +6,18 @@
           "title": "Answer",
           "type": "string"
         },
+        "mode": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mode"
+        },
         "label": {
           "anyOf": [
             {

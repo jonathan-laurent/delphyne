@@ -27,10 +27,10 @@ export interface Data {
   content: string;
 }
 
-export interface Subtree {
-  kind: "subtree";
+export interface NestedTree {
+  kind: "nested";
   strategy: string;
-  args: { [key: string]: ValueRepr };
+  args: Record<string, ValueRepr>;
   node_id: TraceNodeId | null;
 }
 
@@ -43,11 +43,11 @@ export interface Answer {
 export interface Query {
   kind: "query";
   name: string;
-  args: { [key: string]: unknown };
+  args: Record<string, unknown>;
   answers: Answer[];
 }
 
-export type NodeProperty = Data | Subtree | Query;
+export type NodeProperty = Data | NestedTree | Query;
 
 export interface Action {
   ref: Reference;
@@ -61,7 +61,7 @@ export interface Action {
 export type NodeOrigin =
   | "root"
   | ["child", TraceNodeId, TraceActionId]
-  | ["sub", TraceNodeId, TraceNodePropertyId];
+  | ["nested", TraceNodeId, TraceNodePropertyId];
 
 export interface Node {
   kind: string;
@@ -75,7 +75,7 @@ export interface Node {
 }
 
 export interface Trace {
-  nodes: { [key: number]: Node };
+  nodes: Record<TraceNodeId, Node>;
 }
 
 export type DemoQueryId = number;
@@ -89,10 +89,11 @@ export interface TestFeedback {
 
 export interface DemoFeedback {
   trace: Trace;
-  answer_refs: { [key: number]: DemoAnswerId };
-  saved_nodes: { [key: string]: TraceNodeId };
+  answer_refs: Record<TraceAnswerId, DemoAnswerId>;
+  saved_nodes: Record<string, TraceNodeId>;
   test_feedback: TestFeedback[];
   global_diagnostics: Diagnostic[];
   query_diagnostics: [DemoQueryId, Diagnostic][];
   answer_diagnostics: [DemoAnswerId, Diagnostic][];
 }
+

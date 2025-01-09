@@ -4,11 +4,14 @@ export type TestCommandString = string;
 
 export interface Answer {
   answer: string;
-  label?: string | null;
-  example?: boolean | null;
+  mode: string | null;
+  label: string | null;
+  example: boolean | null;
   __loc: vscode.Range;
   __loc__answer: vscode.Range;
-  __loc__label?: vscode.Range;
+  __loc__mode: vscode.Range;
+  __loc__label: vscode.Range;
+  __loc__example: vscode.Range;
 }
 
 export interface DemoQuery {
@@ -27,7 +30,7 @@ export interface Demonstration {
   args: { [key: string]: unknown };
   tests: TestCommandString[];
   queries: DemoQuery[];
-  demonstration?: string | null;
+  demonstration: string | null;
   __loc: vscode.Range;
   __loc__strategy: vscode.Range;
   __loc__args: vscode.Range;
@@ -35,7 +38,7 @@ export interface Demonstration {
   __loc_items__tests: vscode.Range[];
   __loc__queries: vscode.Range;
   __loc_items__queries: vscode.Range[];
-  __loc__demonstration?: vscode.Range;
+  __loc__demonstration: vscode.Range;
 }
 
 export type DemoFile = Demonstration[];

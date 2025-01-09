@@ -1,5 +1,10 @@
 """
-Automatically generate Typescript translations for demos.py and feedback.py.
+Automatically generate Typescript translations for demos.py and
+feedback.py.
+
+An LLM is called to make the translation so make sure to put your OpenAI
+API key in `OPENAI_API_KEY`. Also, always check the diff before
+committing the changes.
 
 Usage: python -m delphyne.server.generate_stubs <demos|feedback>
 """
@@ -100,7 +105,7 @@ if __name__ == "__main__":
             ]
             convert_stub(demo_file, instructions)
         case [_, "feedback"]:
-            file = Path(__file__).parent / "feedback.py"
+            file = Path(__file__).parent.parent / "analysis" / "feedback.py"
             convert_stub(file, [])
         case args:
             assert False, f"Unknown arguments: {args}"
