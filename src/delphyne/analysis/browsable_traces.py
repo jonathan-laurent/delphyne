@@ -479,8 +479,8 @@ class _TraceTranslator:
             case refs.ChildOf(parent, action):
                 action_id = self.action_ids[(parent, action)]
                 return ("child", parent.id, action_id)
-            case refs.NestedTreeOf(parent, choice):
+            case refs.NestedTreeOf(parent, space):
                 if parent == dp.Trace.GLOBAL_ORIGIN_ID:
                     return "root"
-                prop_id = self.space_prop_ids[(parent, choice)]
+                prop_id = self.space_prop_ids[(parent, space)]
                 return ("nested", parent.id, prop_id)

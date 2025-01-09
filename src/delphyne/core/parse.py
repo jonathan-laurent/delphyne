@@ -74,7 +74,7 @@ _run = _run.map(lambda hs: demos.Run(hs, None))
 _until = ps.seq(_hintsel, (_space >> _hints).optional(default=()))
 _until = _until.combine(lambda u, hs: demos.Run(hs, u))
 _until = _s(CmdNames.RUN_UNTIL) >> _space >> _until
-_gosub = _s(CmdNames.SUBCHOICE) >> _space >> _sref
+_gosub = _s(CmdNames.SELECT) >> _space >> _sref
 _gosub = _gosub.map(lambda ref: demos.SelectSpace(ref, expects_query=False))
 _answer = _s(CmdNames.ANSWER) >> _space >> _sref
 _answer = _answer.map(lambda ref: demos.SelectSpace(ref, expects_query=True))

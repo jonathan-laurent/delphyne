@@ -77,7 +77,7 @@ class IdentifierResolver(Protocol):
 @dataclass
 class Stuck(Exception):
     tree: AnyTree
-    choice_ref: refs.SpaceRef
+    space_ref: refs.SpaceRef
     remaining_hints: Sequence[refs.Hint]
 
 

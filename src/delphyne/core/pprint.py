@@ -104,14 +104,14 @@ def node_origin(no: refs.NodeOrigin) -> str:
     match no:
         case refs.ChildOf(node, action):
             return f"child({node.id}, {value_ref(action)})"
-        case refs.NestedTreeOf(node, choice):
-            return f"nested({node.id}, {space_ref(choice)})"
+        case refs.NestedTreeOf(node, space):
+            return f"nested({node.id}, {space_ref(space)})"
 
 
 class CmdNames:
     RUN = "run"
     RUN_UNTIL = "at"
-    SUBCHOICE = "go"
+    SELECT = "go"
     ANSWER = "answer"
     IS_SUCCESS = "success"
     IS_FAILURE = "failure"
@@ -135,7 +135,7 @@ def test_step(ts: demos.TestStep) -> str:
             if ts.expects_query:
                 return f"{CmdNames.ANSWER} {space_ref(ref)}"
             else:
-                return f"{CmdNames.SUBCHOICE} {space_ref(ref)}"
+                return f"{CmdNames.SELECT} {space_ref(ref)}"
         case demos.IsSuccess():
             return CmdNames.IS_SUCCESS
         case demos.IsFailure():

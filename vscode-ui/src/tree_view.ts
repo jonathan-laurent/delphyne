@@ -849,19 +849,19 @@ type PathViewNodeItem = {
   kind: "path_node";
   node: Node;
   node_id: TraceNodeId;
-  subtrees: PathViewSubtreeItem[];
+  nestedTrees: PathNestedTreeItem[];
   expanded: boolean;
   selected: boolean;
 };
 
-type PathViewSubtreeItem = {
-  kind: "path_subtree";
-  subtree: NestedTree;
+type PathNestedTreeItem = {
+  kind: "path_nested_tree";
+  nestedTrees: NestedTree;
   path: PathViewNodeItem[];
   expanded: boolean;
 };
 
-type PathViewItem = PathViewNodeItem | PathViewSubtreeItem;
+type PathViewItem = PathViewNodeItem | PathNestedTreeItem;
 
 // Vscode tries to be too samrt and remember which node items were collapsed between each
 // view refresh. By default, it tries to infer this information from labels but it gets it
@@ -884,7 +884,7 @@ function treeItemOfPathViewNodeItem(
   const icon = nodeItem.selected ? SELECTED_NODE_ICON : NODE_ICON;
   item.iconPath = new vscode.ThemeIcon(icon);
   item.id = uniquePathViewItemId();
-  if (nodeItem.subtrees.length > 0) {
+  if (nodeItem.nestedTrees.length > 0) {
     item.collapsibleState = nodeItem.expanded
       ? vscode.TreeItemCollapsibleState.Expanded
       : vscode.TreeItemCollapsibleState.Expanded;
@@ -892,15 +892,15 @@ function treeItemOfPathViewNodeItem(
   return item;
 }
 
-function treeItemOfPathViewSubtreeItem(
-  subtreeItem: PathViewSubtreeItem,
+function treeItemOfPathViewNestedTreeItem(
+  nestedTreeItem: PathNestedTreeItem,
 ): vscode.TreeItem {
-  const subtree = subtreeItem.subtree;
-  const item = new vscode.TreeItem(subtree.strategy);
+  const nestedTree = nestedTreeItem.nestedTrees;
+  const item = new vscode.TreeItem(nestedTree.strategy);
   item.iconPath = new vscode.ThemeIcon(NESTED_TREE_ICON);
   item.id = uniquePathViewItemId();
-  if (subtreeItem.path.length > 0) {
-    item.collapsibleState = item.collapsibleState = subtreeItem.expanded
+  if (nestedTreeItem.path.length > 0) {
+    item.collapsibleState = item.collapsibleState = nestedTreeItem.expanded
       ? vscode.TreeItemCollapsibleState.Expanded
       : vscode.TreeItemCollapsibleState.Expanded;
   }
@@ -910,42 +910,42 @@ function treeItemOfPathViewSubtreeItem(
 function childrenOfPathViewNodeItem(
   nodeItem: PathViewNodeItem,
 ): PathViewItem[] {
-  return nodeItem.subtrees;
+  return nodeItem.nestedTrees;
 }
 
-function childrenOfPathViewSubtreeItem(
-  subtreeItem: PathViewSubtreeItem,
+function childrenOfPathViewNestedTreeItem(
+  nestedTreeItem: PathNestedTreeItem,
 ): PathViewNodeItem[] {
-  return subtreeItem.path;
+  return nestedTreeItem.path;
 }
 
 function addChildToPath(
   path: PathViewNodeItem[],
   child: PathViewNodeItem,
-  action_subtrees: PathViewSubtreeItem[],
+  actionNestedTrees: PathNestedTreeItem[],
 ): void {
   const last = path[path.length - 1];
-  if (last.subtrees.length === 0) {
-    for (const subtree of action_subtrees) {
-      last.subtrees.push(subtree);
+  if (last.nestedTrees.length === 0) {
+    for (const nestedTree of actionNestedTrees) {
+      last.nestedTrees.push(nestedTree);
     }
     path.push(child);
-  } else if (last.subtrees.length === 1) {
-    addChildToPath(last.subtrees[0].path, child, action_subtrees);
+  } else if (last.nestedTrees.length === 1) {
+    addChildToPath(last.nestedTrees[0].path, child, actionNestedTrees);
   } else {
     throw Error("Invalid path");
   }
 }
 
-function addSubTreeToPath(
+function addNestedTreeToPath(
   path: PathViewNodeItem[],
-  subtree: PathViewSubtreeItem,
+  nestedTree: PathNestedTreeItem,
 ): void {
   const last = path[path.length - 1];
-  if (last.subtrees.length === 0) {
-    last.subtrees.push(subtree);
-  } else if (last.subtrees.length === 1) {
-    addSubTreeToPath(last.subtrees[0].path, subtree);
+  if (last.nestedTrees.length === 0) {
+    last.nestedTrees.push(nestedTree);
+  } else if (last.nestedTrees.length === 1) {
+    addNestedTreeToPath(last.nestedTrees[0].path, nestedTree);
   } else {
     throw Error("Invalid path");
   }
@@ -953,12 +953,12 @@ function addSubTreeToPath(
 
 function setDefaultExpansionState(path: PathViewNodeItem[]): void {
   const last = path[path.length - 1];
-  if (last.subtrees.length === 0) {
+  if (last.nestedTrees.length === 0) {
     last.selected = true;
-  } else if (last.subtrees.length === 1) {
+  } else if (last.nestedTrees.length === 1) {
     last.expanded = true;
-    last.subtrees[0].expanded = true;
-    setDefaultExpansionState(last.subtrees[0].path);
+    last.nestedTrees[0].expanded = true;
+    setDefaultExpansionState(last.nestedTrees[0].path);
   }
 }
 
@@ -967,7 +967,7 @@ function singletonPath(nodeId: TraceNodeId, node: Node): PathViewNodeItem[] {
     kind: "path_node",
     node: node,
     node_id: nodeId,
-    subtrees: [],
+    nestedTrees: [],
     expanded: false,
     selected: false,
   };
@@ -982,7 +982,7 @@ function computePath(
   // The resulting path starts with node `src`.
   // It ends with either:
   // - the node `dst` with no children
-  // - a node `end` with a single subtree child with a path to `dst`.
+  // - a node `end` with a single nested tree child with a path to `dst`.
   if (src_id === dst_id) {
     return singletonPath(src_id, trace.nodes[src_id]);
   }
@@ -994,37 +994,37 @@ function computePath(
     const [_, before_id, prop_id] = dst.origin;
     const sub_parent = trace.nodes[before_id];
     const path = computePath(trace, src_id, before_id);
-    const subtree_item: PathViewSubtreeItem = {
-      kind: "path_subtree",
-      subtree: sub_parent.properties[prop_id][1] as NestedTree,
+    const nestedTreeItem: PathNestedTreeItem = {
+      kind: "path_nested_tree",
+      nestedTrees: sub_parent.properties[prop_id][1] as NestedTree,
       path: singletonPath(dst_id, dst),
       expanded: false,
     };
-    addSubTreeToPath(path, subtree_item);
+    addNestedTreeToPath(path, nestedTreeItem);
     return path;
   } else {
     const [_, before_id, action_id] = dst.origin;
     const before = trace.nodes[before_id];
     const action = before.actions[action_id];
-    const subtrees: PathViewSubtreeItem[] = action.related_success_nodes.map(
+    const nestedTrees: PathNestedTreeItem[] = action.related_success_nodes.map(
       (success_id) => {
         const subpath = computePath(trace, before_id, success_id);
-        if (subpath.length !== 1 || subpath[0].subtrees.length !== 1) {
+        if (subpath.length !== 1 || subpath[0].nestedTrees.length !== 1) {
           throw Error("Invalid success path");
         }
-        return subpath[0].subtrees[0];
+        return subpath[0].nestedTrees[0];
       },
     );
     const item: PathViewNodeItem = {
       kind: "path_node",
       node: dst,
       node_id: dst_id,
-      subtrees: [],
+      nestedTrees: [],
       expanded: false,
       selected: false,
     };
     const path = computePath(trace, src_id, before_id);
-    addChildToPath(path, item, subtrees);
+    addChildToPath(path, item, nestedTrees);
     return path;
   }
 }
@@ -1040,8 +1040,8 @@ class PathView implements vscode.TreeDataProvider<PathViewItem> {
     switch (element.kind) {
       case "path_node":
         return treeItemOfPathViewNodeItem(element);
-      case "path_subtree":
-        return treeItemOfPathViewSubtreeItem(element);
+      case "path_nested_tree":
+        return treeItemOfPathViewNestedTreeItem(element);
     }
   }
 
@@ -1059,8 +1059,8 @@ class PathView implements vscode.TreeDataProvider<PathViewItem> {
     switch (element.kind) {
       case "path_node":
         return childrenOfPathViewNodeItem(element);
-      case "path_subtree":
-        return childrenOfPathViewSubtreeItem(element);
+      case "path_nested_tree":
+        return childrenOfPathViewNestedTreeItem(element);
     }
   }
 

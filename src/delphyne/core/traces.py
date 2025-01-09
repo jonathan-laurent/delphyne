@@ -269,6 +269,6 @@ class TraceReverseMap:
             match origin:
                 case refs.ChildOf(parent_id, action):
                     map.children[parent_id][action] = child_id
-                case refs.NestedTreeOf(parent_id, choice):
-                    map.nested_trees[parent_id][choice] = child_id
+                case refs.NestedTreeOf(parent_id, space):
+                    map.nested_trees[parent_id][space] = child_id
         return map
