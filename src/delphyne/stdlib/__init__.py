@@ -72,5 +72,6 @@ from delphyne.stdlib.streams import (
     StreamTransformer,
     bind_stream,
     stream_transformer,
+    take_first,
     with_budget,
 )

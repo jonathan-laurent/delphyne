@@ -7,6 +7,7 @@ Defining the `@strategy` decorator.
 import functools
 from collections.abc import Callable
 from dataclasses import dataclass
+from types import NoneType
 from typing import Any, Protocol, overload
 
 import delphyne.core as dp
@@ -16,7 +17,7 @@ import delphyne.core as dp
 class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
     def using[P2](
         self,
-        get_policy: Callable[[P2], tuple[dp.AbstractSearchPolicy[N], P]],
+        get_policy: Callable[[P2], dp.Policy[N, P]],
         inner_policy_type: type[P2] | None = None,
     ) -> dp.Builder[dp.OpaqueSpace[P2, T]]:
         return dp.OpaqueSpace[P2, T].from_strategy(self, get_policy)
@@ -27,14 +28,19 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
     def __call__[P2](
         self,
         inner_policy_type: type[P2],
-        get_policy: Callable[[P2], tuple[dp.AbstractSearchPolicy[N], P]],
+        get_policy: Callable[[P2], dp.Policy[N, P]],
     ) -> dp.Builder[dp.OpaqueSpace[P2, T]]:
         return self.using(get_policy)
+
+    def run_toplevel(
+        self, env: dp.PolicyEnv, policy: dp.Policy[N, P]
+    ) -> dp.Stream[T]:
+        return self(NoneType, lambda _: policy).stream(env, None)
 
 
 def search[N: dp.Node, P, P2, T](
     strategy: StrategyInstance[N, P, T],
-    get_policy: Callable[[P2], tuple[dp.AbstractSearchPolicy[N], P]],
+    get_policy: Callable[[P2], dp.Policy[N, P]],
     inner_policy_type: type[P2] | None = None,
 ) -> dp.Builder[dp.OpaqueSpace[P2, T]]:
     return strategy.using(get_policy, inner_policy_type)
