@@ -2,8 +2,7 @@
 Utilities to call OpenAI Models
 """
 
-import asyncio
-from collections.abc import Sequence
+from collections.abc import AsyncIterable, Sequence
 from dataclasses import dataclass
 from typing import Any, Literal, cast
 
@@ -42,26 +41,24 @@ class OpenAIModel(LLM):
             raise LLMCallException(f"Some answer was empty: {answers}")
         return cast(Sequence[str], answers), budget, {}
 
+    async def stream_request(
+        self, chat: Chat, options: RequestOptions
+    ) -> AsyncIterable[str]:
+        client = openai.AsyncOpenAI()
+        options = self.options | options
+        response: Any = await client.chat.completions.create(
+            messages=chat,  # type: ignore
+            stream=True,
+            **self.options,
+        )
+        async for chunk in response:
+            content = chunk.choices[0].delta.content
+            if content:
+                yield content
+
 
 type OpenAIModelName = Literal["gpt-40", "gpt-4o-mini", "gpt-3.5-turbo"]
 
 
 def openai_model(model: OpenAIModelName | str):
     return OpenAIModel({"model": model})
-
-
-_TEST_PROMPT: Chat = [
-    {"role": "user", "content": "What is the capital of France?"}
-]
-
-
-async def _test_completion():
-    model = openai_model("gpt-4o-mini")
-    print(await model.send_request(_TEST_PROMPT, 2, {}))
-
-
-if __name__ == "__main__":
-    """
-    To run the test: `python -m delphyne.stdlib.openai_models`
-    """
-    asyncio.run(_test_completion())

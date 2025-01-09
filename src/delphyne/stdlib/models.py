@@ -4,7 +4,7 @@ Standard interfaces for LLMs
 
 import asyncio
 from abc import ABC, abstractmethod
-from collections.abc import Iterable
+from collections.abc import AsyncIterable, Iterable
 from dataclasses import dataclass
 from typing import Any, Literal, Sequence, TypedDict
 
@@ -44,6 +44,11 @@ Extra options to be passed to a request, overriding the model's default
 NUM_REQUESTS = "num_requests"
 
 
+@dataclass
+class StreamingNotImplemented(Exception):
+    pass
+
+
 class LLM(ABC):
     def estimate_budget(self, chat: Chat, options: RequestOptions) -> Budget:
         return Budget({NUM_REQUESTS: 1})
@@ -56,6 +61,14 @@ class LLM(ABC):
         options: RequestOptions,
     ) -> tuple[Sequence[str], Budget, LLMOutputMetadata]:
         pass
+
+    def stream_request(
+        self, chat: Chat, options: RequestOptions
+    ) -> AsyncIterable[str]:
+        """
+        Streaming is mostly useful for the UI.
+        """
+        raise StreamingNotImplemented()
 
 
 #####
