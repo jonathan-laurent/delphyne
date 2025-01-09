@@ -24,3 +24,8 @@ export function showAlert(message: string) {
     }
   });
 }
+
+export function showAlertAndPanic(message: string): never {
+  showAlert(message);
+  throw new Error(message);
+}

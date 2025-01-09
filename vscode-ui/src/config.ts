@@ -6,6 +6,7 @@ import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
 import * as yaml from "yaml";
+import { showAlertAndPanic } from "./logging";
 
 interface Config {
   strategy_dirs: string[];
@@ -16,16 +17,14 @@ interface Config {
 export function loadConfig(): Config {
   const workspaceFolders = vscode.workspace.workspaceFolders;
   if (!workspaceFolders) {
-    throw new Error("No workspace is opened.");
+    showAlertAndPanic("No workspace is opened.");
   }
 
   const workspaceRoot = workspaceFolders[0].uri.fsPath;
   const configFilePath = path.join(workspaceRoot, "delphyne.yaml");
 
   if (!fs.existsSync(configFilePath)) {
-    throw new Error(
-      `Config file 'delphyne.yaml' not found at the root of the workspace.`,
-    );
+    showAlertAndPanic(`Config file 'delphyne.yaml' not found at the root of the workspace.`);
   }
 
   const configFileContent = fs.readFileSync(configFilePath, "utf8");
@@ -40,7 +39,7 @@ export function loadConfig(): Config {
   config.demo_files = config.demo_files.map((file) => {
     const demoFilePath = path.resolve(workspaceRoot, `${file}.demo.yaml`);
     if (!fs.existsSync(demoFilePath)) {
-      throw new Error(`Demo file '${demoFilePath}' does not exist.`);
+      showAlertAndPanic(`Demo file '${demoFilePath}' does not exist.`);
     }
     return demoFilePath;
   });
