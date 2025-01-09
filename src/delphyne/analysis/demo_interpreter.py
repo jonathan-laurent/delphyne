@@ -392,10 +392,11 @@ def _evaluate_test(
 
 
 def evaluate_demo_and_return_trace(
-    demo: dm.Demonstration, loader: ObjectLoader
+    demo: dm.Demonstration, context: DemoExecutionContext
 ) -> tuple[fb.DemoFeedback, dp.Trace | None]:
     feedback = fb.DemoFeedback(fb.Trace({}), {}, {}, [], [], [], [])
     try:
+        loader = ObjectLoader(context)
         strategy = loader.load_strategy_instance(demo.strategy, demo.args)
     except Exception as e:
         msg = f"Failed to instantiate strategy:\n{e}"
@@ -445,7 +446,7 @@ def evaluate_demo_and_return_trace(
 
 
 def evaluate_demo(
-    demo: dm.Demonstration, loader: ObjectLoader
+    demo: dm.Demonstration, context: DemoExecutionContext
 ) -> fb.DemoFeedback:
-    feedback, _ = evaluate_demo_and_return_trace(demo, loader)
+    feedback, _ = evaluate_demo_and_return_trace(demo, context)
     return feedback

@@ -19,7 +19,6 @@ from delphyne.utils.yaml import dump_yaml
 STRATEGY_FILE = "example_strategies"
 TESTS_FOLDER = Path(__file__).parent
 CONTEXT = analysis.DemoExecutionContext([TESTS_FOLDER], [STRATEGY_FILE])
-LOADER = analysis.ObjectLoader(CONTEXT)
 
 
 def check_object_included(small: object, big: object, path: str = "expect"):
@@ -53,8 +52,8 @@ def check_object_included(small: object, big: object, path: str = "expect"):
 class DemoExpectTest(dp.Demonstration):
     expect: object = None
 
-    def check(self, loader: analysis.ObjectLoader):
-        feedback, trace = analysis.evaluate_demo_and_return_trace(self, loader)
+    def check(self, ctx: analysis.DemoExecutionContext):
+        feedback, trace = analysis.evaluate_demo_and_return_trace(self, ctx)
         if trace is not None:
             print(dump_yaml(dp.ExportableTrace, trace.export()))
         print(dump_yaml(fb.DemoFeedback, feedback))
@@ -97,7 +96,7 @@ def load_demo(demo_label: str) -> DemoExpectTest:
 def test_server(demo_label: str):
     demo = load_demo(demo_label)
     print("\n")
-    demo.check(LOADER)
+    demo.check(CONTEXT)
 
 
 if __name__ == "__main__":

@@ -28,9 +28,8 @@ def make_server(launcher: ta.TaskLauncher):
         demo: dp.Demonstration,
         context: analysis.DemoExecutionContext,
     ):
-        loader = analysis.ObjectLoader(context)
         stream_eval = ta.stream_of_fun(analysis.evaluate_demo)
-        stream = launcher(request, fb.DemoFeedback, stream_eval, demo, loader)
+        stream = launcher(request, fb.DemoFeedback, stream_eval, demo, context)
         return StreamingResponse(stream, media_type="text/event-stream")
 
     @app.post("/count")
