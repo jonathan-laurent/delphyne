@@ -2,12 +2,11 @@
 Utilities to work with streams.
 """
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Never, Protocol
 
 import delphyne.core as dp
-from delphyne.stdlib.models import NUM_REQUESTS_BUDGET
 from delphyne.stdlib.policies import SearchPolicy
 
 #####
@@ -22,6 +21,9 @@ class _StreamTransformerFn(Protocol):
 @dataclass
 class StreamTransformer:
     trans: _StreamTransformerFn
+
+    def __call__[T](self, stream: dp.Stream[T]) -> dp.Stream[T]:
+        return self.trans(stream)
 
     def __matmul__[N: dp.Node](
         self, other: SearchPolicy[N]
@@ -58,8 +60,9 @@ def stream_transformer[**A](
 #####
 
 
-async def _with_budget[T](
-    budget: dp.BudgetLimit, stream: dp.Stream[T]
+@stream_transformer
+async def with_budget[T](
+    stream: dp.Stream[T], budget: dp.BudgetLimit
 ) -> dp.Stream[T]:
     total_spent = dp.Budget.zero()
     async for msg in stream:
@@ -75,10 +78,15 @@ async def _with_budget[T](
 
 
 @stream_transformer
-def with_budget[T](stream: dp.Stream[T], num_requests: int) -> dp.Stream[T]:
-    return _with_budget(
-        dp.BudgetLimit({NUM_REQUESTS_BUDGET: num_requests}), stream
-    )
+async def take[T](stream: dp.Stream[T], num_generated: int) -> dp.Stream[T]:
+    count = 0
+    assert num_generated > 0
+    async for msg in stream:
+        if isinstance(msg, dp.Yield):
+            count += 1
+            if count > num_generated:
+                return
+        yield msg
 
 
 #####
@@ -112,8 +120,20 @@ async def take_one[T](
         yield msg
 
 
-async def take_first[T](stream: dp.Stream[T]) -> dp.Tracked[T] | None:
-    store = ElementStore[T]()
-    async for _ in take_one(stream, store):
-        pass
-    return store.value
+async def collect[T](
+    stream: dp.Stream[T],
+    budget: dp.BudgetLimit | None = None,
+    num_generated: int | None = None,
+) -> tuple[Sequence[dp.Tracked[T]], dp.Budget]:
+    if budget is not None:
+        stream = with_budget(budget)(stream)
+    if num_generated is not None:
+        stream = take(num_generated)(stream)
+    total = dp.Budget.zero()
+    elts: list[dp.Tracked[T]] = []
+    async for msg in stream:
+        if isinstance(msg, dp.Yield):
+            elts.append(msg.value)
+        if isinstance(msg, dp.Spent):
+            total = total + msg.budget
+    return elts, total

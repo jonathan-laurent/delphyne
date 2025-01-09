@@ -25,6 +25,29 @@ def test_search_synthesis():
     )
     policy = (ex.just_guess(), inner_policy)
     stream = ex.synthetize_fun(vars, prop).run_toplevel(env, policy)
-    res = asyncio.run(dp.take_first(stream))
-    assert res is not None
-    print(res.value)
+    res, _ = asyncio.run(dp.collect(stream, num_generated=1))
+    assert res
+    print(res[0].value)
+
+
+def test_bestfs():
+    # 6 requests are necessary to generate the first 4 pairs (2 at the
+    # root of the tree and  near the leaves). With one additional
+    # request, we generate one more answer.
+    REQUESTS_LIMIT = 7
+
+    def oracle(query: object):
+        i = 1
+        while True:
+            yield dp.Answer(None, str(i))
+            i += 1
+
+    env = dp.PolicyEnv((), ())  # Won't be used
+    pp = mock.fixed_oracle(oracle)
+    policy = (dp.best_first_search(), pp)
+    stream = ex.generate_pairs().run_toplevel(env, policy)
+    budget = dp.BudgetLimit({dp.NUM_REQUESTS: REQUESTS_LIMIT})
+    ret, spent = asyncio.run(dp.collect(stream, budget=budget))
+    res = [x.value for x in ret]
+    assert res == [(1, 1), (2, 1), (2, 2), (1, 2), (1, 3)]
+    assert spent[dp.NUM_REQUESTS] == REQUESTS_LIMIT

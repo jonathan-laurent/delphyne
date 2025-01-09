@@ -7,7 +7,7 @@ Delphyne standard library.
 
 from delphyne.stdlib.models import (
     LLM,
-    NUM_REQUESTS_BUDGET,
+    NUM_REQUESTS,
     Chat,
     ChatMessage,
     ChatMessageRole,
@@ -71,7 +71,9 @@ from delphyne.stdlib.strategies import (
 from delphyne.stdlib.streams import (
     StreamTransformer,
     bind_stream,
+    collect,
     stream_transformer,
-    take_first,
+    take,
+    take_one,
     with_budget,
 )

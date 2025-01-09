@@ -41,12 +41,12 @@ Extra options to be passed to a request, overriding the model's default
 """
 
 
-NUM_REQUESTS_BUDGET = "num_requests"
+NUM_REQUESTS = "num_requests"
 
 
 class LLM(ABC):
     def estimate_budget(self, chat: Chat, options: RequestOptions) -> Budget:
-        return Budget({NUM_REQUESTS_BUDGET: 1})
+        return Budget({NUM_REQUESTS: 1})
 
     @abstractmethod
     async def send_request(

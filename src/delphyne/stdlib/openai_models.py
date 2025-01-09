@@ -12,7 +12,7 @@ import openai
 from delphyne.core.streams import Budget
 from delphyne.stdlib.models import (
     LLM,
-    NUM_REQUESTS_BUDGET,
+    NUM_REQUESTS,
     Chat,
     LLMCallException,
     LLMOutputMetadata,
@@ -36,7 +36,7 @@ class OpenAIModel(LLM):
             n=num_completions,
             **self.options,
         )
-        budget = Budget({NUM_REQUESTS_BUDGET: num_completions})
+        budget = Budget({NUM_REQUESTS: num_completions})
         answers = [c.message.content for c in response.choices]
         if any(a is None for a in answers):
             raise LLMCallException(f"Some answer was empty: {answers}")

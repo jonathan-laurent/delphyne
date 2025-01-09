@@ -9,7 +9,7 @@ from typing import Any
 import delphyne as dp
 import delphyne.core.demos as dm
 import delphyne.core.refs as refs
-from delphyne.stdlib.models import NUM_REQUESTS_BUDGET
+from delphyne.stdlib.models import NUM_REQUESTS
 from delphyne.stdlib.policies import PromptingPolicy, prompting_policy
 
 
@@ -40,7 +40,7 @@ def demo_mock_oracle(
         while True:
             answer = answers[n - 1 - i if rev_search else i]
             i = (i + 1) % n
-            budget = dp.Budget({NUM_REQUESTS_BUDGET: 1})
+            budget = dp.Budget({NUM_REQUESTS: 1})
             yield dp.Barrier(budget)
             yield dp.Spent(budget)
             parsed = query.answer(answer.mode, answer.text)
@@ -57,7 +57,7 @@ async def fixed_oracle[T](
     oracle: Callable[[dp.AbstractQuery[Any]], Iterable[dp.Answer]],
 ) -> dp.Stream[T]:
     for answer in oracle(query.query):
-        budget = dp.Budget({NUM_REQUESTS_BUDGET: 1})
+        budget = dp.Budget({NUM_REQUESTS: 1})
         yield dp.Barrier(budget)
         yield dp.Spent(budget)
         parsed = query.answer(answer.mode, answer.text)

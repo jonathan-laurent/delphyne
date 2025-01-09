@@ -292,11 +292,8 @@ class PickNiceBoyNameIP:
 #                 + -- 0 (2) -- 22
 #
 # Confidences in parentheses are priors.
-
-# Let's start with no penalty for creating children. The order in which
-# the elements should be found is: 11, 21, 22, 12. However, if we put a
-# strong penalty for discovering 12, it will not be discovered first
-# anymore.
+#
+# [(1, 1), (2, 1), (2, 2), (1, 2)]
 
 
 @dataclass
