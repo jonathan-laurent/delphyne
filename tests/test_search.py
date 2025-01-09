@@ -27,4 +27,4 @@ def test_search_synthesis():
     stream = ex.synthetize_fun(vars, prop).run_toplevel(env, policy)
     res = asyncio.run(dp.take_first(stream))
     assert res is not None
-    print(res)
+    print(res.value)

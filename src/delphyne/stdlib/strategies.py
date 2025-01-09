@@ -2,12 +2,9 @@
 Defining the `@strategy` decorator.
 """
 
-# pyright: basic
-
 import functools
 from collections.abc import Callable
 from dataclasses import dataclass
-from types import NoneType
 from typing import Any, Protocol, overload
 
 import delphyne.core as dp
@@ -33,9 +30,13 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
         return self.using(get_policy)
 
     def run_toplevel(
-        self, env: dp.PolicyEnv, policy: dp.Policy[N, P]
+        self,
+        env: dp.PolicyEnv,
+        policy: dp.Policy[N, P],
+        monitor: dp.TreeMonitor = dp.TreeMonitor(),
     ) -> dp.Stream[T]:
-        return self(NoneType, lambda _: policy).stream(env, None)
+        tree = dp.reify(self, monitor)
+        return policy[0](tree, env, policy[1])
 
 
 def search[N: dp.Node, P, P2, T](
@@ -72,9 +73,12 @@ def strategy(*dec_args: Any, **dec_kwargs: Any) -> Any:
             lambda *args, **kwargs: StrategyInstance(f, args, kwargs)
         )
     elif not dec_args:
-        return lambda f: functools.wraps(f)(
-            lambda *args, **kwargs: StrategyInstance(
-                f, args, kwargs, name=dec_kwargs.get("name")
+        return lambda f: functools.wraps(f)(  # type: ignore
+            lambda *args, **kwargs: StrategyInstance(  # type: ignore
+                f,  # type: ignore
+                args,
+                kwargs,
+                name=dec_kwargs.get("name"),  # type: ignore
             )
         )
     assert False, "Wrong use of @strategy."
