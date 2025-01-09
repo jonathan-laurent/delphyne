@@ -49,13 +49,13 @@ from delphyne.stdlib.queries import (
     trimmed_string_from_last_block,
     yaml_from_last_block,
 )
-from delphyne.stdlib.search.bfs import (
-    BFS,
-    BFSBranch,
-    BFSFactor,
-    bfs,
-    bfs_branch,
-    bfs_factor,
+from delphyne.stdlib.search.bestfs import (
+    BestFS,
+    BestFSBranch,
+    BestFSFactor,
+    best_first_search,
+    bestfs_branch,
+    bestfs_factor,
 )
 from delphyne.stdlib.search.dfs import (
     dfs,

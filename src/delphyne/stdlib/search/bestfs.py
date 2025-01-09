@@ -14,7 +14,7 @@ from delphyne.stdlib.policies import search_policy
 
 
 @dataclass(frozen=True)
-class BFSFactor(dp.Node):
+class BestFSFactor(dp.Node):
     """
     A node that allows computing a confidence score in the [0, 1]
     interval. This confidence can be computed by a query or a dedicated
@@ -30,7 +30,7 @@ class BFSFactor(dp.Node):
 
 
 @dataclass(frozen=True)
-class BFSBranch(dp.Node):
+class BestFSBranch(dp.Node):
     """
     A BFS Branching Node.
 
@@ -51,26 +51,26 @@ class BFSBranch(dp.Node):
         return self.cands
 
 
-type BFS = BFSBranch | BFSFactor | Failure
+type BestFS = BestFSBranch | BestFSFactor | Failure
 
 
-def bfs_branch[P, T](
+def bestfs_branch[P, T](
     cands: dp.Builder[dp.OpaqueSpace[P, T]],
     *,
     confidence_priors: Callable[[P], Sequence[float]],
     inner_policy_type: type[P] | None = None,
-) -> dp.Strategy[BFSBranch, P, T]:
+) -> dp.Strategy[BestFSBranch, P, T]:
     ret = yield spawn_node(
-        BFSBranch, cands=cands, confidence_priors=confidence_priors
+        BestFSBranch, cands=cands, confidence_priors=confidence_priors
     )
     return cast(T, ret)
 
 
-def bfs_factor[P](
+def bestfs_factor[P](
     confidence: dp.Builder[dp.OpaqueSpace[P, float]],
     inner_policy_type: type[P] | None = None,
-) -> dp.Strategy[BFSFactor, P, float]:
-    ret = yield spawn_node(BFSFactor, confidence=confidence)
+) -> dp.Strategy[BestFSFactor, P, float]:
+    ret = yield spawn_node(BestFSFactor, confidence=confidence)
     return cast(float, ret)
 
 
@@ -87,8 +87,8 @@ class NodeState:
     confidence: float
     confidence_priors: Sequence[float]
     stream: dp.Stream[Any]
-    node: BFSBranch  # equal to tree.node, with a more precise type
-    tree: dp.Tree[BFSBranch | BFSFactor | Failure, Any, Any]
+    node: BestFSBranch  # equal to tree.node, with a more precise type
+    tree: dp.Tree[BestFSBranch | BestFSFactor | Failure, Any, Any]
 
     def confidence_prior(self) -> float:
         if not self.confidence_priors:
@@ -109,8 +109,8 @@ class PriorityItem:
 
 
 @search_policy
-async def bfs[P, T](
-    tree: dp.Tree[BFSBranch | BFSFactor | Failure, P, T],
+async def best_first_search[P, T](
+    tree: dp.Tree[BestFSBranch | BestFSFactor | Failure, P, T],
     env: dp.PolicyEnv,
     policy: P,
 ) -> dp.Stream[T]:
@@ -137,7 +137,7 @@ async def bfs[P, T](
     pqueue: list[PriorityItem] = []  # a heap
 
     async def push_fresh_node(
-        tree: dp.Tree[BFSBranch | BFSFactor | Failure, Any, Any],
+        tree: dp.Tree[BestFSBranch | BestFSFactor | Failure, Any, Any],
         confidence: float,
     ) -> dp.Stream[T]:
         match tree.node:
@@ -145,7 +145,7 @@ async def bfs[P, T](
                 yield dp.Yield(tree.node.success)
             case Failure():
                 pass
-            case BFSFactor():
+            case BestFSFactor():
                 conf_stream = tree.node.confidence.stream(env, policy)
                 factor = None
                 async for conf_msg in conf_stream:
@@ -159,7 +159,7 @@ async def bfs[P, T](
                     push = push_fresh_node(tree.child(()), confidence)
                     async for push_msg in push:
                         yield push_msg
-            case BFSBranch():
+            case BestFSBranch():
                 state = NodeState(
                     children=[],
                     confidence=confidence,
