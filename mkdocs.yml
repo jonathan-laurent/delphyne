@@ -23,6 +23,7 @@ theme:
     - navigation.tabs
 
 plugins:
+  - glightbox
   - mkdocstrings:
       default_handler: python
       handlers:

@@ -241,16 +241,3 @@ async def few_shot[T](
         yield dp.Spent(budget)
         if not isinstance(element, dp.ParseError):
             yield dp.Yield(element)
-
-
-#####
-##### Alternate syntax to .using(...)
-#####
-
-
-def query[N: dp.Node, P, T](
-    query: Query[T],
-    get_policy: Callable[[P], dp.AbstractPromptingPolicy],
-    inner_policy_type: type[P] | None = None,
-) -> dp.Builder[dp.OpaqueSpace[P, T]]:
-    return query.using(get_policy, inner_policy_type)

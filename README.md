@@ -9,7 +9,8 @@ pip install -e .
 To build the documentation:
 
 ```sh
-pip install mkdocs mkdocstrings[python] mkdocs-autolinks-plugin
+pip install mkdocs mkdocstrings[python] mkdocs-autolinks-plugin mkdocs-material mkdocs-glightbox
+
 mkdocs serve
 ```
 

@@ -40,7 +40,6 @@ from delphyne.stdlib.queries import (
     Modes,
     Query,
     extract_final_block,
-    query,
     raw_string,
     raw_yaml,
     single_parser,
@@ -65,7 +64,6 @@ from delphyne.stdlib.search.iterated import (
 )
 from delphyne.stdlib.strategies import (
     StrategyInstance,
-    search,
     strategy,
 )
 from delphyne.stdlib.streams import (

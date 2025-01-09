@@ -28,6 +28,7 @@ clean-ignored:
 
 clean: clean-ignored
 	rm -rf build
+	rm -rf site
 	rm -rf tests/cache
 	make -C vscode-ui clean
 	make -C examples/libraries/why3py clean
