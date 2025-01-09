@@ -68,6 +68,11 @@ class ObjectLoader:
                 return getattr(module, name)
         raise ObjectNotFound(name)
 
+    def load_and_call_function(self, name: str, args: dict[str, Any]) -> Any:
+        f = self.find_object(name)
+        args = tp.parse_function_args(f, args)
+        return f(**args)
+
     def load_strategy_instance(
         self, name: str, args: dict[str, Any]
     ) -> dp.StrategyComp[Any, Any, Any]:
@@ -431,8 +436,7 @@ def evaluate_demo_and_return_trace(
     trace.check_consistency()
     hresolver.set_reachability_diagnostics(feedback)
     simplifier = br.RefSimplifier(cache, rm)
-    idr = br.IdentifierResolverFromCache(trace, cache)
-    feedback.trace = br.compute_browsable_trace(trace, idr, simplifier)
+    feedback.trace = br.compute_browsable_trace(trace, cache, simplifier)
     feedback.answer_refs = {
         trace.convert_answer_ref(k).id: v
         for k, v in hresolver.get_answer_refs().items()

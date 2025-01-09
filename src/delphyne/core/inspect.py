@@ -45,7 +45,9 @@ def return_type_of_strategy_type[T](st: Any) -> TypeAnnot[T] | NoTypeInfo:
     return typing.get_args(st)[-1]
 
 
-def policy_type_of_strategy_type[T](st: Any) -> TypeAnnot[T] | NoTypeInfo:
+def inner_policy_type_of_strategy_type[T](
+    st: Any,
+) -> TypeAnnot[T] | NoTypeInfo:
     """
     If `st` is a type alias with two parameters exactly and whose middle
     one is named `P`, then return the value of `P`.

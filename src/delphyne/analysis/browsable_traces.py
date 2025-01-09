@@ -251,12 +251,13 @@ class IdentifierResolverFromCache:
 
 def compute_browsable_trace(
     trace: dp.Trace,
-    id_resolver: nv.IdentifierResolver,
+    cache: dp.TreeCache,
     simplifier: RefSimplifier | None = None,
 ) -> fb.Trace:
     """
     A simplifier is typically only available for demonstrations.
     """
+    id_resolver = IdentifierResolverFromCache(trace, cache)
     tr = _TraceTranslator(trace, id_resolver, simplifier)
     return tr.translate_trace()
 

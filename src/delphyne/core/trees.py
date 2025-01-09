@@ -263,6 +263,12 @@ class StrategyComp[N: Node, P, T]:
             return NoTypeInfo()
         return inspect.return_type_of_strategy_type(ret_type)
 
+    def inner_policy_type(self) -> TypeAnnot[T] | NoTypeInfo:
+        ret_type = inspect.function_return_type(self.comp)
+        if isinstance(ret_type, NoTypeInfo):
+            return NoTypeInfo()
+        return inspect.inner_policy_type_of_strategy_type(ret_type)
+
 
 #####
 ##### Nested and Embedded Trees
