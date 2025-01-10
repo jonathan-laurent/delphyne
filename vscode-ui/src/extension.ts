@@ -77,6 +77,13 @@ export async function activate(context: vscode.ExtensionContext) {
   // Dev Test Commands
   testCommands.registerCountingTest(context, server);
   testCommands.registerShowCursorPosition(context, demosManager);
+
+  // Keyboard shortcut to show the views
+  context.subscriptions.push(
+    vscode.commands.registerCommand('delphyne.showViews', () => {
+        vscode.commands.executeCommand('workbench.view.extension.delphyneContainer');
+    })
+  );
 }
 
 export function deactivate() {

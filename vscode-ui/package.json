@@ -29,6 +29,10 @@
       {
         "key": "cmd+d cmd+z",
         "command": "delphyne.undoTreeNavigationAction"
+      },
+      {
+        "command": "delphyne.showViews",
+        "key": "cmd+d cmd+v"
       }
     ],
     "viewsContainers": {
@@ -164,6 +168,10 @@
       ]
     },
     "commands": [
+      {
+          "command": "delphyne.showViews",
+          "title": "Delphyne: Show Views"
+      },
       {
         "command": "delphyne.evaluateAllDemos",
         "title": "Delphyne: Evaluate All Demonstrations in File",
