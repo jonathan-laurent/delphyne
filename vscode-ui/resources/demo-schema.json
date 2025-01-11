@@ -49,7 +49,7 @@
       "title": "Answer",
       "type": "object"
     },
-    "DemoQuery": {
+    "QueryDemo": {
       "properties": {
         "query": {
           "title": "Query",
@@ -72,10 +72,10 @@
         "args",
         "answers"
       ],
-      "title": "DemoQuery",
+      "title": "QueryDemo",
       "type": "object"
     },
-    "Demonstration": {
+    "StrategyDemo": {
       "properties": {
         "strategy": {
           "title": "Strategy",
@@ -94,7 +94,7 @@
         },
         "queries": {
           "items": {
-            "$ref": "#/$defs/DemoQuery"
+            "$ref": "#/$defs/QueryDemo"
           },
           "title": "Queries",
           "type": "array"
@@ -117,7 +117,7 @@
         "args",
         "tests"
       ],
-      "title": "Demonstration",
+      "title": "StrategyDemo",
       "type": "object"
     },
     "TestCommandString": {
@@ -125,7 +125,7 @@
     }
   },
   "items": {
-    "$ref": "#/$defs/Demonstration"
+    "$ref": "#/$defs/StrategyDemo"
   },
   "type": "array",
   "title": "Delphyne Demo File"

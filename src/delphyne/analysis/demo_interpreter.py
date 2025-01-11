@@ -118,7 +118,7 @@ class SerializedQuery:
 
 
 class DemoHintResolver(nv.HintResolver):
-    def __init__(self, loader: ObjectLoader, demo: dm.Demonstration):
+    def __init__(self, loader: ObjectLoader, demo: dm.StrategyDemo):
         self.demo = demo
         self.queries: list[SerializedQuery] = []
         for i, q in enumerate(demo.queries):
@@ -392,7 +392,7 @@ def _evaluate_test(
 
 
 def evaluate_demo_and_return_trace(
-    demo: dm.Demonstration, context: DemoExecutionContext
+    demo: dm.StrategyDemo, context: DemoExecutionContext
 ) -> tuple[fb.DemoFeedback, dp.Trace | None]:
     feedback = fb.DemoFeedback(fb.Trace({}), {}, {}, [], [], [], [])
     try:
@@ -446,7 +446,7 @@ def evaluate_demo_and_return_trace(
 
 
 def evaluate_demo(
-    demo: dm.Demonstration, context: DemoExecutionContext
+    demo: dm.StrategyDemo, context: DemoExecutionContext
 ) -> fb.DemoFeedback:
     feedback, _ = evaluate_demo_and_return_trace(demo, context)
     return feedback

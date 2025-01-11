@@ -8,7 +8,7 @@ import { DelphyneServer } from "./server";
 import { DemoElement } from "./elements";
 import { DemoFeedback } from "./stubs/feedback";
 import { ExecutionContext, getExecutionContext } from "./execution_contexts";
-import { Demonstration } from "./stubs/demos";
+import { StrategyDemo } from "./stubs/demos";
 import { PointedTree, TreeInfo, TreeView } from "./tree_view";
 import { ROOT_ID } from "./common";
 
@@ -127,7 +127,7 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
     if (!specific || specific.kind !== "query") {
       return null;
     }
-    const demo = JSON.parse(element.demo) as Demonstration;
+    const demo = JSON.parse(element.demo) as StrategyDemo;
     const query = demo.queries[specific.query_index];
     const args = {
       query: query.query,
@@ -160,7 +160,7 @@ async function evaluateDemo(
   server: DelphyneServer,
   demosManager: DemosManager,
 ) {
-  const demo = JSON.parse(element.demo) as Demonstration;
+  const demo = JSON.parse(element.demo) as StrategyDemo;
   const task = server.launchTask(
     {
       name: "evaluate",

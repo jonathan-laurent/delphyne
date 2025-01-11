@@ -10,7 +10,7 @@ from delphyne.core import (
     pprint,
 )
 from delphyne.core.demos import (
-    Demonstration,
+    StrategyDemo,
 )
 from delphyne.core.environments import (
     ExampleDatabase,

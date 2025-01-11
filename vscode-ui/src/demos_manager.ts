@@ -3,8 +3,8 @@
 //////
 
 import * as vscode from "vscode";
-import { DemoFile, DemoQuery } from "./stubs/demos";
-import { Demonstration } from "./stubs/demos";
+import { DemoFile, QueryDemo } from "./stubs/demos";
+import { StrategyDemo } from "./stubs/demos";
 import { log } from "./logging";
 import { DemoFeedback, Diagnostic } from "./stubs/feedback";
 import { parseYamlWithLocInfo, serializeWithoutLocInfo } from "./yaml_utils";
@@ -77,7 +77,7 @@ class DemoFileManager {
     }));
   }
 
-  public getDemonstration(demo: SerializedDemo): Demonstration | null {
+  public getDemonstration(demo: SerializedDemo): StrategyDemo | null {
     if (!this.parsedDemoFile) {
       return null;
     }
@@ -133,7 +133,7 @@ function makeDiagnostic([kind, message]: Diagnostic, loc: vscode.Range) {
 }
 
 function computeDiagnostics(
-  demonstration: Demonstration, // Annotated with location information
+  demonstration: StrategyDemo, // Annotated with location information
   feedback: DemoFeedback,
 ): vscode.Diagnostic[] {
   let diagnostics: vscode.Diagnostic[] = [];
@@ -186,7 +186,7 @@ export function getElementAt(
 }
 
 function getSpecificElementAt(
-  demo: Demonstration,
+  demo: StrategyDemo,
   cursor: vscode.Position,
 ): TestElement | QueryElement | null {
   const testIndex = demo.__loc_items__tests.findIndex((loc) =>
@@ -209,7 +209,7 @@ function getSpecificElementAt(
 }
 
 function getAnswerIndex(
-  query: DemoQuery,
+  query: QueryDemo,
   cursor: vscode.Position,
 ): number | null {
   const answerIndex = query.__loc_items__answers.findIndex((loc) =>
@@ -284,7 +284,7 @@ export class DemosManager {
   getDemonstration(
     uri: vscode.Uri,
     demo: SerializedDemo,
-  ): Demonstration | null {
+  ): StrategyDemo | null {
     return this.demoFiles.get(uri)?.getDemonstration(demo) ?? null;
   }
 

@@ -14,7 +14,7 @@ from delphyne.stdlib.policies import PromptingPolicy, prompting_policy
 
 
 def demo_mock_oracle(
-    demo: dm.Demonstration,
+    demo: dm.StrategyDemo,
     rev_search: bool = False,
     fail_on_missing: bool = True,
 ) -> PromptingPolicy:

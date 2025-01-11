@@ -14,7 +14,7 @@ export interface Answer {
   __loc__example: vscode.Range;
 }
 
-export interface DemoQuery {
+export interface QueryDemo {
   query: string;
   args: { [key: string]: unknown };
   answers: Answer[];
@@ -25,11 +25,11 @@ export interface DemoQuery {
   __loc_items__answers: vscode.Range[];
 }
 
-export interface Demonstration {
+export interface StrategyDemo {
   strategy: string;
   args: { [key: string]: unknown };
   tests: TestCommandString[];
-  queries: DemoQuery[];
+  queries: QueryDemo[];
   demonstration: string | null;
   __loc: vscode.Range;
   __loc__strategy: vscode.Range;
@@ -41,5 +41,5 @@ export interface Demonstration {
   __loc__demonstration: vscode.Range;
 }
 
-export type DemoFile = Demonstration[];
+export type DemoFile = StrategyDemo[];
 

@@ -15,7 +15,7 @@ import {
   NestedTree,
 } from "./stubs/feedback";
 import { Element } from "./elements";
-import { DemoQuery, Demonstration } from "./stubs/demos";
+import { QueryDemo, StrategyDemo } from "./stubs/demos";
 import {
   prettyYaml,
   prettyYamlOneLiner,
@@ -114,14 +114,14 @@ export function queryKey(query: Query): QueryKey {
   return serializeWithoutLocInfo({ name: query.name, args: query.args });
 }
 
-export function demoQueryKey(query: DemoQuery): QueryKey {
+export function demoQueryKey(query: QueryDemo): QueryKey {
   return serializeWithoutLocInfo({ name: query.query, args: query.args });
 }
 
 function computeCachedInfo(trace: Trace, origin: Element): TreeCachedInfo {
   let existingQueries: QueriesMap = new Set();
   if (origin.kind === "demo") {
-    const demo = JSON.parse(origin.demo) as Demonstration;
+    const demo = JSON.parse(origin.demo) as StrategyDemo;
     for (const query of demo.queries) {
       existingQueries.add(demoQueryKey(query));
     }

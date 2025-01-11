@@ -49,7 +49,7 @@ def check_object_included(small: object, big: object, path: str = "expect"):
 
 
 @dataclass
-class DemoExpectTest(dp.Demonstration):
+class DemoExpectTest(dp.StrategyDemo):
     expect: object = None
 
     def check(self, ctx: analysis.DemoExecutionContext):

@@ -21,22 +21,22 @@ class Answer:
 
 
 @dataclass
-class DemoQuery:
+class QueryDemo:
     query: str
     args: dict[str, Any]
     answers: list[Answer]
 
 
 @dataclass
-class Demonstration:
+class StrategyDemo:
     strategy: str
     args: dict[str, Any]
     tests: list[TestCommandString]
-    queries: list[DemoQuery] = dataclasses.field(default_factory=list)
+    queries: list[QueryDemo] = dataclasses.field(default_factory=list)
     demonstration: str | None = None  # optional label
 
 
-type DemoFile = list[Demonstration]
+type DemoFile = list[StrategyDemo]
 
 
 type NodeTag = str

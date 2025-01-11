@@ -23,7 +23,7 @@ import {
 import { log } from "./logging";
 import { getEditorForUri, insertYamlListElement } from "./edit_utils";
 import { prettyYaml } from "./yaml_utils";
-import { Demonstration } from "./stubs/demos";
+import { StrategyDemo } from "./stubs/demos";
 import { Element } from "./elements";
 import { gotoCommandResultAnswer } from "./commands";
 
@@ -75,7 +75,7 @@ export function registerTreeViewCommands(
 function getDemoInfoForTreeView(
   demosManager: DemosManager,
   treeView: TreeView,
-): [Demonstration, DemoFeedback, vscode.TextEditor] | undefined {
+): [StrategyDemo, DemoFeedback, vscode.TextEditor] | undefined {
   const origin = treeView.getPointedTree()?.tree.origin;
   if (!origin || origin.kind !== "demo") {
     log.error("delphyne.addQuery: the tree view is not attached to a demo.");
@@ -125,7 +125,7 @@ function addQuery(
   editor.revealRange(new vscode.Range(newCursorPosition, newCursorPosition));
 }
 
-function queryIndex(key: QueryKey, demo: Demonstration): number {
+function queryIndex(key: QueryKey, demo: StrategyDemo): number {
   return demo.queries.findIndex((q) => demoQueryKey(q) === key);
 }
 

@@ -12,7 +12,7 @@ import jinja2
 import yaml
 
 from delphyne.core import refs, traces
-from delphyne.core.demos import Demonstration
+from delphyne.core.demos import StrategyDemo
 from delphyne.core.refs import Answer
 from delphyne.utils.typing import pydantic_load
 
@@ -36,7 +36,7 @@ class ExampleDatabase:
         default_factory=lambda: defaultdict(list)
     )
 
-    def add_demonstration(self, demo: Demonstration):
+    def add_demonstration(self, demo: StrategyDemo):
         for q in demo.queries:
             if not q.answers:
                 continue
@@ -155,6 +155,6 @@ class PolicyEnv:
         self.tracer = Tracer()
         for path in demonstration_files:
             with path.open() as f:
-                demos = pydantic_load(list[Demonstration], yaml.safe_load(f))
+                demos = pydantic_load(list[StrategyDemo], yaml.safe_load(f))
                 for demo in demos:
                     self.examples.add_demonstration(demo)
