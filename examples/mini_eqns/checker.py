@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 
+import pydantic
 import sympy as sp
+import yaml
 
 #####
 ##### Proof Definition
@@ -33,6 +35,19 @@ class Rule:
 @dataclass
 class RewritePrev:
     step: StepId
+
+
+@dataclass
+class ParseError:
+    msg: str
+
+
+def parse_proof(proof_str: str) -> Proof | ParseError:
+    try:
+        loaded = yaml.safe_load(proof_str)
+        return pydantic.TypeAdapter(Proof).validate_python(loaded)  # type: ignore
+    except Exception as e:
+        return ParseError(str(e))
 
 
 #####
@@ -79,11 +94,16 @@ class ProofError(Exception):
     feedback: str
     step: int | None = None
 
+    def __str__(self):
+        if self.step is not None:
+            return f"Error at step {self.step}: {self.feedback}"
+        return self.feedback
+
 
 def check_rule_application(eq: Eq, rule_eq: Eq, vars: dict[str, Term]) -> None:
     lhs, rhs = eq
     new_lhs = rewrite(lhs, rule_eq, vars)
-    if new_lhs != rhs:
+    if not equal_terms(new_lhs, rhs):
         raise ProofError(
             f"Rule application failed. Obtained: '{new_lhs}' instead of "
             + "the expected right-hand side.",
@@ -117,7 +137,7 @@ def check(eq: Eq, proof: Proof, rules: dict[str, Eq]) -> ProofError | None:
                     for step in steps:
                         ensure_valid_prev_step(step, cur_step=cur_step)
                     n = len(steps)
-                    if n <= 2:
+                    if n < 2:
                         msg = "Transitivity requires at least 2 steps."
                         raise ProofError(msg)
                     check_equal_terms(cur_eq[0], step_eq(steps[0])[0])
@@ -143,3 +163,15 @@ def check(eq: Eq, proof: Proof, rules: dict[str, Eq]) -> ProofError | None:
         if equal_terms(last_eq[0], eq[0]) and equal_terms(last_eq[1], eq[1]):
             return None
     return ProofError("The proof does not end with the equation to be proved.")
+
+
+TRIG_RULES = {
+    "cos_zero": ("cos(0)", "1"),
+    "sin_zero": ("sin(0)", "0"),
+    "sin_halfpi": ("sin(pi/2)", "1"),
+    "cos_halfpi": ("cos(pi/2)", "0"),
+    "sin_neg": ("sin(-x)", "-sin(x)"),
+    "cos_neg": ("cos(-x)", "cos(x)"),
+    "cos_add": ("cos(x + y)", "cos(x)*cos(y) - sin(x)*sin(y)"),
+    "sin_add": ("sin(x + y)", "sin(x)*cos(y) + cos(x)*sin(y)"),
+}

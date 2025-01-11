@@ -1,0 +1,28 @@
+# Proof for sin^2(x) + cos^2(x) = 1
+
+# Rewriting cos(x-x) in one way
+1:
+    - ["cos(x-x)", "1"]
+    - {rule: cos_zero}
+
+# Rewriting it in another way
+2:
+    - ["cos(x-x)", "cos(x)*cos(-x) - sin(x)*sin(-x)"]
+    - {rule: cos_add, vars: {x: "x", y: "-x"}}
+3:
+    - ["cos(x)*cos(-x) - sin(x)*sin(-x)", "cos(x)**2 - sin(x)*sin(-x)"]
+    - {rule: cos_neg, vars: {x: "x"}}
+4:
+    - ["cos(x)**2 - sin(x)*sin(-x)", "cos(x)**2 + sin(x)**2"]
+    - {rule: sin_neg, vars: {x: "x"}}
+5:
+    - ["cos(x-x)", "cos(x)**2 + sin(x)**2"]
+    - {trans: [2, 3, 4]}
+
+# Combining
+6:
+    - ["cos(x)**2 + sin(x)**2", "cos(x-x)"]
+    - {sym: 5}
+7:
+    - ["cos(x)**2 + sin(x)**2", "1"]
+    - {trans: [6, 1]}
