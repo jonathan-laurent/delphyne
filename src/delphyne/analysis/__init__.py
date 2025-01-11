@@ -12,5 +12,6 @@ from delphyne.analysis.demo_interpreter import (
     DemoExecutionContext,
     ObjectLoader,
     evaluate_demo,
-    evaluate_demo_and_return_trace,
+    evaluate_standalone_query_demo,
+    evaluate_strategy_demo_and_return_trace,
 )

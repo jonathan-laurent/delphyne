@@ -172,7 +172,7 @@ class DemoHintResolver(nv.HintResolver):
     def get_answer_refs(self) -> dict[nv.AnswerRef, fb.DemoAnswerId]:
         return self.answer_refs
 
-    def set_reachability_diagnostics(self, feedback: fb.DemoFeedback):
+    def set_reachability_diagnostics(self, feedback: fb.StrategyDemoFeedback):
         for i, used in enumerate(self.query_used):
             if not used:
                 msg = "Unreachable query."
@@ -387,14 +387,16 @@ def _evaluate_test(
 
 
 #####
-##### Demo Evaluation
+##### Strategy Demo Evaluation
 #####
 
 
-def evaluate_demo_and_return_trace(
+def evaluate_strategy_demo_and_return_trace(
     demo: dm.StrategyDemo, context: DemoExecutionContext
-) -> tuple[fb.DemoFeedback, dp.Trace | None]:
-    feedback = fb.DemoFeedback(fb.Trace({}), {}, {}, [], [], [], [])
+) -> tuple[fb.StrategyDemoFeedback, dp.Trace | None]:
+    feedback = fb.StrategyDemoFeedback(
+        "strategy", fb.Trace({}), {}, {}, [], [], [], []
+    )
     try:
         loader = ObjectLoader(context)
         strategy = loader.load_strategy_instance(demo.strategy, demo.args)
@@ -445,8 +447,50 @@ def evaluate_demo_and_return_trace(
     return feedback, trace
 
 
-def evaluate_demo(
-    demo: dm.StrategyDemo, context: DemoExecutionContext
-) -> fb.DemoFeedback:
-    feedback, _ = evaluate_demo_and_return_trace(demo, context)
+#####
+##### Standalone Query Evaluation
+#####
+
+
+def evaluate_standalone_query_demo(
+    demo: dm.QueryDemo, context: DemoExecutionContext
+) -> fb.QueryDemoFeedback:
+    feedback = fb.QueryDemoFeedback("query", [], [])
+    try:
+        loader = ObjectLoader(context)
+        query = loader.load_query(demo.query, demo.args)
+    except Exception as e:
+        msg = f"Failed to instantiate strategy:\n{e}"
+        feedback.diagnostics.append(("error", msg))
+        return feedback
+    # We just check that all the answers parse
+    for i, a in enumerate(demo.answers):
+        if a.mode not in query.modes():
+            diag = ("error", f"Unknown mode '{a.mode}'")
+            feedback.answer_diagnostics.append((i, diag))
+            break
+        try:
+            mode = query.modes()[a.mode]
+            elt = mode.parse(query.answer_type(), a.answer)
+            if isinstance(elt, dp.ParseError):
+                diag = ("error", f"Parse error: {elt.error}")
+                feedback.answer_diagnostics.append((i, diag))
+        except Exception as e:
+            diag = ("error", f"Internal parser error: {str(e)}")
+            feedback.answer_diagnostics.append((i, diag))
     return feedback
+
+
+#####
+##### Main EntryPoint
+#####
+
+
+def evaluate_demo(
+    demo: dm.Demo, context: DemoExecutionContext
+) -> fb.DemoFeedback:
+    if isinstance(demo, dm.StrategyDemo):
+        feedback, _ = evaluate_strategy_demo_and_return_trace(demo, context)
+        return feedback
+    else:
+        return evaluate_standalone_query_demo(demo, context)

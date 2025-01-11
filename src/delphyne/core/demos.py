@@ -25,6 +25,7 @@ class QueryDemo:
     query: str
     args: dict[str, Any]
     answers: list[Answer]
+    demonstration: str | None = None  # optional label
 
 
 @dataclass
@@ -36,7 +37,10 @@ class StrategyDemo:
     demonstration: str | None = None  # optional label
 
 
-type DemoFile = list[StrategyDemo]
+type Demo = QueryDemo | StrategyDemo
+
+
+type DemoFile = list[Demo]
 
 
 type NodeTag = str

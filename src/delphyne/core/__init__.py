@@ -10,6 +10,8 @@ from delphyne.core import (
     pprint,
 )
 from delphyne.core.demos import (
+    Demo,
+    QueryDemo,
     StrategyDemo,
 )
 from delphyne.core.environments import (

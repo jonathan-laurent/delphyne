@@ -53,21 +53,23 @@ class DemoExpectTest(dp.StrategyDemo):
     expect: object = None
 
     def check(self, ctx: analysis.DemoExecutionContext):
-        feedback, trace = analysis.evaluate_demo_and_return_trace(self, ctx)
+        feedback, trace = analysis.evaluate_strategy_demo_and_return_trace(
+            self, ctx
+        )
         if trace is not None:
             print(dump_yaml(dp.ExportableTrace, trace.export()))
-        print(dump_yaml(fb.DemoFeedback, feedback))
+        print(dump_yaml(fb.StrategyDemoFeedback, feedback))
         feedback_serialized = ty.pydantic_dump(
-            fb.DemoFeedback, feedback, exclude_defaults=False
+            fb.StrategyDemoFeedback, feedback, exclude_defaults=False
         )
         if self.expect is not None:
             check_object_included(self.expect, feedback_serialized)
 
 
-def load_demo(demo_label: str) -> DemoExpectTest:
+def load_demo(demo_label: str) -> DemoExpectTest | dp.QueryDemo:
     DEMO_FILE = Path(__file__).parent / f"{STRATEGY_FILE}.demo.yaml"
     demos_json = yaml.safe_load(open(DEMO_FILE, "r").read())
-    demos = ty.pydantic_load(list[DemoExpectTest], demos_json)
+    demos = ty.pydantic_load(list[DemoExpectTest | dp.QueryDemo], demos_json)
     for demo in demos:
         if demo_label and demo_label == demo.demonstration:
             return demo
@@ -96,7 +98,22 @@ def load_demo(demo_label: str) -> DemoExpectTest:
 def test_server(demo_label: str):
     demo = load_demo(demo_label)
     print("\n")
+    assert isinstance(demo, DemoExpectTest)
     demo.check(CONTEXT)
+
+
+@pytest.mark.parametrize(
+    "name, valid", [("MakeSum_demo", True), ("Unknown_query", False)]
+)
+def test_query_demo(name: str, valid: bool):
+    demo = load_demo(name)
+    assert isinstance(demo, dp.QueryDemo)
+    ret = analysis.evaluate_standalone_query_demo(demo, CONTEXT)
+    has_errors = ret.diagnostics or ret.answer_diagnostics
+    if valid:
+        assert not has_errors
+    else:
+        assert has_errors
 
 
 if __name__ == "__main__":

@@ -206,11 +206,12 @@ class TestFeedback:
 
 
 @dataclass
-class DemoFeedback:
+class StrategyDemoFeedback:
     """
-    Feedback sent by the server for each demonstration.
+    Feedback sent by the server for each strategy demonstration.
     """
 
+    kind: Literal["strategy"]
     trace: Trace
     answer_refs: dict[TraceAnswerId, DemoAnswerId]
     saved_nodes: dict[str, TraceNodeId]
@@ -218,3 +219,17 @@ class DemoFeedback:
     global_diagnostics: list[Diagnostic]
     query_diagnostics: list[tuple[DemoQueryId, Diagnostic]]
     answer_diagnostics: list[tuple[DemoAnswerId, Diagnostic]]
+
+
+@dataclass
+class QueryDemoFeedback:
+    """
+    Feedback sent by the server for each query demonstration.
+    """
+
+    kind: Literal["query"]
+    diagnostics: list[Diagnostic]
+    answer_diagnostics: list[tuple[int, Diagnostic]]
+
+
+type DemoFeedback = StrategyDemoFeedback | QueryDemoFeedback

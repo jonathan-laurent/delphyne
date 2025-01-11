@@ -25,7 +25,7 @@ def make_server(launcher: ta.TaskLauncher):
     @app.post("/demo-feedback")
     def _(
         request: Request,
-        demo: dp.StrategyDemo,
+        demo: dp.Demo,
         context: analysis.DemoExecutionContext,
     ):
         stream_eval = ta.stream_of_fun(analysis.evaluate_demo)
