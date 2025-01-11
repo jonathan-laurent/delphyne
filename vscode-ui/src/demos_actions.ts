@@ -5,7 +5,7 @@
 import * as vscode from "vscode";
 import { DemosManager } from "./demos_manager";
 import { DelphyneServer } from "./server";
-import { StrategyDemoElement } from "./elements";
+import { DemoElement, queryOfDemoElement } from "./elements";
 import { DemoFeedback, StrategyDemoFeedback } from "./stubs/feedback";
 import { ExecutionContext, getExecutionContext } from "./execution_contexts";
 import { StrategyDemo } from "./stubs/demos";
@@ -23,9 +23,8 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
     document: vscode.TextDocument,
     range: vscode.Range,
   ): vscode.CodeAction[] | undefined {
-    // TODO: actions for standalone queries
     const element = this.demosManager.getElementAt(document.uri, range.start);
-    if (element && element.kind === "strategy_demo") {
+    if (element) {
       const exe = getExecutionContext();
       const evaluateDemo = this.evaluateDemoAction(element, exe);
       const viewTreeRoot = this.viewTreeRoot(element);
@@ -59,7 +58,7 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
   }
 
   private evaluateDemoAction(
-    element: StrategyDemoElement,
+    element: DemoElement,
     exeContext: ExecutionContext,
   ): vscode.CodeAction {
     const action = new vscode.CodeAction(
@@ -74,11 +73,14 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
     return action;
   }
 
-  private viewTreeRoot(element: StrategyDemoElement): vscode.CodeAction | null {
+  private viewTreeRoot(element: DemoElement): vscode.CodeAction | null {
     const feedback = this.demosManager.getFeedback(
       element.uri,
       element.demo,
     ) as StrategyDemoFeedback;
+    if (element.kind !== "strategy_demo") {
+      return null;
+    }
     if (feedback && ROOT_ID in feedback.trace.nodes) {
       const action = new vscode.CodeAction(
         "View Tree Root",
@@ -96,9 +98,10 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
     return null;
   }
 
-  private viewTestDestination(
-    element: StrategyDemoElement,
-  ): vscode.CodeAction | null {
+  private viewTestDestination(element: DemoElement): vscode.CodeAction | null {
+    if (element.kind !== "strategy_demo") {
+      return null;
+    }
     const specific = element.specific;
     if (!specific || specific.kind !== "test") {
       return null;
@@ -129,15 +132,13 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
   }
 
   private answerQuery(
-    element: StrategyDemoElement,
+    element: DemoElement,
     promptOnly: boolean,
   ): vscode.CodeAction | null {
-    const specific = element.specific;
-    if (!specific || specific.kind !== "query") {
+    const query = queryOfDemoElement(element);
+    if (!query) {
       return null;
     }
-    const demo = JSON.parse(element.demo) as StrategyDemo;
-    const query = demo.queries[specific.query_index];
     const args = {
       query: query.query,
       completions: 1,
@@ -164,7 +165,7 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
 //////
 
 async function evaluateDemo(
-  element: StrategyDemoElement,
+  element: DemoElement,
   executionContext: ExecutionContext,
   server: DelphyneServer,
   demosManager: DemosManager,
@@ -200,9 +201,7 @@ async function evaluateAllDemos(
     return;
   }
   for (const element of elements) {
-    if (element.kind === "strategy_demo") {
-      await evaluateDemo(element, exe, server, demosManager);
-    }
+    await evaluateDemo(element, exe, server, demosManager);
   }
 }
 

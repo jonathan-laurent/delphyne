@@ -16,11 +16,9 @@ import { parseYamlWithLocInfo, serializeWithoutLocInfo } from "./yaml_utils";
 import { Ajv } from "ajv";
 import { isStrategyDemo } from "./common";
 import {
-  StrategyDemoElement,
   TestElement,
   StrategyQueryElement,
   SerializedDemo,
-  StandaloneQueryDemoElement,
   DemoElement,
 } from "./elements";
 
@@ -174,10 +172,21 @@ function computeQueryDemoDiagnostics(
 ): vscode.Diagnostic[] {
   let diagnostics: vscode.Diagnostic[] = [];
   for (let d of feedback.diagnostics) {
-    diagnostics.push(makeDiagnostic(d, demonstration.__loc));
+    diagnostics.push(makeDiagnostic(d, demonstration.__loc__query));
   }
   for (let [i, d] of feedback.answer_diagnostics) {
     diagnostics.push(makeDiagnostic(d, demonstration.__loc_items__answers[i]));
+  }
+  if (
+    feedback.diagnostics.length === 0 &&
+    feedback.answer_diagnostics.length === 0
+  ) {
+    diagnostics.push(
+      makeDiagnostic(
+        ["info", "Answers parsed successfully."],
+        demonstration.__loc__query,
+      ),
+    );
   }
   return diagnostics;
 }

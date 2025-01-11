@@ -8,6 +8,7 @@
 // - Determine if one is under the cursor
 
 import * as vscode from "vscode";
+import { QueryDemo, StrategyDemo } from "./stubs/demos";
 
 export type SerializedDemo = string;
 export type SerializedCommand = string;
@@ -54,3 +55,17 @@ export type Element =
   | StrategyDemoElement
   | StandaloneQueryDemoElement
   | CommandElement;
+
+export function queryOfDemoElement(element: DemoElement): QueryDemo | null {
+  if (element.kind === "strategy_demo") {
+    const specific = element.specific;
+    if (!specific || specific.kind !== "query") {
+      return null;
+    }
+    const demo = JSON.parse(element.demo) as StrategyDemo;
+    return demo.queries[specific.query_index];
+  } else {
+    const demo = JSON.parse(element.demo) as QueryDemo;
+    return demo;
+  }
+}

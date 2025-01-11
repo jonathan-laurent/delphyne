@@ -17,15 +17,15 @@
 ##### Testing standalone query demos
 
 
-# - demonstration: MakeSum_demo
-#   query: MakeSum
-#   args:
-#     allowed: [9, 6, 2]
-#     goal: 11
-#   answers:
-#     - answer: "[9, 2]"
-#     - label: "wrong_sum"
-#       answer: "[9, 6]"
+- demonstration: MakeSum_demo
+  query: MakeSum
+  args:
+    allowed: [9, 6, 2]
+    goal: 11
+  answers:
+    - answer: "[9, 2]"
+    - label: "wrong_sum"
+      answer: "[9, 6]"
 
 - demonstration: Unknown_query
   query: Unknown
