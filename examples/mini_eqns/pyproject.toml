@@ -1,0 +1,22 @@
+[project]
+name = "delphyne-mini-eqns-example"
+version = "0.2.0"
+description = "A basic example of using Delphyne to prove equations."
+authors = [{name="Jonathan Laurent", email="jonathan.laurent@cs.cmu.edu"}]
+dependencies = [
+    "delphyne>=0.2.0",
+    "sympy>=1.13.3",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.ruff]
+line-length = 79
+
+[tool.pyright]
+typeCheckingMode = "strict"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
