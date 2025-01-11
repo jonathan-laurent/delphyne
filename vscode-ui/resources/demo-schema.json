@@ -49,6 +49,16 @@
       "title": "Answer",
       "type": "object"
     },
+    "Demo": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/QueryDemo"
+        },
+        {
+          "$ref": "#/$defs/StrategyDemo"
+        }
+      ]
+    },
     "QueryDemo": {
       "properties": {
         "query": {
@@ -65,6 +75,18 @@
           },
           "title": "Answers",
           "type": "array"
+        },
+        "demonstration": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Demonstration"
         }
       },
       "required": [
@@ -125,7 +147,7 @@
     }
   },
   "items": {
-    "$ref": "#/$defs/StrategyDemo"
+    "$ref": "#/$defs/Demo"
   },
   "type": "array",
   "title": "Delphyne Demo File"

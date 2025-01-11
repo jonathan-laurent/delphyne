@@ -95,7 +95,17 @@ export class DelphyneServer {
         const result = next[1];
         if (result.done) {
           if (buffer !== "") {
-            log.error("Unexpected end of stream:", { query, payload, buffer });
+            if (response.status === 422) {
+              log.error("Malformed query (error 422)", {
+                error: JSON.parse(buffer),
+              });
+            } else {
+              log.error("Unexpected end of stream:", {
+                query,
+                payload,
+                buffer,
+              });
+            }
           }
           break;
         }

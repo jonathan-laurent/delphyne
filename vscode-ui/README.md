@@ -29,6 +29,7 @@ npx tsc --noEmit
 
 Instead of the last step, one can go to the "Extensions" menus, click on the three dots and select "Install from VSIX".
 
+To make the most out of the extension, we recommend also installing the YAML extension.
 
 ## References
 

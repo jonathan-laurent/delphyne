@@ -25,7 +25,8 @@ def make_server(launcher: ta.TaskLauncher):
     @app.post("/demo-feedback")
     def _(
         request: Request,
-        demo: dp.Demo,
+        # Strangely: `demo: dp.Demo` does not work with fastapi...
+        demo: dp.QueryDemo | dp.StrategyDemo,
         context: analysis.DemoExecutionContext,
     ):
         stream_eval = ta.stream_of_fun(analysis.evaluate_demo)
