@@ -33,6 +33,7 @@ clean: clean-ignored
 	make -C vscode-ui clean
 	make -C examples/libraries/why3py clean
 	make -C examples/why3 clean
+	make -C examples/mini_eqns clean
 
 
 full-clean: clean

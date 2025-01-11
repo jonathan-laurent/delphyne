@@ -1,0 +1,14 @@
+{
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.tabSize": 4,
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        },
+        "editor.rulers": [80],
+        "rewrap.wrappingColumn": 72,
+    },
+    "python.testing.pytestArgs": [".", "-s"],
+    "python.testing.pytestEnabled": true,
+}
