@@ -3,17 +3,25 @@
 //////
 
 import * as vscode from "vscode";
-import { DemoFile, QueryDemo } from "./stubs/demos";
+import { Demo, DemoFile, QueryDemo } from "./stubs/demos";
 import { StrategyDemo } from "./stubs/demos";
 import { log } from "./logging";
-import { DemoFeedback, Diagnostic } from "./stubs/feedback";
+import {
+  DemoFeedback,
+  Diagnostic,
+  QueryDemoFeedback,
+  StrategyDemoFeedback,
+} from "./stubs/feedback";
 import { parseYamlWithLocInfo, serializeWithoutLocInfo } from "./yaml_utils";
 import { Ajv } from "ajv";
+import { isStrategyDemo } from "./common";
 import {
-  DemoElement,
+  StrategyDemoElement,
   TestElement,
-  QueryElement,
+  StrategyQueryElement,
   SerializedDemo,
+  StandaloneQueryDemoElement,
+  DemoElement,
 } from "./elements";
 
 const DEMO_SCHEMA_PATH = "../resources/demo-schema.json";
@@ -69,15 +77,26 @@ class DemoFileManager {
     if (!this.parsedDemoFile) {
       return null;
     }
-    return this.parsedDemoFile.map((demo) => ({
-      kind: "demo",
-      uri: uri,
-      demo: serializeWithoutLocInfo(demo),
-      specific: null,
-    }));
+    return this.parsedDemoFile.map((demo) => {
+      if (isStrategyDemo(demo)) {
+        return {
+          kind: "strategy_demo",
+          uri: uri,
+          demo: serializeWithoutLocInfo(demo),
+          specific: null,
+        };
+      } else {
+        return {
+          kind: "standalone_query",
+          uri: uri,
+          demo: serializeWithoutLocInfo(demo),
+          answer_index: null,
+        };
+      }
+    });
   }
 
-  public getDemonstration(demo: SerializedDemo): StrategyDemo | null {
+  public getDemonstration(demo: SerializedDemo): Demo | null {
     if (!this.parsedDemoFile) {
       return null;
     }
@@ -133,8 +152,39 @@ function makeDiagnostic([kind, message]: Diagnostic, loc: vscode.Range) {
 }
 
 function computeDiagnostics(
-  demonstration: StrategyDemo, // Annotated with location information
+  demonstration: Demo,
   feedback: DemoFeedback,
+): vscode.Diagnostic[] {
+  if (isStrategyDemo(demonstration)) {
+    return computeStrategyDemoDiagnostics(
+      demonstration,
+      feedback as StrategyDemoFeedback,
+    );
+  } else {
+    return computeQueryDemoDiagnostics(
+      demonstration,
+      feedback as QueryDemoFeedback,
+    );
+  }
+}
+
+function computeQueryDemoDiagnostics(
+  demonstration: QueryDemo,
+  feedback: QueryDemoFeedback,
+): vscode.Diagnostic[] {
+  let diagnostics: vscode.Diagnostic[] = [];
+  for (let d of feedback.diagnostics) {
+    diagnostics.push(makeDiagnostic(d, demonstration.__loc));
+  }
+  for (let [i, d] of feedback.answer_diagnostics) {
+    diagnostics.push(makeDiagnostic(d, demonstration.__loc_items__answers[i]));
+  }
+  return diagnostics;
+}
+
+function computeStrategyDemoDiagnostics(
+  demonstration: StrategyDemo, // Annotated with location information
+  feedback: StrategyDemoFeedback,
 ): vscode.Diagnostic[] {
   let diagnostics: vscode.Diagnostic[] = [];
   for (let d of feedback.global_diagnostics) {
@@ -174,12 +224,21 @@ export function getElementAt(
   for (const demo of demoFile) {
     const loc = demo.__loc;
     if (loc.contains(cursor)) {
-      return {
-        kind: "demo",
-        uri: uri,
-        demo: serializeWithoutLocInfo(demo),
-        specific: getSpecificElementAt(demo, cursor),
-      };
+      if (isStrategyDemo(demo)) {
+        return {
+          kind: "strategy_demo",
+          uri: uri,
+          demo: serializeWithoutLocInfo(demo),
+          specific: getSpecificElementAt(demo, cursor),
+        };
+      } else {
+        return {
+          kind: "standalone_query",
+          uri: uri,
+          demo: serializeWithoutLocInfo(demo),
+          answer_index: getAnswerIndex(demo, cursor),
+        };
+      }
     }
   }
   return null;
@@ -188,7 +247,7 @@ export function getElementAt(
 function getSpecificElementAt(
   demo: StrategyDemo,
   cursor: vscode.Position,
-): TestElement | QueryElement | null {
+): TestElement | StrategyQueryElement | null {
   const testIndex = demo.__loc_items__tests.findIndex((loc) =>
     loc.contains(cursor),
   );
@@ -281,10 +340,7 @@ export class DemosManager {
     return this.demoFiles.get(uri)?.getElementAt(uri, cursor) ?? null;
   }
 
-  getDemonstration(
-    uri: vscode.Uri,
-    demo: SerializedDemo,
-  ): StrategyDemo | null {
+  getDemonstration(uri: vscode.Uri, demo: SerializedDemo): Demo | null {
     return this.demoFiles.get(uri)?.getDemonstration(demo) ?? null;
   }
 

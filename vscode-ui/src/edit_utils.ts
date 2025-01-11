@@ -3,7 +3,7 @@
 //////
 
 import * as vscode from "vscode";
-import { log, showAlert } from "./logging";
+import { showAlert } from "./logging";
 
 function editorUsesTwoSpaceIndent(editor: vscode.TextEditor): boolean {
   return editor.options.insertSpaces === true && editor.options.tabSize === 2;

@@ -16,18 +16,20 @@ export interface Answer {
 
 export interface QueryDemo {
   query: string;
-  args: { [key: string]: unknown };
+  args: Record<string, unknown>;
   answers: Answer[];
+  demonstration: string | null;
   __loc: vscode.Range;
   __loc__query: vscode.Range;
   __loc__args: vscode.Range;
   __loc__answers: vscode.Range;
   __loc_items__answers: vscode.Range[];
+  __loc__demonstration: vscode.Range;
 }
 
 export interface StrategyDemo {
   strategy: string;
-  args: { [key: string]: unknown };
+  args: Record<string, unknown>;
   tests: TestCommandString[];
   queries: QueryDemo[];
   demonstration: string | null;
@@ -41,5 +43,7 @@ export interface StrategyDemo {
   __loc__demonstration: vscode.Range;
 }
 
-export type DemoFile = StrategyDemo[];
+export type Demo = QueryDemo | StrategyDemo;
+
+export type DemoFile = Demo[];
 

@@ -17,6 +17,7 @@ import { DemosManager } from "./demos_manager";
 import {
   DemoFeedback,
   Query,
+  StrategyDemoFeedback,
   TraceAnswerId,
   TraceNodeId,
 } from "./stubs/feedback";
@@ -75,18 +76,24 @@ export function registerTreeViewCommands(
 function getDemoInfoForTreeView(
   demosManager: DemosManager,
   treeView: TreeView,
-): [StrategyDemo, DemoFeedback, vscode.TextEditor] | undefined {
+): [StrategyDemo, StrategyDemoFeedback, vscode.TextEditor] | undefined {
   const origin = treeView.getPointedTree()?.tree.origin;
-  if (!origin || origin.kind !== "demo") {
+  if (!origin || origin.kind !== "strategy_demo") {
     log.error("delphyne.addQuery: the tree view is not attached to a demo.");
     return;
   }
-  const demonstration = demosManager.getDemonstration(origin.uri, origin.demo);
+  const demonstration = demosManager.getDemonstration(
+    origin.uri,
+    origin.demo,
+  ) as StrategyDemo;
   if (!demonstration) {
     log.error("delphyne.addQuery: failed to obtain demonstration.");
     return;
   }
-  const feedback = demosManager.getFeedback(origin.uri, origin.demo);
+  const feedback = demosManager.getFeedback(
+    origin.uri,
+    origin.demo,
+  ) as StrategyDemoFeedback;
   if (!feedback) {
     log.error("delphyne.addQuery: failed to obtain feedback.");
     return;

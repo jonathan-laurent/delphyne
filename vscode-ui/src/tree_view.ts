@@ -120,13 +120,13 @@ export function demoQueryKey(query: QueryDemo): QueryKey {
 
 function computeCachedInfo(trace: Trace, origin: Element): TreeCachedInfo {
   let existingQueries: QueriesMap = new Set();
-  if (origin.kind === "demo") {
+  if (origin.kind === "strategy_demo") {
     const demo = JSON.parse(origin.demo) as StrategyDemo;
     for (const query of demo.queries) {
       existingQueries.add(demoQueryKey(query));
     }
   }
-  return { existingQueries, fromDemo: origin.kind === "demo" };
+  return { existingQueries, fromDemo: origin.kind === "strategy_demo" };
 }
 
 type QueriesMap = Set<QueryKey>;

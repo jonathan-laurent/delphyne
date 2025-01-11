@@ -87,7 +87,8 @@ export interface TestFeedback {
   node_id: TraceNodeId | null;
 }
 
-export interface DemoFeedback {
+export interface StrategyDemoFeedback {
+  kind: "strategy";
   trace: Trace;
   answer_refs: Record<TraceAnswerId, DemoAnswerId>;
   saved_nodes: Record<string, TraceNodeId>;
@@ -96,4 +97,12 @@ export interface DemoFeedback {
   query_diagnostics: [DemoQueryId, Diagnostic][];
   answer_diagnostics: [DemoAnswerId, Diagnostic][];
 }
+
+export interface QueryDemoFeedback {
+  kind: "query";
+  diagnostics: Diagnostic[];
+  answer_diagnostics: [number, Diagnostic][];
+}
+
+export type DemoFeedback = StrategyDemoFeedback | QueryDemoFeedback;
 

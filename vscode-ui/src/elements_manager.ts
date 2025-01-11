@@ -19,7 +19,10 @@ export class ElementsManager {
   }
 
   private isAlive(element: Element) {
-    if (element.kind === "demo") {
+    if (
+      element.kind === "strategy_demo" ||
+      element.kind === "standalone_query"
+    ) {
       return this.demosManager.isAlive(element);
     }
     return false;
