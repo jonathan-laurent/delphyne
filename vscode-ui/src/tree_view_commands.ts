@@ -21,12 +21,11 @@ import {
   TraceNodeId,
 } from "./stubs/feedback";
 import { log } from "./logging";
-import { getEditorForUri, insertYamlListElement } from "./edit_utils";
-import { prettyYaml } from "./yaml_utils";
+import { getEditorForUri } from "./edit_utils";
 import { StrategyDemo } from "./stubs/demos";
 import { Element } from "./elements";
 import { gotoCommandResultAnswer } from "./commands";
-import { addQuery } from "./edit";
+import { addQueries } from "./edit";
 
 export function registerTreeViewCommands(
   context: vscode.ExtensionContext,
@@ -118,7 +117,11 @@ function addQueryFromTreeView(
     return;
   }
   const [demonstration, _, editor] = demoInfo;
-  addQuery(query, demonstration, editor);
+  addQueries(
+    [{ name: query.name, args: query.args, answer: null }],
+    demonstration,
+    editor,
+  );
 }
 
 function queryIndex(key: QueryKey, demo: StrategyDemo): number {

@@ -344,7 +344,9 @@ def test_cached_computations(
     n: int,
 ) -> dp.Strategy[dp.Computation, object, int]:
     a, b = yield from dp.compute(expensive_computation, n)
-    return a * b
+    c, d = yield from dp.compute(expensive_computation, n)
+    e, f = yield from dp.compute(expensive_computation, n + 1)
+    return a * b + c * d + e * f
 
 
 #####

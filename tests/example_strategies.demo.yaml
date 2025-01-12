@@ -400,6 +400,12 @@
         args: {n: 2}
       answers:
         - answer: "[2, 3]"
+    - query: __Computation__
+      args:
+        fun: expensive_computation
+        args: {n: 3}
+      answers:
+        - answer: "[3, 4]"
   expect:
     test_feedback:
       - diagnostics: __empty__
@@ -414,5 +420,7 @@
     test_feedback:
       - diagnostics: __empty__
     implicit_answers:
+      - query_name: __Computation__
+        query_args: {fun: expensive_computation}
       - query_name: __Computation__
         query_args: {fun: expensive_computation}

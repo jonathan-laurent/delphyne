@@ -18,11 +18,11 @@ function indentString(str: string, level: number, indent: string): string {
 }
 
 // Insert a new element in a YAML list and return the position of the added element
-export function insertYamlListElement(
+export function insertYamlListElements(
   editor: vscode.TextEditor,
   listRange: vscode.Range,
   originalListEmpty: boolean,
-  newYamlElement: string,
+  newYamlElements: string[],
   parentIndentLevel: number,
 ): vscode.Position {
   if (!editorUsesTwoSpaceIndent(editor)) {
@@ -30,13 +30,18 @@ export function insertYamlListElement(
   }
   const indent = " ".repeat(2);
   const insertPos = listRange.end;
-  let toInsert = indentString(
-    newYamlElement.trim(),
-    parentIndentLevel + 2,
-    indent,
-  );
-  const newStart = indent.repeat(parentIndentLevel + 1) + "- ";
-  toInsert = newStart + toInsert.substring(newStart.length);
+  const newPrefix = indent.repeat(parentIndentLevel + 1) + "- ";
+  const elements: string[] = [];
+  for (const newYamlElement of newYamlElements) {
+    let element = indentString(
+      newYamlElement.trim(),
+      parentIndentLevel + 2,
+      indent,
+    );
+    element = newPrefix + element.substring(newPrefix.length);
+    elements.push(element);
+  }
+  let toInsert = elements.join("\n");
   toInsert = originalListEmpty ? "\n" + toInsert : toInsert + "\n";
   editor.edit((editBuilder) => {
     if (originalListEmpty) {

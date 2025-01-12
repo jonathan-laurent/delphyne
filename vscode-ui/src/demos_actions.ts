@@ -6,11 +6,12 @@ import * as vscode from "vscode";
 import { DemosManager } from "./demos_manager";
 import { DelphyneServer } from "./server";
 import { DemoElement, queryOfDemoElement } from "./elements";
-import { DemoFeedback, StrategyDemoFeedback } from "./stubs/feedback";
+import { DemoFeedback, Query, StrategyDemoFeedback } from "./stubs/feedback";
 import { ExecutionContext, getExecutionContext } from "./execution_contexts";
-import { StrategyDemo } from "./stubs/demos";
+import { QueryDemo, StrategyDemo } from "./stubs/demos";
 import { PointedTree, TreeInfo, TreeView } from "./tree_view";
 import { ROOT_ID } from "./common";
+import { addQueries } from "./edit";
 
 export class DemosActionsProvider implements vscode.CodeActionProvider {
   constructor(
@@ -31,12 +32,14 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
       const viewTestDestination = this.viewTestDestination(element);
       const seePrompt = this.answerQuery(element, true);
       const answerQuery = this.answerQuery(element, false);
+      const addImplicitAnswers = this.addImplicitAnswers(element);
       const all: (vscode.CodeAction | null)[] = [
         seePrompt,
         answerQuery,
         viewTestDestination,
         viewTreeRoot,
         evaluateDemo,
+        addImplicitAnswers,
       ];
       return all.filter((a): a is vscode.CodeAction => a !== null);
     }
@@ -53,6 +56,9 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
       ),
       vscode.commands.registerCommand("delphyne.evaluateAllDemos", async () => {
         await evaluateAllDemos(this.server, this.demosManager);
+      }),
+      vscode.commands.registerCommand("delphyne.addImplicitAnswers", (add) => {
+        add(); // The action to perform is passed as a closure argument.
       }),
     );
   }
@@ -129,6 +135,43 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
       return action;
     }
     return null;
+  }
+
+  private addImplicitAnswers(element: DemoElement): vscode.CodeAction | null {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || element.kind !== "strategy_demo") {
+      return null;
+    }
+    const feedback = this.demosManager.getFeedback(
+      element.uri,
+      element.demo,
+    ) as StrategyDemoFeedback | null;
+    const demo = this.demosManager.getDemonstration(
+      element.uri,
+      element.demo,
+    ) as StrategyDemo | null;
+    if (!demo || !feedback || feedback.implicit_answers.length === 0) {
+      return null;
+    }
+    const action = new vscode.CodeAction(
+      "Add Implicit Answers",
+      vscode.CodeActionKind.Empty,
+    );
+    action.command = {
+      command: "delphyne.addImplicitAnswers",
+      title: "Add Implicit Answers",
+      arguments: [
+        () => {
+          const queries = feedback.implicit_answers.map((ia) => ({
+            name: ia.query_name,
+            args: ia.query_args,
+            answer: ia.answer,
+          }));
+          addQueries(queries, demo, editor);
+        },
+      ],
+    };
+    return action;
   }
 
   private answerQuery(

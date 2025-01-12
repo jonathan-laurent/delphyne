@@ -1,26 +1,32 @@
 import { StrategyDemo } from "./stubs/demos";
-import { Query } from "./stubs/feedback";
 
 import * as vscode from "vscode";
 import { prettyYaml } from "./yaml_utils";
-import { insertYamlListElement } from "./edit_utils";
+import { insertYamlListElements } from "./edit_utils";
 
-export function addQuery(
-  query: Query,
+export function addQueries(
+  queries: {
+    name: string;
+    args: Record<string, unknown>;
+    answer: string | null;
+  }[],
   demo: StrategyDemo,
   editor: vscode.TextEditor,
   focus: boolean = true,
 ) {
   const listRange = demo.__loc__queries;
   const originalListEmpty = demo.queries.length === 0;
-  const newItem = { query: query.name, args: query.args, answers: [] };
-  const newYamlElement = prettyYaml(newItem);
+  const newYamlElements: string[] = queries.map((query) => {
+    const answers = query.answer ? [{ answer: query.answer }] : [];
+    const item = { query: query.name, args: query.args, answers };
+    return prettyYaml(item);
+  });
   const parentIndentLevel = 1;
-  const newCursorPos = insertYamlListElement(
+  const newCursorPos = insertYamlListElements(
     editor,
     listRange,
     originalListEmpty,
-    newYamlElement,
+    newYamlElements,
     parentIndentLevel,
   );
   if (focus) {

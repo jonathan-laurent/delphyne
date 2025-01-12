@@ -96,7 +96,7 @@
       ],
       "view/item/context": [
         {
-          "command": "delphyne.addQuery",
+          "command": "delphyne.addQueryFromTreeView",
           "when": "view == delphyne.tree.node && viewItem =~ /^query/ && viewItem =~ /exists-false/",
           "group": "inline"
         },
@@ -216,7 +216,7 @@
         "title": "Open Documentation"
       },
       {
-        "command": "delphyne.addQuery",
+        "command": "delphyne.addQueryFromTreeView",
         "title": "Insert Query in File",
         "icon": "$(add)"
       },
