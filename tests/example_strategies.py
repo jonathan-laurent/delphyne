@@ -21,10 +21,7 @@ import delphyne as dp
 class MakeSum(dp.Query[list[int]]):
     allowed: list[int]
     goal: int
-
-    @classmethod
-    def modes(cls) -> dp.AnswerModes[list[int]]:
-        return {None: dp.AnswerMode(dp.raw_yaml)}
+    __parser__: ClassVar = dp.raw_yaml
 
 
 @dataclass
@@ -311,9 +308,9 @@ def num_confidence(
 
 
 @dp.strategy
-def generate_pairs() -> (
-    dp.Strategy[dp.BestFS, dp.PromptingPolicy, tuple[int, int]]
-):
+def generate_pairs() -> dp.Strategy[
+    dp.BestFS, dp.PromptingPolicy, tuple[int, int]
+]:
     x = yield from dp.bestfs_branch(
         PickPositiveInteger(None)(IP := dp.PromptingPolicy, lambda p: p),
         confidence_priors=lambda _: [1e-3, 1e-3, 0],

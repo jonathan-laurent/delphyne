@@ -3,37 +3,28 @@ Delphyne Queries.
 """
 
 from abc import ABC, abstractmethod
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any, Self
 
 from delphyne.core.environments import TemplatesManager
-from delphyne.core.refs import AnswerModeName
+from delphyne.core.refs import Answer, AnswerModeName
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
 
 @dataclass
-class ParseError:
+class ParseError(Exception):
+    """
+    Can be used as an exception or a returned value.
+    """
+
     error: str
-
-
-type Parser[T] = Callable[[TypeAnnot[T], str], T | ParseError]
-
-
-@dataclass(frozen=True)
-class AnswerMode[T]:
-    parse: Parser[T]
 
 
 type AnyQuery = AbstractQuery[Any]
 
 
 class AbstractQuery[T](ABC):
-    @classmethod
-    @abstractmethod
-    def modes(cls) -> Mapping[AnswerModeName, AnswerMode[T]]:
-        pass
-
     @abstractmethod
     def system_prompt(
         self,
@@ -58,7 +49,7 @@ class AbstractQuery[T](ABC):
 
     @classmethod
     @abstractmethod
-    def parse(cls, args: dict[str, object]) -> Self:
+    def parse_instance(cls, args: dict[str, object]) -> Self:
         pass
 
     @abstractmethod
@@ -70,3 +61,7 @@ class AbstractQuery[T](ABC):
 
     def tags(self) -> Sequence[str]:
         return [self.name()]
+
+    @abstractmethod
+    def parse_answer(self, answer: Answer) -> T | ParseError:
+        pass

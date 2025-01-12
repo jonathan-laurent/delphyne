@@ -231,9 +231,9 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
                 def answer(
                     mode: refs.AnswerModeName, text: str
                 ) -> tr.Tracked[T] | tr.ParseError:
-                    ref = refs.SpaceElementRef(sr, refs.Answer(mode, text))
-                    atype = query.answer_type()
-                    parsed = query.modes()[mode].parse(atype, text)
+                    answer = refs.Answer(mode, text)
+                    ref = refs.SpaceElementRef(sr, answer)
+                    parsed = query.parse_answer(answer)
                     if isinstance(parsed, tr.ParseError):
                         return parsed
                     return tr.Tracked(parsed, ref, gr, query.answer_type())

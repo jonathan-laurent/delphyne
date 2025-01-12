@@ -391,7 +391,7 @@ class _TraceTranslator:
         answers: list[fb.Answer] = []
         origin = dp.QueryOrigin(id, ref)
         for a, aid in self.trace.answer_ids.get(origin, {}).items():
-            parsed = query.modes()[a.mode].parse(query.answer_type(), a.text)
+            parsed = query.parse_answer(a)
             parsed_repr = _value_repr(parsed, query.answer_type())
             hint_str: tuple[()] | tuple[str] | None = None
             if self.simplifier is not None:

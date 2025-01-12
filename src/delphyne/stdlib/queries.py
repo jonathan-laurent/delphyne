@@ -3,8 +3,8 @@ Standard queries and building blocks for prompting policies.
 """
 
 import re
-from collections.abc import Callable, Mapping, Sequence
-from typing import Any, Self, cast
+from collections.abc import Callable, Sequence
+from typing import Any, Protocol, Self, cast
 
 import yaml
 import yaml.parser
@@ -22,20 +22,36 @@ from delphyne.utils.typing import TypeAnnot, ValidationError
 
 
 class Query[T](dp.AbstractQuery[T]):
-    @classmethod
-    def modes(cls) -> "AnswerModes[T]":
-        __answer__ = "__answer__"
+    def parse(self, mode: dp.AnswerModeName | None, answer: str) -> T:
+        """
+        A more convenient method to override instead of `parse_answer`.
+
+        Raises dp.ParseError
+        """
+        cls = type(self)
         __parser__ = "__parser__"
-        if hasattr(cls, __answer__):
-            assert not hasattr(cls, __parser__)
-            return getattr(cls, __answer__)
-        elif hasattr(cls, __parser__):
-            assert not hasattr(cls, __answer__)
-            return single_parser(getattr(cls, __parser__))
-        assert False, (
-            "Please define the `modes` method "
-            + "or the `__answer__` class attribute."
-        )
+        if hasattr(cls, __parser__):
+            parser: Any = getattr(cls, __parser__)
+            assert callable(parser)
+            parser = cast(Any, parser)
+            import inspect
+
+            sig = inspect.signature(parser)
+            nargs = len(sig.parameters)
+            assert nargs == 1 or nargs == 2
+            if nargs == 1:
+                # Normal parser
+                return parser(answer)
+            else:
+                # Generic parser
+                return parser(self.answer_type(), answer)
+        assert False, f"No {__parser__} attribute found."
+
+    def parse_answer(self, answer: dp.Answer) -> T | dp.ParseError:
+        try:
+            return self.parse(answer.mode, answer.text)
+        except dp.ParseError as e:
+            return e
 
     def system_prompt(
         self,
@@ -67,7 +83,7 @@ class Query[T](dp.AbstractQuery[T]):
         return cast(dict[str, object], ty.pydantic_dump(type(self), self))
 
     @classmethod
-    def parse(cls, args: dict[str, object]) -> Self:
+    def parse_instance(cls, args: dict[str, object]) -> Self:
         return ty.pydantic_load(cls, args)
 
     def answer_type(self) -> TypeAnnot[T]:
@@ -96,61 +112,57 @@ def _no_prompt_manager_error() -> str:
     )
 
 
-type AnswerModes[T] = Mapping[dp.AnswerModeName, dp.AnswerMode[T]]
-type Modes = AnswerModes[Any]
-
-
-def single_parser[T](parser: dp.Parser[T]) -> AnswerModes[T]:
-    return {None: dp.AnswerMode(parse=parser)}
-
-
 #####
 ##### Parsers
 #####
 
 
-def raw_yaml[T](type: TypeAnnot[T], res: str) -> T | dp.ParseError:
+class GenericParser(Protocol):
+    def __call__[T](self, type: TypeAnnot[T], res: str) -> T: ...
+
+
+def raw_yaml[T](type: TypeAnnot[T], res: str) -> T:
     try:
         parsed = yaml.safe_load(res)
         return ty.pydantic_load(type, parsed)
     except ValidationError as e:
-        return dp.ParseError(str(e))
+        raise dp.ParseError(str(e))
     except yaml.parser.ParserError as e:
-        return dp.ParseError(str(e))
+        raise dp.ParseError(str(e))
 
 
-def yaml_from_last_block[T](type: TypeAnnot[T], res: str) -> T | dp.ParseError:
+def yaml_from_last_block[T](type: TypeAnnot[T], res: str) -> T:
     final = extract_final_block(res)
     if final is None:
-        return dp.ParseError("No final code block found.")
+        raise dp.ParseError("No final code block found.")
     return raw_yaml(type, final)
 
 
-def raw_string[T](typ: TypeAnnot[T], res: str) -> T | dp.ParseError:
-    if isinstance(typ, type):  # if `typ` is a class
-        return typ(res)  # type: ignore
-    return res  # type: ignore  # TODO: assuming that `typ` is a string alias
+def raw_string[T](typ: TypeAnnot[T], res: str) -> T:
+    try:
+        if isinstance(typ, type):  # if `typ` is a class
+            return typ(res)  # type: ignore
+        # TODO: check that `typ` is a string alias
+        return res  # type: ignore
+    except Exception as e:
+        raise dp.ParseError(str(e))
 
 
-def trimmed_raw_string[T](typ: TypeAnnot[T], res: str) -> T | dp.ParseError:
+def trimmed_raw_string[T](typ: TypeAnnot[T], res: str) -> T:
     return raw_string(typ, res.strip())
 
 
-def string_from_last_block[T](
-    typ: TypeAnnot[T], res: str
-) -> T | dp.ParseError:  # fmt: skip
+def string_from_last_block[T](typ: TypeAnnot[T], res: str) -> T:
     final = extract_final_block(res)
     if final is None:
-        return dp.ParseError("No final code block found.")
+        raise dp.ParseError("No final code block found.")
     return raw_string(typ, final)
 
 
-def trimmed_string_from_last_block[T](
-    typ: TypeAnnot[T], res: str
-) -> T | dp.ParseError:  # fmt: skip
+def trimmed_string_from_last_block[T](typ: TypeAnnot[T], res: str) -> T:
     final = extract_final_block(res)
     if final is None:
-        return dp.ParseError("No final code block found.")
+        raise dp.ParseError("No final code block found.")
     return trimmed_raw_string(typ, final)
 
 
@@ -168,7 +180,7 @@ def find_all_examples(
     database: dp.ExampleDatabase, query: dp.AbstractQuery[Any]
 ) -> Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]]:
     raw = database.examples(query.name())
-    return [(query.parse(args), ans) for args, ans in raw]
+    return [(query.parse_instance(args), ans) for args, ans in raw]
 
 
 def system_message(content: str) -> ChatMessage:

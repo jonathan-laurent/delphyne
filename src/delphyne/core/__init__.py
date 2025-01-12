@@ -30,9 +30,7 @@ from delphyne.core.policies import (
 )
 from delphyne.core.queries import (
     AbstractQuery,
-    AnswerMode,
     ParseError,
-    Parser,
 )
 from delphyne.core.refs import (
     Answer,

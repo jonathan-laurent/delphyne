@@ -36,13 +36,10 @@ from delphyne.stdlib.policies import (
     search_policy,
 )
 from delphyne.stdlib.queries import (
-    AnswerModes,
-    Modes,
     Query,
     extract_final_block,
     raw_string,
     raw_yaml,
-    single_parser,
     string_from_last_block,
     trimmed_raw_string,
     trimmed_string_from_last_block,

@@ -87,7 +87,7 @@ class ObjectLoader:
         self, name: str, args: dict[str, Any]
     ) -> dp.AbstractQuery[Any]:
         q = cast(type[dp.AbstractQuery[Any]], self.find_object(name))
-        return q.parse(args)
+        return q.parse_instance(args)
 
 
 @contextmanager
@@ -130,10 +130,7 @@ class DemoHintResolver(nv.HintResolver):
             # We try to parse all answers in anticipation, to avoid
             # an error later.
             for j, a in enumerate(q.answers):
-                mode = query.modes().get(a.mode)
-                if mode is None:
-                    raise DemoHintResolver.InvalidAnswer(i, j, "Invalid mode.")
-                parsed = mode.parse(query.answer_type(), a.answer)
+                parsed = query.parse_answer(dp.Answer(a.mode, a.answer))
                 if isinstance(parsed, dp.ParseError):
                     raise DemoHintResolver.InvalidAnswer(i, j, parsed.error)
         # Used to populate `DemoFeedback.answer_refs`, which is needed
@@ -463,13 +460,8 @@ def evaluate_standalone_query_demo(
         return feedback
     # We just check that all the answers parse
     for i, a in enumerate(demo.answers):
-        if a.mode not in query.modes():
-            diag = ("error", f"Unknown mode '{a.mode}'")
-            feedback.answer_diagnostics.append((i, diag))
-            break
         try:
-            mode = query.modes()[a.mode]
-            elt = mode.parse(query.answer_type(), a.answer)
+            elt = query.parse_answer(dp.Answer(a.mode, a.answer))
             if isinstance(elt, dp.ParseError):
                 diag = ("error", f"Parse error: {elt.error}")
                 feedback.answer_diagnostics.append((i, diag))
