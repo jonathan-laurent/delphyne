@@ -206,6 +206,13 @@ class TestFeedback:
 
 
 @dataclass
+class ImplicitAnswer:
+    query_name: str
+    query_args: dict[str, object]
+    answer: str
+
+
+@dataclass
 class StrategyDemoFeedback:
     """
     Feedback sent by the server for each strategy demonstration.
@@ -219,6 +226,7 @@ class StrategyDemoFeedback:
     global_diagnostics: list[Diagnostic]
     query_diagnostics: list[tuple[DemoQueryId, Diagnostic]]
     answer_diagnostics: list[tuple[DemoAnswerId, Diagnostic]]
+    implicit_answers: list[ImplicitAnswer]
 
 
 @dataclass

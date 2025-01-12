@@ -388,7 +388,6 @@
 
 ##### Testing cached computations
 
-
 - demonstration: comp_result_in_cache
   strategy: test_cached_computations
   args: {n: 2}
@@ -404,3 +403,16 @@
   expect:
     test_feedback:
       - diagnostics: __empty__
+
+- demonstration: comp_result_outside_cache
+  strategy: test_cached_computations
+  args: {n: 2}
+  tests:
+    - run | success
+  queries: []
+  expect:
+    test_feedback:
+      - diagnostics: __empty__
+    implicit_answers:
+      - query_name: __Computation__
+        query_args: {fun: expensive_computation}

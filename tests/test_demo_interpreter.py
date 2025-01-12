@@ -96,6 +96,9 @@ def load_demo(demo_label: str) -> DemoExpectTest | dp.QueryDemo:
         "invalid_answer",
         "synthetize_fun_demo",
         "test_iterated",
+        "test_generate_pairs",
+        "comp_result_in_cache",
+        "comp_result_outside_cache",
     ],
 )
 def test_server(demo_label: str):
@@ -121,4 +124,4 @@ def test_query_demo(name: str, valid: bool):
 
 if __name__ == "__main__":
     # Entry point for the debugger (see "Debug Server Tests" configuration).
-    test_server("comp_result_in_cache")
+    test_server("comp_result_outside_cache")

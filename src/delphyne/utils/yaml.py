@@ -18,7 +18,7 @@ def pretty_yaml(obj: object) -> str:
 
 def dump_yaml[T](type: type[T] | Any, obj: T) -> str:
     """
-    Debugging utility to dump a response to YAML.
+    Pretty-print a value in Yaml.
 
     We allow `type` to be `Any` because pyright does not recognize
     unions as being member of `type`.

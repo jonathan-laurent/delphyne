@@ -14,6 +14,7 @@ import delphyne.core as dp
 import delphyne.core.inspect as insp
 import delphyne.utils.typing as ty
 from delphyne.stdlib.nodes import spawn_node
+from delphyne.utils.yaml import dump_yaml
 
 
 @dataclass
@@ -57,12 +58,15 @@ class __Computation__(dp.AbstractQuery[object]):
 class Computation(dp.ComputationNode):
     query: dp.AttachedQuery[Any]
     _comp: Callable[[], Any]
+    _ret_type: ty.TypeAnnot[Any]
 
     def navigate(self) -> dp.Navigation:
         return (yield self.query)
 
     def run_computation(self) -> str:
-        return ""
+        ret = self._comp()
+        serialized = dump_yaml(self._ret_type, ret)
+        return serialized
 
 
 def compute[**P, T](
@@ -75,6 +79,8 @@ def compute[**P, T](
     fun = insp.function_name(f)
     assert fun is not None
     query = dp.AttachedQuery.build(__Computation__(fun, fun_args))
-    unparsed = yield spawn_node(Computation, query=query, _comp=comp)
+    unparsed = yield spawn_node(
+        Computation, query=query, _comp=comp, _ret_type=ret_type
+    )
     ret = ty.pydantic_load(ret_type, unparsed)
     return cast(T, ret)

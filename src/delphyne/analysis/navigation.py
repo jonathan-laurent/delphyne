@@ -3,7 +3,7 @@ Resolving references within a trace.
 """
 
 from collections import defaultdict
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from typing import Any, Protocol, cast
 
@@ -55,6 +55,7 @@ class HintResolver(Protocol):
         self,
         query: dp.AttachedQuery[Any],
         hint: refs.HintValue | None,
+        implicit_answer: Callable[[], str] | None,
     ) -> refs.Answer | None:
         """
         Take a query and a hint and return a suitable answer. If no hint
@@ -205,7 +206,11 @@ class Navigator:
             encountered.space_tags[tag] += 1
         match source:
             case dp.AttachedQuery():
-                return self.answer_from_hints(tree, source, hints)
+                # TODO: figure out whether to inject an implicit answer
+                implicit = None
+                if isinstance(tree.node, dp.ComputationNode):
+                    implicit = tree.node.run_computation
+                return self.answer_from_hints(tree, source, hints, implicit)
             case dp.NestedTree():
                 tree = source.spawn_tree()
                 # New selector
@@ -282,13 +287,16 @@ class Navigator:
         tree: AnyTree,
         query: dp.AttachedQuery[Any],
         hints: Sequence[refs.Hint],
+        implicit: Callable[[], str] | None,
     ) -> tuple[dp.Tracked[Any], Sequence[refs.Hint]]:
         assert self.hint_resolver is not None
-        # TODO: we ignore selectors because they should not work this way.
+        # TODO: we ignore qualifiers because they should not work this way.
         used_hint: refs.Hint | None = None
         # We first try the first hint if there is one
         if hints:
-            answer = self.hint_resolver(query, hints[0].hint)
+            # We don't send the implicit answer the first time since
+            # we don't want to consume the hint.
+            answer = self.hint_resolver(query, hints[0].hint, None)
             if answer is not None:
                 used_hint = hints[0]
                 hints = hints[1:]
@@ -296,7 +304,7 @@ class Navigator:
             answer = None
         # If we could not use a hint, we try with the default answer
         if answer is None:
-            answer = self.hint_resolver(query, None)
+            answer = self.hint_resolver(query, None, implicit)
         # If we still have no answer, we're stuck
         if answer is None:
             raise Stuck(tree, query.ref[1], hints)

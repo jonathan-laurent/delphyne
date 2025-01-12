@@ -5,7 +5,7 @@ Demonstration Interpreter.
 import importlib
 import json
 import sys
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -149,13 +149,17 @@ class DemoHintResolver(nv.HintResolver):
         self.answer_refs: dict[nv.AnswerRef, fb.DemoAnswerId] = {}
         # To keep track of what queries are reachable
         self.query_used: list[bool] = [False] * len(self.queries)
+        # Keeping track of implicit answers
+        self.implicit: list[tuple[SerializedQuery, fb.ImplicitAnswer]] = []
 
     def __call__(
         self,
         query: dp.AttachedQuery[Any],
         hint: refs.HintValue | None,
+        implicit_answer: Callable[[], str] | None,
     ) -> refs.Answer | None:
         serialized = SerializedQuery.make(query.query)
+        # Look at the query demonstrations included in the demo
         for i, q in enumerate(self.queries):
             if q == serialized:
                 self.query_used[i] = True
@@ -175,10 +179,28 @@ class DemoHintResolver(nv.HintResolver):
                 answer = refs.Answer(demo_answer.mode, demo_answer.answer)
                 self.answer_refs[(query.ref, answer)] = (i, answer_id)
                 return answer
+        # Look at previous implicit answers
+        for serialized_key, a in self.implicit:
+            if serialized == serialized_key:
+                return refs.Answer(None, a.answer)
+        # Maybe we try adding an implicit answer
+        if implicit_answer:
+            try:
+                ans_text = implicit_answer()
+            except Exception as e:
+                raise dp.StrategyException(e)
+            implicit = fb.ImplicitAnswer(
+                query.query.name(), query.query.serialize_args(), ans_text
+            )
+            self.implicit.append((serialized, implicit))
+            return refs.Answer(None, ans_text)
         return None
 
     def get_answer_refs(self) -> dict[nv.AnswerRef, fb.DemoAnswerId]:
         return self.answer_refs
+
+    def get_implicit_answers(self) -> list[fb.ImplicitAnswer]:
+        return [a for _, a in self.implicit]
 
     def set_reachability_diagnostics(self, feedback: fb.StrategyDemoFeedback):
         for i, used in enumerate(self.query_used):
@@ -286,7 +308,7 @@ def _interpret_test_select_step(
                 msg = f"Not a query: {space_ref_pretty}."
                 diagnostics.append(("error", msg))
                 return tree, "stop"
-            answer = hint_resolver(source, None)
+            answer = hint_resolver(source, None, None)
             if answer is None:
                 msg = f"Query not answered: {space_ref_pretty}."
                 diagnostics.append(("error", msg))
@@ -401,7 +423,7 @@ def evaluate_strategy_demo_and_return_trace(
     demo: dm.StrategyDemo, context: DemoExecutionContext
 ) -> tuple[fb.StrategyDemoFeedback, dp.Trace | None]:
     feedback = fb.StrategyDemoFeedback(
-        "strategy", fb.Trace({}), {}, {}, [], [], [], []
+        "strategy", fb.Trace({}), {}, {}, [], [], [], [], []
     )
     try:
         loader = ObjectLoader(context)
@@ -450,6 +472,7 @@ def evaluate_strategy_demo_and_return_trace(
         trace.convert_answer_ref(k).id: v
         for k, v in hresolver.get_answer_refs().items()
     }
+    feedback.implicit_answers = hresolver.get_implicit_answers()
     return feedback, trace
 
 
