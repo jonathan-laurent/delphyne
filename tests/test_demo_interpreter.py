@@ -13,8 +13,11 @@ import yaml
 import delphyne as dp
 from delphyne import analysis
 from delphyne.analysis import feedback as fb
+from delphyne.stdlib import register_stdlib_globals
 from delphyne.utils import typing as ty
 from delphyne.utils.yaml import dump_yaml
+
+register_stdlib_globals()
 
 STRATEGY_FILE = "example_strategies"
 TESTS_FOLDER = Path(__file__).parent
@@ -118,4 +121,4 @@ def test_query_demo(name: str, valid: bool):
 
 if __name__ == "__main__":
     # Entry point for the debugger (see "Debug Server Tests" configuration).
-    test_server("test_iterated")
+    test_server("comp_result_in_cache")

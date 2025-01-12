@@ -55,8 +55,14 @@ class __Computation__(dp.AbstractQuery[object]):
 
 @dataclass
 class Computation(dp.ComputationNode):
-    query: __Computation__
+    query: dp.AttachedQuery[Any]
     _comp: Callable[[], Any]
+
+    def navigate(self) -> dp.Navigation:
+        return (yield self.query)
+
+    def run_computation(self) -> str:
+        return ""
 
 
 def compute[**P, T](
@@ -65,6 +71,10 @@ def compute[**P, T](
     comp = partial(f, *args, **kwargs)
     ret_type = insp.function_return_type(f)
     assert not isinstance(ret_type, ty.NoTypeInfo)
-    unparsed = yield spawn_node(Computation, comp=comp)
+    fun_args = insp.function_args_dict(f, args, kwargs)
+    fun = insp.function_name(f)
+    assert fun is not None
+    query = dp.AttachedQuery.build(__Computation__(fun, fun_args))
+    unparsed = yield spawn_node(Computation, query=query, _comp=comp)
     ret = ty.pydantic_load(ret_type, unparsed)
     return cast(T, ret)

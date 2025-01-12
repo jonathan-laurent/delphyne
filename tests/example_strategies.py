@@ -331,6 +331,23 @@ def generate_pairs() -> dp.Strategy[
 
 
 #####
+##### Test cached computations
+#####
+
+
+def expensive_computation(n: int) -> tuple[int, int]:
+    return (n, n + 1)
+
+
+@dp.strategy
+def test_cached_computations(
+    n: int,
+) -> dp.Strategy[dp.Computation, object, int]:
+    a, b = yield from dp.compute(expensive_computation, n)
+    return a * b
+
+
+#####
 ##### Trivial strategy examples
 #####
 

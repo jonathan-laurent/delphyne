@@ -5,6 +5,13 @@ Delphyne standard library.
 # ruff: noqa: F401
 # pyright: reportUnusedImport=false
 
+from delphyne.stdlib.computations import (
+    Computation,
+    compute,
+)
+from delphyne.stdlib.globals import (
+    register_stdlib_globals,
+)
 from delphyne.stdlib.models import (
     LLM,
     NUM_REQUESTS,

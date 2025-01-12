@@ -384,3 +384,23 @@
       - diagnostics: __empty__
       - diagnostics:
           - - "warning"
+
+
+##### Testing cached computations
+
+
+- demonstration: comp_result_in_cache
+  strategy: test_cached_computations
+  args: {n: 2}
+  tests:
+    - run | success
+  queries:
+    - query: __Computation__
+      args:
+        fun: expensive_computation
+        args: {n: 2}
+      answers:
+        - answer: "[2, 3]"
+  expect:
+    test_feedback:
+      - diagnostics: __empty__

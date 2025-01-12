@@ -34,7 +34,7 @@ class Space[T](ABC):
 
 
 @dataclass(frozen=True)
-class AttachedQuery[T]:
+class AttachedQuery[T](Space[T]):
     """
     Wrapper for a query attached to a specific space.
     """
@@ -45,6 +45,13 @@ class AttachedQuery[T]:
 
     def tags(self) -> "Sequence[Tag]":
         return self.query.tags()
+
+    def source(self):
+        return self
+
+    @staticmethod
+    def build[T1](query: AbstractQuery[T1]) -> "Builder[AttachedQuery[T1]]":
+        return lambda _, spawner: spawner(query)
 
 
 type Tag = str

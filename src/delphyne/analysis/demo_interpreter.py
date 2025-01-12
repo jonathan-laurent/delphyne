@@ -9,7 +9,7 @@ from collections.abc import Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal, cast
+from typing import Any, ClassVar, Literal, cast
 
 import delphyne.core as dp
 from delphyne.analysis import browsable_traces as br
@@ -46,6 +46,8 @@ class DemoExecutionContext:
 
 
 class ObjectLoader:
+    global_objects: ClassVar[dict[str, object]] = {}
+
     def __init__(self, ctx: DemoExecutionContext, reload: bool = True):
         """
         Raises `ModuleNotFound`.
@@ -63,6 +65,8 @@ class ObjectLoader:
                     raise ModuleNotFound(module_name)
 
     def find_object(self, name: str) -> Any:
+        if name in self.global_objects:
+            return self.global_objects[name]
         for module in self.modules:
             if hasattr(module, name):
                 return getattr(module, name)
@@ -88,6 +92,13 @@ class ObjectLoader:
     ) -> dp.AbstractQuery[Any]:
         q = cast(type[dp.AbstractQuery[Any]], self.find_object(name))
         return q.parse_instance(args)
+
+    @classmethod
+    def register_global(cls, obj: Any, name: str | None = None):
+        if name is None:
+            name = cast(str, obj.__name__)
+        assert name not in cls.global_objects
+        cls.global_objects[name] = obj
 
 
 @contextmanager
