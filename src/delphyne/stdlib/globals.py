@@ -2,9 +2,8 @@
 Global objects
 """
 
-from delphyne.analysis import ObjectLoader
 from delphyne.stdlib.computations import __Computation__
 
 
-def register_stdlib_globals() -> None:
-    ObjectLoader.register_global(__Computation__)
+def stdlib_globals() -> dict[str, object]:
+    return {__Computation__.__name__: __Computation__}

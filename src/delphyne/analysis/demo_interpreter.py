@@ -9,7 +9,7 @@ from collections.abc import Callable, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, ClassVar, Literal, cast
+from typing import Any, Literal, cast
 
 import delphyne.core as dp
 from delphyne.analysis import browsable_traces as br
@@ -46,13 +46,17 @@ class DemoExecutionContext:
 
 
 class ObjectLoader:
-    global_objects: ClassVar[dict[str, object]] = {}
-
-    def __init__(self, ctx: DemoExecutionContext, reload: bool = True):
+    def __init__(
+        self,
+        ctx: DemoExecutionContext,
+        extra_objects: dict[str, object] | None = None,
+        reload: bool = True,
+    ):
         """
         Raises `ModuleNotFound`.
         """
         self.ctx = ctx
+        self.extra_objects = extra_objects if extra_objects is not None else {}
         self.modules: list[Any] = []
         with _append_path(self.ctx.strategy_dirs):
             for module_name in ctx.modules:
@@ -65,8 +69,8 @@ class ObjectLoader:
                     raise ModuleNotFound(module_name)
 
     def find_object(self, name: str) -> Any:
-        if name in self.global_objects:
-            return self.global_objects[name]
+        if name in self.extra_objects:
+            return self.extra_objects[name]
         for module in self.modules:
             if hasattr(module, name):
                 return getattr(module, name)
@@ -92,13 +96,6 @@ class ObjectLoader:
     ) -> dp.AbstractQuery[Any]:
         q = cast(type[dp.AbstractQuery[Any]], self.find_object(name))
         return q.parse_instance(args)
-
-    @classmethod
-    def register_global(cls, obj: Any, name: str | None = None):
-        if name is None:
-            name = cast(str, obj.__name__)
-        assert name not in cls.global_objects
-        cls.global_objects[name] = obj
 
 
 @contextmanager
@@ -420,13 +417,15 @@ def _evaluate_test(
 
 
 def evaluate_strategy_demo_and_return_trace(
-    demo: dm.StrategyDemo, context: DemoExecutionContext
+    demo: dm.StrategyDemo,
+    context: DemoExecutionContext,
+    extra_objects: dict[str, object],
 ) -> tuple[fb.StrategyDemoFeedback, dp.Trace | None]:
     feedback = fb.StrategyDemoFeedback(
         "strategy", fb.Trace({}), {}, {}, [], [], [], [], []
     )
     try:
-        loader = ObjectLoader(context)
+        loader = ObjectLoader(context, extra_objects)
         strategy = loader.load_strategy_instance(demo.strategy, demo.args)
     except Exception as e:
         msg = f"Failed to instantiate strategy:\n{e}"
@@ -482,11 +481,13 @@ def evaluate_strategy_demo_and_return_trace(
 
 
 def evaluate_standalone_query_demo(
-    demo: dm.QueryDemo, context: DemoExecutionContext
+    demo: dm.QueryDemo,
+    context: DemoExecutionContext,
+    extra_objects: dict[str, object],
 ) -> fb.QueryDemoFeedback:
     feedback = fb.QueryDemoFeedback("query", [], [])
     try:
-        loader = ObjectLoader(context)
+        loader = ObjectLoader(context, extra_objects)
         query = loader.load_query(demo.query, demo.args)
     except Exception as e:
         msg = f"Failed to instantiate strategy:\n{e}"
@@ -511,10 +512,14 @@ def evaluate_standalone_query_demo(
 
 
 def evaluate_demo(
-    demo: dm.Demo, context: DemoExecutionContext
+    demo: dm.Demo,
+    context: DemoExecutionContext,
+    extra_objects: dict[str, object],
 ) -> fb.DemoFeedback:
     if isinstance(demo, dm.StrategyDemo):
-        feedback, _ = evaluate_strategy_demo_and_return_trace(demo, context)
+        feedback, _ = evaluate_strategy_demo_and_return_trace(
+            demo, context, extra_objects
+        )
         return feedback
     else:
-        return evaluate_standalone_query_demo(demo, context)
+        return evaluate_standalone_query_demo(demo, context, extra_objects)

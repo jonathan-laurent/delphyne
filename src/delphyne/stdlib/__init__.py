@@ -10,7 +10,7 @@ from delphyne.stdlib.computations import (
     compute,
 )
 from delphyne.stdlib.globals import (
-    register_stdlib_globals,
+    stdlib_globals,
 )
 from delphyne.stdlib.models import (
     LLM,

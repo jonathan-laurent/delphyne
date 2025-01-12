@@ -13,6 +13,7 @@ import delphyne.analysis.feedback as fb
 import delphyne.core as dp
 import delphyne.server.commands as cm
 import delphyne.server.tasks as ta
+import delphyne.stdlib as std
 
 
 def make_server(launcher: ta.TaskLauncher):
@@ -30,7 +31,10 @@ def make_server(launcher: ta.TaskLauncher):
         context: analysis.DemoExecutionContext,
     ):
         stream_eval = ta.stream_of_fun(analysis.evaluate_demo)
-        stream = launcher(request, fb.DemoFeedback, stream_eval, demo, context)
+        extra = std.stdlib_globals()
+        stream = launcher(
+            request, fb.DemoFeedback, stream_eval, demo, context, extra
+        )
         return StreamingResponse(stream, media_type="text/event-stream")
 
     @app.post("/count")

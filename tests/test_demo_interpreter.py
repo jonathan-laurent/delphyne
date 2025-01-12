@@ -13,11 +13,8 @@ import yaml
 import delphyne as dp
 from delphyne import analysis
 from delphyne.analysis import feedback as fb
-from delphyne.stdlib import register_stdlib_globals
 from delphyne.utils import typing as ty
 from delphyne.utils.yaml import dump_yaml
-
-register_stdlib_globals()
 
 STRATEGY_FILE = "example_strategies"
 TESTS_FOLDER = Path(__file__).parent
@@ -57,7 +54,7 @@ class DemoExpectTest(dp.StrategyDemo):
 
     def check(self, ctx: analysis.DemoExecutionContext):
         feedback, trace = analysis.evaluate_strategy_demo_and_return_trace(
-            self, ctx
+            self, ctx, dp.stdlib_globals()
         )
         if trace is not None:
             print(dump_yaml(dp.ExportableTrace, trace.export()))
@@ -114,7 +111,8 @@ def test_server(demo_label: str):
 def test_query_demo(name: str, valid: bool):
     demo = load_demo(name)
     assert isinstance(demo, dp.QueryDemo)
-    ret = analysis.evaluate_standalone_query_demo(demo, CONTEXT)
+    extra = dp.stdlib_globals()
+    ret = analysis.evaluate_standalone_query_demo(demo, CONTEXT, extra)
     has_errors = ret.diagnostics or ret.answer_diagnostics
     if valid:
         assert not has_errors
