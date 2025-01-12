@@ -323,6 +323,11 @@
     - run 'other_boy_name' | failure
     - go cands | go next([])
     - go cands | go next([next([]){'other_boy_name'}]) | run | success
+    # Valid selectors
+    - at iterated
+    - at iterated/pick_boy_name/PickBoyName
+    # Invalid selectors
+    - at iterated/pick_boy_name  # `Iterated` node has no tags or primary space
   queries:
     - query: PickBoyName
       args:
@@ -347,6 +352,10 @@
       - diagnostics: __empty__
       - diagnostics: __empty__
       - diagnostics: __empty__
+      - diagnostics: __empty__
+      - diagnostics: __empty__
+      - diagnostics:
+          - - "warning"
 
 
 ##### Testing generate_pairs and advanced selectors
