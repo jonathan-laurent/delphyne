@@ -54,9 +54,9 @@ def value_ref(vr: refs.ValueRef) -> str:
 
 
 def hint(h: refs.Hint) -> str:
-    if not h.query_name:
+    if not h.qualifier:
         return h.hint
-    return f"{h.query_name}:{h.hint}"
+    return f"{h.qualifier}:{h.hint}"
 
 
 def hints(hs: Sequence[refs.Hint]):
@@ -119,6 +119,24 @@ class CmdNames:
     LOAD = "load"
 
 
+def tag_selector(selector: demos.TagSelector) -> str:
+    ret = selector.tag
+    if selector.num is not None:
+        ret += "#" + str(selector.num)
+    return ret
+
+
+def node_selector(selector: demos.NodeSelector) -> str:
+    if isinstance(selector, demos.TagSelector):
+        return tag_selector(selector)
+    else:
+        return (
+            tag_selector(selector.space)
+            + "/"
+            + node_selector(selector.selector)
+        )
+
+
 def test_step(ts: demos.TestStep) -> str:
     match ts:
         case demos.Run(hs, None):
@@ -127,7 +145,8 @@ def test_step(ts: demos.TestStep) -> str:
             return f"{CmdNames.RUN} {hints(hs)}"
         case demos.Run(hs, until):
             assert until is not None
-            res = f"{CmdNames.RUN_UNTIL} {until}"
+            sel = node_selector(until)
+            res = f"{CmdNames.RUN_UNTIL} {sel}"
             if hs:
                 res += f" {hints(hs)}"
             return res

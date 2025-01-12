@@ -43,13 +43,25 @@ type Demo = QueryDemo | StrategyDemo
 type DemoFile = list[Demo]
 
 
-type NodeTag = str
+@dataclass
+class TagSelector:
+    tag: str
+    num: int | None
+
+
+type NodeSelector = TagSelector | WithinSpace
+
+
+@dataclass
+class WithinSpace:
+    space: TagSelector
+    selector: NodeSelector
 
 
 @dataclass
 class Run:
     hints: Sequence[Hint]
-    until: NodeTag | None
+    until: NodeSelector | None
 
 
 @dataclass

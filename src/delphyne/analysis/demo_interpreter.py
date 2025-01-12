@@ -5,7 +5,7 @@ Demonstration Interpreter.
 import importlib
 import json
 import sys
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -198,10 +198,6 @@ class DemoHintResolver(nv.HintResolver):
 #####
 
 
-def _until_node(label: dm.NodeTag) -> Callable[[dp.AnyTree], bool]:
-    return lambda tree: label in tree.node.get_tags()
-
-
 def _unused_hints(diagnostics: list[fb.Diagnostic], rem: Sequence[refs.Hint]):
     if rem:
         msg = f"Unused hints: {dp.pprint.hints(rem)}."
@@ -229,24 +225,26 @@ def _interpret_test_run_step(
     step: dm.Run,
 ) -> tuple[dp.AnyTree, Literal["stop", "continue"]]:
     try:
+        encountered = nv.EncounteredTags()
         navigator = hint_resolver.navigator()
         navigator.info = nv.NavigationInfo(hint_rev)
-        if step.until is not None:
-            navigator.interrupt = _until_node(step.until)
         try:
-            tree, rem = navigator.follow_hints(tree, step.hints)
+            tree, rem = navigator.follow_hints(
+                tree, step.hints, step.until, encountered
+            )
         except nv.ReachedFailureNode as e:
             tree = e.tree
             rem = e.remaining_hints
         _unused_hints(diagnostics, rem)
         if step.until is not None:
-            msg = f"Leaf node reached before '{step.until}'."
+            until_pp = dp.pprint.node_selector(step.until)
+            msg = f"Leaf node reached before '{until_pp}'."
             diagnostics.append(("warning", msg))
         if step.until is None and not tree.node.leaf_node():
             msg = "The `run` command did not reach a leaf."
             diagnostics.append(("warning", msg))
         return tree, "continue"
-    except nv.Interrupted as intr:
+    except nv.MatchedSelector as intr:
         tree = intr.tree
         _unused_hints(diagnostics, intr.remaining_hints)
         return tree, "continue"

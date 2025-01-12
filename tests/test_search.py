@@ -14,6 +14,7 @@ import delphyne.stdlib.mock as mock
 def test_search_synthesis():
     pass
     demo = load_demo("synthetize_fun_demo")
+    assert isinstance(demo, dp.StrategyDemo)
     env = dp.PolicyEnv((), ())  # Won't be used
     vars = ["x", "y"]
     prop = (["a", "b"], "F(a, b) == F(b, a) and F(0, 1) == 2")

@@ -40,6 +40,9 @@ def test_node_origin_roundabout(s: str):
         ("at find_inv | answer aggr(['', 'alt'])", None),
         (" run  \n | run", "run | run"),
         ("save x | load x", None),
+        # Advanced node selectors
+        ("at tag#2", None),
+        ("at tag#1/iter/node#3", None),
     ],
 )
 def test_parser(inp: str, out: str | None):

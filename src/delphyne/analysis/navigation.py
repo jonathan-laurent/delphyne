@@ -2,11 +2,13 @@
 Resolving references within a trace.
 """
 
-from collections.abc import Callable, Sequence
+from collections import defaultdict
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import Any, Protocol, cast
 
 import delphyne.core as dp
+import delphyne.core.demos as dm
 from delphyne.core import AnyTree, refs
 
 #####
@@ -69,6 +71,16 @@ class IdentifierResolver(Protocol):
     def resolve_answer(self, id: refs.AnswerId) -> dp.Answer: ...
 
 
+@dataclass
+class EncounteredTags:
+    node_tags: dict[str, int] = field(
+        default_factory=lambda: defaultdict(lambda: 0)
+    )
+    space_tags: dict[str, int] = field(
+        default_factory=lambda: defaultdict(lambda: 0)
+    )
+
+
 #####
 ##### Navigator Exceptions
 #####
@@ -88,7 +100,7 @@ class ReachedFailureNode(Exception):
 
 
 @dataclass
-class Interrupted(Exception):
+class MatchedSelector(Exception):
     tree: AnyTree
     remaining_hints: Sequence[refs.Hint]
 
@@ -127,7 +139,6 @@ class Navigator:
     hint_resolver: HintResolver | None = None
     id_resolver: IdentifierResolver | None = None
     info: NavigationInfo | None = None
-    interrupt: Callable[[AnyTree], bool] | None = None
 
     def resolve_value_ref(self, tree: AnyTree, ref: refs.ValueRef) -> dp.Value:
         if isinstance(ref, refs.SpaceElementRef):
@@ -157,7 +168,9 @@ class Navigator:
         match ref.element:
             case refs.HintsRef():
                 hints = ref.element.hints
-                elt, rem = self.space_element_from_hints(tree, space, hints)
+                elt, rem = self.space_element_from_hints(
+                    tree, space, hints, None, EncounteredTags()
+                )
                 if self.info is not None:
                     self.info.unused_hints += rem
                 return elt
@@ -184,14 +197,29 @@ class Navigator:
         tree: AnyTree,
         space: dp.Space[Any],
         hints: Sequence[refs.Hint],
+        selector: dm.NodeSelector | None,
+        encountered: EncounteredTags,
     ) -> tuple[dp.Tracked[Any], Sequence[refs.Hint]]:
         source = space.source()
+        for tag in space.tags():
+            encountered.space_tags[tag] += 1
         match source:
             case dp.AttachedQuery():
                 return self.answer_from_hints(tree, source, hints)
             case dp.NestedTree():
                 tree = source.spawn_tree()
-                final, hints = self.follow_hints(tree, hints)
+                # New selector
+                sub_selector: dm.NodeSelector | None = None
+                for tag in space.tags():
+                    if isinstance(selector, dm.WithinSpace):
+                        ssel = selector.space
+                        num = ssel.num if ssel.num is not None else 1
+                        tot_encountered = encountered.space_tags[tag]
+                        if ssel.tag == tag and num == tot_encountered:
+                            sub_selector = selector.selector
+                final, hints = self.follow_hints(
+                    tree, hints, sub_selector, EncounteredTags()
+                )
                 success = cast(dp.Success[Any], final.node)
                 # `follow_hints` raises an exception if a success is not
                 # reached.
@@ -199,27 +227,47 @@ class Navigator:
                 return success.success, hints
 
     def follow_hints(
-        self, tree: AnyTree, hints: Sequence[refs.Hint]
+        self,
+        tree: AnyTree,
+        hints: Sequence[refs.Hint],
+        selector: dm.NodeSelector | None,
+        encountered: EncounteredTags,
     ) -> tuple[AnyTree, Sequence[refs.Hint]]:
         if tree.node.leaf_node():
             if isinstance(tree.node, dp.Success):
                 return tree, hints
             else:
                 raise ReachedFailureNode(tree, hints)
-        if self.interrupt is not None and self.interrupt(tree):
-            raise Interrupted(tree, hints)
-        value, hints = self.action_from_hints(tree, hints)
-        return self.follow_hints(tree.child(value), hints)
+        # We see test whether we've reached our target node
+        # We register that the tags were encountered
+        for tag in tree.node.get_tags():
+            encountered.node_tags[tag] += 1
+            if isinstance(selector, dm.TagSelector):
+                num = selector.num if selector.num is not None else 1
+                if selector.tag == tag and num == encountered.node_tags[tag]:
+                    raise MatchedSelector(tree, hints)
+        value, hints = self.action_from_hints(
+            tree, hints, selector, encountered
+        )
+        return self.follow_hints(
+            tree.child(value), hints, selector, encountered
+        )
 
     def action_from_hints(
-        self, tree: AnyTree, hints: Sequence[refs.Hint]
+        self,
+        tree: AnyTree,
+        hints: Sequence[refs.Hint],
+        selector: dm.NodeSelector | None,
+        encountered: EncounteredTags,
     ) -> tuple[dp.Value, Sequence[refs.Hint]]:
         original_hints = hints
         navigator = tree.node.navigate()
         try:
             space = next(navigator)
             while True:
-                elt, hints = self.space_element_from_hints(tree, space, hints)
+                elt, hints = self.space_element_from_hints(
+                    tree, space, hints, selector, encountered
+                )
                 space = navigator.send(elt)
         except StopIteration as e:
             value = cast(dp.Value, e.value)

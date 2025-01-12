@@ -129,10 +129,11 @@ A string that hints at a query answer.
 class Hint:
     """A hint for selecting a query answer.
 
-    The hint can be conditioned on a specific query.
+    A hint can be associated to a qualifier, which is the name of an
+    imported demonstration defining the hint. TODO: implement imports.
     """
 
-    query_name: str | None
+    qualifier: str | None
     hint: HintValue
 
 

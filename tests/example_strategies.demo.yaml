@@ -347,3 +347,31 @@
       - diagnostics: __empty__
       - diagnostics: __empty__
       - diagnostics: __empty__
+
+
+##### Testing generate_pairs and advanced selectors
+
+- demonstration: test_generate_pairs
+  strategy: generate_pairs
+  args: {}
+  tests:
+    - run | success
+    - at PickPositiveInteger#1
+    - at PickPositiveInteger#2
+    - at PickPositiveInteger#3  # error
+  queries:
+    - query: PickPositiveInteger
+      args: {prev: null}
+      answers:
+        - answer: "1"
+    - query: PickPositiveInteger
+      args: {prev: 1}
+      answers:
+        - answer: "2"
+  expect:
+    test_feedback:
+      - diagnostics: __empty__
+      - diagnostics: __empty__
+      - diagnostics: __empty__
+      - diagnostics:
+          - - "warning"

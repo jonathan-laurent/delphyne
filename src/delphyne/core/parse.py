@@ -13,6 +13,20 @@ from delphyne.core.pprint import CmdNames
 from delphyne.utils.typing import pydantic_load
 
 """
+Utilities
+"""
+
+
+def _node_selector_from_path(
+    sels: list[demos.TagSelector],
+) -> demos.NodeSelector:
+    if len(sels) == 1:
+        return sels[0]
+    else:
+        return demos.WithinSpace(sels[0], _node_selector_from_path(sels[1:]))
+
+
+"""
 Grammar definition with Parsy
 """
 
@@ -33,9 +47,9 @@ _node_id = _s("%") >> _num.map(refs.NodeId)
 _answer_id = _s("@") >> _num.map(refs.AnswerId)
 
 # Hint
-_hintsel = _ident
-_hintsel_colon = _hintsel << _s(":")
-_hint = ps.seq(_hintsel_colon.optional(), _ident).combine(refs.Hint)
+_hint_qual = _ident
+_hint_qual_colon = _hint_qual << _s(":")
+_hint = ps.seq(_hint_qual_colon.optional(), _ident).combine(refs.Hint)
 _hints = _s("'") >> _hint.sep_by(_space).map(tuple) << _s("'")
 _hints_ref = _hints.map(refs.HintsRef)
 
@@ -68,10 +82,17 @@ _nested = ps.seq(_naked_nid, _comma >> _sref).combine(refs.NestedTreeOf)
 _nested = _s("nested(") >> _nested << _s(")")
 _node_origin = _child | _nested
 
+
+# Node selectors
+_tag_sel = ps.seq(_ident, (_s("#") >> _num).optional())
+_tag_sel = _tag_sel.combine(demos.TagSelector)
+_node_sel = _tag_sel.sep_by(_s("/"), min=1).map(_node_selector_from_path)
+
+
 # Test commands
 _run = _s(CmdNames.RUN) >> _spopt >> _hints.optional(default=())
 _run = _run.map(lambda hs: demos.Run(hs, None))
-_until = ps.seq(_hintsel, (_space >> _hints).optional(default=()))
+_until = ps.seq(_node_sel, (_space >> _hints).optional(default=()))
 _until = _until.combine(lambda u, hs: demos.Run(hs, u))
 _until = _s(CmdNames.RUN_UNTIL) >> _space >> _until
 _gosub = _s(CmdNames.SELECT) >> _space >> _sref
