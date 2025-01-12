@@ -5,11 +5,11 @@ Delphyne Queries.
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Self
+from typing import Any, Self, cast
 
+import delphyne.utils.typing as ty
 from delphyne.core.environments import TemplatesManager
 from delphyne.core.refs import Answer, AnswerModeName
-from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
 
 @dataclass
@@ -43,17 +43,15 @@ class AbstractQuery[T](ABC):
     ) -> str:
         pass
 
-    @abstractmethod
     def serialize_args(self) -> dict[str, object]:
-        pass
+        return cast(dict[str, object], ty.pydantic_dump(type(self), self))
 
     @classmethod
-    @abstractmethod
     def parse_instance(cls, args: dict[str, object]) -> Self:
-        pass
+        return ty.pydantic_load(cls, args)
 
     @abstractmethod
-    def answer_type(self) -> TypeAnnot[T] | NoTypeInfo:
+    def answer_type(self) -> ty.TypeAnnot[T] | ty.NoTypeInfo:
         pass
 
     def name(self) -> str:

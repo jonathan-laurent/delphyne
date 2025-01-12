@@ -4,7 +4,7 @@ Standard queries and building blocks for prompting policies.
 
 import re
 from collections.abc import Callable, Sequence
-from typing import Any, Protocol, Self, cast
+from typing import Any, Protocol, cast
 
 import yaml
 import yaml.parser
@@ -81,10 +81,6 @@ class Query[T](dp.AbstractQuery[T]):
 
     def serialize_args(self) -> dict[str, object]:
         return cast(dict[str, object], ty.pydantic_dump(type(self), self))
-
-    @classmethod
-    def parse_instance(cls, args: dict[str, object]) -> Self:
-        return ty.pydantic_load(cls, args)
 
     def answer_type(self) -> TypeAnnot[T]:
         return dpi.first_parameter_of_base_class(type(self))

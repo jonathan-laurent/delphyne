@@ -64,6 +64,7 @@ from delphyne.core.trees import (
     AnyTree,
     AttachedQuery,
     Builder,
+    ComputationNode,
     EmbeddedTree,
     Navigation,
     NestedTree,

@@ -78,3 +78,17 @@ def ensure(
 ) -> dp.Strategy[Failure, object, None]:
     if not prop:
         yield from fail(message)
+
+
+#####
+##### Logging Node
+#####
+
+
+@dataclass
+class Message(dp.Node):
+    msg: str
+
+
+def message(msg: str) -> dp.Strategy[Message, object, None]:
+    yield spawn_node(Message, msg=msg)
