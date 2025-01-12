@@ -87,6 +87,12 @@ export interface TestFeedback {
   node_id: TraceNodeId | null;
 }
 
+export interface ImplicitAnswer {
+  query_name: string;
+  query_args: Record<string, unknown>;
+  answer: string;
+}
+
 export interface StrategyDemoFeedback {
   kind: "strategy";
   trace: Trace;
@@ -96,6 +102,7 @@ export interface StrategyDemoFeedback {
   global_diagnostics: Diagnostic[];
   query_diagnostics: [DemoQueryId, Diagnostic][];
   answer_diagnostics: [DemoAnswerId, Diagnostic][];
+  implicit_answers: ImplicitAnswer[];
 }
 
 export interface QueryDemoFeedback {

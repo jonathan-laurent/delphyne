@@ -216,6 +216,14 @@ function computeStrategyDemoDiagnostics(
       diagnostics.push(makeDiagnostic(["info", "Test passed."], loc));
     }
   }
+  if (feedback.implicit_answers.length !== 0) {
+    diagnostics.push(
+      makeDiagnostic(
+        ["warning", "Implicit answers were used."],
+        demonstration.__loc__strategy,
+      ),
+    );
+  }
   return diagnostics;
 }
 

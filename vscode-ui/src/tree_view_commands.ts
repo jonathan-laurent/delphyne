@@ -15,7 +15,6 @@ import {
 } from "./tree_view";
 import { DemosManager } from "./demos_manager";
 import {
-  DemoFeedback,
   Query,
   StrategyDemoFeedback,
   TraceAnswerId,
@@ -27,6 +26,7 @@ import { prettyYaml } from "./yaml_utils";
 import { StrategyDemo } from "./stubs/demos";
 import { Element } from "./elements";
 import { gotoCommandResultAnswer } from "./commands";
+import { addQuery } from "./edit";
 
 export function registerTreeViewCommands(
   context: vscode.ExtensionContext,
@@ -35,11 +35,11 @@ export function registerTreeViewCommands(
 ) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "delphyne.addQuery",
+      "delphyne.addQueryFromTreeView",
       (arg: NodeViewItem) => {
         const prop_item = arg as PropertyItem;
         const query = prop_item.prop as Query;
-        addQuery(query, demosManager, treeView);
+        addQueryFromTreeView(query, demosManager, treeView);
       },
     ),
     vscode.commands.registerCommand(
@@ -79,7 +79,9 @@ function getDemoInfoForTreeView(
 ): [StrategyDemo, StrategyDemoFeedback, vscode.TextEditor] | undefined {
   const origin = treeView.getPointedTree()?.tree.origin;
   if (!origin || origin.kind !== "strategy_demo") {
-    log.error("delphyne.addQuery: the tree view is not attached to a demo.");
+    log.error(
+      "delphyne.addQueryFromTreeView: the tree view is not attached to a demo.",
+    );
     return;
   }
   const demonstration = demosManager.getDemonstration(
@@ -87,7 +89,7 @@ function getDemoInfoForTreeView(
     origin.demo,
   ) as StrategyDemo;
   if (!demonstration) {
-    log.error("delphyne.addQuery: failed to obtain demonstration.");
+    log.error("delphyne.addQueryFromTreeView: failed to obtain demonstration.");
     return;
   }
   const feedback = demosManager.getFeedback(
@@ -95,7 +97,7 @@ function getDemoInfoForTreeView(
     origin.demo,
   ) as StrategyDemoFeedback;
   if (!feedback) {
-    log.error("delphyne.addQuery: failed to obtain feedback.");
+    log.error("delphyne.addQueryFromTreeView: failed to obtain feedback.");
     return;
   }
   const editor = getEditorForUri(origin.uri);
@@ -106,7 +108,7 @@ function getDemoInfoForTreeView(
   return [demonstration, feedback, editor];
 }
 
-function addQuery(
+function addQueryFromTreeView(
   query: Query,
   demosManager: DemosManager,
   treeView: TreeView,
@@ -116,20 +118,7 @@ function addQuery(
     return;
   }
   const [demonstration, _, editor] = demoInfo;
-  const listRange = demonstration.__loc__queries;
-  const originalListEmpty = demonstration.queries.length === 0;
-  const newItem = { query: query.name, args: query.args, answers: [] };
-  const newYamlElement = prettyYaml(newItem);
-  const parentIndentLevel = 1;
-  const newCursorPosition = insertYamlListElement(
-    editor,
-    listRange,
-    originalListEmpty,
-    newYamlElement,
-    parentIndentLevel,
-  );
-  editor.selection = new vscode.Selection(newCursorPosition, newCursorPosition);
-  editor.revealRange(new vscode.Range(newCursorPosition, newCursorPosition));
+  addQuery(query, demonstration, editor);
 }
 
 function queryIndex(key: QueryKey, demo: StrategyDemo): number {
