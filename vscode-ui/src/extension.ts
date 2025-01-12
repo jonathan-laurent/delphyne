@@ -12,6 +12,7 @@ import { DemosActionsProvider } from "./demos_actions";
 import { ElementsManager } from "./elements_manager";
 import { registerTreeViewCommands } from "./tree_view_commands";
 import { CommandsManager } from "./commands";
+import { autoFold } from "./folding";
 
 //////
 /// Activation code
@@ -80,9 +81,18 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Keyboard shortcut to show the views
   context.subscriptions.push(
-    vscode.commands.registerCommand('delphyne.showViews', () => {
-        vscode.commands.executeCommand('workbench.view.extension.delphyneContainer');
-    })
+    vscode.commands.registerCommand("delphyne.showViews", () => {
+      vscode.commands.executeCommand(
+        "workbench.view.extension.delphyneContainer",
+      );
+    }),
+  );
+
+  // Auto-Fold command
+  context.subscriptions.push(
+    vscode.commands.registerCommand("delphyne.autoFold", () => {
+      autoFold(demosManager);
+    }),
   );
 }
 

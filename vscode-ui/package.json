@@ -33,6 +33,10 @@
       {
         "command": "delphyne.showViews",
         "key": "cmd+d cmd+v"
+      },
+      {
+        "key": "cmd+d cmd+k",
+        "command": "delphyne.autoFold"
       }
     ],
     "viewsContainers": {
@@ -169,8 +173,12 @@
     },
     "commands": [
       {
-          "command": "delphyne.showViews",
-          "title": "Delphyne: Show Views"
+        "command": "delphyne.showViews",
+        "title": "Delphyne: Show Views"
+      },
+      {
+        "command": "delphyne.autoFold",
+        "title": "Delphyne: Auto Fold"
       },
       {
         "command": "delphyne.evaluateAllDemos",

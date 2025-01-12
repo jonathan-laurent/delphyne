@@ -60,6 +60,10 @@ class DemoFileManager {
     return this.feedback.get(demo) ?? null;
   }
 
+  public getParsedDemoFile(): DemoFile | null {
+    return this.parsedDemoFile;
+  }
+
   public getElementAt(
     uri: vscode.Uri,
     cursor: vscode.Position,
@@ -363,5 +367,9 @@ export class DemosManager {
 
   getAllDemoElements(uri: vscode.Uri): DemoElement[] | null {
     return this.demoFiles.get(uri)?.getAllDemoElements(uri) ?? null;
+  }
+
+  getParsedDemoFile(uri: vscode.Uri): DemoFile | null {
+    return this.demoFiles.get(uri)?.getParsedDemoFile() ?? null;
   }
 }

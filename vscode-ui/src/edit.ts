@@ -1,6 +1,5 @@
-import { StrategyDemo } from "./stubs/demos";
-
 import * as vscode from "vscode";
+import { StrategyDemo } from "./stubs/demos";
 import { prettyYaml } from "./yaml_utils";
 import { insertYamlListElements } from "./edit_utils";
 
