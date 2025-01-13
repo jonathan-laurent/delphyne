@@ -5,7 +5,7 @@ Computation Nodes
 from collections.abc import Callable
 from dataclasses import dataclass
 from functools import partial
-from typing import Any, cast
+from typing import Any, Never, cast
 
 import yaml
 import yaml.parser
@@ -14,6 +14,7 @@ import delphyne.core as dp
 import delphyne.core.inspect as insp
 import delphyne.utils.typing as ty
 from delphyne.stdlib.nodes import spawn_node
+from delphyne.stdlib.policies import ContextualTreeTransformer
 from delphyne.utils.yaml import dump_yaml
 
 
@@ -86,16 +87,18 @@ def compute[**P, T](
     return cast(T, ret)
 
 
-def elim_compute[N: dp.Node, P, T](
+def pure_elim_compute[N: dp.Node, P, T](
     tree: dp.Tree[Computation | N, P, T],
 ) -> dp.Tree[N, P, T]:
     if isinstance(tree.node, Computation):
         answer = tree.node.run_computation()
         tracked = tree.node.query.answer(None, answer)
         assert not isinstance(tracked, dp.ParseError)
-        return elim_compute(tree.child(tracked))
+        return pure_elim_compute(tree.child(tracked))
 
-    def child(action: dp.Value) -> dp.Tree[N, P, T]:
-        return elim_compute(tree.child(action))
+    return tree.transform(tree.node, pure_elim_compute)
 
-    return dp.Tree(tree.node, child, tree.ref)
+
+elim_compute = ContextualTreeTransformer[Computation, Never].pure(
+    pure_elim_compute
+)

@@ -8,6 +8,7 @@ Delphyne standard library.
 from delphyne.stdlib.computations import (
     Computation,
     compute,
+    elim_compute,
 )
 from delphyne.stdlib.globals import (
     stdlib_globals,

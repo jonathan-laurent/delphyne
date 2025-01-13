@@ -8,6 +8,52 @@ from typing import Any, Protocol
 import delphyne.core as dp
 
 #####
+##### Tree Transformers
+#####
+
+
+class PureTreeTransformerFn[A: dp.Node, B: dp.Node](Protocol):
+    def __call__[N: dp.Node, P, T](
+        self, tree: dp.Tree[A | N, P, T]
+    ) -> dp.Tree[B | N, P, T]: ...
+
+
+class ContextualTreeTransformerFn[A: dp.Node, B: dp.Node](Protocol):
+    def __call__[N: dp.Node, P, T](
+        self, tree: dp.Tree[A | N, P, T], env: dp.PolicyEnv
+    ) -> dp.Tree[B | N, P, T]: ...
+
+
+@dataclass
+class ContextualTreeTransformer[A: dp.Node, B: dp.Node]:
+    fn: ContextualTreeTransformerFn[A, B]
+
+    @staticmethod
+    def pure(
+        fn: PureTreeTransformerFn[A, B],
+    ) -> "ContextualTreeTransformer[A, B]":
+        def contextual[N: dp.Node, P, T](
+            tree: dp.Tree[A | N, P, T], env: dp.PolicyEnv
+        ) -> dp.Tree[B | N, P, T]:
+            return fn(tree)
+
+        return ContextualTreeTransformer(contextual)
+
+    def __rmatmul__[N: dp.Node](
+        self, search_policy: "SearchPolicy[B | N]"
+    ) -> "SearchPolicy[A | N]":
+        def new_search_policy[P, T](
+            tree: dp.Tree[A | N, P, T],
+            env: dp.PolicyEnv,
+            policy: P,
+        ) -> dp.Stream[T]:
+            new_tree = self.fn(tree, env)
+            return search_policy(new_tree, env, policy)
+
+        return SearchPolicy(new_search_policy)
+
+
+#####
 ##### Search Policies
 #####
 
@@ -23,19 +69,6 @@ class SearchPolicy[N: dp.Node](dp.AbstractSearchPolicy[N]):
         policy: P,
     ) -> dp.Stream[T]:
         return self.fn(tree, env, policy)
-
-    def __matmul__[M: dp.Node](
-        self, tree_transformer: dp.TreeTransformer[M, N]
-    ) -> "SearchPolicy[M]":
-        def fn[P, T](
-            tree: dp.Tree[M, P, T],
-            env: dp.PolicyEnv,
-            policy: P,
-        ) -> dp.Stream[T]:
-            new_tree = tree_transformer(tree)
-            return self.fn(new_tree, env, policy)
-
-        return SearchPolicy(fn)
 
 
 class _ParametricSearchPolicyFn[N: dp.Node, **A](Protocol):

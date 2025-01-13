@@ -61,6 +61,7 @@ from delphyne.core.traces import (
     TraceReverseMap,
 )
 from delphyne.core.trees import (
+    AbstractTreeTransformer,
     AnyTree,
     AttachedQuery,
     Builder,
@@ -77,5 +78,4 @@ from delphyne.core.trees import (
     Success,
     Tag,
     Tree,
-    TreeTransformer,
 )

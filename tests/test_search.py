@@ -12,7 +12,6 @@ import delphyne.stdlib.mock as mock
 
 
 def test_search_synthesis():
-    pass
     demo = load_demo("synthetize_fun_demo")
     assert isinstance(demo, dp.StrategyDemo)
     env = dp.PolicyEnv((), ())  # Won't be used
@@ -27,6 +26,16 @@ def test_search_synthesis():
     policy = (ex.just_guess(), inner_policy)
     stream = ex.synthetize_fun(vars, prop).run_toplevel(env, policy)
     res, _ = asyncio.run(dp.collect(stream, num_generated=1))
+    assert res
+    print(res[0].value)
+
+
+def test_cached_computations():
+    env = dp.PolicyEnv((), ())
+    # tr = Trans[N, M](dp.elim_compute)
+    policy = (dp.dfs() @ dp.elim_compute, None)
+    stream = ex.test_cached_computations(1).run_toplevel(env, policy)
+    res, _ = asyncio.run(dp.collect(stream))
     assert res
     print(res[0].value)
 

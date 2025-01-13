@@ -200,7 +200,7 @@ class Node(ABC):
         return cls(**args_new)
 
     def map_embedded[N: Node](
-        self: N, trans: "TreeTransformer[Any, Any]"
+        self: N, trans: "AbstractTreeTransformer[Any, Any]"
     ) -> N:
         """
         Apply a tree transformer to all embedded nest trees and return
@@ -408,6 +408,17 @@ class Tree(Generic[N, P, T]):
     child: "Callable[[Value], Tree[N, P, T]]"
     ref: GlobalNodePath
 
+    def transform[M: Node](
+        self,
+        node: "M | Success[T]",
+        transformer: "AbstractTreeTransformer[N, M]",
+    ) -> "Tree[M, P, T]":
+        def child(action: Value) -> Tree[M, P, T]:
+            return transformer(self.child(action))
+
+        node = node.map_embedded(transformer)
+        return Tree(node, child, self.ref)
+
 
 @dataclass(frozen=True)
 class Success[T]:
@@ -455,6 +466,11 @@ class Success[T]:
     ) -> Space[Any] | None:
         return None
 
+    def map_embedded(
+        self, trans: "AbstractTreeTransformer[Any, Any]"
+    ) -> "Success[T]":
+        return self
+
 
 @dataclass
 class StrategyException(Exception):
@@ -469,7 +485,7 @@ class StrategyException(Exception):
 type AnyTree = Tree[Node, Any, Any]
 
 
-class TreeTransformer[N: Node, M: Node](Protocol):
+class AbstractTreeTransformer[N: Node, M: Node](Protocol):
     def __call__[T, P](self, tree: "Tree[N, P, T]") -> "Tree[M, P, T]": ...
 
 
