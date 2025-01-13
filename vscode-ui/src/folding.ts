@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 import { DemosManager } from "./demos_manager";
-import { isStrategyDemo } from "./common";
+import { isQueryDemo } from "./common";
 
 function foldRange(
   editor: vscode.TextEditor,
@@ -37,13 +37,17 @@ export function autoFold(manager: DemosManager) {
     return;
   }
   for (const demo of demos) {
-    if (!isStrategyDemo(demo)) {
-      continue;
-    }
-    for (const query of demo.queries) {
-      foldRange(editor, query.__loc__args, true);
-      for (const answer of query.answers) {
+    if (isQueryDemo(demo)) {
+      for (const answer of demo.answers) {
         foldRange(editor, answer.__loc__answer, false);
+      }
+      continue;
+    } else {
+      for (const query of demo.queries) {
+        foldRange(editor, query.__loc__args, true);
+        for (const answer of query.answers) {
+          foldRange(editor, answer.__loc__answer, false);
+        }
       }
     }
   }
