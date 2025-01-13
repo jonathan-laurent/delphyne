@@ -6,3 +6,4 @@ The Delphyne Framework for Oracular Programming
 
 from delphyne.core import *
 from delphyne.stdlib import *
+from delphyne.analysis import *
