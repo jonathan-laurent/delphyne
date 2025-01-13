@@ -2,9 +2,21 @@
 Standard Delphyne Commands
 """
 
-from delphyne.stdlib.commands.answer_query import answer_query
-from delphyne.stdlib.commands.run_strategy import run_strategy
-from delphyne.stdlib.tasks import test_command
+# ruff: noqa: F401
+# pyright: reportUnusedImport=false
+
+from delphyne.stdlib.commands.answer_query import (
+    AnswerQueryArgs,
+    answer_query,
+)
+from delphyne.stdlib.commands.run_strategy import (
+    RunStrategyArgs,
+    run_strategy,
+)
+from delphyne.stdlib.tasks import (
+    TestCommandArgs,
+    test_command,
+)
 
 STD_COMMANDS: dict[str, object] = {
     "test_command": test_command,

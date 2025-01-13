@@ -179,7 +179,7 @@ def run_command[A, T](
                     }
                 os.makedirs(dump_result.parent, exist_ok=True)
                 with open(dump_result, "w") as f:
-                    f.write(pretty_yaml(ret))
+                    f.write("# delphyne-command\n\n" + pretty_yaml(ret))
 
         async def raise_internal_error(self, message: str) -> None:
             error = ("error", f"Internal error: {message}")

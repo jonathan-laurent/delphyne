@@ -15,7 +15,7 @@ DEFAULT_OPENAI_MODEL = "gpt-4o"
 
 
 @dataclass
-class AnswerQueryCmd:
+class AnswerQueryArgs:
     query: str
     completions: int
     prompt_only: bool
@@ -33,7 +33,7 @@ class AnswerQueryResponse:
 async def answer_query(
     task: ta.TaskContext[ta.CommandResult[AnswerQueryResponse]],
     exe: ta.CommandExecutionContext,
-    cmd: AnswerQueryCmd,
+    cmd: AnswerQueryArgs,
 ):
     # TODO: no examples for now. Also, we have to externalize this anyway.
     loader = analysis.ObjectLoader(exe.base)

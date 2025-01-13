@@ -349,6 +349,10 @@ def test_cached_computations(
     return a * b + c * d + e * f
 
 
+def test_cached_computations_policy():
+    return (dp.dfs() @ dp.elim_compute, None)
+
+
 #####
 ##### Trivial strategy examples
 #####

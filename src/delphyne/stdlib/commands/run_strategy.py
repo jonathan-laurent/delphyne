@@ -2,6 +2,7 @@
 Standard commands for running strategies.
 """
 
+import time
 from dataclasses import dataclass
 
 import delphyne.analysis as analysis
@@ -9,6 +10,8 @@ import delphyne.analysis.feedback as fb
 import delphyne.core as dp
 import delphyne.stdlib as std
 import delphyne.stdlib.tasks as ta
+
+DEFAULT_REFRESH_RATE_IN_SECONDS = 5
 
 
 @dataclass
@@ -32,6 +35,9 @@ async def run_loaded_strategy[N: dp.Node, P, T](
     args: RunLoadedStrategyArgs[N, P, T],
 ):
     # TODO: respect refresh rate
+    refresh_rate = exe.refresh_rate
+    if refresh_rate is None:
+        refresh_rate = DEFAULT_REFRESH_RATE_IN_SECONDS
     env = dp.PolicyEnv(exe.base.strategy_dirs, exe.demo_files)
     cache: dp.TreeCache = {}
     monitor = dp.TreeMonitor(cache, hooks=[dp.tracer_hook(env.tracer)])
@@ -57,6 +63,7 @@ async def run_loaded_strategy[N: dp.Node, P, T](
         else:
             return f"{num_nodes} nodes"
 
+    last_refreshed = time.time()
     async for msg in stream:
         match msg:
             case dp.Yield():
@@ -65,7 +72,9 @@ async def run_loaded_strategy[N: dp.Node, P, T](
                 total_budget += b
             case dp.Barrier():
                 pass
-        await task.set_result(compute_result())
+        if time.time() - last_refreshed > refresh_rate:
+            await task.set_result(compute_result())
+            last_refreshed = time.time()
         await task.set_status(compute_status())
     await task.set_result(compute_result())
 
