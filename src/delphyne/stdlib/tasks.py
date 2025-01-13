@@ -1,13 +1,25 @@
 """
-Abstract interface and utilities for streaming tasks.
+Delphyne Tasks.
+
+In order to better integrate with the UI, we propose a standard
+interface for Delphyne tasks, which allows streaming updates.
 """
 
 import asyncio
+import inspect
 import typing
 from collections.abc import Callable
+from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Concatenate, Literal, Never, Protocol
 
-import fastapi
+import delphyne.analysis as analysis
+import delphyne.analysis.feedback as fb
+import delphyne.stdlib.tasks as ta
+
+#####
+##### Tasks
+#####
 
 
 class TaskContext[T](typing.Protocol):
@@ -63,21 +75,61 @@ async def counting_generator(task: TaskContext[Never], n: int):
         print("Generator over.", flush=True)
 
 
-class TaskLauncher(Protocol):
-    """
-    The Delphyne server can be instantiated with different task
-    launchers. The simplest one is single-threaded and, which is ideal
-    for debugging. We plan to add multi-threaded launchers in the
-    future.
-    """
+#####
+##### Particular Case: Commands
+#####
 
-    # fmt: off
-    async def __call__[**P, T](
-    # fmt: on
+
+@dataclass
+class CommandExecutionContext:
+    base: analysis.DemoExecutionContext
+    demo_files: list[Path]
+    refresh_rate: float | None
+
+
+@dataclass
+class CommandResult[T]:
+    diagnostics: list[fb.Diagnostic]
+    result: T
+
+
+class Command[A, T](Protocol):
+    async def __call__(
         self,
-        request: fastapi.Request,
-        type: type[T] | Any,
-        task: StreamingTask[P, T],
-        *args: P.args,
-        **kwargs: P.kwargs,
-    ) -> typing.AsyncGenerator[str, None]: ...
+        task: ta.TaskContext[CommandResult[T]],
+        exe: CommandExecutionContext,
+        args: A,
+    ) -> None: ...
+
+
+def command_args_type(cmd: Callable[..., Any]) -> Any:
+    sig = inspect.signature(cmd)
+    parameters = list(sig.parameters.keys())
+    assert len(parameters) == 3
+    hints = typing.get_type_hints(cmd)
+    return hints[parameters[2]]
+
+
+#####
+##### A dummy command for test purposes
+#####
+
+
+@dataclass
+class TestCommandArgs:
+    n: int
+
+
+async def test_command(
+    task: ta.TaskContext[CommandResult[list[int]]],
+    exe: ta.CommandExecutionContext,
+    args: TestCommandArgs,
+):
+    await task.set_status("counting...")
+    for i in range(args.n):
+        await asyncio.sleep(0.5)
+        await task.set_result(CommandResult([], list(range(i + 1))))
+        print(i)
+    await task.set_status("done")
+    await asyncio.sleep(0.1)
+    print("done")

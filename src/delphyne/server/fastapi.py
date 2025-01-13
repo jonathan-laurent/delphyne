@@ -11,12 +11,13 @@ from fastapi.responses import StreamingResponse
 import delphyne.analysis as analysis
 import delphyne.analysis.feedback as fb
 import delphyne.core as dp
-import delphyne.server.commands as cm
-import delphyne.server.tasks as ta
+import delphyne.server.execute_command as cm
 import delphyne.stdlib as std
+import delphyne.stdlib.tasks as ta
+from delphyne.server.task_launchers import TaskLauncher
 
 
-def make_server(launcher: ta.TaskLauncher):
+def make_server(launcher: TaskLauncher):
     app = FastAPI()
 
     @app.get("/ping-delphyne")
@@ -46,10 +47,10 @@ def make_server(launcher: ta.TaskLauncher):
     async def _(
         request: Request,
         spec: cm.CommandSpec,
-        context: cm.CommandExecutionContext,
+        context: ta.CommandExecutionContext,
     ):
         stream = launcher(
-            request, cm.CommandResult, cm.execute_command, context, spec
+            request, ta.CommandResult, cm.execute_command, context, spec
         )
         return StreamingResponse(stream, media_type="text/event-stream")
 

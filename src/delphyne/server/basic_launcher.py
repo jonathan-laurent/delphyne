@@ -10,8 +10,9 @@ from typing import Any
 import pydantic
 from fastapi import Request
 
-from delphyne.server import tasks
-from delphyne.server.tasks import StreamingTask, TaskMessage
+from delphyne.server.task_launchers import StreamingTask, TaskLauncher
+from delphyne.stdlib import tasks
+from delphyne.stdlib.tasks import TaskMessage
 
 _CONNECTION_POLLING_TIME = 0.5
 """
@@ -40,7 +41,7 @@ class _BasicTaskContext[T](tasks.TaskContext[T]):
         await asyncio.sleep(0)
 
 
-class BasicLauncher(tasks.TaskLauncher):
+class BasicLauncher(TaskLauncher):
     async def __call__[**P, T](
         self,
         request: Request | None,
