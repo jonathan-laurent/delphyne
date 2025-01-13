@@ -1,4 +1,4 @@
-.PHONY: clean clean-ignored test full-clean all examples schemas stubs install doc-logo cloc
+.PHONY: install-dev-deps clean clean-ignored test full-clean all examples schemas stubs install doc-logo cloc
 
 TO_CLEAN := \
 	-name '__pycache__' -o \
@@ -16,6 +16,11 @@ STUBS_FOLDER := vscode-ui/src/stubs
 
 install:
 	pip install -e .
+
+
+install-dev-deps:
+	pip install pyright ruff
+	pip install mkdocs mkdocstrings[python] mkdocs-autolinks-plugin mkdocs-material mkdocs-glightbox
 
 
 test:

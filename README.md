@@ -1,45 +1,21 @@
-# The Delphyne Framework for Oracular Programming
+<p align="center">
+  <img src="docs/assets/title-logo.png" alt="Delphyne Logo" width="50%"/>
+</p>
 
-## Install
+
+## Installation
+
+First, download the Delphyne repository and enter it:
+
+```sh
+git clone git@github.com:jonathan-laurent/delphyne.git
+cd delphyne
+```
+
+Then, to install the Delphyne library in your current Python environment:
 
 ```sh
 pip install -e .
 ```
 
-To build the documentation:
-
-```sh
-pip install mkdocs mkdocstrings[python] mkdocs-autolinks-plugin mkdocs-material mkdocs-glightbox
-
-mkdocs serve
-```
-
-Current pyright version: 1.1.378
-To check the pyright version used by pylance, check "Output / Python Language Server" and look for "pyright".
-
-```sh
-pip install pyright==1.1.378  # For the one in sync with pylance
-pip install pyright -U  # for the latest one
-```
-
-The vscode "Black Formatter" extension is needed for the `"editor.defaultFormatter": "ms-python.black-formatter"` setting to work. Same for the `isort` extension.
-
-## Tricks
-
-To create a test notebook:
-
-```py
-%load_ext autoreload
-%autoreload 2
-from test_strategies import *
-```
-
-To count lines in the codebase:
-
-```py
-find . -name '*.py' -print0 | xargs -0 wc -l
-find vscode-ui/src/ -name '*.ts' -print0 | xargs -0 wc -l
-
-npm install -g cloc
-cloc . --exclude-dir=node_modules,out,.vscode-test --include-lang=python,typescript
-```
+Note that Python 3.12 (or more recent) is required.
