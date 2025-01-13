@@ -6,19 +6,26 @@ import * as vscode from "vscode";
 import { DemosManager } from "./demos_manager";
 import { DelphyneServer } from "./server";
 import { DemoElement, queryOfDemoElement } from "./elements";
-import { DemoFeedback, Query, StrategyDemoFeedback } from "./stubs/feedback";
+import { DemoFeedback, StrategyDemoFeedback } from "./stubs/feedback";
 import { ExecutionContext, getExecutionContext } from "./execution_contexts";
-import { QueryDemo, StrategyDemo } from "./stubs/demos";
+import { StrategyDemo } from "./stubs/demos";
 import { PointedTree, TreeInfo, TreeView } from "./tree_view";
 import { ROOT_ID } from "./common";
 import { addQueries } from "./edit";
 
 export class DemosActionsProvider implements vscode.CodeActionProvider {
+  /////
+  // Constructor and misc registration
+  /////
+
   constructor(
     private demosManager: DemosManager,
     private treeView: TreeView,
     private server: DelphyneServer,
   ) {}
+  // Memorize on what element `viewTestDestination` was called, to be used by
+  // `rerunLastTest`.
+  private lastTestElement: DemoElement | null = null;
 
   public provideCodeActions(
     document: vscode.TextDocument,
@@ -50,18 +57,16 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
     context.subscriptions.push(
       vscode.languages.registerCodeActionsProvider("yaml", this),
       vscode.commands.registerCommand("delphyne.evaluateDemo", evaluateDemo),
-      vscode.commands.registerCommand(
-        "delphyne.openPointedTree",
-        openPointedTree,
-      ),
       vscode.commands.registerCommand("delphyne.evaluateAllDemos", async () => {
         await evaluateAllDemos(this.server, this.demosManager);
       }),
-      vscode.commands.registerCommand("delphyne.addImplicitAnswers", (add) => {
-        add(); // The action to perform is passed as a closure argument.
-      }),
+      vscode.commands.registerCommand("delphyne.anonDemoCmd", (cmd) => cmd()),
     );
   }
+
+  /////
+  // Code Actions
+  /////
 
   private evaluateDemoAction(
     element: DemoElement,
@@ -95,9 +100,9 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
       const tree = new TreeInfo(feedback.trace, element);
       const pointedTree = new PointedTree(tree, ROOT_ID);
       action.command = {
-        command: "delphyne.openPointedTree",
-        title: "Open Pointed Tree",
-        arguments: [pointedTree, this.treeView],
+        command: "delphyne.anonDemoCmd",
+        title: "View Tree Destination",
+        arguments: [() => this.treeView.setPointedTree(pointedTree)],
       };
       return action;
     }
@@ -128,9 +133,13 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
       const tree = new TreeInfo(feedback.trace, element);
       const pointedTree = new PointedTree(tree, node_id);
       action.command = {
-        command: "delphyne.openPointedTree",
-        title: "Open Pointed Tree",
-        arguments: [pointedTree, this.treeView],
+        command: "delphyne.anonDemoCmd",
+        title: "View Test Destination",
+        arguments: [
+          () => {
+            this.treeView.setPointedTree(pointedTree);
+          },
+        ],
       };
       return action;
     }
@@ -158,7 +167,7 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
       vscode.CodeActionKind.Empty,
     );
     action.command = {
-      command: "delphyne.addImplicitAnswers",
+      command: "delphyne.anonDemoCmd",
       title: "Add Implicit Answers",
       arguments: [
         () => {
@@ -246,8 +255,4 @@ async function evaluateAllDemos(
   for (const element of elements) {
     await evaluateDemo(element, exe, server, demosManager);
   }
-}
-
-function openPointedTree(pointedTree: PointedTree, treeView: TreeView) {
-  treeView.setPointedTree(pointedTree);
 }

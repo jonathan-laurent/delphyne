@@ -206,10 +206,6 @@
         "title": "Evaluate Demonstration"
       },
       {
-        "command": "delphyne.openPointedTree",
-        "title": "Open Pointed Tree"
-      },
-      {
         "command": "delphyne.closeTreeView",
         "title": "Close Tree View",
         "icon": "$(close)"
