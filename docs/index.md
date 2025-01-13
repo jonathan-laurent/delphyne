@@ -5,7 +5,6 @@
   <img src="assets/logos/white/banner.png#only-dark" alt="Delphyne Logo" width="50%"/>
 </p>
 
-<br/>
 
 Delphyne is a framework for solving problems.
 
@@ -13,14 +12,14 @@ Delphyne is a framework for solving problems.
 
 First, download the Delphyne repository and enter it:
 
-```sh
+```
 git clone git@github.com:jonathan-laurent/delphyne.git
 cd delphyne
 ```
 
 Then, to install the Delphyne library in your current Python environment:
 
-```sh
+```
 pip install -e .
 ```
 

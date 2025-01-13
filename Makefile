@@ -1,4 +1,4 @@
-.PHONY: install-dev-deps clean clean-ignored test full-clean all examples schemas stubs install doc-logo cloc
+.PHONY: install-dev-deps clean clean-ignored test full-clean all examples schemas stubs install doc-logo cloc deploy-doc
 
 TO_CLEAN := \
 	-name '__pycache__' -o \
@@ -77,6 +77,10 @@ WHITE_LOGOS := $(subst /black/,/white/,$(BLACK_LOGOS))
 $(LOGOS_DIR)/white/%.png: $(LOGOS_DIR)/black/%.png
 	convert $< -fill black -colorize 100% -channel RGB -negate +channel $@
 doc-logo: $(WHITE_LOGOS)
+
+
+deploy-doc:
+	mkdocs gh-deploy --force
 
 
 # Count the number of lines of code
