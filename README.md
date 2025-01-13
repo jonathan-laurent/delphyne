@@ -1,5 +1,6 @@
 <p align="center">
-  <img src="docs/assets/title-logo.png" alt="Delphyne Logo" width="50%"/>
+  <img src="docs/assets/logos/black/banner.png#gh-light-mode-only" alt="Delphyne Logo" width="50%"/>
+  <img src="docs/assets/logos/white/banner.png#gh-dark-mode-only" alt="Delphyne Logo" width="50%"/>
 </p>
 
 

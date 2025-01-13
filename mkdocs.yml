@@ -3,7 +3,7 @@ theme:
   name: material
   favicon: null
   # favicon: assets/logos/black/21.png
-  logo: assets/logos/white/21.png
+  logo: assets/logos/white/mini.png
   palette:
     # Palette toggle for light mode
     - scheme: default
