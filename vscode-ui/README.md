@@ -6,7 +6,6 @@ To install all dependencies:
 
 ```sh
 npm install
-npm install -g @vscode/vsce
 ```
 
 Then, start the extension in debugging mode using `F5`.
@@ -16,8 +15,8 @@ Somehow, `npm install` requires a Python installation because of  `node-gyp`.
 To install the vscode extension:
 
 ```sh
-npm install -g vsce
-vsce package
+npm install @vscode/vsce
+npx vsce package
 code --install-extension *.vsix
 ```
 

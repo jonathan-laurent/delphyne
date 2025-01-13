@@ -12,4 +12,4 @@ install:
 	npm install
 
 extension:
-	vsce package
+	npx vsce package

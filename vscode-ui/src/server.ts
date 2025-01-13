@@ -15,7 +15,7 @@ import {
   TaskOptions,
 } from "./tasks";
 import { waitFor } from "./utils";
-import { ReadableStreamDefaultReadResult } from "stream/web";
+import { ReadableStreamReadResult } from "stream/web";
 
 const CANCEL_POLLING_INTERVAL = 100;
 const SERVER_ADDRESS = "http://localhost:8000";
@@ -77,7 +77,7 @@ export class DelphyneServer {
     }
     let buffer = "";
     try {
-      let readNext: () => Promise<ReadableStreamDefaultReadResult<any>> = () =>
+      let readNext: () => Promise<ReadableStreamReadResult<any>> = () =>
         reader.read();
       while (true) {
         const next = await waitFor(readNext(), CANCEL_POLLING_INTERVAL);
