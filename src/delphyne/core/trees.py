@@ -199,6 +199,46 @@ class Node(ABC):
         }
         return cls(**args_new)
 
+    def map_embedded[N: Node](
+        self: N, trans: "TreeTransformer[Any, Any]"
+    ) -> N:
+        """
+        Apply a tree transformer to all embedded nest trees and return
+        the updated node (the argument is still valid afterwards).
+        """
+
+        def convert_embedded(
+            emb: EmbeddedTree[Any, Any, Any],
+        ) -> EmbeddedTree[Any, Any, Any]:
+            assert isinstance(emb, EmbeddedTree)
+            return EmbeddedTree(
+                emb.strategy, emb.ref, lambda: trans(emb.spawn_tree())
+            )
+
+        def convert_parametric_embedded(obj: Any) -> Callable[[Any], Any]:
+            return lambda arg: convert_embedded(obj(arg))
+
+        def convert(field: nf.FieldType, obj: Any) -> Any:
+            match field:
+                case nf.SpaceF() | nf.ParametricF(nf.SpaceF()) | nf.DataF():
+                    return obj
+                case nf.EmbeddedF():
+                    return convert_embedded(obj)
+                case nf.ParametricF(nf.EmbeddedF()):
+                    return convert_parametric_embedded(obj)
+                case nf.SequenceF(f):
+                    return [convert(f, x) for x in obj]
+                case nf.OptionalF(f):
+                    return convert(f, obj) if obj is not None else None
+                case _:
+                    assert False
+
+        args_new = {
+            fname: convert(fkind, getattr(self, fname))
+            for fname, fkind in self.fields().items()
+        }
+        return type(self)(**args_new)
+
 
 type Navigation = Generator[Space[Any], Tracked[Any], Value]
 """
@@ -284,7 +324,14 @@ class StrategyComp[N: Node, P, T]:
 
 @dataclass(frozen=True)
 class NestedTree[N: Node, P, T](Space[T]):
-    strategy: StrategyComp[N, P, T]
+    """
+
+    Note: one cannot count on `strategy` having the same node type as
+    `spawn_tree` since nested trees can be applies tree transformers
+    (see `Node.map_embedded`).
+    """
+
+    strategy: StrategyComp[Node, P, T]
     ref: refs.GlobalSpacePath
     spawn_tree: "Callable[[], Tree[N, P, T]]"
 
