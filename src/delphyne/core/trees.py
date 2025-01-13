@@ -279,7 +279,7 @@ class NodeBuilder(Generic[N, P]):
 
 
 @dataclass(frozen=True)
-class StrategyComp[N: Node, P, T]:
+class StrategyComp(Generic[N, P, T]):
     """
     A strategy computation also stores metadata for navigation and
     debugging.
@@ -410,7 +410,17 @@ class Tree(Generic[N, P, T]):
 
 
 @dataclass(frozen=True)
-class Success[T](Node):
+class Success[T]:
+    """
+    A success leaf, carrying a tracked value.
+
+    Note that although it largely implements the same interface via duck
+    typing, `Success` does not inherit `Node`. The reason is that
+    `Tree[N, P, T].node` has type `Success[T] | N`. If `Success`
+    inherited `Node`, it would be possible for `N` to include a value of
+    type `Success[T2]` for some `T2 != T`, which we want to avoid.
+    """
+
     success: Tracked[T]
 
     def leaf_node(self) -> bool:
@@ -421,6 +431,29 @@ class Success[T](Node):
 
     def navigate(self) -> Navigation:
         assert False
+
+    def summary_message(self) -> str | None:
+        return None
+
+    def primary_space(self) -> None:
+        return None
+
+    def primary_space_ref(self) -> None:
+        return None
+
+    def effect_name(self) -> str:
+        return self.__class__.__name__
+
+    def get_tags(self) -> Sequence[Tag]:
+        return ()
+
+    def base_spaces(self) -> "Iterable[Space[object]]":
+        return ()
+
+    def nested_space(
+        self, name: refs.SpaceName, args: tuple[Value, ...]
+    ) -> Space[Any] | None:
+        return None
 
 
 @dataclass

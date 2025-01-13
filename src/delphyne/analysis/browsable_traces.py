@@ -319,9 +319,8 @@ class _TraceTranslator:
     def translate_node(self, id: refs.NodeId) -> fb.Node:
         # Computing the success value if any
         tree = self.id_resolver.resolve_node(id)
-        node = cast(dp.Node, tree.node)
+        node = tree.node
         if isinstance(node, dp.Success):
-            node = cast(dp.Success[Any], node)
             value = refs.drop_refs(node.success)
             success = _value_repr(value, node.success.type_annot)
         else:

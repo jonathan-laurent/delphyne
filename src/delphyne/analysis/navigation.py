@@ -187,9 +187,8 @@ class Navigator:
             case refs.NodeId():
                 assert self.id_resolver is not None
                 success = self.id_resolver.resolve_node(ref.element)
-                node = cast(dp.Success[object], success.node)
                 assert isinstance(success.node, dp.Success)
-                return node.success
+                return success.node.success
             case _:
                 assert False
 
@@ -225,11 +224,10 @@ class Navigator:
                 final, hints = self.follow_hints(
                     tree, hints, sub_selector, EncounteredTags()
                 )
-                success = cast(dp.Success[Any], final.node)
                 # `follow_hints` raises an exception if a success is not
                 # reached.
-                assert isinstance(success, dp.Success)
-                return success.success, hints
+                assert isinstance(final.node, dp.Success)
+                return final.node.success, hints
 
     def follow_hints(
         self,
