@@ -2,6 +2,7 @@
 Utilities for writing policies.
 """
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Protocol
 
@@ -172,3 +173,22 @@ def log(
         case dp.AttachedQuery(_, ref):
             location = dp.Location(ref[0], ref[1])
     env.tracer.log(message, metadata, location)
+
+
+#####
+##### Checking consistency of strategies and policies
+#####
+
+
+type _ParametricPolicy[**A, N: dp.Node, P] = Callable[A, dp.Policy[N, P]]
+
+
+def ensure_compatible[**A, N: dp.Node, P](
+    strategy: Callable[..., dp.StrategyComp[N, P, object]],
+) -> Callable[[_ParametricPolicy[A, N, P]], _ParametricPolicy[A, N, P]]:
+    """
+    A decorator that does nothing but allows type-checkers to ensure
+    that the decorated function returns a policy compatible with its
+    strategy argument.
+    """
+    return lambda f: f

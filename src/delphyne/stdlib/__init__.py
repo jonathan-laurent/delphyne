@@ -39,6 +39,7 @@ from delphyne.stdlib.openai_models import (
 from delphyne.stdlib.policies import (
     PromptingPolicy,
     SearchPolicy,
+    ensure_compatible,
     log,
     prompting_policy,
     search_policy,

@@ -349,6 +349,7 @@ def test_cached_computations(
     return a * b + c * d + e * f
 
 
+@dp.ensure_compatible(test_cached_computations)
 def test_cached_computations_policy():
     return (dp.dfs() @ dp.elim_compute, None)
 
