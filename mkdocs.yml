@@ -19,11 +19,11 @@ theme:
     - content.code.annotate
     - content.code.copy
     - content.tabs.link
-    - navigation.indexes
-    - navigation.tabs
+    # - navigation.indexes  # Allows adding welcome pages to sections
+    # - navigation.tabs
 
 plugins:
-  - glightbox
+  # - glightbox  # To allow clicking on images to view them in a lightbox
   - mkdocstrings:
       default_handler: python
       handlers:
@@ -56,11 +56,12 @@ extra_css:
 
 nav:
   - index.md
-  - Tutorials:
-    - tutorials/index.md
-    - tutorials/installation.md
+  - tutorial.md
+  - Manual:
+    - manual/strategies.md
+    - manual/policies.md
+    - manual/demos.md
+    - manual/extension.md
   - how-to-guides.md
-  - reference.md
-  - explanations.md
-  - Developer:
-    - dev/mkdocs-tricks.md
+  - Examples:
+    - examples/loop-invariants.md

@@ -1,13 +1,15 @@
 <!-- We do not show the page title -->
 <style> .md-content .md-typeset h1 { display: none; } </style>
-<p align="center">
+<p align="center" style="margin-bottom: 45px">
   <img src="assets/logos/black/banner.png#only-light" alt="Delphyne Logo" width="50%"/>
   <img src="assets/logos/white/banner.png#only-dark" alt="Delphyne Logo" width="50%"/>
 </p>
 
-
 Delphyne is a framework for solving problems.
 
+
+!!! warning
+    Delphyne is still under development and is evolving quickly. You should expect some rough edges.
 
 ## Installation
 
