@@ -54,7 +54,7 @@
       answers:
         - answer: "[9, 2]"
         - label: "wrong_sum"
-          answer: "[9, 6]"
+          answer: "[9, 2]"
         - label: "alt_order"
           answer: "[2, 9]"
   expect:

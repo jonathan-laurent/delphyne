@@ -40,6 +40,7 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
       const seePrompt = this.answerQuery(element, true);
       const answerQuery = this.answerQuery(element, false);
       const addImplicitAnswers = this.addImplicitAnswers(element);
+      const rerunLastTest = this.rerunLastTest();
       const all: (vscode.CodeAction | null)[] = [
         seePrompt,
         answerQuery,
@@ -47,6 +48,7 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
         viewTreeRoot,
         evaluateDemo,
         addImplicitAnswers,
+        rerunLastTest,
       ];
       return all.filter((a): a is vscode.CodeAction => a !== null);
     }
@@ -61,6 +63,10 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
         await evaluateAllDemos(this.server, this.demosManager);
       }),
       vscode.commands.registerCommand("delphyne.anonDemoCmd", (cmd) => cmd()),
+      vscode.commands.registerCommand(
+        "delphyne.anonAsyncDemoCmd",
+        async (cmd) => await cmd(),
+      ),
     );
   }
 
@@ -137,6 +143,7 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
         title: "View Test Destination",
         arguments: [
           () => {
+            this.lastTestElement = element;
             this.treeView.setPointedTree(pointedTree);
           },
         ],
@@ -144,6 +151,52 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
       return action;
     }
     return null;
+  }
+
+  private rerunLastTest(): vscode.CodeAction | null {
+    const element = this.lastTestElement;
+    if (
+      !element ||
+      element.kind !== "strategy_demo" ||
+      element.specific?.kind !== "test"
+    ) {
+      return null;
+    }
+    const specific = element.specific;
+    // Get back the demo if it is still alive
+    const demo = this.demosManager.getDemonstration(
+      element.uri,
+      element.demo,
+    ) as StrategyDemo | null;
+    if (!demo) {
+      return null;
+    }
+    const action = new vscode.CodeAction(
+      "Rerun Last Test",
+      vscode.CodeActionKind.Empty,
+    );
+    action.command = {
+      command: "delphyne.anonAsyncDemoCmd",
+      title: "Rerun Last Test",
+      arguments: [
+        async () => {
+          // We reevaluate the demonstration
+          await evaluateDemo(
+            element,
+            getExecutionContext(),
+            this.server,
+            this.demosManager,
+          );
+          // We call the anon command associated with `viewTestDestination`
+          const action = this.viewTestDestination(element);
+          if (action) {
+            // @ts-ignore
+            action.command.arguments[0]();
+          }
+        },
+      ],
+    };
+    return action;
   }
 
   private addImplicitAnswers(element: DemoElement): vscode.CodeAction | null {
