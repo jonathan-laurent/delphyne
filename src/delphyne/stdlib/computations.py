@@ -84,3 +84,18 @@ def compute[**P, T](
     )
     ret = ty.pydantic_load(ret_type, unparsed)
     return cast(T, ret)
+
+
+def elim_compute[N: dp.Node, P, T](
+    tree: dp.Tree[Computation | N, P, T],
+) -> dp.Tree[N, P, T]:
+    if isinstance(tree.node, Computation):
+        answer = tree.node.run_computation()
+        tracked = tree.node.query.answer(None, answer)
+        assert not isinstance(tracked, dp.ParseError)
+        return elim_compute(tree.child(tracked))
+
+    def child(action: dp.Value) -> dp.Tree[N, P, T]:
+        return elim_compute(tree.child(action))
+
+    return dp.Tree(tree.node, child, tree.ref)
