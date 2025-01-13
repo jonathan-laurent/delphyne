@@ -84,7 +84,7 @@ async def counting_generator(task: TaskContext[Never], n: int):
 class CommandExecutionContext:
     base: analysis.DemoExecutionContext
     demo_files: list[Path]
-    refresh_rate: float | None
+    refresh_rate: float | None = None
 
 
 @dataclass
