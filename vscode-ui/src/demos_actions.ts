@@ -193,11 +193,12 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
     }
     const args = {
       query: query.query,
-      completions: 1,
-      prompt_only: promptOnly,
-      params: {},
-      options: {},
       args: query.args,
+      prompt_only: promptOnly,
+      model: "gpt-4o",
+      num_answers: 1,
+      iterative_mode: false,
+      budget: null,
     };
     const execute = promptOnly;
     const cmd = { command: "answer_query", args };

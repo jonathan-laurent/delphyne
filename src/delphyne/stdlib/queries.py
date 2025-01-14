@@ -187,7 +187,7 @@ def create_prompt(
     query: dp.AbstractQuery[Any],
     examples: Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]],
     params: dict[str, object],
-    env: dp.TemplatesManager | None = None,
+    env: dp.TemplatesManager | None,
 ) -> Chat:
     msgs: list[ChatMessage] = []
     msgs.append(
@@ -241,7 +241,8 @@ async def few_shot[T](
     are currently not using prompt params.
     """
     examples = find_all_examples(env.examples, query.query)
-    prompt = create_prompt(query.query, examples, {})
+    mngr = env.templates
+    prompt = create_prompt(query.query, examples, {}, mngr)
     options: dict[str, Any] = {}
     cost_estimate = model.estimate_budget(prompt, options)
     while True:
@@ -270,6 +271,7 @@ async def few_shot[T](
                         REPAIR_PROMPT,
                         query.query.name(),
                         {"error": element.error},
+                        mngr,
                     )
                 except dp.TemplateNotFound:
                     repair = (
@@ -280,7 +282,7 @@ async def few_shot[T](
             else:
                 try:
                     gen_new = query.query.generate_prompt(
-                        REQUEST_OTHER_PROMPT, query.query.name(), {}
+                        REQUEST_OTHER_PROMPT, query.query.name(), {}, mngr
                     )
                 except dp.TemplateNotFound:
                     gen_new = "Good! Can you generate a different answer now?"

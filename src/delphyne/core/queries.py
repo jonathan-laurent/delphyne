@@ -31,7 +31,7 @@ class AbstractQuery[T](ABC):
         kind: Literal["system", "instance"] | str,
         mode: AnswerModeName,
         params: dict[str, object],
-        env: TemplatesManager | None = None,
+        env: TemplatesManager | None,
     ) -> str:
         pass
 

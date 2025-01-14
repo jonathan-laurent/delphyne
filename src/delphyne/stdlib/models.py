@@ -80,6 +80,7 @@ class LLM(ABC):
         raise StreamingNotImplemented()
 
 
+@dataclass
 class DummyModel(LLM):
     async def send_request(
         self, chat: Chat, num_completions: int, options: RequestOptions
