@@ -30,6 +30,12 @@ type Chat = Iterable[ChatMessage]
 class LLMCallException(Exception):
     exn: Exception | str
 
+    def __str__(self) -> str:
+        if isinstance(self.exn, Exception):
+            return str(self.exn)
+        else:
+            return self.exn
+
 
 type LLMOutputMetadata = dict[str, Any]
 
@@ -60,6 +66,9 @@ class LLM(ABC):
         num_completions: int,
         options: RequestOptions,
     ) -> tuple[Sequence[str], Budget, LLMOutputMetadata]:
+        """
+        This function is allowed to raise exceptions.
+        """
         pass
 
     def stream_request(

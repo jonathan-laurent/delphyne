@@ -246,7 +246,16 @@ async def few_shot[T](
     cost_estimate = model.estimate_budget(prompt, options)
     while True:
         yield dp.Barrier(cost_estimate)
-        answers, budget, meta = await model.send_request(prompt, 1, options)
+        try:
+            answers, budget, meta = await model.send_request(
+                prompt, 1, options
+            )
+        except Exception as e:
+            msg = "Exception while querying the LLM. Quitting."
+            args = {"error": str(e), "prompt": prompt, "options": options}
+            args["model"] = str(model)
+            log(env, msg, args, loc=query)
+            return
         answer = answers[0]
         element = query.answer(None, answer)
         if enable_logging:
