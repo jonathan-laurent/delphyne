@@ -16,6 +16,10 @@ from delphyne.stdlib.policies import log, prompting_policy
 from delphyne.utils import typing as ty
 from delphyne.utils.typing import TypeAnnot, ValidationError
 
+REPAIR_PROMPT = "repair"
+REQUEST_OTHER_PROMPT = "more"
+
+
 #####
 ##### Standard Queries
 #####
@@ -222,12 +226,19 @@ async def few_shot[T](
     env: dp.PolicyEnv,
     model: LLM,
     enable_logging: bool = True,
+    iterative_mode: bool = False,
 ) -> dp.Stream[T]:
     """
     The standard few-shot prompting sequential prompting policy.
 
-    TODO: have an example limit and randomly sample examples.
-    TODO: we are not using any prompt param.
+    If `iterative_mode` is `False`, then the prompt is always the same
+    and different answers are sampled. If `iterative_mode` is `True`,
+    everything happens within a single big chat. Every parse error leads
+    to some feedback while every correctly parsed answer leads to a
+    message inviting the system to generate another different solution.
+
+    TODO: Have an example limit and randomly sample examples. TODO: We
+    are currently not using prompt params.
     """
     examples = find_all_examples(env.examples, query.query)
     prompt = create_prompt(query.query, examples, {})
@@ -243,3 +254,26 @@ async def few_shot[T](
         yield dp.Spent(budget)
         if not isinstance(element, dp.ParseError):
             yield dp.Yield(element)
+        if iterative_mode:
+            if isinstance(element, dp.ParseError):
+                try:
+                    repair = query.query.generate_prompt(
+                        REPAIR_PROMPT,
+                        query.query.name(),
+                        {"error": element.error},
+                    )
+                except dp.TemplateNotFound:
+                    repair = (
+                        "Invalid answer. Please consider the following"
+                        + f" feedback and try again:\n\n{element.error}"
+                    )
+                new_message = user_message(repair)
+            else:
+                try:
+                    gen_new = query.query.generate_prompt(
+                        REQUEST_OTHER_PROMPT, query.query.name(), {}
+                    )
+                except dp.TemplateNotFound:
+                    gen_new = "Good! Can you generate a different answer now?"
+                new_message = user_message(gen_new)
+            prompt = (*prompt, new_message)
