@@ -10,6 +10,9 @@ Delphyne is a programming framework for building _reliable_ and _modular_ LLM ap
 - A _policy language_ for specifying ways to navigate such trees (with LLM guidance) by composing reusable search primitives.
 - A _demonstration language_ for describing successful _and_ unsuccessful search scenarios to be used as training or prompting examples. A dedicated language server allows writing demonstrations interactively and keeping them synchronized with evolving strategies.
 
+> [!WARNING]
+> Delphyne is still under development and is evolving quickly. You should expect some rough edges
+
 
 ## Installation
 
