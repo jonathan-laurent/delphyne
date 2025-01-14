@@ -3,7 +3,7 @@ Policy environments.
 """
 
 from collections import defaultdict
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
@@ -11,6 +11,7 @@ from typing import Any, Literal
 import jinja2
 import yaml
 
+from delphyne import pprint
 from delphyne.core import refs, traces
 from delphyne.core.demos import StrategyDemo
 from delphyne.core.refs import Answer
@@ -102,7 +103,15 @@ class TemplateNotFound(Exception):
 class LogMessage:
     message: str
     metadata: dict[str, Any] | None = None
-    location: traces.Location | None = None
+    location: traces.ShortLocation | None = None
+
+
+@dataclass(frozen=True)
+class ExportableLogMessage:
+    message: str
+    node: int | None
+    space: str | None
+    metadata: dict[str, Any] | None = None
 
 
 class Tracer:
@@ -111,10 +120,10 @@ class Tracer:
         self.messages: list[LogMessage] = []
 
     def trace_space(self, ref: refs.GlobalSpacePath) -> None:
-        self.trace.add_location(traces.Location(ref[0], ref[1]))
+        self.trace.convert_location(traces.Location(ref[0], ref[1]))
 
     def trace_node(self, node: refs.GlobalNodePath) -> None:
-        self.trace.add_location(traces.Location(node, None))
+        self.trace.convert_location(traces.Location(node, None))
 
     def log(
         self,
@@ -122,9 +131,23 @@ class Tracer:
         metadata: dict[str, Any] | None = None,
         location: traces.Location | None = None,
     ):
+        short_location = None
         if location is not None:
-            self.trace.add_location(location)
-        self.messages.append(LogMessage(message, metadata, location))
+            short_location = self.trace.convert_location(location)
+        self.messages.append(LogMessage(message, metadata, short_location))
+
+    def export_log(self) -> Iterable[ExportableLogMessage]:
+        for m in self.messages:
+            node = None
+            space = None
+            if (loc := m.location) is not None:
+                node = loc.node.id
+                if loc.space is not None:
+                    space = pprint.space_ref(loc.space)
+            yield ExportableLogMessage(m.message, node, space, m.metadata)
+
+    def export_trace(self) -> traces.ExportableTrace:
+        return self.trace.export()
 
 
 ####

@@ -3,7 +3,6 @@ Exporting and importing traces.
 """
 
 from collections import defaultdict
-from collections.abc import Iterable
 from dataclasses import dataclass, field
 
 from delphyne.core import pprint, refs
@@ -12,6 +11,12 @@ from delphyne.core import pprint, refs
 @dataclass(frozen=True)
 class Location:
     node: refs.GlobalNodePath
+    space: refs.SpaceRef | None
+
+
+@dataclass(frozen=True)
+class ShortLocation:
+    node: refs.NodeId
     space: refs.SpaceRef | None
 
 
@@ -222,14 +227,12 @@ class Trace:
 
     # Utilities
 
-    def add_location(self, location: Location) -> None:
+    def convert_location(self, location: Location) -> ShortLocation:
         id = self.convert_global_node_path(location.node)
+        space = None
         if location.space is not None:
-            self.convert_space_ref(id, location.space)
-
-    def add_locations(self, locations: Iterable[Location]) -> None:
-        for location in locations:
-            self.add_location(location)
+            space = self.convert_space_ref(id, location.space)
+        return ShortLocation(id, space)
 
     def export(self) -> ExportableTrace:
         nodes = {
