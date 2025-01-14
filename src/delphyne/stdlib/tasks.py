@@ -90,8 +90,15 @@ class CommandExecutionContext:
     refresh_rate: float | None = None
 
 
+T = typing.TypeVar("T", covariant=True)
+"""
+Somehow, pyright sometimes infers the wrong variance for `T` in
+`CommandResult` so we specify it manually.
+"""
+
+
 @dataclass(frozen=True)
-class CommandResult[T]:
+class CommandResult(typing.Generic[T]):
     diagnostics: Sequence[fb.Diagnostic]
     result: T
 
