@@ -4,7 +4,7 @@ Standard queries and building blocks for prompting policies.
 
 import re
 from collections.abc import Callable, Sequence
-from typing import Any, Protocol, cast
+from typing import Any, Literal, Protocol, cast
 
 import yaml
 import yaml.parser
@@ -53,8 +53,9 @@ class Query[T](dp.AbstractQuery[T]):
         except dp.ParseError as e:
             return e
 
-    def system_prompt(
+    def generate_prompt(
         self,
+        kind: Literal["system", "instance"] | str,
         mode: dp.AnswerModeName,
         params: dict[str, object],
         env: dp.TemplatesManager | None = None,
@@ -64,20 +65,7 @@ class Query[T](dp.AbstractQuery[T]):
         """
         assert env is not None, _no_prompt_manager_error()
         args = {"query": self, "mode": mode, "params": params}
-        return env.prompt("system", self.name(), args)
-
-    def instance_prompt(
-        self,
-        mode: dp.AnswerModeName,
-        params: dict[str, object],
-        env: dp.TemplatesManager | None = None,
-    ) -> str:
-        """
-        Raises `TemplateNotFound`.
-        """
-        assert env is not None, _no_prompt_manager_error()
-        args = {"query": self, "mode": mode, "params": params}
-        return env.prompt("instance", self.name(), args)
+        return env.prompt(kind, self.name(), args)
 
     def serialize_args(self) -> dict[str, object]:
         return cast(dict[str, object], ty.pydantic_dump(type(self), self))
@@ -198,11 +186,17 @@ def create_prompt(
     env: dp.TemplatesManager | None = None,
 ) -> Chat:
     msgs: list[ChatMessage] = []
-    msgs.append(system_message(query.system_prompt(None, params, env)))
+    msgs.append(
+        system_message(query.generate_prompt("system", None, params, env))
+    )
     for q, ans in examples:
-        msgs.append(user_message(q.instance_prompt(ans.mode, params, env)))
+        msgs.append(
+            user_message(q.generate_prompt("instance", ans.mode, params, env))
+        )
         msgs.append(assistant_message(ans.text))
-    msgs.append(user_message(query.instance_prompt(None, params, env)))
+    msgs.append(
+        user_message(query.generate_prompt("instance", None, params, env))
+    )
     return msgs
 
 

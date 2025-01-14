@@ -29,16 +29,9 @@ class __Computation__(dp.AbstractQuery[object]):
     fun: str
     args: dict[str, Any]
 
-    def system_prompt(
+    def generate_prompt(
         self,
-        mode: dp.AnswerModeName,
-        params: dict[str, object],
-        env: dp.TemplatesManager | None = None,
-    ):
-        return ""
-
-    def instance_prompt(
-        self,
+        kind: str,
         mode: dp.AnswerModeName,
         params: dict[str, object],
         env: dp.TemplatesManager | None = None,

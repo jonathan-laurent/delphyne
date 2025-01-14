@@ -5,7 +5,7 @@ Delphyne Queries.
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Self, cast
+from typing import Any, Literal, Self, cast
 
 import delphyne.utils.typing as ty
 from delphyne.core.environments import TemplatesManager
@@ -26,17 +26,9 @@ type AnyQuery = AbstractQuery[Any]
 
 class AbstractQuery[T](ABC):
     @abstractmethod
-    def system_prompt(
+    def generate_prompt(
         self,
-        mode: AnswerModeName,
-        params: dict[str, object],
-        env: TemplatesManager | None = None,
-    ) -> str:
-        pass
-
-    @abstractmethod
-    def instance_prompt(
-        self,
+        kind: Literal["system", "instance"] | str,
         mode: AnswerModeName,
         params: dict[str, object],
         env: TemplatesManager | None = None,

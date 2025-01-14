@@ -59,8 +59,6 @@ class ExampleDatabase:
 
 
 PROMPT_DIR = "prompts"
-SYSTEM_MESSAGE_SUFFIX = ""
-INSTANCE_MESSAGE_SUFFIX = ".instance"
 
 
 class TemplatesManager:
@@ -74,17 +72,14 @@ class TemplatesManager:
 
     def prompt(
         self,
-        type: Literal["system", "instance"],
+        kind: Literal["system", "instance"] | str,
         query_name: str,
         template_args: dict[str, Any],
     ) -> str:
         """
         Raises `TemplateNotFound`.
         """
-        if type == "system":
-            suffix = SYSTEM_MESSAGE_SUFFIX
-        elif type == "instance":
-            suffix = INSTANCE_MESSAGE_SUFFIX
+        suffix = "." + kind
         template_name = f"{query_name}{suffix}.jinja"
         try:
             template = self.env.get_template(template_name)
