@@ -5,8 +5,11 @@
   <img src="assets/logos/white/banner.png#only-dark" alt="Delphyne Logo" width="50%"/>
 </p>
 
-Delphyne is a framework for solving problems.
+Delphyne is a programming framework for building _reliable_ and _modular_ LLM applications. It is based on a new fundamental paradigm named _oracular programming_, where high-level problem-solving strategies are expressed as nondeterministic programs whose choice points are annotated with examples and resolved by LLMs. Delphyne combines three languages:
 
+- A _strategy language_ embedded in Python that allows writing nondeterministic programs that can be reified into (modular) search trees.
+- A _policy language_ for specifying ways to navigate such trees (with LLM guidance) by composing reusable search primitives.
+- A _demonstration language_ for describing successful _and_ unsuccessful search scenarios to be used as training or prompting examples. A dedicated language server allows writing demonstrations interactively and keeping them synchronized with evolving strategies.
 
 !!! warning
     Delphyne is still under development and is evolving quickly. You should expect some rough edges.
