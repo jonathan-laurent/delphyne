@@ -42,6 +42,12 @@ def make_sum(
     return xs
 
 
+@dp.ensure_compatible(make_sum)
+def make_sum_policy():
+    model = dp.openai_model("gpt-4o-mini")
+    return (dp.dfs(), MakeSumIP(dp.few_shot(model)))
+
+
 #####
 ##### Adding support for conjecture nodes
 #####

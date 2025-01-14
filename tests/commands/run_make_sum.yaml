@@ -1,0 +1,15 @@
+# Run the `make_sum` strategy, for testing purposes. 
+
+# delphyne-command
+
+command: run_strategy
+args:
+  strategy: make_sum
+  args:
+    allowed: [1, 2, 3, 4, 5]
+    goal: 9
+  policy: make_sum_policy
+  policy_args: {}
+  num_generated: 1
+  budget:
+    num_requests: 10

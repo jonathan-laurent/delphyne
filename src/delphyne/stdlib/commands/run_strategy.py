@@ -3,6 +3,7 @@ Standard commands for running strategies.
 """
 
 import time
+from collections.abc import Sequence
 from dataclasses import dataclass
 
 import delphyne.analysis as analysis
@@ -16,9 +17,9 @@ DEFAULT_REFRESH_RATE_IN_SECONDS = 5
 
 @dataclass
 class RunStrategyResponse:
-    # TODO: export the log too.
     success: bool
     raw_trace: dp.ExportableTrace
+    log: Sequence[dp.ExportableLogMessage]
     browsable_trace: fb.Trace
 
 
@@ -26,7 +27,8 @@ class RunStrategyResponse:
 class RunLoadedStrategyArgs[N: dp.Node, P, T]:
     strategy: dp.StrategyComp[N, P, T]
     policy: dp.Policy[N, P]
-    budget: dict[str, float]
+    num_generated: int = 1
+    budget: dict[str, float] | None = None
 
 
 async def run_loaded_strategy[N: dp.Node, P, T](
@@ -44,7 +46,9 @@ async def run_loaded_strategy[N: dp.Node, P, T](
     tree = dp.reify(args.strategy, monitor)
     search_policy, inner_policy = args.policy
     stream = search_policy(tree, env, inner_policy)
-    stream = std.take(1)(std.with_budget(dp.BudgetLimit(args.budget))(stream))
+    if args.budget is not None:
+        stream = std.with_budget(dp.BudgetLimit(args.budget))(stream)
+    stream = std.take(1)(stream)
     success = False
     total_budget = dp.Budget.zero()
 
@@ -52,7 +56,10 @@ async def run_loaded_strategy[N: dp.Node, P, T](
         trace = env.tracer.trace
         raw_trace = trace.export()
         browsable_trace = analysis.compute_browsable_trace(trace, cache)
-        response = RunStrategyResponse(success, raw_trace, browsable_trace)
+        log = list(env.tracer.export_log())
+        response = RunStrategyResponse(
+            success, raw_trace, log, browsable_trace
+        )
         return ta.CommandResult([], response)
 
     def compute_status():
@@ -85,6 +92,7 @@ class RunStrategyArgs:
     args: dict[str, object]
     policy: str
     policy_args: dict[str, object]
+    num_generated: int
     budget: dict[str, float]
 
 
@@ -97,5 +105,9 @@ async def run_strategy(
     strategy = loader.load_strategy_instance(args.strategy, args.args)
     policy = loader.load_and_call_function(args.policy, args.policy_args)
     await run_loaded_strategy(
-        task, exe, RunLoadedStrategyArgs(strategy, policy, args.budget)
+        task,
+        exe,
+        RunLoadedStrategyArgs(
+            strategy, policy, args.num_generated, args.budget
+        ),
     )

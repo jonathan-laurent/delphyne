@@ -22,6 +22,7 @@ import { getEditorForUri } from "./edit_utils";
 
 const DEFAULT_COMMAND = { command: null, args: {} };
 const EXECUTE_COMMAND_ENDPOINT = "execute-command";
+const RUN_STRATEGY_DEFAULT_NUM_REQUESTS = 10;
 
 // TODO: this is hardcoded for now
 function taskOptions(name: string, args: { [key: string]: any }) {
@@ -290,7 +291,23 @@ async function createCommandBuffer(cmd: unknown, execute: boolean = false) {
 }
 
 function isCommandFile(document: vscode.TextDocument) {
-  return document.getText().startsWith("# " + DELPHYNE_COMMAND_HEADER);
+  // Return `true` if the file starts with a number of empty lines and comments
+  // (starting with `#`), one of them being `# ${DELPHYNE_COMMAND_HEADER}`
+  const lines = document.getText().split("\n");
+  let foundHeader = false;
+  for (const line of lines) {
+    if (line.trim() === "") {
+      continue;
+    }
+    if (line.trim().startsWith("#")) {
+      if (line.trim().startsWith("# " + DELPHYNE_COMMAND_HEADER)) {
+        return true;
+      }
+    } else {
+      break;
+    }
+  }
+  return false;
 }
 
 async function runStrategy() {
@@ -299,8 +316,10 @@ async function runStrategy() {
     args: {
       strategy: "<strategy_name>",
       args: {},
-      params: {},
-      budget: { num_requests: null },
+      policy: "<policy_name>",
+      policy_args: {},
+      num_generated: 1,
+      budget: { num_requests: RUN_STRATEGY_DEFAULT_NUM_REQUESTS },
     },
   };
   await createCommandBuffer(cmd);
