@@ -54,7 +54,7 @@ class BasicLauncher(TaskLauncher):
         background = asyncio.create_task(task(context, *args, **kwargs))
         adapter = pydantic.TypeAdapter[TaskMessage[type]](TaskMessage[type])
         try:
-            while not background.done():
+            while not context.messages_queue.empty() or not background.done():
                 if request is not None and await request.is_disconnected():
                     break
                 try:
