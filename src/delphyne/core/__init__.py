@@ -16,6 +16,7 @@ from delphyne.core.demos import (
 )
 from delphyne.core.environments import (
     ExampleDatabase,
+    ExportableLogMessage,
     LogMessage,
     PolicyEnv,
     TemplateNotFound,
@@ -43,6 +44,7 @@ from delphyne.core.reification import (
     TreeHook,
     TreeMonitor,
     reify,
+    spawn_standalone_query,
     tracer_hook,
 )
 from delphyne.core.streams import (

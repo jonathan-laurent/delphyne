@@ -9,6 +9,7 @@ from typing import Any, cast
 from delphyne.core import environments as en
 from delphyne.core import refs
 from delphyne.core import trees as tr
+from delphyne.core.queries import AbstractQuery
 from delphyne.core.refs import GlobalNodePath, SpaceName, Value
 from delphyne.core.trees import Node, Strategy, StrategyComp, Success, Tree
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
@@ -246,3 +247,27 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
 
     def nonparametric[S](self, name: SpaceName, builder: tr.Builder[S]) -> S:
         return self.parametric(name, lambda: builder)()
+
+
+#####
+##### Standalone Queries
+#####
+
+
+def spawn_standalone_query[T](query: AbstractQuery[T]) -> tr.AttachedQuery[T]:
+    """
+    Spawn a standalone query attached to the $main space of the global
+    origin. Do NOT use this for queries attached to strategies.
+    """
+
+    def answer(
+        mode: refs.AnswerModeName, text: str
+    ) -> tr.Tracked[T] | tr.ParseError:
+        answer = refs.Answer(mode, text)
+        ref = refs.SpaceElementRef(refs.MAIN_SPACE, answer)
+        parsed = query.parse_answer(answer)
+        if isinstance(parsed, tr.ParseError):
+            return parsed
+        return tr.Tracked(parsed, ref, (), query.answer_type())
+
+    return tr.AttachedQuery(query, ((), refs.MAIN_SPACE), answer)

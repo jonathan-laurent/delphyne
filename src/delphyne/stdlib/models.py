@@ -80,6 +80,13 @@ class LLM(ABC):
         raise StreamingNotImplemented()
 
 
+class DummyModel(LLM):
+    async def send_request(
+        self, chat: Chat, num_completions: int, options: RequestOptions
+    ) -> tuple[Sequence[str], Budget, LLMOutputMetadata]:
+        raise LLMCallException("No model was provided.")
+
+
 #####
 ##### Retry Wrapper
 #####

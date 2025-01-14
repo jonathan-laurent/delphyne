@@ -47,6 +47,7 @@ from delphyne.stdlib.policies import (
 from delphyne.stdlib.queries import (
     Query,
     extract_final_block,
+    few_shot,
     raw_string,
     raw_yaml,
     string_from_last_block,

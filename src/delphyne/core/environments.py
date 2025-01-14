@@ -11,8 +11,7 @@ from typing import Any, Literal
 import jinja2
 import yaml
 
-from delphyne import pprint
-from delphyne.core import refs, traces
+from delphyne.core import pprint, refs, traces
 from delphyne.core.demos import StrategyDemo
 from delphyne.core.refs import Answer
 from delphyne.utils.typing import pydantic_load
