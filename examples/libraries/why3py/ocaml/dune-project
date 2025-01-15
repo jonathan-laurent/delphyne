@@ -2,6 +2,7 @@
 
 (authors "Jonathan Laurent")
 (maintainers "jonathan.laurent@cs.cmu.edu")
+(generate_opam_files)
 
 (package
  (name why3py)
@@ -13,7 +14,7 @@
  (depends
   (ppx_jane (>= 0.15))
   (ppx_import (>= 1.10.0))
-  (why3 (>= 1.6.0))
+  (why3 (>= 1.8.0))
   (python-libgen (>= 0.1.0))
   (fmt (>= 0.9))
  ))

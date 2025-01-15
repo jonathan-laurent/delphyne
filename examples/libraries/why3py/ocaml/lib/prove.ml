@@ -56,10 +56,10 @@ let compute_tasks ast =
 
 let prove_task ?(max_steps = 0) t =
   let open Call_provers in
-  let limit = {empty_limit with limit_steps= max_steps} in
+  let limits = {empty_limits with limit_steps= max_steps} in
   let res =
     wait_on_call
-      (Driver.prove_task ~limit ~config:config_main
+      (Driver.prove_task ~limits ~config:config_main
          ~command:alt_ergo.Whyconf.command alt_ergo_driver t )
   in
   let proved = res.pr_answer = Valid in

@@ -5,11 +5,9 @@ clean:
 
 full-clean: clean
 	rm -f src/why3py/bin/core.so
+	rm -rf .eggs
 
-build:
-	python setup.py build
-
-install: build
+install:
 	pip install -e .
 
 uninstall:

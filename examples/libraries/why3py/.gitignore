@@ -3,5 +3,6 @@ _build
 *.xml
 *.gz
 *.so
+.eggs
 
 why3shapes

@@ -2,21 +2,55 @@
 
 ## Installation
 
-Just install with pip:
+Installing this library can be a bit tricky since it is implemented in OCaml and wrapped in Python. First, you must build the OCaml library. If you don't have ocaml installed, you should install the Opam package manager first: 
 
-```sh
+```
+bash -c "sh <(curl -fsSL https://opam.ocaml.org/install.sh)"
+opam init
+```
+
+We recommend creating an opam switch with compiler version 5.1.1 since more recent versions were not compatible with `metaquot` last time we checked:
+
+```
+opam switch create delphyne 5.1.1 delphyne
+```
+
+Then, you should install the `python-libgen` dependency, which is not on Opam, along with all other dependencies:
+
+```
+opam pin add -y python-libgen https://github.com/jonathan-laurent/python-libgen.git
+opam install . --deps-only
+```
+
+You can finally build the OCaml library:
+
+```
+dune build
+```
+
+Once this is done, you can build and install the Python library:
+
+```
+pip install rich
 pip install -e .
 ```
 
-If there is any problem with the installation, you can try running the build script manually:
+In particular, running this script should create a `src/why3py/bin.core.so` file. Finally, once this is done, you have to install and configure the Alt-Ergo prover used by `why3py`:
 
-```sh
-python setup.py build
+```
+opam install alt-ergo
+why3 config detect
 ```
 
-## Commands
+If everything worked, you should be able to run the tests successfully:
 
-Generate obligations:
-```sh
+
+```
+pytest tests
+```
+
+You can also see all the generated obligations for an example by running:
+
+```
 pytest -k "prove" -rP --color=yes
 ```

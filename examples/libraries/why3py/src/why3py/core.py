@@ -387,7 +387,7 @@ Decl: TypeAlias = Union[
     tuple[Literal["Dexn"], tuple[Ident, Pty, Mask]],
     tuple[Literal["Dmeta"], tuple[Ident, list[Metarg]]],
     tuple[Literal["Dcloneexport"], tuple[Position, Qualid, list[CloneSubst]]],
-    tuple[Literal["Duseexport"], tuple[Qualid]],
+    tuple[Literal["Duseexport"], tuple[Position, Qualid]],
     tuple[
         Literal["Dcloneimport"],
         tuple[Position, bool, Qualid, Ident | None, list[CloneSubst]],

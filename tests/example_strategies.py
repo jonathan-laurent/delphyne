@@ -295,6 +295,7 @@ class PickNiceBoyNameIP:
 #                  + -- 0 (2) -- 22
 #
 # Confidences in parentheses are priors.
+# Note that the values at the second level do not matter (only the prior).
 #
 # [(1, 1), (2, 1), (2, 2), (1, 2)]
 
@@ -309,7 +310,11 @@ class PickPositiveInteger(dp.Query[int]):
 def num_confidence(
     prev: int | None, new: int
 ) -> dp.Strategy[Never, object, float]:
-    return 0.1 if (prev, new) == (None, 1) else 1
+    # Depth 0
+    if prev is None:
+        return 0.1 if new == 1 else 1
+    # Depth 1
+    return 0.1 if prev == 1 else 1
     yield
 
 

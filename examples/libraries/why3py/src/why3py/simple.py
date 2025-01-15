@@ -8,7 +8,6 @@ from typing import Any, Literal, cast
 
 import why3py
 
-
 type File = str
 
 
@@ -93,7 +92,7 @@ def check_file(file: File, original: File | None) -> Outcome:
         return Obligations.of_why3py(file, obligations)
     except why3py.Why3Error as e:
         return Error(kind="error", message=e.msg)
-    except:
+    except Exception:
         import sys
 
         e = sys.exc_info()

@@ -1,6 +1,6 @@
 {
     "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.tabSize": 4,
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
@@ -10,17 +10,11 @@
         "editor.rulers": [80],
         "rewrap.wrappingColumn": 72,
     },
-    "python.formatting.provider": "none",
-    "python.linting.mypyEnabled": false, // we use pyright instead
     "python.analysis.typeCheckingMode": "basic",
-    "python.linting.enabled": true,
     "python.testing.pytestArgs": [
         "."
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "python.analysis.autoImportCompletions": true,
-    "isort.args": [
-        "--settings-path=${workspaceFolder}/pyproject.toml",
-    ]
 }

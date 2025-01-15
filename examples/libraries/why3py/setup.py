@@ -21,13 +21,13 @@ class build(build_py):
         shutil.copy(join(dune_build, "why3py_ocaml.so"), dll)
         os.chmod(dll, 0o666)
         # Generate stub
-        generator = join(dune_build, f"why3py_ocaml.exe")
-        cmd = [generator, f"generate-py", "--lib-name", lib_name]
+        generator = join(dune_build, "why3py_ocaml.exe")
+        cmd = [generator, "generate-py", "--lib-name", lib_name]
         proc = subprocess.run(cmd, text=True, stdout=subprocess.PIPE)
         if proc.returncode != 0:
             print(proc.stdout)
             print("Error generating Python stubs.")
-        file = join("src", lib_name, f"core.py")
+        file = join("src", lib_name, "core.py")
         with open(file, "w") as f:
             f.write(proc.stdout)
         # Format the stub with black
@@ -35,4 +35,7 @@ class build(build_py):
             subprocess.run(["black", file])
 
 
-setup(cmdclass={"build_py": build}, setup_requires=["black"])
+setup(
+    cmdclass={"build_py": build},
+    setup_requires=["black"],
+    install_requires=["rich>=13.9.4"])
