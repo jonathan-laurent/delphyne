@@ -60,7 +60,7 @@ async def answer_query(
 
     def compute_status():
         num_requests = total_budget.values.get(std.NUM_REQUESTS)
-        if num_requests is None:
+        if num_requests is not None:
             return f"{num_successes} success(es), {num_requests} request(s)"
         return ""
 

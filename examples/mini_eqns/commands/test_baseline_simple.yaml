@@ -8,6 +8,6 @@ args:
   prompt_only: false
   model: gpt-4o
   num_answers: 1
-  iterative_mode: false
+  iterative_mode: true
   budget:
-    num_requests: 4
+    num_requests: 2

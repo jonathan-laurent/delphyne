@@ -217,12 +217,13 @@ def create_prompt(
 def log_oracle_answer(
     env: dp.PolicyEnv,
     query: dp.AttachedQuery[Any],
+    prompt: Chat,
     mode: dp.AnswerModeName,
     answer: str,
     parsed: object,
     meta: dict[str, Any],
 ):
-    info: dict[str, Any] = {"mode": mode, "answer": answer}
+    info: dict[str, Any] = {"mode": mode, "prompt": prompt, "answer": answer}
     if isinstance(parsed, dp.ParseError):
         info["parse_error"] = parsed.error
     if meta:
@@ -270,7 +271,7 @@ async def few_shot[T](
         answer = answers[0]
         element = query.answer(None, answer)
         if enable_logging:
-            log_oracle_answer(env, query, None, answer, element, meta)
+            log_oracle_answer(env, query, prompt, None, answer, element, meta)
         yield dp.Spent(budget)
         if not isinstance(element, dp.ParseError):
             yield dp.Yield(element)
@@ -297,4 +298,4 @@ async def few_shot[T](
                 except dp.TemplateNotFound:
                     gen_new = "Good! Can you generate a different answer now?"
                 new_message = user_message(gen_new)
-            prompt = (*prompt, new_message)
+            prompt = (*prompt, assistant_message(answer), new_message)
