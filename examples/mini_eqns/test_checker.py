@@ -30,9 +30,15 @@ def test_rewrite(src: Term, rule: Eq, vars: dict[str, Term], target: Term):
         ("1 + 2", "3"),
         ("sqrt(4)", "2"),
         ("pi/2 - pi/3", "pi/6"),
+        ("x*(x + 1)", "x**2 + x"),
+        ("(x + 1)**2", "x**2 + 2*x + 1"),
         (
             "-sin(-x)*sin(x) + cos(-x)*cos(x)",
             "cos(x)*cos(-x) - sin(x)*sin(-x)",
+        ),
+        (
+            "cos(x)*(4*sin(x) - 8*sin(x)**3)",
+            "4*cos(x)*sin(x) - 8*cos(x)*sin(x)**3",
         ),
     ],
 )
@@ -46,6 +52,7 @@ def test_equal_terms(lhs: Term, rhs: Term):
         ("1 + 2", "4"),
         # `sin` and `cos` are treated as uninterpreted function symbols
         ("cos(0)", "1"),
+        ("x**2 + 1", "x**2 - x"),
     ],
 )
 def test_not_equal_terms(lhs: Term, rhs: Term):

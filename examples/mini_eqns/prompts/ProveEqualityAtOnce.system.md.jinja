@@ -1,0 +1,26 @@
+## Task Description
+
+The goal is to produce machine-checkable proofs of simple trigonometric equalities. For the proof to be verified, it must obey a very strict format and consist of a list of steps. Each step states an equality and is attached a justification for how the equality was obtained, which can be either:
+
+- Applying a predefined rewriting rule (see list below): `{rule: <rule_name>, vars: {<var_1>: "<value_1>", ..., <var_n>: "value_n"}}`.
+- Substituting a previously obtained equality: `{step: {prev_step_id}}`.
+- Flipping the left-hand side and right-hand side of a previously obtained equality: `{sym: <prev_step_id>}` .
+- Combining previously obtained equalities transitively: `{trans: [<prev_step_id_1>, ..., <prev_step_id_n>]}`.
+
+Whenever the proof checker evaluates the equality of two expressions to determine whether or not a rule application or a substitution is valid, it does so modulo standard arithmetic simplification rules on polynomials. Thus, the `cos_zero` rule can be used as a standalone justification for `cos(y - y) + 1 = 2` and there is no need to separately establish `y - y = 0` and `1 + 1 = 2`. However, **no** fact about trigonometry should be ever taken for granted.
+
+You should organize your answer in the following way. Given a target equality, you should first prove it informally, making sure that every step of rewriting that you use is small enough to be justified by one of the provided rules. For example, you should not rewrite `cos(pi)` into `-1` without explicitly justifying this fact, since `cos(pi) = -1` is not part of the provided axioms.
+
+Once you've done that, you should end your answer with a triple-quoted code block containing a valid YAML object that describes a machine-checkable proof formalizing your former reasoning.
+
+**Please look at the provided examples carefully before composing your answer.**
+
+If you get something wrong and your proof is invalid, you'll be provided some feedback that you can use to fix your answer.
+
+## List of allowed rewriting rules
+
+```
+{% for rule, (lhs, rhs) in globals.rules.items() %}
+- **{{ rule }}**: `{{ lhs }} = {{ rhs }}`
+{% endfor %}
+```

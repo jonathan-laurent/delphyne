@@ -81,7 +81,8 @@ def rewrite(term: Term, rule: Eq, vars: dict[str, Term]) -> Term:
 
 
 def equal_terms(lhs: Term, rhs: Term) -> bool:
-    return parse_term(lhs) == parse_term(rhs)
+    lhs_e, rhs_e = parse_term(lhs), parse_term(rhs)
+    return lhs_e == rhs_e or (sp.expand(lhs_e - rhs_e) == 0)  # type: ignore
 
 
 #####

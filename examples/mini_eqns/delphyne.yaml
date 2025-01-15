@@ -1,0 +1,3 @@
+strategy_dirs: ["."]
+modules: ["test_checker"]
+demo_files: ["baseline"]

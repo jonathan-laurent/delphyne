@@ -59,6 +59,7 @@ class ExampleDatabase:
 
 
 PROMPT_DIR = "prompts"
+JINJA_EXTENSIONS = [".jinja", ".md.jinja"]
 
 
 class TemplatesManager:
@@ -80,17 +81,19 @@ class TemplatesManager:
         Raises `TemplateNotFound`.
         """
         suffix = "." + kind
-        template_name = f"{query_name}{suffix}.jinja"
-        try:
-            template = self.env.get_template(template_name)
-        except jinja2.TemplateNotFound as e:
-            raise TemplateNotFound(e)
-        return template.render(template_args)
+        for ext in JINJA_EXTENSIONS:
+            try:
+                template_name = f"{query_name}{suffix}{ext}"
+                template = self.env.get_template(template_name)
+                return template.render(template_args)
+            except jinja2.TemplateNotFound:
+                pass
+        raise TemplateNotFound(f"{query_name}{suffix}.*.jinja")
 
 
 @dataclass
 class TemplateNotFound(Exception):
-    exn: Exception
+    exn: str
 
 
 ####

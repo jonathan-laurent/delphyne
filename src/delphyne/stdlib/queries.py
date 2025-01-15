@@ -57,6 +57,9 @@ class Query[T](dp.AbstractQuery[T]):
         except dp.ParseError as e:
             return e
 
+    def globals(self) -> dict[str, object] | None:
+        return None
+
     def generate_prompt(
         self,
         kind: Literal["system", "instance"] | str,
@@ -68,7 +71,13 @@ class Query[T](dp.AbstractQuery[T]):
         Raises `TemplateNotFound`.
         """
         assert env is not None, _no_prompt_manager_error()
-        args = {"query": self, "mode": mode, "params": params}
+        args: dict[str, object] = {
+            "query": self,
+            "mode": mode,
+            "params": params,
+        }
+        if glob := self.globals() is not None:
+            args["globals"] = glob
         return env.prompt(kind, self.name(), args)
 
     def serialize_args(self) -> dict[str, object]:
