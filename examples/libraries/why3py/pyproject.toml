@@ -5,7 +5,9 @@ description = ""
 authors = [{name="Jonathan Laurent", email="jonathan.laurent@cs.cmu.edu"}]
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "rich>=13.9.4"
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -17,11 +19,16 @@ where = ["src"]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
-[tool.isort]
-profile = "black"
-lines_after_imports = 2
+# [tool.isort]
+# profile = "black"
+# lines_after_imports = 2
 
-[tool.black]
+# [tool.black]
+# line-length = 79
+
+[tool.ruff]
 line-length = 79
 
 [tool.pyright]
+typeCheckingMode = "basic"
+include = ["src/**", "tests/**"]

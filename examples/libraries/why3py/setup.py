@@ -35,7 +35,4 @@ class build(build_py):
             subprocess.run(["black", file])
 
 
-setup(
-    cmdclass={"build_py": build},
-    setup_requires=["black"],
-    install_requires=["rich>=13.9.4"])
+setup(cmdclass={"build_py": build}, setup_requires=["black"])

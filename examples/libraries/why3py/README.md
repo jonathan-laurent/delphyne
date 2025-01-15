@@ -31,7 +31,6 @@ dune build
 Once this is done, you can build and install the Python library:
 
 ```
-pip install rich
 pip install -e .
 ```
 
