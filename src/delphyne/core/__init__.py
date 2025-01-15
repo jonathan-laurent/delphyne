@@ -17,6 +17,7 @@ from delphyne.core.demos import (
 from delphyne.core.environments import (
     ExampleDatabase,
     ExportableLogMessage,
+    InvalidDemoFile,
     LogMessage,
     PolicyEnv,
     TemplateNotFound,

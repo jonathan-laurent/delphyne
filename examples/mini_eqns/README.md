@@ -32,3 +32,10 @@ sin(x)**3 = (3*sin(x) - sin(3*x))/4
 sin(3*x) = 3*sin(x) - 4*sin(x)**3
 sin(4*x) = cos(x)*(4*sin(x) - 8*sin(x)**3)
 ```
+
+Used as examples
+
+```
+cos(pi/3) = sin(pi/6)
+sin(x) = 2*sin(x/2)*cos(x/2)
+```

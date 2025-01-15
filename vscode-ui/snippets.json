@@ -2,7 +2,19 @@
     "demo": {
         "prefix": "demo",
         "body": ["- strategy: ${1:strategy_name}", "  args:", "    $0", "  tests:", "    - run", "  queries: []"],
-        "description": "Code snippet for an unlabeled demonstration."
+        "description": "Code snippet for an unlabeled strategy demonstration."
+    },
+    "qdemo": {
+        "prefix": "qdemo",
+        "body": [
+            "- query: ${1:QueryName}",
+            "  args:",
+            "    ${2:arg1}: ${3:val1}",
+            "  answers:",
+            "    - answer: |",
+            "        ${0:text}"
+        ],
+        "description": "Code snippet for an unlabeled query demonstration"
     },
     "answer": {
         "prefix": "answer",

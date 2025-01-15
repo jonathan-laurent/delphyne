@@ -157,6 +157,12 @@ class Tracer:
 ####
 
 
+@dataclass
+class InvalidDemoFile(Exception):
+    file: Path
+    exn: Exception
+
+
 class PolicyEnv:
     def __init__(
         self,
@@ -174,7 +180,11 @@ class PolicyEnv:
         self.examples = ExampleDatabase()
         self.tracer = Tracer()
         for path in demonstration_files:
-            with path.open() as f:
-                demos = pydantic_load(list[StrategyDemo], yaml.safe_load(f))
-                for demo in demos:
-                    self.examples.add_demonstration(demo)
+            try:
+                with path.open() as f:
+                    content = yaml.safe_load(f)
+                    demos = pydantic_load(list[StrategyDemo], content)
+                    for demo in demos:
+                        self.examples.add_demonstration(demo)
+            except Exception as e:
+                raise InvalidDemoFile(path, e)

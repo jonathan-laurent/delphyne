@@ -1,0 +1,8 @@
+# Demos for the baseline
+
+- query: ProveEqualityAtOnce
+  args:
+    equality: ["cos(pi/3)", "sin(pi/6)"]
+  answers:
+    - answer: |
+        hello

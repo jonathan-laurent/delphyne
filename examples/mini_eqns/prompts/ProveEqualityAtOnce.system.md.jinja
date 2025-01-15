@@ -11,7 +11,7 @@ Whenever the proof checker evaluates the equality of two expressions to determin
 
 You should organize your answer in the following way. Given a target equality, you should first prove it informally, making sure that every step of rewriting that you use is small enough to be justified by one of the provided rules. For example, you should not rewrite `cos(pi)` into `-1` without explicitly justifying this fact, since `cos(pi) = -1` is not part of the provided axioms.
 
-Once you've done that, you should end your answer with a triple-quoted code block containing a valid YAML object that describes a machine-checkable proof formalizing your former reasoning.
+Once you've done that, you should end your answer with a triple-quoted code block containing a valid YAML object that describes a machine-checkable proof formalizing your former reasoning. All expressions must be written as strings using Python syntax (and thus parsable using `sympy.sympyfy`). In particular, exponentiation is written `**`.
 
 **Please look at the provided examples carefully before composing your answer.**
 
