@@ -47,6 +47,7 @@ async def best_first_search[P, T](
     env: dp.PolicyEnv,
     policy: P,
     child_confidence_prior: Callable[[int, int], float],
+    max_depth: int | None = None,
 ) -> dp.Stream[T]:
     """
     Best First Search Algorithm.
@@ -69,6 +70,10 @@ async def best_first_search[P, T](
     incrementing when meeting other branching nodes) and as its second
     argument how many children have been generated so far. It returns
     the additional penalty to be added.
+
+    The `max_depth` parameter indicates the maximum depth a branch node
+    can have. The root has depth 0 and and only branch nodes count
+    towards increasing the depth.
     """
     # `counter` is used to assign ids that are used to solve ties in the
     # priority queue (the older element gets priority).
@@ -100,6 +105,8 @@ async def best_first_search[P, T](
                     async for push_msg in push:
                         yield push_msg
             case Branch():
+                if max_depth is not None and depth > max_depth:
+                    return
                 state = NodeState(
                     depth=depth,
                     children=[],
