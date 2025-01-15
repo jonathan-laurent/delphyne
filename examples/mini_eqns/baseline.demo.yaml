@@ -5,4 +5,72 @@
     equality: ["cos(pi/3)", "sin(pi/6)"]
   answers:
     - answer: |
-        hello
+        The equality can be derived as follows:
+        ```
+        cos(pi/3)
+        = cos(pi/2-pi/6)
+        = sin(pi/6)
+        ```
+
+        However, the second step uses property `cos(pi/2-x) = sin(x)`, which is not part of the allowed set of rules. Thus, we provide a longer derivation that uses `cos_add`.
+
+        ```
+        cos(pi/2-pi/6)
+        = cos(pi/2+(-pi/6))
+        = cos(pi/2)*cos(-pi/6) - sin(pi/2)*sin(-pi/6)
+        = -sin(-pi/6)
+        = sin(pi/6)
+        ```
+
+        The second step uses that `cos(pi/2) = 0` and `sin(pi/2)` = 1, which we can get via the `sin_halfpi` and `cos_halfpi` rules. The last step uses `sin_neg`, so we should be done. Let's formalize this reasoning as a proof.
+
+        ```yaml
+        # We start establishing `cos(pi/2-pi/6) = sin(pi/6)`
+        1:
+          - ["cos(pi/2-pi/6)", "cos(pi/2)*cos(-pi/6) - sin(pi/2)*sin(-pi/6)"]
+          - {rule: cos_add, vars: {x: "pi/2", y: "-pi/6"}}
+        2:
+          - ["cos(pi/2)*cos(-pi/6) - sin(pi/2)*sin(-pi/6)", "-sin(pi/2)*sin(-pi/6)"]
+          - {rule: cos_halfpi, vars: {}}
+        3:
+          - ["-sin(pi/2)*sin(-pi/6)", "-sin(-pi/6)"]
+          - {rule: sin_halfpi, vars: {}}
+        4:
+          - ["-sin(-pi/6)", "sin(pi/6)"]
+          - {rule: sin_neg, vars: {x: "pi/6"}}
+        5:
+          - ["cos(pi/2-pi/6)", "sin(pi/6)"]
+          - {trans: [1, 2, 3, 4]}
+
+        # We establish our main result.
+        # Step 5 applies directly since "cos(pi/3)" and "cos(pi/2-pi/6)" are treated as identical by the rule matcher, which performs simple simplification (as long as the required simplification does not require trigonometry).
+        6:
+          - ["cos(pi/3)", "sin(pi/6)"]
+          - {step: 5}
+        ```
+
+
+- query: ProveEqualityAtOnce
+  args:
+    equality: ["2*sin(x/2)*cos(x/2)", "sin(x)"]
+  answers:
+    - answer: |
+        It is easier to start with the right-hand side here:
+
+        ```
+        sin(x)
+        = sin(x/2+x/2)
+        = sin(x/2)*cos(x/2) + cos(x/2)*sin(x/2)
+        = 2*sin(x/2)*cos(x/2)
+        ```
+
+        The first and last steps are just elementary simplifications so the only real rule to apply here is `sin_add`.
+
+        ```yaml
+        1:
+          - ["sin(x)", "2*sin(x/2)*cos(x/2)"]
+          - {rule: sin_add, vars: {x: "x/2", y: "x/2"}}
+        2:
+          - ["2*sin(x/2)*cos(x/2)", "sin(x)"]
+          - {sym: 1}
+        ```

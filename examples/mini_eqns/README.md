@@ -37,5 +37,5 @@ Used as examples
 
 ```
 cos(pi/3) = sin(pi/6)
-sin(x) = 2*sin(x/2)*cos(x/2)
+2*sin(x/2)*cos(x/2) = sin(x)
 ```

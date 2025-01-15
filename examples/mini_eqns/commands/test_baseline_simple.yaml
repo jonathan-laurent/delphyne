@@ -1,0 +1,13 @@
+# delphyne-command
+
+command: answer_query
+args:
+  query: ProveEqualityAtOnce
+  args:
+    equality: [sin(pi/4), cos(pi/4)]
+  prompt_only: false
+  model: gpt-4o
+  num_answers: 1
+  iterative_mode: false
+  budget:
+    num_requests: 4
