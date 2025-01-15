@@ -31,6 +31,7 @@ def test_run_strategy():
         cmd.RunStrategyArgs(
             strategy="test_cached_computations",
             args={"n": 1},
+            num_generated=1,
             policy="test_cached_computations_policy",
             policy_args={},
             budget={},

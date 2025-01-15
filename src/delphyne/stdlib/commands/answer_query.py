@@ -42,6 +42,7 @@ async def answer_query(
     env = dp.PolicyEnv(
         strategy_dirs=exe.base.strategy_dirs,
         demonstration_files=exe.demo_files,
+        do_not_match_identical_queries=True,
     )
     attached = dp.spawn_standalone_query(query)
     model = std.openai_model(cmd.model or DEFAULT_OPENAI_MODEL)

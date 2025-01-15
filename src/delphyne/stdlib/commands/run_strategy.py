@@ -40,7 +40,11 @@ async def run_loaded_strategy[N: dp.Node, P, T](
     refresh_rate = exe.refresh_rate
     if refresh_rate is None:
         refresh_rate = DEFAULT_REFRESH_RATE_IN_SECONDS
-    env = dp.PolicyEnv(exe.base.strategy_dirs, exe.demo_files)
+    env = dp.PolicyEnv(
+        exe.base.strategy_dirs,
+        exe.demo_files,
+        do_not_match_identical_queries=True,
+    )
     cache: dp.TreeCache = {}
     monitor = dp.TreeMonitor(cache, hooks=[dp.tracer_hook(env.tracer)])
     tree = dp.reify(args.strategy, monitor)

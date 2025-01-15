@@ -174,9 +174,10 @@ def extract_final_block(s: str) -> str | None:
 
 
 def find_all_examples(
-    database: dp.ExampleDatabase, query: dp.AbstractQuery[Any]
+    database: dp.ExampleDatabase,
+    query: dp.AbstractQuery[Any],
 ) -> Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]]:
-    raw = database.examples(query.name())
+    raw = database.examples(query.name(), query.serialize_args())
     return [(query.parse_instance(args), ans) for args, ans in raw]
 
 

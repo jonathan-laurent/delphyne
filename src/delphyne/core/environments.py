@@ -2,6 +2,7 @@
 Policy environments.
 """
 
+import json
 from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
@@ -19,6 +20,13 @@ from delphyne.utils.typing import pydantic_load
 type QueryArgs = dict[str, Any]
 
 
+def _equal_query_args(args1: QueryArgs, args2: QueryArgs) -> bool:
+    # Comparing the dictionaries directly would not work because the
+    # same object where a tuple is used instead of a list would be
+    # considered different.
+    return json.dumps(args1) == json.dumps(args2)
+
+
 ####
 #### Example Database
 ####
@@ -29,9 +37,15 @@ class ExampleDatabase:
     """
     A simple example database. Examples are stored as JSON strings.
 
+    The `do_not_match_identical_queries` parameter can be set to `True`
+    in a context where demonstrations are being developed. Indeed, it is
+    not interesting to see what the LLM would answer if the solution is
+    in the context.
+
     TODO: add provenance info for better error messages.
     """
 
+    do_not_match_identical_queries: bool = False
     _examples: dict[str, list[tuple[QueryArgs, Answer]]] = field(
         default_factory=lambda: defaultdict(list)
     )
@@ -56,8 +70,14 @@ class ExampleDatabase:
             for q in demo.queries:
                 self.add_query_demonstration(q)
 
-    def examples(self, query_name: str) -> Sequence[tuple[QueryArgs, Answer]]:
-        return self._examples[query_name]
+    def examples(
+        self, query_name: str, query_args: QueryArgs
+    ) -> Iterable[tuple[QueryArgs, Answer]]:
+        for ex in self._examples[query_name]:
+            if self.do_not_match_identical_queries:
+                if _equal_query_args(ex[0], query_args):
+                    continue
+            yield ex
 
 
 ####
@@ -185,6 +205,7 @@ class PolicyEnv:
         self,
         strategy_dirs: Sequence[Path],
         demonstration_files: Sequence[Path],
+        do_not_match_identical_queries: bool = False,
     ):
         """
         An environment accessible to a policy, containing prompt and
@@ -194,7 +215,7 @@ class PolicyEnv:
         prompt templates.
         """
         self.templates = TemplatesManager(strategy_dirs)
-        self.examples = ExampleDatabase()
+        self.examples = ExampleDatabase(do_not_match_identical_queries)
         self.tracer = Tracer()
         for path in demonstration_files:
             try:
