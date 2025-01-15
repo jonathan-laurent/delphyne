@@ -26,10 +26,14 @@ from delphyne.stdlib.models import (
 )
 from delphyne.stdlib.nodes import (
     Branch,
+    Factor,
     Failure,
+    Message,
     branch,
     ensure,
+    factor,
     fail,
+    message,
     spawn_node,
 )
 from delphyne.stdlib.openai_models import (
@@ -56,12 +60,7 @@ from delphyne.stdlib.queries import (
     yaml_from_last_block,
 )
 from delphyne.stdlib.search.bestfs import (
-    BestFS,
-    BestFSBranch,
-    BestFSFactor,
     best_first_search,
-    bestfs_branch,
-    bestfs_factor,
 )
 from delphyne.stdlib.search.dfs import (
     dfs,

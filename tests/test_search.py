@@ -54,10 +54,10 @@ def test_bestfs():
 
     env = dp.PolicyEnv((), ())  # Won't be used
     pp = mock.fixed_oracle(oracle)
-    policy = (dp.best_first_search(), pp)
+    policy = ex.generate_pairs_policy(pp)
     stream = ex.generate_pairs().run_toplevel(env, policy)
     budget = dp.BudgetLimit({dp.NUM_REQUESTS: REQUESTS_LIMIT})
     ret, spent = asyncio.run(dp.collect(stream, budget=budget))
     res = [x.value for x in ret]
-    assert res == [(1, 1), (2, 1), (2, 2), (1, 2), (1, 3)]
+    assert res == [(1, 1), (2, 1), (2, 2), (1, 2), (2, 3)]
     assert spent[dp.NUM_REQUESTS] == REQUESTS_LIMIT

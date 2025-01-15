@@ -92,3 +92,32 @@ class Message(dp.Node):
 
 def message(msg: str) -> dp.Strategy[Message, object, None]:
     yield spawn_node(Message, msg=msg)
+
+
+#####
+##### Factor Node
+#####
+
+
+@dataclass(frozen=True)
+class Factor(dp.Node):
+    """
+    A node that allows computing a confidence score in the [0, 1]
+    interval. This confidence can be computed by a query or a dedicated
+    strategy but only one element will be generated from the resulting
+    space.
+    """
+
+    confidence: dp.OpaqueSpace[Any, float]
+
+    def navigate(self) -> dp.Navigation:
+        return ()
+        yield
+
+
+def factor[P](
+    confidence: dp.Builder[dp.OpaqueSpace[P, float]],
+    inner_policy_type: type[P] | None = None,
+) -> dp.Strategy[Factor, P, float]:
+    ret = yield spawn_node(Factor, confidence=confidence)
+    return cast(float, ret)

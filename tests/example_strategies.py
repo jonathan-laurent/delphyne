@@ -286,13 +286,13 @@ class PickNiceBoyNameIP:
 # We want to artificially create the following tree:
 # The confidences are annotated as costs: cost = -log_10(confidence).
 #
-#   @ -- 1 (3) -- @ -- 0 (2) -- 11
-#   |             |
-#   |             + -- 0 (3) -- 12
-#   |
-#   + -- 0 (3) -- @ -- 0 (1) -- 21
-#                 |
-#                 + -- 0 (2) -- 22
+#    @ -- 1 (3) -- @ -- 1 (1) -- 11
+#    |             |
+#    |             + -- 1 (2) -- 12
+#    |
+#    + -- 0 (3) -- @ -- 0 (1) -- 21
+#                  |
+#                  + -- 0 (2) -- 22
 #
 # Confidences in parentheses are priors.
 #
@@ -315,25 +315,32 @@ def num_confidence(
 
 @dp.strategy
 def generate_pairs() -> dp.Strategy[
-    dp.BestFS, dp.PromptingPolicy, tuple[int, int]
+    dp.Branch | dp.Factor | dp.Failure, dp.PromptingPolicy, tuple[int, int]
 ]:
-    x = yield from dp.bestfs_branch(
-        PickPositiveInteger(None)(IP := dp.PromptingPolicy, lambda p: p),
-        confidence_priors=lambda _: [1e-3, 1e-3, 0],
+    x = yield from dp.branch(
+        PickPositiveInteger(None)(IP := dp.PromptingPolicy, lambda p: p)
     )
-    yield from dp.bestfs_factor(
-        num_confidence(None, x)(IP, lambda _: (dp.dfs(), ()))
-    )
-    y = yield from dp.bestfs_branch(
+    yield from dp.factor(num_confidence(None, x)(IP, lambda _: (dp.dfs(), ())))
+    y = yield from dp.branch(
         PickPositiveInteger(x)(IP, lambda p: p),
-        confidence_priors=lambda _: (
-            [0.01, 0.001, 1e-8] if x == 1 else [0.1, 0.01, 1e-15]
-        ),
     )
-    yield from dp.bestfs_factor(
+    yield from dp.factor(
         num_confidence(x, y)(IP, lambda _: (dp.dfs(), ())),
     )
     return (x, y)
+
+
+@dp.ensure_compatible(generate_pairs)
+def generate_pairs_policy(pp: dp.PromptingPolicy):
+    def child_prior(depth: int, num_prev: int):
+        if depth == 0:
+            return 0 if num_prev >= 2 else 1e-3
+        if depth == 1:
+            return 1e-15 if num_prev >= 2 else 1e-2 if num_prev >= 1 else 1e-1
+        assert False
+
+    bestfs = dp.best_first_search(child_prior)
+    return (bestfs, pp)
 
 
 #####

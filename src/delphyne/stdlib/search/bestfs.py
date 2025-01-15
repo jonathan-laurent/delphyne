@@ -3,75 +3,14 @@ An implementation of best-first search.
 """
 
 import heapq
-from collections.abc import Callable, Sequence
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, cast
+from typing import Any
 
 import delphyne.core as dp
 from delphyne.core import refs
-from delphyne.stdlib.nodes import Failure, spawn_node
+from delphyne.stdlib.nodes import Branch, Factor, Failure
 from delphyne.stdlib.policies import search_policy
-
-
-@dataclass(frozen=True)
-class BestFSFactor(dp.Node):
-    """
-    A node that allows computing a confidence score in the [0, 1]
-    interval. This confidence can be computed by a query or a dedicated
-    strategy but only one element will be generated from the resulting
-    space.
-    """
-
-    confidence: dp.OpaqueSpace[Any, float]
-
-    def navigate(self) -> dp.Navigation:
-        return ()
-        yield
-
-
-@dataclass(frozen=True)
-class BestFSBranch(dp.Node):
-    """
-    A BFS Branching Node.
-
-    Confidence priors represent penalty factors to be applied to the
-    node's total confidence depending on the number of candidates that
-    were generated already. Element `i` of `self.confidence_priors`
-    indicates the penalty to apply if `i` candidates have been generated
-    already (the last element of this list repeats ad infinitum).
-    """
-
-    cands: dp.OpaqueSpace[Any, Any]
-    confidence_priors: Callable[[Any], Sequence[float]]
-
-    def navigate(self) -> dp.Navigation:
-        return (yield self.cands)
-
-    def primary_space(self):
-        return self.cands
-
-
-type BestFS = BestFSBranch | BestFSFactor | Failure
-
-
-def bestfs_branch[P, T](
-    cands: dp.Builder[dp.OpaqueSpace[P, T]],
-    *,
-    confidence_priors: Callable[[P], Sequence[float]],
-    inner_policy_type: type[P] | None = None,
-) -> dp.Strategy[BestFSBranch, P, T]:
-    ret = yield spawn_node(
-        BestFSBranch, cands=cands, confidence_priors=confidence_priors
-    )
-    return cast(T, ret)
-
-
-def bestfs_factor[P](
-    confidence: dp.Builder[dp.OpaqueSpace[P, float]],
-    inner_policy_type: type[P] | None = None,
-) -> dp.Strategy[BestFSFactor, P, float]:
-    ret = yield spawn_node(BestFSFactor, confidence=confidence)
-    return cast(float, ret)
 
 
 @dataclass(frozen=True)
@@ -83,18 +22,12 @@ class NodeState:
     # convenient (`heapq` is being overly conservative here because
     # mutability is not an issue as long as the part that is relevant
     # for comparison is immutable).
+    depth: int
     children: list[refs.GlobalNodePath]  # can be mutated
     confidence: float
-    confidence_priors: Sequence[float]
     stream: dp.Stream[Any]
-    node: BestFSBranch  # equal to tree.node, with a more precise type
-    tree: dp.Tree[BestFSBranch | BestFSFactor | Failure, Any, Any]
-
-    def confidence_prior(self) -> float:
-        if not self.confidence_priors:
-            return 1
-        i = len(self.children)
-        return self.confidence_priors[min(i, len(self.confidence_priors) - 1)]
+    node: Branch  # equal to tree.node, with a more precise type
+    tree: dp.Tree[Branch | Factor | Failure, Any, Any]
 
 
 @dataclass(frozen=True, order=True)
@@ -110,9 +43,10 @@ class PriorityItem:
 
 @search_policy
 async def best_first_search[P, T](
-    tree: dp.Tree[BestFSBranch | BestFSFactor | Failure, P, T],
+    tree: dp.Tree[Branch | Factor | Failure, P, T],
     env: dp.PolicyEnv,
     policy: P,
+    child_confidence_prior: Callable[[int, int], float],
 ) -> dp.Stream[T]:
     """
     Best First Search Algorithm.
@@ -129,7 +63,12 @@ async def best_first_search[P, T](
 
     Also, the total confidence of each branching node is multiplied by
     an additional penalty factor that depends on how many children have
-    been generated already (see `confidence_priors`).
+    been generated already, using the `child_confidence_prior` argument.
+    This argument is a function that takes as its first argument the
+    depth of the current branching node (0 for the root, only
+    incrementing when meeting other branching nodes) and as its second
+    argument how many children have been generated so far. It returns
+    the additional penalty to be added.
     """
     # `counter` is used to assign ids that are used to solve ties in the
     # priority queue (the older element gets priority).
@@ -137,15 +76,16 @@ async def best_first_search[P, T](
     pqueue: list[PriorityItem] = []  # a heap
 
     async def push_fresh_node(
-        tree: dp.Tree[BestFSBranch | BestFSFactor | Failure, Any, Any],
+        tree: dp.Tree[Branch | Factor | Failure, Any, Any],
         confidence: float,
+        depth: int,
     ) -> dp.Stream[T]:
         match tree.node:
             case dp.Success():
                 yield dp.Yield(tree.node.success)
             case Failure():
                 pass
-            case BestFSFactor():
+            case Factor():
                 conf_stream = tree.node.confidence.stream(env, policy)
                 factor = None
                 async for conf_msg in conf_stream:
@@ -156,33 +96,35 @@ async def best_first_search[P, T](
                         yield msg
                 if factor is not None:
                     confidence *= factor.value
-                    push = push_fresh_node(tree.child(()), confidence)
+                    push = push_fresh_node(tree.child(()), confidence, depth)
                     async for push_msg in push:
                         yield push_msg
-            case BestFSBranch():
+            case Branch():
                 state = NodeState(
+                    depth=depth,
                     children=[],
                     confidence=confidence,
-                    confidence_priors=tree.node.confidence_priors(policy),
                     stream=tree.node.cands.stream(env, policy),
                     node=tree.node,
                     tree=tree,
                 )
                 nonlocal counter
                 counter += 1
-                item_confidence = confidence * state.confidence_prior()
+                prior = child_confidence_prior(depth, 0)
+                item_confidence = confidence * prior
                 item = PriorityItem(-item_confidence, counter, state)
                 heapq.heappush(pqueue, item)
 
     def reinsert_node(state: NodeState) -> None:
         nonlocal counter
         counter += 1
-        item_confidence = state.confidence * state.confidence_prior()
+        prior = child_confidence_prior(state.depth, len(state.children))
+        item_confidence = state.confidence * prior
         item = PriorityItem(-item_confidence, counter, state)
         heapq.heappush(pqueue, item)
 
     # Pust the root into the queue.
-    async for resp in push_fresh_node(tree, 1.0):
+    async for resp in push_fresh_node(tree, 1.0, 0):
         yield resp
     while pqueue:
         state = heapq.heappop(pqueue).node_state
@@ -203,7 +145,7 @@ async def best_first_search[P, T](
         if cand is not None:
             child = state.tree.child(cand)
             state.children.append(child.ref)
-            async for resp in push_fresh_node(child, 1):
+            async for resp in push_fresh_node(child, 1, state.depth + 1):
                 yield resp
         # We put the node back into the queue
         reinsert_node(state)
