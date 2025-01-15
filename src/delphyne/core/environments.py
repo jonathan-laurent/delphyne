@@ -12,7 +12,7 @@ import jinja2
 import yaml
 
 from delphyne.core import pprint, refs, traces
-from delphyne.core.demos import StrategyDemo
+from delphyne.core.demos import Demo, QueryDemo, StrategyDemo
 from delphyne.core.refs import Answer
 from delphyne.utils.typing import pydantic_load
 
@@ -36,18 +36,25 @@ class ExampleDatabase:
         default_factory=lambda: defaultdict(list)
     )
 
-    def add_demonstration(self, demo: StrategyDemo):
-        for q in demo.queries:
-            if not q.answers:
-                continue
-            if (ex := q.answers[0].example) is not None and not ex:
-                # If the user explicitly asked not to
-                # include the example. TODO: What if the user
-                # asked to include several answers?
-                continue
-            answer = q.answers[0].answer
-            mode = q.answers[0].mode
-            self._examples[q.query].append((q.args, Answer(mode, answer)))
+    def add_query_demonstration(self, demo: QueryDemo):
+        if not demo.answers:
+            return
+        if (ex := demo.answers[0].example) is not None and not ex:
+            # If the user explicitly asked not to
+            # include the example. TODO: What if the user
+            # asked to include several answers?
+            return
+        answer = demo.answers[0].answer
+        mode = demo.answers[0].mode
+        self._examples[demo.query].append((demo.args, Answer(mode, answer)))
+
+    def add_demonstration(self, demo: Demo):
+        if isinstance(demo, QueryDemo):
+            self.add_query_demonstration(demo)
+        else:
+            assert isinstance(demo, StrategyDemo)
+            for q in demo.queries:
+                self.add_query_demonstration(q)
 
     def examples(self, query_name: str) -> Sequence[tuple[QueryArgs, Answer]]:
         return self._examples[query_name]
@@ -82,18 +89,28 @@ class TemplatesManager:
         """
         suffix = "." + kind
         for ext in JINJA_EXTENSIONS:
+            template_name = f"{query_name}{suffix}{ext}"
             try:
-                template_name = f"{query_name}{suffix}{ext}"
                 template = self.env.get_template(template_name)
                 return template.render(template_args)
             except jinja2.TemplateNotFound:
                 pass
+            except jinja2.UndefinedError as e:
+                raise TemplateError(template_name, e)
+            except jinja2.TemplateSyntaxError as e:
+                raise TemplateError(template_name, e)
         raise TemplateNotFound(f"{query_name}{suffix}.*.jinja")
 
 
 @dataclass
 class TemplateNotFound(Exception):
     exn: str
+
+
+@dataclass
+class TemplateError(Exception):
+    name: str
+    exn: Exception
 
 
 ####
@@ -183,7 +200,7 @@ class PolicyEnv:
             try:
                 with path.open() as f:
                     content = yaml.safe_load(f)
-                    demos = pydantic_load(list[StrategyDemo], content)
+                    demos = pydantic_load(list[Demo], content)
                     for demo in demos:
                         self.examples.add_demonstration(demo)
             except Exception as e:

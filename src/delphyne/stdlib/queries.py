@@ -76,7 +76,7 @@ class Query[T](dp.AbstractQuery[T]):
             "mode": mode,
             "params": params,
         }
-        if glob := self.globals() is not None:
+        if (glob := self.globals()) is not None:
             args["globals"] = glob
         return env.prompt(kind, self.name(), args)
 

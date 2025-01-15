@@ -20,6 +20,7 @@ from delphyne.core.environments import (
     InvalidDemoFile,
     LogMessage,
     PolicyEnv,
+    TemplateError,
     TemplateNotFound,
     TemplatesManager,
     Tracer,

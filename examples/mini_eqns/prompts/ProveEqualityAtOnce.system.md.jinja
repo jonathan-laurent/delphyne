@@ -21,6 +21,6 @@ If you get something wrong and your proof is invalid, you'll be provided some fe
 
 ```
 {% for rule, (lhs, rhs) in globals.rules.items() %}
-- **{{ rule }}**: `{{ lhs }} = {{ rhs }}`
+- {{ rule }}: `{{ lhs }} = {{ rhs }}`
 {% endfor %}
 ```
