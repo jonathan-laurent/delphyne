@@ -2,7 +2,7 @@
 Standard Nodes
 """
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Any, Never, cast
 
@@ -17,6 +17,13 @@ def spawn_node[N: dp.Node](
     node_type: type[N], **args: Any
 ) -> dp.NodeBuilder[Any, Any]:
     return dp.NodeBuilder(lambda spawner: node_type.spawn(spawner, **args))
+
+
+type FromPolicy[T] = Callable[[Any], T]
+"""
+For readability, represents a value parametric in the surrounding
+policy.
+"""
 
 
 #####
@@ -105,19 +112,51 @@ class Factor(dp.Node):
     A node that allows computing a confidence score in the [0, 1]
     interval. This confidence can be computed by a query or a dedicated
     strategy but only one element will be generated from the resulting
-    space.
+    space. Instead of having an oracle compute a numerical value
+    directly, it computes an evaluation object that is then transformed
+    into a number using a policy-provided function. This allows greater
+    customization on the policy side.
     """
 
-    confidence: dp.OpaqueSpace[Any, float]
+    eval: dp.OpaqueSpace[Any, Any]
+    factor: FromPolicy[Callable[[Any], float]]
 
     def navigate(self) -> dp.Navigation:
         return ()
         yield
 
 
-def factor[P](
-    confidence: dp.OpaqueSpaceBuilder[P, float],
+def factor[E, P](
+    eval: dp.OpaqueSpaceBuilder[P, E],
+    factor: Callable[[P], Callable[[E], float]],
     inner_policy_type: type[P] | None = None,
-) -> dp.Strategy[Factor, P, float]:
-    ret = yield spawn_node(Factor, confidence=confidence)
-    return cast(float, ret)
+) -> dp.Strategy[Factor, P, None]:
+    yield spawn_node(Factor, eval=eval, factor=factor)
+
+
+#####
+##### Value Node
+#####
+
+
+@dataclass(frozen=True)
+class Value(dp.Node):
+    """
+    Similar to `Factor`, except that the resulting number is used to set
+    the whole value of the branch instead of just multiplying it.
+    """
+
+    eval: dp.OpaqueSpace[Any, Any]
+    value: FromPolicy[Callable[[Any], float]]
+
+    def navigate(self) -> dp.Navigation:
+        return ()
+        yield
+
+
+def value[E, P](
+    eval: dp.OpaqueSpaceBuilder[P, E],
+    value: Callable[[P], Callable[[E], float]],
+    inner_policy_type: type[P] | None = None,
+) -> dp.Strategy[Value, P, None]:
+    yield spawn_node(Value, eval=eval, value=value)

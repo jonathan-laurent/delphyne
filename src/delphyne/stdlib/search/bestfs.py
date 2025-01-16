@@ -9,7 +9,7 @@ from typing import Any
 
 import delphyne.core as dp
 from delphyne.core import refs
-from delphyne.stdlib.nodes import Branch, Factor, Failure
+from delphyne.stdlib.nodes import Branch, Factor, Failure, Value
 from delphyne.stdlib.policies import search_policy
 
 
@@ -27,7 +27,7 @@ class NodeState:
     confidence: float
     stream: dp.Stream[Any]
     node: Branch  # equal to tree.node, with a more precise type
-    tree: dp.Tree[Branch | Factor | Failure, Any, Any]
+    tree: dp.Tree[Branch | Factor | Value | Failure, Any, Any]
 
 
 @dataclass(frozen=True, order=True)
@@ -81,7 +81,7 @@ async def best_first_search[P, T](
     pqueue: list[PriorityItem] = []  # a heap
 
     async def push_fresh_node(
-        tree: dp.Tree[Branch | Factor | Failure, Any, Any],
+        tree: dp.Tree[Branch | Factor | Value | Failure, Any, Any],
         confidence: float,
         depth: int,
     ) -> dp.Stream[T]:
@@ -90,17 +90,20 @@ async def best_first_search[P, T](
                 yield dp.Yield(tree.node.success)
             case Failure():
                 pass
-            case Factor():
-                conf_stream = tree.node.confidence.stream(env, policy)
-                factor = None
-                async for conf_msg in conf_stream:
-                    if isinstance(conf_msg, dp.Yield):
-                        factor = conf_msg.value
+            case Factor() | Value():
+                eval_stream = tree.node.eval.stream(env, policy)
+                eval = None
+                async for eval_msg in eval_stream:
+                    if isinstance(eval_msg, dp.Yield):
+                        eval = eval_msg.value.value
                         break
                     else:
                         yield msg
-                if factor is not None:
-                    confidence *= factor.value
+                if eval is not None:
+                    if isinstance(tree.node, Value):
+                        confidence = tree.node.value(policy)(eval)
+                    else:
+                        confidence *= tree.node.factor(policy)(eval)
                     push = push_fresh_node(tree.child(()), confidence, depth)
                     async for push_msg in push:
                         yield push_msg
