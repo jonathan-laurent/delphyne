@@ -329,6 +329,11 @@
     - at iterate/pick_boy_name/PickBoyName
     # Invalid selectors
     - at iterate/pick_boy_name  # `Iteration` node has no tags or primary space
+
+    # Mistakenly send the wrong value to `next` by using index 0 instead of 1. The strategy raises
+    # an exception because it explicitly checks the type of its arguments but without this
+    # assertion, we would get stuck on a query with ill-typed arguments.
+    - go cands | go next(next(nil){'other_boy_name'}[0]) | run | success
   queries:
     - query: PickBoyName
       args:
@@ -365,6 +370,8 @@
       - diagnostics: __empty__
       - diagnostics:
           - - "warning"
+      - diagnostics:
+          - - "error"
 
 
 ##### Testing generate_pairs and advanced selectors

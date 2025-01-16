@@ -253,6 +253,7 @@ def pick_boy_name(
 ]:
     if picked_already is None:
         picked_already = []
+    assert not isinstance(picked_already, str)
     name = yield from dp.branch(
         PickBoyName(names, picked_already).using(one_pp)
     )

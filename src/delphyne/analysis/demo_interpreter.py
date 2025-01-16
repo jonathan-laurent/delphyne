@@ -5,6 +5,7 @@ Demonstration Interpreter.
 import importlib
 import json
 import sys
+import traceback
 from collections.abc import Callable, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -232,7 +233,8 @@ def _unused_hints(diagnostics: list[fb.Diagnostic], rem: Sequence[refs.Hint]):
 
 
 def _strategy_exn(diagnostics: list[fb.Diagnostic], exn: dp.StrategyException):
-    msg = f"Exception raised in strategy:\n{exn}"
+    details = f"{repr(exn.exn)}\n\n{traceback.format_exc()}"
+    msg = f"Exception raised in strategy:\n\n{details}"
     diagnostics.append(("error", msg))
 
 
@@ -438,8 +440,7 @@ def evaluate_strategy_demo_and_return_trace(
         monitor = dp.TreeMonitor(cache=cache, hooks=[dp.tracer_hook(tracer)])
         tree = dp.reify(strategy, monitor)
     except dp.StrategyException as e:
-        msg = f"Exception raised in strategy:\n{e}"
-        feedback.global_diagnostics.append(("error", msg))
+        _strategy_exn(feedback.global_diagnostics, e)
         return feedback, None
     try:
         hresolver = DemoHintResolver(loader, demo)
