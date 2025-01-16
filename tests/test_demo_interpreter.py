@@ -92,7 +92,7 @@ def load_demo(demo_label: str) -> DemoExpectTest | dp.QueryDemo:
         "unknown_query",
         "invalid_answer",
         "synthetize_fun_demo",
-        "test_iterated",
+        "test_iterate",
         "test_generate_pairs",
         "comp_result_in_cache",
         "comp_result_outside_cache",

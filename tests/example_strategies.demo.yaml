@@ -313,7 +313,7 @@
 ##### Testing pick_nice_boy_name
 
 
-- demonstration: test_iterated
+- demonstration: test_iterate
   strategy: pick_nice_boy_name
   args:
     names: ["Adeline", "Noah", "Julia", "Jonathan"]
@@ -324,10 +324,10 @@
     - go cands | go next(nil)
     - go cands | go next(next(nil){'other_boy_name'}[1]) | run | success
     # Valid selectors
-    - at iterated
-    - at iterated/pick_boy_name/PickBoyName
+    - at iterate
+    - at iterate/pick_boy_name/PickBoyName
     # Invalid selectors
-    - at iterated/pick_boy_name  # `Iterated` node has no tags or primary space
+    - at iterate/pick_boy_name  # `Iteration` node has no tags or primary space
   queries:
     - query: PickBoyName
       args:

@@ -9,7 +9,7 @@ from delphyne.stdlib.strategies import strategy
 
 
 @dataclass
-class Iterated(dp.Node):
+class Iteration(dp.Node):
     next: Callable[
         [dp.Tracked[Any] | None],
         dp.OpaqueSpace[Any, tuple[Any | None, Any]],
@@ -19,11 +19,11 @@ class Iterated(dp.Node):
         return (yield self.next(None))
 
 
-@strategy(name="iterated")
-def _iterated[P, S, T](
+@strategy(name="iterate")
+def _iterate[P, S, T](
     next: Callable[[S | None], dp.OpaqueSpaceBuilder[P, tuple[T | None, S]]],
-) -> dp.Strategy[Iterated | Failure, P, T]:
-    ret = yield spawn_node(Iterated, next=next)
+) -> dp.Strategy[Iteration | Failure, P, T]:
+    ret = yield spawn_node(Iteration, next=next)
     ret = cast(tuple[T | None, S], ret)
     yielded, _new_state = ret
     if yielded is None:
@@ -33,12 +33,12 @@ def _iterated[P, S, T](
 
 
 @search_policy
-async def search_iterated[P, T](
-    tree: dp.Tree[Iterated | Failure, P, T],
+async def search_iteration[P, T](
+    tree: dp.Tree[Iteration | Failure, P, T],
     env: dp.PolicyEnv,
     policy: P,
 ) -> dp.Stream[T]:
-    assert isinstance(tree.node, Iterated)
+    assert isinstance(tree.node, Iteration)
     state: dp.Tracked[Any] | None = None
     while True:
         async for msg in tree.node.next(state).stream(env, policy):
@@ -53,7 +53,7 @@ async def search_iterated[P, T](
                 yielded_and_new_state = msg.value
                 state = yielded_and_new_state[1]
                 child = tree.child(yielded_and_new_state)
-                assert not isinstance(child.node, Iterated)
+                assert not isinstance(child.node, Iteration)
                 if isinstance(child.node, dp.Success):
                     yield dp.Yield(child.node.success)
                 break
@@ -61,7 +61,7 @@ async def search_iterated[P, T](
                 yield msg
 
 
-def iterated[P, S, T](
+def iterate[P, S, T](
     next: Callable[[S | None], dp.OpaqueSpaceBuilder[P, tuple[T | None, S]]],
-) -> dp.Builder[dp.OpaqueSpace[P, T]]:
-    return _iterated(next).using(lambda p: (search_iterated(), p))
+) -> dp.OpaqueSpaceBuilder[P, T]:
+    return _iterate(next).using(lambda p: (search_iteration(), p))

@@ -69,10 +69,10 @@ class Conjecture(dp.Node):
 
 
 def make_conjecture[P, T](
-    cands: dp.Builder[dp.OpaqueSpace[P, T]],
-    disprove: Callable[[T], dp.Builder[dp.OpaqueSpace[P, None]]],
+    cands: dp.OpaqueSpaceBuilder[P, T],
+    disprove: Callable[[T], dp.OpaqueSpaceBuilder[P, None]],
     aggregate: Callable[
-        [tuple[T, ...]], dp.Builder[dp.OpaqueSpace[P, Sequence[T]]]
+        [tuple[T, ...]], dp.OpaqueSpaceBuilder[P, Sequence[T]]
     ],
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Conjecture, P, T]:
@@ -234,7 +234,7 @@ def test_check_prop():
 
 
 #####
-##### Iterated Strategies
+##### Iteration
 #####
 
 
@@ -266,7 +266,7 @@ def pick_nice_boy_name(
     names: Sequence[str],
 ) -> dp.Strategy[dp.Branch | dp.Failure, "PickNiceBoyNameIP", str]:
     name = yield from dp.branch(
-        dp.iterated(
+        dp.iterate(
             lambda prev: pick_boy_name(names, prev).using(
                 lambda ip: ip.pick_boy_name, PickNiceBoyNameIP
             )

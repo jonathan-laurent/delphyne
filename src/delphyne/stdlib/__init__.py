@@ -65,8 +65,8 @@ from delphyne.stdlib.search.bestfs import (
 from delphyne.stdlib.search.dfs import (
     dfs,
 )
-from delphyne.stdlib.search.iterated import (
-    iterated,
+from delphyne.stdlib.search.iteration import (
+    iterate,
 )
 from delphyne.stdlib.strategies import (
     StrategyInstance,

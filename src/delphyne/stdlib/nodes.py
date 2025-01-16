@@ -37,7 +37,7 @@ class Branch(dp.Node):
 
 
 def branch[P, T](
-    cands: dp.Builder[dp.OpaqueSpace[P, T]],
+    cands: dp.OpaqueSpaceBuilder[P, T],
     extra_tags: Sequence[dp.Tag] = (),
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Branch, P, T]:
@@ -116,7 +116,7 @@ class Factor(dp.Node):
 
 
 def factor[P](
-    confidence: dp.Builder[dp.OpaqueSpace[P, float]],
+    confidence: dp.OpaqueSpaceBuilder[P, float],
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Factor, P, float]:
     ret = yield spawn_node(Factor, confidence=confidence)
