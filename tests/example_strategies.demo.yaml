@@ -321,8 +321,8 @@
     - run | success
     - run 'girl_name' | failure
     - run 'other_boy_name' | failure
-    - go cands | go next([])
-    - go cands | go next([next([]){'other_boy_name'}]) | run | success
+    - go cands | go next(nil)
+    - go cands | go next(next(nil){'other_boy_name'}[1]) | run | success
     # Valid selectors
     - at iterated
     - at iterated/pick_boy_name/PickBoyName

@@ -29,6 +29,7 @@ from delphyne.core.policies import (
     AbstractPromptingPolicy,
     AbstractSearchPolicy,
     OpaqueSpace,
+    OpaqueSpaceBuilder,
     Policy,
 )
 from delphyne.core.queries import (

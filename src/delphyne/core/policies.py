@@ -4,7 +4,7 @@ Policies and opaque spaces.
 
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Any, Protocol
+from typing import Any, Generic, Protocol, TypeVar
 
 from delphyne.core import trees as tr
 from delphyne.core.environments import PolicyEnv
@@ -41,8 +41,12 @@ class AbstractPromptingPolicy(Protocol):
 #####
 
 
+T = TypeVar("T", covariant=True)
+P = TypeVar("P", contravariant=True)
+
+
 @dataclass(frozen=True)
-class OpaqueSpace[P, T](Space[T]):
+class OpaqueSpace(Generic[P, T], Space[T]):
     stream: Callable[[PolicyEnv, P], Stream[T]]
     _source: NestedTree[Any, Any, T] | AttachedQuery[T]
 
@@ -81,3 +85,6 @@ class OpaqueSpace[P, T](Space[T]):
             return OpaqueSpace(stream, nested)
 
         return lambda spawner, _: build(spawner)
+
+
+type OpaqueSpaceBuilder[P, T] = tr.Builder[OpaqueSpace[P, T]]

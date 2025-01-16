@@ -240,22 +240,25 @@ def test_check_prop():
 
 @dataclass
 class PickBoyName(dp.Query[str]):
-    # TODO: can we have sequences without causing serialization bugs?
-    names: list[str]
-    picked_already: list[str]
+    names: Sequence[str]
+    picked_already: Sequence[str]
     __parser__: ClassVar = dp.raw_yaml
 
 
 @dp.strategy
 def pick_boy_name(
-    names: Sequence[str], picked_already: Sequence[str]
-) -> dp.Strategy[dp.Branch | dp.Failure, dp.PromptingPolicy, str]:
+    names: Sequence[str], picked_already: Sequence[str] | None
+) -> dp.Strategy[
+    dp.Branch | dp.Failure, dp.PromptingPolicy, tuple[str, Sequence[str]]
+]:
+    if picked_already is None:
+        picked_already = []
     name = yield from dp.branch(
-        PickBoyName(list(names), list(picked_already)).using(one_pp)
+        PickBoyName(names, picked_already).using(one_pp)
     )
     yield from dp.ensure(name in names, "Unavailable name.")
     yield from dp.ensure(name not in picked_already, "Already picked.")
-    return name
+    return name, [*picked_already, name]
 
 
 @dp.strategy
