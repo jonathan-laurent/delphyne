@@ -53,3 +53,8 @@ You can also see all the generated obligations for an example by running:
 ```
 pytest -k "prove" -rP --color=yes
 ```
+
+
+## TODO
+
+- Right now, there is a hardcoded limit of 5000 reasoning steps (see `Prove.prove`). We could make it an option.

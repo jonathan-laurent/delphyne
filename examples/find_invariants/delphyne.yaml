@@ -1,0 +1,3 @@
+strategy_dirs: ["."]
+modules: ["find_invariants"]
+demo_files: ["examples", "incremental"]
