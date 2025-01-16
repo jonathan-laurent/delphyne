@@ -114,13 +114,25 @@ class Trace:
         args = tuple(self.convert_value_ref(id, a) for a in ref.args)
         return refs.SpaceRef(ref.name, args)
 
+    def convert_atomic_value_ref(
+        self, id: refs.NodeId, ref: refs.AtomicValueRef
+    ) -> refs.AtomicValueRef:
+        if isinstance(ref, refs.IndexedRef):
+            return refs.IndexedRef(
+                self.convert_atomic_value_ref(id, ref.ref), ref.index
+            )
+        else:
+            return self.convert_space_element_ref(id, ref)
+
     def convert_value_ref(
         self, id: refs.NodeId, ref: refs.ValueRef
     ) -> refs.ValueRef:
-        if isinstance(ref, refs.SpaceElementRef):
-            return self.convert_space_element_ref(id, ref)
-        else:
+        if ref is None:
+            return None
+        elif isinstance(ref, tuple):
             return tuple(self.convert_value_ref(id, a) for a in ref)
+        else:
+            return self.convert_atomic_value_ref(id, ref)
 
     def convert_answer_ref(
         self, ref: tuple[refs.GlobalSpacePath, refs.Answer]
@@ -194,13 +206,25 @@ class Trace:
         args = tuple(self.expand_value_ref(id, a) for a in ref.args)
         return refs.SpaceRef(ref.name, args)
 
+    def expand_atomic_value_ref(
+        self, id: refs.NodeId, ref: refs.AtomicValueRef
+    ) -> refs.AtomicValueRef:
+        if isinstance(ref, refs.IndexedRef):
+            return refs.IndexedRef(
+                self.expand_atomic_value_ref(id, ref.ref), ref.index
+            )
+        else:
+            return self.expand_space_element_ref(id, ref)
+
     def expand_value_ref(
         self, id: refs.NodeId, ref: refs.ValueRef
     ) -> refs.ValueRef:
-        if isinstance(ref, refs.SpaceElementRef):
-            return self.expand_space_element_ref(id, ref)
-        else:
+        if ref is None:
+            return None
+        elif isinstance(ref, tuple):
             return tuple(self.expand_value_ref(id, a) for a in ref)
+        else:
+            return self.expand_atomic_value_ref(id, ref)
 
     def expand_space_element_ref(
         self, id: refs.NodeId, ref: refs.SpaceElementRef

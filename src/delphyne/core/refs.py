@@ -2,9 +2,11 @@
 References to nodes, values, spaces and space elements.
 """
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Literal
+from typing import Any, Generic, Literal, TypeVar, overload
 
+import delphyne.core.inspect as insp
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
 
@@ -30,14 +32,31 @@ A name for an answer mode, or `None` for the default mode.
 """
 
 
-type ValueRef = Assembly[SpaceElementRef]
+type AtomicValueRef = IndexedRef | SpaceElementRef
+"""
+An atomic value ref is a space element reference that is indexed zero or
+a finite number of times: space_elt_ref[i1][i2]...[in].
+"""
+
+
+@dataclass(frozen=True)
+class IndexedRef:
+    """
+    Indexing an atomic value reference.
+    """
+
+    ref: AtomicValueRef
+    index: int
+
+
+type ValueRef = Assembly[AtomicValueRef]
 """
 A reference to a local value, which is obtained by combining elements of
 (possibly multiple) local spaces.
 """
 
 
-type Assembly[T] = T | tuple[Assembly[T], ...]
+type Assembly[T] = T | None | tuple[Assembly[T], ...]
 """
 An S-expression whose atoms have type `T`.
 """
@@ -130,7 +149,7 @@ class Hint:
     """A hint for selecting a query answer.
 
     A hint can be associated to a qualifier, which is the name of an
-    imported demonstration defining the hint. TODO: implement imports.
+    imported demonstration defining the hint.
     """
 
     qualifier: str | None
@@ -196,8 +215,11 @@ class NestedTreeOf:
 #####
 
 
+T = TypeVar("T", covariant=True)
+
+
 @dataclass(frozen=True)
-class Tracked[T]:
+class Tracked(Generic[T]):
     """
     A tracked value, which associates a value with a reference.
 
@@ -208,9 +230,34 @@ class Tracked[T]:
     """
 
     value: T
-    ref: ValueRef
+    ref: AtomicValueRef
     node: GlobalNodePath
     type_annot: TypeAnnot[T] | NoTypeInfo
+
+    @overload
+    def __getitem__[A, B](
+        self: "Tracked[tuple[A, B]]", index: Literal[0]
+    ) -> "Tracked[A]": ...
+
+    @overload
+    def __getitem__[A, B](
+        self: "Tracked[tuple[A, B]]", index: Literal[1]
+    ) -> "Tracked[B]": ...
+
+    @overload
+    def __getitem__[U](
+        self: "Tracked[Sequence[U]]", index: int
+    ) -> "Tracked[U]": ...
+
+    def __getitem__[U](
+        self: "Tracked[Sequence[U] | tuple[Any, ...]]", index: int
+    ) -> "Tracked[U | Any]":
+        return Tracked(
+            self.value[index],
+            IndexedRef(self.ref, index),
+            self.node,
+            insp.element_type_of_sequence_type(self.type_annot, index),
+        )
 
 
 type Value = Assembly[Tracked[Any]]
@@ -223,6 +270,8 @@ def value_ref(v: Value) -> ValueRef:
     match v:
         case Tracked(_, ref):
             return ref
+        case None:
+            return None
         case tuple():
             return tuple(value_ref(o) for o in v)
 
@@ -231,6 +280,8 @@ def drop_refs(v: Value) -> object:
     match v:
         case Tracked(value):
             return value
+        case None:
+            return None
         case tuple():
             return tuple(drop_refs(o) for o in v)
 
@@ -239,6 +290,8 @@ def value_type(v: Value) -> TypeAnnot[Any] | NoTypeInfo:
     match v:
         case Tracked():
             return v.type_annot
+        case None:
+            return None
         case tuple():
             types = [value_type(o) for o in v]
             if any(isinstance(t, NoTypeInfo) for t in types):

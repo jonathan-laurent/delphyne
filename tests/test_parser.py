@@ -11,6 +11,8 @@ from delphyne.core import parse, pprint
         "aggr(['', 'foo bar'])",
         "cex(cands{'foo'})",
         "foo(sub[1]{%2}, cands{@3})",
+        "next(nil)",
+        "next(next(nil){''}[1])",
     ],
 )
 def test_space_ref_roundabout(s: str):

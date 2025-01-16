@@ -77,3 +77,31 @@ def function_args_dict(
     for a, p in zip(args, sig.parameters.keys()):
         ret[p] = a
     return ret | kwargs
+
+
+def element_type_of_sequence_type(seq_type: Any, i: int) -> Any | NoTypeInfo:
+    """
+    Return the type of the element obtained by indexing an element of
+    another type.
+
+    If `seq_type` is `list[T]`, `Sequence[T]` or `tuple[T, ...]`, return
+    `T`. If `seq_type` is `tuple[T_1, ..., T_n]`, then return `T_i`.
+    """
+    origin = typing.get_origin(seq_type)
+    args = typing.get_args(seq_type)
+
+    # Handle List[T] or Sequence[T]
+    if origin in {list, Sequence}:
+        if args:
+            return args[0]
+        return NoTypeInfo
+
+    # Handle tuple[T, ...] or `tuple[T_1, ..., T_n]`
+    if origin is tuple:
+        if len(args) == 2 and args[1] is Ellipsis:
+            return args[0]
+        elif len(args) > i:
+            return args[i]
+        return NoTypeInfo
+
+    return NoTypeInfo

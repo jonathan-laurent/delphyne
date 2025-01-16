@@ -2,6 +2,9 @@
 
 import typing
 from collections.abc import Callable
+from typing import Any, Sequence
+
+import pytest
 
 import delphyne.core.inspect as insp
 import delphyne.core.node_fields as nf
@@ -25,3 +28,20 @@ def test_decompose_callable_annot():
     assert decompose(typing.Callable[[int, str], str]) == ([int, str], str)
     assert decompose(list[int]) is None
     assert decompose(Callable) is None
+
+
+@pytest.mark.parametrize(
+    "inp, i, out",
+    [
+        (list[int], 0, int),
+        (list[tuple[int, float]], 1, tuple[int, float]),
+        (Sequence[bool], 0, bool),
+        (tuple[int, ...], 0, int),
+        (tuple[int, ...], 1, int),
+        (tuple[int, bool], 0, int),
+        (tuple[int, bool], 1, bool),
+        (tuple[int, bool, float], 2, float),
+    ],
+)
+def test_element_type_of_sequence_type(inp: Any, i, out: Any):
+    assert insp.element_type_of_sequence_type(inp, i) == out

@@ -17,6 +17,9 @@ class PathDetected(Exception): ...
 class AnswerDetected(Exception): ...
 
 
+NONE_REF_REPR = "nil"
+
+
 def node_id(id: refs.NodeId) -> str:
     return f"%{id.id}"
 
@@ -30,6 +33,8 @@ def assembly[T](pp: Callable[[T], str], a: refs.Assembly[T]) -> str:
     if isinstance(a, tuple):
         a = cast(tuple[refs.Assembly[T], ...], a)
         return "[" + ", ".join(assembly(pp, x) for x in a) + "]"
+    elif a is None:
+        return NONE_REF_REPR
     else:
         return pp(a)
 
@@ -49,8 +54,14 @@ def space_ref(sr: refs.SpaceRef) -> str:
     return f"{name}({args_str})"
 
 
+def atomic_value_ref(vr: refs.AtomicValueRef) -> str:
+    if isinstance(vr, refs.IndexedRef):
+        return f"{atomic_value_ref(vr.ref)}[{vr.index}]"
+    return space_element_ref(vr)
+
+
 def value_ref(vr: refs.ValueRef) -> str:
-    return assembly(space_element_ref, vr)
+    return assembly(atomic_value_ref, vr)
 
 
 def hint(h: refs.Hint) -> str:

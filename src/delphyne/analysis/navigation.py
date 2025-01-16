@@ -141,10 +141,22 @@ class Navigator:
     id_resolver: IdentifierResolver | None = None
     info: NavigationInfo | None = None
 
-    def resolve_value_ref(self, tree: AnyTree, ref: refs.ValueRef) -> dp.Value:
+    def resolve_atomic_value_ref(
+        self, tree: AnyTree, ref: refs.AtomicValueRef
+    ) -> dp.Tracked[Any]:
         if isinstance(ref, refs.SpaceElementRef):
             return self.resolve_space_element_ref(tree, ref)
-        return tuple(self.resolve_value_ref(tree, r) for r in ref)
+        else:
+            parent = self.resolve_atomic_value_ref(tree, ref.ref)
+            return parent[ref.index]
+
+    def resolve_value_ref(self, tree: AnyTree, ref: refs.ValueRef) -> dp.Value:
+        if ref is None:
+            return None
+        elif isinstance(ref, tuple):
+            return tuple(self.resolve_value_ref(tree, r) for r in ref)
+        else:
+            return self.resolve_atomic_value_ref(tree, ref)
 
     def resolve_space_ref(
         self, tree: AnyTree, ref: refs.SpaceRef

@@ -5,11 +5,13 @@ Parser for references and test commands
 # pyright: basic
 # ruff: noqa: E731  # no lambda definition
 
+from collections.abc import Sequence
+
 import parsy as ps
 import yaml  # pyright: ignore[reportMissingTypeStubs]
 
 from delphyne.core import demos, refs
-from delphyne.core.pprint import CmdNames
+from delphyne.core.pprint import NONE_REF_REPR, CmdNames
 from delphyne.utils.typing import pydantic_load
 
 """
@@ -24,6 +26,17 @@ def _node_selector_from_path(
         return sels[0]
     else:
         return demos.WithinSpace(sels[0], _node_selector_from_path(sels[1:]))
+
+
+def _atomic_value_ref_from_index_list(
+    ref: refs.SpaceElementRef, indexes: Sequence[int]
+) -> refs.AtomicValueRef:
+    if not indexes:
+        return ref
+    else:
+        return refs.IndexedRef(
+            _atomic_value_ref_from_index_list(ref, indexes[:-1]), indexes[-1]
+        )
 
 
 """
@@ -71,8 +84,13 @@ _seref_long = ps.seq(_sref, _s("{") >> _seref_val << _s("}"))
 _seref_long = _seref_long.combine(refs.SpaceElementRef)
 _seref = _seref_hints | _seref_long
 
+# AtomicValueRef
+_avref = ps.seq(_seref, (_s("[") >> _num << _s("]")).many())
+_avref = _avref.combine(_atomic_value_ref_from_index_list)
+
 # ValueRef
-_vref.become(_tuple(_vref) | _seref)
+_noneref = _s(NONE_REF_REPR).map(lambda _: None)
+_vref.become(_noneref | _tuple(_vref) | _avref)
 
 # NodeOrigin
 _naked_nid = _num.map(refs.NodeId)

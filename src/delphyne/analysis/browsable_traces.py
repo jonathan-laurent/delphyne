@@ -105,13 +105,24 @@ class RefSimplifier:
             )
         return ref
 
+    def atomic_value_ref(
+        self, id: refs.GlobalNodePath, ref: refs.AtomicValueRef
+    ) -> refs.AtomicValueRef:
+        if isinstance(ref, refs.IndexedRef):
+            parent = self.atomic_value_ref(id, ref.ref)
+            return refs.IndexedRef(parent, ref.index)
+        else:
+            return self.space_element_ref(id, ref)
+
     def value_ref(
         self, id: refs.GlobalNodePath, v: refs.ValueRef
     ) -> refs.ValueRef:
-        if isinstance(v, tuple):
-            return tuple(self.value_ref(id, v) for v in v)
+        if v is None:
+            return None
+        elif isinstance(v, tuple):
+            return tuple(self.value_ref(id, a) for a in v)
         else:
-            return self.space_element_ref(id, v)
+            return self.atomic_value_ref(id, v)
 
     def space_ref(
         self, id: refs.GlobalNodePath, ref: refs.SpaceRef
@@ -185,15 +196,26 @@ def _spaces_in_node_origin(
             yield from _spaces_in_space_ref(origin.space)
 
 
+def _spaces_in_atomic_value_ref(
+    ref: refs.AtomicValueRef,
+) -> Iterable[refs.SpaceRef]:
+    if isinstance(ref, refs.IndexedRef):
+        yield from _spaces_in_atomic_value_ref(ref.ref)
+    else:
+        if ref.space is not None:
+            yield from _spaces_in_space_ref(ref.space)
+
+
 def _spaces_in_value_ref(
     value: refs.ValueRef,
 ) -> Iterable[refs.SpaceRef]:
-    if isinstance(value, refs.SpaceElementRef):
-        if value.space is not None:
-            yield from _spaces_in_space_ref(value.space)
-    else:
+    if value is None:
+        pass
+    elif isinstance(value, tuple):
         for v in value:
             yield from _spaces_in_value_ref(v)
+    else:
+        yield from _spaces_in_atomic_value_ref(value)
 
 
 def _spaces_in_space_ref(ref: refs.SpaceRef) -> Iterable[refs.SpaceRef]:
@@ -208,13 +230,24 @@ def _spaces_in_space_ref(ref: refs.SpaceRef) -> Iterable[refs.SpaceRef]:
 def _space_elements_in_value_ref(
     value: refs.ValueRef,
 ) -> Iterable[refs.SpaceElementRef]:
-    if isinstance(value, refs.SpaceElementRef):
+    if value is None:
+        pass
+    elif isinstance(value, tuple):
+        for v in value:
+            yield from _space_elements_in_value_ref(v)
+    else:
+        yield from _space_elements_in_atomic_value_ref(value)
+
+
+def _space_elements_in_atomic_value_ref(
+    value: refs.AtomicValueRef,
+) -> Iterable[refs.SpaceElementRef]:
+    if isinstance(value, refs.IndexedRef):
+        yield from _space_elements_in_atomic_value_ref(value.ref)
+    else:
         yield value
         if value.space is not None:
             yield from _space_elements_in_space_ref(value.space)
-    else:
-        for v in value:
-            yield from _space_elements_in_value_ref(v)
 
 
 def _space_elements_in_space_ref(
