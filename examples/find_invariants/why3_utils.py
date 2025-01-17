@@ -24,7 +24,7 @@ class Feedback:
 
     @property
     def success(self) -> bool:
-        return self.error is None and not self.obligations
+        return self.error is None and all(obl.proved for obl in self.obligations)
 
 
 def check(prog: File, annotated: File) -> Feedback:
