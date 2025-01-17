@@ -1,0 +1,15 @@
+Here is the program that Why3 was tasked to verify.
+
+```mlw
+{{ query.unproved.relevance_hints|trim }}
+```
+
+The name of the proof obligation that failed is: `{{ query.unproved.obligation_name }}`.
+
+Can you fix this by suggesting new invariants or adding a disjunct to the currently failing one?
+
+Here is a list of proposed changes that were tried previously and did not work. You should not try those again:
+
+{% for change in query.prior_changes_summaries %}
+- {{ change }}
+{% endfor %}

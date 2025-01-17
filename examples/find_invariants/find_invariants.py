@@ -15,7 +15,7 @@ import why3_utils as why3
 
 
 #####
-##### Policy Types
+##### Inner Policy Types
 #####
 
 
@@ -38,6 +38,12 @@ class ProveProgramIP:
 
 
 @dataclass
+class UnprovedObligation:
+    obligation_name: str
+    relevance_hints: str
+
+
+@dataclass
 class Proposal:
     change_summary: str
     annotated: why3.File
@@ -49,7 +55,6 @@ class Proposal:
 @dataclass
 class ProofStateMetrics:
     num_annotations: int
-    prob_provable: float
 
 
 @dataclass
@@ -74,25 +79,26 @@ def prove_program(
         yield from dp.ensure(feedback.error is None, "invalid program")
         if feedback.success:
             return annotated
+        remaining = [o for o in feedback.obligations if not o.proved]
+        yield from dp.ensure(len(remaining) == 1, "too many remaining obligations")
+        unproved = UnprovedObligation(remaining[0].name, remaining[0].relevance_hints)
         yield from dp.value(
-            EvaluateProofState(annotated)(ProveProgramIP, lambda p: p.eval_proposal),
+            EvaluateProofState(unproved)(ProveProgramIP, lambda p: p.eval_proposal),
             lambda p: p.quantify_eval)
         proposal = yield from dp.branch(
             dp.iterate(
-                lambda prior: propose_change(annotated, feedback, prior)(
+                lambda prior: propose_change(annotated, unproved, prior)(
                     ProveProgramIP, lambda p: p.propose_change)))
         annotated = proposal.annotated
 
 
 @dataclass
 class EvaluateProofState(dp.Query[ProofStateMetrics]):
-    annotated: why3.File
+    unproved: UnprovedObligation
 
     def parse(self, mode: str | None, answer: str) -> ProofStateMetrics:
         metrics = dp.yaml_from_last_block(ProofStateMetrics, answer)
-        prob_valid = 0 <= metrics.prob_provable <= 1
-        num_annots_valid = metrics.num_annotations >= 1
-        if not (prob_valid and num_annots_valid):
+        if not metrics.num_annotations >= 1:
             raise dp.ParseError("Invalid metrics.")
         return metrics
 
@@ -100,26 +106,26 @@ class EvaluateProofState(dp.Query[ProofStateMetrics]):
 @strategy
 def propose_change(
     annotated: why3.File,
-    feedback: why3.Feedback,
-    prior_change_summaries: Sequence[str] | None,
+    unproved: UnprovedObligation,
+    prior_changes: Sequence[str] | None,
 ) -> Strategy[Branch | Failure, ProposeChangeIP, tuple[Proposal, Sequence[str]]]:
-    if prior_change_summaries is None:
-        prior_change_summaries = []
+    if prior_changes is None:
+        prior_changes = []
     new_annotated = yield from dp.branch(
-        ProposeChange(annotated, feedback)(ProposeChangeIP, lambda p: p.propose))
+        ProposeChange(unproved, prior_changes)(ProposeChangeIP, lambda p: p.propose))
     evaluation = yield from dp.branch(
-        EvaluateProposal(annotated, new_annotated, prior_change_summaries)(
+        EvaluateProposal(annotated, new_annotated, prior_changes)(
             ProposeChangeIP, lambda p: p.eval))
     yield from dp.ensure(evaluation.good_proposal)
     proposal = Proposal(evaluation.change_summary, new_annotated)
-    return proposal, [*prior_change_summaries, proposal.change_summary]
+    return proposal, [*prior_changes, proposal.change_summary]
 
 
 
 @dataclass
 class ProposeChange(dp.Query[why3.File]):
-    annotated: why3.File
-    feedback: why3.Feedback
+    unproved: UnprovedObligation
+    prior_changes_summaries: Sequence[str]
 
     __parser__: ClassVar = dp.string_from_last_block
 
