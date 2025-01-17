@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import ClassVar
 
 import delphyne as dp
-from delphyne import Branch, Failure, Strategy, Value, strategy
+from delphyne import Branch, Computation, Failure, Strategy, Value, strategy
 
 import why3_utils as why3
 
@@ -67,16 +67,16 @@ class ProposalEvaluation:
 @strategy
 def prove_program(
     prog: why3.File,
-) -> Strategy[Branch | Value | Failure, ProveProgramIP, why3.File]:
+) -> Strategy[Branch | Value | Failure | Computation, ProveProgramIP, why3.File]:
     annotated: why3.File = prog
     while True:
-        feedback = why3.check(prog, annotated)
+        feedback = yield from dp.compute(why3.check, prog, annotated)
         yield from dp.ensure(feedback.error is None, "invalid program")
         if feedback.success:
             return annotated
         yield from dp.value(
             EvaluateProofState(annotated)(ProveProgramIP, lambda p: p.eval_proposal),
-            lambda p: p.quantify_eval)  # fmt:skip
+            lambda p: p.quantify_eval)
         proposal = yield from dp.branch(
             dp.iterate(
                 lambda prior: propose_change(annotated, feedback, prior)(

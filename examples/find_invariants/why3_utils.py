@@ -7,9 +7,7 @@ This API consists in a single function `check`.
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-import why3py.simple as why3py
-
-type File = why3py.File
+type File = str
 
 
 @dataclass
@@ -51,11 +49,12 @@ def check(prog: File, annotated: File) -> Feedback:
       obligation. This information is displayed in the Why3 IDE using
       colors.
     """
+    import why3py.simple as why3py
+
     outcome = why3py.check_file(annotated, prog)
     if outcome.kind == "error" or outcome.kind == "mismatch":
         return Feedback(error=why3py.summary(outcome), obligations=[])
     obligations = [
-        Obligation(obl.name, obl.proved, obl.annotated)
-        for obl in outcome.obligations
+        Obligation(obl.name, obl.proved, obl.annotated) for obl in outcome.obligations
     ]
     return Feedback(error=None, obligations=obligations)
