@@ -84,9 +84,9 @@ async def take[T](stream: dp.Stream[T], num_generated: int) -> dp.Stream[T]:
     async for msg in stream:
         if isinstance(msg, dp.Yield):
             count += 1
-            if count > num_generated:
-                return
         yield msg
+        if count >= num_generated:
+            return
 
 
 #####
