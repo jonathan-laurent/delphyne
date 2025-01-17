@@ -156,6 +156,7 @@ interface OpaqueObject {
 type StructuredObject = {
   kind: "object";
   value: unknown;
+  short_descr: string | null;
 };
 
 export type ObjectItem = OpaqueObject | StructuredObject;
@@ -180,7 +181,7 @@ export function clipboardValueOfObjectItem(item: ObjectItem): string {
 
 function objectItemOfValueRepr(repr: ValueRepr): ObjectItem {
   if (repr.json_provided) {
-    return { kind: "object", value: repr.json };
+    return { kind: "object", value: repr.json, short_descr: repr.short };
   } else {
     return {
       kind: "opaque",
@@ -208,7 +209,7 @@ function childrenOfObjectItem(item: ObjectItem): ArgItem[] {
       return {
         kind: "arg",
         arg: value instanceof Array ? "-" : k,
-        value: { kind: "object", value: v },
+        value: { kind: "object", value: v, short_descr: null },
       };
     });
   }
@@ -229,7 +230,7 @@ function treeItemOfObjectItem(
     item.iconPath = new vscode.ThemeIcon("symbol-misc");
   } else {
     let value = obj.value;
-    item.description = prettyYamlOneLiner(value);
+    item.description = obj.short_descr ?? prettyYamlOneLiner(value);
     item.tooltip = prettyYaml(value).trim();
     switch (typeof value) {
       case "string":
@@ -283,7 +284,7 @@ export function copiableValue(item: ArgItem | ArgsItem): string {
     return clipboardValueOfObjectItem(item.value);
   } else {
     // Ensure that no argument is opaque. Then, make an object that collects then and  all
-    // clipboardValueOfObjectItem. Ptherwise, return an error.
+    // clipboardValueOfObjectItem. Otherwise, return an error.
     const args = item.items;
     const opaqueArg = args.find((arg) => arg.value.kind === "opaque");
     if (opaqueArg) {
@@ -293,7 +294,11 @@ export function copiableValue(item: ArgItem | ArgsItem): string {
     for (const arg of args) {
       obj[arg.arg] = (arg.value as StructuredObject).value;
     }
-    return clipboardValueOfObjectItem({ kind: "object", value: obj });
+    return clipboardValueOfObjectItem({
+      kind: "object",
+      value: obj,
+      short_descr: null,
+    });
   }
 }
 
@@ -697,7 +702,7 @@ class NodeView implements vscode.TreeDataProvider<NodeViewItem> {
                 return {
                   kind: "arg",
                   arg: k,
-                  value: { kind: "object", value: v },
+                  value: { kind: "object", value: v, short_descr: null },
                 };
               },
             );

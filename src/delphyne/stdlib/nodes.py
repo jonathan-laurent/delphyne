@@ -96,6 +96,13 @@ def ensure(
 class Message(dp.Node):
     msg: str
 
+    def navigate(self) -> dp.Navigation:
+        return None
+        yield
+
+    def summary_message(self) -> str:
+        return self.msg
+
 
 def message(msg: str) -> dp.Strategy[Message, object, None]:
     yield spawn_node(Message, msg=msg)
