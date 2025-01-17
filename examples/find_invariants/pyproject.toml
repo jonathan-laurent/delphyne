@@ -12,7 +12,7 @@ dependencies = [
 where = ["."]
 
 [tool.ruff]
-line-length = 79
+line-length = 88
 
 [tool.pyright]
 typeCheckingMode = "strict"

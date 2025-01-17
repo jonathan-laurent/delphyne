@@ -11,6 +11,9 @@ from delphyne import Branch, Failure, Strategy, Value, strategy
 
 import why3_utils as why3
 
+# fmt: off
+
+
 #####
 ##### Policy Types
 #####
@@ -18,7 +21,8 @@ import why3_utils as why3
 
 @dataclass
 class ProposeChangeIP:
-    pass
+    propose: dp.PromptingPolicy
+    eval: dp.PromptingPolicy
 
 
 @dataclass
@@ -35,21 +39,11 @@ class ProveProgramIP:
 
 @dataclass
 class Proposal:
-    """
-    A proposal that was made to finish a proof.
-
-    The proposal contains a full annotated program (`annotated`) but
-    also a summary of the changes made, for easier comparison with
-    previous proposals when doing redundancy checks. The
-    `rejection_reason` field is not `None` when the proposal was
-    rejected before consideration and contains a reason for the
-    rejection, so that future attempts can try and avoid the same
-    mistake.
-    """
-
     change_summary: str
     annotated: why3.File
-    rejection_reason: str | None
+
+    def __str__(self) -> str:
+        return self.change_summary
 
 
 @dataclass
@@ -74,7 +68,6 @@ class ProposalEvaluation:
 def prove_program(
     prog: why3.File,
 ) -> Strategy[Branch | Value | Failure, ProveProgramIP, why3.File]:
-    IP = ProveProgramIP  # shortcut for the inner policy type
     annotated: why3.File = prog
     while True:
         feedback = why3.check(prog, annotated)
@@ -82,32 +75,13 @@ def prove_program(
         if feedback.success:
             return annotated
         yield from dp.value(
-            EvaluateProofState(annotated)(IP, lambda p: p.eval_proposal),
+            EvaluateProofState(annotated)(ProveProgramIP, lambda p: p.eval_proposal),
             lambda p: p.quantify_eval)  # fmt:skip
         proposal = yield from dp.branch(
             dp.iterate(
                 lambda prior: propose_change(annotated, feedback, prior)(
-                    IP, lambda p: p.propose_change)))  # fmt: skip
+                    ProveProgramIP, lambda p: p.propose_change)))
         annotated = proposal.annotated
-
-
-@strategy
-def propose_change(
-    annotated: why3.File,
-    feedback: why3.Feedback,
-    prior_attempts: Sequence[Proposal] | None,
-) -> Strategy[
-    Branch | Failure,
-    ProposeChangeIP,
-    tuple[Proposal | None, Sequence[Proposal]],
-]:
-    """
-    Try and propose a better solution. We have two steps: first we
-    propose. Then, we ask to summarize the change and check redundancy.
-    """
-
-    assert False
-    yield
 
 
 @dataclass
@@ -123,9 +97,29 @@ class EvaluateProofState(dp.Query[ProofStateMetrics]):
         return metrics
 
 
+@strategy
+def propose_change(
+    annotated: why3.File,
+    feedback: why3.Feedback,
+    prior_change_summaries: Sequence[str] | None,
+) -> Strategy[Branch | Failure, ProposeChangeIP, tuple[Proposal, Sequence[str]]]:
+    if prior_change_summaries is None:
+        prior_change_summaries = []
+    new_annotated = yield from dp.branch(
+        ProposeChange(annotated, feedback)(ProposeChangeIP, lambda p: p.propose))
+    evaluation = yield from dp.branch(
+        EvaluateProposal(annotated, new_annotated, prior_change_summaries)(
+            ProposeChangeIP, lambda p: p.eval))
+    yield from dp.ensure(evaluation.good_proposal)
+    proposal = Proposal(evaluation.change_summary, new_annotated)
+    return proposal, [*prior_change_summaries, proposal.change_summary]
+
+
+
 @dataclass
 class ProposeChange(dp.Query[why3.File]):
     annotated: why3.File
+    feedback: why3.Feedback
 
     __parser__: ClassVar = dp.string_from_last_block
 
@@ -134,10 +128,6 @@ class ProposeChange(dp.Query[why3.File]):
 class EvaluateProposal(dp.Query[ProposalEvaluation]):
     before: why3.File
     after: why3.File
+    prior_attempts: Sequence[str]
 
     __parser__: ClassVar = dp.yaml_from_last_block
-
-
-#####
-##### Policy Definition
-#####

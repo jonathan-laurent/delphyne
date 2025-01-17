@@ -159,7 +159,8 @@ def _check_valid_json(obj: object) -> bool:
 def _value_repr[T](
     obj: T, typ: tp.TypeAnnot[T] | tp.NoTypeInfo
 ) -> fb.ValueRepr:
-    short = pprint.pformat(obj, compact=True, sort_dicts=False)
+    short = str(obj)
+    # short = pprint.pformat(obj, compact=True, sort_dicts=False)
     long = pprint.pformat(obj, compact=False, sort_dicts=False)
     value = fb.ValueRepr(short, long, False, None)
     if not isinstance(typ, tp.NoTypeInfo):

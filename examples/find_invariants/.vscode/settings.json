@@ -6,8 +6,8 @@
         "editor.codeActionsOnSave": {
             "source.organizeImports": "explicit"
         },
-        "editor.rulers": [80],
-        "rewrap.wrappingColumn": 72,
+        "editor.rulers": [88],
+        "rewrap.wrappingColumn": 80,
     },
     "python.testing.pytestArgs": [".", "-s"],
     "python.testing.pytestEnabled": true,
