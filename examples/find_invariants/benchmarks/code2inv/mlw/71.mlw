@@ -1,0 +1,18 @@
+use int.Int
+
+let main () diverges =
+  let ref c = any int in
+  let ref y = any int in
+  let ref z = any int in
+  c <- 0;
+  assume { y >= 0 };
+  assume { y >= 127 };
+  z <- 36 * y;
+  while any bool do
+    if c < 36 then begin
+      z <- z + 1;
+      c <- c + 1
+    end
+  done;
+  if c < 36 then
+    assert { z >= 0 }

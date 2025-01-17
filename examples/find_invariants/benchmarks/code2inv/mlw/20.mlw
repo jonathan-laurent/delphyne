@@ -1,0 +1,16 @@
+use int.Int
+
+let main () diverges =
+  let ref z1 = any int in
+  let ref z2 = any int in
+  let ref z3 = any int in
+  let ref x = 0 in
+  let ref m = 0 in
+  let ref n = any int in
+  while x < n do
+    if any bool then
+      m <- x;
+    x <- x + 1
+  done;
+  if n > 0 then
+    assert { m >= 0 }

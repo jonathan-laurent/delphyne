@@ -1,0 +1,19 @@
+use int.Int
+
+let main () diverges =
+  let ref lock = any int in
+  let ref x = any int in
+  let ref y = any int in
+  x <- y;
+  lock <- 1;
+  while x <> y do
+    if any bool then begin
+      lock <- 1;
+      x <- y
+    end else begin
+      lock <- 0;
+      x <- y;
+      y <- y + 1
+    end
+  done;
+  assert { lock = 1 }

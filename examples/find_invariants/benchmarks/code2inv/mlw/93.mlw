@@ -1,0 +1,22 @@
+use int.Int
+
+let main () diverges =
+  let ref i = any int in
+  let ref n = any int in
+  let ref x = any int in
+  let ref y = any int in
+  assume { n >= 0 };
+  i <- 0;
+  x <- 0;
+  y <- 0;
+  while i < n do
+    i <- i + 1;
+    if any bool then begin
+      x <- x + 1;
+      y <- y + 2
+    end else begin
+      x <- x + 2;
+      y <- y + 1
+    end
+  done;
+  assert { 3 * n = x + y }

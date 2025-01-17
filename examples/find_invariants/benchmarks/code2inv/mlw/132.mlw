@@ -1,0 +1,16 @@
+use int.Int
+
+let main () diverges =
+  let ref i = 0 in
+  let ref j = any int in
+  let ref c = any int in
+  let ref t = any int in
+  while any bool do
+    if c > 48 then
+      if c < 57 then begin
+        j <- i + i;
+        t <- c - 48;
+        i <- j + t
+      end
+  done;
+  assert { i >= 0 }

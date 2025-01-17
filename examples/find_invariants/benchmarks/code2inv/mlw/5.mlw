@@ -1,0 +1,14 @@
+use int.Int
+
+let main () diverges =
+  let ref x = 0 in
+  let ref size = any int in
+  let ref y = any int in
+  let ref z = any int in
+  while x < size do
+    x <- x + 1;
+    if z <= y then
+      y <- z
+  done;
+  if size > 0 then
+    assert { z >= y }

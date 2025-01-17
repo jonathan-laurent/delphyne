@@ -1,0 +1,12 @@
+use int.Int
+
+let main () diverges =
+  let ref i = any int in
+  let ref j = any int in
+  i <- 1;
+  j <- 20;
+  while j >= i do
+    i <- i + 2;
+    j <- j - 1
+  done;
+  assert { j = 13 }

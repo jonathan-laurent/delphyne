@@ -1,0 +1,21 @@
+use int.Int
+
+let main () diverges =
+  let ref c = any int in
+  let ref n = any int in
+  let ref v1 = any int in
+  let ref v2 = any int in
+  let ref v3 = any int in
+  c <- 0;
+  assume { n > 0 };
+  while any bool do
+    if any bool then
+      if c <> n then
+        c <- c + 1
+    else
+      if c = n then
+        c <- 1
+  done;
+  if c < 0 then
+    if c > n then
+      assert { c = n }

@@ -1,0 +1,12 @@
+use int.Int
+
+let main () diverges =
+  let ref x = any int in
+  let ref y = any int in
+  x <- 1;
+  y <- 0;
+  while y < 100000 do
+    x <- x + y;
+    y <- y + 1
+  done;
+  assert { x >= y }

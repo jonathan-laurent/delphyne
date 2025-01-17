@@ -1,0 +1,18 @@
+use int.Int
+
+let main () diverges =
+  let ref x = any int in
+  let ref y = any int in
+  let ref z1 = any int in
+  let ref z2 = any int in
+  let ref z3 = any int in
+  assume { x >= 0 };
+  assume { x <= 2 };
+  assume { y <= 2 };
+  assume { y >= 0 };
+  while any bool do
+    x <- x + 2;
+    y <- y + 2
+  done;
+  if x = 4 then
+    assert { y <> 0 }

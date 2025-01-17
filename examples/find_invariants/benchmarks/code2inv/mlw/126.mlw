@@ -1,0 +1,18 @@
+use int.Int
+
+let main () diverges =
+  let ref i = any int in
+  let ref j = any int in
+  let ref x = any int in
+  let ref y = any int in
+  let ref z1 = any int in
+  let ref z2 = any int in
+  let ref z3 = any int in
+  i <- x;
+  j <- y;
+  while x <> 0 do
+    x <- x - 1;
+    y <- y - 1
+  done;
+  if i = j then
+    assert { y = 0 }

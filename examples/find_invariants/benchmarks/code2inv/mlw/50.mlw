@@ -1,0 +1,15 @@
+use int.Int
+
+let main () diverges =
+  let ref c = any int in
+  c <- 0;
+  while any bool do
+    if any bool then
+      if c <> 4 then
+        c <- c + 1
+    else
+      if c = 4 then
+        c <- 1
+  done;
+  if c <> 4 then
+    assert { c >= 0 }

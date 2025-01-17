@@ -1,0 +1,9 @@
+use int.Int
+
+let main () diverges =
+  let ref x = any int in
+  x <- 10000;
+  while x > 0 do
+    x <- x - 1
+  done;
+  assert { x = 0 }

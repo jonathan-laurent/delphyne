@@ -1,0 +1,13 @@
+use int.Int
+
+let main () diverges =
+  let ref x = 0 in
+  let ref m = 0 in
+  let ref n = any int in
+  while x < n do
+    if any bool then
+      m <- x;
+    x <- x + 1
+  done;
+  if n > 0 then
+    assert { m < n }

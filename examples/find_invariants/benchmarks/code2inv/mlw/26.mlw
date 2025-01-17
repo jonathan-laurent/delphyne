@@ -1,0 +1,11 @@
+use int.Int
+
+let main () diverges =
+  let ref n = any int in
+  let ref x = any int in
+  x <- n;
+  while x > 1 do
+    x <- x - 1
+  done;
+  if x <> 1 then
+    assert { n < 0 }

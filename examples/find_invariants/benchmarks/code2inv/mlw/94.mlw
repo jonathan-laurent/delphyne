@@ -1,0 +1,16 @@
+use int.Int
+
+let main () diverges =
+  let ref i = any int in
+  let ref j = any int in
+  let ref k = any int in
+  let ref n = any int in
+  assume { k >= 0 };
+  assume { n >= 0 };
+  i <- 0;
+  j <- 0;
+  while i <= n do
+    i <- i + 1;
+    j <- j + i
+  done;
+  assert { i + (j + k) > 2 * n }

@@ -1,0 +1,13 @@
+use int.Int
+
+let main () diverges =
+  let ref i = any int in
+  let ref sn = any int in
+  sn <- 0;
+  i <- 1;
+  while i <= 8 do
+    i <- i + 1;
+    sn <- sn + 1
+  done;
+  if sn <> 8 then
+    assert { sn = 0 }

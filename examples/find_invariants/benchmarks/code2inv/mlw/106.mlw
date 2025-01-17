@@ -1,0 +1,16 @@
+use int.Int
+
+let main () diverges =
+  let ref a = any int in
+  let ref m = any int in
+  let ref j = any int in
+  let ref k = any int in
+  assume { a <= m };
+  assume { j < 1 };
+  k <- 0;
+  while k < 1 do
+    if m < a then
+      m <- a;
+    k <- k + 1
+  done;
+  assert { a >= m }
