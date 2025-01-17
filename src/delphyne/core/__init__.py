@@ -21,7 +21,7 @@ from delphyne.core.environments import (
     LogMessage,
     PolicyEnv,
     TemplateError,
-    TemplateNotFound,
+    TemplateFileMissing,
     TemplatesManager,
     Tracer,
 )

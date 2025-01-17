@@ -28,4 +28,8 @@
         "editor.indentSize": 2,
         "editor.rulers": [80],
     },
+    // Indicate that the Jinja templates are written in Markdown
+    "files.associations": {
+        "*.jinja": "jinja-md"
+    }
 }

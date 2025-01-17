@@ -67,9 +67,6 @@ class Query[T](dp.AbstractQuery[T]):
         params: dict[str, object],
         env: dp.TemplatesManager | None = None,
     ) -> str:
-        """
-        Raises `TemplateNotFound`.
-        """
         assert env is not None, _no_prompt_manager_error()
         args: dict[str, object] = {
             "query": self,
@@ -284,7 +281,7 @@ async def few_shot[T](
                         {"error": element.error},
                         mngr,
                     )
-                except dp.TemplateNotFound:
+                except dp.TemplateFileMissing:
                     repair = (
                         "Invalid answer. Please consider the following"
                         + f" feedback and try again:\n\n{element.error}"
@@ -295,7 +292,7 @@ async def few_shot[T](
                     gen_new = query.query.generate_prompt(
                         REQUEST_OTHER_PROMPT, query.query.name(), {}, mngr
                     )
-                except dp.TemplateNotFound:
+                except dp.TemplateFileMissing:
                     gen_new = "Good! Can you generate a different answer now?"
                 new_message = user_message(gen_new)
             prompt = (*prompt, assistant_message(answer), new_message)

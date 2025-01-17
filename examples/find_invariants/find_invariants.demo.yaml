@@ -65,3 +65,37 @@
               done;
               assert { x <> y }
             ```
+    - query: EvaluateProposal
+      args:
+        before: |
+          use int.Int
+      
+          let example1 () diverges =
+            let ref x = any int in
+            let ref y = 3 in
+            let ref z = 0 in
+            assume { x < 0 };
+            while x < 10 do
+              x <- x + 1;
+              z <- z - 1;
+              if z < 0 then y <- y + 1
+            done;
+            assert { x <> y }
+        after: |
+          use int.Int
+      
+          let example1 () diverges =
+            let ref x = any int in
+            let ref y = 3 in
+            let ref z = 0 in
+            assume { x < 0 };
+            while x < 10 do
+              invariant { z <= 0 }
+              invariant { x <> y }
+              x <- x + 1;
+              z <- z - 1;
+              if z < 0 then y <- y + 1
+            done;
+            assert { x <> y }
+        prior_attempts: []
+      answers: []

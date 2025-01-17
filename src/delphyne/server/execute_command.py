@@ -39,6 +39,9 @@ async def execute_command(
     except dp.TemplateError as e:
         error = ("error", f"Invalid prompt template `{e.name}`:\n{e.exn}")
         await task.set_result(ta.CommandResult([error], None))
+    except dp.TemplateFileMissing as e:
+        error = ("error", f"Prompt template file missing: {e.file}")
+        await task.set_result(ta.CommandResult([error], None))
     except Exception as e:
         error = (
             "error",

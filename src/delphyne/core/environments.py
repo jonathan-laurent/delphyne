@@ -86,14 +86,14 @@ class ExampleDatabase:
 
 
 PROMPT_DIR = "prompts"
-JINJA_EXTENSIONS = [".jinja", ".md.jinja"]
+JINJA_EXTENSION = ".jinja"
 
 
 class TemplatesManager:
     def __init__(self, strategy_dirs: Sequence[Path]):
-        prompt_folders = [dir / PROMPT_DIR for dir in strategy_dirs]
+        self.prompt_folders = [dir / PROMPT_DIR for dir in strategy_dirs]
         self.env = jinja2.Environment(
-            loader=jinja2.FileSystemLoader(prompt_folders),
+            loader=jinja2.FileSystemLoader(self.prompt_folders),
             trim_blocks=True,
             lstrip_blocks=True,
         )
@@ -104,33 +104,40 @@ class TemplatesManager:
         query_name: str,
         template_args: dict[str, Any],
     ) -> str:
-        """
-        Raises `TemplateNotFound`.
-        """
         suffix = "." + kind
-        for ext in JINJA_EXTENSIONS:
-            template_name = f"{query_name}{suffix}{ext}"
-            try:
-                template = self.env.get_template(template_name)
-                return template.render(template_args)
-            except jinja2.TemplateNotFound:
-                pass
-            except jinja2.UndefinedError as e:
-                raise TemplateError(template_name, e)
-            except jinja2.TemplateSyntaxError as e:
-                raise TemplateError(template_name, e)
-        raise TemplateNotFound(f"{query_name}{suffix}.*.jinja")
-
-
-@dataclass
-class TemplateNotFound(Exception):
-    exn: str
+        template_name = f"{query_name}{suffix}{JINJA_EXTENSION}"
+        prompt_file_exists = any(
+            (d / template_name).exists() for d in self.prompt_folders
+        )
+        if not prompt_file_exists:
+            raise TemplateFileMissing(template_name)
+        try:
+            template = self.env.get_template(template_name)
+            return template.render(template_args)
+        except jinja2.TemplateNotFound as e:
+            raise TemplateError(template_name, e)
+        except jinja2.UndefinedError as e:
+            raise TemplateError(template_name, e)
+        except jinja2.TemplateSyntaxError as e:
+            raise TemplateError(template_name, e)
 
 
 @dataclass
 class TemplateError(Exception):
     name: str
     exn: Exception
+
+
+@dataclass
+class TemplateFileMissing(Exception):
+    """
+    We want to make a distinction with the `TemplateNotFound` Jinja
+    exception, which can also be raised when `include` statements fail
+    within templates. In comparison, this exception means that the main
+    template file does not exist.
+    """
+
+    file: str
 
 
 ####
