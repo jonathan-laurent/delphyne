@@ -1,0 +1,24 @@
+### Proposal description
+
+Program _before_ the proposed changes:
+
+```mlw
+{{ query.before|trim }}
+```
+
+Program _after_ the proposed changes:
+
+
+```mlw
+{{ query.after|trim }}
+```
+
+### Previously considered proposals
+
+{% if query.prior_attempts %}
+{% for summary in query.prior_attempts %}
+- {{ summary }}
+{% endfor %}
+{% else %}
+None
+{% endif %}

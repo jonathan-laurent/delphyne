@@ -45,11 +45,11 @@ class UnprovedObligation:
 
 @dataclass
 class Proposal:
-    change_summary: str
+    summary: str
     annotated: why3.File
 
     def __str__(self) -> str:
-        return self.change_summary
+        return self.summary
 
 
 @dataclass
@@ -59,9 +59,8 @@ class ProofStateMetrics:
 
 @dataclass
 class ProposalEvaluation:
-    change_summary: str
+    proposal_summary: str
     good_proposal: bool
-    comment: str
 
 
 #####
@@ -117,8 +116,8 @@ def propose_change(
         EvaluateProposal(annotated, new_annotated, prior_changes)(
             ProposeChangeIP, lambda p: p.eval))
     yield from dp.ensure(evaluation.good_proposal)
-    proposal = Proposal(evaluation.change_summary, new_annotated)
-    return proposal, [*prior_changes, proposal.change_summary]
+    proposal = Proposal(evaluation.proposal_summary, new_annotated)
+    return proposal, [*prior_changes, proposal.summary]
 
 
 
