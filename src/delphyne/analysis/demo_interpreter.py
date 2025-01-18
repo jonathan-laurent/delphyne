@@ -177,6 +177,9 @@ class DemoHintResolver(nv.HintResolver):
                 answer = refs.Answer(demo_answer.mode, demo_answer.answer)
                 self.answer_refs[(query.ref, answer)] = (i, answer_id)
                 return answer
+        # We only look at implicit answers if no hint is provided.
+        if hint is not None:
+            return None
         # Look at previous implicit answers
         for serialized_key, a in self.implicit:
             if serialized == serialized_key:
