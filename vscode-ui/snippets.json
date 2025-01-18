@@ -1,7 +1,7 @@
 {
     "demo": {
         "prefix": "demo",
-        "body": ["- strategy: ${1:strategy_name}", "  args:", "    $0", "  tests:", "    - run", "  queries: []"],
+        "body": ["- strategy: ${1:strategy_name}", "  args:", "    $0", "  tests:", "    - run | success", "  queries: []"],
         "description": "Code snippet for an unlabeled strategy demonstration."
     },
     "qdemo": {
