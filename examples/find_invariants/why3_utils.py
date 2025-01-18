@@ -1,13 +1,12 @@
 """
 A very basic API to interact with Why3.
-
-This API consists in a single function `check`.
 """
 
 from collections.abc import Sequence
 from dataclasses import dataclass
 
 type File = str
+type Formula = str
 
 
 @dataclass
@@ -58,3 +57,23 @@ def check(prog: File, annotated: File) -> Feedback:
         Obligation(obl.name, obl.proved, obl.annotated) for obl in outcome.obligations
     ]
     return Feedback(error=None, obligations=obligations)
+
+
+def add_invariant(prog: File, inv: Formula) -> File:
+    """
+    Add an invariant to a single-loop program.
+
+    TODO: make this function more robust.
+    """
+    lines = prog.splitlines()
+    for i, line in enumerate(lines):
+        if line.startswith("  while"):
+            lines.insert(i + 1, f"    invariant {{ {inv} }}")
+            return "\n".join(lines)
+    assert False
+
+
+def add_invariants(prog: File, invs: Sequence[Formula]) -> File:
+    for inv in reversed(invs):
+        prog = add_invariant(prog, inv)
+    return prog
