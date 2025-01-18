@@ -121,7 +121,7 @@ def raw_yaml[T](type: TypeAnnot[T], res: str) -> T:
         return ty.pydantic_load(type, parsed)
     except ValidationError as e:
         raise dp.ParseError(str(e))
-    except yaml.parser.ParserError as e:
+    except Exception as e:
         raise dp.ParseError(str(e))
 
 
