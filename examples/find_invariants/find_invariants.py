@@ -27,7 +27,6 @@ class ProposeInvsIP:
 
 @dataclass
 class ProveProgIP:
-    iterate: dp.StreamTransformer | None
     propose: "dp.Policy[Branch | Failure, ProposeInvsIP]"
     eval: dp.PromptingPolicy
     quantify_eval: "Callable[[ProofStateMetrics], float]"
@@ -78,8 +77,7 @@ def prove_program(
         new_invariants = yield from dp.branch(
             dp.iterate(
                 lambda prior: propose_invariants(unproved, prior)(
-                    ProveProgIP, lambda p: p.propose),
-                lambda p: p.iterate))
+                    ProveProgIP, lambda p: p.propose)))
         annotated = why3.add_invariants(annotated, new_invariants)
 
 
@@ -131,3 +129,51 @@ class EvaluateProofState(dp.Query[ProofStateMetrics]):
         if not (redundant_ok and incorrect_ok) >= 1:
             raise dp.ParseError("Invalid metrics.")
         return metrics
+
+
+#####
+##### Policies
+#####
+
+
+def prove_program_policy(
+    fancy_model: str = "gpt-4o",
+    base_model: str = "gpt-4o",
+    max_depth: int = 2,
+    min_value: float = 0.2,
+    max_requests_per_proposal: int = 5,
+    proposal_penalty: float = 0.7,
+    max_deep_proposals: int = 2,
+    penalize_redundancy: bool = True,
+) -> dp.Policy[Branch | Value | Failure | Computation, ProveProgIP]:
+
+    def compute_value(metrics: ProofStateMetrics) -> float:
+        prob = (1 - metrics.prob_incorrect)
+        if penalize_redundancy:
+            prob *= (1 - metrics.prob_redundant)
+        return max(min_value, prob)
+
+    def child_confidence_prior(depth: int, prev_gen: int) -> float:
+        if depth >= 1 and prev_gen >= max_deep_proposals:
+            return 0
+        return proposal_penalty
+
+    n = dp.NUM_REQUESTS
+    fancy = dp.openai_model(fancy_model)
+    base = dp.openai_model(base_model)
+
+    propose_ip = ProposeInvsIP(
+        propose=dp.few_shot(fancy),
+        novel=dp.take(1) @ dp.few_shot(base),
+    )
+    proposal_limit = dp.BudgetLimit({n: max_requests_per_proposal})
+    prove_prog_ip = ProveProgIP(
+        propose=(dp.with_budget(proposal_limit) @ dp.dfs(), propose_ip),
+        eval=dp.take(1) @ dp.few_shot(base),
+        quantify_eval=compute_value,
+    )
+    bestfs = dp.best_first_search(
+        child_confidence_prior=child_confidence_prior,
+        max_depth=max_depth)
+
+    return (bestfs @ dp.elim_compute, prove_prog_ip)

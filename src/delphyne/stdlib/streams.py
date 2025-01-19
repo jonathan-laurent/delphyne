@@ -4,10 +4,10 @@ Utilities to work with streams.
 
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Never, Protocol
+from typing import Never, Protocol, overload
 
 import delphyne.core as dp
-from delphyne.stdlib.policies import SearchPolicy
+from delphyne.stdlib.policies import PromptingPolicy, SearchPolicy
 
 #####
 ##### Stream transformers
@@ -25,7 +25,23 @@ class StreamTransformer:
     def __call__[T](self, stream: dp.Stream[T]) -> dp.Stream[T]:
         return self.trans(stream)
 
+    @overload
     def __matmul__[N: dp.Node](
+        self, other: SearchPolicy[N]
+    ) -> SearchPolicy[N]: ...
+
+    @overload
+    def __matmul__(self, other: PromptingPolicy) -> PromptingPolicy: ...
+
+    def __matmul__[N: dp.Node](
+        self, other: SearchPolicy[N] | PromptingPolicy
+    ) -> SearchPolicy[N] | PromptingPolicy:
+        if isinstance(other, SearchPolicy):
+            return self.compose_with_search_policy(other)
+        else:
+            return self.compose_with_prompting_policy(other)
+
+    def compose_with_search_policy[N: dp.Node](
         self, other: SearchPolicy[N]
     ) -> SearchPolicy[N]:
         def policy[P, T](
@@ -35,6 +51,17 @@ class StreamTransformer:
             return self.trans(stream)
 
         return SearchPolicy(policy)
+
+    def compose_with_prompting_policy(
+        self, other: PromptingPolicy
+    ) -> PromptingPolicy:
+        def policy[P, T](
+            query: dp.AttachedQuery[T], env: dp.PolicyEnv
+        ) -> dp.Stream[T]:
+            stream = other(query, env)
+            return self.trans(stream)
+
+        return PromptingPolicy(policy)
 
 
 class _ParametricStreamTransformerFn[**A](Protocol):

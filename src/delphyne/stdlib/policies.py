@@ -190,5 +190,7 @@ def ensure_compatible[**A, N: dp.Node, P](
     A decorator that does nothing but allows type-checkers to ensure
     that the decorated function returns a policy compatible with its
     strategy argument.
+
+    TODO: this decorator does not seem to work with pyright.
     """
     return lambda f: f

@@ -43,7 +43,7 @@ class PriorityItem:
 
 @search_policy
 async def best_first_search[P, T](
-    tree: dp.Tree[Branch | Factor | Failure, P, T],
+    tree: dp.Tree[Branch | Factor | Value | Failure, P, T],
     env: dp.PolicyEnv,
     policy: P,
     child_confidence_prior: Callable[[int, int], float],
