@@ -158,7 +158,7 @@ def prove_program_policy(
     def child_confidence_prior(depth: int, prev_gen: int) -> float:
         if depth >= 1 and prev_gen >= max_deep_proposals:
             return 0
-        return proposal_penalty
+        return proposal_penalty ** prev_gen
 
     n = dp.NUM_REQUESTS
     fancy = dp.openai_model(fancy_model)
