@@ -98,7 +98,7 @@ async def best_first_search[P, T](
                         eval = eval_msg.value.value
                         break
                     else:
-                        yield msg
+                        yield eval_msg
                 if eval is not None:
                     if isinstance(tree.node, Value):
                         confidence = tree.node.value(policy)(eval)
