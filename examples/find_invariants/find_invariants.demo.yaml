@@ -1,4 +1,4 @@
-# Demonstrations for the `find_invariants.prove_program` strategy
+# Demonstrations for `find_invariants.prove_program`
 
 
 # A demonstration with conditionals, which involves abducting an additional assumption.

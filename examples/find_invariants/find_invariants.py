@@ -45,8 +45,8 @@ class UnprovedObligation:
 
 @dataclass
 class ProofStateMetrics:
-    prob_redundant: float
     prob_incorrect: float
+    prob_redundant: float
 
 
 type Proposal = Sequence[why3.Formula]

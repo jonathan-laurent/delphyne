@@ -1,0 +1,6 @@
+{% include 'shared/intro.jinja' %}
+
+
+I will show you an annotated program in which Why3 did not manage to prove a particular assertion or invariant. Your task is two-fold. First, you have to determine whether: (1) this annotation is correct but proving it requires additional annotations or (2) this annotation is simply incorrect. Then, you'll have to determine whether or not the shown program features redundant invariants. For example, having both invariants `x >= 1` and `x >= 2` is unnecessary since the second one is stronger and thus `x >= 1` is redundant. Similarly, having invariants `x > 0`, `y > 0` and `x + y > 0` is redundant since the first two invariants together imply the third one.
+
+You should terminate your answer with a triple-quoted code block containing a YAML object with fields `prob_incorrect` and `prob_redundant`. For each of those fields, you should provide a confidence score as a number between 0 and 1.
