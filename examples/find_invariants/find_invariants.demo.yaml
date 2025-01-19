@@ -1,7 +1,7 @@
 # Demonstrations for `find_invariants.prove_program`
 
 
-# A demonstration with conditionals, which involves abducting an additional assumption.
+# A demonstration with conditionals, which involves abducting an additional assumption
 - strategy: prove_program
   args:
     prog: |
