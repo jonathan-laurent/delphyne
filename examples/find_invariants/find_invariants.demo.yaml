@@ -263,6 +263,724 @@
             yes
             ```
           example: true
+    - query: __Computation__
+      args:
+        fun: check
+        args:
+          prog: |
+            use int.Int
+      
+            let example1 () diverges =
+              let ref x = any int in
+              let ref y = 3 in
+              let ref z = 0 in
+              assume { x < 0 };
+              while x < 10 do
+                x <- x + 1;
+                z <- z - 1;
+                if z < 0 then y <- y + 1
+              done;
+              assert { x <> y }
+          annotated: |
+            use int.Int
+      
+            let example1 () diverges =
+              let ref x = any int in
+              let ref y = 3 in
+              let ref z = 0 in
+              assume { x < 0 };
+              while x < 10 do
+                x <- x + 1;
+                z <- z - 1;
+                if z < 0 then y <- y + 1
+              done;
+              assert { x <> y }
+      answers:
+        - answer: |
+            error:
+            obligations:
+              - name: VC for example1 (assertion)
+                proved: no
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      x <- x + 1;
+                      z <- z - 1;
+                      if z < 0 then y <- y + 1
+                    done;
+                    assert { x <> y }  (* GOAL *)
+    - query: __Computation__
+      args:
+        fun: check
+        args:
+          prog: |
+            use int.Int
+      
+            let example1 () diverges =
+              let ref x = any int in
+              let ref y = 3 in
+              let ref z = 0 in
+              assume { x < 0 };
+              while x < 10 do
+                x <- x + 1;
+                z <- z - 1;
+                if z < 0 then y <- y + 1
+              done;
+              assert { x <> y }
+          annotated: |-
+            use int.Int
+      
+            let example1 () diverges =
+              let ref x = any int in
+              let ref y = 3 in
+              let ref z = 0 in
+              assume { x < 0 };
+              while x < 10 do
+                invariant { z <= 0 }
+                invariant { x <> y }
+                x <- x + 1;
+                z <- z - 1;
+                if z < 0 then y <- y + 1
+              done;
+              assert { x <> y }
+      answers:
+        - answer: |
+            error:
+      
+            obligations:
+              - name: VC for example1 (loop invariant init)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in  (* GOAL *)
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do
+                      invariant { z <= 0 }  (* GOAL *)
+                      invariant { x <> y }
+                      x <- x + 1;
+                      z <- z - 1;
+                      if z < 0 then y <- y + 1
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant init)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* GOAL, premise *)
+                    let ref y = 3 in  (* GOAL *)
+                    let ref z = 0 in  (* premise *)
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do
+                      invariant { z <= 0 }  (* premise *)
+                      invariant { x <> y }  (* GOAL *)
+                      x <- x + 1;
+                      z <- z - 1;
+                      if z < 0 then y <- y + 1
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant preservation)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { z <= 0 }  (* GOAL, premise *)
+                      invariant { x <> y }  (* premise *)
+                      x <- x + 1;  (* premise *)
+                      z <- z - 1;  (* premise *)
+                      if z < 0 then y <- y + 1  (* premise *)
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant preservation)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { z <= 0 }  (* premise *)
+                      invariant { x <> y }  (* GOAL, premise *)
+                      x <- x + 1;  (* premise *)
+                      z <- z - 1;  (* premise *)
+                      if z < 0 then y <- y + 1  (* premise *)
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant preservation)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { z <= 0 }  (* GOAL, premise *)
+                      invariant { x <> y }  (* premise *)
+                      x <- x + 1;  (* premise *)
+                      z <- z - 1;  (* premise *)
+                      if z < 0 then y <- y + 1  (* premise *)
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant preservation)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { z <= 0 }  (* premise *)
+                      invariant { x <> y }  (* GOAL, premise *)
+                      x <- x + 1;  (* premise *)
+                      z <- z - 1;  (* premise *)
+                      if z < 0 then y <- y + 1  (* premise *)
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (assertion)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { z <= 0 }  (* premise *)
+                      invariant { x <> y }  (* premise *)
+                      x <- x + 1;
+                      z <- z - 1;
+                      if z < 0 then y <- y + 1
+                    done;
+                    assert { x <> y }  (* GOAL *)
+    - query: __Computation__
+      args:
+        fun: check
+        args:
+          prog: |
+            use int.Int
+      
+            let example1 () diverges =
+              let ref x = any int in
+              let ref y = 3 in
+              let ref z = 0 in
+              assume { x < 0 };
+              while x < 10 do
+                x <- x + 1;
+                z <- z - 1;
+                if z < 0 then y <- y + 1
+              done;
+              assert { x <> y }
+          annotated: |-
+            use int.Int
+      
+            let example1 () diverges =
+              let ref x = any int in
+              let ref y = 3 in
+              let ref z = 0 in
+              assume { x < 0 };
+              while x < 10 do
+                invariant { x <> y }
+                x <- x + 1;
+                z <- z - 1;
+                if z < 0 then y <- y + 1
+              done;
+              assert { x <> y }
+      answers:
+        - answer: |
+            error:
+      
+            obligations:
+              - name: VC for example1 (loop invariant init)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* GOAL, premise *)
+                    let ref y = 3 in  (* GOAL *)
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do
+                      invariant { x <> y }  (* GOAL *)
+                      x <- x + 1;
+                      z <- z - 1;
+                      if z < 0 then y <- y + 1
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant preservation)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { x <> y }  (* GOAL, premise *)
+                      x <- x + 1;  (* premise *)
+                      z <- z - 1;  (* premise *)
+                      if z < 0 then y <- y + 1  (* premise *)
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant preservation)
+                proved: no
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { x <> y }  (* GOAL, premise *)
+                      x <- x + 1;  (* premise *)
+                      z <- z - 1;  (* premise *)
+                      if z < 0 then y <- y + 1  (* premise *)
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (assertion)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { x <> y }  (* premise *)
+                      x <- x + 1;
+                      z <- z - 1;
+                      if z < 0 then y <- y + 1
+                    done;
+                    assert { x <> y }  (* GOAL *)
+    - query: __Computation__
+      args:
+        fun: check
+        args:
+          prog: |
+            use int.Int
+      
+            let example1 () diverges =
+              let ref x = any int in
+              let ref y = 3 in
+              let ref z = 0 in
+              assume { x < 0 };
+              while x < 10 do
+                x <- x + 1;
+                z <- z - 1;
+                if z < 0 then y <- y + 1
+              done;
+              assert { x <> y }
+          annotated: |-
+            use int.Int
+      
+            let example1 () diverges =
+              let ref x = any int in
+              let ref y = 3 in
+              let ref z = 0 in
+              assume { x < 0 };
+              while x < 10 do
+                invariant { not (x = y) }
+                invariant { x <> y }
+                x <- x + 1;
+                z <- z - 1;
+                if z < 0 then y <- y + 1
+              done;
+              assert { x <> y }
+      answers:
+        - answer: |
+            error:
+      
+            obligations:
+              - name: VC for example1 (loop invariant init)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* GOAL, premise *)
+                    let ref y = 3 in  (* GOAL *)
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do
+                      invariant { not (x = y) }  (* GOAL *)
+                      invariant { x <> y }
+                      x <- x + 1;
+                      z <- z - 1;
+                      if z < 0 then y <- y + 1
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant init)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* GOAL, premise *)
+                    let ref y = 3 in  (* GOAL, premise *)
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do
+                      invariant { not (x = y) }  (* premise *)
+                      invariant { x <> y }  (* GOAL *)
+                      x <- x + 1;
+                      z <- z - 1;
+                      if z < 0 then y <- y + 1
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant preservation)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { not (x = y) }  (* GOAL, premise *)
+                      invariant { x <> y }  (* premise *)
+                      x <- x + 1;  (* premise *)
+                      z <- z - 1;  (* premise *)
+                      if z < 0 then y <- y + 1  (* premise *)
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant preservation)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { not (x = y) }  (* premise *)
+                      invariant { x <> y }  (* GOAL, premise *)
+                      x <- x + 1;  (* premise *)
+                      z <- z - 1;  (* premise *)
+                      if z < 0 then y <- y + 1  (* premise *)
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant preservation)
+                proved: no
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { not (x = y) }  (* GOAL, premise *)
+                      invariant { x <> y }  (* premise *)
+                      x <- x + 1;  (* premise *)
+                      z <- z - 1;  (* premise *)
+                      if z < 0 then y <- y + 1  (* premise *)
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant preservation)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { not (x = y) }  (* premise *)
+                      invariant { x <> y }  (* GOAL, premise *)
+                      x <- x + 1;  (* premise *)
+                      z <- z - 1;  (* premise *)
+                      if z < 0 then y <- y + 1  (* premise *)
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (assertion)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { not (x = y) }  (* premise *)
+                      invariant { x <> y }  (* premise *)
+                      x <- x + 1;
+                      z <- z - 1;
+                      if z < 0 then y <- y + 1
+                    done;
+                    assert { x <> y }  (* GOAL *)
+    - query: __Computation__
+      args:
+        fun: check
+        args:
+          prog: |
+            use int.Int
+      
+            let example1 () diverges =
+              let ref x = any int in
+              let ref y = 3 in
+              let ref z = 0 in
+              assume { x < 0 };
+              while x < 10 do
+                x <- x + 1;
+                z <- z - 1;
+                if z < 0 then y <- y + 1
+              done;
+              assert { x <> y }
+          annotated: |-
+            use int.Int
+      
+            let example1 () diverges =
+              let ref x = any int in
+              let ref y = 3 in
+              let ref z = 0 in
+              assume { x < 0 };
+              while x < 10 do
+                invariant { z <= 0 }
+                invariant { x + z <= -2 }
+                invariant { x <> y }
+                x <- x + 1;
+                z <- z - 1;
+                if z < 0 then y <- y + 1
+              done;
+              assert { x <> y }
+      answers:
+        - answer: |
+            error:
+      
+            obligations:
+              - name: VC for example1 (loop invariant init)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in  (* GOAL *)
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do
+                      invariant { z <= 0 }  (* GOAL *)
+                      invariant { x + z <= -2 }
+                      invariant { x <> y }
+                      x <- x + 1;
+                      z <- z - 1;
+                      if z < 0 then y <- y + 1
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant init)
+                proved: no
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* GOAL, premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in  (* GOAL, premise *)
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do
+                      invariant { z <= 0 }  (* premise *)
+                      invariant { x + z <= -2 }  (* GOAL *)
+                      invariant { x <> y }
+                      x <- x + 1;
+                      z <- z - 1;
+                      if z < 0 then y <- y + 1
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant init)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* GOAL, premise *)
+                    let ref y = 3 in  (* GOAL *)
+                    let ref z = 0 in  (* premise *)
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do
+                      invariant { z <= 0 }  (* premise *)
+                      invariant { x + z <= -2 }  (* premise *)
+                      invariant { x <> y }  (* GOAL *)
+                      x <- x + 1;
+                      z <- z - 1;
+                      if z < 0 then y <- y + 1
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant preservation)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { z <= 0 }  (* GOAL, premise *)
+                      invariant { x + z <= -2 }  (* premise *)
+                      invariant { x <> y }  (* premise *)
+                      x <- x + 1;  (* premise *)
+                      z <- z - 1;  (* premise *)
+                      if z < 0 then y <- y + 1  (* premise *)
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant preservation)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { z <= 0 }  (* premise *)
+                      invariant { x + z <= -2 }  (* GOAL, premise *)
+                      invariant { x <> y }  (* premise *)
+                      x <- x + 1;  (* premise *)
+                      z <- z - 1;  (* premise *)
+                      if z < 0 then y <- y + 1  (* premise *)
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant preservation)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { z <= 0 }  (* premise *)
+                      invariant { x + z <= -2 }  (* premise *)
+                      invariant { x <> y }  (* GOAL, premise *)
+                      x <- x + 1;  (* premise *)
+                      z <- z - 1;  (* premise *)
+                      if z < 0 then y <- y + 1  (* premise *)
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant preservation)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { z <= 0 }  (* GOAL, premise *)
+                      invariant { x + z <= -2 }  (* premise *)
+                      invariant { x <> y }  (* premise *)
+                      x <- x + 1;  (* premise *)
+                      z <- z - 1;  (* premise *)
+                      if z < 0 then y <- y + 1  (* premise *)
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant preservation)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { z <= 0 }  (* premise *)
+                      invariant { x + z <= -2 }  (* GOAL, premise *)
+                      invariant { x <> y }  (* premise *)
+                      x <- x + 1;  (* premise *)
+                      z <- z - 1;  (* premise *)
+                      if z < 0 then y <- y + 1  (* premise *)
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (loop invariant preservation)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { z <= 0 }  (* premise *)
+                      invariant { x + z <= -2 }  (* premise *)
+                      invariant { x <> y }  (* GOAL, premise *)
+                      x <- x + 1;  (* premise *)
+                      z <- z - 1;  (* premise *)
+                      if z < 0 then y <- y + 1  (* premise *)
+                    done;
+                    assert { x <> y }
+              - name: VC for example1 (assertion)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let example1 () diverges =  (* GOAL *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = 3 in
+                    let ref z = 0 in
+                    assume { x < 0 };  (* premise *)
+                    while x < 10 do  (* premise *)
+                      invariant { z <= 0 }  (* premise *)
+                      invariant { x + z <= -2 }  (* premise *)
+                      invariant { x <> y }  (* premise *)
+                      x <- x + 1;
+                      z <- z - 1;
+                      if z < 0 then y <- y + 1
+                    done;
+                    assert { x <> y }  (* GOAL *)
 
 
 # Second demonstration: invariants involving implications
@@ -307,6 +1025,123 @@
             ```
             - "n > 0 -> x <= n"
             ```
+    - query: __Computation__
+      args:
+        fun: check
+        args:
+          prog: |
+            use int.Int
+      
+            let main () diverges =
+              let n = any int in
+              let ref x = 0 in
+              while x < n do
+                x <- x + 1;
+              done;
+              assume { n > 0 };
+              assert { x = n }
+          annotated: |
+            use int.Int
+      
+            let main () diverges =
+              let n = any int in
+              let ref x = 0 in
+              while x < n do
+                x <- x + 1;
+              done;
+              assume { n > 0 };
+              assert { x = n }
+      answers:
+        - answer: |
+            error:
+            obligations:
+              - name: VC for main (assertion)
+                proved: no
+                relevance_hints: |-
+                  use int.Int
+      
+                  let main () diverges =  (* GOAL *)
+                    let n = any int in
+                    let ref x = 0 in
+                    while x < n do  (* premise *)
+                      x <- x + 1;
+                    done;
+                    assume { n > 0 };  (* premise *)
+                    assert { x = n }  (* GOAL *)
+    - query: __Computation__
+      args:
+        fun: check
+        args:
+          prog: |
+            use int.Int
+      
+            let main () diverges =
+              let n = any int in
+              let ref x = 0 in
+              while x < n do
+                x <- x + 1;
+              done;
+              assume { n > 0 };
+              assert { x = n }
+          annotated: |-
+            use int.Int
+      
+            let main () diverges =
+              let n = any int in
+              let ref x = 0 in
+              while x < n do
+                invariant { n > 0 -> x <= n }
+                x <- x + 1;
+              done;
+              assume { n > 0 };
+              assert { x = n }
+      answers:
+        - answer: |
+            error:
+      
+            obligations:
+              - name: VC for main (loop invariant init)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let main () diverges =  (* GOAL *)
+                    let n = any int in
+                    let ref x = 0 in  (* GOAL *)
+                    while x < n do
+                      invariant { n > 0 -> x <= n }  (* GOAL, premise *)
+                      x <- x + 1;
+                    done;
+                    assume { n > 0 };
+                    assert { x = n }
+              - name: VC for main (loop invariant preservation)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let main () diverges =  (* GOAL *)
+                    let n = any int in
+                    let ref x = 0 in
+                    while x < n do  (* premise *)
+                      invariant { n > 0 -> x <= n }  (* GOAL, premise *)
+                      x <- x + 1;  (* premise *)
+                    done;
+                    assume { n > 0 };
+                    assert { x = n }
+              - name: VC for main (assertion)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let main () diverges =  (* GOAL *)
+                    let n = any int in
+                    let ref x = 0 in
+                    while x < n do  (* premise *)
+                      invariant { n > 0 -> x <= n }  (* premise *)
+                      x <- x + 1;
+                    done;
+                    assume { n > 0 };  (* premise *)
+                    assert { x = n }  (* GOAL *)
 
 
 # Third demonstration: when disjunctions are needed
@@ -356,3 +1191,152 @@
             - "z >= y || x < 500"
             ```
           example: true
+    - query: __Computation__
+      args:
+        fun: check
+        args:
+          prog: |
+            use int.Int
+      
+            let main () diverges =
+              let ref x = 0 in
+              let ref y = any int in
+              let ref z = any int in
+              while x < 500 do
+                x <- x + 1;
+                if z <= y then
+                  y <- z
+              done;
+              assert { z >= y }
+          annotated: |
+            use int.Int
+      
+            let main () diverges =
+              let ref x = 0 in
+              let ref y = any int in
+              let ref z = any int in
+              while x < 500 do
+                x <- x + 1;
+                if z <= y then
+                  y <- z
+              done;
+              assert { z >= y }
+      answers:
+        - answer: |
+            error:
+            obligations:
+              - name: VC for main (assertion)
+                proved: no
+                relevance_hints: |-
+                  use int.Int
+      
+                  let main () diverges =  (* GOAL *)
+                    let ref x = 0 in
+                    let ref y = any int in
+                    let ref z = any int in  (* GOAL *)
+                    while x < 500 do  (* premise *)
+                      x <- x + 1;
+                      if z <= y then
+                        y <- z
+                    done;
+                    assert { z >= y }  (* GOAL *)
+    - query: __Computation__
+      args:
+        fun: check
+        args:
+          prog: |
+            use int.Int
+      
+            let main () diverges =
+              let ref x = 0 in
+              let ref y = any int in
+              let ref z = any int in
+              while x < 500 do
+                x <- x + 1;
+                if z <= y then
+                  y <- z
+              done;
+              assert { z >= y }
+          annotated: |-
+            use int.Int
+      
+            let main () diverges =
+              let ref x = 0 in
+              let ref y = any int in
+              let ref z = any int in
+              while x < 500 do
+                invariant { z >= y || x < 500 }
+                x <- x + 1;
+                if z <= y then
+                  y <- z
+              done;
+              assert { z >= y }
+      answers:
+        - answer: |
+            error:
+      
+            obligations:
+              - name: VC for main (loop invariant init)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let main () diverges =  (* GOAL *)
+                    let ref x = 0 in  (* GOAL *)
+                    let ref y = any int in  (* GOAL *)
+                    let ref z = any int in  (* GOAL *)
+                    while x < 500 do
+                      invariant { z >= y || x < 500 }  (* GOAL *)
+                      x <- x + 1;
+                      if z <= y then
+                        y <- z
+                    done;
+                    assert { z >= y }
+              - name: VC for main (loop invariant preservation)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let main () diverges =  (* GOAL *)
+                    let ref x = 0 in
+                    let ref y = any int in
+                    let ref z = any int in
+                    while x < 500 do  (* premise *)
+                      invariant { z >= y || x < 500 }  (* GOAL, premise *)
+                      x <- x + 1;  (* premise *)
+                      if z <= y then  (* premise *)
+                        y <- z
+                    done;
+                    assert { z >= y }
+              - name: VC for main (loop invariant preservation)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let main () diverges =  (* GOAL *)
+                    let ref x = 0 in
+                    let ref y = any int in
+                    let ref z = any int in  (* GOAL, premise *)
+                    while x < 500 do  (* premise *)
+                      invariant { z >= y || x < 500 }  (* GOAL, premise *)
+                      x <- x + 1;  (* premise *)
+                      if z <= y then  (* premise *)
+                        y <- z
+                    done;
+                    assert { z >= y }
+              - name: VC for main (assertion)
+                proved: yes
+                relevance_hints: |-
+                  use int.Int
+      
+                  let main () diverges =  (* GOAL *)
+                    let ref x = 0 in
+                    let ref y = any int in
+                    let ref z = any int in  (* GOAL, premise *)
+                    while x < 500 do  (* premise *)
+                      invariant { z >= y || x < 500 }  (* premise *)
+                      x <- x + 1;
+                      if z <= y then
+                        y <- z
+                    done;
+                    assert { z >= y }  (* GOAL *)
