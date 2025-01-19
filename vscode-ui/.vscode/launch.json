@@ -10,7 +10,7 @@
 			"type": "extensionHost",
 			"request": "launch",
 			"args": [
-				"${workspaceFolder}/../tests",  // Load this workspace when debugging.
+				"${workspaceFolder}/../examples/find_invariants",  // Load this workspace when debugging.
 				"--extensionDevelopmentPath=${workspaceFolder}"
 			],
 			"outFiles": [

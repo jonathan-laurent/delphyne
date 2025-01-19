@@ -1,7 +1,7 @@
 # Demonstrations for the `find_invariants.prove_program` strategy
 
 
-# An example with conditionals, which involves abducting an additional assumption.
+# A demonstration with conditionals, which involves abducting an additional assumption.
 - strategy: prove_program
   args:
     prog: |
@@ -53,9 +53,133 @@
             - "z <= 0"
             - "x <> y"
             ```
+          example: true
         - label: partial
           example: false
           answer: |
             ```
             - "x <> y"
             ```
+    - query: ProposeInvariants
+      args:
+        unproved:
+          obligation_name: VC for example1 (loop invariant preservation)
+          relevance_hints: |-
+            use int.Int
+      
+            let example1 () diverges =  (* GOAL *)
+              let ref x = any int in  (* premise *)
+              let ref y = 3 in
+              let ref z = 0 in
+              assume { x < 0 };  (* premise *)
+              while x < 10 do  (* premise *)
+                invariant { x <> y }  (* GOAL, premise *)
+                x <- x + 1;  (* premise *)
+                z <- z - 1;  (* premise *)
+                if z < 0 then y <- y + 1  (* premise *)
+              done;
+              assert { x <> y }
+        blacklist: []
+      answers:
+        - answer: |
+            Why3 wasn't able to prove that the invariant `x <> y` is preserved by the loop body. Let's dig into this. Within the loop body, `x` is incremented. What happens to `y` depends on whether the conditional statement is executed or not, which in turns depend on `z`. However, we can see that `z = 0` initially and then `z` never increases. Thus, `z <= 0` is an invariant and the conditional statement always executes. As a consequence, both `x` and `y` increase by the same amount at each loop iteration and thus `x <> y` is preserved.
+
+            As a consequence, we propose adding `z <= 0` as an invariant:
+
+            ```
+            - "z <= 0"
+            ```
+          example: true
+
+
+# Second demonstration: invariants involving implications
+- strategy: prove_program
+  args:
+    prog: |
+      use int.Int
+
+      let main () diverges =
+        let n = any int in
+        let ref x = 0 in
+        while x < n do
+          x <- x + 1;
+        done;
+        assume { n > 0 };
+        assert { x = n }
+  tests:
+    - run | success
+  queries: 
+    - query: ProposeInvariants
+      args:
+        unproved:
+          obligation_name: VC for main (assertion)
+          relevance_hints: |-
+            use int.Int
+      
+            let main () diverges =  (* GOAL *)
+              let n = any int in
+              let ref x = 0 in
+              while x < n do  (* premise *)
+                x <- x + 1;
+              done;
+              assume { n > 0 };  (* premise *)
+              assert { x = n }  (* GOAL *)
+        blacklist: []
+      answers:
+        - answer: |
+            Why3 did not manage to deduce the final assertion `x = n` from the preceding assumption `n > 0` and the negation of the loop guard `x >= n`. What remains to establish indeed is that `x <= n` at the end of the program. Note that the `n > 0` assumption involves a variable `n` that is constant throughout the program. Thus, assuming `n > 0` after the loop, we also have `n > 0` before the loop. Also, assuming `n > 0`, then `x <= n` is a loop invariant. Indeed, `x <= n` is true before entering the loop thanks to the `n > 0` assumption. Moreover, before the loop body executes, we have `x < n` by the loop guard and so `x <= n` after the loop body executes since `x` is incremented. As a consequence, `x <= n` is preserved by the loop body.
+
+            Thus, we propose `n > 0 -> x <= n` as an invariant. Note that the `n > 0` assumption is important. Otherwise, the invariant would not hold initially!
+
+            ```
+            - "n > 0 -> x <= n"
+            ```
+
+
+# Third demonstration: when disjunctions are needed
+- strategy: prove_program
+  args:
+    prog: |
+      use int.Int
+
+      let main () diverges =
+        let ref x = 0 in
+        let ref y = any int in
+        let ref z = any int in
+        while x < 500 do
+          x <- x + 1;
+          if z <= y then
+            y <- z
+        done;
+        assert { z >= y }
+  tests:
+    - run | success
+  queries: 
+    - query: ProposeInvariants
+      args:
+        unproved:
+          obligation_name: VC for main (assertion)
+          relevance_hints: |-
+            use int.Int
+      
+            let main () diverges =  (* GOAL *)
+              let ref x = 0 in
+              let ref y = any int in
+              let ref z = any int in  (* GOAL *)
+              while x < 500 do  (* premise *)
+                x <- x + 1;
+                if z <= y then
+                  y <- z
+              done;
+              assert { z >= y }  (* GOAL *)
+        blacklist: []
+      answers:
+        - answer: |
+            Why3 did not manage to prove the final assertion `z >= y`. The formula `z >= y` is clearly not a loop invariant because it is not necessarily true before the loop. The reason `z >= y` really holds at the end is that executing any loop iteration will make it true (if `z >= y` is false at the start of an iteration, the conditional statement will execute and make it true). In turn, at least one loop iteration will execute since `x < 500` is true initially.
+
+            Thus, we propose to add invariant `z >= y || x < 500`, meaning that `z >= y` is true already or the loop guard is true, meaning one more loop iteration at least will execute.
+
+            ```
+            - "z >= y || x < 500"
+            ```
+          example: true

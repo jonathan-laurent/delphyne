@@ -29,7 +29,7 @@ y >= 0
 
 ## Demonstration Problems
 
-Here are some problems used for demonstrations, which are in a similar style but not in the Code2Inv benchmark:
+Here are some problems used for demonstrations:
 
 ```
 use int.Int
@@ -53,9 +53,24 @@ use int.Int
 let main () diverges =
   let n = any int in
   let ref x = 0 in
-  assume { n > 0 };
   while x < n do
     x <- x + 1;
   done;
+  assume { n > 0 };
   assert { x = n }
+```
+
+```
+use int.Int
+
+let main () diverges =
+  let ref x = 0 in
+  let ref y = any int in
+  let ref z = any int in
+  while x < 500 do
+    x <- x + 1;
+    if z <= y then
+      y <- z
+  done;
+  assert { z >= y }
 ```
