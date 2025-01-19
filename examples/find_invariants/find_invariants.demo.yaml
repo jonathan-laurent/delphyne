@@ -21,10 +21,14 @@
   tests:
     - run | success
     - run 'partial' | success
-    # Demonstrating EvaluateProofState
+    # Demonstrating `EvaluateProofState`
     - at EvaluateProofState#1 'partial' | answer eval
     - at EvaluateProofState#2 'partial propose_same' | answer eval
     - at EvaluateProofState#2 'partial propose_false' | answer eval
+    # Demonstrating `IsProposalNovel`
+    - at iterate#1 | go cands | go next(next(nil){'partial'}[1]) | save second_attempt
+    - load second_attempt | at IsProposalNovel 'blacklisted' | answer cands
+    - load second_attempt | at IsProposalNovel 'not_blacklisted' | answer cands
   queries: 
     - query: ProposeInvariants
       args:
@@ -200,7 +204,65 @@
             prob_redundant: 0
             ```
           example: true
+    - query: ProposeInvariants
+      args:
+        unproved:
+          obligation_name: VC for example1 (assertion)
+          relevance_hints: |-
+            use int.Int
+      
+            let example1 () diverges =  (* GOAL *)
+              let ref x = any int in  (* premise *)
+              let ref y = 3 in
+              let ref z = 0 in
+              assume { x < 0 };  (* premise *)
+              while x < 10 do  (* premise *)
+                x <- x + 1;
+                z <- z - 1;
+                if z < 0 then y <- y + 1
+              done;
+              assert { x <> y }  (* GOAL *)
+        blacklist:
+          - [x <> y]
+      answers:
+        - label: blacklisted
+          answer: |
+            ```
+            - "not (x = y)"
+            ```
+          example: false
+        - label: not_blacklisted
+          answer: |
+            ```
+            - "z <= 0"
+            ```
+          example: false
+    - query: IsProposalNovel
+      args:
+        proposal: [not (x = y)]
+        blacklist:
+          - [x <> y]
+      answers:
+        - answer: | 
+            The new formula is equivalent to blacklisted formula `x <> y` so it is not novel.
 
+            ```
+            no
+            ```
+          example: true
+    - query: IsProposalNovel
+      args:
+        proposal: [z <= 0]
+        blacklist:
+          - [x <> y]
+      answers:
+        - answer: |
+            The new formula `z <= 0` is not equivalent to the only blacklisted formula `x <> y` so it is novel.
+
+            ```
+            yes
+            ```
+          example: true
 
 
 # Second demonstration: invariants involving implications

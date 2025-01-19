@@ -1,9 +1,8 @@
 Blacklist:
-
 {% for b in query.blacklist %}
-  - `({% b|join(") && (") %})`
+  - `({{ b|join(") && (") }})`
 {% endfor %}
 
-New formula: `({% query.proposal|join(") && (") %})`
+New formula: `({{ query.proposal|join(") && (") }})`
 
 Is the new formula distinct from all blacklisted formulas?
