@@ -330,14 +330,14 @@ def generate_pairs() -> dp.Strategy[
         PickPositiveInteger(None)(IP := dp.PromptingPolicy, lambda p: p)
     )
     yield from dp.factor(
-        num_confidence(None, x)(IP, lambda _: (dp.dfs(), ())),
+        num_confidence(None, x)(IP, lambda _: (dp.dfs(), None)),
         lambda _: lambda f: f,
     )
     y = yield from dp.branch(
         PickPositiveInteger(x)(IP, lambda p: p),
     )
     yield from dp.factor(
-        num_confidence(x, y)(IP, lambda _: (dp.dfs(), ())),
+        num_confidence(x, y)(IP, lambda _: (dp.dfs(), None)),
         lambda _: lambda f: f,
     )
     return (x, y)

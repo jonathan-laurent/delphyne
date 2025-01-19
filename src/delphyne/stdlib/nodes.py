@@ -129,7 +129,7 @@ class Factor(dp.Node):
     factor: FromPolicy[Callable[[Any], float]]
 
     def navigate(self) -> dp.Navigation:
-        return ()
+        return None
         yield
 
     def primary_space(self):
@@ -160,7 +160,7 @@ class Value(dp.Node):
     value: FromPolicy[Callable[[Any], float]]
 
     def navigate(self) -> dp.Navigation:
-        return ()
+        return None
         yield
 
     def primary_space(self):

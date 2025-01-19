@@ -104,7 +104,7 @@ async def best_first_search[P, T](
                         confidence = tree.node.value(policy)(eval)
                     else:
                         confidence *= tree.node.factor(policy)(eval)
-                    push = push_fresh_node(tree.child(()), confidence, depth)
+                    push = push_fresh_node(tree.child(None), confidence, depth)
                     async for push_msg in push:
                         yield push_msg
             case Branch():
