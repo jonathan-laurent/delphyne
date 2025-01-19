@@ -93,7 +93,7 @@ def propose_invariants(
     if blacklist:
         novel = yield from dp.branch(
             IsProposalNovel(proposal, blacklist)(ProposeInvsIP, lambda p: p.novel))
-        dp.ensure(novel, "proposal is not novel")
+        yield from dp.ensure(novel, "proposal is not novel")
     return proposal, [*blacklist, proposal]
 
 
