@@ -64,12 +64,14 @@ async def search_iteration[P, T](
 
 def iterate[P, S, T](
     next: Callable[[S | None], dp.OpaqueSpaceBuilder[P, tuple[T | None, S]]],
-    transform_stream: Callable[[P], StreamTransformer] | None = None,
+    transform_stream: Callable[[P], StreamTransformer | None] | None = None,
 ) -> dp.OpaqueSpaceBuilder[P, T]:
     def iterate_policy(inner_policy: P):
         policy = search_iteration()
         if transform_stream is not None:
-            policy = transform_stream(inner_policy) @ policy
+            trans = transform_stream(inner_policy)
+            if trans is not None:
+                policy = trans @ policy
         return (policy, inner_policy)
 
     return _iterate(next).using(iterate_policy)

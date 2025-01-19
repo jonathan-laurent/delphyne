@@ -27,7 +27,7 @@ class ProposeInvsIP:
 
 @dataclass
 class ProveProgIP:
-    iterate: dp.StreamTransformer
+    iterate: dp.StreamTransformer | None
     propose: "dp.Policy[Branch | Failure, ProposeInvsIP]"
     eval: dp.PromptingPolicy
     quantify_eval: "Callable[[ProofStateMetrics], float]"
