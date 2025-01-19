@@ -90,6 +90,8 @@ def propose_invariants(
         blacklist = []
     proposal = yield from dp.branch(
         ProposeInvariants(obligation, blacklist)(ProposeInvsIP, lambda p: p.propose))
+    sanity_check = all(why3.no_invalid_formula_symbol(inv) for inv in proposal)
+    yield from dp.ensure(sanity_check, "sanity check failed")
     if blacklist:
         novel = yield from dp.branch(
             IsProposalNovel(proposal, blacklist)(ProposeInvsIP, lambda p: p.novel))
@@ -141,7 +143,7 @@ def prove_program_policy(
     base_model: str = "gpt-4o",
     max_depth: int = 2,
     min_value: float = 0.2,
-    max_requests_per_proposal: int = 5,
+    max_requests_per_proposal: int = 10,
     proposal_penalty: float = 0.7,
     max_deep_proposals: int = 2,
     penalize_redundancy: bool = True,

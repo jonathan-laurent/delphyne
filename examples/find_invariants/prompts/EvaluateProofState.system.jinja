@@ -1,9 +1,10 @@
 {% include 'shared/intro.jinja' %}
 
 
-I will show you an annotated program in which Why3 did not manage to prove a particular assertion or invariant (indicated by a `GOAL` comment). Your task is two-fold. First, you have to determine whether: (1) this annotation is correct but proving it requires additional annotations or (2) this annotation is simply incorrect. Then, you'll have to determine whether or not the shown program features redundant invariants. For example, having both invariants `x >= 1` and `x >= 2` is unnecessary since the second one is stronger and thus `x >= 1` is redundant. Similarly, having invariants `x > 0`, `y > 0` and `x + y > 0` is redundant since the first two invariants together imply the third one.
-
-You should terminate your answer with a triple-quoted code block containing a YAML object with fields `prob_incorrect` and `prob_redundant`. For each of those fields, you should provide a confidence score as a number between 0 and 1.
+I will show you an annotated program in which Why3 did not manage to prove a particular proof obligation. You must determine two things:
 
 {# Judging preservation can be hard and we want to use a weak model here. #}
-When trying to determine whether an invariant annotation is true, you should focus on whether it holds initially since examining preservation can be pretty challenging.
+1. Whether the failing proof obligation is about an invariant not holding initially. In this case, there is no hope to fix the proof by adding new invariants and so the invariant in question must be incorrect.
+2. Whether or not the shown program features redundant invariants. For example, having both invariants `x >= 1` and `x >= 2` is unnecessary since the second one is stronger and thus `x >= 1` is redundant. Similarly, having invariants `x > 0`, `y > 0` and `x + y > 0` is redundant since the first two invariants together imply the third one.
+
+You should terminate your answer with a triple-quoted code block containing a YAML object with fields `prob_incorrect` and `prob_redundant`. For each of those fields, you should provide a confidence score as a number between 0 and 1.

@@ -133,7 +133,7 @@
               assert { x <> y }
       answers:
         - answer: |
-            The `not (x = y)` proposed invariant clearly holds initially since `y = 3` and `x < 0` before the loop.
+            From its name, the only failed obligation is about invariant preservation so all invariants can be proved to hold initially.
 
             Invariant `not (x = 0)` is redundant with invariant `x <> y`.
 
@@ -165,7 +165,7 @@
               assert { x <> y }
       answers:
         - answer: |
-            From the obligation name and looking at the `(* GOAL *)` comments, the invariant `x + z <= -2` could not be proved to hold initially. And indeed, it is not possible to deduce `x + z <= -2` from `x < 0` and `z = 0`.
+            From its name, the obligation that failed is about proving that an invariant holds initially. Thus, this invariant must be incorrect.
 
             I do not see any redundant invariant.
 
@@ -195,7 +195,7 @@
               assert { x <> y }
       answers:
         - answer: |
-            From the obligation name and looking at the `(* GOAL *)` comments, Why3 did not manage to prove that invariant `x <> y` is preserved by the loop body but it did manage to prove that it holds initially (no other proof obligation failed).
+            From its name, the only failed obligation is about invariant preservation so all invariants can be proved to hold initially.
             
             Also, only one invariant is listed so it cannot be redundant.
 

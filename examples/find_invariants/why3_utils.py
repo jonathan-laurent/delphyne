@@ -21,6 +21,15 @@ class Feedback:
     error: str | None
     obligations: Sequence[Obligation]
 
+    def __str__(self):
+        # TODO: this nicer representation is not used in the tree
+        # explorer because of the way `Computation` nodes work.
+        if self.error is not None:
+            return self.error
+        num_obl = len(self.obligations)
+        num_proved = sum(obl.proved for obl in self.obligations)
+        return f"{num_proved}/{num_obl} obligations proved"
+
     @property
     def success(self) -> bool:
         return self.error is None and all(obl.proved for obl in self.obligations)
@@ -77,3 +86,7 @@ def add_invariants(prog: File, invs: Sequence[Formula]) -> File:
     for inv in reversed(invs):
         prog = add_invariant(prog, inv)
     return prog
+
+
+def no_invalid_formula_symbol(fml: Formula) -> bool:
+    return all(c not in fml for c in "/[]{};")
