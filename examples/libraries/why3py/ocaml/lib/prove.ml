@@ -54,9 +54,9 @@ let compute_tasks ast =
   in
   List.rev tasks
 
-let prove_task ?(max_steps = 0) t =
+let prove_task ?(max_steps = 0) ?(max_time_in_secs: float = 5.0) t =
   let open Call_provers in
-  let limits = {empty_limits with limit_steps= max_steps} in
+  let limits = {empty_limits with limit_steps= max_steps; limit_time = max_time_in_secs} in
   let res =
     wait_on_call
       (Driver.prove_task ~limits ~config:config_main

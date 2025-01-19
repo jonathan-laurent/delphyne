@@ -1,11 +1,11 @@
 import timeit
 
+import pytest
 import utils
 
 from why3py.core import prove
 from why3py.locations import highlight_mlw
 from why3py.utils import print_rich
-
 
 TEST_MLW = """
 use int.Int
@@ -42,3 +42,23 @@ def test_prove_obligations(monkeypatch):
                 print_rich(highlight_mlw(TEST_MLW, obl["locs"]))
         case _:
             assert False
+
+
+TEST_TIMEOUT = """
+use int.Int
+
+let main () diverges =
+  let ref x = 1 in
+  let ref y = 0 in
+  while y < 100000 do
+    invariant { 2*x >= y*(y+1) + 2 }
+    x <- x + y;
+    y <- y + 1
+  done;
+  assert { x >= y }
+"""
+
+
+@pytest.mark.skip("Too long")
+def test_prove_timeout():
+    print(prove(TEST_TIMEOUT))
