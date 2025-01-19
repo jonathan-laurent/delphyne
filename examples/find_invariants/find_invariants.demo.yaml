@@ -21,6 +21,10 @@
   tests:
     - run | success
     - run 'partial' | success
+    # Demonstrating EvaluateProofState
+    - at EvaluateProofState#1 'partial' | answer eval
+    - at EvaluateProofState#2 'partial propose_same' | answer eval
+    - at EvaluateProofState#2 'partial propose_false' | answer eval
   queries: 
     - query: ProposeInvariants
       args:
@@ -90,6 +94,113 @@
             - "z <= 0"
             ```
           example: true
+        - label: propose_same
+          example: false
+          answer: | 
+            ```
+            - "not (x = y)"
+            ```
+        - label: propose_false
+          example: false
+          answer: |
+            ```
+            - "z <= 0"
+            - "x + z <= -2"
+            ```
+    - query: EvaluateProofState
+      args:
+        unproved:
+          obligation_name: VC for example1 (loop invariant preservation)
+          relevance_hints: |-
+            use int.Int
+      
+            let example1 () diverges =  (* GOAL *)
+              let ref x = any int in  (* premise *)
+              let ref y = 3 in
+              let ref z = 0 in
+              assume { x < 0 };  (* premise *)
+              while x < 10 do  (* premise *)
+                invariant { not (x = y) }  (* GOAL, premise *)
+                invariant { x <> y }  (* premise *)
+                x <- x + 1;  (* premise *)
+                z <- z - 1;  (* premise *)
+                if z < 0 then y <- y + 1  (* premise *)
+              done;
+              assert { x <> y }
+      answers:
+        - answer: |
+            The `not (x = y)` proposed invariant clearly holds initially since `y = 3` and `x < 0` before the loop.
+
+            Invariant `not (x = 0)` is redundant with invariant `x <> y`.
+
+            ```
+            prob_incorrect: 0
+            prob_redundant: 1
+            ```
+          example: true
+    - query: EvaluateProofState
+      args:
+        unproved:
+          obligation_name: VC for example1 (loop invariant init)
+          relevance_hints: |-
+            use int.Int
+      
+            let example1 () diverges =  (* GOAL *)
+              let ref x = any int in  (* GOAL, premise *)
+              let ref y = 3 in
+              let ref z = 0 in  (* GOAL, premise *)
+              assume { x < 0 };  (* premise *)
+              while x < 10 do
+                invariant { z <= 0 }  (* premise *)
+                invariant { x + z <= -2 }  (* GOAL *)
+                invariant { x <> y }
+                x <- x + 1;
+                z <- z - 1;
+                if z < 0 then y <- y + 1
+              done;
+              assert { x <> y }
+      answers:
+        - answer: |
+            From the obligation name and looking at the `(* GOAL *)` comments, the invariant `x + z <= -2` could not be proved to hold initially. And indeed, it is not possible to deduce `x + z <= -2` from `x < 0` and `z = 0`.
+
+            I do not see any redundant invariant.
+
+            ```
+            prob_incorrect: 1
+            prob_redundant: 0
+            ```
+          example: true
+    - query: EvaluateProofState
+      args:
+        unproved:
+          obligation_name: VC for example1 (loop invariant preservation)
+          relevance_hints: |-
+            use int.Int
+      
+            let example1 () diverges =  (* GOAL *)
+              let ref x = any int in  (* premise *)
+              let ref y = 3 in
+              let ref z = 0 in
+              assume { x < 0 };  (* premise *)
+              while x < 10 do  (* premise *)
+                invariant { x <> y }  (* GOAL, premise *)
+                x <- x + 1;  (* premise *)
+                z <- z - 1;  (* premise *)
+                if z < 0 then y <- y + 1  (* premise *)
+              done;
+              assert { x <> y }
+      answers:
+        - answer: |
+            From the obligation name and looking at the `(* GOAL *)` comments, Why3 did not manage to prove that invariant `x <> y` is preserved by the loop body but it did manage to prove that it holds initially (no other proof obligation failed).
+            
+            Also, only one invariant is listed so it cannot be redundant.
+
+            ```
+            prob_incorrect: 0
+            prob_redundant: 0
+            ```
+          example: true
+
 
 
 # Second demonstration: invariants involving implications

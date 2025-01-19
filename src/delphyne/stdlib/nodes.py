@@ -132,6 +132,9 @@ class Factor(dp.Node):
         return ()
         yield
 
+    def primary_space(self):
+        return self.eval
+
 
 def factor[E, P](
     eval: dp.OpaqueSpaceBuilder[P, E],
@@ -159,6 +162,9 @@ class Value(dp.Node):
     def navigate(self) -> dp.Navigation:
         return ()
         yield
+
+    def primary_space(self):
+        return self.eval
 
 
 def value[E, P](
