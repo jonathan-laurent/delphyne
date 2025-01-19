@@ -6,6 +6,7 @@ import delphyne.core as dp
 from delphyne.stdlib.nodes import Failure, fail, spawn_node
 from delphyne.stdlib.policies import search_policy
 from delphyne.stdlib.strategies import strategy
+from delphyne.stdlib.streams import StreamTransformer
 
 
 @dataclass
@@ -63,5 +64,12 @@ async def search_iteration[P, T](
 
 def iterate[P, S, T](
     next: Callable[[S | None], dp.OpaqueSpaceBuilder[P, tuple[T | None, S]]],
+    transform_stream: Callable[[P], StreamTransformer] | None = None,
 ) -> dp.OpaqueSpaceBuilder[P, T]:
-    return _iterate(next).using(lambda p: (search_iteration(), p))
+    def iterate_policy(inner_policy: P):
+        policy = search_iteration()
+        if transform_stream is not None:
+            policy = transform_stream(inner_policy) @ policy
+        return (policy, inner_policy)
+
+    return _iterate(next).using(iterate_policy)

@@ -27,6 +27,7 @@ class ProposeInvsIP:
 
 @dataclass
 class ProveProgIP:
+    iterate: dp.StreamTransformer
     propose: "dp.Policy[Branch | Failure, ProposeInvsIP]"
     eval: dp.PromptingPolicy
     quantify_eval: "Callable[[ProofStateMetrics], float]"
@@ -77,7 +78,8 @@ def prove_program(
         new_invariants = yield from dp.branch(
             dp.iterate(
                 lambda prior: propose_invariants(unproved, prior)(
-                    ProveProgIP, lambda p: p.propose)))
+                    ProveProgIP, lambda p: p.propose),
+                lambda p: p.iterate))
         annotated = why3.add_invariants(annotated, new_invariants)
 
 
