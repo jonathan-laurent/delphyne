@@ -542,7 +542,8 @@ export class TreeView {
     this.nodeView.message = undefined;
     if (this.pointedTree) {
       const node = this.pointedTree.getNode();
-      this.nodeView.description = node.kind;
+      const nodeId = this.pointedTree.selectedNode;
+      this.nodeView.description = `${node.kind} (${nodeId})`;
       if (node.summary_message !== null) {
         this.nodeView.message = node.summary_message;
       }
