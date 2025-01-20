@@ -267,6 +267,7 @@ async def few_shot[T](
             return
         answer = answers[0]
         element = query.answer(None, answer)
+        env.tracer.trace_answer(query.ref, dp.Answer(None, answer))
         if enable_logging:
             log_oracle_answer(env, query, prompt, None, answer, element, meta)
         yield dp.Spent(budget)

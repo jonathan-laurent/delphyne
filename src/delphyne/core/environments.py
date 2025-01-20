@@ -171,6 +171,11 @@ class Tracer:
     def trace_node(self, node: refs.GlobalNodePath) -> None:
         self.trace.convert_location(traces.Location(node, None))
 
+    def trace_answer(
+        self, space: refs.GlobalSpacePath, answer: refs.Answer
+    ) -> None:
+        self.trace.convert_answer_ref((space, answer))
+
     def log(
         self,
         message: str,
