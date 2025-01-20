@@ -230,7 +230,8 @@ function treeItemOfObjectItem(
     item.iconPath = new vscode.ThemeIcon("symbol-misc");
   } else {
     let value = obj.value;
-    item.description = obj.short_descr ?? prettyYamlOneLiner(value);
+    item.description = prettyYamlOneLiner(value);
+    // item.description = obj.short_descr ?? prettyYamlOneLiner(value);
     item.tooltip = prettyYaml(value).trim();
     switch (typeof value) {
       case "string":
