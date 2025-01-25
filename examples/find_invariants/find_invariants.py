@@ -142,15 +142,18 @@ def prove_program_policy(
     fancy_model: str = "gpt-4o",
     base_model: str = "gpt-4o",
     max_depth: int = 2,
-    min_value: float = 0.2,
-    max_requests_per_proposal: int = 10,
+    min_value: float = 0.3,
+    max_requests_per_proposal: int = 5,
     proposal_penalty: float = 0.7,
     max_deep_proposals: int = 2,
     penalize_redundancy: bool = True,
+    penalize_likely_incorrect: bool = False,
 ) -> dp.Policy[Branch | Value | Failure | Computation, ProveProgIP]:
 
     def compute_value(metrics: ProofStateMetrics) -> float:
-        prob = (1 - metrics.prob_incorrect)
+        prob = 1
+        if penalize_likely_incorrect:
+            prob *= (1 - metrics.prob_incorrect)
         if penalize_redundancy:
             prob *= (1 - metrics.prob_redundant)
         return max(min_value, prob)
