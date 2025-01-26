@@ -63,5 +63,3 @@ nav:
     - manual/demos.md
     - manual/extension.md
   - how-to-guides.md
-  - Examples:
-    - examples/loop-invariants.md
