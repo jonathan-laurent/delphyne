@@ -127,7 +127,7 @@ class Factor(dp.Node):
     """
 
     eval: dp.OpaqueSpace[Any, Any]
-    factor: FromPolicy[Callable[[Any], float]]
+    factor: FromPolicy[Callable[[Any], float] | None]
 
     def navigate(self) -> dp.Navigation:
         return None
@@ -170,7 +170,7 @@ class Value(dp.Node):
 
 def value[E, P](
     eval: dp.OpaqueSpaceBuilder[P, E],
-    value: Callable[[P], Callable[[E], float]],
+    value: Callable[[P], Callable[[E], float] | None],
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Value, P, None]:
     yield spawn_node(Value, eval=eval, value=value)

@@ -29,7 +29,7 @@ class ProposeInvsIP:
 class ProveProgIP:
     propose: "dp.Policy[Branch | Failure, ProposeInvsIP]"
     eval: dp.PromptingPolicy
-    quantify_eval: "Callable[[ProofStateMetrics], float]"
+    quantify_eval: "Callable[[ProofStateMetrics], float] | None"
 
 
 #####
@@ -130,16 +130,16 @@ def prove_program_policy(
     fancy_model: str = "gpt-4o",
     base_model: str = "gpt-4o",
     max_depth: int = 2,
-    min_value: float = 0.3,
     max_requests_per_proposal: int = 5,
     proposal_penalty: float = 0.7,
     max_deep_proposals: int = 2,
-    penalize_redundancy: bool = True,
+    enable_state_evaluation: bool = False,
+    min_value: float = 0.3,
 ) -> dp.Policy[Branch | Value | Failure | Computation, ProveProgIP]:
 
     def compute_value(metrics: ProofStateMetrics) -> float:
         prob = 1
-        if penalize_redundancy and metrics.has_redundant_invs:
+        if metrics.has_redundant_invs:
             prob = 0
         return max(min_value, prob)
 
@@ -160,7 +160,7 @@ def prove_program_policy(
     prove_prog_ip = ProveProgIP(
         propose=(dp.with_budget(proposal_limit) @ dp.dfs(), propose_ip),
         eval=dp.take(1) @ dp.few_shot(base),
-        quantify_eval=compute_value,
+        quantify_eval=compute_value if enable_state_evaluation else None,
     )
     bestfs = dp.best_first_search(
         child_confidence_prior=child_confidence_prior,
