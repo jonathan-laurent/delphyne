@@ -91,22 +91,30 @@ async def best_first_search[P, T](
             case Failure():
                 pass
             case Factor() | Value():
-                eval_stream = tree.node.eval.stream(env, policy)
-                eval = None
-                async for eval_msg in eval_stream:
-                    if isinstance(eval_msg, dp.Yield):
-                        eval = eval_msg.value.value
-                        break
-                    else:
-                        yield eval_msg
-                if eval is not None:
+                if isinstance(tree.node, Value):
+                    penalty_fun = tree.node.value(policy)
+                else:
+                    penalty_fun = tree.node.factor(policy)
+                # Evaluate metrics if a penalty function is provided
+                if penalty_fun is not None:
+                    eval_stream = tree.node.eval.stream(env, policy)
+                    eval = None
+                    async for eval_msg in eval_stream:
+                        if isinstance(eval_msg, dp.Yield):
+                            eval = eval_msg.value.value
+                            break
+                        else:
+                            yield eval_msg
+                    # If we failed to evaluate the metrics, we give up.
+                    if eval is None:
+                        return
                     if isinstance(tree.node, Value):
-                        confidence = tree.node.value(policy)(eval)
+                        confidence = penalty_fun(eval)
                     else:
-                        confidence *= tree.node.factor(policy)(eval)
-                    push = push_fresh_node(tree.child(None), confidence, depth)
-                    async for push_msg in push:
-                        yield push_msg
+                        confidence *= penalty_fun(eval)
+                push = push_fresh_node(tree.child(None), confidence, depth)
+                async for push_msg in push:
+                    yield push_msg
             case Branch():
                 if max_depth is not None and depth > max_depth:
                     return

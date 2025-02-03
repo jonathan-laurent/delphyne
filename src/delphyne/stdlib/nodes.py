@@ -122,7 +122,8 @@ class Factor(dp.Node):
     space. Instead of having an oracle compute a numerical value
     directly, it computes an evaluation object that is then transformed
     into a number using a policy-provided function. This allows greater
-    customization on the policy side.
+    customization on the policy side. If no such function is given, the
+    whole node is ignored.
     """
 
     eval: dp.OpaqueSpace[Any, Any]
@@ -138,7 +139,7 @@ class Factor(dp.Node):
 
 def factor[E, P](
     eval: dp.OpaqueSpaceBuilder[P, E],
-    factor: Callable[[P], Callable[[E], float]],
+    factor: Callable[[P], Callable[[E], float] | None],
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Factor, P, None]:
     yield spawn_node(Factor, eval=eval, factor=factor)
@@ -157,7 +158,7 @@ class Value(dp.Node):
     """
 
     eval: dp.OpaqueSpace[Any, Any]
-    value: FromPolicy[Callable[[Any], float]]
+    value: FromPolicy[Callable[[Any], float] | None]
 
     def navigate(self) -> dp.Navigation:
         return None
