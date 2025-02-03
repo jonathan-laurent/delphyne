@@ -131,8 +131,9 @@ def prove_program_policy(
     base_model: str = "gpt-4o",
     max_depth: int = 2,
     max_requests_per_proposal: int = 5,
-    proposal_penalty: float = 0.7,
-    max_deep_proposals: int = 2,
+    root_proposal_penalty: float = 0.7,
+    nonroot_proposal_penalty: float = 1.0,
+    max_nonroot_proposals: int = 3,
     enable_state_evaluation: bool = False,
     min_value: float = 0.3,
 ) -> dp.Policy[Branch | Value | Failure | Computation, ProveProgIP]:
@@ -144,9 +145,11 @@ def prove_program_policy(
         return max(min_value, prob)
 
     def child_confidence_prior(depth: int, prev_gen: int) -> float:
-        if depth >= 1 and prev_gen >= max_deep_proposals:
-            return 0
-        return proposal_penalty ** prev_gen
+        if depth >= 1:
+            if prev_gen >= max_nonroot_proposals:
+                return 0
+            return nonroot_proposal_penalty ** prev_gen
+        return root_proposal_penalty ** prev_gen
 
     n = dp.NUM_REQUESTS
     fancy = dp.openai_model(fancy_model)

@@ -6,8 +6,10 @@
 
 I will show you an annotated program in which Why3 did not manage to prove a particular assertion or invariant. Your task is to suggest one or several missing invariants that may help finish the proof.
 
-In order to help you diagnose the problem, I added comments to the WhyML program indicating what assertion or invariant failed to be proved (`GOAL`) and what parts of the program provide relevant assumptions (`premise`). I will also show you the conclusion of the proof obligation that failed to be proved.
+In order to help you diagnose the problem, I added comments to the WhyML program indicating what assertion or invariant failed to be proved (`GOAL`) and what parts of the program provide relevant assumptions (`premise`).
 
-In addition, I will summarize a list of changes that were tried already and did not prove successful. You must try and suggest something different.
+I will also show you the conclusion of the proof obligation that failed to be proved. This information is not always meaningful since it may contain anonymous variables produced by the obligation generator. However, if it describes a valid invariant, simplifying it and suggesting it as a missing invariant may be a good idea.
+
+Finally, I will summarize a list of changes that were tried already and did not prove successful. You must try and suggest something different.
 
 You should **carefully** check the proposed examples and organize your answer in a similar way. First, try to understand the problem and identify missing invariants that may help complete the proof. Then, terminate your answer with a triple-quoted YAML code block that denotes a list of strings, each of which corresponding to an invariant.

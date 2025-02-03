@@ -2,4 +2,4 @@
 
 strategy_dirs: ["."]
 modules: ["why3_utils", "find_invariants", "baseline"]
-demo_files: []
+demo_files: ["find_invariants"]
