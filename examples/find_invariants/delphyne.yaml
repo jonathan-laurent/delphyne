@@ -1,5 +1,5 @@
 # We include `why3_utils` in the list of modules to get it automatically reloaded.
 
 strategy_dirs: ["."]
-modules: ["why3_utils", "find_invariants"]
+modules: ["why3_utils", "find_invariants", "baseline"]
 demo_files: []
