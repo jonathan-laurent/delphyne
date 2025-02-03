@@ -38,12 +38,6 @@ class ProveProgIP:
 
 
 @dataclass
-class UnprovedObligation:
-    obligation_name: str
-    relevance_hints: str
-
-
-@dataclass
 class ProofStateMetrics:
     prob_incorrect: float
     prob_redundant: float
@@ -69,7 +63,8 @@ def prove_program(
             return annotated
         remaining = [o for o in feedback.obligations if not o.proved]
         yield from dp.ensure(len(remaining) == 1, "too many remaining obligations")
-        unproved = UnprovedObligation(remaining[0].name, remaining[0].relevance_hints)
+        unproved = remaining[0]
+        yield from dp.ensure(not why3.invariant_init_obligation(unproved), "init")
         if annotated != prog:
             yield from dp.value(
                 EvaluateProofState(unproved)(ProveProgIP, lambda p: p.eval),
@@ -83,7 +78,7 @@ def prove_program(
 
 @strategy
 def propose_invariants(
-    obligation: UnprovedObligation,
+    obligation: why3.Obligation,
     blacklist: Sequence[Proposal] | None,
 ) -> Strategy[Branch | Failure, ProposeInvsIP, tuple[Proposal, Sequence[Proposal]]]:
     if blacklist is None:
@@ -106,7 +101,7 @@ def propose_invariants(
 
 @dataclass
 class ProposeInvariants(dp.Query[Proposal]):
-    unproved: UnprovedObligation
+    unproved: why3.Obligation
     blacklist: Sequence[Proposal]
 
     __parser__: ClassVar = dp.yaml_from_last_block
@@ -122,7 +117,7 @@ class IsProposalNovel(dp.Query[bool]):
 
 @dataclass
 class EvaluateProofState(dp.Query[ProofStateMetrics]):
-    unproved: UnprovedObligation
+    unproved: why3.Obligation
 
     def parse(self, mode: str | None, answer: str) -> ProofStateMetrics:
         metrics = dp.yaml_from_last_block(ProofStateMetrics, answer)

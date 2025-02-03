@@ -14,6 +14,7 @@ class Obligation:
     name: str
     proved: bool
     relevance_hints: str
+    goal_formula: str
 
 
 @dataclass
@@ -63,7 +64,8 @@ def check(prog: File, annotated: File) -> Feedback:
     if outcome.kind == "error" or outcome.kind == "mismatch":
         return Feedback(error=why3py.summary(outcome), obligations=[])
     obligations = [
-        Obligation(obl.name, obl.proved, obl.annotated) for obl in outcome.obligations
+        Obligation(obl.name, obl.proved, obl.annotated, obl.goal)
+        for obl in outcome.obligations
     ]
     return Feedback(error=None, obligations=obligations)
 
@@ -90,3 +92,7 @@ def add_invariants(prog: File, invs: Sequence[Formula]) -> File:
 
 def no_invalid_formula_symbol(fml: Formula) -> bool:
     return all(c not in fml for c in "/[]{};")
+
+
+def invariant_init_obligation(obligation: Obligation) -> bool:
+    return "init" in obligation.name
