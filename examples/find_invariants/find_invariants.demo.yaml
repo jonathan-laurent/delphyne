@@ -24,7 +24,6 @@
     # Demonstrating `EvaluateProofState`
     - at EvaluateProofState#1 'partial' | answer eval
     - at EvaluateProofState#2 'partial propose_same' | answer eval
-    - at EvaluateProofState#2 'partial propose_false' | answer eval
     # Demonstrating `IsProposalNovel`
     - at iterate#1 | go cands | go next(next(nil){'partial'}[1]) | save second_attempt
     - load second_attempt | at IsProposalNovel 'blacklisted' | answer cands
@@ -33,7 +32,8 @@
     - query: ProposeInvariants
       args:
         unproved:
-          obligation_name: VC for example1 (assertion)
+          name: VC for example1 (assertion)
+          proved: false
           relevance_hints: |-
             use int.Int
       
@@ -48,6 +48,7 @@
                 if z < 0 then y <- y + 1
               done;
               assert { x <> y }  (* GOAL *)
+          goal_formula: not x = y
         blacklist: []
       answers:
         - answer: |
@@ -71,7 +72,8 @@
     - query: ProposeInvariants
       args:
         unproved:
-          obligation_name: VC for example1 (loop invariant preservation)
+          name: VC for example1 (loop invariant preservation)
+          proved: false
           relevance_hints: |-
             use int.Int
       
@@ -87,10 +89,11 @@
                 if z < 0 then y <- y + 1  (* premise *)
               done;
               assert { x <> y }
+          goal_formula: not (x + 1) = y
         blacklist: []
       answers:
         - answer: |
-            Why3 wasn't able to prove that the invariant `x <> y` is preserved by the loop body. Let's dig into this. Within the loop body, `x` is incremented. What happens to `y` depends on whether the conditional statement is executed or not, which in turns depend on `z`. However, we can see that `z = 0` initially and then `z` never increases. Thus, `z <= 0` is an invariant and the conditional statement always executes. As a consequence, both `x` and `y` increase by the same amount at each loop iteration and thus `x <> y` is preserved.
+            Why3 wasn't able to prove that the invariant `x <> y` is preserved by the loop body. Let's dig into this. Within the loop body, `x` is incremented. What happens to `y` depends on whether the conditional statement is executed or not, which in turns depends on `z`. However, we can see that `z = 0` initially and then `z` never increases. Thus, `z <= 0` is an invariant and the conditional statement always executes. As a consequence, both `x` and `y` increase by the same amount at each loop iteration and thus `x <> y` is preserved.
 
             As a consequence, we propose adding `z <= 0` as an invariant:
 
@@ -104,17 +107,40 @@
             ```
             - "not (x = y)"
             ```
-        - label: propose_false
-          example: false
-          answer: |
-            ```
-            - "z <= 0"
-            - "x + z <= -2"
-            ```
     - query: EvaluateProofState
       args:
         unproved:
-          obligation_name: VC for example1 (loop invariant preservation)
+          name: VC for example1 (loop invariant preservation)
+          proved: false
+          relevance_hints: |-
+            use int.Int
+      
+            let example1 () diverges =  (* GOAL *)
+              let ref x = any int in  (* premise *)
+              let ref y = 3 in
+              let ref z = 0 in
+              assume { x < 0 };  (* premise *)
+              while x < 10 do  (* premise *)
+                invariant { x <> y }  (* GOAL, premise *)
+                x <- x + 1;  (* premise *)
+                z <- z - 1;  (* premise *)
+                if z < 0 then y <- y + 1  (* premise *)
+              done;
+              assert { x <> y }
+          goal_formula: not (x + 1) = y
+      answers:
+        - answer: |
+            Only one invariant is listed so it cannot be redundant.
+
+            ```
+            has_redundant_invs: no
+            ```
+          example: true
+    - query: EvaluateProofState
+      args:
+        unproved:
+          name: VC for example1 (loop invariant preservation)
+          proved: false
           relevance_hints: |-
             use int.Int
       
@@ -131,83 +157,20 @@
                 if z < 0 then y <- y + 1  (* premise *)
               done;
               assert { x <> y }
+          goal_formula: not (x + 1) = y
       answers:
         - answer: |
-            From its name, the only failed obligation is about invariant preservation so all invariants can be proved to hold initially.
-
             Invariant `not (x = 0)` is redundant with invariant `x <> y`.
 
             ```
-            prob_incorrect: 0
-            prob_redundant: 1
-            ```
-          example: true
-    - query: EvaluateProofState
-      args:
-        unproved:
-          obligation_name: VC for example1 (loop invariant init)
-          relevance_hints: |-
-            use int.Int
-      
-            let example1 () diverges =  (* GOAL *)
-              let ref x = any int in  (* GOAL, premise *)
-              let ref y = 3 in
-              let ref z = 0 in  (* GOAL, premise *)
-              assume { x < 0 };  (* premise *)
-              while x < 10 do
-                invariant { z <= 0 }  (* premise *)
-                invariant { x + z <= -2 }  (* GOAL *)
-                invariant { x <> y }
-                x <- x + 1;
-                z <- z - 1;
-                if z < 0 then y <- y + 1
-              done;
-              assert { x <> y }
-      answers:
-        - answer: |
-            From its name, the obligation that failed is about proving that an invariant holds initially. Thus, this invariant must be incorrect.
-
-            I do not see any redundant invariant.
-
-            ```
-            prob_incorrect: 1
-            prob_redundant: 0
-            ```
-          example: true
-    - query: EvaluateProofState
-      args:
-        unproved:
-          obligation_name: VC for example1 (loop invariant preservation)
-          relevance_hints: |-
-            use int.Int
-      
-            let example1 () diverges =  (* GOAL *)
-              let ref x = any int in  (* premise *)
-              let ref y = 3 in
-              let ref z = 0 in
-              assume { x < 0 };  (* premise *)
-              while x < 10 do  (* premise *)
-                invariant { x <> y }  (* GOAL, premise *)
-                x <- x + 1;  (* premise *)
-                z <- z - 1;  (* premise *)
-                if z < 0 then y <- y + 1  (* premise *)
-              done;
-              assert { x <> y }
-      answers:
-        - answer: |
-            From its name, the only failed obligation is about invariant preservation so all invariants can be proved to hold initially.
-            
-            Also, only one invariant is listed so it cannot be redundant.
-
-            ```
-            prob_incorrect: 0
-            prob_redundant: 0
+            has_redundant_invs: yes
             ```
           example: true
     - query: ProposeInvariants
       args:
         unproved:
-          obligation_name: VC for example1 (assertion)
+          name: VC for example1 (assertion)
+          proved: false
           relevance_hints: |-
             use int.Int
       
@@ -222,6 +185,7 @@
                 if z < 0 then y <- y + 1
               done;
               assert { x <> y }  (* GOAL *)
+          goal_formula: not x = y
         blacklist:
           - [x <> y]
       answers:
@@ -315,6 +279,7 @@
                       if z < 0 then y <- y + 1
                     done;
                     assert { x <> y }  (* GOAL *)
+                goal_formula: not x = y
     - query: __Computation__
       args:
         fun: check
@@ -372,6 +337,7 @@
                       if z < 0 then y <- y + 1
                     done;
                     assert { x <> y }
+                goal_formula: 0 <= 0
               - name: VC for example1 (loop invariant init)
                 proved: yes
                 relevance_hints: |-
@@ -390,6 +356,7 @@
                       if z < 0 then y <- y + 1
                     done;
                     assert { x <> y }
+                goal_formula: not o = 3
               - name: VC for example1 (loop invariant preservation)
                 proved: yes
                 relevance_hints: |-
@@ -408,6 +375,7 @@
                       if z < 0 then y <- y + 1  (* premise *)
                     done;
                     assert { x <> y }
+                goal_formula: (z - 1) <= 0
               - name: VC for example1 (loop invariant preservation)
                 proved: yes
                 relevance_hints: |-
@@ -426,6 +394,7 @@
                       if z < 0 then y <- y + 1  (* premise *)
                     done;
                     assert { x <> y }
+                goal_formula: not (x + 1) = (y + 1)
               - name: VC for example1 (loop invariant preservation)
                 proved: yes
                 relevance_hints: |-
@@ -444,6 +413,7 @@
                       if z < 0 then y <- y + 1  (* premise *)
                     done;
                     assert { x <> y }
+                goal_formula: (z - 1) <= 0
               - name: VC for example1 (loop invariant preservation)
                 proved: yes
                 relevance_hints: |-
@@ -462,6 +432,7 @@
                       if z < 0 then y <- y + 1  (* premise *)
                     done;
                     assert { x <> y }
+                goal_formula: not (x + 1) = y
               - name: VC for example1 (assertion)
                 proved: yes
                 relevance_hints: |-
@@ -480,6 +451,7 @@
                       if z < 0 then y <- y + 1
                     done;
                     assert { x <> y }  (* GOAL *)
+                goal_formula: not x = y
     - query: __Computation__
       args:
         fun: check
@@ -535,6 +507,7 @@
                       if z < 0 then y <- y + 1
                     done;
                     assert { x <> y }
+                goal_formula: not o = 3
               - name: VC for example1 (loop invariant preservation)
                 proved: yes
                 relevance_hints: |-
@@ -552,6 +525,7 @@
                       if z < 0 then y <- y + 1  (* premise *)
                     done;
                     assert { x <> y }
+                goal_formula: not (x + 1) = (y + 1)
               - name: VC for example1 (loop invariant preservation)
                 proved: no
                 relevance_hints: |-
@@ -569,6 +543,7 @@
                       if z < 0 then y <- y + 1  (* premise *)
                     done;
                     assert { x <> y }
+                goal_formula: not (x + 1) = y
               - name: VC for example1 (assertion)
                 proved: yes
                 relevance_hints: |-
@@ -586,6 +561,7 @@
                       if z < 0 then y <- y + 1
                     done;
                     assert { x <> y }  (* GOAL *)
+                goal_formula: not x = y
     - query: __Computation__
       args:
         fun: check
@@ -643,6 +619,7 @@
                       if z < 0 then y <- y + 1
                     done;
                     assert { x <> y }
+                goal_formula: not o = 3
               - name: VC for example1 (loop invariant init)
                 proved: yes
                 relevance_hints: |-
@@ -661,6 +638,7 @@
                       if z < 0 then y <- y + 1
                     done;
                     assert { x <> y }
+                goal_formula: not o = 3
               - name: VC for example1 (loop invariant preservation)
                 proved: yes
                 relevance_hints: |-
@@ -679,6 +657,7 @@
                       if z < 0 then y <- y + 1  (* premise *)
                     done;
                     assert { x <> y }
+                goal_formula: not (x + 1) = (y + 1)
               - name: VC for example1 (loop invariant preservation)
                 proved: yes
                 relevance_hints: |-
@@ -697,6 +676,7 @@
                       if z < 0 then y <- y + 1  (* premise *)
                     done;
                     assert { x <> y }
+                goal_formula: not (x + 1) = (y + 1)
               - name: VC for example1 (loop invariant preservation)
                 proved: no
                 relevance_hints: |-
@@ -715,6 +695,7 @@
                       if z < 0 then y <- y + 1  (* premise *)
                     done;
                     assert { x <> y }
+                goal_formula: not (x + 1) = y
               - name: VC for example1 (loop invariant preservation)
                 proved: yes
                 relevance_hints: |-
@@ -733,6 +714,7 @@
                       if z < 0 then y <- y + 1  (* premise *)
                     done;
                     assert { x <> y }
+                goal_formula: not (x + 1) = y
               - name: VC for example1 (assertion)
                 proved: yes
                 relevance_hints: |-
@@ -751,236 +733,8 @@
                       if z < 0 then y <- y + 1
                     done;
                     assert { x <> y }  (* GOAL *)
-    - query: __Computation__
-      args:
-        fun: check
-        args:
-          prog: |
-            use int.Int
-      
-            let example1 () diverges =
-              let ref x = any int in
-              let ref y = 3 in
-              let ref z = 0 in
-              assume { x < 0 };
-              while x < 10 do
-                x <- x + 1;
-                z <- z - 1;
-                if z < 0 then y <- y + 1
-              done;
-              assert { x <> y }
-          annotated: |-
-            use int.Int
-      
-            let example1 () diverges =
-              let ref x = any int in
-              let ref y = 3 in
-              let ref z = 0 in
-              assume { x < 0 };
-              while x < 10 do
-                invariant { z <= 0 }
-                invariant { x + z <= -2 }
-                invariant { x <> y }
-                x <- x + 1;
-                z <- z - 1;
-                if z < 0 then y <- y + 1
-              done;
-              assert { x <> y }
-      answers:
-        - answer: |
-            error:
-      
-            obligations:
-              - name: VC for example1 (loop invariant init)
-                proved: yes
-                relevance_hints: |-
-                  use int.Int
-      
-                  let example1 () diverges =  (* GOAL *)
-                    let ref x = any int in  (* premise *)
-                    let ref y = 3 in
-                    let ref z = 0 in  (* GOAL *)
-                    assume { x < 0 };  (* premise *)
-                    while x < 10 do
-                      invariant { z <= 0 }  (* GOAL *)
-                      invariant { x + z <= -2 }
-                      invariant { x <> y }
-                      x <- x + 1;
-                      z <- z - 1;
-                      if z < 0 then y <- y + 1
-                    done;
-                    assert { x <> y }
-              - name: VC for example1 (loop invariant init)
-                proved: no
-                relevance_hints: |-
-                  use int.Int
-      
-                  let example1 () diverges =  (* GOAL *)
-                    let ref x = any int in  (* GOAL, premise *)
-                    let ref y = 3 in
-                    let ref z = 0 in  (* GOAL, premise *)
-                    assume { x < 0 };  (* premise *)
-                    while x < 10 do
-                      invariant { z <= 0 }  (* premise *)
-                      invariant { x + z <= -2 }  (* GOAL *)
-                      invariant { x <> y }
-                      x <- x + 1;
-                      z <- z - 1;
-                      if z < 0 then y <- y + 1
-                    done;
-                    assert { x <> y }
-              - name: VC for example1 (loop invariant init)
-                proved: yes
-                relevance_hints: |-
-                  use int.Int
-      
-                  let example1 () diverges =  (* GOAL *)
-                    let ref x = any int in  (* GOAL, premise *)
-                    let ref y = 3 in  (* GOAL *)
-                    let ref z = 0 in  (* premise *)
-                    assume { x < 0 };  (* premise *)
-                    while x < 10 do
-                      invariant { z <= 0 }  (* premise *)
-                      invariant { x + z <= -2 }  (* premise *)
-                      invariant { x <> y }  (* GOAL *)
-                      x <- x + 1;
-                      z <- z - 1;
-                      if z < 0 then y <- y + 1
-                    done;
-                    assert { x <> y }
-              - name: VC for example1 (loop invariant preservation)
-                proved: yes
-                relevance_hints: |-
-                  use int.Int
-      
-                  let example1 () diverges =  (* GOAL *)
-                    let ref x = any int in  (* premise *)
-                    let ref y = 3 in
-                    let ref z = 0 in
-                    assume { x < 0 };  (* premise *)
-                    while x < 10 do  (* premise *)
-                      invariant { z <= 0 }  (* GOAL, premise *)
-                      invariant { x + z <= -2 }  (* premise *)
-                      invariant { x <> y }  (* premise *)
-                      x <- x + 1;  (* premise *)
-                      z <- z - 1;  (* premise *)
-                      if z < 0 then y <- y + 1  (* premise *)
-                    done;
-                    assert { x <> y }
-              - name: VC for example1 (loop invariant preservation)
-                proved: yes
-                relevance_hints: |-
-                  use int.Int
-      
-                  let example1 () diverges =  (* GOAL *)
-                    let ref x = any int in  (* premise *)
-                    let ref y = 3 in
-                    let ref z = 0 in
-                    assume { x < 0 };  (* premise *)
-                    while x < 10 do  (* premise *)
-                      invariant { z <= 0 }  (* premise *)
-                      invariant { x + z <= -2 }  (* GOAL, premise *)
-                      invariant { x <> y }  (* premise *)
-                      x <- x + 1;  (* premise *)
-                      z <- z - 1;  (* premise *)
-                      if z < 0 then y <- y + 1  (* premise *)
-                    done;
-                    assert { x <> y }
-              - name: VC for example1 (loop invariant preservation)
-                proved: yes
-                relevance_hints: |-
-                  use int.Int
-      
-                  let example1 () diverges =  (* GOAL *)
-                    let ref x = any int in  (* premise *)
-                    let ref y = 3 in
-                    let ref z = 0 in
-                    assume { x < 0 };  (* premise *)
-                    while x < 10 do  (* premise *)
-                      invariant { z <= 0 }  (* premise *)
-                      invariant { x + z <= -2 }  (* premise *)
-                      invariant { x <> y }  (* GOAL, premise *)
-                      x <- x + 1;  (* premise *)
-                      z <- z - 1;  (* premise *)
-                      if z < 0 then y <- y + 1  (* premise *)
-                    done;
-                    assert { x <> y }
-              - name: VC for example1 (loop invariant preservation)
-                proved: yes
-                relevance_hints: |-
-                  use int.Int
-      
-                  let example1 () diverges =  (* GOAL *)
-                    let ref x = any int in  (* premise *)
-                    let ref y = 3 in
-                    let ref z = 0 in
-                    assume { x < 0 };  (* premise *)
-                    while x < 10 do  (* premise *)
-                      invariant { z <= 0 }  (* GOAL, premise *)
-                      invariant { x + z <= -2 }  (* premise *)
-                      invariant { x <> y }  (* premise *)
-                      x <- x + 1;  (* premise *)
-                      z <- z - 1;  (* premise *)
-                      if z < 0 then y <- y + 1  (* premise *)
-                    done;
-                    assert { x <> y }
-              - name: VC for example1 (loop invariant preservation)
-                proved: yes
-                relevance_hints: |-
-                  use int.Int
-      
-                  let example1 () diverges =  (* GOAL *)
-                    let ref x = any int in  (* premise *)
-                    let ref y = 3 in
-                    let ref z = 0 in
-                    assume { x < 0 };  (* premise *)
-                    while x < 10 do  (* premise *)
-                      invariant { z <= 0 }  (* premise *)
-                      invariant { x + z <= -2 }  (* GOAL, premise *)
-                      invariant { x <> y }  (* premise *)
-                      x <- x + 1;  (* premise *)
-                      z <- z - 1;  (* premise *)
-                      if z < 0 then y <- y + 1  (* premise *)
-                    done;
-                    assert { x <> y }
-              - name: VC for example1 (loop invariant preservation)
-                proved: yes
-                relevance_hints: |-
-                  use int.Int
-      
-                  let example1 () diverges =  (* GOAL *)
-                    let ref x = any int in  (* premise *)
-                    let ref y = 3 in
-                    let ref z = 0 in
-                    assume { x < 0 };  (* premise *)
-                    while x < 10 do  (* premise *)
-                      invariant { z <= 0 }  (* premise *)
-                      invariant { x + z <= -2 }  (* premise *)
-                      invariant { x <> y }  (* GOAL, premise *)
-                      x <- x + 1;  (* premise *)
-                      z <- z - 1;  (* premise *)
-                      if z < 0 then y <- y + 1  (* premise *)
-                    done;
-                    assert { x <> y }
-              - name: VC for example1 (assertion)
-                proved: yes
-                relevance_hints: |-
-                  use int.Int
-      
-                  let example1 () diverges =  (* GOAL *)
-                    let ref x = any int in  (* premise *)
-                    let ref y = 3 in
-                    let ref z = 0 in
-                    assume { x < 0 };  (* premise *)
-                    while x < 10 do  (* premise *)
-                      invariant { z <= 0 }  (* premise *)
-                      invariant { x + z <= -2 }  (* premise *)
-                      invariant { x <> y }  (* premise *)
-                      x <- x + 1;
-                      z <- z - 1;
-                      if z < 0 then y <- y + 1
-                    done;
-                    assert { x <> y }  (* GOAL *)
+                goal_formula: not x = y
+
 
 
 # Second demonstration: invariants involving implications
@@ -1003,7 +757,8 @@
     - query: ProposeInvariants
       args:
         unproved:
-          obligation_name: VC for main (assertion)
+          name: VC for main (assertion)
+          proved: false
           relevance_hints: |-
             use int.Int
       
@@ -1015,6 +770,7 @@
               done;
               assume { n > 0 };  (* premise *)
               assert { x = n }  (* GOAL *)
+          goal_formula: x = n
         blacklist: []
       answers:
         - answer: |
@@ -1068,6 +824,7 @@
                     done;
                     assume { n > 0 };  (* premise *)
                     assert { x = n }  (* GOAL *)
+                goal_formula: x = n
     - query: __Computation__
       args:
         fun: check
@@ -1114,6 +871,7 @@
                     done;
                     assume { n > 0 };
                     assert { x = n }
+                goal_formula: 0 <= n
               - name: VC for main (loop invariant preservation)
                 proved: yes
                 relevance_hints: |-
@@ -1128,6 +886,7 @@
                     done;
                     assume { n > 0 };
                     assert { x = n }
+                goal_formula: (x + 1) <= n
               - name: VC for main (assertion)
                 proved: yes
                 relevance_hints: |-
@@ -1142,6 +901,7 @@
                     done;
                     assume { n > 0 };  (* premise *)
                     assert { x = n }  (* GOAL *)
+                goal_formula: x = n
 
 
 # Third demonstration: when disjunctions are needed
@@ -1166,7 +926,8 @@
     - query: ProposeInvariants
       args:
         unproved:
-          obligation_name: VC for main (assertion)
+          name: VC for main (assertion)
+          proved: false
           relevance_hints: |-
             use int.Int
       
@@ -1180,6 +941,7 @@
                   y <- z
               done;
               assert { z >= y }  (* GOAL *)
+          goal_formula: o2 >= y
         blacklist: []
       answers:
         - answer: |
@@ -1240,6 +1002,7 @@
                         y <- z
                     done;
                     assert { z >= y }  (* GOAL *)
+                goal_formula: o2 >= y
     - query: __Computation__
       args:
         fun: check
@@ -1292,6 +1055,7 @@
                         y <- z
                     done;
                     assert { z >= y }
+                goal_formula: o2 >= o1 || 0 < 500
               - name: VC for main (loop invariant preservation)
                 proved: yes
                 relevance_hints: |-
@@ -1308,6 +1072,7 @@
                         y <- z
                     done;
                     assert { z >= y }
+                goal_formula: y2 >= y2 || (x + 1) < 500
               - name: VC for main (loop invariant preservation)
                 proved: yes
                 relevance_hints: |-
@@ -1324,6 +1089,7 @@
                         y <- z
                     done;
                     assert { z >= y }
+                goal_formula: o2 >= y || (x + 1) < 500
               - name: VC for main (assertion)
                 proved: yes
                 relevance_hints: |-
@@ -1340,3 +1106,4 @@
                         y <- z
                     done;
                     assert { z >= y }  (* GOAL *)
+                goal_formula: o2 >= y

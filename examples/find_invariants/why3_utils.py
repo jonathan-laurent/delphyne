@@ -64,7 +64,7 @@ def check(prog: File, annotated: File) -> Feedback:
     if outcome.kind == "error" or outcome.kind == "mismatch":
         return Feedback(error=why3py.summary(outcome), obligations=[])
     obligations = [
-        Obligation(obl.name, obl.proved, obl.annotated, obl.goal)
+        Obligation(obl.name, obl.proved, obl.annotated, _goal_formula(obl.goal))
         for obl in outcome.obligations
     ]
     return Feedback(error=None, obligations=obligations)
@@ -96,3 +96,8 @@ def no_invalid_formula_symbol(fml: Formula) -> bool:
 
 def invariant_init_obligation(obligation: Obligation) -> bool:
     return "init" in obligation.name
+
+
+def _goal_formula(descr: str) -> str:
+    # Turn a goal description such as `goal vc1: <fml>` into `<fml>`.
+    return descr.split(": ", 1)[1]

@@ -4,7 +4,11 @@ Here is the program that Why3 was tasked to verify.
 {{ query.unproved.relevance_hints|trim }}
 ```
 
-The name of the proof obligation that failed is: `{{ query.unproved.name }}`. The conclusion of this obligation is `{{ query.unproved.goal }}`. Can you fix this by suggesting a list of new invariants?
+The name of the proof obligation that failed is: `{{ query.unproved.name }}`.
+
+The conclusion of this obligation is: `{{ query.unproved.goal_formula }}`.
+
+Can you fix this by suggesting a list of new invariants?
 {% if query.blacklist %}
 
 Here is a list of proposed changes that were tried previously and did not work. You should not try those again:
