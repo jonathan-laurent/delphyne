@@ -100,4 +100,4 @@ def invariant_init_obligation(obligation: Obligation) -> bool:
 
 def _goal_formula(descr: str) -> str:
     # Turn a goal description such as `goal vc1: <fml>` into `<fml>`.
-    return descr.split(": ", 1)[1]
+    return descr.split(":", 1)[1].strip()
