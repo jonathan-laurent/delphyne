@@ -39,8 +39,7 @@ class ProveProgIP:
 
 @dataclass
 class ProofStateMetrics:
-    prob_incorrect: float
-    prob_redundant: float
+    has_redundant_invs: bool
 
 
 type Proposal = Sequence[why3.Formula]
@@ -119,13 +118,7 @@ class IsProposalNovel(dp.Query[bool]):
 class EvaluateProofState(dp.Query[ProofStateMetrics]):
     unproved: why3.Obligation
 
-    def parse(self, mode: str | None, answer: str) -> ProofStateMetrics:
-        metrics = dp.yaml_from_last_block(ProofStateMetrics, answer)
-        redundant_ok = 0 <= metrics.prob_redundant <= 1
-        incorrect_ok = 0 <= metrics.prob_incorrect <= 1
-        if not (redundant_ok and incorrect_ok) >= 1:
-            raise dp.ParseError("Invalid metrics.")
-        return metrics
+    __parser__: ClassVar = dp.yaml_from_last_block
 
 
 #####
@@ -142,15 +135,12 @@ def prove_program_policy(
     proposal_penalty: float = 0.7,
     max_deep_proposals: int = 2,
     penalize_redundancy: bool = True,
-    penalize_likely_incorrect: bool = False,
 ) -> dp.Policy[Branch | Value | Failure | Computation, ProveProgIP]:
 
     def compute_value(metrics: ProofStateMetrics) -> float:
         prob = 1
-        if penalize_likely_incorrect:
-            prob *= (1 - metrics.prob_incorrect)
-        if penalize_redundancy:
-            prob *= (1 - metrics.prob_redundant)
+        if penalize_redundancy and metrics.has_redundant_invs:
+            prob = 0
         return max(min_value, prob)
 
     def child_confidence_prior(depth: int, prev_gen: int) -> float:
