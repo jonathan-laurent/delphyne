@@ -5,8 +5,10 @@ description = "Using Delphyne and Why3 to find loop invariants"
 authors = [{name="Jonathan Laurent", email="jonathan.laurent@cs.cmu.edu"}]
 dependencies = [
     "delphyne>=0.2.0",
-    "why3py>=0.1.0",
 ]
+
+[project.optional-dependencies]
+why3 = ["why3py>=0.1.0"]
 
 [tool.setuptools.packages.find]
 where = ["."]
