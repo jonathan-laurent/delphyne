@@ -14,7 +14,7 @@ Delphyne is a programming framework for building _reliable_ and _modular_ LLM ap
 !!! warning
     Delphyne is still under development and is evolving quickly. You should expect some rough edges.
 
-## Installation
+## Installation {#installation}
 
 First, download the Delphyne repository and enter it:
 
