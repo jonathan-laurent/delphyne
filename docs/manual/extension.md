@@ -62,7 +62,7 @@ demo_files: ["demo_1", "demo_2"]
 This files features the following information:
 
 - A list of directories within which strategy files can be found, relative to the root of the workspace.
-- A list of module (i.e. file names without extensions) containing those strategies, to be found within those directories.
+- A list of module (i.e. file names without extensions) containing those strategies, to be found within those directories. For [hot reloading](#editing-demonstrations) to work, a module should alwways be listed *after* its dependencies.
 - A list of demonstration files, to be passed implicitly to all commands (e.g. when running an oracular program).
 
 
@@ -75,6 +75,9 @@ To evaluate a demonstration, put your cursor anywhere in its scope. A light bulb
 Each test in a demonstration, even a failing one, describes a path through the underlying search tree. In order to visualize the endpoint of this path, you can put your cursor on the test and select the `View Test Destination` code action. The resulting node and its context will then be displayed in Delphyne's `Tree`, `Node` and `Actions` view. In the typical case where the test is stuck on a query that is unanswered in the demonstration, one can then click on the `+` icon next to its description (within the `Node` view) to add it to the demonstration (if the query exists already, a `Jump To` icon will be shown instead). The standard workflow is then to add an answer to this query and evaluate the demonstration again.
 
 To evaluate all demonstrations within a file, you can use the `Delphyne: Evaluate All Demonstrations in File` command (use ++cmd+shift+p++ to open the command palette). To see the prompt associated to a query, put your cursor on this query and use the `See Prompt` code action. Doing so will create and run the appropriate [command](#commands) in a new tab.
+
+!!! info "Automatic Reloading of Strategies"
+    The language server reloads all modules listed in [`delphyne.yaml`](#delphyne-workspace-file) for _every_ query, using `importlib.reload`. This way, strategies can be updated interactively without effort. Note that modules are reloaded in the order in which they are listed. Thus, a module should always be listed after its dependencies.
 
 ## Running Commands {#commands}
 
@@ -152,6 +155,6 @@ After VSCode quitted unexpectedly, the language server may still be running in b
 sudo kill -9 $(sudo lsof -t -i :8000)
 ```
 
-### Debugging the language server
+### Debugging the language server {#debug-server}
 
 To debug the language server or even specific strategies, it is useful to attach a debugger to the language server. To do so, you should open VSCode at the root of the Delphyne repository and use the `Debug Server` debugging profile. This will start the server in debug mode (on port 8000). Starting the Delphyne extension when a server instance is running already will cause the extension to use this instance (as confirmed by the log output in the `Delphyne` channel). You can then put arbitrary breakpoints in the server source code or even in strategy code.
