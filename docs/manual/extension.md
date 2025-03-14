@@ -68,7 +68,17 @@ This files features the following information:
 
 ## Editing Demonstrations {#editing-demonstrations}
 
-## Running Commands
+Once activated, the Delphyne extension recognizes demonstration files via their extension `*.demo.yaml`. A proper YAML schema is automatically loaded and syntax errors are displayed within the editor. To quickly add a new demonstration, you can use the `demo` snippet (by typing `demo` and clicking on ++tab++). All available snippets are listed in [`vscode-ui/snippets.json`](https://github.com/jonathan-laurent/delphyne/blob/main/vscode-ui/snippets.json).
+
+To evaluate a demonstration, put your cursor anywhere in its scope. A light bulb should then appear, suggesting that code actions are available. Use ++cmd+period++ to see available code actions and select `Evaluate Demonstration`. Diagnostics should then appear, possibly after a moment of waiting (in which case a pending task should be displayed in Delphyne's `Tasks` view). If the demonstration was successfully evaluated, an `info` diagnostic should be shown for every test. Otherwise, warnings and errors can be displayed. These diagnostics will stay displayed until the demo file ir closed or the demonstration gets updated. Note that adding comments or modifying other demonstrations does _not_ invalidate them.
+
+Each test in a demonstration, even a failing one, describes a path through the underlying search tree. In order to visualize the endpoint of this path, you can put your cursor on the test and select the `View Test Destination` code action. The resulting node and its context will then be displayed in Delphyne's `Tree`, `Node` and `Actions` view. In the typical case where the test is stuck on a query that is unanswered in the demonstration, one can then click on the `+` icon next to its description (within the `Node` view) to add it to the demonstration (if the query exists already, a `Jump To` icon will be shown instead). The standard workflow is then to add an answer to this query and evaluate the demonstration again. To 
+
+To evaluate all demonstrations within a file, you can use the `Delphyne: Evaluate All Demonstrations in File` command (use ++cmd+shift+p++ to open the command palette). To see the prompt associated to a query, put your cursor on this query and use the `See Prompt` code action. Doing so will create and run the appropriate [command](#commands) in a new tab.
+
+## Running Commands {#commands}
+
+
 
 ## Navigating Strategy Trees
 
