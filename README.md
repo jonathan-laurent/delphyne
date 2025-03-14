@@ -49,3 +49,7 @@ To test your installation, open VSCode and set the `examples/find_invariants` fo
 To learn about the core concepts underlying Delphyne, we recommend that you read the paper: [_Oracular Programming: A Modular Foundation for Building LLM-Enabled Software_](https://arxiv.org/abs/2502.05310). An easier introduction is coming soon.
 
 You can then look at the `examples/find_invariants` folder for an example of an oracular program. 
+
+**Other Resources**
+
+- [Delphyne VSCode extension manual](https://jonathan-laurent.github.io/delphyne/manual/extension)
