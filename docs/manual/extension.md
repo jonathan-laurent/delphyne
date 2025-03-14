@@ -72,14 +72,52 @@ Once activated, the Delphyne extension recognizes demonstration files via their 
 
 To evaluate a demonstration, put your cursor anywhere in its scope. A light bulb should then appear, suggesting that code actions are available. Use ++cmd+period++ to see available code actions and select `Evaluate Demonstration`. Diagnostics should then appear, possibly after a moment of waiting (in which case a pending task should be displayed in Delphyne's `Tasks` view). If the demonstration was successfully evaluated, an `info` diagnostic should be shown for every test. Otherwise, warnings and errors can be displayed. These diagnostics will stay displayed until the demo file ir closed or the demonstration gets updated. Note that adding comments or modifying other demonstrations does _not_ invalidate them.
 
-Each test in a demonstration, even a failing one, describes a path through the underlying search tree. In order to visualize the endpoint of this path, you can put your cursor on the test and select the `View Test Destination` code action. The resulting node and its context will then be displayed in Delphyne's `Tree`, `Node` and `Actions` view. In the typical case where the test is stuck on a query that is unanswered in the demonstration, one can then click on the `+` icon next to its description (within the `Node` view) to add it to the demonstration (if the query exists already, a `Jump To` icon will be shown instead). The standard workflow is then to add an answer to this query and evaluate the demonstration again. To 
+Each test in a demonstration, even a failing one, describes a path through the underlying search tree. In order to visualize the endpoint of this path, you can put your cursor on the test and select the `View Test Destination` code action. The resulting node and its context will then be displayed in Delphyne's `Tree`, `Node` and `Actions` view. In the typical case where the test is stuck on a query that is unanswered in the demonstration, one can then click on the `+` icon next to its description (within the `Node` view) to add it to the demonstration (if the query exists already, a `Jump To` icon will be shown instead). The standard workflow is then to add an answer to this query and evaluate the demonstration again.
 
 To evaluate all demonstrations within a file, you can use the `Delphyne: Evaluate All Demonstrations in File` command (use ++cmd+shift+p++ to open the command palette). To see the prompt associated to a query, put your cursor on this query and use the `See Prompt` code action. Doing so will create and run the appropriate [command](#commands) in a new tab.
 
 ## Running Commands {#commands}
 
+Many interactions with Delphyne can be performed by executing **commands**. A command can be invoked via a YAML file specifying its name and arguments, starting with header `# delphyne-command`. A standard command is the `run_strategy` command that can be used to run an oracular program by specifying a strategy along with a policy (demonstrations are automatically extracted from the files listed in [delphyne.yaml](#delphyne-workspace-file)). To create a new tab with a template for invoking the `run_strategy` command, you can use `Delphyne: Run Strategy` from the VSCode command palette.
 
+<details>
+<summary>A Command Example</summary>
+```yaml
+# delphyne-command
 
-## Navigating Strategy Trees
+command: run_strategy
+args:
+  strategy: prove_program
+  args:
+    prog: |
+      use int.Int
+
+      let main () diverges =
+        let ref a = any int in
+        let ref b = a * a + 2 in
+        let ref x = 0 in
+        while b < 50 do
+          x <- x * (b - 1) + 1;
+          b <- b + 1;
+        done;
+        assert { x >= 0 }
+  policy: prove_program_policy
+  policy_args: {}
+  num_generated: 1
+  budget:
+    num_requests: 60
+```
+</details>
+
+To execute a command, one can put the cursor over it and use the `Execute Command` code action. Doing so will launch a new task that can be viewed in the Delphyne `Task` view. When the task terminates (successfully or with an error), the command's result is appended at the end of the command file (and can be discarded using the `Clear Output` code action). When a command returns a trace, the latter can be [inspected](#navigating-trees) via the `Show Trace` code action.
+
+The progress of commands can be supervised while they are running through the `Tasks` view. This view lists all currently running commands and maps each one to a set of actions. For example, a command can be cancelled or its progress indicator shown on the status bar. In addition, the `Update Source` action (pen icon) allows dumping the command's current _partial_ result to the command file. In the case of the `run_strategy` command, this allows inspecting the current trace _at any point in time_ while search is still undergoing.
+
+!!! note
+    In the future, Delphyne will allow adding new commands by registering command scripts. 
+
+## Navigating Strategy Trees {#navigating-trees}
+
+## Tips and Shortcuts
 
 ## Troubleshooting {#troubleshooting}
