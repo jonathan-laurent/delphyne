@@ -21,3 +21,2020 @@ args:
   num_generated: 1
   budget:
     num_requests: 60
+outcome:
+  status: completed
+  diagnostics: []
+  result:
+    success: true
+    raw_trace:
+      nodes:
+        "1": nested(0, $main)
+        "2": child(1, query{@1})
+        "3": nested(2, cands)
+        "4": nested(3, next(nil))
+        "5": child(4, cands{@2})
+        "6": child(3, next(nil){%5})
+        "7": child(2, cands{%6})
+        "8": child(7, query{@3})
+        "9": child(8, nil)
+        "10": nested(9, cands)
+        "11": nested(10, next(nil))
+        "12": child(11, cands{@4})
+        "13": child(10, next(nil){%12})
+        "14": child(9, cands{%13})
+        "15": child(14, query{@5})
+      queries:
+        - node: 1
+          space: query
+          answers:
+            "1":
+              mode: null
+              text: |
+                error:
+                obligations:
+                  - name: VC for main (assertion)
+                    proved: no
+                    relevance_hints: |-
+                      use int.Int
+
+                      let main () diverges =  (* GOAL *)
+                        let ref a = any int in
+                        let ref b = a * a + 2 in
+                        let ref x = 0 in
+                        while b < 50 do  (* premise *)
+                          x <- x * (b - 1) + 1;
+                          b <- b + 1;
+                        done;
+                        assert { x >= 0 }  (* GOAL *)
+                    goal_formula: x >= 0
+        - node: 4
+          space: cands
+          answers:
+            "2":
+              mode: null
+              text: |
+                The goal is to prove the final assertion `x >= 0`. To achieve this, it's necessary to determine what invariants hold during the execution of the loop that can help establish this conclusion.
+
+                An analysis of the loop reveals that:
+
+                1. **Initialization**: 
+                   - `x` starts at `0`. So initially, `x >= 0` holds.
+
+                2. **Loop Body**:
+                   - The expression `x <- x * (b - 1) + 1` modifies `x` during each iteration of the loop. The key observation is the addition of `1` ensures that no matter the initial value of `x`, the result will always be incremented by at least `1`. 
+                   - Another key observation is that during the loop, `b - 1 >= 0`. Indeed, since `b = a * a + 2`, you can easily see that `b-1 >= 0` regardless of the value of `a`. Thus, multiplication by a non-negative integer does not affect non-negativity. As a consequence, `x` is updated in a way that maintains non-negativity.
+
+                With these in mind, we can identify a suitable invariant:
+
+                - **Invariant**: `x >= 0` should be an invariant. Given that `b >= 1`, `x * (b - 1)` will be non-negative so adding `1` to this product preserves the fact that `x` is non-negative.
+
+                Hence, the necessary invariant that could assist in proving the goal is:
+
+                ```
+                - "x >= 0"
+                ```
+        - node: 7
+          space: query
+          answers:
+            "3":
+              mode: null
+              text: |
+                error:
+
+                obligations:
+                  - name: VC for main (loop invariant init)
+                    proved: yes
+                    relevance_hints: |-
+                      use int.Int
+
+                      let main () diverges =  (* GOAL *)
+                        let ref a = any int in
+                        let ref b = a * a + 2 in
+                        let ref x = 0 in  (* GOAL *)
+                        while b < 50 do
+                          invariant { x >= 0 }  (* GOAL *)
+                          x <- x * (b - 1) + 1;
+                          b <- b + 1;
+                        done;
+                        assert { x >= 0 }
+                    goal_formula: 0 >= 0
+                  - name: VC for main (loop invariant preservation)
+                    proved: no
+                    relevance_hints: |-
+                      use int.Int
+
+                      let main () diverges =  (* GOAL *)
+                        let ref a = any int in
+                        let ref b = a * a + 2 in
+                        let ref x = 0 in
+                        while b < 50 do  (* premise *)
+                          invariant { x >= 0 }  (* GOAL, premise *)
+                          x <- x * (b - 1) + 1;  (* premise *)
+                          b <- b + 1;
+                        done;
+                        assert { x >= 0 }
+                    goal_formula: ((x * (b - 1)) + 1) >= 0
+                  - name: VC for main (assertion)
+                    proved: yes
+                    relevance_hints: |-
+                      use int.Int
+
+                      let main () diverges =  (* GOAL *)
+                        let ref a = any int in
+                        let ref b = a * a + 2 in
+                        let ref x = 0 in
+                        while b < 50 do  (* premise *)
+                          invariant { x >= 0 }  (* premise *)
+                          x <- x * (b - 1) + 1;
+                          b <- b + 1;
+                        done;
+                        assert { x >= 0 }  (* GOAL *)
+                    goal_formula: x >= 0
+        - node: 11
+          space: cands
+          answers:
+            "4":
+              mode: null
+              text: |
+                The program attempts to prove that `x >= 0` remains true throughout the loop. The conclusion of the failed proof obligation is `((x * (b - 1)) + 1) >= 0`, which suggests that `x * (b - 1) >= -1` might need to be true for the invariant to hold after the loop body execution.
+
+                To ensure the invariant `x >= 0` is preserved, `b - 1` should be positive or zero so that `x * (b - 1)` remains non-negative whenever `x` is non-negative. Consequently, if `b` is always greater than or equal to 1 during each loop iteration, the multiplication will not violate the non-negativity of `x`.
+
+                However, initially, `b = a * a + 2`. Since any integer squared `a * a` is non-negative, the expression `a * a + 2` will always be greater than or equal to 2, meaning `b - 1 >= 1` is certainly true.
+
+                Thus, `b - 1 >= 0` can be added as an invariant:
+
+                ```
+                - "b - 1 >= 0"
+                ```
+        - node: 14
+          space: query
+          answers:
+            "5":
+              mode: null
+              text: |
+                error:
+
+                obligations:
+                  - name: VC for main (loop invariant init)
+                    proved: yes
+                    relevance_hints: |-
+                      use int.Int
+
+                      let main () diverges =  (* GOAL *)
+                        let ref a = any int in  (* GOAL *)
+                        let ref b = a * a + 2 in  (* GOAL *)
+                        let ref x = 0 in
+                        while b < 50 do
+                          invariant { b - 1 >= 0 }  (* GOAL *)
+                          invariant { x >= 0 }
+                          x <- x * (b - 1) + 1;
+                          b <- b + 1;
+                        done;
+                        assert { x >= 0 }
+                    goal_formula: (((o * o) + 2) - 1) >= 0
+                  - name: VC for main (loop invariant init)
+                    proved: yes
+                    relevance_hints: |-
+                      use int.Int
+
+                      let main () diverges =  (* GOAL *)
+                        let ref a = any int in  (* premise *)
+                        let ref b = a * a + 2 in  (* premise *)
+                        let ref x = 0 in  (* GOAL *)
+                        while b < 50 do
+                          invariant { b - 1 >= 0 }  (* premise *)
+                          invariant { x >= 0 }  (* GOAL *)
+                          x <- x * (b - 1) + 1;
+                          b <- b + 1;
+                        done;
+                        assert { x >= 0 }
+                    goal_formula: 0 >= 0
+                  - name: VC for main (loop invariant preservation)
+                    proved: yes
+                    relevance_hints: |-
+                      use int.Int
+
+                      let main () diverges =  (* GOAL *)
+                        let ref a = any int in
+                        let ref b = a * a + 2 in
+                        let ref x = 0 in
+                        while b < 50 do  (* premise *)
+                          invariant { b - 1 >= 0 }  (* GOAL, premise *)
+                          invariant { x >= 0 }  (* premise *)
+                          x <- x * (b - 1) + 1;  (* premise *)
+                          b <- b + 1;  (* premise *)
+                        done;
+                        assert { x >= 0 }
+                    goal_formula: ((b + 1) - 1) >= 0
+                  - name: VC for main (loop invariant preservation)
+                    proved: yes
+                    relevance_hints: |-
+                      use int.Int
+
+                      let main () diverges =  (* GOAL *)
+                        let ref a = any int in
+                        let ref b = a * a + 2 in
+                        let ref x = 0 in
+                        while b < 50 do  (* premise *)
+                          invariant { b - 1 >= 0 }  (* premise *)
+                          invariant { x >= 0 }  (* GOAL, premise *)
+                          x <- x * (b - 1) + 1;  (* premise *)
+                          b <- b + 1;  (* premise *)
+                        done;
+                        assert { x >= 0 }
+                    goal_formula: ((x * (b - 1)) + 1) >= 0
+                  - name: VC for main (assertion)
+                    proved: yes
+                    relevance_hints: |-
+                      use int.Int
+
+                      let main () diverges =  (* GOAL *)
+                        let ref a = any int in
+                        let ref b = a * a + 2 in
+                        let ref x = 0 in
+                        while b < 50 do  (* premise *)
+                          invariant { b - 1 >= 0 }  (* premise *)
+                          invariant { x >= 0 }  (* premise *)
+                          x <- x * (b - 1) + 1;
+                          b <- b + 1;
+                        done;
+                        assert { x >= 0 }  (* GOAL *)
+                    goal_formula: x >= 0
+    log:
+      - message: Answer received
+        node: 4
+        space: cands
+        metadata:
+          mode: null
+          prompt:
+            - role: system
+              content: |-
+                Your goal is to prove the correctness of WhyML programs using the Why3 theorem prover. To do so, you must annotate programs with loop invariants in such a way that all assertions in the program can be proved automatically via the weakest-precondition calculus.
+
+                We only allow invariants that feature logical combinations of **linear** arithmetic expressions. In particular, we only accept multiplication by constant numerical literals. Thus, we accept invariants such as `x + y > 0` or `a > 0 || 2*x + y < n` but not `x * y > 0` or `x >= y * (y + 1) / 2`. I insist, and this is **VERY IMPORTANT**, you must **NOT** propose invariants involving complex arithmetic such as `2 * x >= y * (y + 1)`.
+
+                I will show you an annotated program in which Why3 did not manage to prove a particular assertion or invariant. Your task is to suggest one or several missing invariants that may help finish the proof.
+
+                In order to help you diagnose the problem, I added comments to the WhyML program indicating what assertion or invariant failed to be proved (`GOAL`) and what parts of the program provide relevant assumptions (`premise`).
+
+                I will also show you the conclusion of the proof obligation that failed to be proved. This information is not always meaningful since it may contain anonymous variables produced by the obligation generator. However, if it describes a valid invariant, simplifying it and suggesting it as a missing invariant may be a good idea.
+
+                Finally, I will summarize a list of changes that were tried already and did not prove successful. You must try and suggest something different.
+
+                You should **carefully** check the proposed examples and organize your answer in a similar way. First, try to understand the problem and identify missing invariants that may help complete the proof. Then, terminate your answer with a triple-quoted YAML code block that denotes a list of strings, each of which corresponding to an invariant.
+            - role: user
+              content: |
+                Here is the program that Why3 was tasked to verify.
+
+                ```mlw
+                use int.Int
+
+                let example1 () diverges =  (* GOAL *)
+                  let ref x = any int in  (* premise *)
+                  let ref y = 3 in
+                  let ref z = 0 in
+                  assume { x < 0 };  (* premise *)
+                  while x < 10 do  (* premise *)
+                    x <- x + 1;
+                    z <- z - 1;
+                    if z < 0 then y <- y + 1
+                  done;
+                  assert { x <> y }  (* GOAL *)
+                ```
+
+                The name of the proof obligation that failed is: `VC for example1 (assertion)`.
+
+                The conclusion of this obligation is: `not x = y`.
+
+                Can you fix this by suggesting a list of new invariants?
+            - role: assistant
+              content: |
+                The final assertion `x <> y` failed to prove, meaning that Why3 could not deduce it after assuming the provided loop invariants (none) and the negation of the loop guard. Let's see if `x <> y` itself might be an invariant. For this to hold, it has to be true before the loop and preserved by each loop iteration.
+
+                Right before the loop, `x <> y` holds thanks to the `x < 0` assumption. Assuming `x <> y` holds at the start of a loop iteration, can it be shown to hold afterwards? What happens to `x` and `y` in the loop body depends on whether or not the conditional statement is executed, which in turns depends on the value of `z`. Looking at `z`, it starts with value `0` at the beginning of the program and it is then never increased. Thus, `z <= 0` is an invariant and the conditional statement is always executed. Thus, at each loop iteration, both `x` and `y` are increased by 1 and so `x <> y` is preserved.
+
+                Summarizing, we can prove `x <> y` to be an invariant, assuming that `z <= 0` is added as an invariant too. Thus, we propose to update the program by adding the following two invariants:
+
+                ```
+                - "z <= 0"
+                - "x <> y"
+                ```
+            - role: user
+              content: |
+                Here is the program that Why3 was tasked to verify.
+
+                ```mlw
+                use int.Int
+
+                let example1 () diverges =  (* GOAL *)
+                  let ref x = any int in  (* premise *)
+                  let ref y = 3 in
+                  let ref z = 0 in
+                  assume { x < 0 };  (* premise *)
+                  while x < 10 do  (* premise *)
+                    invariant { x <> y }  (* GOAL, premise *)
+                    x <- x + 1;  (* premise *)
+                    z <- z - 1;  (* premise *)
+                    if z < 0 then y <- y + 1  (* premise *)
+                  done;
+                  assert { x <> y }
+                ```
+
+                The name of the proof obligation that failed is: `VC for example1 (loop invariant preservation)`.
+
+                The conclusion of this obligation is: `not (x + 1) = y`.
+
+                Can you fix this by suggesting a list of new invariants?
+            - role: assistant
+              content: |
+                Why3 wasn't able to prove that the invariant `x <> y` is preserved by the loop body. Let's dig into this. Within the loop body, `x` is incremented. What happens to `y` depends on whether the conditional statement is executed or not, which in turns depends on `z`. However, we can see that `z = 0` initially and then `z` never increases. Thus, `z <= 0` is an invariant and the conditional statement always executes. As a consequence, both `x` and `y` increase by the same amount at each loop iteration and thus `x <> y` is preserved.
+
+                As a consequence, we propose adding `z <= 0` as an invariant:
+
+                ```
+                - "z <= 0"
+                ```
+            - role: user
+              content: |
+                Here is the program that Why3 was tasked to verify.
+
+                ```mlw
+                use int.Int
+
+                let main () diverges =  (* GOAL *)
+                  let n = any int in
+                  let ref x = 0 in
+                  while x < n do  (* premise *)
+                    x <- x + 1;
+                  done;
+                  assume { n > 0 };  (* premise *)
+                  assert { x = n }  (* GOAL *)
+                ```
+
+                The name of the proof obligation that failed is: `VC for main (assertion)`.
+
+                The conclusion of this obligation is: `x = n`.
+
+                Can you fix this by suggesting a list of new invariants?
+            - role: assistant
+              content: |
+                Why3 did not manage to deduce the final assertion `x = n` from the preceding assumption `n > 0` and the negation of the loop guard `x >= n`. What remains to establish indeed is that `x <= n` at the end of the program. Note that the `n > 0` assumption involves a variable `n` that is constant throughout the program. Thus, assuming `n > 0` after the loop, we also have `n > 0` before the loop. Also, assuming `n > 0`, then `x <= n` is a loop invariant. Indeed, `x <= n` is true before entering the loop thanks to the `n > 0` assumption. Moreover, before the loop body executes, we have `x < n` by the loop guard and so `x <= n` after the loop body executes since `x` is incremented. As a consequence, `x <= n` is preserved by the loop body.
+
+                Thus, we propose `n > 0 -> x <= n` as an invariant. Note that the `n > 0` assumption is important. Otherwise, the invariant would not hold initially!
+
+                ```
+                - "n > 0 -> x <= n"
+                ```
+            - role: user
+              content: |
+                Here is the program that Why3 was tasked to verify.
+
+                ```mlw
+                use int.Int
+
+                let main () diverges =  (* GOAL *)
+                  let ref x = 0 in
+                  let ref y = any int in
+                  let ref z = any int in  (* GOAL *)
+                  while x < 500 do  (* premise *)
+                    x <- x + 1;
+                    if z <= y then
+                      y <- z
+                  done;
+                  assert { z >= y }  (* GOAL *)
+                ```
+
+                The name of the proof obligation that failed is: `VC for main (assertion)`.
+
+                The conclusion of this obligation is: `o2 >= y`.
+
+                Can you fix this by suggesting a list of new invariants?
+            - role: assistant
+              content: |
+                Why3 did not manage to prove the final assertion `z >= y`. The formula `z >= y` is clearly not a loop invariant because it is not necessarily true before the loop. The reason `z >= y` really holds at the end is that executing any loop iteration will make it true (if `z >= y` is false at the start of an iteration, the conditional statement will execute and make it true). In turn, at least one loop iteration will execute since `x < 500` is true initially.
+
+                Thus, we propose to add invariant `z >= y || x < 500`, meaning that `z >= y` is true already or the loop guard is true, meaning one more loop iteration at least will execute.
+
+                ```
+                - "z >= y || x < 500"
+                ```
+            - role: user
+              content: |
+                Here is the program that Why3 was tasked to verify.
+
+                ```mlw
+                use int.Int
+
+                let example1 () diverges =  (* GOAL *)
+                  let ref x = any int in  (* premise *)
+                  let ref y = 3 in
+                  let ref z = 0 in
+                  assume { x < 0 };  (* premise *)
+                  while x < 10 do  (* premise *)
+                    x <- x + 1;
+                    z <- z - 1;
+                    if z < 0 then y <- y + 1
+                  done;
+                  assert { x <> y }  (* GOAL *)
+                ```
+
+                The name of the proof obligation that failed is: `VC for example1 (assertion)`.
+
+                The conclusion of this obligation is: `not x = y`.
+
+                Can you fix this by suggesting a list of new invariants?
+            - role: assistant
+              content: |
+                Long explanation...
+                ```
+                - "x <> y"
+                ```
+            - role: user
+              content: |
+                Here is the program that Why3 was tasked to verify.
+
+                ```mlw
+                use int.Int
+
+                let example1 () diverges =  (* GOAL *)
+                  let ref x = any int in  (* premise *)
+                  let ref y = 3 in
+                  let ref z = 0 in
+                  assume { x < 0 };  (* premise *)
+                  while x < 10 do  (* premise *)
+                    invariant { x <> y }  (* GOAL, premise *)
+                    x <- x + 1;  (* premise *)
+                    z <- z - 1;  (* premise *)
+                    if z < 0 then y <- y + 1  (* premise *)
+                  done;
+                  assert { x <> y }
+                ```
+
+                The name of the proof obligation that failed is: `VC for example1 (loop invariant preservation)`.
+
+                The conclusion of this obligation is: `not (x + 1) = y`.
+
+                Can you fix this by suggesting a list of new invariants?
+            - role: assistant
+              content: |
+                ```
+                - "z <= 0"
+                ```
+            - role: user
+              content: |
+                Here is the program that Why3 was tasked to verify.
+
+                ```mlw
+                use int.Int
+
+                let main () diverges =  (* GOAL *)
+                  let ref a = any int in
+                  let ref b = a * a + 2 in
+                  let ref x = 0 in
+                  while b < 50 do  (* premise *)
+                    x <- x * (b - 1) + 1;
+                    b <- b + 1;
+                  done;
+                  assert { x >= 0 }  (* GOAL *)
+                ```
+
+                The name of the proof obligation that failed is: `VC for main (assertion)`.
+
+                The conclusion of this obligation is: `x >= 0`.
+
+                Can you fix this by suggesting a list of new invariants?
+          answer: |
+            The goal is to prove the final assertion `x >= 0`. To achieve this, it's necessary to determine what invariants hold during the execution of the loop that can help establish this conclusion.
+
+            An analysis of the loop reveals that:
+
+            1. **Initialization**: 
+               - `x` starts at `0`. So initially, `x >= 0` holds.
+
+            2. **Loop Body**:
+               - The expression `x <- x * (b - 1) + 1` modifies `x` during each iteration of the loop. The key observation is the addition of `1` ensures that no matter the initial value of `x`, the result will always be incremented by at least `1`. 
+               - Another key observation is that during the loop, `b - 1 >= 0`. Indeed, since `b = a * a + 2`, you can easily see that `b-1 >= 0` regardless of the value of `a`. Thus, multiplication by a non-negative integer does not affect non-negativity. As a consequence, `x` is updated in a way that maintains non-negativity.
+
+            With these in mind, we can identify a suitable invariant:
+
+            - **Invariant**: `x >= 0` should be an invariant. Given that `b >= 1`, `x * (b - 1)` will be non-negative so adding `1` to this product preserves the fact that `x` is non-negative.
+
+            Hence, the necessary invariant that could assist in proving the goal is:
+
+            ```
+            - "x >= 0"
+            ```
+      - message: Answer received
+        node: 11
+        space: cands
+        metadata:
+          mode: null
+          prompt:
+            - role: system
+              content: |-
+                Your goal is to prove the correctness of WhyML programs using the Why3 theorem prover. To do so, you must annotate programs with loop invariants in such a way that all assertions in the program can be proved automatically via the weakest-precondition calculus.
+
+                We only allow invariants that feature logical combinations of **linear** arithmetic expressions. In particular, we only accept multiplication by constant numerical literals. Thus, we accept invariants such as `x + y > 0` or `a > 0 || 2*x + y < n` but not `x * y > 0` or `x >= y * (y + 1) / 2`. I insist, and this is **VERY IMPORTANT**, you must **NOT** propose invariants involving complex arithmetic such as `2 * x >= y * (y + 1)`.
+
+                I will show you an annotated program in which Why3 did not manage to prove a particular assertion or invariant. Your task is to suggest one or several missing invariants that may help finish the proof.
+
+                In order to help you diagnose the problem, I added comments to the WhyML program indicating what assertion or invariant failed to be proved (`GOAL`) and what parts of the program provide relevant assumptions (`premise`).
+
+                I will also show you the conclusion of the proof obligation that failed to be proved. This information is not always meaningful since it may contain anonymous variables produced by the obligation generator. However, if it describes a valid invariant, simplifying it and suggesting it as a missing invariant may be a good idea.
+
+                Finally, I will summarize a list of changes that were tried already and did not prove successful. You must try and suggest something different.
+
+                You should **carefully** check the proposed examples and organize your answer in a similar way. First, try to understand the problem and identify missing invariants that may help complete the proof. Then, terminate your answer with a triple-quoted YAML code block that denotes a list of strings, each of which corresponding to an invariant.
+            - role: user
+              content: |
+                Here is the program that Why3 was tasked to verify.
+
+                ```mlw
+                use int.Int
+
+                let example1 () diverges =  (* GOAL *)
+                  let ref x = any int in  (* premise *)
+                  let ref y = 3 in
+                  let ref z = 0 in
+                  assume { x < 0 };  (* premise *)
+                  while x < 10 do  (* premise *)
+                    x <- x + 1;
+                    z <- z - 1;
+                    if z < 0 then y <- y + 1
+                  done;
+                  assert { x <> y }  (* GOAL *)
+                ```
+
+                The name of the proof obligation that failed is: `VC for example1 (assertion)`.
+
+                The conclusion of this obligation is: `not x = y`.
+
+                Can you fix this by suggesting a list of new invariants?
+            - role: assistant
+              content: |
+                The final assertion `x <> y` failed to prove, meaning that Why3 could not deduce it after assuming the provided loop invariants (none) and the negation of the loop guard. Let's see if `x <> y` itself might be an invariant. For this to hold, it has to be true before the loop and preserved by each loop iteration.
+
+                Right before the loop, `x <> y` holds thanks to the `x < 0` assumption. Assuming `x <> y` holds at the start of a loop iteration, can it be shown to hold afterwards? What happens to `x` and `y` in the loop body depends on whether or not the conditional statement is executed, which in turns depends on the value of `z`. Looking at `z`, it starts with value `0` at the beginning of the program and it is then never increased. Thus, `z <= 0` is an invariant and the conditional statement is always executed. Thus, at each loop iteration, both `x` and `y` are increased by 1 and so `x <> y` is preserved.
+
+                Summarizing, we can prove `x <> y` to be an invariant, assuming that `z <= 0` is added as an invariant too. Thus, we propose to update the program by adding the following two invariants:
+
+                ```
+                - "z <= 0"
+                - "x <> y"
+                ```
+            - role: user
+              content: |
+                Here is the program that Why3 was tasked to verify.
+
+                ```mlw
+                use int.Int
+
+                let example1 () diverges =  (* GOAL *)
+                  let ref x = any int in  (* premise *)
+                  let ref y = 3 in
+                  let ref z = 0 in
+                  assume { x < 0 };  (* premise *)
+                  while x < 10 do  (* premise *)
+                    invariant { x <> y }  (* GOAL, premise *)
+                    x <- x + 1;  (* premise *)
+                    z <- z - 1;  (* premise *)
+                    if z < 0 then y <- y + 1  (* premise *)
+                  done;
+                  assert { x <> y }
+                ```
+
+                The name of the proof obligation that failed is: `VC for example1 (loop invariant preservation)`.
+
+                The conclusion of this obligation is: `not (x + 1) = y`.
+
+                Can you fix this by suggesting a list of new invariants?
+            - role: assistant
+              content: |
+                Why3 wasn't able to prove that the invariant `x <> y` is preserved by the loop body. Let's dig into this. Within the loop body, `x` is incremented. What happens to `y` depends on whether the conditional statement is executed or not, which in turns depends on `z`. However, we can see that `z = 0` initially and then `z` never increases. Thus, `z <= 0` is an invariant and the conditional statement always executes. As a consequence, both `x` and `y` increase by the same amount at each loop iteration and thus `x <> y` is preserved.
+
+                As a consequence, we propose adding `z <= 0` as an invariant:
+
+                ```
+                - "z <= 0"
+                ```
+            - role: user
+              content: |
+                Here is the program that Why3 was tasked to verify.
+
+                ```mlw
+                use int.Int
+
+                let main () diverges =  (* GOAL *)
+                  let n = any int in
+                  let ref x = 0 in
+                  while x < n do  (* premise *)
+                    x <- x + 1;
+                  done;
+                  assume { n > 0 };  (* premise *)
+                  assert { x = n }  (* GOAL *)
+                ```
+
+                The name of the proof obligation that failed is: `VC for main (assertion)`.
+
+                The conclusion of this obligation is: `x = n`.
+
+                Can you fix this by suggesting a list of new invariants?
+            - role: assistant
+              content: |
+                Why3 did not manage to deduce the final assertion `x = n` from the preceding assumption `n > 0` and the negation of the loop guard `x >= n`. What remains to establish indeed is that `x <= n` at the end of the program. Note that the `n > 0` assumption involves a variable `n` that is constant throughout the program. Thus, assuming `n > 0` after the loop, we also have `n > 0` before the loop. Also, assuming `n > 0`, then `x <= n` is a loop invariant. Indeed, `x <= n` is true before entering the loop thanks to the `n > 0` assumption. Moreover, before the loop body executes, we have `x < n` by the loop guard and so `x <= n` after the loop body executes since `x` is incremented. As a consequence, `x <= n` is preserved by the loop body.
+
+                Thus, we propose `n > 0 -> x <= n` as an invariant. Note that the `n > 0` assumption is important. Otherwise, the invariant would not hold initially!
+
+                ```
+                - "n > 0 -> x <= n"
+                ```
+            - role: user
+              content: |
+                Here is the program that Why3 was tasked to verify.
+
+                ```mlw
+                use int.Int
+
+                let main () diverges =  (* GOAL *)
+                  let ref x = 0 in
+                  let ref y = any int in
+                  let ref z = any int in  (* GOAL *)
+                  while x < 500 do  (* premise *)
+                    x <- x + 1;
+                    if z <= y then
+                      y <- z
+                  done;
+                  assert { z >= y }  (* GOAL *)
+                ```
+
+                The name of the proof obligation that failed is: `VC for main (assertion)`.
+
+                The conclusion of this obligation is: `o2 >= y`.
+
+                Can you fix this by suggesting a list of new invariants?
+            - role: assistant
+              content: |
+                Why3 did not manage to prove the final assertion `z >= y`. The formula `z >= y` is clearly not a loop invariant because it is not necessarily true before the loop. The reason `z >= y` really holds at the end is that executing any loop iteration will make it true (if `z >= y` is false at the start of an iteration, the conditional statement will execute and make it true). In turn, at least one loop iteration will execute since `x < 500` is true initially.
+
+                Thus, we propose to add invariant `z >= y || x < 500`, meaning that `z >= y` is true already or the loop guard is true, meaning one more loop iteration at least will execute.
+
+                ```
+                - "z >= y || x < 500"
+                ```
+            - role: user
+              content: |
+                Here is the program that Why3 was tasked to verify.
+
+                ```mlw
+                use int.Int
+
+                let example1 () diverges =  (* GOAL *)
+                  let ref x = any int in  (* premise *)
+                  let ref y = 3 in
+                  let ref z = 0 in
+                  assume { x < 0 };  (* premise *)
+                  while x < 10 do  (* premise *)
+                    x <- x + 1;
+                    z <- z - 1;
+                    if z < 0 then y <- y + 1
+                  done;
+                  assert { x <> y }  (* GOAL *)
+                ```
+
+                The name of the proof obligation that failed is: `VC for example1 (assertion)`.
+
+                The conclusion of this obligation is: `not x = y`.
+
+                Can you fix this by suggesting a list of new invariants?
+            - role: assistant
+              content: |
+                Long explanation...
+                ```
+                - "x <> y"
+                ```
+            - role: user
+              content: |
+                Here is the program that Why3 was tasked to verify.
+
+                ```mlw
+                use int.Int
+
+                let example1 () diverges =  (* GOAL *)
+                  let ref x = any int in  (* premise *)
+                  let ref y = 3 in
+                  let ref z = 0 in
+                  assume { x < 0 };  (* premise *)
+                  while x < 10 do  (* premise *)
+                    invariant { x <> y }  (* GOAL, premise *)
+                    x <- x + 1;  (* premise *)
+                    z <- z - 1;  (* premise *)
+                    if z < 0 then y <- y + 1  (* premise *)
+                  done;
+                  assert { x <> y }
+                ```
+
+                The name of the proof obligation that failed is: `VC for example1 (loop invariant preservation)`.
+
+                The conclusion of this obligation is: `not (x + 1) = y`.
+
+                Can you fix this by suggesting a list of new invariants?
+            - role: assistant
+              content: |
+                ```
+                - "z <= 0"
+                ```
+            - role: user
+              content: |
+                Here is the program that Why3 was tasked to verify.
+
+                ```mlw
+                use int.Int
+
+                let main () diverges =  (* GOAL *)
+                  let ref a = any int in
+                  let ref b = a * a + 2 in
+                  let ref x = 0 in
+                  while b < 50 do  (* premise *)
+                    invariant { x >= 0 }  (* GOAL, premise *)
+                    x <- x * (b - 1) + 1;  (* premise *)
+                    b <- b + 1;
+                  done;
+                  assert { x >= 0 }
+                ```
+
+                The name of the proof obligation that failed is: `VC for main (loop invariant preservation)`.
+
+                The conclusion of this obligation is: `((x * (b - 1)) + 1) >= 0`.
+
+                Can you fix this by suggesting a list of new invariants?
+          answer: |
+            The program attempts to prove that `x >= 0` remains true throughout the loop. The conclusion of the failed proof obligation is `((x * (b - 1)) + 1) >= 0`, which suggests that `x * (b - 1) >= -1` might need to be true for the invariant to hold after the loop body execution.
+
+            To ensure the invariant `x >= 0` is preserved, `b - 1` should be positive or zero so that `x * (b - 1)` remains non-negative whenever `x` is non-negative. Consequently, if `b` is always greater than or equal to 1 during each loop iteration, the multiplication will not violate the non-negativity of `x`.
+
+            However, initially, `b = a * a + 2`. Since any integer squared `a * a` is non-negative, the expression `a * a + 2` will always be greater than or equal to 2, meaning `b - 1 >= 1` is certainly true.
+
+            Thus, `b - 1 >= 0` can be added as an invariant:
+
+            ```
+            - "b - 1 >= 0"
+            ```
+    browsable_trace:
+      nodes:
+        "1":
+          kind: Computation
+          success_value: null
+          summary_message: null
+          leaf_node: false
+          label: null
+          properties:
+            - - with_ids: query
+                with_hints: null
+              - kind: query
+                name: __Computation__
+                args:
+                  fun: check
+                  args:
+                    prog: |
+                      use int.Int
+
+                      let main () diverges =
+                        let ref a = any int in
+                        let ref b = a * a + 2 in
+                        let ref x = 0 in
+                        while b < 50 do
+                          x <- x * (b - 1) + 1;
+                          b <- b + 1;
+                        done;
+                        assert { x >= 0 }
+                    annotated: |
+                      use int.Int
+
+                      let main () diverges =
+                        let ref a = any int in
+                        let ref b = a * a + 2 in
+                        let ref x = 0 in
+                        while b < 50 do
+                          x <- x * (b - 1) + 1;
+                          b <- b + 1;
+                        done;
+                        assert { x >= 0 }
+                answers:
+                  - id: 1
+                    hint: null
+                    value:
+                      short: "{'error': None, 'obligations': [{'name': 'VC for main (assertion)', 'proved': False, 'relevance_hints': 'use int.Int\\n\\nlet main () diverges =  (* GOAL *)\\n  let ref a = any int in\\n  let ref b = a * a + 2 in\\n  let ref x = 0 in\\n  while b < 50 do  (* premise *)\\n    x <- x * (b - 1) + 1;\\n    b <- b + 1;\\n  done;\\n  assert { x >= 0 }  (* GOAL *)', 'goal_formula': 'x >= 0'}]}"
+                      long: |-
+                        {'error': None,
+                         'obligations': [{'name': 'VC for main (assertion)',
+                                          'proved': False,
+                                          'relevance_hints': 'use int.Int\n'
+                                                             '\n'
+                                                             'let main () diverges =  (* GOAL *)\n'
+                                                             '  let ref a = any int in\n'
+                                                             '  let ref b = a * a + 2 in\n'
+                                                             '  let ref x = 0 in\n'
+                                                             '  while b < 50 do  (* premise *)\n'
+                                                             '    x <- x * (b - 1) + 1;\n'
+                                                             '    b <- b + 1;\n'
+                                                             '  done;\n'
+                                                             '  assert { x >= 0 }  (* GOAL *)',
+                                          'goal_formula': 'x >= 0'}]}
+                      json_provided: true
+                      json:
+                        error: null
+                        obligations:
+                          - name: VC for main (assertion)
+                            proved: false
+                            relevance_hints: |-
+                              use int.Int
+
+                              let main () diverges =  (* GOAL *)
+                                let ref a = any int in
+                                let ref b = a * a + 2 in
+                                let ref x = 0 in
+                                while b < 50 do  (* premise *)
+                                  x <- x * (b - 1) + 1;
+                                  b <- b + 1;
+                                done;
+                                assert { x >= 0 }  (* GOAL *)
+                            goal_formula: x >= 0
+          actions:
+            - ref:
+                with_ids: query{@1}
+                with_hints: null
+              hints: null
+              related_success_nodes: []
+              related_answers: [1]
+              value:
+                short: "{'error': None, 'obligations': [{'name': 'VC for main (assertion)', 'proved': False, 'relevance_hints': 'use int.Int\\n\\nlet main () diverges =  (* GOAL *)\\n  let ref a = any int in\\n  let ref b = a * a + 2 in\\n  let ref x = 0 in\\n  while b < 50 do  (* premise *)\\n    x <- x * (b - 1) + 1;\\n    b <- b + 1;\\n  done;\\n  assert { x >= 0 }  (* GOAL *)', 'goal_formula': 'x >= 0'}]}"
+                long: |-
+                  {'error': None,
+                   'obligations': [{'name': 'VC for main (assertion)',
+                                    'proved': False,
+                                    'relevance_hints': 'use int.Int\n'
+                                                       '\n'
+                                                       'let main () diverges =  (* GOAL *)\n'
+                                                       '  let ref a = any int in\n'
+                                                       '  let ref b = a * a + 2 in\n'
+                                                       '  let ref x = 0 in\n'
+                                                       '  while b < 50 do  (* premise *)\n'
+                                                       '    x <- x * (b - 1) + 1;\n'
+                                                       '    b <- b + 1;\n'
+                                                       '  done;\n'
+                                                       '  assert { x >= 0 }  (* GOAL *)',
+                                    'goal_formula': 'x >= 0'}]}
+                json_provided: true
+                json:
+                  error: null
+                  obligations:
+                    - name: VC for main (assertion)
+                      proved: false
+                      relevance_hints: |-
+                        use int.Int
+
+                        let main () diverges =  (* GOAL *)
+                          let ref a = any int in
+                          let ref b = a * a + 2 in
+                          let ref x = 0 in
+                          while b < 50 do  (* premise *)
+                            x <- x * (b - 1) + 1;
+                            b <- b + 1;
+                          done;
+                          assert { x >= 0 }  (* GOAL *)
+                      goal_formula: x >= 0
+              destination: 2
+          origin: root
+        "2":
+          kind: Branch
+          success_value: null
+          summary_message: null
+          leaf_node: false
+          label: iterate
+          properties:
+            - - with_ids: cands
+                with_hints: null
+              - kind: nested
+                strategy: iterate
+                args:
+                  next:
+                    short: <function prove_program.<locals>.<lambda> at 0x104d5e660>
+                    long: <function prove_program.<locals>.<lambda> at 0x104d5e660>
+                    json_provided: false
+                    json: null
+                node_id: 3
+          actions:
+            - ref:
+                with_ids: cands{%6}
+                with_hints: null
+              hints: null
+              related_success_nodes: [6]
+              related_answers: []
+              value:
+                short: "['x >= 0']"
+                long: "['x >= 0']"
+                json_provided: true
+                json: [x >= 0]
+              destination: 7
+          origin: [child, 1, 0]
+        "3":
+          kind: Iteration
+          success_value: null
+          summary_message: null
+          leaf_node: false
+          label: null
+          properties:
+            - - with_ids: next(nil)
+                with_hints: null
+              - kind: nested
+                strategy: propose_invariants
+                args:
+                  obligation:
+                    short: Obligation(name='VC for main (loop invariant preservation)', proved=False, relevance_hints='use int.Int\n\nlet main () diverges =  (* GOAL *)\n  let ref a = any int in\n  let ref b = a * a + 2 in\n  let ref x = 0 in\n  while b < 50 do  (* premise *)\n    invariant { x >= 0 }  (* GOAL, premise *)\n    x <- x * (b - 1) + 1;  (* premise *)\n    b <- b + 1;\n  done;\n  assert { x >= 0 }', goal_formula='((x * (b - 1)) + 1) >= 0')
+                    long: |-
+                      Obligation(name='VC for main (loop invariant preservation)',
+                                 proved=False,
+                                 relevance_hints='use int.Int\n'
+                                                 '\n'
+                                                 'let main () diverges =  (* GOAL *)\n'
+                                                 '  let ref a = any int in\n'
+                                                 '  let ref b = a * a + 2 in\n'
+                                                 '  let ref x = 0 in\n'
+                                                 '  while b < 50 do  (* premise *)\n'
+                                                 '    invariant { x >= 0 }  (* GOAL, premise *)\n'
+                                                 '    x <- x * (b - 1) + 1;  (* premise *)\n'
+                                                 '    b <- b + 1;\n'
+                                                 '  done;\n'
+                                                 '  assert { x >= 0 }',
+                                 goal_formula='((x * (b - 1)) + 1) >= 0')
+                    json_provided: true
+                    json:
+                      name: VC for main (loop invariant preservation)
+                      proved: false
+                      relevance_hints: |-
+                        use int.Int
+
+                        let main () diverges =  (* GOAL *)
+                          let ref a = any int in
+                          let ref b = a * a + 2 in
+                          let ref x = 0 in
+                          while b < 50 do  (* premise *)
+                            invariant { x >= 0 }  (* GOAL, premise *)
+                            x <- x * (b - 1) + 1;  (* premise *)
+                            b <- b + 1;
+                          done;
+                          assert { x >= 0 }
+                      goal_formula: ((x * (b - 1)) + 1) >= 0
+                  blacklist:
+                    short: None
+                    long: None
+                    json_provided: true
+                    json: null
+                node_id: 4
+          actions:
+            - ref:
+                with_ids: next(nil){%5}
+                with_hints: null
+              hints: null
+              related_success_nodes: [5]
+              related_answers: []
+              value:
+                short: (['x >= 0'], [['x >= 0']])
+                long: (['x >= 0'], [['x >= 0']])
+                json_provided: true
+                json:
+                  - [x >= 0]
+                  - - [x >= 0]
+              destination: 6
+          origin: [nested, 2, 0]
+        "4":
+          kind: Branch
+          success_value: null
+          summary_message: null
+          leaf_node: false
+          label: ProposeInvariants
+          properties:
+            - - with_ids: cands
+                with_hints: null
+              - kind: query
+                name: ProposeInvariants
+                args:
+                  unproved:
+                    name: VC for main (assertion)
+                    proved: false
+                    relevance_hints: |-
+                      use int.Int
+
+                      let main () diverges =  (* GOAL *)
+                        let ref a = any int in
+                        let ref b = a * a + 2 in
+                        let ref x = 0 in
+                        while b < 50 do  (* premise *)
+                          x <- x * (b - 1) + 1;
+                          b <- b + 1;
+                        done;
+                        assert { x >= 0 }  (* GOAL *)
+                    goal_formula: x >= 0
+                  blacklist: []
+                answers:
+                  - id: 2
+                    hint: null
+                    value:
+                      short: "['x >= 0']"
+                      long: "['x >= 0']"
+                      json_provided: true
+                      json: [x >= 0]
+          actions:
+            - ref:
+                with_ids: cands{@2}
+                with_hints: null
+              hints: null
+              related_success_nodes: []
+              related_answers: [2]
+              value:
+                short: "['x >= 0']"
+                long: "['x >= 0']"
+                json_provided: true
+                json: [x >= 0]
+              destination: 5
+          origin: [nested, 3, 0]
+        "5":
+          kind: Success
+          success_value:
+            short: (['x >= 0'], [['x >= 0']])
+            long: (['x >= 0'], [['x >= 0']])
+            json_provided: true
+            json:
+              - [x >= 0]
+              - - [x >= 0]
+          summary_message: null
+          leaf_node: true
+          label: null
+          properties: []
+          actions: []
+          origin: [child, 4, 0]
+        "6":
+          kind: Success
+          success_value:
+            short: "['x >= 0']"
+            long: "['x >= 0']"
+            json_provided: true
+            json: [x >= 0]
+          summary_message: null
+          leaf_node: true
+          label: null
+          properties: []
+          actions: []
+          origin: [child, 3, 0]
+        "7":
+          kind: Computation
+          success_value: null
+          summary_message: null
+          leaf_node: false
+          label: null
+          properties:
+            - - with_ids: query
+                with_hints: null
+              - kind: query
+                name: __Computation__
+                args:
+                  fun: check
+                  args:
+                    prog: |
+                      use int.Int
+
+                      let main () diverges =
+                        let ref a = any int in
+                        let ref b = a * a + 2 in
+                        let ref x = 0 in
+                        while b < 50 do
+                          x <- x * (b - 1) + 1;
+                          b <- b + 1;
+                        done;
+                        assert { x >= 0 }
+                    annotated: |-
+                      use int.Int
+
+                      let main () diverges =
+                        let ref a = any int in
+                        let ref b = a * a + 2 in
+                        let ref x = 0 in
+                        while b < 50 do
+                          invariant { x >= 0 }
+                          x <- x * (b - 1) + 1;
+                          b <- b + 1;
+                        done;
+                        assert { x >= 0 }
+                answers:
+                  - id: 3
+                    hint: null
+                    value:
+                      short: "{'error': None, 'obligations': [{'name': 'VC for main (loop invariant init)', 'proved': True, 'relevance_hints': 'use int.Int\\n\\nlet main () diverges =  (* GOAL *)\\n  let ref a = any int in\\n  let ref b = a * a + 2 in\\n  let ref x = 0 in  (* GOAL *)\\n  while b < 50 do\\n    invariant { x >= 0 }  (* GOAL *)\\n    x <- x * (b - 1) + 1;\\n    b <- b + 1;\\n  done;\\n  assert { x >= 0 }', 'goal_formula': '0 >= 0'}, {'name': 'VC for main (loop invariant preservation)', 'proved': False, 'relevance_hints': 'use int.Int\\n\\nlet main () diverges =  (* GOAL *)\\n  let ref a = any int in\\n  let ref b = a * a + 2 in\\n  let ref x = 0 in\\n  while b < 50 do  (* premise *)\\n    invariant { x >= 0 }  (* GOAL, premise *)\\n    x <- x * (b - 1) + 1;  (* premise *)\\n    b <- b + 1;\\n  done;\\n  assert { x >= 0 }', 'goal_formula': '((x * (b - 1)) + 1) >= 0'}, {'name': 'VC for main (assertion)', 'proved': True, 'relevance_hints': 'use int.Int\\n\\nlet main () diverges =  (* GOAL *)\\n  let ref a = any int in\\n  let ref b = a * a + 2 in\\n  let ref x = 0 in\\n  while b < 50 do  (* premise *)\\n    invariant { x >= 0 }  (* premise *)\\n    x <- x * (b - 1) + 1;\\n    b <- b + 1;\\n  done;\\n  assert { x >= 0 }  (* GOAL *)', 'goal_formula': 'x >= 0'}]}"
+                      long: |-
+                        {'error': None,
+                         'obligations': [{'name': 'VC for main (loop invariant init)',
+                                          'proved': True,
+                                          'relevance_hints': 'use int.Int\n'
+                                                             '\n'
+                                                             'let main () diverges =  (* GOAL *)\n'
+                                                             '  let ref a = any int in\n'
+                                                             '  let ref b = a * a + 2 in\n'
+                                                             '  let ref x = 0 in  (* GOAL *)\n'
+                                                             '  while b < 50 do\n'
+                                                             '    invariant { x >= 0 }  (* GOAL *)\n'
+                                                             '    x <- x * (b - 1) + 1;\n'
+                                                             '    b <- b + 1;\n'
+                                                             '  done;\n'
+                                                             '  assert { x >= 0 }',
+                                          'goal_formula': '0 >= 0'},
+                                         {'name': 'VC for main (loop invariant preservation)',
+                                          'proved': False,
+                                          'relevance_hints': 'use int.Int\n'
+                                                             '\n'
+                                                             'let main () diverges =  (* GOAL *)\n'
+                                                             '  let ref a = any int in\n'
+                                                             '  let ref b = a * a + 2 in\n'
+                                                             '  let ref x = 0 in\n'
+                                                             '  while b < 50 do  (* premise *)\n'
+                                                             '    invariant { x >= 0 }  (* GOAL, '
+                                                             'premise *)\n'
+                                                             '    x <- x * (b - 1) + 1;  (* premise '
+                                                             '*)\n'
+                                                             '    b <- b + 1;\n'
+                                                             '  done;\n'
+                                                             '  assert { x >= 0 }',
+                                          'goal_formula': '((x * (b - 1)) + 1) >= 0'},
+                                         {'name': 'VC for main (assertion)',
+                                          'proved': True,
+                                          'relevance_hints': 'use int.Int\n'
+                                                             '\n'
+                                                             'let main () diverges =  (* GOAL *)\n'
+                                                             '  let ref a = any int in\n'
+                                                             '  let ref b = a * a + 2 in\n'
+                                                             '  let ref x = 0 in\n'
+                                                             '  while b < 50 do  (* premise *)\n'
+                                                             '    invariant { x >= 0 }  (* premise *)\n'
+                                                             '    x <- x * (b - 1) + 1;\n'
+                                                             '    b <- b + 1;\n'
+                                                             '  done;\n'
+                                                             '  assert { x >= 0 }  (* GOAL *)',
+                                          'goal_formula': 'x >= 0'}]}
+                      json_provided: true
+                      json:
+                        error: null
+                        obligations:
+                          - name: VC for main (loop invariant init)
+                            proved: true
+                            relevance_hints: |-
+                              use int.Int
+
+                              let main () diverges =  (* GOAL *)
+                                let ref a = any int in
+                                let ref b = a * a + 2 in
+                                let ref x = 0 in  (* GOAL *)
+                                while b < 50 do
+                                  invariant { x >= 0 }  (* GOAL *)
+                                  x <- x * (b - 1) + 1;
+                                  b <- b + 1;
+                                done;
+                                assert { x >= 0 }
+                            goal_formula: 0 >= 0
+                          - name: VC for main (loop invariant preservation)
+                            proved: false
+                            relevance_hints: |-
+                              use int.Int
+
+                              let main () diverges =  (* GOAL *)
+                                let ref a = any int in
+                                let ref b = a * a + 2 in
+                                let ref x = 0 in
+                                while b < 50 do  (* premise *)
+                                  invariant { x >= 0 }  (* GOAL, premise *)
+                                  x <- x * (b - 1) + 1;  (* premise *)
+                                  b <- b + 1;
+                                done;
+                                assert { x >= 0 }
+                            goal_formula: ((x * (b - 1)) + 1) >= 0
+                          - name: VC for main (assertion)
+                            proved: true
+                            relevance_hints: |-
+                              use int.Int
+
+                              let main () diverges =  (* GOAL *)
+                                let ref a = any int in
+                                let ref b = a * a + 2 in
+                                let ref x = 0 in
+                                while b < 50 do  (* premise *)
+                                  invariant { x >= 0 }  (* premise *)
+                                  x <- x * (b - 1) + 1;
+                                  b <- b + 1;
+                                done;
+                                assert { x >= 0 }  (* GOAL *)
+                            goal_formula: x >= 0
+          actions:
+            - ref:
+                with_ids: query{@3}
+                with_hints: null
+              hints: null
+              related_success_nodes: []
+              related_answers: [3]
+              value:
+                short: "{'error': None, 'obligations': [{'name': 'VC for main (loop invariant init)', 'proved': True, 'relevance_hints': 'use int.Int\\n\\nlet main () diverges =  (* GOAL *)\\n  let ref a = any int in\\n  let ref b = a * a + 2 in\\n  let ref x = 0 in  (* GOAL *)\\n  while b < 50 do\\n    invariant { x >= 0 }  (* GOAL *)\\n    x <- x * (b - 1) + 1;\\n    b <- b + 1;\\n  done;\\n  assert { x >= 0 }', 'goal_formula': '0 >= 0'}, {'name': 'VC for main (loop invariant preservation)', 'proved': False, 'relevance_hints': 'use int.Int\\n\\nlet main () diverges =  (* GOAL *)\\n  let ref a = any int in\\n  let ref b = a * a + 2 in\\n  let ref x = 0 in\\n  while b < 50 do  (* premise *)\\n    invariant { x >= 0 }  (* GOAL, premise *)\\n    x <- x * (b - 1) + 1;  (* premise *)\\n    b <- b + 1;\\n  done;\\n  assert { x >= 0 }', 'goal_formula': '((x * (b - 1)) + 1) >= 0'}, {'name': 'VC for main (assertion)', 'proved': True, 'relevance_hints': 'use int.Int\\n\\nlet main () diverges =  (* GOAL *)\\n  let ref a = any int in\\n  let ref b = a * a + 2 in\\n  let ref x = 0 in\\n  while b < 50 do  (* premise *)\\n    invariant { x >= 0 }  (* premise *)\\n    x <- x * (b - 1) + 1;\\n    b <- b + 1;\\n  done;\\n  assert { x >= 0 }  (* GOAL *)', 'goal_formula': 'x >= 0'}]}"
+                long: |-
+                  {'error': None,
+                   'obligations': [{'name': 'VC for main (loop invariant init)',
+                                    'proved': True,
+                                    'relevance_hints': 'use int.Int\n'
+                                                       '\n'
+                                                       'let main () diverges =  (* GOAL *)\n'
+                                                       '  let ref a = any int in\n'
+                                                       '  let ref b = a * a + 2 in\n'
+                                                       '  let ref x = 0 in  (* GOAL *)\n'
+                                                       '  while b < 50 do\n'
+                                                       '    invariant { x >= 0 }  (* GOAL *)\n'
+                                                       '    x <- x * (b - 1) + 1;\n'
+                                                       '    b <- b + 1;\n'
+                                                       '  done;\n'
+                                                       '  assert { x >= 0 }',
+                                    'goal_formula': '0 >= 0'},
+                                   {'name': 'VC for main (loop invariant preservation)',
+                                    'proved': False,
+                                    'relevance_hints': 'use int.Int\n'
+                                                       '\n'
+                                                       'let main () diverges =  (* GOAL *)\n'
+                                                       '  let ref a = any int in\n'
+                                                       '  let ref b = a * a + 2 in\n'
+                                                       '  let ref x = 0 in\n'
+                                                       '  while b < 50 do  (* premise *)\n'
+                                                       '    invariant { x >= 0 }  (* GOAL, '
+                                                       'premise *)\n'
+                                                       '    x <- x * (b - 1) + 1;  (* premise '
+                                                       '*)\n'
+                                                       '    b <- b + 1;\n'
+                                                       '  done;\n'
+                                                       '  assert { x >= 0 }',
+                                    'goal_formula': '((x * (b - 1)) + 1) >= 0'},
+                                   {'name': 'VC for main (assertion)',
+                                    'proved': True,
+                                    'relevance_hints': 'use int.Int\n'
+                                                       '\n'
+                                                       'let main () diverges =  (* GOAL *)\n'
+                                                       '  let ref a = any int in\n'
+                                                       '  let ref b = a * a + 2 in\n'
+                                                       '  let ref x = 0 in\n'
+                                                       '  while b < 50 do  (* premise *)\n'
+                                                       '    invariant { x >= 0 }  (* premise *)\n'
+                                                       '    x <- x * (b - 1) + 1;\n'
+                                                       '    b <- b + 1;\n'
+                                                       '  done;\n'
+                                                       '  assert { x >= 0 }  (* GOAL *)',
+                                    'goal_formula': 'x >= 0'}]}
+                json_provided: true
+                json:
+                  error: null
+                  obligations:
+                    - name: VC for main (loop invariant init)
+                      proved: true
+                      relevance_hints: |-
+                        use int.Int
+
+                        let main () diverges =  (* GOAL *)
+                          let ref a = any int in
+                          let ref b = a * a + 2 in
+                          let ref x = 0 in  (* GOAL *)
+                          while b < 50 do
+                            invariant { x >= 0 }  (* GOAL *)
+                            x <- x * (b - 1) + 1;
+                            b <- b + 1;
+                          done;
+                          assert { x >= 0 }
+                      goal_formula: 0 >= 0
+                    - name: VC for main (loop invariant preservation)
+                      proved: false
+                      relevance_hints: |-
+                        use int.Int
+
+                        let main () diverges =  (* GOAL *)
+                          let ref a = any int in
+                          let ref b = a * a + 2 in
+                          let ref x = 0 in
+                          while b < 50 do  (* premise *)
+                            invariant { x >= 0 }  (* GOAL, premise *)
+                            x <- x * (b - 1) + 1;  (* premise *)
+                            b <- b + 1;
+                          done;
+                          assert { x >= 0 }
+                      goal_formula: ((x * (b - 1)) + 1) >= 0
+                    - name: VC for main (assertion)
+                      proved: true
+                      relevance_hints: |-
+                        use int.Int
+
+                        let main () diverges =  (* GOAL *)
+                          let ref a = any int in
+                          let ref b = a * a + 2 in
+                          let ref x = 0 in
+                          while b < 50 do  (* premise *)
+                            invariant { x >= 0 }  (* premise *)
+                            x <- x * (b - 1) + 1;
+                            b <- b + 1;
+                          done;
+                          assert { x >= 0 }  (* GOAL *)
+                      goal_formula: x >= 0
+              destination: 8
+          origin: [child, 2, 0]
+        "8":
+          kind: Value
+          success_value: null
+          summary_message: null
+          leaf_node: false
+          label: EvaluateProofState
+          properties:
+            - - with_ids: eval
+                with_hints: null
+              - kind: query
+                name: EvaluateProofState
+                args:
+                  unproved:
+                    name: VC for main (loop invariant preservation)
+                    proved: false
+                    relevance_hints: |-
+                      use int.Int
+
+                      let main () diverges =  (* GOAL *)
+                        let ref a = any int in
+                        let ref b = a * a + 2 in
+                        let ref x = 0 in
+                        while b < 50 do  (* premise *)
+                          invariant { x >= 0 }  (* GOAL, premise *)
+                          x <- x * (b - 1) + 1;  (* premise *)
+                          b <- b + 1;
+                        done;
+                        assert { x >= 0 }
+                    goal_formula: ((x * (b - 1)) + 1) >= 0
+                answers: []
+          actions:
+            - ref:
+                with_ids: nil
+                with_hints: null
+              hints: null
+              related_success_nodes: []
+              related_answers: []
+              value:
+                short: None
+                long: None
+                json_provided: true
+                json: null
+              destination: 9
+          origin: [child, 7, 0]
+        "9":
+          kind: Branch
+          success_value: null
+          summary_message: null
+          leaf_node: false
+          label: iterate
+          properties:
+            - - with_ids: cands
+                with_hints: null
+              - kind: nested
+                strategy: iterate
+                args:
+                  next:
+                    short: <function prove_program.<locals>.<lambda> at 0x104d5fba0>
+                    long: <function prove_program.<locals>.<lambda> at 0x104d5fba0>
+                    json_provided: false
+                    json: null
+                node_id: 10
+          actions:
+            - ref:
+                with_ids: cands{%13}
+                with_hints: null
+              hints: null
+              related_success_nodes: [13]
+              related_answers: []
+              value:
+                short: "['b - 1 >= 0']"
+                long: "['b - 1 >= 0']"
+                json_provided: true
+                json: [b - 1 >= 0]
+              destination: 14
+          origin: [child, 8, 0]
+        "10":
+          kind: Iteration
+          success_value: null
+          summary_message: null
+          leaf_node: false
+          label: null
+          properties:
+            - - with_ids: next(nil)
+                with_hints: null
+              - kind: nested
+                strategy: propose_invariants
+                args:
+                  obligation:
+                    short: Obligation(name='VC for main (loop invariant preservation)', proved=False, relevance_hints='use int.Int\n\nlet main () diverges =  (* GOAL *)\n  let ref a = any int in\n  let ref b = a * a + 2 in\n  let ref x = 0 in\n  while b < 50 do  (* premise *)\n    invariant { x >= 0 }  (* GOAL, premise *)\n    x <- x * (b - 1) + 1;  (* premise *)\n    b <- b + 1;\n  done;\n  assert { x >= 0 }', goal_formula='((x * (b - 1)) + 1) >= 0')
+                    long: |-
+                      Obligation(name='VC for main (loop invariant preservation)',
+                                 proved=False,
+                                 relevance_hints='use int.Int\n'
+                                                 '\n'
+                                                 'let main () diverges =  (* GOAL *)\n'
+                                                 '  let ref a = any int in\n'
+                                                 '  let ref b = a * a + 2 in\n'
+                                                 '  let ref x = 0 in\n'
+                                                 '  while b < 50 do  (* premise *)\n'
+                                                 '    invariant { x >= 0 }  (* GOAL, premise *)\n'
+                                                 '    x <- x * (b - 1) + 1;  (* premise *)\n'
+                                                 '    b <- b + 1;\n'
+                                                 '  done;\n'
+                                                 '  assert { x >= 0 }',
+                                 goal_formula='((x * (b - 1)) + 1) >= 0')
+                    json_provided: true
+                    json:
+                      name: VC for main (loop invariant preservation)
+                      proved: false
+                      relevance_hints: |-
+                        use int.Int
+
+                        let main () diverges =  (* GOAL *)
+                          let ref a = any int in
+                          let ref b = a * a + 2 in
+                          let ref x = 0 in
+                          while b < 50 do  (* premise *)
+                            invariant { x >= 0 }  (* GOAL, premise *)
+                            x <- x * (b - 1) + 1;  (* premise *)
+                            b <- b + 1;
+                          done;
+                          assert { x >= 0 }
+                      goal_formula: ((x * (b - 1)) + 1) >= 0
+                  blacklist:
+                    short: None
+                    long: None
+                    json_provided: true
+                    json: null
+                node_id: 11
+          actions:
+            - ref:
+                with_ids: next(nil){%12}
+                with_hints: null
+              hints: null
+              related_success_nodes: [12]
+              related_answers: []
+              value:
+                short: (['b - 1 >= 0'], [['b - 1 >= 0']])
+                long: (['b - 1 >= 0'], [['b - 1 >= 0']])
+                json_provided: true
+                json:
+                  - [b - 1 >= 0]
+                  - - [b - 1 >= 0]
+              destination: 13
+          origin: [nested, 9, 0]
+        "11":
+          kind: Branch
+          success_value: null
+          summary_message: null
+          leaf_node: false
+          label: ProposeInvariants
+          properties:
+            - - with_ids: cands
+                with_hints: null
+              - kind: query
+                name: ProposeInvariants
+                args:
+                  unproved:
+                    name: VC for main (loop invariant preservation)
+                    proved: false
+                    relevance_hints: |-
+                      use int.Int
+
+                      let main () diverges =  (* GOAL *)
+                        let ref a = any int in
+                        let ref b = a * a + 2 in
+                        let ref x = 0 in
+                        while b < 50 do  (* premise *)
+                          invariant { x >= 0 }  (* GOAL, premise *)
+                          x <- x * (b - 1) + 1;  (* premise *)
+                          b <- b + 1;
+                        done;
+                        assert { x >= 0 }
+                    goal_formula: ((x * (b - 1)) + 1) >= 0
+                  blacklist: []
+                answers:
+                  - id: 4
+                    hint: null
+                    value:
+                      short: "['b - 1 >= 0']"
+                      long: "['b - 1 >= 0']"
+                      json_provided: true
+                      json: [b - 1 >= 0]
+          actions:
+            - ref:
+                with_ids: cands{@4}
+                with_hints: null
+              hints: null
+              related_success_nodes: []
+              related_answers: [4]
+              value:
+                short: "['b - 1 >= 0']"
+                long: "['b - 1 >= 0']"
+                json_provided: true
+                json: [b - 1 >= 0]
+              destination: 12
+          origin: [nested, 10, 0]
+        "12":
+          kind: Success
+          success_value:
+            short: (['b - 1 >= 0'], [['b - 1 >= 0']])
+            long: (['b - 1 >= 0'], [['b - 1 >= 0']])
+            json_provided: true
+            json:
+              - [b - 1 >= 0]
+              - - [b - 1 >= 0]
+          summary_message: null
+          leaf_node: true
+          label: null
+          properties: []
+          actions: []
+          origin: [child, 11, 0]
+        "13":
+          kind: Success
+          success_value:
+            short: "['b - 1 >= 0']"
+            long: "['b - 1 >= 0']"
+            json_provided: true
+            json: [b - 1 >= 0]
+          summary_message: null
+          leaf_node: true
+          label: null
+          properties: []
+          actions: []
+          origin: [child, 10, 0]
+        "14":
+          kind: Computation
+          success_value: null
+          summary_message: null
+          leaf_node: false
+          label: null
+          properties:
+            - - with_ids: query
+                with_hints: null
+              - kind: query
+                name: __Computation__
+                args:
+                  fun: check
+                  args:
+                    prog: |
+                      use int.Int
+
+                      let main () diverges =
+                        let ref a = any int in
+                        let ref b = a * a + 2 in
+                        let ref x = 0 in
+                        while b < 50 do
+                          x <- x * (b - 1) + 1;
+                          b <- b + 1;
+                        done;
+                        assert { x >= 0 }
+                    annotated: |-
+                      use int.Int
+
+                      let main () diverges =
+                        let ref a = any int in
+                        let ref b = a * a + 2 in
+                        let ref x = 0 in
+                        while b < 50 do
+                          invariant { b - 1 >= 0 }
+                          invariant { x >= 0 }
+                          x <- x * (b - 1) + 1;
+                          b <- b + 1;
+                        done;
+                        assert { x >= 0 }
+                answers:
+                  - id: 5
+                    hint: null
+                    value:
+                      short: "{'error': None, 'obligations': [{'name': 'VC for main (loop invariant init)', 'proved': True, 'relevance_hints': 'use int.Int\\n\\nlet main () diverges =  (* GOAL *)\\n  let ref a = any int in  (* GOAL *)\\n  let ref b = a * a + 2 in  (* GOAL *)\\n  let ref x = 0 in\\n  while b < 50 do\\n    invariant { b - 1 >= 0 }  (* GOAL *)\\n    invariant { x >= 0 }\\n    x <- x * (b - 1) + 1;\\n    b <- b + 1;\\n  done;\\n  assert { x >= 0 }', 'goal_formula': '(((o * o) + 2) - 1) >= 0'}, {'name': 'VC for main (loop invariant init)', 'proved': True, 'relevance_hints': 'use int.Int\\n\\nlet main () diverges =  (* GOAL *)\\n  let ref a = any int in  (* premise *)\\n  let ref b = a * a + 2 in  (* premise *)\\n  let ref x = 0 in  (* GOAL *)\\n  while b < 50 do\\n    invariant { b - 1 >= 0 }  (* premise *)\\n    invariant { x >= 0 }  (* GOAL *)\\n    x <- x * (b - 1) + 1;\\n    b <- b + 1;\\n  done;\\n  assert { x >= 0 }', 'goal_formula': '0 >= 0'}, {'name': 'VC for main (loop invariant preservation)', 'proved': True, 'relevance_hints': 'use int.Int\\n\\nlet main () diverges =  (* GOAL *)\\n  let ref a = any int in\\n  let ref b = a * a + 2 in\\n  let ref x = 0 in\\n  while b < 50 do  (* premise *)\\n    invariant { b - 1 >= 0 }  (* GOAL, premise *)\\n    invariant { x >= 0 }  (* premise *)\\n    x <- x * (b - 1) + 1;  (* premise *)\\n    b <- b + 1;  (* premise *)\\n  done;\\n  assert { x >= 0 }', 'goal_formula': '((b + 1) - 1) >= 0'}, {'name': 'VC for main (loop invariant preservation)', 'proved': True, 'relevance_hints': 'use int.Int\\n\\nlet main () diverges =  (* GOAL *)\\n  let ref a = any int in\\n  let ref b = a * a + 2 in\\n  let ref x = 0 in\\n  while b < 50 do  (* premise *)\\n    invariant { b - 1 >= 0 }  (* premise *)\\n    invariant { x >= 0 }  (* GOAL, premise *)\\n    x <- x * (b - 1) + 1;  (* premise *)\\n    b <- b + 1;  (* premise *)\\n  done;\\n  assert { x >= 0 }', 'goal_formula': '((x * (b - 1)) + 1) >= 0'}, {'name': 'VC for main (assertion)', 'proved': True, 'relevance_hints': 'use int.Int\\n\\nlet main () diverges =  (* GOAL *)\\n  let ref a = any int in\\n  let ref b = a * a + 2 in\\n  let ref x = 0 in\\n  while b < 50 do  (* premise *)\\n    invariant { b - 1 >= 0 }  (* premise *)\\n    invariant { x >= 0 }  (* premise *)\\n    x <- x * (b - 1) + 1;\\n    b <- b + 1;\\n  done;\\n  assert { x >= 0 }  (* GOAL *)', 'goal_formula': 'x >= 0'}]}"
+                      long: |-
+                        {'error': None,
+                         'obligations': [{'name': 'VC for main (loop invariant init)',
+                                          'proved': True,
+                                          'relevance_hints': 'use int.Int\n'
+                                                             '\n'
+                                                             'let main () diverges =  (* GOAL *)\n'
+                                                             '  let ref a = any int in  (* GOAL *)\n'
+                                                             '  let ref b = a * a + 2 in  (* GOAL *)\n'
+                                                             '  let ref x = 0 in\n'
+                                                             '  while b < 50 do\n'
+                                                             '    invariant { b - 1 >= 0 }  (* GOAL '
+                                                             '*)\n'
+                                                             '    invariant { x >= 0 }\n'
+                                                             '    x <- x * (b - 1) + 1;\n'
+                                                             '    b <- b + 1;\n'
+                                                             '  done;\n'
+                                                             '  assert { x >= 0 }',
+                                          'goal_formula': '(((o * o) + 2) - 1) >= 0'},
+                                         {'name': 'VC for main (loop invariant init)',
+                                          'proved': True,
+                                          'relevance_hints': 'use int.Int\n'
+                                                             '\n'
+                                                             'let main () diverges =  (* GOAL *)\n'
+                                                             '  let ref a = any int in  (* premise *)\n'
+                                                             '  let ref b = a * a + 2 in  (* premise '
+                                                             '*)\n'
+                                                             '  let ref x = 0 in  (* GOAL *)\n'
+                                                             '  while b < 50 do\n'
+                                                             '    invariant { b - 1 >= 0 }  (* premise '
+                                                             '*)\n'
+                                                             '    invariant { x >= 0 }  (* GOAL *)\n'
+                                                             '    x <- x * (b - 1) + 1;\n'
+                                                             '    b <- b + 1;\n'
+                                                             '  done;\n'
+                                                             '  assert { x >= 0 }',
+                                          'goal_formula': '0 >= 0'},
+                                         {'name': 'VC for main (loop invariant preservation)',
+                                          'proved': True,
+                                          'relevance_hints': 'use int.Int\n'
+                                                             '\n'
+                                                             'let main () diverges =  (* GOAL *)\n'
+                                                             '  let ref a = any int in\n'
+                                                             '  let ref b = a * a + 2 in\n'
+                                                             '  let ref x = 0 in\n'
+                                                             '  while b < 50 do  (* premise *)\n'
+                                                             '    invariant { b - 1 >= 0 }  (* GOAL, '
+                                                             'premise *)\n'
+                                                             '    invariant { x >= 0 }  (* premise *)\n'
+                                                             '    x <- x * (b - 1) + 1;  (* premise '
+                                                             '*)\n'
+                                                             '    b <- b + 1;  (* premise *)\n'
+                                                             '  done;\n'
+                                                             '  assert { x >= 0 }',
+                                          'goal_formula': '((b + 1) - 1) >= 0'},
+                                         {'name': 'VC for main (loop invariant preservation)',
+                                          'proved': True,
+                                          'relevance_hints': 'use int.Int\n'
+                                                             '\n'
+                                                             'let main () diverges =  (* GOAL *)\n'
+                                                             '  let ref a = any int in\n'
+                                                             '  let ref b = a * a + 2 in\n'
+                                                             '  let ref x = 0 in\n'
+                                                             '  while b < 50 do  (* premise *)\n'
+                                                             '    invariant { b - 1 >= 0 }  (* premise '
+                                                             '*)\n'
+                                                             '    invariant { x >= 0 }  (* GOAL, '
+                                                             'premise *)\n'
+                                                             '    x <- x * (b - 1) + 1;  (* premise '
+                                                             '*)\n'
+                                                             '    b <- b + 1;  (* premise *)\n'
+                                                             '  done;\n'
+                                                             '  assert { x >= 0 }',
+                                          'goal_formula': '((x * (b - 1)) + 1) >= 0'},
+                                         {'name': 'VC for main (assertion)',
+                                          'proved': True,
+                                          'relevance_hints': 'use int.Int\n'
+                                                             '\n'
+                                                             'let main () diverges =  (* GOAL *)\n'
+                                                             '  let ref a = any int in\n'
+                                                             '  let ref b = a * a + 2 in\n'
+                                                             '  let ref x = 0 in\n'
+                                                             '  while b < 50 do  (* premise *)\n'
+                                                             '    invariant { b - 1 >= 0 }  (* premise '
+                                                             '*)\n'
+                                                             '    invariant { x >= 0 }  (* premise *)\n'
+                                                             '    x <- x * (b - 1) + 1;\n'
+                                                             '    b <- b + 1;\n'
+                                                             '  done;\n'
+                                                             '  assert { x >= 0 }  (* GOAL *)',
+                                          'goal_formula': 'x >= 0'}]}
+                      json_provided: true
+                      json:
+                        error: null
+                        obligations:
+                          - name: VC for main (loop invariant init)
+                            proved: true
+                            relevance_hints: |-
+                              use int.Int
+
+                              let main () diverges =  (* GOAL *)
+                                let ref a = any int in  (* GOAL *)
+                                let ref b = a * a + 2 in  (* GOAL *)
+                                let ref x = 0 in
+                                while b < 50 do
+                                  invariant { b - 1 >= 0 }  (* GOAL *)
+                                  invariant { x >= 0 }
+                                  x <- x * (b - 1) + 1;
+                                  b <- b + 1;
+                                done;
+                                assert { x >= 0 }
+                            goal_formula: (((o * o) + 2) - 1) >= 0
+                          - name: VC for main (loop invariant init)
+                            proved: true
+                            relevance_hints: |-
+                              use int.Int
+
+                              let main () diverges =  (* GOAL *)
+                                let ref a = any int in  (* premise *)
+                                let ref b = a * a + 2 in  (* premise *)
+                                let ref x = 0 in  (* GOAL *)
+                                while b < 50 do
+                                  invariant { b - 1 >= 0 }  (* premise *)
+                                  invariant { x >= 0 }  (* GOAL *)
+                                  x <- x * (b - 1) + 1;
+                                  b <- b + 1;
+                                done;
+                                assert { x >= 0 }
+                            goal_formula: 0 >= 0
+                          - name: VC for main (loop invariant preservation)
+                            proved: true
+                            relevance_hints: |-
+                              use int.Int
+
+                              let main () diverges =  (* GOAL *)
+                                let ref a = any int in
+                                let ref b = a * a + 2 in
+                                let ref x = 0 in
+                                while b < 50 do  (* premise *)
+                                  invariant { b - 1 >= 0 }  (* GOAL, premise *)
+                                  invariant { x >= 0 }  (* premise *)
+                                  x <- x * (b - 1) + 1;  (* premise *)
+                                  b <- b + 1;  (* premise *)
+                                done;
+                                assert { x >= 0 }
+                            goal_formula: ((b + 1) - 1) >= 0
+                          - name: VC for main (loop invariant preservation)
+                            proved: true
+                            relevance_hints: |-
+                              use int.Int
+
+                              let main () diverges =  (* GOAL *)
+                                let ref a = any int in
+                                let ref b = a * a + 2 in
+                                let ref x = 0 in
+                                while b < 50 do  (* premise *)
+                                  invariant { b - 1 >= 0 }  (* premise *)
+                                  invariant { x >= 0 }  (* GOAL, premise *)
+                                  x <- x * (b - 1) + 1;  (* premise *)
+                                  b <- b + 1;  (* premise *)
+                                done;
+                                assert { x >= 0 }
+                            goal_formula: ((x * (b - 1)) + 1) >= 0
+                          - name: VC for main (assertion)
+                            proved: true
+                            relevance_hints: |-
+                              use int.Int
+
+                              let main () diverges =  (* GOAL *)
+                                let ref a = any int in
+                                let ref b = a * a + 2 in
+                                let ref x = 0 in
+                                while b < 50 do  (* premise *)
+                                  invariant { b - 1 >= 0 }  (* premise *)
+                                  invariant { x >= 0 }  (* premise *)
+                                  x <- x * (b - 1) + 1;
+                                  b <- b + 1;
+                                done;
+                                assert { x >= 0 }  (* GOAL *)
+                            goal_formula: x >= 0
+          actions:
+            - ref:
+                with_ids: query{@5}
+                with_hints: null
+              hints: null
+              related_success_nodes: []
+              related_answers: [5]
+              value:
+                short: "{'error': None, 'obligations': [{'name': 'VC for main (loop invariant init)', 'proved': True, 'relevance_hints': 'use int.Int\\n\\nlet main () diverges =  (* GOAL *)\\n  let ref a = any int in  (* GOAL *)\\n  let ref b = a * a + 2 in  (* GOAL *)\\n  let ref x = 0 in\\n  while b < 50 do\\n    invariant { b - 1 >= 0 }  (* GOAL *)\\n    invariant { x >= 0 }\\n    x <- x * (b - 1) + 1;\\n    b <- b + 1;\\n  done;\\n  assert { x >= 0 }', 'goal_formula': '(((o * o) + 2) - 1) >= 0'}, {'name': 'VC for main (loop invariant init)', 'proved': True, 'relevance_hints': 'use int.Int\\n\\nlet main () diverges =  (* GOAL *)\\n  let ref a = any int in  (* premise *)\\n  let ref b = a * a + 2 in  (* premise *)\\n  let ref x = 0 in  (* GOAL *)\\n  while b < 50 do\\n    invariant { b - 1 >= 0 }  (* premise *)\\n    invariant { x >= 0 }  (* GOAL *)\\n    x <- x * (b - 1) + 1;\\n    b <- b + 1;\\n  done;\\n  assert { x >= 0 }', 'goal_formula': '0 >= 0'}, {'name': 'VC for main (loop invariant preservation)', 'proved': True, 'relevance_hints': 'use int.Int\\n\\nlet main () diverges =  (* GOAL *)\\n  let ref a = any int in\\n  let ref b = a * a + 2 in\\n  let ref x = 0 in\\n  while b < 50 do  (* premise *)\\n    invariant { b - 1 >= 0 }  (* GOAL, premise *)\\n    invariant { x >= 0 }  (* premise *)\\n    x <- x * (b - 1) + 1;  (* premise *)\\n    b <- b + 1;  (* premise *)\\n  done;\\n  assert { x >= 0 }', 'goal_formula': '((b + 1) - 1) >= 0'}, {'name': 'VC for main (loop invariant preservation)', 'proved': True, 'relevance_hints': 'use int.Int\\n\\nlet main () diverges =  (* GOAL *)\\n  let ref a = any int in\\n  let ref b = a * a + 2 in\\n  let ref x = 0 in\\n  while b < 50 do  (* premise *)\\n    invariant { b - 1 >= 0 }  (* premise *)\\n    invariant { x >= 0 }  (* GOAL, premise *)\\n    x <- x * (b - 1) + 1;  (* premise *)\\n    b <- b + 1;  (* premise *)\\n  done;\\n  assert { x >= 0 }', 'goal_formula': '((x * (b - 1)) + 1) >= 0'}, {'name': 'VC for main (assertion)', 'proved': True, 'relevance_hints': 'use int.Int\\n\\nlet main () diverges =  (* GOAL *)\\n  let ref a = any int in\\n  let ref b = a * a + 2 in\\n  let ref x = 0 in\\n  while b < 50 do  (* premise *)\\n    invariant { b - 1 >= 0 }  (* premise *)\\n    invariant { x >= 0 }  (* premise *)\\n    x <- x * (b - 1) + 1;\\n    b <- b + 1;\\n  done;\\n  assert { x >= 0 }  (* GOAL *)', 'goal_formula': 'x >= 0'}]}"
+                long: |-
+                  {'error': None,
+                   'obligations': [{'name': 'VC for main (loop invariant init)',
+                                    'proved': True,
+                                    'relevance_hints': 'use int.Int\n'
+                                                       '\n'
+                                                       'let main () diverges =  (* GOAL *)\n'
+                                                       '  let ref a = any int in  (* GOAL *)\n'
+                                                       '  let ref b = a * a + 2 in  (* GOAL *)\n'
+                                                       '  let ref x = 0 in\n'
+                                                       '  while b < 50 do\n'
+                                                       '    invariant { b - 1 >= 0 }  (* GOAL '
+                                                       '*)\n'
+                                                       '    invariant { x >= 0 }\n'
+                                                       '    x <- x * (b - 1) + 1;\n'
+                                                       '    b <- b + 1;\n'
+                                                       '  done;\n'
+                                                       '  assert { x >= 0 }',
+                                    'goal_formula': '(((o * o) + 2) - 1) >= 0'},
+                                   {'name': 'VC for main (loop invariant init)',
+                                    'proved': True,
+                                    'relevance_hints': 'use int.Int\n'
+                                                       '\n'
+                                                       'let main () diverges =  (* GOAL *)\n'
+                                                       '  let ref a = any int in  (* premise *)\n'
+                                                       '  let ref b = a * a + 2 in  (* premise '
+                                                       '*)\n'
+                                                       '  let ref x = 0 in  (* GOAL *)\n'
+                                                       '  while b < 50 do\n'
+                                                       '    invariant { b - 1 >= 0 }  (* premise '
+                                                       '*)\n'
+                                                       '    invariant { x >= 0 }  (* GOAL *)\n'
+                                                       '    x <- x * (b - 1) + 1;\n'
+                                                       '    b <- b + 1;\n'
+                                                       '  done;\n'
+                                                       '  assert { x >= 0 }',
+                                    'goal_formula': '0 >= 0'},
+                                   {'name': 'VC for main (loop invariant preservation)',
+                                    'proved': True,
+                                    'relevance_hints': 'use int.Int\n'
+                                                       '\n'
+                                                       'let main () diverges =  (* GOAL *)\n'
+                                                       '  let ref a = any int in\n'
+                                                       '  let ref b = a * a + 2 in\n'
+                                                       '  let ref x = 0 in\n'
+                                                       '  while b < 50 do  (* premise *)\n'
+                                                       '    invariant { b - 1 >= 0 }  (* GOAL, '
+                                                       'premise *)\n'
+                                                       '    invariant { x >= 0 }  (* premise *)\n'
+                                                       '    x <- x * (b - 1) + 1;  (* premise '
+                                                       '*)\n'
+                                                       '    b <- b + 1;  (* premise *)\n'
+                                                       '  done;\n'
+                                                       '  assert { x >= 0 }',
+                                    'goal_formula': '((b + 1) - 1) >= 0'},
+                                   {'name': 'VC for main (loop invariant preservation)',
+                                    'proved': True,
+                                    'relevance_hints': 'use int.Int\n'
+                                                       '\n'
+                                                       'let main () diverges =  (* GOAL *)\n'
+                                                       '  let ref a = any int in\n'
+                                                       '  let ref b = a * a + 2 in\n'
+                                                       '  let ref x = 0 in\n'
+                                                       '  while b < 50 do  (* premise *)\n'
+                                                       '    invariant { b - 1 >= 0 }  (* premise '
+                                                       '*)\n'
+                                                       '    invariant { x >= 0 }  (* GOAL, '
+                                                       'premise *)\n'
+                                                       '    x <- x * (b - 1) + 1;  (* premise '
+                                                       '*)\n'
+                                                       '    b <- b + 1;  (* premise *)\n'
+                                                       '  done;\n'
+                                                       '  assert { x >= 0 }',
+                                    'goal_formula': '((x * (b - 1)) + 1) >= 0'},
+                                   {'name': 'VC for main (assertion)',
+                                    'proved': True,
+                                    'relevance_hints': 'use int.Int\n'
+                                                       '\n'
+                                                       'let main () diverges =  (* GOAL *)\n'
+                                                       '  let ref a = any int in\n'
+                                                       '  let ref b = a * a + 2 in\n'
+                                                       '  let ref x = 0 in\n'
+                                                       '  while b < 50 do  (* premise *)\n'
+                                                       '    invariant { b - 1 >= 0 }  (* premise '
+                                                       '*)\n'
+                                                       '    invariant { x >= 0 }  (* premise *)\n'
+                                                       '    x <- x * (b - 1) + 1;\n'
+                                                       '    b <- b + 1;\n'
+                                                       '  done;\n'
+                                                       '  assert { x >= 0 }  (* GOAL *)',
+                                    'goal_formula': 'x >= 0'}]}
+                json_provided: true
+                json:
+                  error: null
+                  obligations:
+                    - name: VC for main (loop invariant init)
+                      proved: true
+                      relevance_hints: |-
+                        use int.Int
+
+                        let main () diverges =  (* GOAL *)
+                          let ref a = any int in  (* GOAL *)
+                          let ref b = a * a + 2 in  (* GOAL *)
+                          let ref x = 0 in
+                          while b < 50 do
+                            invariant { b - 1 >= 0 }  (* GOAL *)
+                            invariant { x >= 0 }
+                            x <- x * (b - 1) + 1;
+                            b <- b + 1;
+                          done;
+                          assert { x >= 0 }
+                      goal_formula: (((o * o) + 2) - 1) >= 0
+                    - name: VC for main (loop invariant init)
+                      proved: true
+                      relevance_hints: |-
+                        use int.Int
+
+                        let main () diverges =  (* GOAL *)
+                          let ref a = any int in  (* premise *)
+                          let ref b = a * a + 2 in  (* premise *)
+                          let ref x = 0 in  (* GOAL *)
+                          while b < 50 do
+                            invariant { b - 1 >= 0 }  (* premise *)
+                            invariant { x >= 0 }  (* GOAL *)
+                            x <- x * (b - 1) + 1;
+                            b <- b + 1;
+                          done;
+                          assert { x >= 0 }
+                      goal_formula: 0 >= 0
+                    - name: VC for main (loop invariant preservation)
+                      proved: true
+                      relevance_hints: |-
+                        use int.Int
+
+                        let main () diverges =  (* GOAL *)
+                          let ref a = any int in
+                          let ref b = a * a + 2 in
+                          let ref x = 0 in
+                          while b < 50 do  (* premise *)
+                            invariant { b - 1 >= 0 }  (* GOAL, premise *)
+                            invariant { x >= 0 }  (* premise *)
+                            x <- x * (b - 1) + 1;  (* premise *)
+                            b <- b + 1;  (* premise *)
+                          done;
+                          assert { x >= 0 }
+                      goal_formula: ((b + 1) - 1) >= 0
+                    - name: VC for main (loop invariant preservation)
+                      proved: true
+                      relevance_hints: |-
+                        use int.Int
+
+                        let main () diverges =  (* GOAL *)
+                          let ref a = any int in
+                          let ref b = a * a + 2 in
+                          let ref x = 0 in
+                          while b < 50 do  (* premise *)
+                            invariant { b - 1 >= 0 }  (* premise *)
+                            invariant { x >= 0 }  (* GOAL, premise *)
+                            x <- x * (b - 1) + 1;  (* premise *)
+                            b <- b + 1;  (* premise *)
+                          done;
+                          assert { x >= 0 }
+                      goal_formula: ((x * (b - 1)) + 1) >= 0
+                    - name: VC for main (assertion)
+                      proved: true
+                      relevance_hints: |-
+                        use int.Int
+
+                        let main () diverges =  (* GOAL *)
+                          let ref a = any int in
+                          let ref b = a * a + 2 in
+                          let ref x = 0 in
+                          while b < 50 do  (* premise *)
+                            invariant { b - 1 >= 0 }  (* premise *)
+                            invariant { x >= 0 }  (* premise *)
+                            x <- x * (b - 1) + 1;
+                            b <- b + 1;
+                          done;
+                          assert { x >= 0 }  (* GOAL *)
+                      goal_formula: x >= 0
+              destination: 15
+          origin: [child, 9, 0]
+        "15":
+          kind: Success
+          success_value:
+            short: |-
+              use int.Int
+
+              let main () diverges =
+                let ref a = any int in
+                let ref b = a * a + 2 in
+                let ref x = 0 in
+                while b < 50 do
+                  invariant { b - 1 >= 0 }
+                  invariant { x >= 0 }
+                  x <- x * (b - 1) + 1;
+                  b <- b + 1;
+                done;
+                assert { x >= 0 }
+            long: |-
+              ('use int.Int\n'
+               '\n'
+               'let main () diverges =\n'
+               '  let ref a = any int in\n'
+               '  let ref b = a * a + 2 in\n'
+               '  let ref x = 0 in\n'
+               '  while b < 50 do\n'
+               '    invariant { b - 1 >= 0 }\n'
+               '    invariant { x >= 0 }\n'
+               '    x <- x * (b - 1) + 1;\n'
+               '    b <- b + 1;\n'
+               '  done;\n'
+               '  assert { x >= 0 }')
+            json_provided: true
+            json: |-
+              use int.Int
+
+              let main () diverges =
+                let ref a = any int in
+                let ref b = a * a + 2 in
+                let ref x = 0 in
+                while b < 50 do
+                  invariant { b - 1 >= 0 }
+                  invariant { x >= 0 }
+                  x <- x * (b - 1) + 1;
+                  b <- b + 1;
+                done;
+                assert { x >= 0 }
+          summary_message: null
+          leaf_node: true
+          label: null
+          properties: []
+          actions: []
+          origin: [child, 14, 0]

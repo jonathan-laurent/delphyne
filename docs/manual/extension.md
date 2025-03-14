@@ -116,8 +116,25 @@ The progress of commands can be supervised while they are running through the `T
 !!! note
     In the future, Delphyne will allow adding new commands by registering command scripts. 
 
+
 ## Navigating Strategy Trees {#navigating-trees}
+
+Traces can be inspected using the `Tree`, `Node` and `Actions` views (see screenshot at the top of this page). These views are synchronized together and display information about a single node at a time. The `Tree` view indicates a path from the root to the current node and allows jumping to every intermediate node on this path. The `Node` view shows the node type and all associated spaces. For each space, it shows the underlying query or allows jumping to the underlying tree. Finally, the `Actions` view lists all children of the current node that belong to the trace. Actions leading to subtrees containing success nodes are indicated by small checkmarks.
+
+Navigation operations can be undone by clicking on the `Undo` icon on the header of the tree view or by using shortcut ++cmd+d++ followed by ++cmd+z++. 
+
 
 ## Tips and Shortcuts
 
+- Folding is very useful to keep demonstration readable. You should learn the standard [VSCode shortcuts](https://code.visualstudio.com/docs/editor/codebasics#_folding) for controlling folding (++cmd+k+cmd+l++ for toggling folding under the cursor, ++cmd+k+cmd+0++ for folding everything, ++cmd+k+cmd+3++ for folding everything at depth 3, ++cmd+k+cmd+j++ for unfolding everything...). In addition, the custom Delphyne shortcut ++cmd+d+cmd+k++ can be used to fold all strategy and query arguments outside of the cursor's scope.
+- Shortcut ++cmd+d+cmd+v++ can be used to focus on Delphyne's views.
+- The Github Copilot Code Actions can get in the way of using Delphyne and can be disabled with the `"github.copilot.editor.enableCodeActions": false` setting.
+- When editing YAML files (and demonstration files in particular), VSCode allows semantically expanding and shrinking the selection with respect to the underlying syntax tree via ++cmd+ctrl+shift+arrow-left++ and ++cmd+ctrl+shift+arrow-right++.
+
 ## Troubleshooting {#troubleshooting}
+
+### Accessing log information
+
+### Killing a server instance still running in the background
+
+### Debugging the language server
