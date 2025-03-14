@@ -130,11 +130,28 @@ Navigation operations can be undone by clicking on the `Undo` icon on the header
 - Shortcut ++cmd+d+cmd+v++ can be used to focus on Delphyne's views.
 - The Github Copilot Code Actions can get in the way of using Delphyne and can be disabled with the `"github.copilot.editor.enableCodeActions": false` setting.
 - When editing YAML files (and demonstration files in particular), VSCode allows semantically expanding and shrinking the selection with respect to the underlying syntax tree via ++cmd+ctrl+shift+arrow-left++ and ++cmd+ctrl+shift+arrow-right++.
+- To close a tab (and in particular a command tab), you can use shortcut ++cmd+w++, followed by ++cmd+d++ to decline saving the tab's content if prompted.
 
 ## Troubleshooting {#troubleshooting}
 
 ### Accessing log information
 
+The Delphyne extension outputs logging information in three different output channels:
+
+- `Delphyne`: main logging channel
+- `Delphyne Server`: the output of the language server is redirected here (only when the server was started by the extension)
+- `Delphyne Tasks`: displays the logging information produced by commands such as `run_strategy`
+
+You should consult those channels if anything goes wrong. Also, to output more information, you can ask the extension to log more information by raising the log level to `Debug` or `Trace` via the `Developer: Set Log Level` command.
+
 ### Killing a server instance still running in the background
 
+After VSCode quitted unexpectedly, the language server may still be running in background, which may cause problem when trying to restart the extension. On Unix systems, the language server can be killed by killing the program listening to port 8000:
+
+```sh
+sudo kill -9 $(sudo lsof -t -i :8000)
+```
+
 ### Debugging the language server
+
+To debug the language server or even specific strategies, it is useful to attach a debugger to the language server. To do so, you should open VSCode at the root of the Delphyne repository and use the `Debug Server` debugging profile. This will start the server in debug mode (on port 8000). Starting the Delphyne extension when a server instance is running already will cause the extension to use this instance (as confirmed by the log output in the `Delphyne` channel). You can then put arbitrary breakpoints in the server source code or even in strategy code.
