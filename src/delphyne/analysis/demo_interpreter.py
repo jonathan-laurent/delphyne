@@ -55,6 +55,7 @@ class ObjectLoader:
     ):
         """
         Raises `ModuleNotFound`.
+        Modules can be part of packages and so their name may feature `.`.
         """
         self.ctx = ctx
         self.extra_objects = extra_objects if extra_objects is not None else {}
@@ -70,11 +71,27 @@ class ObjectLoader:
                     raise ModuleNotFound(module_name)
 
     def find_object(self, name: str) -> Any:
+        """
+        Find an object with a given name. If the name is unqualified (it
+        features no `.`), one attempts to find the object in every
+        registered module in order. If the name is qualified, one looks
+        at the specified registered module.
+        """
         if name in self.extra_objects:
             return self.extra_objects[name]
-        for module in self.modules:
-            if hasattr(module, name):
-                return getattr(module, name)
+        comps = name.split(".")
+        assert comps
+        if len(comps) == 1:
+            # unqualified name
+            for module in self.modules:
+                if hasattr(module, name):
+                    return getattr(module, name)
+        else:
+            # qualified name
+            module = ".".join(comps[:-1])
+            attr = comps[-1]
+            if hasattr(module, attr):
+                return getattr(module, attr)
         raise ObjectNotFound(name)
 
     def load_and_call_function(self, name: str, args: dict[str, Any]) -> Any:
