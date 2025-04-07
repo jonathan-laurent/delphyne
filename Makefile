@@ -25,6 +25,7 @@ install-dev-deps:
 
 test:
 	pytest tests
+	make -C examples/find_invariants test
 
 
 clean-ignored:
