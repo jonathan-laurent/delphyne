@@ -64,7 +64,7 @@ def prove_program(
         yield from dp.ensure(len(remaining) == 1, "too many remaining obligations")
         unproved = remaining[0]
         yield from dp.ensure(not why3.invariant_init_obligation(unproved), "init")
-        if annotated != prog:
+        if annotated != prog:  # if invariant annotations are present
             yield from dp.value(
                 EvaluateProofState(unproved)(ProveProgIP, lambda p: p.eval),
                 lambda p: p.quantify_eval)
