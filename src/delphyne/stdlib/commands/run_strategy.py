@@ -51,8 +51,8 @@ async def run_loaded_strategy[N: dp.Node, P, T](
     search_policy, inner_policy = args.policy
     stream = search_policy(tree, env, inner_policy)
     if args.budget is not None:
-        stream = std.with_budget(dp.BudgetLimit(args.budget))(stream)
-    stream = std.take(1)(stream)
+        stream = std.stream_with_budget(stream, dp.BudgetLimit(args.budget))
+    stream = std.stream_take(stream, 1)
     success = False
     total_budget = dp.Budget.zero()
 

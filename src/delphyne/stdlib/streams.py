@@ -15,15 +15,91 @@ from delphyne.stdlib.policies import PromptingPolicy, SearchPolicy
 
 
 class _StreamTransformerFn(Protocol):
+    """
+    A stream transformer takes as an argument a stream builder instead
+    of a stream so that it can instantiate the stream several times,
+    allowing to implement `forever`. Also, having access to the policy
+    environment can be useful (e.g. to access particular configuration
+    or template files).
+    """
+
+    def __call__[T](
+        self,
+        stream_builder: Callable[[], dp.Stream[T]],
+        env: dp.PolicyEnv,
+    ) -> dp.Stream[T]: ...
+
+
+class _ParametricStreamTransformerFn[**A](Protocol):
+    def __call__[T](
+        self,
+        stream_builder: Callable[[], dp.Stream[T]],
+        env: dp.PolicyEnv,
+        *args: A.args,
+        **kwargs: A.kwargs,
+    ) -> dp.Stream[T]: ...
+
+
+class _PureStreamTransformerFn(Protocol):
+    """
+    Special case of _pure_ stream transformer functions that do not need
+    to replicate the source stream or access the policy environment.
+    """
+
     def __call__[T](self, stream: dp.Stream[T]) -> dp.Stream[T]: ...
+
+
+class _PureParametricStreamTransformerFn[**A](Protocol):
+    def __call__[T](
+        self,
+        stream: dp.Stream[T],
+        *args: A.args,
+        **kwargs: A.kwargs,
+    ) -> dp.Stream[T]: ...
 
 
 @dataclass
 class StreamTransformer:
+    """
+    Wraps a stream transformer function (`_StreamTransformerFn`) so that
+    it can compose nicely with search policies using the `@` operator.
+    """
+
     trans: _StreamTransformerFn
 
-    def __call__[T](self, stream: dp.Stream[T]) -> dp.Stream[T]:
-        return self.trans(stream)
+    def __call__[T](
+        self,
+        stream_builder: Callable[[], dp.Stream[T]],
+        env: dp.PolicyEnv,
+    ) -> dp.Stream[T]:
+        return self.trans(stream_builder, env)
+
+    @staticmethod
+    def pure(
+        fn: _PureStreamTransformerFn,
+    ) -> "StreamTransformer":
+        def pure_transformer[T](
+            stream_builder: Callable[[], dp.Stream[T]],
+            env: dp.PolicyEnv,
+        ) -> dp.Stream[T]:
+            return fn(stream_builder())
+
+        return StreamTransformer(pure_transformer)
+
+    @staticmethod
+    def pure_parametric[**A](
+        fn: _PureParametricStreamTransformerFn[A],
+    ) -> Callable[A, "StreamTransformer"]:
+        def parametric(*args: A.args, **kwargs: A.kwargs) -> StreamTransformer:
+            def pure_transformer[T](
+                stream_builder: Callable[[], dp.Stream[T]],
+                env: dp.PolicyEnv,
+            ) -> dp.Stream[T]:
+                return fn(stream_builder(), *args, **kwargs)
+
+            return StreamTransformer(pure_transformer)
+
+        return parametric
 
     @overload
     def __matmul__[N: dp.Node](
@@ -47,8 +123,7 @@ class StreamTransformer:
         def policy[P, T](
             tree: dp.Tree[N, P, T], env: dp.PolicyEnv, policy: P
         ) -> dp.Stream[T]:
-            stream = other(tree, env, policy)
-            return self.trans(stream)
+            return self.trans(lambda: other(tree, env, policy), env)
 
         return SearchPolicy(policy)
 
@@ -58,62 +133,24 @@ class StreamTransformer:
         def policy[P, T](
             query: dp.AttachedQuery[T], env: dp.PolicyEnv
         ) -> dp.Stream[T]:
-            stream = other(query, env)
-            return self.trans(stream)
+            return self.trans(lambda: other(query, env), env)
 
         return PromptingPolicy(policy)
-
-
-class _ParametricStreamTransformerFn[**A](Protocol):
-    def __call__[T](
-        self, stream: dp.Stream[T], *args: A.args, **kwargs: A.kwargs
-    ) -> dp.Stream[T]: ...
 
 
 def stream_transformer[**A](
     f: _ParametricStreamTransformerFn[A],
 ) -> Callable[A, StreamTransformer]:
     def parametric(*args: A.args, **kwargs: A.kwargs) -> StreamTransformer:
-        def transformer[T](stream: dp.Stream[T]) -> dp.Stream[T]:
-            return f(stream, *args, **kwargs)
+        def transformer[T](
+            stream_builder: Callable[[], dp.Stream[T]],
+            env: dp.PolicyEnv,
+        ) -> dp.Stream[T]:
+            return f(stream_builder, env, *args, **kwargs)
 
         return StreamTransformer(transformer)
 
     return parametric
-
-
-#####
-##### Standard Stream Transformers
-#####
-
-
-@stream_transformer
-async def with_budget[T](
-    stream: dp.Stream[T], budget: dp.BudgetLimit
-) -> dp.Stream[T]:
-    total_spent = dp.Budget.zero()
-    async for msg in stream:
-        match msg:
-            case dp.Spent(spent):
-                total_spent = total_spent + spent
-            case dp.Barrier(pred):
-                if not (total_spent + pred <= budget):
-                    return
-            case _:
-                pass
-        yield msg
-
-
-@stream_transformer
-async def take[T](stream: dp.Stream[T], num_generated: int) -> dp.Stream[T]:
-    count = 0
-    assert num_generated > 0
-    async for msg in stream:
-        if isinstance(msg, dp.Yield):
-            count += 1
-        yield msg
-        if count >= num_generated:
-            return
 
 
 #####
@@ -147,15 +184,50 @@ async def take_one[T](
         yield msg
 
 
+async def stream_with_budget[T](
+    stream: dp.Stream[T], budget: dp.BudgetLimit
+) -> dp.Stream[T]:
+    """
+    See `with_budget` for a version wrapped as a stream transformer.
+    """
+    total_spent = dp.Budget.zero()
+    async for msg in stream:
+        match msg:
+            case dp.Spent(spent):
+                total_spent = total_spent + spent
+            case dp.Barrier(pred):
+                if not (total_spent + pred <= budget):
+                    return
+            case _:
+                pass
+        yield msg
+
+
+async def stream_take[T](
+    stream: dp.Stream[T], num_generated: int
+) -> dp.Stream[T]:
+    """
+    See `take` for a version wrapped as a stream transformer.
+    """
+    count = 0
+    assert num_generated > 0
+    async for msg in stream:
+        if isinstance(msg, dp.Yield):
+            count += 1
+        yield msg
+        if count >= num_generated:
+            return
+
+
 async def collect[T](
     stream: dp.Stream[T],
     budget: dp.BudgetLimit | None = None,
     num_generated: int | None = None,
 ) -> tuple[Sequence[dp.Tracked[T]], dp.Budget]:
     if budget is not None:
-        stream = with_budget(budget)(stream)
+        stream = stream_with_budget(stream, budget)
     if num_generated is not None:
-        stream = take(num_generated)(stream)
+        stream = stream_take(stream, num_generated)
     total = dp.Budget.zero()
     elts: list[dp.Tracked[T]] = []
     async for msg in stream:
@@ -164,3 +236,13 @@ async def collect[T](
         if isinstance(msg, dp.Spent):
             total = total + msg.budget
     return elts, total
+
+
+#####
+##### Standard Stream Transformers
+#####
+
+
+with_budget = StreamTransformer.pure_parametric(stream_with_budget)
+
+take = StreamTransformer.pure_parametric(stream_take)

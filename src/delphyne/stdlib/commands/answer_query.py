@@ -53,8 +53,8 @@ async def answer_query(
     )
     stream = policy(attached, env)
     if cmd.budget is not None:
-        stream = std.with_budget(dp.BudgetLimit(cmd.budget))(stream)
-    stream = std.take(cmd.num_answers)(stream)
+        stream = std.stream_with_budget(stream, dp.BudgetLimit(cmd.budget))
+    stream = std.stream_take(stream, cmd.num_answers)
     total_budget = dp.Budget.zero()
     num_successes = 0
 
