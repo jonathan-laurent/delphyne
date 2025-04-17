@@ -21,7 +21,7 @@ class PureTreeTransformerFn[A: dp.Node, B: dp.Node](Protocol):
 
 class ContextualTreeTransformerFn[A: dp.Node, B: dp.Node](Protocol):
     def __call__[N: dp.Node, P, T](
-        self, tree: dp.Tree[A | N, P, T], env: dp.PolicyEnv
+        self, tree: dp.Tree[A | N, P, T], env: dp.PolicyEnv, policy: P
     ) -> dp.Tree[B | N, P, T]: ...
 
 
@@ -34,7 +34,7 @@ class ContextualTreeTransformer[A: dp.Node, B: dp.Node]:
         fn: PureTreeTransformerFn[A, B],
     ) -> "ContextualTreeTransformer[A, B]":
         def contextual[N: dp.Node, P, T](
-            tree: dp.Tree[A | N, P, T], env: dp.PolicyEnv
+            tree: dp.Tree[A | N, P, T], env: dp.PolicyEnv, policy: P
         ) -> dp.Tree[B | N, P, T]:
             return fn(tree)
 
@@ -48,7 +48,7 @@ class ContextualTreeTransformer[A: dp.Node, B: dp.Node]:
             env: dp.PolicyEnv,
             policy: P,
         ) -> dp.Stream[T]:
-            new_tree = self.fn(tree, env)
+            new_tree = self.fn(tree, env, policy)
             return search_policy(new_tree, env, policy)
 
         return SearchPolicy(new_search_policy)
