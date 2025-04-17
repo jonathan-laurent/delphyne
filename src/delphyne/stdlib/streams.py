@@ -18,7 +18,7 @@ class _StreamTransformerFn(Protocol):
     """
     A stream transformer takes as an argument a stream builder instead
     of a stream so that it can instantiate the stream several times,
-    allowing to implement `forever`. Also, having access to the policy
+    allowing to implement `loop`. Also, having access to the policy
     environment can be useful (e.g. to access particular configuration
     or template files).
     """
@@ -246,3 +246,21 @@ async def collect[T](
 with_budget = StreamTransformer.pure_parametric(stream_with_budget)
 
 take = StreamTransformer.pure_parametric(stream_take)
+
+
+@stream_transformer
+async def loop[T](
+    stream_builder: Callable[[], dp.Stream[T]],
+    env: dp.PolicyEnv,
+    n: int | None = None,
+) -> dp.Stream[T]:
+    """
+    Stream transformer that repeatedly respawns the underlying stream,
+    up to an (optional) limit.
+    """
+    i = 0
+    while (n is None) or (i < n):
+        i += 1
+        stream = stream_builder()
+        async for msg in stream:
+            yield msg
