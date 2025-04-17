@@ -19,7 +19,7 @@ class TaskLauncher(Protocol):
     """
 
     # fmt: off
-    async def __call__[**P, T](
+    def __call__[**P, T](
     # fmt: on
         self,
         request: fastapi.Request,

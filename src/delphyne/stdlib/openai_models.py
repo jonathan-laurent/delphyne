@@ -30,10 +30,13 @@ class OpenAIModel(LLM):
     ) -> tuple[Sequence[str], Budget, LLMOutputMetadata]:
         client = openai.AsyncOpenAI()
         options = self.options | options
-        response: Any = await client.chat.completions.create(
-            messages=chat,  # type: ignore
-            n=num_completions,
-            **self.options,
+        response = await cast(
+            Any,
+            client.chat.completions.create(
+                messages=chat,  # type: ignore
+                n=num_completions,
+                **self.options,
+            ),
         )
         budget = Budget({NUM_REQUESTS: num_completions})
         answers = [c.message.content for c in response.choices]
@@ -46,10 +49,13 @@ class OpenAIModel(LLM):
     ) -> AsyncIterable[str]:
         client = openai.AsyncOpenAI()
         options = self.options | options
-        response: Any = await client.chat.completions.create(
-            messages=chat,  # type: ignore
-            stream=True,
-            **self.options,
+        response: Any = await cast(
+            Any,
+            client.chat.completions.create(
+                messages=chat,  # type: ignore
+                stream=True,
+                **self.options,
+            ),
         )
         async for chunk in response:
             content = chunk.choices[0].delta.content

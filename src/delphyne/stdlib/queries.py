@@ -7,7 +7,6 @@ from collections.abc import Callable, Sequence
 from typing import Any, Literal, Protocol, cast
 
 import yaml
-import yaml.parser
 
 import delphyne.core as dp
 import delphyne.core.inspect as dpi
