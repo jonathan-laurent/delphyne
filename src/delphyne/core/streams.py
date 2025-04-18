@@ -88,4 +88,4 @@ class Barrier:
     budget: Budget
 
 
-type Stream[T] = Generator[Yield[Tracked[T]] | Spent | Barrier]
+type Stream[T] = Generator[Yield[Tracked[T]] | Spent | Barrier, None, None]
