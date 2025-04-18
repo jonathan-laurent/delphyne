@@ -69,7 +69,7 @@ async def answer_query(
         resp = AnswerQueryResponse(num_successes, log)
         return ta.CommandResult([], resp)
 
-    async for msg in stream:
+    for msg in stream:
         match msg:
             case dp.Yield():
                 num_successes += 1

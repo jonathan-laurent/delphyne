@@ -2,7 +2,7 @@
 Standard interfaces for LLMs
 """
 
-import asyncio
+import time
 from abc import ABC, abstractmethod
 from collections.abc import AsyncIterable, Iterable
 from dataclasses import dataclass
@@ -60,7 +60,7 @@ class LLM(ABC):
         return Budget({NUM_REQUESTS: 1})
 
     @abstractmethod
-    async def send_request(
+    def send_request(
         self,
         chat: Chat,
         num_completions: int,
@@ -82,7 +82,7 @@ class LLM(ABC):
 
 @dataclass
 class DummyModel(LLM):
-    async def send_request(
+    def send_request(
         self, chat: Chat, num_completions: int, options: RequestOptions
     ) -> tuple[Sequence[str], Budget, LLMOutputMetadata]:
         raise LLMCallException("No model was provided.")
@@ -101,17 +101,15 @@ class WithRetry(LLM):
     def estimate_budget(self, chat: Chat, options: RequestOptions) -> Budget:
         return self.model.estimate_budget(chat, options)
 
-    async def send_request(
+    def send_request(
         self, chat: Chat, num_completions: int, options: RequestOptions
     ) -> tuple[Sequence[str], Budget, LLMOutputMetadata]:
         for retry_delay in [*self.retry_delays, None]:
             try:
-                return await self.model.send_request(
-                    chat, num_completions, options
-                )
+                return self.model.send_request(chat, num_completions, options)
             except Exception as e:
                 if retry_delay is None:
                     raise LLMCallException(e)
                 else:
-                    await asyncio.sleep(retry_delay)
+                    time.sleep(retry_delay)
         assert False

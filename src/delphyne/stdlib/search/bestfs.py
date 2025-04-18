@@ -42,7 +42,7 @@ class PriorityItem:
 
 
 @search_policy
-async def best_first_search[P, T](
+def best_first_search[P, T](
     tree: dp.Tree[Branch | Factor | Value | Failure, P, T],
     env: dp.PolicyEnv,
     policy: P,
@@ -80,7 +80,7 @@ async def best_first_search[P, T](
     counter = 0
     pqueue: list[PriorityItem] = []  # a heap
 
-    async def push_fresh_node(
+    def push_fresh_node(
         tree: dp.Tree[Branch | Factor | Value | Failure, Any, Any],
         confidence: float,
         depth: int,
@@ -99,7 +99,7 @@ async def best_first_search[P, T](
                 if penalty_fun is not None:
                     eval_stream = tree.node.eval.stream(env, policy)
                     eval = None
-                    async for eval_msg in eval_stream:
+                    for eval_msg in eval_stream:
                         if isinstance(eval_msg, dp.Yield):
                             eval = eval_msg.value.value
                             break
@@ -113,7 +113,7 @@ async def best_first_search[P, T](
                     else:
                         confidence *= penalty_fun(eval)
                 push = push_fresh_node(tree.child(None), confidence, depth)
-                async for push_msg in push:
+                for push_msg in push:
                     yield push_msg
             case Branch():
                 if max_depth is not None and depth > max_depth:
@@ -142,14 +142,13 @@ async def best_first_search[P, T](
         heapq.heappush(pqueue, item)
 
     # Pust the root into the queue.
-    async for resp in push_fresh_node(tree, 1.0, 0):
-        yield resp
+    yield from push_fresh_node(tree, 1.0, 0)
     while pqueue:
         state = heapq.heappop(pqueue).node_state
         try:
             # We make an atomic attempt at generating a new candidate
             while True:
-                msg = await anext(state.stream)
+                msg = next(state.stream)
                 if isinstance(msg, dp.Yield):
                     cand = msg.value
                     break
@@ -157,13 +156,12 @@ async def best_first_search[P, T](
                 if isinstance(msg, dp.Barrier):
                     cand = None
                     break
-        except StopAsyncIteration:
+        except StopIteration:
             # No need to put the node back in the queue
             continue
         if cand is not None:
             child = state.tree.child(cand)
             state.children.append(child.ref)
-            async for resp in push_fresh_node(child, 1, state.depth + 1):
-                yield resp
+            yield from push_fresh_node(child, 1, state.depth + 1)
         # We put the node back into the queue
         reinsert_node(state)

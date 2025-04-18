@@ -3,6 +3,7 @@ Policy environments.
 """
 
 import json
+import threading
 from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
@@ -165,6 +166,10 @@ class Tracer:
         self.trace = traces.Trace()
         self.messages: list[LogMessage] = []
 
+        # Different threads may be logging information or appending to
+        # the trace in parallel.
+        self.lock = threading.Lock()
+
     def trace_space(self, ref: refs.GlobalSpacePath) -> None:
         self.trace.convert_location(traces.Location(ref[0], ref[1]))
 
@@ -182,23 +187,26 @@ class Tracer:
         metadata: dict[str, Any] | None = None,
         location: traces.Location | None = None,
     ):
-        short_location = None
-        if location is not None:
-            short_location = self.trace.convert_location(location)
-        self.messages.append(LogMessage(message, metadata, short_location))
+        with self.lock:
+            short_location = None
+            if location is not None:
+                short_location = self.trace.convert_location(location)
+            self.messages.append(LogMessage(message, metadata, short_location))
 
     def export_log(self) -> Iterable[ExportableLogMessage]:
-        for m in self.messages:
-            node = None
-            space = None
-            if (loc := m.location) is not None:
-                node = loc.node.id
-                if loc.space is not None:
-                    space = pprint.space_ref(loc.space)
-            yield ExportableLogMessage(m.message, node, space, m.metadata)
+        with self.lock:
+            for m in self.messages:
+                node = None
+                space = None
+                if (loc := m.location) is not None:
+                    node = loc.node.id
+                    if loc.space is not None:
+                        space = pprint.space_ref(loc.space)
+                yield ExportableLogMessage(m.message, node, space, m.metadata)
 
     def export_trace(self) -> traces.ExportableTrace:
-        return self.trace.export()
+        with self.lock:
+            return self.trace.export()
 
 
 ####

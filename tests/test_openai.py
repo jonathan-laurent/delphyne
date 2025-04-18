@@ -11,7 +11,7 @@ _TEST_PROMPT: dp.Chat = [
 
 async def _test_completion():
     model = dp.openai_model("gpt-4o-mini")
-    print(await model.send_request(_TEST_PROMPT, 2, {}))
+    print(model.send_request(_TEST_PROMPT, 2, {}))
 
 
 async def _test_stream():

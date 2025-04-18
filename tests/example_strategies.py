@@ -83,7 +83,7 @@ def make_conjecture[P, T](
 
 
 @dp.search_policy
-async def just_guess[P, T](
+def just_guess[P, T](
     tree: dp.Tree[Conjecture, P, T], env: dp.PolicyEnv, policy: P
 ) -> dp.Stream[T]:
     """
@@ -93,11 +93,10 @@ async def just_guess[P, T](
         case dp.Success(x):
             yield dp.Yield(x)
         case Conjecture(candidate):
-            async for msg in dp.bind_stream(
+            yield from dp.bind_stream(
                 candidate.stream(env, policy),
                 lambda y: just_guess()(tree.child(y), env, policy),
-            ):
-                yield msg
+            )
 
 
 #####

@@ -25,12 +25,12 @@ DEFAULT_MODEL = "gpt-4o"
 class OpenAIModel(LLM):
     options: dict[str, Any]
 
-    async def send_request(
+    def send_request(
         self, chat: Chat, num_completions: int, options: RequestOptions
     ) -> tuple[Sequence[str], Budget, LLMOutputMetadata]:
-        client = openai.AsyncOpenAI()
+        client = openai.OpenAI()
         options = self.options | options
-        response = await cast(
+        response = cast(
             Any,
             client.chat.completions.create(
                 messages=chat,  # type: ignore

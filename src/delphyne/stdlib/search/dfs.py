@@ -10,7 +10,7 @@ from delphyne.stdlib.policies import search_policy
 
 
 @search_policy
-async def dfs[P, T](
+def dfs[P, T](
     tree: Tree[Branch | Failure, P, T],
     env: PolicyEnv,
     policy: P,
@@ -24,11 +24,11 @@ async def dfs[P, T](
         case Failure():
             pass
         case Branch(cands):
-            async for cands_msg in cands.stream(env, policy):
+            for cands_msg in cands.stream(env, policy):
                 if not isinstance(cands_msg, Yield):
                     yield cands_msg
                     continue
                 child = tree.child(cands_msg.value)
                 max_depth = max_depth - 1 if max_depth is not None else None
-                async for rec_msg in dfs(max_depth)(child, env, policy):
+                for rec_msg in dfs(max_depth)(child, env, policy):
                     yield rec_msg

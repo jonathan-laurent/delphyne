@@ -158,14 +158,14 @@ def stream_transformer[**A](
 #####
 
 
-async def bind_stream[A, B](
+def bind_stream[A, B](
     stream: dp.Stream[A], f: Callable[[dp.Tracked[A]], dp.Stream[B]]
 ) -> dp.Stream[B]:
-    async for msg in stream:
+    for msg in stream:
         if not isinstance(msg, dp.Yield):
             yield msg
             continue
-        async for new_msg in f(msg.value):
+        for new_msg in f(msg.value):
             yield new_msg
 
 
@@ -174,24 +174,24 @@ class ElementStore[T](Exception):
     value: dp.Tracked[T] | None = None
 
 
-async def take_one[T](
+def take_one[T](
     stream: dp.Stream[T], store: ElementStore[T]
 ) -> dp.Stream[Never]:
-    async for msg in stream:
+    for msg in stream:
         if isinstance(msg, dp.Yield):
             store.value = msg.value
             return
         yield msg
 
 
-async def stream_with_budget[T](
+def stream_with_budget[T](
     stream: dp.Stream[T], budget: dp.BudgetLimit
 ) -> dp.Stream[T]:
     """
     See `with_budget` for a version wrapped as a stream transformer.
     """
     total_spent = dp.Budget.zero()
-    async for msg in stream:
+    for msg in stream:
         match msg:
             case dp.Spent(spent):
                 total_spent = total_spent + spent
@@ -203,15 +203,13 @@ async def stream_with_budget[T](
         yield msg
 
 
-async def stream_take[T](
-    stream: dp.Stream[T], num_generated: int
-) -> dp.Stream[T]:
+def stream_take[T](stream: dp.Stream[T], num_generated: int) -> dp.Stream[T]:
     """
     See `take` for a version wrapped as a stream transformer.
     """
     count = 0
     assert num_generated > 0
-    async for msg in stream:
+    for msg in stream:
         if isinstance(msg, dp.Yield):
             count += 1
         yield msg
@@ -219,7 +217,7 @@ async def stream_take[T](
             return
 
 
-async def collect[T](
+def collect[T](
     stream: dp.Stream[T],
     budget: dp.BudgetLimit | None = None,
     num_generated: int | None = None,
@@ -230,7 +228,7 @@ async def collect[T](
         stream = stream_take(stream, num_generated)
     total = dp.Budget.zero()
     elts: list[dp.Tracked[T]] = []
-    async for msg in stream:
+    for msg in stream:
         if isinstance(msg, dp.Yield):
             elts.append(msg.value)
         if isinstance(msg, dp.Spent):
@@ -249,7 +247,7 @@ take = StreamTransformer.pure_parametric(stream_take)
 
 
 @stream_transformer
-async def loop[T](
+def loop[T](
     stream_builder: Callable[[], dp.Stream[T]],
     env: dp.PolicyEnv,
     n: int | None = None,
@@ -261,6 +259,4 @@ async def loop[T](
     i = 0
     while (n is None) or (i < n):
         i += 1
-        stream = stream_builder()
-        async for msg in stream:
-            yield msg
+        yield from stream_builder()

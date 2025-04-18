@@ -3,7 +3,7 @@ Defining Policies for Delphyne
 """
 
 import math
-from collections.abc import AsyncGenerator, Mapping
+from collections.abc import Generator, Mapping
 from dataclasses import dataclass
 
 from delphyne.core.refs import Tracked
@@ -88,4 +88,4 @@ class Barrier:
     budget: Budget
 
 
-type Stream[T] = AsyncGenerator[Yield[Tracked[T]] | Spent | Barrier]
+type Stream[T] = Generator[Yield[Tracked[T]] | Spent | Barrier]

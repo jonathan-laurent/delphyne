@@ -228,7 +228,7 @@ def log_oracle_answer(
 
 
 @prompting_policy
-async def few_shot[T](
+def few_shot[T](
     query: dp.AttachedQuery[T],
     env: dp.PolicyEnv,
     model: LLM,
@@ -255,9 +255,7 @@ async def few_shot[T](
     while True:
         yield dp.Barrier(cost_estimate)
         try:
-            answers, budget, meta = await model.send_request(
-                prompt, 1, options
-            )
+            answers, budget, meta = model.send_request(prompt, 1, options)
         except Exception as e:
             msg = "Exception while querying the LLM. Quitting."
             args = {"error": str(e), "prompt": prompt, "options": options}

@@ -34,7 +34,7 @@ def _iterate[P, S, T](
 
 
 @search_policy
-async def search_iteration[P, T](
+def search_iteration[P, T](
     tree: dp.Tree[Iteration | Failure, P, T],
     env: dp.PolicyEnv,
     policy: P,
@@ -42,7 +42,7 @@ async def search_iteration[P, T](
     assert isinstance(tree.node, Iteration)
     state: dp.Tracked[Any] | None = None
     while True:
-        async for msg in tree.node.next(state).stream(env, policy):
+        for msg in tree.node.next(state).stream(env, policy):
             if isinstance(msg, dp.Yield):
                 # TODO: here, `msg` contains the value we are interested
                 # in so it is tempting to just yield it. However, this

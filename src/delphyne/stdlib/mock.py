@@ -27,7 +27,7 @@ def demo_mock_oracle(
             for a in q.answers:
                 yield refs.Answer(a.mode, a.answer)
 
-    async def policy[T](
+    def policy[T](
         query: dp.AttachedQuery[T],
         env: dp.PolicyEnv,
     ) -> dp.Stream[T]:
@@ -51,7 +51,7 @@ def demo_mock_oracle(
 
 
 @prompting_policy
-async def fixed_oracle[T](
+def fixed_oracle[T](
     query: dp.AttachedQuery[T],
     env: dp.PolicyEnv,
     oracle: Callable[[dp.AbstractQuery[Any]], Iterable[dp.Answer]],

@@ -75,7 +75,9 @@ async def run_loaded_strategy[N: dp.Node, P, T](
             return f"{num_nodes} nodes"
 
     last_refreshed = time.time()
-    async for msg in stream:
+    # TODO: generating each element is blocking here. Should we spawn a
+    # thread for every new element?
+    for msg in stream:
         match msg:
             case dp.Yield():
                 success = True
