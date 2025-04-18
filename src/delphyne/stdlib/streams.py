@@ -2,9 +2,9 @@
 Utilities to work with streams.
 """
 
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Generator, Sequence
 from dataclasses import dataclass
-from typing import Never, Protocol, overload
+from typing import Protocol, overload
 
 import delphyne.core as dp
 from delphyne.stdlib.policies import PromptingPolicy, SearchPolicy
@@ -169,19 +169,14 @@ def bind_stream[A, B](
             yield new_msg
 
 
-@dataclass
-class ElementStore[T](Exception):
-    value: dp.Tracked[T] | None = None
-
-
 def take_one[T](
-    stream: dp.Stream[T], store: ElementStore[T]
-) -> dp.Stream[Never]:
+    stream: dp.Stream[T],
+) -> Generator[dp.Spent | dp.Barrier, None, dp.Tracked[T] | None]:
     for msg in stream:
         if isinstance(msg, dp.Yield):
-            store.value = msg.value
-            return
+            return msg.value
         yield msg
+    return None
 
 
 def stream_with_budget[T](

@@ -11,6 +11,7 @@ import delphyne.core as dp
 from delphyne.core import refs
 from delphyne.stdlib.nodes import Branch, Factor, Failure, Value
 from delphyne.stdlib.policies import search_policy
+from delphyne.stdlib.streams import take_one
 
 
 @dataclass(frozen=True)
@@ -98,23 +99,15 @@ def best_first_search[P, T](
                 # Evaluate metrics if a penalty function is provided
                 if penalty_fun is not None:
                     eval_stream = tree.node.eval.stream(env, policy)
-                    eval = None
-                    for eval_msg in eval_stream:
-                        if isinstance(eval_msg, dp.Yield):
-                            eval = eval_msg.value.value
-                            break
-                        else:
-                            yield eval_msg
+                    eval = yield from take_one(eval_stream)
                     # If we failed to evaluate the metrics, we give up.
                     if eval is None:
                         return
                     if isinstance(tree.node, Value):
-                        confidence = penalty_fun(eval)
+                        confidence = penalty_fun(eval.value)
                     else:
-                        confidence *= penalty_fun(eval)
-                push = push_fresh_node(tree.child(None), confidence, depth)
-                for push_msg in push:
-                    yield push_msg
+                        confidence *= penalty_fun(eval.value)
+                yield from push_fresh_node(tree.child(None), confidence, depth)
             case Branch():
                 if max_depth is not None and depth > max_depth:
                     return
