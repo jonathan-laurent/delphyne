@@ -3,7 +3,7 @@
 A _Visual Studio Code_ extension is available for interactively writing demonstrations, navigating strategy trees, and running oracular programs.
 
 <p align="center">
-  <img src="assets/extension-screenshot.png" alt="Extension Screenshot" style="width: 100%;">
+  <img src="../../assets/extension-screenshot.png" alt="Extension Screenshot" style="width: 100%;">
 </p>
 
 ## Setting up the extension
