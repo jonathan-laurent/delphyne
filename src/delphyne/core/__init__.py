@@ -28,9 +28,12 @@ from delphyne.core.environments import (
 from delphyne.core.policies import (
     AbstractPromptingPolicy,
     AbstractSearchPolicy,
+    AsyncTree,
+    AsyncTreeNode,
     OpaqueSpace,
     OpaqueSpaceBuilder,
     Policy,
+    wrap_async,
 )
 from delphyne.core.queries import (
     AbstractQuery,

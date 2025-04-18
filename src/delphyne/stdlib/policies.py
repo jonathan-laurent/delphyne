@@ -13,38 +13,21 @@ import delphyne.core as dp
 #####
 
 
-class PureTreeTransformerFn[A: dp.Node, B: dp.Node](Protocol):
-    def __call__[N: dp.Node, P, T](
-        self, tree: dp.Tree[A | N, P, T]
-    ) -> dp.Tree[B | N, P, T]: ...
-
-
 class ContextualTreeTransformerFn[A: dp.Node, B: dp.Node](Protocol):
     def __call__[N: dp.Node, P, T](
-        self, tree: dp.Tree[A | N, P, T], env: dp.PolicyEnv, policy: P
-    ) -> dp.Tree[B | N, P, T]: ...
+        self, tree: dp.AsyncTree[A | N, P, T], env: dp.PolicyEnv, policy: P
+    ) -> dp.AsyncTree[B | N, P, T]: ...
 
 
 @dataclass
 class ContextualTreeTransformer[A: dp.Node, B: dp.Node]:
     fn: ContextualTreeTransformerFn[A, B]
 
-    @staticmethod
-    def pure(
-        fn: PureTreeTransformerFn[A, B],
-    ) -> "ContextualTreeTransformer[A, B]":
-        def contextual[N: dp.Node, P, T](
-            tree: dp.Tree[A | N, P, T], env: dp.PolicyEnv, policy: P
-        ) -> dp.Tree[B | N, P, T]:
-            return fn(tree)
-
-        return ContextualTreeTransformer(contextual)
-
     def __rmatmul__[N: dp.Node](
         self, search_policy: "SearchPolicy[B | N]"
     ) -> "SearchPolicy[A | N]":
         def new_search_policy[P, T](
-            tree: dp.Tree[A | N, P, T],
+            tree: dp.AsyncTree[A | N, P, T],
             env: dp.PolicyEnv,
             policy: P,
         ) -> dp.Stream[T]:
@@ -65,7 +48,7 @@ class SearchPolicy[N: dp.Node](dp.AbstractSearchPolicy[N]):
 
     def __call__[P, T](
         self,
-        tree: "dp.Tree[N, P, T]",
+        tree: "dp.AsyncTree[N, P, T]",
         env: dp.PolicyEnv,
         policy: P,
     ) -> dp.Stream[T]:
@@ -75,7 +58,7 @@ class SearchPolicy[N: dp.Node](dp.AbstractSearchPolicy[N]):
 class _ParametricSearchPolicyFn[N: dp.Node, **A](Protocol):
     def __call__[P, T](
         self,
-        tree: dp.Tree[N, P, T],
+        tree: dp.AsyncTree[N, P, T],
         env: dp.PolicyEnv,
         policy: P,
         *args: A.args,
@@ -100,7 +83,7 @@ def search_policy[N: dp.Node, **A](
 
     def parametric(*args: A.args, **kwargs: A.kwargs) -> SearchPolicy[N]:
         def policy[T](
-            tree: dp.Tree[N, Any, T], env: dp.PolicyEnv, policy: Any
+            tree: dp.AsyncTree[N, Any, T], env: dp.PolicyEnv, policy: Any
         ) -> dp.Stream[T]:
             return fn(tree, env, policy, *args, **kwargs)
 

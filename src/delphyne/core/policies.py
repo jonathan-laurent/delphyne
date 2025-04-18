@@ -2,7 +2,7 @@
 Policies and opaque spaces.
 """
 
-from collections.abc import Callable, Sequence
+from collections.abc import Awaitable, Callable, Sequence
 from dataclasses import dataclass
 from typing import Any, Generic, Protocol, TypeVar
 
@@ -11,6 +11,32 @@ from delphyne.core.environments import PolicyEnv
 from delphyne.core.queries import AbstractQuery
 from delphyne.core.streams import Stream
 from delphyne.core.trees import AttachedQuery, NestedTree, Node, Space, Tree
+
+#####
+##### Async Tree Interface
+#####
+
+
+type AsyncTree[N: Node, P, T] = Awaitable[AsyncTreeNode[N, P, T]]
+
+
+@dataclass(frozen=True)
+class AsyncTreeNode[N: Node, P, T]:
+    node: N | tr.Success[T]
+    child: "Callable[[tr.Value], AsyncTree[N, P, T]]"
+    ref: tr.GlobalNodePath
+
+    # async def transform[M: Node](self, node: M | tr.Success[T]):
+    #     assert False
+
+
+async def wrap_async[N: Node, P, T](
+    tree: Tree[N, P, T],
+) -> AsyncTreeNode[N, P, T]:
+    return AsyncTreeNode(
+        tree.node, lambda v: wrap_async(tree.child(v)), tree.ref
+    )
+
 
 #####
 ##### Search and Prompting Policies
@@ -26,7 +52,7 @@ handling `N` along with an inner policy object of type `P`.
 
 class AbstractSearchPolicy[N: tr.Node](Protocol):
     def __call__[P, T](
-        self, tree: "Tree[N, P, T]", env: PolicyEnv, policy: P
+        self, tree: "AsyncTree[N, P, T]", env: PolicyEnv, policy: P
     ) -> Stream[T]: ...
 
 
@@ -80,7 +106,7 @@ class OpaqueSpace(Generic[P, T], Space[T]):
             def stream(env: PolicyEnv, policy: P1) -> Stream[T1]:
                 tree = nested.spawn_tree()
                 search_pol, inner_pol = get_policy(policy)
-                return search_pol(tree, env, inner_pol)
+                return search_pol(wrap_async(tree), env, inner_pol)
 
             return OpaqueSpace(stream, nested)
 
