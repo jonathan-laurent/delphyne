@@ -5,6 +5,7 @@ Defining Policies for Delphyne
 import math
 from collections.abc import Generator, Mapping
 from dataclasses import dataclass
+from typing import Any
 
 from delphyne.core.refs import Tracked
 
@@ -73,9 +74,13 @@ class BudgetLimit:
 #####
 
 
+type SearchMetadata = Any
+
+
 @dataclass(frozen=True)
 class Yield[T]:
     value: T
+    meta: SearchMetadata | None = None
 
 
 @dataclass(frozen=True)
