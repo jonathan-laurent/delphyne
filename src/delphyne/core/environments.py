@@ -86,13 +86,12 @@ class ExampleDatabase:
 ####
 
 
-PROMPT_DIR = "prompts"
 JINJA_EXTENSION = ".jinja"
 
 
 class TemplatesManager:
-    def __init__(self, strategy_dirs: Sequence[Path]):
-        self.prompt_folders = [dir / PROMPT_DIR for dir in strategy_dirs]
+    def __init__(self, prompt_dirs: Sequence[Path]):
+        self.prompt_folders = prompt_dirs
         self.env = jinja2.Environment(
             loader=jinja2.FileSystemLoader(self.prompt_folders),
             trim_blocks=True,
@@ -224,17 +223,15 @@ class PolicyEnv:
     def __init__(
         self,
         strategy_dirs: Sequence[Path],
+        prompt_dirs: Sequence[Path],
         demonstration_files: Sequence[Path],
         do_not_match_identical_queries: bool = False,
     ):
         """
         An environment accessible to a policy, containing prompt and
         example databases in particular.
-
-        The `strategy_dirs` argument is used to deduce a directory for
-        prompt templates.
         """
-        self.templates = TemplatesManager(strategy_dirs)
+        self.templates = TemplatesManager(prompt_dirs)
         self.examples = ExampleDatabase(do_not_match_identical_queries)
         self.tracer = Tracer()
         for path in demonstration_files:

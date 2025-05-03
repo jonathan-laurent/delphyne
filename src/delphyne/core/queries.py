@@ -47,6 +47,12 @@ class AbstractQuery[T](ABC):
         pass
 
     def name(self) -> str:
+        """
+        Return a unique name identifying the query type.
+
+        Currently, we do not use qualified names and so the user must
+        ensure the absence of clashes.
+        """
         return self.__class__.__name__
 
     def tags(self) -> Sequence[str]:

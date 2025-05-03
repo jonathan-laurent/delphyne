@@ -1,5 +1,6 @@
 # Delphyne configuration
 
 strategy_dirs: ["."]
+prompt_dirs: ["./prompts"]
 modules: ["example_strategies"]
 demo_files: []
