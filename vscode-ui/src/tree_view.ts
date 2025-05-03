@@ -85,7 +85,7 @@ export class TreeInfo {
   public readonly cached: TreeCachedInfo;
 }
 
-// Information  used to visualize a tree, which can be computed once from the server
+// Information used to visualize a tree, which can be computed once from the server
 // feedback and cached.
 interface TreeCachedInfo {
   fromDemo: boolean;
@@ -114,7 +114,7 @@ export function queryKey(query: Query): QueryKey {
   return serializeWithoutLocInfo({ name: query.name, args: query.args });
 }
 
-export function demoQueryKey(query: QueryDemo): QueryKey {
+export function queryDemoKey(query: QueryDemo): QueryKey {
   return serializeWithoutLocInfo({ name: query.query, args: query.args });
 }
 
@@ -123,7 +123,7 @@ function computeCachedInfo(trace: Trace, origin: Element): TreeCachedInfo {
   if (origin.kind === "strategy_demo") {
     const demo = JSON.parse(origin.demo) as StrategyDemo;
     for (const query of demo.queries) {
-      existingQueries.add(demoQueryKey(query));
+      existingQueries.add(queryDemoKey(query));
     }
   }
   return { existingQueries, fromDemo: origin.kind === "strategy_demo" };

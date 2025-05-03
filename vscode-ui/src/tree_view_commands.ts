@@ -7,7 +7,7 @@ import {
   NodeViewItem,
   QueryKey,
   TreeView,
-  demoQueryKey,
+  queryDemoKey,
   PropertyItem,
   queryKey,
   AnswerItem,
@@ -125,7 +125,7 @@ function addQueryFromTreeView(
 }
 
 function queryIndex(key: QueryKey, demo: StrategyDemo): number {
-  return demo.queries.findIndex((q) => demoQueryKey(q) === key);
+  return demo.queries.findIndex((q) => queryDemoKey(q) === key);
 }
 
 function gotoQuery(
@@ -153,6 +153,10 @@ function gotoAnswer(
   demosManager: DemosManager,
   treeView: TreeView,
 ) {
+  // There are different strategies for jumping to an answer depending on
+  // whether the trace originates from a command or a demo. In the case it comes
+  // from a demo, we use the `answer_refs` field from the server feedback to
+  // convert the trace answer id to a query demo index and answer index.
   if (treeView.getPointedTree()?.tree.origin?.kind === "command") {
     const origin = treeView.getPointedTree()?.tree.origin as Element;
     gotoCommandResultAnswer(origin.uri, answer);
