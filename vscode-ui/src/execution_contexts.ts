@@ -15,14 +15,17 @@ interface FileMetadata {
   modules: string[];
 }
 
-/** Extract FileMetadata from a YAML file. The metadata can be included in a block comment
- * such as the following:
+/** Extract FileMetadata from a YAML file. The metadata can be included in a
+ * block comment such as the following:
  *  ```
  *  # @strategy_dirs: .
  *  # @modules: foo, bar
  *  ```
- * The block comment can only occur at the beginning of the file and be preceded by blank
- * lines or other comments.
+ * The block comment can only occur at the beginning of the file and be preceded
+ * by blank lines or other comments.
+ *
+ * Currently, this function is not used to recover execution metadata and the
+ * delphyne.yaml file is used instead.
  */
 export function extractMetadata(fileContent: string): FileMetadata {
   const metadata: FileMetadata = { strategy_dirs: [], modules: [] };
@@ -80,6 +83,7 @@ export function getExecutionContext(): ExecutionContext {
 
 export interface CommandExecutionContext {
   base: ExecutionContext;
+  prompt_dirs: string[];
   demo_files: string[];
 }
 
@@ -87,6 +91,7 @@ export function getCommandExecutionContext(): CommandExecutionContext {
   const config = loadConfig();
   return {
     base: { strategy_dirs: config.strategy_dirs, modules: config.modules },
+    prompt_dirs: config.prompt_dirs,
     demo_files: config.demo_files,
   };
 }
