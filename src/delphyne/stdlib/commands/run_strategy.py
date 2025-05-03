@@ -41,7 +41,6 @@ async def run_loaded_strategy[N: dp.Node, P, T](
     if refresh_rate is None:
         refresh_rate = DEFAULT_REFRESH_RATE_IN_SECONDS
     env = dp.PolicyEnv(
-        strategy_dirs=exe.base.strategy_dirs,
         prompt_dirs=exe.prompt_dirs,
         demonstration_files=exe.demo_files,
         do_not_match_identical_queries=True,

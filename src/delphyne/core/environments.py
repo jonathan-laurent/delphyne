@@ -222,7 +222,6 @@ class InvalidDemoFile(Exception):
 class PolicyEnv:
     def __init__(
         self,
-        strategy_dirs: Sequence[Path],
         prompt_dirs: Sequence[Path],
         demonstration_files: Sequence[Path],
         do_not_match_identical_queries: bool = False,

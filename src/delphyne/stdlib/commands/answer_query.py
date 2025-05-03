@@ -40,7 +40,6 @@ async def answer_query(
     loader = analysis.ObjectLoader(exe.base)
     query = loader.load_query(cmd.query, cmd.args)
     env = dp.PolicyEnv(
-        strategy_dirs=exe.base.strategy_dirs,
         prompt_dirs=exe.prompt_dirs,
         demonstration_files=exe.demo_files,
         do_not_match_identical_queries=True,
