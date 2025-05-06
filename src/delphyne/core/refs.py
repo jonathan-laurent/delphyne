@@ -2,7 +2,7 @@
 References to nodes, values, spaces and space elements.
 """
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Generic, Literal, TypeVar, overload
 
@@ -112,6 +112,12 @@ MAIN_ROOT: "GlobalNodePath" = ((MAIN_SPACE, ()),)
 
 
 @dataclass(frozen=True)
+class ToolCall:
+    name: str
+    args: Mapping[str, Any]
+
+
+@dataclass(frozen=True)
 class Answer:
     """
     An answer to a query. This can serve as a _space element reference_
@@ -121,6 +127,7 @@ class Answer:
 
     mode: AnswerModeName
     text: str
+    tool_call: Sequence[ToolCall] = ()
 
 
 @dataclass(frozen=True)

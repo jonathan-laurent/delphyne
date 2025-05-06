@@ -49,7 +49,8 @@ def test_make_sum():
     assert isinstance(success.node, dp.Success)
     assert success.node.success.value == [9, 2]
     tracer.trace.check_consistency()
-    pretty_trace = dump_yaml(dp.ExportableTrace, tracer.trace.export())
+    opts = {"exclude_defaults": True}
+    pretty_trace = dump_yaml(dp.ExportableTrace, tracer.trace.export(), **opts)
     expected = textwrap.dedent(
         """
         nodes:

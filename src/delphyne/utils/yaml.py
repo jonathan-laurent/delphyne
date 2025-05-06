@@ -16,7 +16,13 @@ def pretty_yaml(obj: object) -> str:
     return cast(Any, pyaml.dump(obj, sort_dicts=pyaml.PYAMLSort.none))
 
 
-def dump_yaml[T](type: type[T] | Any, obj: T) -> str:
+def dump_yaml[T](
+    type: type[T] | Any,
+    obj: T,
+    *,
+    exclude_defaults: bool = False,
+    exclude_none: bool = False,
+) -> str:
     """
     Pretty-print a value in Yaml.
 
@@ -24,7 +30,9 @@ def dump_yaml[T](type: type[T] | Any, obj: T) -> str:
     unions as being member of `type`.
     """
     Adapter = pydantic.TypeAdapter(type)
-    py = Adapter.dump_python(obj)
+    py = Adapter.dump_python(
+        obj, exclude_defaults=exclude_defaults, exclude_none=exclude_none
+    )
     return pretty_yaml(py)
 
 
