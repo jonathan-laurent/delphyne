@@ -5,6 +5,13 @@ Delphyne standard library.
 # ruff: noqa: F401
 # pyright: reportUnusedImport=false
 
+from delphyne.stdlib.chats import (
+    AnswerPrefix,
+    AnswerPrefixElement,
+    FeedbackMessage,
+    OracleMessage,
+    ToolResult,
+)
 from delphyne.stdlib.computations import (
     Computation,
     compute,
