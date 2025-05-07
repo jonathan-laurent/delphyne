@@ -6,9 +6,13 @@ import time
 from abc import ABC, abstractmethod
 from collections.abc import AsyncIterable, Iterable
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Literal, Sequence, TypedDict
 
+from why3py import defaultdict
+
 from delphyne.core.streams import Budget
+from delphyne.utils.caching import cache
 
 #####
 ##### Standard LLM Interface
@@ -113,3 +117,54 @@ class WithRetry(LLM):
                 else:
                     time.sleep(retry_delay)
         assert False
+
+
+#####
+##### Caching Wrapper
+#####
+
+
+@dataclass(frozen=True)
+class _CachedBaseRequest:
+    chat: Chat
+    num_completions: int
+    options: RequestOptions
+
+    def __hash__(self) -> int:
+        return hash(str(self.chat))
+
+
+type _CachedRequest = tuple[_CachedBaseRequest, int]
+
+
+type _CachedResponse = tuple[Sequence[str], Budget, LLMOutputMetadata]
+
+
+@dataclass
+class CachedModel(LLM):
+    model: LLM
+    cache_dir: Path
+
+    def __post_init__(self):
+        self.num_seen: dict[_CachedBaseRequest, int] = defaultdict(lambda: 0)
+
+        @cache(dir=self.cache_dir)
+        def run_request(req: _CachedRequest) -> _CachedResponse:
+            base, _ = req
+            return self.model.send_request(
+                base.chat, base.num_completions, base.options
+            )
+
+        self.run_request = run_request
+
+    def estimate_budget(self, chat: Chat, options: RequestOptions) -> Budget:
+        return self.model.estimate_budget(chat, options)
+
+    def send_request(
+        self, chat: Chat, num_completions: int, options: RequestOptions
+    ) -> tuple[Sequence[str], Budget, LLMOutputMetadata]:
+        base_req = _CachedBaseRequest(chat, num_completions, options)
+        self.num_seen[base_req] += 1
+        num_seen = self.num_seen[base_req]
+        req = (base_req, num_seen)
+        return self.run_request(req)

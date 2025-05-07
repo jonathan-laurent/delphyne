@@ -23,6 +23,7 @@ from delphyne.stdlib.globals import (
 from delphyne.stdlib.models import (
     LLM,
     NUM_REQUESTS,
+    CachedModel,
     Chat,
     ChatMessage,
     ChatMessageRole,
