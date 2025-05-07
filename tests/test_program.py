@@ -20,5 +20,5 @@ def test_basic_llm_call():
     policy = (dp.take(1) @ dp.dfs(), ex.MakeSumIP(pp))
     stream = ex.make_sum([1, 2, 3, 4], 7).run_toplevel(env, policy)
     res, _ = dp.collect(stream)
-    # print(list(env.tracer.export_log()))
+    print(list(env.tracer.export_log()))
     assert res

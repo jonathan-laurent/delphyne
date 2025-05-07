@@ -41,7 +41,7 @@ class AttachedQuery[T](Space[T]):
 
     query: AbstractQuery[T]
     ref: refs.GlobalSpacePath
-    answer: Callable[[refs.AnswerModeName, str], Tracked[T] | ParseError]
+    parse_answer: Callable[[refs.Answer], Tracked[T] | ParseError]
 
     def tags(self) -> "Sequence[Tag]":
         return self.query.tags()

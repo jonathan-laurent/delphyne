@@ -43,7 +43,7 @@ def demo_mock_oracle(
             budget = dp.Budget({NUM_REQUESTS: 1})
             yield dp.Barrier(budget)
             yield dp.Spent(budget)
-            parsed = query.answer(answer.mode, answer.text)
+            parsed = query.parse_answer(answer)
             if not isinstance(parsed, dp.ParseError):
                 yield dp.Yield(parsed)
 
@@ -60,6 +60,6 @@ def fixed_oracle[T](
         budget = dp.Budget({NUM_REQUESTS: 1})
         yield dp.Barrier(budget)
         yield dp.Spent(budget)
-        parsed = query.answer(answer.mode, answer.text)
+        parsed = query.parse_answer(answer)
         if not isinstance(parsed, dp.ParseError):
             yield dp.Yield(parsed)

@@ -192,7 +192,7 @@ class Navigator:
                 ans = self.id_resolver.resolve_answer(ref.element)
                 query = space.source()
                 assert isinstance(query, dp.AttachedQuery)
-                parsed = query.answer(ans.mode, ans.text)
+                parsed = query.parse_answer(ans)
                 if isinstance(parsed, dp.ParseError):
                     raise AnswerParseError(tree, query, ans.text, parsed.error)
                 return parsed
@@ -318,7 +318,7 @@ class Navigator:
         # If we still have no answer, we're stuck
         if answer is None:
             raise Stuck(tree, query.ref[1], hints)
-        parsed = query.answer(answer.mode, answer.text)
+        parsed = query.parse_answer(answer)
         if isinstance(parsed, dp.ParseError):
             raise AnswerParseError(tree, query, answer.text, parsed.error)
         # We contribute to the hint reverse map

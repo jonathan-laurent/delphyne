@@ -28,22 +28,22 @@ def test_make_sum():
     cands_space = root.node.nested_space(refs.SpaceName("cands", ()), ())
     assert isinstance(cands_space, dp.OpaqueSpace)
     # Testing to answer with the wrong sum
-    wrong_sum_ans = root_space.answer(None, "[4, 6]")
+    wrong_sum_ans = root_space.parse_answer(dp.Answer(None, "[4, 6]"))
     assert not isinstance(wrong_sum_ans, dp.ParseError)
     wrong_sum = root.child(wrong_sum_ans)
     assert isinstance(wrong_sum.node, dp.Failure)
     assert wrong_sum.node.message == "wrong-sum"
     # Trying to answer with a forbidden number
-    forbidden_ans = root_space.answer(None, "[4, 8]")
+    forbidden_ans = root_space.parse_answer(dp.Answer(None, "[4, 8]"))
     assert not isinstance(forbidden_ans, dp.ParseError)
     forbidden = root.child(forbidden_ans)
     assert isinstance(forbidden.node, dp.Failure)
     assert forbidden.node.message == "forbidden-num"
     # Making a parse error
-    parse_error = root_space.answer(None, "4, 8")
+    parse_error = root_space.parse_answer(dp.Answer(None, "4, 8"))
     assert isinstance(parse_error, dp.ParseError)
     # Correct answer
-    success_ans = root_space.answer(None, "[9, 2]")
+    success_ans = root_space.parse_answer(dp.Answer(None, "[9, 2]"))
     assert not isinstance(success_ans, dp.ParseError)
     success = root.child(success_ans)
     assert isinstance(success.node, dp.Success)
@@ -92,7 +92,7 @@ def test_synthetize_fun():
     assert isinstance(conjecture_root.node, dp.Branch)
     query = conjecture_root.node.cands.source()
     assert isinstance(query, dp.AttachedQuery)
-    answer = query.answer(None, "2*(x + y)")
+    answer = query.parse_answer(dp.Answer(None, "2*(x + y)"))
     assert not isinstance(answer, dp.ParseError)
     inner_succ = conjecture_root.child(answer)
     assert isinstance(inner_succ.node, dp.Success)

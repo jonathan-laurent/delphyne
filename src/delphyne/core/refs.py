@@ -127,7 +127,7 @@ class Answer:
 
     mode: AnswerModeName
     text: str
-    tool_call: Sequence[ToolCall] = ()
+    tool_calls: Sequence[ToolCall] = ()
 
 
 @dataclass(frozen=True)

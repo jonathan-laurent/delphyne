@@ -185,8 +185,10 @@ def user_message(content: str) -> ChatMessage:
     return {"role": "user", "content": content}
 
 
-def assistant_message(content: str) -> ChatMessage:
-    return {"role": "assistant", "content": content}
+def assistant_message(answer: dp.Answer) -> ChatMessage:
+    # TODO: how do we integrate tool calls?
+    assert not answer.tool_calls
+    return {"role": "assistant", "content": answer.text}
 
 
 def create_prompt(
@@ -203,7 +205,7 @@ def create_prompt(
         msgs.append(
             user_message(q.generate_prompt("instance", ans.mode, params, env))
         )
-        msgs.append(assistant_message(ans.text))
+        msgs.append(assistant_message(ans))
     msgs.append(
         user_message(query.generate_prompt("instance", None, params, env))
     )
@@ -214,12 +216,11 @@ def log_oracle_answer(
     env: dp.PolicyEnv,
     query: dp.AttachedQuery[Any],
     prompt: Chat,
-    mode: dp.AnswerModeName,
-    answer: str,
+    answer: dp.Answer,
     parsed: object,
     meta: dict[str, Any],
 ):
-    info: dict[str, Any] = {"mode": mode, "prompt": prompt, "answer": answer}
+    info: dict[str, Any] = {"prompt": prompt, "answer": answer}
     if isinstance(parsed, dp.ParseError):
         info["parse_error"] = parsed.error
     if meta:
@@ -255,18 +256,19 @@ def few_shot[T](
     while True:
         yield dp.Barrier(cost_estimate)
         try:
-            answers, budget, meta = model.send_request(prompt, 1, options)
+            outputs, budget, meta = model.send_request(prompt, 1, options)
         except Exception as e:
             msg = "Exception while querying the LLM. Quitting."
             args = {"error": str(e), "prompt": prompt, "options": options}
             args["model"] = str(model)
             log(env, msg, args, loc=query)
             return
-        answer = answers[0]
-        element = query.answer(None, answer)
-        env.tracer.trace_answer(query.ref, dp.Answer(None, answer))
+        output = outputs[0]
+        answer = dp.Answer(None, output.message, output.tool_calls)
+        element = query.parse_answer(answer)
+        env.tracer.trace_answer(query.ref, answer)
         if enable_logging:
-            log_oracle_answer(env, query, prompt, None, answer, element, meta)
+            log_oracle_answer(env, query, prompt, answer, element, meta)
         yield dp.Spent(budget)
         if not isinstance(element, dp.ParseError):
             yield dp.Yield(element)

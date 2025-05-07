@@ -12,11 +12,12 @@ from typing import Any, Literal, TypedDict
 import pydantic
 from why3py import defaultdict
 
+from delphyne.core.refs import ToolCall
 from delphyne.core.streams import Budget
 from delphyne.utils.caching import cache
 
 #####
-##### Standard LLM Interface
+##### Types for LLM Requests
 #####
 
 
@@ -31,6 +32,61 @@ class ChatMessage(TypedDict):
 type Chat = Sequence[ChatMessage]
 
 
+type RequestOptions = dict[str, Any]
+"""
+Extra options to be passed to a request, overriding the model's default
+(e.g. temperature).
+"""
+
+
+#####
+##### Types for LLM Answers
+#####
+
+
+type FinishReason = Literal["stop", "length", "content_filter", "tool_calls"]
+
+
+@dataclass
+class Token:
+    bytes: Sequence[int]
+    token: str
+
+
+@dataclass
+class TokenInfo:
+    token: Token
+    logprob: float
+    top_logprobs: Sequence[tuple[Token, float]] | None
+
+
+@dataclass
+class LLMOutput:
+    message: str
+    logprobs: Sequence[TokenInfo] | None
+    tool_calls: Sequence[ToolCall]
+    finish_reason: FinishReason
+
+
+type LLMOutputMetadata = dict[str, Any]
+
+
+#####
+##### Standard Budget Keys
+#####
+
+
+NUM_REQUESTS = "num_requests"
+NUM_INPUT_TOKENS = "input_tokens"
+NUM_OUTPUT_TOKENS = "output_tokens"
+DOLLAR_PRICE = "price"
+
+
+#####
+##### Standard LLM Interface
+#####
+
+
 @dataclass
 class LLMCallException(Exception):
     exn: Exception | str
@@ -40,19 +96,6 @@ class LLMCallException(Exception):
             return str(self.exn)
         else:
             return self.exn
-
-
-type LLMOutputMetadata = dict[str, Any]
-
-
-type RequestOptions = dict[str, Any]
-"""
-Extra options to be passed to a request, overriding the model's default
-(e.g. temperature).
-"""
-
-
-NUM_REQUESTS = "num_requests"
 
 
 @dataclass
@@ -70,7 +113,7 @@ class LLM(ABC):
         chat: Chat,
         num_completions: int,
         options: RequestOptions,
-    ) -> tuple[Sequence[str], Budget, LLMOutputMetadata]:
+    ) -> tuple[Sequence[LLMOutput], Budget, LLMOutputMetadata]:
         """
         This function is allowed to raise exceptions.
         """
@@ -89,7 +132,7 @@ class LLM(ABC):
 class DummyModel(LLM):
     def send_request(
         self, chat: Chat, num_completions: int, options: RequestOptions
-    ) -> tuple[Sequence[str], Budget, LLMOutputMetadata]:
+    ) -> tuple[Sequence[LLMOutput], Budget, LLMOutputMetadata]:
         raise LLMCallException("No model was provided.")
 
 
@@ -108,7 +151,7 @@ class WithRetry(LLM):
 
     def send_request(
         self, chat: Chat, num_completions: int, options: RequestOptions
-    ) -> tuple[Sequence[str], Budget, LLMOutputMetadata]:
+    ) -> tuple[Sequence[LLMOutput], Budget, LLMOutputMetadata]:
         for retry_delay in [*self.retry_delays, None]:
             try:
                 return self.model.send_request(chat, num_completions, options)
@@ -147,7 +190,7 @@ class _CachedRequest:
         return adapter.dump_json(self.request)
 
 
-type _CachedResponse = tuple[Sequence[str], Budget, LLMOutputMetadata]
+type _CachedResponse = tuple[Sequence[LLMOutput], Budget, LLMOutputMetadata]
 
 
 @dataclass
@@ -172,7 +215,7 @@ class CachedModel(LLM):
 
     def send_request(
         self, chat: Chat, num_completions: int, options: RequestOptions
-    ) -> tuple[Sequence[str], Budget, LLMOutputMetadata]:
+    ) -> tuple[Sequence[LLMOutput], Budget, LLMOutputMetadata]:
         base_req = _CachedBaseRequest(chat, num_completions, options)
         self.num_seen[base_req] += 1
         num_seen = self.num_seen[base_req]

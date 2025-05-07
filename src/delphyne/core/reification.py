@@ -229,17 +229,16 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
             def spawn_query[T](
                 query: tr.AbstractQuery[T],
             ) -> tr.AttachedQuery[T]:
-                def answer(
-                    mode: refs.AnswerModeName, text: str
+                def parse_answer(
+                    answer: refs.Answer,
                 ) -> tr.Tracked[T] | tr.ParseError:
-                    answer = refs.Answer(mode, text)
                     ref = refs.SpaceElementRef(sr, answer)
                     parsed = query.parse_answer(answer)
                     if isinstance(parsed, tr.ParseError):
                         return parsed
                     return tr.Tracked(parsed, ref, gr, query.answer_type())
 
-                return tr.AttachedQuery(query, (gr, sr), answer)
+                return tr.AttachedQuery(query, (gr, sr), parse_answer)
 
             return builder(spawn_tree, spawn_query)
 
@@ -260,14 +259,11 @@ def spawn_standalone_query[T](query: AbstractQuery[T]) -> tr.AttachedQuery[T]:
     origin. Do NOT use this for queries attached to strategies.
     """
 
-    def answer(
-        mode: refs.AnswerModeName, text: str
-    ) -> tr.Tracked[T] | tr.ParseError:
-        answer = refs.Answer(mode, text)
+    def parse_answer(answer: refs.Answer) -> tr.Tracked[T] | tr.ParseError:
         ref = refs.SpaceElementRef(refs.MAIN_SPACE, answer)
         parsed = query.parse_answer(answer)
         if isinstance(parsed, tr.ParseError):
             return parsed
         return tr.Tracked(parsed, ref, (), query.answer_type())
 
-    return tr.AttachedQuery(query, ((), refs.MAIN_SPACE), answer)
+    return tr.AttachedQuery(query, ((), refs.MAIN_SPACE), parse_answer)

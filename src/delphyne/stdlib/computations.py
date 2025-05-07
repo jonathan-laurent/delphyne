@@ -85,7 +85,7 @@ def pure_elim_compute[N: dp.Node, P, T](
 ) -> dp.Tree[N, P, T]:
     if isinstance(tree.node, Computation):
         answer = tree.node.run_computation()
-        tracked = tree.node.query.answer(None, answer)
+        tracked = tree.node.query.parse_answer(dp.Answer(None, answer))
         assert not isinstance(tracked, dp.ParseError)
         return pure_elim_compute(tree.child(tracked))
 
