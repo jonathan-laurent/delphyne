@@ -116,6 +116,14 @@ class ToolCall:
     name: str
     args: Mapping[str, Any]
 
+    def __hash__(self) -> int:
+        # Tool calls need to be hashable since they are part of answers
+        # and references. However, they can feature arbitrary JSON
+        # objects...
+        import json
+
+        return hash(json.dumps(self.__dict__))
+
 
 @dataclass(frozen=True)
 class Answer:
@@ -127,7 +135,7 @@ class Answer:
 
     mode: AnswerModeName
     text: str
-    tool_calls: Sequence[ToolCall] = ()
+    tool_calls: tuple[ToolCall, ...] = ()
 
 
 @dataclass(frozen=True)

@@ -264,7 +264,7 @@ def few_shot[T](
             log(env, msg, args, loc=query)
             return
         output = outputs[0]
-        answer = dp.Answer(None, output.message, output.tool_calls)
+        answer = dp.Answer(None, output.message, tuple(output.tool_calls))
         element = query.parse_answer(answer)
         env.tracer.trace_answer(query.ref, answer)
         if enable_logging:
