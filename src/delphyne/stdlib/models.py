@@ -4,11 +4,12 @@ Standard interfaces for LLMs
 
 import time
 from abc import ABC, abstractmethod
-from collections.abc import AsyncIterable, Iterable
+from collections.abc import AsyncIterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal, Sequence, TypedDict
+from typing import Any, Literal, TypedDict
 
+import pydantic
 from why3py import defaultdict
 
 from delphyne.core.streams import Budget
@@ -27,7 +28,7 @@ class ChatMessage(TypedDict):
     content: str
 
 
-type Chat = Iterable[ChatMessage]
+type Chat = Sequence[ChatMessage]
 
 
 @dataclass
@@ -134,7 +135,16 @@ class _CachedBaseRequest:
         return hash(str(self.chat))
 
 
-type _CachedRequest = tuple[_CachedBaseRequest, int]
+@dataclass(frozen=True)
+class _CachedRequest:
+    request: _CachedBaseRequest
+    iter: int
+
+    def stable_repr(self) -> bytes:
+        # We define a custom stable hash so that different iterations of the
+        # same request are stored within the same bucket.
+        adapter = pydantic.TypeAdapter(_CachedBaseRequest)
+        return adapter.dump_json(self.request)
 
 
 type _CachedResponse = tuple[Sequence[str], Budget, LLMOutputMetadata]
@@ -148,9 +158,9 @@ class CachedModel(LLM):
     def __post_init__(self):
         self.num_seen: dict[_CachedBaseRequest, int] = defaultdict(lambda: 0)
 
-        @cache(dir=self.cache_dir)
+        @cache(dir=self.cache_dir, hash_arg=_CachedRequest.stable_repr)
         def run_request(req: _CachedRequest) -> _CachedResponse:
-            base, _ = req
+            base = req.request
             return self.model.send_request(
                 base.chat, base.num_completions, base.options
             )
@@ -166,5 +176,5 @@ class CachedModel(LLM):
         base_req = _CachedBaseRequest(chat, num_completions, options)
         self.num_seen[base_req] += 1
         num_seen = self.num_seen[base_req]
-        req = (base_req, num_seen)
+        req = _CachedRequest(base_req, num_seen)
         return self.run_request(req)

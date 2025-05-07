@@ -1,0 +1,36 @@
+# The LLM fails the first time but succeeds the second time.
+
+- input:
+    request:
+      chat:
+        - role: system
+          content: Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target. Just answer with the raw answer.
+        - role: user
+          content: |-
+            List: [1, 2, 3, 4]
+            Target: 7
+      num_completions: 1
+      options: {}
+    iter: 1
+  output:
+    - - '[3, 5]'
+    - values:
+        num_requests: 1.0
+    - {}
+- input:
+    request:
+      chat:
+        - role: system
+          content: Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target. Just answer with the raw answer.
+        - role: user
+          content: |-
+            List: [1, 2, 3, 4]
+            Target: 7
+      num_completions: 1
+      options: {}
+    iter: 2
+  output:
+    - - '[3, 4]'
+    - values:
+        num_requests: 1
+    - {}

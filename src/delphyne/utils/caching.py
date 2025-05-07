@@ -5,6 +5,7 @@ Simple utility for caching values.
 import functools
 import hashlib
 from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 from typing import get_type_hints
 
@@ -13,17 +14,22 @@ from pydantic import TypeAdapter
 
 from delphyne.utils.yaml import pretty_yaml
 
-HASH_LEN = 8
+
+@dataclass
+class _BucketItem[P, T]:
+    input: P
+    output: T
 
 
-def _short_hash(s: bytes) -> str:
-    return hashlib.md5(s).hexdigest()[:HASH_LEN]
+type _Bucket[P, T] = list[_BucketItem[P, T]]
 
 
-type _Bucket[P, T] = list[tuple[P, T]]
-
-
-def cache[P, T](dir: Path) -> Callable[[Callable[[P], T]], Callable[[P], T]]:
+def cache[P, T](
+    dir: Path,
+    hash_arg: Callable[[P], bytes] | None = None,
+    hash_len: int = 8,
+    # Pyright has trouble with more precise typing of `hash_by`
+) -> Callable[[Callable[[P], T]], Callable[[P], T]]:
     """
     A decorator that adds hard-disk caching to a function.
 
@@ -42,14 +48,18 @@ def cache[P, T](dir: Path) -> Callable[[Callable[[P], T]], Callable[[P], T]]:
         ret_type = arg_types[1][1]
         arg_adapter = TypeAdapter[P](arg_type)
         bucket_adapter = TypeAdapter[_Bucket[P, T]](
-            list[tuple[arg_type, ret_type]]
+            list[_BucketItem[arg_type, ret_type]]
         )
 
         @functools.wraps(func)
         def cached_func(arg: P) -> T:
             dir.mkdir(parents=True, exist_ok=True)
-            arg_json = arg_adapter.dump_json(arg)
-            arg_hash = _short_hash(arg_json)
+            if hash_arg is not None:
+                arg_bytes = hash_arg(arg)
+            else:
+                arg_bytes = arg_adapter.dump_json(arg)
+            arg_hash = hashlib.md5(arg_bytes).hexdigest()
+            arg_hash = arg_hash[:hash_len]
             cache_file = dir / f"{arg_hash}.yaml"
             if cache_file.exists():
                 with cache_file.open("r") as f:
@@ -57,12 +67,12 @@ def cache[P, T](dir: Path) -> Callable[[Callable[[P], T]], Callable[[P], T]]:
                     bucket = bucket_adapter.validate_python(bucket_yaml)
             else:
                 bucket: _Bucket[P, T] = []
-            for arg_, ret in bucket:
-                if arg_ == arg:
-                    return ret
+            for b in bucket:
+                if b.input == arg:
+                    return b.output
             # if not found
             ret = func(arg)
-            bucket.append((arg, ret))
+            bucket.append(_BucketItem(arg, ret))
             with cache_file.open("w") as f:
                 # using pretty_yaml is important because `yaml.dump`
                 # uses tags to serialize tuples instead of just using

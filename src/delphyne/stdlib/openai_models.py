@@ -18,7 +18,7 @@ from delphyne.stdlib.models import (
     RequestOptions,
 )
 
-DEFAULT_MODEL = "gpt-4o"
+DEFAULT_MODEL = "gpt-4.1"
 
 
 @dataclass
@@ -63,7 +63,7 @@ class OpenAIModel(LLM):
                 yield content
 
 
-type OpenAIModelName = Literal["gpt-40", "gpt-4o-mini", "gpt-3.5-turbo"]
+type OpenAIModelName = Literal["gpt-4.1", "gpt-4.1-mini"]
 
 
 def openai_model(model: OpenAIModelName | str):
