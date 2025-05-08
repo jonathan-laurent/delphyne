@@ -178,17 +178,17 @@ def find_all_examples(
 
 
 def system_message(content: str) -> ChatMessage:
-    return {"role": "system", "content": content}
+    return ChatMessage("system", content)
 
 
 def user_message(content: str) -> ChatMessage:
-    return {"role": "user", "content": content}
+    return ChatMessage("user", content)
 
 
 def assistant_message(answer: dp.Answer) -> ChatMessage:
     # TODO: how do we integrate tool calls?
     assert not answer.tool_calls
-    return {"role": "assistant", "content": answer.text}
+    return ChatMessage("assistant", answer.text)
 
 
 def create_prompt(

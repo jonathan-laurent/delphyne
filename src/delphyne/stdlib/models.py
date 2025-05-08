@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 from collections.abc import AsyncIterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal, TypedDict
+from typing import Any, Literal
 
 import pydantic
 from why3py import defaultdict
@@ -24,9 +24,11 @@ from delphyne.utils.caching import cache
 type ChatMessageRole = Literal["user", "system", "assistant"]
 
 
-class ChatMessage(TypedDict):
+@dataclass(frozen=True)
+class ChatMessage:
     role: ChatMessageRole
     content: str
+    tool_calls: Sequence[ToolCall] = ()
 
 
 type Chat = Sequence[ChatMessage]

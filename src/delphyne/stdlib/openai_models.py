@@ -24,6 +24,46 @@ from delphyne.stdlib.models import (
 DEFAULT_MODEL = "gpt-4.1"
 
 
+class ToolCallIdGenerator:
+    def __init__(self):
+        self.next_id = 1
+        self.calls: dict[ToolCall, int] = {}
+
+    def get_id(self, tool_call: ToolCall) -> int:
+        if tool_call in self.calls:
+            return self.calls[tool_call]
+        else:
+            self.calls[tool_call] = self.next_id
+            self.next_id += 1
+            return self.calls[tool_call]
+
+
+def translate_chat(chat: Chat) -> Sequence[dict[str, Any]]:
+    """
+    We translate the chat into the format expected by OpenAI API.
+
+    Unique ids are generated for tool calls.
+    """
+    gen = ToolCallIdGenerator()
+    res: Sequence[dict[str, Any]] = []
+    for m in chat:
+        msg: dict[str, Any] = {"role": m.role, "content": m.content}
+        if m.tool_calls:
+            msg["tool_calls"] = [
+                {
+                    "id": f"call_{gen.get_id(call)}",
+                    "type": "function",
+                    "function": {
+                        "name": call.name,
+                        "arguments": call.args,
+                    },
+                }
+                for call in m.tool_calls
+            ]
+        res.append(msg)
+    return res
+
+
 @dataclass
 class OpenAIModel(LLM):
     options: dict[str, Any]
@@ -36,7 +76,7 @@ class OpenAIModel(LLM):
         response = cast(
             Any,
             client.chat.completions.create(
-                messages=chat,  # type: ignore
+                messages=translate_chat(chat),  # type: ignore
                 n=num_completions,
                 **self.options,
             ),
@@ -72,7 +112,7 @@ class OpenAIModel(LLM):
         response: Any = await cast(
             Any,
             client.chat.completions.create(
-                messages=chat,  # type: ignore
+                messages=translate_chat(chat),  # type: ignore
                 stream=True,
                 **self.options,
             ),
