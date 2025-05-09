@@ -2,6 +2,7 @@
 Utilities to call OpenAI Models
 """
 
+import json
 from collections.abc import AsyncIterable, Sequence
 from dataclasses import dataclass
 from typing import Any, Literal, cast
@@ -19,6 +20,7 @@ from delphyne.stdlib.models import (
     LLMOutput,
     LLMOutputMetadata,
     RequestOptions,
+    ToolResultMessage,
 )
 
 DEFAULT_MODEL = "gpt-4.1"
@@ -29,13 +31,16 @@ class ToolCallIdGenerator:
         self.next_id = 1
         self.calls: dict[ToolCall, int] = {}
 
-    def get_id(self, tool_call: ToolCall) -> int:
+    def get_raw_id(self, tool_call: ToolCall) -> int:
         if tool_call in self.calls:
             return self.calls[tool_call]
         else:
             self.calls[tool_call] = self.next_id
             self.next_id += 1
             return self.calls[tool_call]
+
+    def get_id(self, tool_call: ToolCall) -> str:
+        return f"call_{self.get_raw_id(tool_call)}"
 
 
 def translate_chat(chat: Chat) -> Sequence[dict[str, Any]]:
@@ -47,19 +52,27 @@ def translate_chat(chat: Chat) -> Sequence[dict[str, Any]]:
     gen = ToolCallIdGenerator()
     res: Sequence[dict[str, Any]] = []
     for m in chat:
-        msg: dict[str, Any] = {"role": m.role, "content": m.content}
-        if m.tool_calls:
-            msg["tool_calls"] = [
-                {
-                    "id": f"call_{gen.get_id(call)}",
-                    "type": "function",
-                    "function": {
-                        "name": call.name,
-                        "arguments": call.args,
-                    },
-                }
-                for call in m.tool_calls
-            ]
+        if isinstance(m, ToolResultMessage):
+            content = json.dumps(m.result)
+            msg: dict[str, Any] = {
+                "role": "tool",
+                "content": content,
+                "tool_call_id": gen.get_id(m.call),
+            }
+        else:
+            msg: dict[str, Any] = {"role": m.role, "content": m.content}
+            if m.tool_calls:
+                msg["tool_calls"] = [
+                    {
+                        "id": gen.get_id(call),
+                        "type": "function",
+                        "function": {
+                            "name": call.name,
+                            "arguments": json.dumps(call.args),
+                        },
+                    }
+                    for call in m.tool_calls
+                ]
         res.append(msg)
     return res
 

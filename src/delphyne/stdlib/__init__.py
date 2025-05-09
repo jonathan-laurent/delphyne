@@ -27,9 +27,11 @@ from delphyne.stdlib.models import (
     Chat,
     ChatMessage,
     ChatMessageRole,
+    ChatTextMessage,
     LLMCallException,
     LLMOutputMetadata,
     RequestOptions,
+    ToolResultMessage,
     WithRetry,
 )
 from delphyne.stdlib.nodes import (

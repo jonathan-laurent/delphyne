@@ -5,7 +5,7 @@ import pytest
 import delphyne as dp
 
 _TEST_PROMPT: dp.Chat = [
-    dp.ChatMessage("user", "What is the capital of France?")
+    dp.ChatTextMessage("user", "What is the capital of France?")
 ]
 
 

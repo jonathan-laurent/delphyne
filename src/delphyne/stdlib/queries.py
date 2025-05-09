@@ -10,7 +10,7 @@ import yaml
 
 import delphyne.core as dp
 import delphyne.core.inspect as dpi
-from delphyne.stdlib.models import LLM, Chat, ChatMessage
+from delphyne.stdlib.models import LLM, Chat, ChatTextMessage
 from delphyne.stdlib.policies import log, prompting_policy
 from delphyne.utils import typing as ty
 from delphyne.utils.typing import TypeAnnot, ValidationError
@@ -177,18 +177,18 @@ def find_all_examples(
     return [(query.parse_instance(args), ans) for args, ans in raw]
 
 
-def system_message(content: str) -> ChatMessage:
-    return ChatMessage("system", content)
+def system_message(content: str) -> ChatTextMessage:
+    return ChatTextMessage("system", content)
 
 
-def user_message(content: str) -> ChatMessage:
-    return ChatMessage("user", content)
+def user_message(content: str) -> ChatTextMessage:
+    return ChatTextMessage("user", content)
 
 
-def assistant_message(answer: dp.Answer) -> ChatMessage:
+def assistant_message(answer: dp.Answer) -> ChatTextMessage:
     # TODO: how do we integrate tool calls?
     assert not answer.tool_calls
-    return ChatMessage("assistant", answer.text)
+    return ChatTextMessage("assistant", answer.text)
 
 
 def create_prompt(
@@ -197,7 +197,7 @@ def create_prompt(
     params: dict[str, object],
     env: dp.TemplatesManager | None,
 ) -> Chat:
-    msgs: list[ChatMessage] = []
+    msgs: list[ChatTextMessage] = []
     msgs.append(
         system_message(query.generate_prompt("system", None, params, env))
     )

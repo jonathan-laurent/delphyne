@@ -21,14 +21,23 @@ from delphyne.utils.caching import cache
 #####
 
 
-type ChatMessageRole = Literal["user", "system", "assistant"]
+type ChatMessageRole = Literal["user", "assistant", "developer", "system"]
 
 
 @dataclass(frozen=True)
-class ChatMessage:
+class ChatTextMessage:
     role: ChatMessageRole
     content: str
     tool_calls: Sequence[ToolCall] = ()
+
+
+@dataclass(frozen=True)
+class ToolResultMessage:
+    call: ToolCall
+    result: Any  # JSON object
+
+
+type ChatMessage = ChatTextMessage | ToolResultMessage
 
 
 type Chat = Sequence[ChatMessage]
