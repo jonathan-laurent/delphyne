@@ -110,7 +110,7 @@ class MatchedSelector(Exception):
 class AnswerParseError(Exception):
     tree: AnyTree
     query: dp.AttachedQuery[Any]
-    answer: str
+    answer: dp.Answer
     error: str
 
 
@@ -194,7 +194,7 @@ class Navigator:
                 assert isinstance(query, dp.AttachedQuery)
                 parsed = query.parse_answer(ans)
                 if isinstance(parsed, dp.ParseError):
-                    raise AnswerParseError(tree, query, ans.text, parsed.error)
+                    raise AnswerParseError(tree, query, ans, parsed.error)
                 return parsed
             case refs.NodeId():
                 assert self.id_resolver is not None
@@ -320,7 +320,7 @@ class Navigator:
             raise Stuck(tree, query.ref[1], hints)
         parsed = query.parse_answer(answer)
         if isinstance(parsed, dp.ParseError):
-            raise AnswerParseError(tree, query, answer.text, parsed.error)
+            raise AnswerParseError(tree, query, answer, parsed.error)
         # We contribute to the hint reverse map
         if self.info is not None:
             self.info.hints_rev.answers[(query.ref, answer)] = used_hint

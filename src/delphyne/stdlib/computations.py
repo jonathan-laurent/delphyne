@@ -43,6 +43,7 @@ class __Computation__(dp.AbstractQuery[object]):
 
     def parse_answer(self, answer: dp.Answer) -> object | dp.ParseError:
         try:
+            assert isinstance(answer.text, str)
             return yaml.safe_load(answer.text)
         except yaml.parser.ParserError as e:
             return dp.ParseError(str(e))

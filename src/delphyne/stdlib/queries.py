@@ -10,6 +10,7 @@ import yaml
 
 import delphyne.core as dp
 import delphyne.core.inspect as dpi
+from delphyne.core.refs import Answer
 from delphyne.stdlib.models import LLM, Chat, ChatTextMessage
 from delphyne.stdlib.policies import log, prompting_policy
 from delphyne.utils import typing as ty
@@ -25,7 +26,7 @@ REQUEST_OTHER_PROMPT = "more"
 
 
 class Query[T](dp.AbstractQuery[T]):
-    def parse(self, mode: dp.AnswerModeName | None, answer: str) -> T:
+    def parse(self, answer: Answer) -> T:
         """
         A more convenient method to override instead of `parse_answer`.
 
@@ -42,17 +43,18 @@ class Query[T](dp.AbstractQuery[T]):
             sig = inspect.signature(parser)
             nargs = len(sig.parameters)
             assert nargs == 1 or nargs == 2
+            text = _get_text_answer(answer)
             if nargs == 1:
                 # Normal parser
-                return parser(answer)
+                return parser(text)
             else:
                 # Generic parser
-                return parser(self.answer_type(), answer)
+                return parser(self.answer_type(), text)
         assert False, f"No {__parser__} attribute found."
 
     def parse_answer(self, answer: dp.Answer) -> T | dp.ParseError:
         try:
-            return self.parse(answer.mode, answer.text)
+            return self.parse(answer)
         except dp.ParseError as e:
             return e
 
@@ -112,6 +114,14 @@ def _no_prompt_manager_error() -> str:
 
 class GenericParser(Protocol):
     def __call__[T](self, type: TypeAnnot[T], res: str) -> T: ...
+
+
+def _get_text_answer(ans: Answer) -> str:
+    if ans.tool_calls:
+        raise dp.ParseError("Trying to parse answer with tool calls.")
+    if not isinstance(ans.text, str):
+        raise dp.ParseError("Trying to parse answer with non-string text.")
+    return ans.text
 
 
 def raw_yaml[T](type: TypeAnnot[T], res: str) -> T:
@@ -188,6 +198,7 @@ def user_message(content: str) -> ChatTextMessage:
 def assistant_message(answer: dp.Answer) -> ChatTextMessage:
     # TODO: how do we integrate tool calls?
     assert not answer.tool_calls
+    assert isinstance(answer.text, str)
     return ChatTextMessage("assistant", answer.text)
 
 

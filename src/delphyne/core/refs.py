@@ -126,6 +126,17 @@ class ToolCall:
 
 
 @dataclass(frozen=True)
+class Structured:
+    structured: Any  # JSON object
+
+    def __hash__(self) -> int:
+        # See `ToolCall.__hash__`
+        import json
+
+        return hash(json.dumps(self.__dict__))
+
+
+@dataclass(frozen=True)
 class Answer:
     """
     An answer to a query. This can serve as a _space element reference_
@@ -134,7 +145,7 @@ class Answer:
     """
 
     mode: AnswerModeName
-    text: str
+    text: str | Structured
     tool_calls: tuple[ToolCall, ...] = ()
 
 
