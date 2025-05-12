@@ -75,7 +75,7 @@ def hints(hs: Sequence[refs.Hint]):
 
 
 def answer(a: refs.Answer) -> str:
-    ret = repr(a.text)
+    ret = repr(a.content)
     if a.mode is not None:
         ret = f"{a.mode}:{ret}"
     return ret

@@ -145,7 +145,7 @@ class Answer:
     """
 
     mode: AnswerModeName
-    text: str | Structured
+    content: str | Structured
     tool_calls: tuple[ToolCall, ...] = ()
 
 

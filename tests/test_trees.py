@@ -64,13 +64,13 @@ def test_make_sum():
             answers:
               1:
                 mode:
-                text: '[4, 6]'
+                content: '[4, 6]'
               2:
                 mode:
-                text: '[4, 8]'
+                content: '[4, 8]'
               3:
                 mode:
-                text: '[9, 2]'
+                content: '[9, 2]'
         """
     )
     print(pretty_trace)

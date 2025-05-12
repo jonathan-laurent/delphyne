@@ -119,9 +119,9 @@ class GenericParser(Protocol):
 def _get_text_answer(ans: Answer) -> str:
     if ans.tool_calls:
         raise dp.ParseError("Trying to parse answer with tool calls.")
-    if not isinstance(ans.text, str):
+    if not isinstance(ans.content, str):
         raise dp.ParseError("Trying to parse answer with non-string text.")
-    return ans.text
+    return ans.content
 
 
 def raw_yaml[T](type: TypeAnnot[T], res: str) -> T:
@@ -198,8 +198,8 @@ def user_message(content: str) -> ChatTextMessage:
 def assistant_message(answer: dp.Answer) -> ChatTextMessage:
     # TODO: how do we integrate tool calls?
     assert not answer.tool_calls
-    assert isinstance(answer.text, str)
-    return ChatTextMessage("assistant", answer.text)
+    assert isinstance(answer.content, str)
+    return ChatTextMessage("assistant", answer.content)
 
 
 def create_prompt(
