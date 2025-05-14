@@ -12,7 +12,7 @@ from typing import Any, Literal, TypedDict
 import pydantic
 from why3py import defaultdict
 
-from delphyne.core.refs import Answer, ToolCall
+from delphyne.core.refs import Answer, Structured, ToolCall
 from delphyne.core.streams import Budget
 from delphyne.utils.caching import cache
 
@@ -97,7 +97,7 @@ class TokenInfo:
 @dataclass
 class LLMOutput:
     # TODO: structured answers for which we need to parse the content...
-    message: str
+    content: str | Structured
     logprobs: Sequence[TokenInfo] | None
     tool_calls: Sequence[ToolCall]
     finish_reason: FinishReason
@@ -154,6 +154,8 @@ class LLMRequest:
     If `structured_output` is not None, it must be a type expression
     that can be plugged into a pydantic adapter.
     """
+
+    # TODO: add support for getting tokens.
 
     chat: Chat
     num_completions: int

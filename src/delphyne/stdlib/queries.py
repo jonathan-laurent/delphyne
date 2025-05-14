@@ -263,7 +263,7 @@ def few_shot[T](
             log(env, "llm_no_output", loc=query)
             continue
         output = resp.outputs[0]
-        answer = dp.Answer(None, output.message, tuple(output.tool_calls))
+        answer = dp.Answer(None, output.content, tuple(output.tool_calls))
         element = query.parse_answer(answer)
         env.tracer.trace_answer(query.ref, answer)
         if isinstance(element, dp.ParseError):

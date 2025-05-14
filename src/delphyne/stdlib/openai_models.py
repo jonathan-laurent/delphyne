@@ -169,12 +169,17 @@ class OpenAIModel(md.LLM):
                 if choice.finish_reason != "function_call"
                 else "tool_calls"
             )
-            message = choice.message.content
-            if message is None:
+            content = choice.message.content
+            if content is None:
                 if finish_reason != "tool_calls":
                     log.append(md.LLMResponseLogItem("error", "empty_answer"))
                     continue
-                message = ""
+                content = ""
+            if (
+                req.structured_output is not None
+                and choice.message.tool_calls is None
+            ):
+                content = json.loads(content)
             tool_calls: list[ToolCall] = []
             if choice.message.tool_calls is not None:
                 ok = True
@@ -194,7 +199,7 @@ class OpenAIModel(md.LLM):
                 if not ok:
                     continue
             output = md.LLMOutput(
-                message=message,
+                content=content,
                 logprobs=None,
                 finish_reason=finish_reason,
                 tool_calls=tool_calls,
