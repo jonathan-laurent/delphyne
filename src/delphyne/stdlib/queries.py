@@ -10,8 +10,8 @@ import yaml
 
 import delphyne.core as dp
 import delphyne.core.inspect as dpi
+import delphyne.stdlib.models as md
 from delphyne.core.refs import Answer
-from delphyne.stdlib.models import LLM, Chat, ChatTextMessage
 from delphyne.stdlib.policies import log, prompting_policy
 from delphyne.utils import typing as ty
 from delphyne.utils.typing import TypeAnnot, ValidationError
@@ -187,63 +187,53 @@ def find_all_examples(
     return [(query.parse_instance(args), ans) for args, ans in raw]
 
 
-def system_message(content: str) -> ChatTextMessage:
-    return ChatTextMessage("system", content)
-
-
-def user_message(content: str) -> ChatTextMessage:
-    return ChatTextMessage("user", content)
-
-
-def assistant_message(answer: dp.Answer) -> ChatTextMessage:
-    # TODO: how do we integrate tool calls?
-    assert not answer.tool_calls
-    assert isinstance(answer.content, str)
-    return ChatTextMessage("assistant", answer.content)
-
-
 def create_prompt(
     query: dp.AbstractQuery[Any],
     examples: Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]],
     params: dict[str, object],
     env: dp.TemplatesManager | None,
-) -> Chat:
-    msgs: list[ChatTextMessage] = []
+) -> md.Chat:
+    msgs: list[md.ChatMessage] = []
     msgs.append(
-        system_message(query.generate_prompt("system", None, params, env))
+        md.SystemMessage(query.generate_prompt("system", None, params, env))
     )
     for q, ans in examples:
         msgs.append(
-            user_message(q.generate_prompt("instance", ans.mode, params, env))
+            md.UserMessage(
+                q.generate_prompt("instance", ans.mode, params, env)
+            )
         )
-        msgs.append(assistant_message(ans))
+        msgs.append(md.AssistantMessage(ans))
     msgs.append(
-        user_message(query.generate_prompt("instance", None, params, env))
+        md.UserMessage(query.generate_prompt("instance", None, params, env))
     )
     return msgs
 
 
-def log_oracle_answer(
+def log_oracle_response(
     env: dp.PolicyEnv,
     query: dp.AttachedQuery[Any],
-    prompt: Chat,
-    answer: dp.Answer,
-    parsed: object,
-    meta: dict[str, Any],
+    req: md.LLMRequest,
+    resp: md.LLMResponse,
+    *,
+    verbose: bool,
 ):
-    info: dict[str, Any] = {"prompt": prompt, "answer": answer}
-    if isinstance(parsed, dp.ParseError):
-        info["parse_error"] = parsed.error
-    if meta:
-        info["meta"] = meta
-    log(env, "Answer received", info, loc=query)
+    if verbose:
+        info = {
+            "request": ty.pydantic_dump(md.LLMRequest, req),
+            "response": ty.pydantic_dump(md.LLMResponse, resp),
+        }
+        log(env, "llm_response", info, loc=query)
+    # TODO: severity
+    for extra in resp.log_items:
+        log(env, extra.message, extra.metadata, loc=query)
 
 
 @prompting_policy
 def few_shot[T](
     query: dp.AttachedQuery[T],
     env: dp.PolicyEnv,
-    model: LLM,
+    model: md.LLM,
     enable_logging: bool = True,
     iterative_mode: bool = False,
 ) -> dp.Stream[T]:
@@ -262,27 +252,25 @@ def few_shot[T](
     examples = find_all_examples(env.examples, query.query)
     mngr = env.templates
     prompt = create_prompt(query.query, examples, {}, mngr)
-    options: dict[str, Any] = {}
-    cost_estimate = model.estimate_budget(prompt, options)
+    req = md.LLMRequest(prompt, 1, {})
+    cost_estimate = model.estimate_budget(req)
     while True:
         yield dp.Barrier(cost_estimate)
-        try:
-            outputs, budget, meta = model.send_request(prompt, 1, options)
-        except Exception as e:
-            msg = "Exception while querying the LLM. Quitting."
-            args = {"error": str(e), "prompt": prompt, "options": options}
-            args["model"] = str(model)
-            log(env, msg, args, loc=query)
-            return
-        output = outputs[0]
+        resp = model.send_request(req)
+        log_oracle_response(env, query, req, resp, verbose=enable_logging)
+        yield dp.Spent(resp.budget)
+        if not resp.outputs:
+            log(env, "llm_no_output", loc=query)
+            continue
+        output = resp.outputs[0]
         answer = dp.Answer(None, output.message, tuple(output.tool_calls))
         element = query.parse_answer(answer)
         env.tracer.trace_answer(query.ref, answer)
-        if enable_logging:
-            log_oracle_answer(env, query, prompt, answer, element, meta)
-        yield dp.Spent(budget)
-        if not isinstance(element, dp.ParseError):
+        if isinstance(element, dp.ParseError):
+            log(env, "parse_error", {"error": element.error}, loc=query)
+        else:
             yield dp.Yield(element)
+        # In iterative mode, we want to keep the conversation going
         if iterative_mode:
             if isinstance(element, dp.ParseError):
                 try:
@@ -297,7 +285,7 @@ def few_shot[T](
                         "Invalid answer. Please consider the following"
                         + f" feedback and try again:\n\n{element.error}"
                     )
-                new_message = user_message(repair)
+                new_message = md.UserMessage(repair)
             else:
                 try:
                     gen_new = query.query.generate_prompt(
@@ -305,5 +293,5 @@ def few_shot[T](
                     )
                 except dp.TemplateFileMissing:
                     gen_new = "Good! Can you generate a different answer now?"
-                new_message = user_message(gen_new)
-            prompt = (*prompt, assistant_message(answer), new_message)
+                new_message = md.UserMessage(gen_new)
+            prompt = (*prompt, md.AssistantMessage(answer), new_message)

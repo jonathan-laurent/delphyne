@@ -7,13 +7,14 @@ import delphyne.core as dp
 
 @dataclass(frozen=True)
 class OracleMessage:
-    msg: str
+    kind: Literal["oracle"]
+    answer: dp.Answer
 
 
 @dataclass(frozen=True)
 class FeedbackMessage:
-    kind: Literal["message"]
-    mode: str
+    kind: Literal["feedback"]
+    category: str
     args: Mapping[str, Any]
 
 
