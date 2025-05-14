@@ -17,6 +17,27 @@ from delphyne.core.streams import Budget
 from delphyne.utils.caching import cache
 
 #####
+##### Tools
+#####
+
+
+def _class_name_to_lower_snake_case(s: str) -> str:
+    bits = ["_" + c.lower() if c.isupper() else c for c in s]
+    return "".join(bits).lstrip("_")
+
+
+class AbstractTool:
+    @classmethod
+    def tool_name(cls) -> str:
+        return _class_name_to_lower_snake_case(cls.__name__)
+
+    @classmethod
+    def tool_description(cls) -> str | None:
+        doc = cls.__doc__
+        return doc
+
+
+#####
 ##### Types for LLM Requests
 #####
 
@@ -129,9 +150,16 @@ class LLMResponseLogItem:
 
 @dataclass(frozen=True)
 class LLMRequest:
+    """
+    If `structured_output` is not None, it must be a type expression
+    that can be plugged into a pydantic adapter.
+    """
+
     chat: Chat
     num_completions: int
     options: RequestOptions
+    tools: Sequence[type[AbstractTool]] = ()
+    structured_output: Any | None = None
 
     def __hash__(self) -> int:
         # LLMRequest needs to be hashable for `CachedModel` to work.

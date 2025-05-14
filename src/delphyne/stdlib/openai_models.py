@@ -5,10 +5,12 @@ Utilities to call OpenAI Models
 import json
 from collections.abc import AsyncIterable, Sequence
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal
 
 import openai
 import openai.types.chat as ochat
+import openai.types.chat.completion_create_params as ochatp
+import pydantic
 
 from delphyne.core.refs import ToolCall
 from delphyne.core.streams import Budget
@@ -90,6 +92,52 @@ def translate_chat(
     return [translate(msg) for msg in chat]
 
 
+def _strict_schema(schema: Any):
+    from copy import deepcopy
+
+    from openai.lib._pydantic import _ensure_strict_json_schema  # type: ignore
+
+    schema = deepcopy(schema)
+    _ensure_strict_json_schema(schema, path=(), root=schema)
+    return schema
+
+
+def _chat_response_format(
+    structured_output: Any | None,
+) -> ochatp.ResponseFormat:
+    if structured_output is None:
+        return {"type": "text"}
+    adapter = pydantic.TypeAdapter[Any](structured_output)
+    schema = _strict_schema(adapter.json_schema())
+    # We do not use `description` keys.
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "strict": True,
+            "name": schema["title"],
+            "schema": schema,
+        },
+    }
+
+
+def _make_chat_tool(
+    tool: type[md.AbstractTool],
+) -> ochat.ChatCompletionToolParam:
+    adapter = pydantic.TypeAdapter[Any](tool)
+    schema = _strict_schema(adapter.json_schema())
+    ret: ochat.ChatCompletionToolParam = {
+        "type": "function",
+        "function": {
+            "name": tool.tool_name(),
+            "parameters": schema,
+            "strict": True,
+        },
+    }
+    if (descr := tool.tool_description()) is not None:
+        ret["function"]["description"] = descr
+    return ret
+
+
 @dataclass
 class OpenAIModel(md.LLM):
     options: md.RequestOptions
@@ -107,6 +155,8 @@ class OpenAIModel(md.LLM):
                 model=options["model"],
                 messages=translate_chat(req.chat),
                 n=req.num_completions,
+                tools=[_make_chat_tool(tool) for tool in req.tools],
+                response_format=_chat_response_format(req.structured_output),
             )
         except (openai.RateLimitError, openai.APITimeoutError) as e:
             raise md.LLMBusyException(e)
