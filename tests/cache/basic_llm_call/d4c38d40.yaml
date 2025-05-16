@@ -12,7 +12,7 @@
     iter: 1
   output:
     outputs:
-      - message: '[3, 4]'
+      - content: '[3, 4]'
         logprobs:
         tool_calls: []
         finish_reason: stop

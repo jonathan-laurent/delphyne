@@ -2,13 +2,13 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Literal
 
-import delphyne.core as dp
+from delphyne.core.refs import Answer, ToolCall
 
 
 @dataclass(frozen=True)
 class OracleMessage:
     kind: Literal["oracle"]
-    answer: dp.Answer
+    answer: Answer
 
 
 @dataclass(frozen=True)
@@ -21,7 +21,7 @@ class FeedbackMessage:
 @dataclass(frozen=True)
 class ToolResult:
     kind: Literal["tool"]
-    call: dp.ToolCall
+    call: ToolCall
     result: Any  # JSON object
 
 

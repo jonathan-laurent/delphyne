@@ -9,6 +9,13 @@ from delphyne.core import (
     parse,
     pprint,
 )
+from delphyne.core.chats import (
+    AnswerPrefix,
+    AnswerPrefixElement,
+    FeedbackMessage,
+    OracleMessage,
+    ToolResult,
+)
 from delphyne.core.demos import (
     Demo,
     QueryDemo,
@@ -35,10 +42,12 @@ from delphyne.core.policies import (
 from delphyne.core.queries import (
     AbstractQuery,
     ParseError,
+    QueryConfig,
 )
 from delphyne.core.refs import (
     Answer,
     AnswerModeName,
+    Structured,
     ToolCall,
     Tracked,
     Value,

@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from typing import Any, Literal, Self, cast
 
 import delphyne.utils.typing as ty
+from delphyne.core.chats import AnswerPrefix
 from delphyne.core.environments import TemplatesManager
 from delphyne.core.refs import Answer, AnswerModeName
 
@@ -21,6 +22,11 @@ class ParseError(Exception):
     error: str
 
 
+@dataclass(frozen=True)
+class QueryConfig:
+    force_structured_output: bool = False
+
+
 type AnyQuery = AbstractQuery[Any]
 
 
@@ -28,12 +34,18 @@ class AbstractQuery[T](ABC):
     @abstractmethod
     def generate_prompt(
         self,
-        kind: Literal["system", "instance"] | str,
+        kind: Literal["system", "instance", "feedback"] | str,
         mode: AnswerModeName,
         params: dict[str, object],
         env: TemplatesManager | None,
     ) -> str:
         pass
+
+    def query_prefix(self) -> AnswerPrefix | None:
+        return None
+
+    def query_config(self) -> QueryConfig:
+        return QueryConfig()
 
     def serialize_args(self) -> dict[str, object]:
         return cast(dict[str, object], ty.pydantic_dump(type(self), self))

@@ -32,6 +32,8 @@ class Query[T](dp.AbstractQuery[T]):
 
         Raises dp.ParseError
         """
+        if isinstance(answer, dp.Structured) and not answer.tool_calls:
+            return _parse_structured_output(self.answer_type(), answer)
         cls = type(self)
         __parser__ = "__parser__"
         if hasattr(cls, __parser__):
@@ -51,6 +53,11 @@ class Query[T](dp.AbstractQuery[T]):
                 # Generic parser
                 return parser(self.answer_type(), text)
         assert False, f"No {__parser__} attribute found."
+
+    def query_config(self) -> dp.QueryConfig:
+        return dp.QueryConfig(
+            force_structured_output=(not hasattr(self, "__parser__"))
+        )
 
     def parse_answer(self, answer: dp.Answer) -> T | dp.ParseError:
         try:
@@ -105,6 +112,13 @@ def _no_prompt_manager_error() -> str:
         "Please provide an explicit prompt manager "
         + " or override the `system_prompt` and `instance_prompt` functions."
     )
+
+
+def _parse_structured_output[T](type: TypeAnnot[T], arg: dp.Structured):
+    try:
+        return ty.pydantic_load(type, arg.structured)
+    except ValidationError as e:
+        raise dp.ParseError(str(e))
 
 
 #####
