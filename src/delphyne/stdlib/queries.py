@@ -118,7 +118,7 @@ def _parse_structured_output[T](type: TypeAnnot[T], arg: dp.Structured):
     try:
         return ty.pydantic_load(type, arg.structured)
     except ValidationError as e:
-        raise dp.ParseError(str(e))
+        raise dp.ParseError(description=str(e))
 
 
 #####
@@ -132,9 +132,13 @@ class GenericParser(Protocol):
 
 def _get_text_answer(ans: Answer) -> str:
     if ans.tool_calls:
-        raise dp.ParseError("Trying to parse answer with tool calls.")
+        raise dp.ParseError(
+            description="Trying to parse answer with tool calls."
+        )
     if not isinstance(ans.content, str):
-        raise dp.ParseError("Trying to parse answer with non-string text.")
+        raise dp.ParseError(
+            description="Trying to parse answer with non-string text."
+        )
     return ans.content
 
 
@@ -143,15 +147,15 @@ def raw_yaml[T](type: TypeAnnot[T], res: str) -> T:
         parsed = yaml.safe_load(res)
         return ty.pydantic_load(type, parsed)
     except ValidationError as e:
-        raise dp.ParseError(str(e))
+        raise dp.ParseError(description=str(e))
     except Exception as e:
-        raise dp.ParseError(str(e))
+        raise dp.ParseError(description=str(e))
 
 
 def yaml_from_last_block[T](type: TypeAnnot[T], res: str) -> T:
     final = extract_final_block(res)
     if final is None:
-        raise dp.ParseError("No final code block found.")
+        raise dp.ParseError(description="No final code block found.")
     return raw_yaml(type, final)
 
 
@@ -162,7 +166,7 @@ def raw_string[T](typ: TypeAnnot[T], res: str) -> T:
         # TODO: check that `typ` is a string alias
         return res  # type: ignore
     except Exception as e:
-        raise dp.ParseError(str(e))
+        raise dp.ParseError(description=str(e))
 
 
 def trimmed_raw_string[T](typ: TypeAnnot[T], res: str) -> T:
@@ -172,14 +176,14 @@ def trimmed_raw_string[T](typ: TypeAnnot[T], res: str) -> T:
 def string_from_last_block[T](typ: TypeAnnot[T], res: str) -> T:
     final = extract_final_block(res)
     if final is None:
-        raise dp.ParseError("No final code block found.")
+        raise dp.ParseError(description="No final code block found.")
     return raw_string(typ, final)
 
 
 def trimmed_string_from_last_block[T](typ: TypeAnnot[T], res: str) -> T:
     final = extract_final_block(res)
     if final is None:
-        raise dp.ParseError("No final code block found.")
+        raise dp.ParseError(description="No final code block found.")
     return trimmed_raw_string(typ, final)
 
 
@@ -281,7 +285,7 @@ def few_shot[T](
         element = query.parse_answer(answer)
         env.tracer.trace_answer(query.ref, answer)
         if isinstance(element, dp.ParseError):
-            log(env, "parse_error", {"error": element.error}, loc=query)
+            log(env, "parse_error", {"error": element}, loc=query)
         else:
             yield dp.Yield(element)
         # In iterative mode, we want to keep the conversation going
@@ -291,13 +295,13 @@ def few_shot[T](
                     repair = query.query.generate_prompt(
                         REPAIR_PROMPT,
                         query.query.name(),
-                        {"error": element.error},
+                        {"error": element},
                         mngr,
                     )
                 except dp.TemplateFileMissing:
                     repair = (
                         "Invalid answer. Please consider the following"
-                        + f" feedback and try again:\n\n{element.error}"
+                        + f" feedback and try again:\n\n{element}"
                     )
                 new_message = md.UserMessage(repair)
             else:

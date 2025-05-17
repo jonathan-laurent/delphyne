@@ -46,7 +46,7 @@ class __Computation__(dp.AbstractQuery[object]):
             assert isinstance(answer.content, str)
             return yaml.safe_load(answer.content)
         except yaml.parser.ParserError as e:
-            return dp.ParseError(str(e))
+            return dp.ParseError(description=str(e))
 
 
 @dataclass

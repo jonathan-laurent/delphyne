@@ -10,16 +10,26 @@ from typing import Any, Literal, Self, cast
 import delphyne.utils.typing as ty
 from delphyne.core.chats import AnswerPrefix
 from delphyne.core.environments import TemplatesManager
+from delphyne.core.errors import Error
 from delphyne.core.refs import Answer, AnswerModeName
 
 
 @dataclass
-class ParseError(Exception):
+class ParseError(Error, Exception):
     """
     Can be used as an exception or a returned value.
     """
 
-    error: str
+    def __init__(
+        self,
+        *,
+        label: str | None = None,
+        description: str | None = None,
+        meta: Any | None = None,
+    ):
+        if label is None:
+            label = "parse_error"
+        super().__init__(label=label, description=description, meta=meta)
 
 
 @dataclass(frozen=True)

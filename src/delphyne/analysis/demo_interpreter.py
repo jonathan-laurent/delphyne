@@ -158,7 +158,7 @@ class DemoHintResolver(nv.HintResolver):
             for j, a in enumerate(q.answers):
                 parsed = query.parse_answer(dp.Answer(a.mode, a.answer))
                 if isinstance(parsed, dp.ParseError):
-                    raise DemoHintResolver.InvalidAnswer(i, j, parsed.error)
+                    raise DemoHintResolver.InvalidAnswer(i, j, parsed)
         # Used to populate `DemoFeedback.answer_refs`, which is needed
         # to implement the `Jump to Answer` action in the UI tree view.
         self.answer_refs: dict[nv.AnswerRef, fb.DemoAnswerId] = {}
@@ -238,7 +238,7 @@ class DemoHintResolver(nv.HintResolver):
     class InvalidAnswer(Exception):
         query_id: int
         answer_id: int
-        parse_error: str
+        parse_error: dp.ParseError
 
 
 #####
@@ -519,7 +519,7 @@ def evaluate_standalone_query_demo(
         try:
             elt = query.parse_answer(dp.Answer(a.mode, a.answer))
             if isinstance(elt, dp.ParseError):
-                diag = ("error", f"Parse error: {elt.error}")
+                diag = ("error", f"Parse error: {str(elt)}")
                 feedback.answer_diagnostics.append((i, diag))
         except Exception as e:
             diag = ("error", f"Internal parser error: {str(e)}")

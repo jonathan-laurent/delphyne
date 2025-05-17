@@ -32,6 +32,7 @@ from delphyne.core.environments import (
     TemplatesManager,
     Tracer,
 )
+from delphyne.core.errors import Error
 from delphyne.core.policies import (
     AbstractPromptingPolicy,
     AbstractSearchPolicy,
