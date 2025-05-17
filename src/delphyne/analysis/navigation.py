@@ -47,7 +47,7 @@ class NavigationInfo:
     """
 
     hints_rev: HintReverseMap = field(default_factory=HintReverseMap)
-    unused_hints: list[refs.Hint] = field(default_factory=list)
+    unused_hints: list[refs.Hint] = field(default_factory=list[refs.Hint])
 
 
 class HintResolver(Protocol):
