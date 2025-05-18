@@ -16,18 +16,18 @@ def prove_program_baseline(
     prog: why3.File,
 ) -> Strategy[Branch | Failure | Computation, dp.PromptingPolicy, why3.File]:
     feedback = yield from dp.compute(why3.check, prog, prog)
-    yield from dp.ensure(feedback.error is None, "invalid program")
+    yield from dp.ensure(feedback.error is None, label="invalid_program")
     if feedback.success:
         return prog
     remaining = [o for o in feedback.obligations if not o.proved]
     unproved = remaining[0]
-    yield from dp.ensure(len(remaining) == 1, "too many remaining obligations")
+    yield from dp.ensure(len(remaining) == 1)
     invariants = yield from dp.branch(
         ProposeInvariants(unproved, [])(dp.PromptingPolicy, lambda p: p)
     )
     annotated = why3.add_invariants(prog, invariants)
     feedback = yield from dp.compute(why3.check, prog, annotated)
-    yield from dp.ensure(feedback.success, "invalid invariants")
+    yield from dp.ensure(feedback.success)
     return prog
 
 

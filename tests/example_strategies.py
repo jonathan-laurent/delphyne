@@ -37,8 +37,8 @@ def make_sum(
         cands=MakeSum(allowed, goal).using(lambda p: p.make_sum),
         inner_policy_type=MakeSumIP,
     )
-    yield from dp.ensure(all(x in allowed for x in xs), "forbidden-num")
-    yield from dp.ensure(sum(xs) == goal, "wrong-sum")
+    yield from dp.ensure(all(x in allowed for x in xs), label="forbidden_num")
+    yield from dp.ensure(sum(xs) == goal, label="wrong_sum")
     return xs
 
 
@@ -158,11 +158,11 @@ def conjecture_expr(
     vars: Vars, prop: IntPred
 ) -> dp.Strategy[dp.Branch | dp.Failure, dp.PromptingPolicy, Expr]:
     expr = yield from dp.branch(ConjectureExpr(vars, prop).using(one_pp))
-    yield from dp.ensure(expr_safe(expr), "Possibly unsafe expression")
+    yield from dp.ensure(expr_safe(expr), label="possibly-unsafe-expr")
     try:
         eval(expr, {v: 0 for v in vars})
     except Exception:
-        yield from dp.fail("Invalid expression")
+        yield from dp.fail(label="invalid-expr")
     return expr
 
 
@@ -173,13 +173,14 @@ def find_counterexample(
     cand = yield from dp.branch(ProposeCex(prop, (vars, expr)).using(one_pp))
     try:
         yield from dp.ensure(
-            not check_prop((vars, expr), prop, cand), "Invalid counterexample."
+            not check_prop((vars, expr), prop, cand),
+            label="invalid_counterexample",
         )
     # Note: it is important to catch Exception instead of having an
     # unqualified `except`. Indeed, doing the former would cause runtime
     # errors such as : "RuntimeError: generator ignored GeneratorExit".
     except Exception:
-        yield from dp.fail("Failed to process counterexample.")
+        yield from dp.fail(label="failed_to_process_counterexample")
 
 
 @dataclass
@@ -256,8 +257,8 @@ def pick_boy_name(
     name = yield from dp.branch(
         PickBoyName(names, picked_already).using(one_pp)
     )
-    yield from dp.ensure(name in names, "Unavailable name.")
-    yield from dp.ensure(name not in picked_already, "Already picked.")
+    yield from dp.ensure(name in names, label="unavailable-name.")
+    yield from dp.ensure(name not in picked_already, label="already-picked")
     return name, [*picked_already, name]
 
 
@@ -272,7 +273,7 @@ def pick_nice_boy_name(
             )
         )
     )
-    yield from dp.ensure(name == "Jonathan", "You can do better.")
+    yield from dp.ensure(name == "Jonathan", message="You can do better.")
     return name
 
 
@@ -392,5 +393,5 @@ def trivial_strategy() -> dp.Strategy[Never, object, int]:
 
 @dp.strategy
 def buggy_strategy() -> dp.Strategy[dp.Failure, object, int]:
-    yield from dp.ensure(True, "ok")
+    yield from dp.ensure(True, label="unreachable")
     assert False

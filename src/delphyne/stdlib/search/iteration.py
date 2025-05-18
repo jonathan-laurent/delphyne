@@ -28,7 +28,7 @@ def _iterate[P, S, T](
     ret = cast(tuple[T | None, S], ret)
     yielded, _new_state = ret
     if yielded is None:
-        yield from fail("No element yielded")
+        yield from fail(label="no_element_yielded")
     else:
         return yielded
 

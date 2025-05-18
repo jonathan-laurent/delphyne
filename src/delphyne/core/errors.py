@@ -22,7 +22,10 @@ class Error:
         description: str | None = None,
         meta: Any | None = None,
     ):
-        assert label or description
+        if label is not None:
+            assert label
+            assert not any(c in label for c in [" ", "\n", "\t"])
+        # assert label or description
         self.label = label
         self.description = description
         self.meta = meta
