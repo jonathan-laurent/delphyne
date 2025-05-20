@@ -10,9 +10,8 @@ from typing import Any, Literal
 import openai
 import openai.types.chat as ochat
 import openai.types.chat.completion_create_params as ochatp
-import pydantic
 
-from delphyne.core.refs import ToolCall
+from delphyne.core.refs import Structured, ToolCall
 from delphyne.core.streams import Budget
 from delphyne.stdlib import models as md
 
@@ -103,31 +102,32 @@ def _strict_schema(schema: Any):
 
 
 def _chat_response_format(
-    structured_output: Any | None,
+    structured_output: md.Schema | None,
 ) -> ochatp.ResponseFormat:
     if structured_output is None:
         return {"type": "text"}
-    adapter = pydantic.TypeAdapter[Any](structured_output)
-    schema = _strict_schema(adapter.json_schema())
     # We do not use `description` keys.
-    return {
+    resp: ochatp.ResponseFormat = {
         "type": "json_schema",
         "json_schema": {
             "strict": True,
-            "name": schema["title"],
-            "schema": schema,
+            "name": structured_output.name,
+            "schema": _strict_schema(structured_output.schema),
         },
     }
+    if structured_output.description is not None:
+        resp["json_schema"]["description"] = structured_output.description
+    return resp
 
 
 def _make_chat_tool(
-    tool: md.ToolSpec,
+    tool: md.Schema,
 ) -> ochat.ChatCompletionToolParam:
     ret: ochat.ChatCompletionToolParam = {
         "type": "function",
         "function": {
             "name": tool.name,
-            "parameters": _strict_schema(tool.args_schema),
+            "parameters": _strict_schema(tool.schema),
             "strict": True,
         },
     }
@@ -177,7 +177,7 @@ class OpenAIModel(md.LLM):
                 req.structured_output is not None
                 and choice.message.tool_calls is None
             ):
-                content = json.loads(content)
+                content = Structured(json.loads(content))
             tool_calls: list[ToolCall] = []
             if choice.message.tool_calls is not None:
                 ok = True

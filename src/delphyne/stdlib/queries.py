@@ -167,6 +167,17 @@ class Query[T](dp.AbstractQuery[T]):
     def globals(self) -> dict[str, object] | None:
         return None
 
+    @classmethod
+    def _default_prompt(
+        cls, kind: Literal["system", "instance"] | str
+    ) -> str | None:
+        attr_name = f"__{kind}_prompt__"
+        if hasattr(cls, attr_name):
+            res = getattr(cls, attr_name)
+            assert isinstance(res, str)
+            return res
+        return None
+
     def generate_prompt(
         self,
         kind: Literal["system", "instance"] | str,
@@ -182,7 +193,7 @@ class Query[T](dp.AbstractQuery[T]):
         }
         if (glob := self.globals()) is not None:
             args["globals"] = glob
-        return env.prompt(kind, self.name(), args)
+        return env.prompt(kind, self.name(), args, self._default_prompt(kind))
 
     def serialize_args(self) -> dict[str, object]:
         return cast(dict[str, object], ty.pydantic_dump(type(self), self))
@@ -208,6 +219,14 @@ class Query[T](dp.AbstractQuery[T]):
         get_policy: Callable[[P], dp.AbstractPromptingPolicy],
     ) -> dp.OpaqueSpaceBuilder[P, T]:
         return self.using(get_policy, inner_policy_type)
+
+    def run_toplevel(
+        self,
+        env: dp.PolicyEnv,
+        policy: dp.AbstractPromptingPolicy,
+    ) -> dp.Stream[T]:
+        attached = dp.spawn_standalone_query(self)
+        return policy(attached, env)
 
 
 def _no_prompt_manager_error() -> str:
@@ -425,7 +444,13 @@ def few_shot[T](
     examples = find_all_examples(env.examples, query.query)
     mngr = env.templates
     prompt = create_prompt(query.query, examples, {}, mngr)
-    req = md.LLMRequest(prompt, 1, {})
+    config = query.query.query_config()
+    structured_output = None
+    if config.force_structured_output:
+        ans_type = query.query.answer_type()
+        assert isinstance(ans_type, type)
+        structured_output = md.Schema.make(ans_type)
+    req = md.LLMRequest(prompt, 1, {}, structured_output=structured_output)
     cost_estimate = model.estimate_budget(req)
     while True:
         yield dp.Barrier(cost_estimate)

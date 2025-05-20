@@ -97,13 +97,20 @@ class RequestOptions(TypedDict, total=False):
 
 
 @dataclass(frozen=True)
-class ToolSpec:
+class Schema:
+    """
+    The description of a schema for structured output or tool use.
+
+    The `schema` argument is typically generated using
+    `json_schema()` from `pydantic`.
+    """
+
     name: str
     description: str | None
-    args_schema: Any
+    schema: Any
 
     @staticmethod
-    def make(tool: type[object]) -> "ToolSpec":
+    def make(tool: type[object]) -> "Schema":
         if issubclass(tool, AbstractTool):
             name = tool.tool_name()
             description = tool.tool_description()
@@ -111,10 +118,10 @@ class ToolSpec:
             name = _class_name_to_lower_snake_case(tool.__name__)
             description = tool.__doc__
         adapter = pydantic.TypeAdapter(tool)
-        return ToolSpec(
+        return Schema(
             name=name,
             description=description,
-            args_schema=adapter.json_schema(),
+            schema=adapter.json_schema(),
         )
 
 
@@ -205,8 +212,8 @@ class LLMRequest:
     chat: Chat
     num_completions: int
     options: RequestOptions
-    tools: Sequence[ToolSpec] = ()
-    structured_output: Any | None = None
+    tools: Sequence[Schema] = ()
+    structured_output: Schema | None = None
 
     def __hash__(self) -> int:
         # LLMRequest needs to be hashable for `CachedModel` to work.
@@ -316,6 +323,18 @@ class _CachedRequest:
 
 @dataclass
 class CachedModel(LLM):
+    """
+    Wrap a model while caching its requests.
+
+    More precisely, what are cached are `(r, i)` pairs where `r` is a
+    request and `i` is the number of times the request has been answered
+    since the model was instantiated. This way, caching works even when
+    a policy samples multiple answers for the same request.
+
+    Important: two models must _not_ share the same cache directory,
+    without which their answers would become correlated.
+    """
+
     model: LLM
     cache_dir: Path
 

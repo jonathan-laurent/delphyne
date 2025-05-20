@@ -103,6 +103,7 @@ class TemplatesManager:
         kind: Literal["system", "instance"] | str,
         query_name: str,
         template_args: dict[str, Any],
+        default_template: str | None = None,
     ) -> str:
         suffix = "." + kind
         template_name = f"{query_name}{suffix}{JINJA_EXTENSION}"
@@ -110,9 +111,13 @@ class TemplatesManager:
             (d / template_name).exists() for d in self.prompt_folders
         )
         if not prompt_file_exists:
-            raise TemplateFileMissing(template_name)
-        try:
+            if default_template is not None:
+                template = self.env.from_string(default_template)
+            else:
+                raise TemplateFileMissing(template_name)
+        else:
             template = self.env.get_template(template_name)
+        try:
             return template.render(template_args)
         except jinja2.TemplateNotFound as e:
             raise TemplateError(template_name, e)
