@@ -1,5 +1,5 @@
 """
-Inspection utilities.s
+Inspection utilities.
 """
 
 import inspect
@@ -79,7 +79,9 @@ def function_args_dict(
     return ret | kwargs
 
 
-def element_type_of_sequence_type(seq_type: Any, i: int) -> Any | NoTypeInfo:
+def element_type_of_sequence_type(
+    seq_type: Any, i: int = 0
+) -> Any | NoTypeInfo:
     """
     Return the type of the element obtained by indexing an element of
     another type.
@@ -105,3 +107,37 @@ def element_type_of_sequence_type(seq_type: Any, i: int) -> Any | NoTypeInfo:
         return NoTypeInfo
 
     return NoTypeInfo
+
+
+def is_sequence_type(typ: Any) -> bool:
+    """
+    Determine whether a type is of the form `list[T]`, `Sequence[T]` or
+    `tuple[T, ...]`.
+    """
+    origin = typing.get_origin(typ)
+    if origin is tuple:
+        args = typing.get_args(typ)
+        return len(args) == 2 and args[1] is Ellipsis
+    return origin in {list, Sequence}
+
+
+def union_components(typ: Any) -> Sequence[Any]:
+    """
+    Take a type of the form `Union[T_1, ..., T_n]` or `T_1 | ... | T_n`
+    and return the `T_i` sequence. If the type is not a union, returns a
+    singleton with the type itself.
+    """
+    if typing.get_origin(typ) in [typing.Union, types.UnionType]:
+        return typing.get_args(typ)
+    return [typ]
+
+
+def make_union(comps: Sequence[Any]) -> Any:
+    """
+    Take a sequence of types and return a union type.
+    """
+    if len(comps) == 0:
+        return typing.Never
+    if len(comps) == 1:
+        return comps[0]
+    return typing.Union[*comps]

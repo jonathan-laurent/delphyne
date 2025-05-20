@@ -2,8 +2,11 @@
 Standard queries and building blocks for prompting policies.
 """
 
+import inspect
 import re
+import typing
 from collections.abc import Callable, Sequence
+from dataclasses import dataclass
 from typing import Any, Literal, Protocol, cast
 
 import yaml
@@ -25,38 +28,134 @@ REQUEST_OTHER_PROMPT = "more"
 #####
 
 
+type _StandardParserName = Literal["structured", "final_tool_call"]
+
+
+type ParserSpec = (
+    _StandardParserName | GenericTextParser | Callable[[str], Any]
+)
+"""
+Queries can have a `__parser__` attribute, from which the `parse`,
+`query_tools` and `query_config` methods are deduced.
+"""
+
+
+@dataclass
+class FollowUpRequest[T: md.AbstractTool]:
+    """
+    Object returned by a query when a follow-up is requested for
+    answering tool calls.
+
+    Tool calls are provided in `tool_calls` in the order in which they
+    are provided in `answer`.
+    """
+
+    answer: dp.Answer
+    tool_calls: Sequence[T]
+
+
+@dataclass
+class _DecomposedAnswerType:
+    """
+    Decomposed view of an answer type of the form `A | FollowUpRequest[T]`.
+    """
+
+    follow_up_request: bool
+    tools: Sequence[type[md.AbstractTool]]
+    final: TypeAnnot[Any]
+
+    def __init__(self, annot: TypeAnnot[Any]):
+        follow_up_request = False
+        tools: list[type[md.AbstractTool]] | None = None
+        final_comps: list[TypeAnnot[Any]] = []
+        for comp in dpi.union_components(annot):
+            if typing.get_origin(comp) is FollowUpRequest:
+                assert tools is None
+                follow_up_request = True
+                args = typing.get_args(comp)
+                assert len(args) == 1
+                tools_raw = dpi.union_components(args[0])
+                tools = [
+                    a for a in tools_raw if issubclass(a, md.AbstractTool)
+                ]
+                assert len(tools) == len(tools_raw)
+            else:
+                final_comps.append(comp)
+        self.follow_up_request = follow_up_request
+        self.tools = tools or []
+        self.final = dpi.make_union(final_comps)
+
+
 class Query[T](dp.AbstractQuery[T]):
+    """
+    Base class for queries, which adds convenience features on top of
+    `AbstractQuery`, including inferring a lot of information from type
+    hints and from the special __parser__ class attribute.
+    """
+
+    @classmethod
+    def _parser_attribute(cls) -> ParserSpec:
+        if hasattr(cls, "__parser__"):
+            return getattr(cls, "__parser__")
+        return "structured"
+
+    @classmethod
+    def _decomposed_answer_type(cls) -> _DecomposedAnswerType:
+        return _DecomposedAnswerType(cls._answer_type())
+
+    def query_tools(self) -> Sequence[type[Any]]:
+        ans_type = self._decomposed_answer_type()
+        tools = [*ans_type.tools]
+        if self._parser_attribute() == "final_tool_call":
+            final = ans_type.final
+            assert isinstance(final, type)
+            tools.append(final)
+        return tools
+
     def parse(self, answer: Answer) -> T:
         """
         A more convenient method to override instead of `parse_answer`.
 
         Raises dp.ParseError
         """
-        if isinstance(answer, dp.Structured) and not answer.tool_calls:
-            return _parse_structured_output(self.answer_type(), answer)
-        cls = type(self)
-        __parser__ = "__parser__"
-        if hasattr(cls, __parser__):
-            parser: Any = getattr(cls, __parser__)
-            assert callable(parser)
-            parser = cast(Any, parser)
-            import inspect
 
-            sig = inspect.signature(parser)
+        # Decompose the specified answer type
+        attr = self._parser_attribute()
+        ans_type = self._decomposed_answer_type()
+
+        # Compute base parsing function `parser`
+        parser: _ParsingFunction[Any]
+        if attr == "structured":
+            parser = _from_structured(ans_type.final)
+        elif attr == "final_tool_call":
+            assert isinstance(ans_type.final, type)
+            parser = _from_final_tool_call(cast(type[Any], ans_type.final))
+        else:
+            assert callable(attr)
+            attr = cast(Callable[..., Any], attr)
+            sig = inspect.signature(attr)
             nargs = len(sig.parameters)
             assert nargs == 1 or nargs == 2
-            text = _get_text_answer(answer)
             if nargs == 1:
-                # Normal parser
-                return parser(text)
+                parser = attr
             else:
-                # Generic parser
-                return parser(self.answer_type(), text)
-        assert False, f"No {__parser__} attribute found."
+                parser = _from_generic_text_parser(attr, ans_type.final)
+
+        # Add tool supports if needed
+        if ans_type.follow_up_request:
+            tcs = [
+                _parse_tool_call(ans_type.tools, tc)
+                for tc in answer.tool_calls
+            ]
+            if tcs:
+                return cast(T, FollowUpRequest(answer, tcs))
+        return parser(answer)
 
     def query_config(self) -> dp.QueryConfig:
+        attr = self._parser_attribute()
         return dp.QueryConfig(
-            force_structured_output=(not hasattr(self, "__parser__"))
+            force_structured_output=(attr == "structured"),
+            force_tool_call=(attr == "final_tool_call"),
         )
 
     def parse_answer(self, answer: dp.Answer) -> T | dp.ParseError:
@@ -88,8 +187,12 @@ class Query[T](dp.AbstractQuery[T]):
     def serialize_args(self) -> dict[str, object]:
         return cast(dict[str, object], ty.pydantic_dump(type(self), self))
 
+    @classmethod
+    def _answer_type(cls) -> TypeAnnot[T]:
+        return dpi.first_parameter_of_base_class(cls)
+
     def answer_type(self) -> TypeAnnot[T]:
-        return dpi.first_parameter_of_base_class(type(self))
+        return self._answer_type()
 
     def using[P](
         self,
@@ -114,11 +217,13 @@ def _no_prompt_manager_error() -> str:
     )
 
 
-def _parse_structured_output[T](type: TypeAnnot[T], arg: dp.Structured):
-    try:
-        return ty.pydantic_load(type, arg.structured)
-    except ValidationError as e:
-        raise dp.ParseError(description=str(e))
+def _parse_tool_call(
+    tools: Sequence[type[md.AbstractTool]], tc: dp.ToolCall
+) -> md.AbstractTool:
+    for t in tools:
+        if tc.name == t.tool_name():
+            return _parse_or_raise(t, tc.args)
+    raise dp.ParseError(description=f"Unknown tool: {tc.name}.")
 
 
 #####
@@ -126,7 +231,11 @@ def _parse_structured_output[T](type: TypeAnnot[T], arg: dp.Structured):
 #####
 
 
-class GenericParser(Protocol):
+class _ParsingFunction[T](Protocol):
+    def __call__(self, answer: dp.Answer) -> T: ...
+
+
+class GenericTextParser(Protocol):
     def __call__[T](self, type: TypeAnnot[T], res: str) -> T: ...
 
 
@@ -136,10 +245,55 @@ def _get_text_answer(ans: Answer) -> str:
             description="Trying to parse answer with tool calls."
         )
     if not isinstance(ans.content, str):
-        raise dp.ParseError(
-            description="Trying to parse answer with non-string text."
-        )
+        raise dp.ParseError(description="Unexpected structured answer.")
     return ans.content
+
+
+def _get_single_tool_call(ans: Answer) -> dp.ToolCall:
+    n = len(ans.tool_calls)
+    if n == 0:
+        msg = "No tool call was made."
+        raise dp.ParseError(description=msg)
+    if n > 1:
+        msg = "Too many tool calls."
+        raise dp.ParseError(description=msg)
+    return ans.tool_calls[0]
+
+
+def _parse_or_raise[T](type: TypeAnnot[T], obj: Any) -> T:
+    try:
+        return ty.pydantic_load(type, obj)
+    except ValidationError as e:
+        raise dp.ParseError(description=str(e))
+
+
+def _parse_structured_output[T](type: TypeAnnot[T], answer: dp.Answer) -> T:
+    if not isinstance(answer.content, dp.Structured):
+        raise dp.ParseError(
+            description="A structured output was expected.",
+        )
+    return _parse_or_raise(type, answer.content.structured)
+
+
+def _from_generic_text_parser[T](
+    parser: GenericTextParser, type: TypeAnnot[T]
+) -> _ParsingFunction[T]:
+    return lambda answer: parser(type, _get_text_answer(answer))
+
+
+def _from_structured[T](type: TypeAnnot[T]) -> _ParsingFunction[T]:
+    return lambda answer: _parse_structured_output(type, answer)
+
+
+def _from_final_tool_call[T](type: type[T]) -> _ParsingFunction[T]:
+    return lambda answer: _parse_or_raise(
+        type, _get_single_tool_call(answer).args
+    )
+
+
+#####
+##### Standard Parsers
+#####
 
 
 def raw_yaml[T](type: TypeAnnot[T], res: str) -> T:
@@ -159,32 +313,33 @@ def yaml_from_last_block[T](type: TypeAnnot[T], res: str) -> T:
     return raw_yaml(type, final)
 
 
-def raw_string[T](typ: TypeAnnot[T], res: str) -> T:
+def raw_string[T](type: TypeAnnot[T], res: str) -> T:
+    __builtins__.type
     try:
-        if isinstance(typ, type):  # if `typ` is a class
-            return typ(res)  # type: ignore
-        # TODO: check that `typ` is a string alias
+        if isinstance(type, __builtins__.type):  # if `type` is a class
+            return type(res)  # type: ignore
+        # TODO: check that `type` is a string alias
         return res  # type: ignore
     except Exception as e:
         raise dp.ParseError(description=str(e))
 
 
-def trimmed_raw_string[T](typ: TypeAnnot[T], res: str) -> T:
-    return raw_string(typ, res.strip())
+def trimmed_raw_string[T](type: TypeAnnot[T], res: str) -> T:
+    return raw_string(type, res.strip())
 
 
-def string_from_last_block[T](typ: TypeAnnot[T], res: str) -> T:
+def string_from_last_block[T](type: TypeAnnot[T], res: str) -> T:
     final = extract_final_block(res)
     if final is None:
         raise dp.ParseError(description="No final code block found.")
-    return raw_string(typ, final)
+    return raw_string(type, final)
 
 
-def trimmed_string_from_last_block[T](typ: TypeAnnot[T], res: str) -> T:
+def trimmed_string_from_last_block[T](type: TypeAnnot[T], res: str) -> T:
     final = extract_final_block(res)
     if final is None:
         raise dp.ParseError(description="No final code block found.")
-    return trimmed_raw_string(typ, final)
+    return trimmed_raw_string(type, final)
 
 
 def extract_final_block(s: str) -> str | None:

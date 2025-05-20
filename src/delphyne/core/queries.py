@@ -35,6 +35,7 @@ class ParseError(Error, Exception):
 @dataclass(frozen=True)
 class QueryConfig:
     force_structured_output: bool = False
+    force_tool_call: bool = False
 
 
 type AnyQuery = AbstractQuery[Any]
@@ -83,3 +84,6 @@ class AbstractQuery[T](ABC):
     @abstractmethod
     def parse_answer(self, answer: Answer) -> T | ParseError:
         pass
+
+    def query_tools(self) -> Sequence[type[Any]]:
+        return ()

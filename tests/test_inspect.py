@@ -45,3 +45,24 @@ def test_decompose_callable_annot():
 )
 def test_element_type_of_sequence_type(inp: Any, i, out: Any):
     assert insp.element_type_of_sequence_type(inp, i) == out
+
+
+@pytest.mark.parametrize(
+    "inp, out",
+    [
+        (typing.Union[int, str], [int, str]),
+        (int | str, [int, str]),
+        (int | (str | bool), [int, str, bool]),
+        (typing.Union[int, bool | float], [int, bool, float]),
+    ],
+)
+def test_union_components(inp: Any, out: Any):
+    assert list(insp.union_components(inp)) == list(out)
+
+
+def test_is_sequence_type():
+    assert insp.is_sequence_type(list[int])
+    assert insp.is_sequence_type(typing.Sequence[int])
+    assert insp.is_sequence_type(tuple[int, ...])
+    assert not insp.is_sequence_type(tuple[int, str])
+    assert not insp.is_sequence_type(dict[str, int])
