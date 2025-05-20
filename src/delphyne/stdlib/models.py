@@ -73,6 +73,28 @@ class RequestOptions(TypedDict, total=False):
     model: str
 
 
+@dataclass(frozen=True)
+class ToolSpec:
+    name: str
+    description: str | None
+    args_schema: Any
+
+    @staticmethod
+    def make(tool: type[object]) -> "ToolSpec":
+        if issubclass(tool, AbstractTool):
+            name = tool.tool_name()
+            description = tool.tool_description()
+        else:
+            name = _class_name_to_lower_snake_case(tool.__name__)
+            description = tool.__doc__
+        adapter = pydantic.TypeAdapter(tool)
+        return ToolSpec(
+            name=name,
+            description=description,
+            args_schema=adapter.json_schema(),
+        )
+
+
 #####
 ##### Types for LLM Answers
 #####
@@ -160,7 +182,7 @@ class LLMRequest:
     chat: Chat
     num_completions: int
     options: RequestOptions
-    tools: Sequence[type[AbstractTool]] = ()
+    tools: Sequence[ToolSpec] = ()
     structured_output: Any | None = None
 
     def __hash__(self) -> int:

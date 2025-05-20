@@ -121,20 +121,18 @@ def _chat_response_format(
 
 
 def _make_chat_tool(
-    tool: type[md.AbstractTool],
+    tool: md.ToolSpec,
 ) -> ochat.ChatCompletionToolParam:
-    adapter = pydantic.TypeAdapter[Any](tool)
-    schema = _strict_schema(adapter.json_schema())
     ret: ochat.ChatCompletionToolParam = {
         "type": "function",
         "function": {
-            "name": tool.tool_name(),
-            "parameters": schema,
+            "name": tool.name,
+            "parameters": _strict_schema(tool.args_schema),
             "strict": True,
         },
     }
-    if (descr := tool.tool_description()) is not None:
-        ret["function"]["description"] = descr
+    if tool.description is not None:
+        ret["function"]["description"] = tool.description
     return ret
 
 
