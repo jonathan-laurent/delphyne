@@ -17,6 +17,7 @@ from delphyne.core import pprint, refs, traces
 from delphyne.core.demos import Demo, QueryDemo, StrategyDemo
 from delphyne.core.refs import Answer
 from delphyne.utils.typing import pydantic_load
+from delphyne.utils.yaml import dump_yaml_object
 
 type QueryArgs = dict[str, Any]
 
@@ -97,6 +98,7 @@ class TemplatesManager:
             trim_blocks=True,
             lstrip_blocks=True,
         )
+        self.env.filters["yaml"] = dump_yaml_object  # type: ignore
 
     def prompt(
         self,

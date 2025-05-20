@@ -36,6 +36,14 @@ def dump_yaml[T](
     return pretty_yaml(py)
 
 
+def dump_yaml_object(
+    obj: object,
+    exclude_defaults: bool = False,
+    exclude_none: bool = False,
+) -> str:
+    return dump_yaml(type(obj), obj)
+
+
 def load_yaml[T](type: type[T], s: str) -> T:
     """
     Raises ValidationError.

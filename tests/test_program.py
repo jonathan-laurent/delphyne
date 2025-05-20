@@ -29,9 +29,7 @@ class StructuredOutput(dp.Query[Article]):
     Generate an article on the given topic. Answer as a JSON object.
     """
 
-    __instance_prompt__: ClassVar = """
-    Topic: {{query.topic}}
-    """
+    __instance_prompt__: ClassVar = "{query | yaml | trim}}"
 
 
 #####
