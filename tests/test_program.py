@@ -3,7 +3,6 @@ Testing oracular programs in an end-to-end fashion
 """
 
 from pathlib import Path
-from typing import ClassVar
 
 import example_strategies as ex
 from why3py import dataclass
@@ -23,13 +22,11 @@ class Article:
 
 @dataclass
 class StructuredOutput(dp.Query[Article]):
-    topic: str
-
-    __system_prompt__: ClassVar = """
+    """
     Generate an article on the given topic. Answer as a JSON object.
     """
 
-    __instance_prompt__: ClassVar = "{query | yaml | trim}}"
+    topic: str
 
 
 #####

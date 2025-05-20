@@ -2,6 +2,7 @@
 Standard interfaces for LLMs
 """
 
+import inspect
 import time
 from abc import ABC, abstractmethod
 from collections.abc import AsyncIterable, Iterable, Sequence
@@ -33,8 +34,7 @@ class AbstractTool:
 
     @classmethod
     def tool_description(cls) -> str | None:
-        doc = cls.__doc__
-        return doc
+        return inspect.getdoc(cls)
 
 
 #####
@@ -116,7 +116,7 @@ class Schema:
             description = tool.tool_description()
         else:
             name = _class_name_to_lower_snake_case(tool.__name__)
-            description = tool.__doc__
+            description = inspect.getdoc(tool)
         adapter = pydantic.TypeAdapter(tool)
         return Schema(
             name=name,

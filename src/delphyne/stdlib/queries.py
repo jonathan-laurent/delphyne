@@ -21,6 +21,7 @@ from delphyne.utils.typing import TypeAnnot, ValidationError
 
 REPAIR_PROMPT = "repair"
 REQUEST_OTHER_PROMPT = "more"
+DEFAULT_INSTANCE_PROMPT = "{{query | yaml | trim}}"
 
 
 #####
@@ -176,6 +177,10 @@ class Query[T](dp.AbstractQuery[T]):
             res = getattr(cls, attr_name)
             assert isinstance(res, str)
             return res
+        if kind == "instance":
+            return DEFAULT_INSTANCE_PROMPT
+        if kind == "system" and (doc := inspect.getdoc(cls)) is not None:
+            return doc
         return None
 
     def generate_prompt(

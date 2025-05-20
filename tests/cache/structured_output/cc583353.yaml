@@ -2,9 +2,9 @@
     request:
       chat:
         - role: system
-          content: "\n    Generate an article on the given topic. Answer as a JSON object.\n    "
+          content: Generate an article on the given topic. Answer as a JSON object.
         - role: user
-          content: '{query | yaml | trim}}'
+          content: 'topic: AI'
       num_completions: 1
       options: {}
       tools: []
@@ -32,7 +32,7 @@
     outputs:
       - content:
           structured:
-            title: 'The Future of Sustainable Energy: Innovations and Challenges'
+            title: The Transformative Impact of Artificial Intelligence on Society
             authors:
               - Jane Doe
               - John Smith
