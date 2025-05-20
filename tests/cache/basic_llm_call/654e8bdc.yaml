@@ -1,8 +1,10 @@
 - input:
     request:
       chat:
-        - content: Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target. Just answer with the raw answer.
-        - content: |-
+        - role: system
+          content: Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target. Just answer with a list of numbers and nothing else.
+        - role: user
+          content: |-
             List: [1, 2, 3, 4]
             Target: 7
       num_completions: 1

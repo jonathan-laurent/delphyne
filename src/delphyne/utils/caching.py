@@ -67,8 +67,14 @@ def cache[P, T](
                     bucket = bucket_adapter.validate_python(bucket_yaml)
             else:
                 bucket: _Bucket[P, T] = []
+            # if `arg.x: Sequence[int] = ()`, then parsing `arg` again
+            # might make it an empty list instead so we test equality
+            # with the roundabout conversion.
+            arg_roundabout = arg_adapter.validate_json(
+                arg_adapter.dump_json(arg)
+            )
             for b in bucket:
-                if b.input == arg:
+                if b.input == arg_roundabout:
                     return b.output
             # if not found
             ret = func(arg)

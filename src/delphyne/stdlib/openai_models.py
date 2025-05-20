@@ -55,11 +55,11 @@ def translate_chat(
 
     def translate(msg: md.ChatMessage) -> ochat.ChatCompletionMessageParam:
         match msg:
-            case md.SystemMessage(content):
+            case md.SystemMessage(content=content):
                 return {"role": "system", "content": content}
             case md.UserMessage(content=content):
                 return {"role": "user", "content": content}
-            case md.AssistantMessage(answer):
+            case md.AssistantMessage(answer=answer):
                 if isinstance(answer.content, str):
                     content = answer.content
                 else:

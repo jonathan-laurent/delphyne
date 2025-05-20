@@ -44,23 +44,46 @@ class AbstractTool:
 
 @dataclass(frozen=True)
 class SystemMessage:
+    role: Literal["system"]  # for deserialization
     content: str
+
+    def __init__(self, content: str):
+        # to bypass the frozen dataclass check
+        object.__setattr__(self, "role", "system")
+        object.__setattr__(self, "content", content)
 
 
 @dataclass(frozen=True)
 class UserMessage:
+    role: Literal["user"]
     content: str
+
+    def __init__(self, content: str):
+        object.__setattr__(self, "role", "user")
+        object.__setattr__(self, "content", content)
 
 
 @dataclass(frozen=True)
 class AssistantMessage:
+    role: Literal["assistant"]
     answer: Answer
+
+    def __init__(self, answer: Answer):
+        # to bypass the frozen dataclass check
+        object.__setattr__(self, "role", "assistant")
+        object.__setattr__(self, "answer", answer)
 
 
 @dataclass(frozen=True)
 class ToolMessage:
+    role: Literal["tool"]
     call: ToolCall
     result: Any  # JSON object
+
+    def __init__(self, call: ToolCall, result: Any):
+        object.__setattr__(self, "role", "tool")
+        object.__setattr__(self, "call", call)
+        object.__setattr__(self, "result", result)
 
 
 type ChatMessage = SystemMessage | UserMessage | AssistantMessage | ToolMessage
