@@ -8,14 +8,16 @@ from abc import ABC, abstractmethod
 from collections.abc import AsyncIterable, Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal, TypedDict
+from typing import Any, Literal, TypedDict, cast
 
 import pydantic
 from why3py import defaultdict
 
+import delphyne.core.inspect as dpi
 from delphyne.core.refs import Answer, Structured, ToolCall
 from delphyne.core.streams import Budget
 from delphyne.utils.caching import cache
+from delphyne.utils.typing import TypeAnnot, pydantic_dump
 
 #####
 ##### Tools
@@ -27,7 +29,7 @@ def _class_name_to_lower_snake_case(s: str) -> str:
     return "".join(bits).lstrip("_")
 
 
-class AbstractTool:
+class AbstractTool[T]:
     @classmethod
     def tool_name(cls) -> str:
         return _class_name_to_lower_snake_case(cls.__name__)
@@ -35,6 +37,16 @@ class AbstractTool:
     @classmethod
     def tool_description(cls) -> str | None:
         return inspect.getdoc(cls)
+
+    @classmethod
+    def tool_answer_type(cls) -> TypeAnnot[T]:
+        return dpi.first_parameter_of_base_class(cls)
+
+    def render_result(self, res: T) -> str | Structured:
+        if isinstance(res, str):
+            return res
+        ans_type = self.tool_answer_type()
+        return Structured(pydantic_dump(ans_type, res))
 
 
 #####
@@ -118,7 +130,7 @@ class Schema:
         else:
             name = _class_name_to_lower_snake_case(tool.__name__)
             description = inspect.getdoc(tool)
-        adapter = pydantic.TypeAdapter(tool)
+        adapter = pydantic.TypeAdapter(cast(type[AbstractTool[Any]], tool))
         return Schema(
             name=name,
             description=description,

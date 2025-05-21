@@ -13,6 +13,7 @@ from typing import Any, Literal, Protocol, cast
 import yaml
 
 import delphyne.core as dp
+import delphyne.core.chats as ct
 import delphyne.core.inspect as dpi
 import delphyne.stdlib.models as md
 from delphyne.core.refs import Answer
@@ -43,7 +44,7 @@ Queries can have a `__parser__` attribute, from which the `parse`,
 
 
 @dataclass
-class FollowUpRequest[T: md.AbstractTool]:
+class FollowUpRequest[T: md.AbstractTool[Any]]:
     """
     Object returned by a query when a follow-up is requested for
     answering tool calls.
@@ -63,12 +64,12 @@ class _DecomposedAnswerType:
     """
 
     follow_up_request: bool
-    tools: Sequence[type[md.AbstractTool]]
+    tools: Sequence[type[md.AbstractTool[Any]]]
     final: TypeAnnot[Any]
 
     def __init__(self, annot: TypeAnnot[Any]):
         follow_up_request = False
-        tools: list[type[md.AbstractTool]] | None = None
+        tools: list[type[md.AbstractTool[Any]]] | None = None
         final_comps: list[TypeAnnot[Any]] = []
         for comp in dpi.union_components(annot):
             if typing.get_origin(comp) is FollowUpRequest:
@@ -160,6 +161,16 @@ class Query[T](dp.AbstractQuery[T]):
             force_tool_call=(attr == "final_tool_call"),
         )
 
+    def query_prefix(self) -> ct.AnswerPrefix | None:
+        """
+        Return the value of the `prefix` attribute if it has type
+        annotation `AnswerPrefix` or return `None`.
+        """
+        annots = typing.get_type_hints(type(self))
+        if "prefix" in annots and annots["prefix"] is ct.AnswerPrefix:
+            return getattr(self, "prefix")
+        return None
+
     def parse_answer(self, answer: dp.Answer) -> T | dp.ParseError:
         try:
             return self.parse(answer)
@@ -243,8 +254,8 @@ def _no_prompt_manager_error() -> str:
 
 
 def _parse_tool_call(
-    tools: Sequence[type[md.AbstractTool]], tc: dp.ToolCall
-) -> md.AbstractTool:
+    tools: Sequence[type[md.AbstractTool[Any]]], tc: dp.ToolCall
+) -> md.AbstractTool[Any]:
     for t in tools:
         if tc.name == t.tool_name():
             return _parse_or_raise(t, tc.args)
@@ -505,3 +516,8 @@ def few_shot[T](
                     gen_new = "Good! Can you generate a different answer now?"
                 new_message = md.UserMessage(gen_new)
             prompt = (*prompt, md.AssistantMessage(answer), new_message)
+
+
+#####
+##### Utilities for Interactive Chatting
+#####

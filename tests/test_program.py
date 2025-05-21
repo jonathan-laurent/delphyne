@@ -31,7 +31,7 @@ class StructuredOutput(dp.Query[Article]):
 
 
 @dataclass
-class GetUserFavoriteTopic(dp.AbstractTool):
+class GetUserFavoriteTopic(dp.AbstractTool[str]):
     """
     Retrieve the favorite topic of a given user.
     """
@@ -40,7 +40,7 @@ class GetUserFavoriteTopic(dp.AbstractTool):
 
 
 @dataclass
-class Calculator(dp.AbstractTool):
+class Calculator(dp.AbstractTool[str]):
     """
     Compute the value of a numerical Python expression.
     """

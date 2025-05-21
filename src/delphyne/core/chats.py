@@ -2,7 +2,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Literal
 
-from delphyne.core.refs import Answer, ToolCall
+from delphyne.core.refs import Answer, Structured, ToolCall
 
 
 @dataclass(frozen=True)
@@ -22,7 +22,7 @@ class FeedbackMessage:
 class ToolResult:
     kind: Literal["tool"]
     call: ToolCall
-    result: Any  # JSON object
+    result: str | Structured
 
 
 type AnswerPrefixElement = OracleMessage | FeedbackMessage | ToolResult
