@@ -58,7 +58,7 @@ class ProposeArticle(
 
     __system_prompt__: ClassVar[str] = """
         Find the user's tastes and propose an article for them.
-        Provide your final answer by calling the `article` tool.
+        Provide your final answer by calling the `Article` tool.
         Please carefully explain your reasoning before calling any tool.
         """
 

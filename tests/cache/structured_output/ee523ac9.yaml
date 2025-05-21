@@ -9,7 +9,7 @@
       options: {}
       tools: []
       structured_output:
-        name: article
+        name: Article
         description: 'Article(title: str, authors: list[str])'
         schema:
           properties:
@@ -32,10 +32,10 @@
     outputs:
       - content:
           structured:
-            title: The Transformative Impact of Artificial Intelligence on Society
+            title: 'Artificial Intelligence: Transforming the Future'
             authors:
-              - Jane Doe
-              - John Smith
+              - John Doe
+              - Jane Smith
         logprobs:
         tool_calls: []
         finish_reason: stop

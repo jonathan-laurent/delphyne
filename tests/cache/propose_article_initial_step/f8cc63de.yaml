@@ -6,7 +6,7 @@
         - role: system
           content: |-
             Find the user's tastes and propose an article for them.
-            Provide your final answer by calling the `article` tool.
+            Provide your final answer by calling the `Article` tool.
             Please carefully explain your reasoning before calling any tool.
         - role: user
           content: 'user_name: Alice'
@@ -17,7 +17,7 @@
         tool_choice: required
 
       tools:
-        - name: get_user_favorite_topic
+        - name: GetUserFavoriteTopic
           description: Retrieve the favorite topic of a given user.
           schema:
             properties:
@@ -28,7 +28,7 @@
               - user_name
             title: GetUserFavoriteTopic
             type: object
-        - name: calculator
+        - name: Calculator
           description: Compute the value of a numerical Python expression.
           schema:
             properties:
@@ -39,7 +39,7 @@
               - expr
             title: Calculator
             type: object
-        - name: article
+        - name: Article
           description: 'Article(title: str, authors: list[str])'
           schema:
             properties:
@@ -66,7 +66,7 @@
       - content: ''
         logprobs:
         tool_calls:
-          - name: get_user_favorite_topic
+          - name: GetUserFavoriteTopic
             args:
               user_name: Alice
         finish_reason: tool_calls

@@ -24,15 +24,20 @@ from delphyne.utils.typing import TypeAnnot, pydantic_dump
 #####
 
 
-def _class_name_to_lower_snake_case(s: str) -> str:
-    bits = ["_" + c.lower() if c.isupper() else c for c in s]
-    return "".join(bits).lstrip("_")
+# def _lower_snake_case_of_class_name(s: str) -> str:
+#     bits = ["_" + c.lower() if c.isupper() else c for c in s]
+#     return "".join(bits).lstrip("_")
+
+
+def tool_name_of_class_name(s: str) -> str:
+    # return _lower_snake_case_of_class_name(s)
+    return s
 
 
 class AbstractTool[T]:
     @classmethod
     def tool_name(cls) -> str:
-        return _class_name_to_lower_snake_case(cls.__name__)
+        return tool_name_of_class_name(cls.__name__)
 
     @classmethod
     def tool_description(cls) -> str | None:
@@ -128,7 +133,7 @@ class Schema:
             name = tool.tool_name()
             description = tool.tool_description()
         else:
-            name = _class_name_to_lower_snake_case(tool.__name__)
+            name = tool_name_of_class_name(tool.__name__)
             description = inspect.getdoc(tool)
         adapter = pydantic.TypeAdapter(cast(type[AbstractTool[Any]], tool))
         return Schema(
