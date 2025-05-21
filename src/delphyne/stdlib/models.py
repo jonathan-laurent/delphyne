@@ -94,6 +94,7 @@ type Chat = Sequence[ChatMessage]
 
 class RequestOptions(TypedDict, total=False):
     model: str
+    tool_choice: Literal["auto", "none", "required"]
 
 
 @dataclass(frozen=True)

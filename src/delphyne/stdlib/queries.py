@@ -451,12 +451,18 @@ def few_shot[T](
     mngr = env.templates
     prompt = create_prompt(query.query, examples, {}, mngr)
     config = query.query.query_config()
+    options: md.RequestOptions = {}
     structured_output = None
     if config.force_structured_output:
         ans_type = query.query.answer_type()
         assert isinstance(ans_type, type)
         structured_output = md.Schema.make(ans_type)
-    req = md.LLMRequest(prompt, 1, {}, structured_output=structured_output)
+    if config.force_tool_call:
+        options["tool_choice"] = "required"
+    tools = [md.Schema.make(t) for t in query.query.query_tools()]
+    req = md.LLMRequest(
+        prompt, 1, options, tools=tools, structured_output=structured_output
+    )
     cost_estimate = model.estimate_budget(req)
     while True:
         yield dp.Barrier(cost_estimate)

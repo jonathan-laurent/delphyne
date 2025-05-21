@@ -155,6 +155,7 @@ class OpenAIModel(md.LLM):
                 n=req.num_completions,
                 tools=[_make_chat_tool(tool) for tool in req.tools],
                 response_format=_chat_response_format(req.structured_output),
+                tool_choice=options.get("tool_choice", openai.NOT_GIVEN),
             )
         except (openai.RateLimitError, openai.APITimeoutError) as e:
             raise md.LLMBusyException(e)

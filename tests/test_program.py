@@ -3,6 +3,7 @@ Testing oracular programs in an end-to-end fashion
 """
 
 from pathlib import Path
+from typing import Any, ClassVar, cast
 
 import example_strategies as ex
 from why3py import dataclass
@@ -10,7 +11,7 @@ from why3py import dataclass
 import delphyne as dp
 
 #####
-##### Strategies
+##### Strategies and Queries
 #####
 
 
@@ -27,6 +28,39 @@ class StructuredOutput(dp.Query[Article]):
     """
 
     topic: str
+
+
+@dataclass
+class GetUserFavoriteTopic(dp.AbstractTool):
+    """
+    Retrieve the favorite topic of a given user.
+    """
+
+    user_name: str
+
+
+@dataclass
+class Calculator(dp.AbstractTool):
+    """
+    Compute the value of a numerical Python expression.
+    """
+
+    expr: str
+
+
+@dataclass
+class ProposeArticle(
+    dp.Query[Article | dp.FollowUpRequest[GetUserFavoriteTopic | Calculator]]
+):
+    user_name: str
+
+    __parser__: ClassVar[dp.ParserSpec] = "final_tool_call"
+
+    __system_prompt__: ClassVar[str] = """
+        Find the user's tastes and propose an article for them.
+        Provide your final answer by calling the `article` tool.
+        Please carefully explain your reasoning before calling any tool.
+        """
 
 
 #####
@@ -55,16 +89,39 @@ def test_query_properties():
     assert StructuredOutput(topic="AI").query_config().force_structured_output
     q2 = ex.MakeSum([1, 2, 3, 4], 7)
     assert not q2.query_config().force_structured_output
+    q3 = ProposeArticle(user_name="Alice")
+    assert q3.query_config().force_tool_call
+    assert len(q3.query_tools()) == 3  # Counting the answer tool
 
 
-def test_structured_output():
+def _eval_query(query: dp.Query[object], cache_name: str):
     env = dp.PolicyEnv(demonstration_files=(), prompt_dirs=(PROMPT_DIR,))
-    cache = CACHE_DIR / "structured_output"
+    cache = CACHE_DIR / cache_name
     model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
     pp = dp.with_budget(bl) @ dp.few_shot(model)
-    stream = StructuredOutput(topic="AI").run_toplevel(env, pp)
+    stream = query.run_toplevel(env, pp)
     res, _ = dp.collect(stream)
-    # print(list(env.tracer.export_log()))
+    print(list(env.tracer.export_log()))
+    return res
+
+
+def test_structured_output():
+    res = _eval_query(
+        StructuredOutput(topic="AI"),
+        "structured_output",
+    )
     assert res
     print(res[0].value)
+
+
+def test_propose_article_initial_step():
+    # Interestingly, the answer content is often empty here despite us
+    # explicitly asking for a additional reasoning. Is it because we
+    # mandate tool calls? Probably, yes.
+    res = _eval_query(
+        ProposeArticle(user_name="Alice"), "propose_article_initial_step"
+    )
+    v = cast(dp.FollowUpRequest[Any], res[0].value)
+    assert isinstance(v, dp.FollowUpRequest)
+    assert isinstance(v.tool_calls[0], GetUserFavoriteTopic)

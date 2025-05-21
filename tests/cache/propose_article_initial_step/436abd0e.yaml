@@ -1,0 +1,76 @@
+- input:
+
+    request:
+
+      chat:
+        - role: system
+          content: |-
+            Find the user's tastes and propose an article for them.
+            Provide your final answer by calling the `article` tool.
+            Please carefully explain your reasoning before calling any tool.
+        - role: user
+          content: 'user_name: Alice'
+
+      num_completions: 1
+
+      options:
+        tool_choice: required
+
+      tools:
+        - name: get_user_favorite_topic
+          description: Retrieve the favorite topic of a given user.
+          schema:
+            properties:
+              user_name:
+                title: User Name
+                type: string
+            required:
+              - user_name
+            title: GetUserFavoriteTopic
+            type: object
+        - name: calculator
+          description: Compute the value of a numerical Python expression.
+          schema:
+            properties:
+              expr:
+                title: Expr
+                type: string
+            required:
+              - expr
+            title: Calculator
+            type: object
+        - name: article
+          description: 'Article(title: str, authors: list[str])'
+          schema:
+            properties:
+              title:
+                title: Title
+                type: string
+              authors:
+                items:
+                  type: string
+                title: Authors
+                type: array
+            required:
+              - title
+              - authors
+            title: Article
+            type: object
+
+      structured_output:
+
+    iter: 1
+
+  output:
+    outputs:
+      - content: ''
+        logprobs:
+        tool_calls:
+          - name: get_user_favorite_topic
+            args:
+              user_name: Alice
+        finish_reason: tool_calls
+    budget:
+      values:
+        num_requests: 1
+    log_items: []

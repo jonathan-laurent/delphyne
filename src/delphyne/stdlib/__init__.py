@@ -62,6 +62,8 @@ from delphyne.stdlib.policies import (
     search_policy,
 )
 from delphyne.stdlib.queries import (
+    FollowUpRequest,
+    ParserSpec,
     Query,
     extract_final_block,
     few_shot,
