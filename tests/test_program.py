@@ -63,6 +63,26 @@ class ProposeArticle(
         """
 
 
+@dataclass
+class PrimingTest(dp.Query[list[str]]):
+    """
+    Generate a list of nice baby names in the given style.
+
+    End your answer with a triple-backquoted code block containing a
+    list of strings as a YAML object.
+    """
+
+    style: str
+
+    __parser__: ClassVar[dp.ParserSpec] = dp.yaml_from_last_block
+
+    __instance_prompt__: ClassVar[str] = """
+    Style: {{query.style}}
+    !<assistant>
+    Here are 4 baby names in this style:
+    """
+
+
 #####
 ##### Main Script
 #####
@@ -81,7 +101,7 @@ def test_basic_llm_call():
     policy = dp.take(1) @ (dp.with_budget(bl) @ dp.dfs()), ex.MakeSumIP(pp)
     stream = ex.make_sum([1, 2, 3, 4], 7).run_toplevel(env, policy)
     res, _ = dp.collect(stream)
-    print(list(env.tracer.export_log()))
+    # print(list(env.tracer.export_log()))
     assert res
 
 
@@ -102,15 +122,13 @@ def _eval_query(query: dp.Query[object], cache_name: str):
     pp = dp.with_budget(bl) @ dp.few_shot(model)
     stream = query.run_toplevel(env, pp)
     res, _ = dp.collect(stream)
-    print(list(env.tracer.export_log()))
-    return res
+    log = list(env.tracer.export_log())
+    print(log)
+    return res, log
 
 
 def test_structured_output():
-    res = _eval_query(
-        StructuredOutput(topic="AI"),
-        "structured_output",
-    )
+    res, _ = _eval_query(StructuredOutput(topic="AI"), "structured_output")
     assert res
     print(res[0].value)
 
@@ -119,9 +137,15 @@ def test_propose_article_initial_step():
     # Interestingly, the answer content is often empty here despite us
     # explicitly asking for a additional reasoning. Is it because we
     # mandate tool calls? Probably, yes.
-    res = _eval_query(
+    res, _ = _eval_query(
         ProposeArticle(user_name="Alice"), "propose_article_initial_step"
     )
     v = cast(dp.FollowUpRequest[Any], res[0].value)
     assert isinstance(v, dp.FollowUpRequest)
     assert isinstance(v.tool_calls[0], GetUserFavoriteTopic)
+
+
+def test_assistant_priming():
+    res, log = _eval_query(PrimingTest(style="French"), "assistant_priming")
+    assert res
+    assert len(log[0].metadata["request"]["chat"]) == 3  # type: ignore

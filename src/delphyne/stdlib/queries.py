@@ -24,6 +24,7 @@ from delphyne.utils.typing import TypeAnnot, ValidationError
 REPAIR_PROMPT = "repair"
 REQUEST_OTHER_PROMPT = "more"
 DEFAULT_INSTANCE_PROMPT = "{{query | yaml | trim}}"
+ASSISTANT_PRIMING_STR = "!<assistant>"
 
 
 #####
@@ -396,6 +397,33 @@ def find_all_examples(
     return [(query.parse_instance(args), ans) for args, ans in raw]
 
 
+def _priming_split(prompt: str) -> tuple[str, str | None]:
+    # Split a prompt so as to allow assistant priming. If the prompt
+    # contains `ASSISTANT_PRIMING_STR`` on a single line, then split it
+    # into a `(before, after)`` pair. Otherwise, return `(prompt,
+    # None)`.
+    if ASSISTANT_PRIMING_STR not in prompt:  # Optimization
+        return prompt, None
+    lines = prompt.splitlines()
+    for i, line in enumerate(lines):
+        if line.strip() == ASSISTANT_PRIMING_STR:
+            before = "\n".join(lines[:i]).rstrip()
+            after = "\n".join(lines[i + 1 :]).lstrip()
+            if after:
+                return before, after
+            else:
+                break
+    return prompt, None
+
+
+def _user_message(prompt: str) -> Sequence[md.ChatMessage]:
+    prompt, priming = _priming_split(prompt)
+    msgs: list[md.ChatMessage] = [md.UserMessage(prompt)]
+    if priming is not None:
+        msgs.append(md.AssistantMessage(Answer(None, priming)))
+    return msgs
+
+
 def create_prompt(
     query: dp.AbstractQuery[Any],
     examples: Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]],
@@ -403,19 +431,14 @@ def create_prompt(
     env: dp.TemplatesManager | None,
 ) -> md.Chat:
     msgs: list[md.ChatMessage] = []
-    msgs.append(
-        md.SystemMessage(query.generate_prompt("system", None, params, env))
-    )
+    sys = query.generate_prompt("system", None, params, env)
+    msgs.append(md.SystemMessage(sys))
     for q, ans in examples:
-        msgs.append(
-            md.UserMessage(
-                q.generate_prompt("instance", ans.mode, params, env)
-            )
-        )
+        prompt = q.generate_prompt("instance", ans.mode, params, env)
+        msgs.extend(_user_message(prompt))
         msgs.append(md.AssistantMessage(ans))
-    msgs.append(
-        md.UserMessage(query.generate_prompt("instance", None, params, env))
-    )
+    prompt = query.generate_prompt("instance", None, params, env)
+    msgs.extend(_user_message(prompt))
     return msgs
 
 
