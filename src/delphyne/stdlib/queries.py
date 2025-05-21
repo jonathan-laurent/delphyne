@@ -539,8 +539,3 @@ def few_shot[T](
                     gen_new = "Good! Can you generate a different answer now?"
                 new_message = md.UserMessage(gen_new)
             prompt = (*prompt, md.AssistantMessage(answer), new_message)
-
-
-#####
-##### Utilities for Interactive Chatting
-#####
