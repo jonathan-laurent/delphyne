@@ -4,6 +4,7 @@ Standard queries and building blocks for prompting policies.
 
 import inspect
 import re
+import textwrap
 import typing
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
@@ -176,7 +177,7 @@ class Query[T](dp.AbstractQuery[T]):
         if hasattr(cls, attr_name):
             res = getattr(cls, attr_name)
             assert isinstance(res, str)
-            return res
+            return textwrap.dedent(res).strip()
         if kind == "instance":
             return DEFAULT_INSTANCE_PROMPT
         if kind == "system" and (doc := inspect.getdoc(cls)) is not None:
