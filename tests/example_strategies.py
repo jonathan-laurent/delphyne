@@ -395,3 +395,92 @@ def trivial_strategy() -> dp.Strategy[Never, object, int]:
 def buggy_strategy() -> dp.Strategy[dp.Failure, object, int]:
     yield from dp.ensure(True, label="unreachable")
     assert False
+
+
+#####
+##### Structured output and tool use
+#####
+
+
+@dataclass
+class Article:
+    title: str
+    authors: list[str]
+
+
+@dataclass
+class StructuredOutput(dp.Query[Article]):
+    """
+    Generate an article on the given topic. Answer as a JSON object.
+    """
+
+    topic: str
+
+
+@dataclass
+class GetUserFavoriteTopic(dp.AbstractTool[str]):
+    """
+    Retrieve the favorite topic of a given user.
+    """
+
+    user_name: str
+
+
+@dataclass
+class Calculator(dp.AbstractTool[str]):
+    """
+    Compute the value of a numerical Python expression.
+    """
+
+    expr: str
+
+
+@dataclass
+class ProposeArticle(
+    dp.Query[dp.Response[Article, GetUserFavoriteTopic | Calculator]]
+):
+    user_name: str
+    prefix: dp.AnswerPrefix = ()
+
+    __parser__: ClassVar[dp.ParserSpec] = "final_tool_call"
+
+    __system_prompt__: ClassVar[str] = """
+        Find the user's tastes and propose an article for them.
+        Provide your final answer by calling the `Article` tool.
+        Please carefully explain your reasoning before calling any tool.
+        """
+
+
+@dp.strategy
+def propose_article(
+    user_name: str,
+) -> dp.Strategy[dp.Branch, dp.PromptingPolicy, Article]:
+    IP = dp.PromptingPolicy
+    article = yield from dp.branch(
+        dp.interact(
+            step=lambda pre: ProposeArticle(user_name, pre)(IP, lambda p: p),
+            process=lambda x: x,
+            tools={GetUserFavoriteTopic: (lambda _: dp.const_space("Soccer"))},
+        )
+    )
+    return article
+
+
+@dataclass
+class PrimingTest(dp.Query[list[str]]):
+    """
+    Generate a list of nice baby names in the given style.
+
+    End your answer with a triple-backquoted code block containing a
+    list of strings as a YAML object.
+    """
+
+    style: str
+
+    __parser__: ClassVar[dp.ParserSpec] = dp.yaml_from_last_block
+
+    __instance_prompt__: ClassVar[str] = """
+    Style: {{query.style}}
+    !<assistant>
+    Here are 4 baby names in this style:
+    """
