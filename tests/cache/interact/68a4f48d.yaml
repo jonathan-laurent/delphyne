@@ -9,9 +9,21 @@
             Provide your final answer by calling the `Article` tool.
             Please carefully explain your reasoning before calling any tool.
         - role: user
-          content: |-
-            user_name: Jonathan
-            prefix: []
+          content: 'user_name: Jonathan'
+        - role: assistant
+          answer:
+            mode:
+            content: ''
+            tool_calls:
+              - name: GetUserFavoriteTopic
+                args:
+                  user_name: Jonathan
+        - role: tool
+          call:
+            name: GetUserFavoriteTopic
+            args:
+              user_name: Jonathan
+          result: Soccer
 
       num_completions: 1
 
@@ -68,9 +80,12 @@
       - content: ''
         logprobs:
         tool_calls:
-          - name: GetUserFavoriteTopic
+          - name: Article
             args:
-              user_name: Jonathan
+              title: 'The Evolution of Soccer Tactics: From Classic Formations to Modern Strategies'
+              authors:
+                - Alex Morgan
+                - Jamie Carragher
         finish_reason: tool_calls
     budget:
       values:

@@ -95,9 +95,9 @@ class AssistantMessage:
 class ToolMessage:
     role: Literal["tool"]
     call: ToolCall
-    result: Any  # JSON object
+    result: str | Structured
 
-    def __init__(self, call: ToolCall, result: Any):
+    def __init__(self, call: ToolCall, result: str | Structured):
         object.__setattr__(self, "role", "tool")
         object.__setattr__(self, "call", call)
         object.__setattr__(self, "result", result)

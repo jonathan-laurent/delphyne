@@ -5,6 +5,7 @@ We use pyaml to dump YAML with a more human-readable format.
 # pyaml has no stubs
 # pyright: reportUnknownMemberType=false, reportMissingTypeStubs=false
 
+from collections.abc import Iterable
 from typing import Any, cast
 
 import pyaml
@@ -22,6 +23,7 @@ def dump_yaml[T](
     *,
     exclude_defaults: bool = False,
     exclude_none: bool = False,
+    exclude_fields: Iterable[str] = (),
 ) -> str:
     """
     Pretty-print a value in Yaml.
@@ -33,6 +35,10 @@ def dump_yaml[T](
     py = Adapter.dump_python(
         obj, exclude_defaults=exclude_defaults, exclude_none=exclude_none
     )
+    if isinstance(py, dict):
+        py = cast(dict[Any, Any], py)
+        for f in exclude_fields:
+            del py[f]
     return pretty_yaml(py)
 
 
@@ -40,8 +46,15 @@ def dump_yaml_object(
     obj: object,
     exclude_defaults: bool = False,
     exclude_none: bool = False,
+    exclude_fields: Iterable[str] = (),
 ) -> str:
-    return dump_yaml(type(obj), obj)
+    return dump_yaml(
+        type(obj),
+        obj,
+        exclude_defaults=exclude_defaults,
+        exclude_none=exclude_none,
+        exclude_fields=exclude_fields,
+    )
 
 
 def load_yaml[T](type: type[T], s: str) -> T:

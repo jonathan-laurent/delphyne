@@ -23,7 +23,6 @@ from delphyne.utils.typing import TypeAnnot, ValidationError
 
 REPAIR_PROMPT = "repair"
 REQUEST_OTHER_PROMPT = "more"
-DEFAULT_INSTANCE_PROMPT = "{{query | yaml | trim}}"
 ASSISTANT_PRIMING_STR = "!<assistant>"
 
 
@@ -172,13 +171,17 @@ class Query[T](dp.AbstractQuery[T]):
             force_tool_call=(attr == "final_tool_call"),
         )
 
+    @classmethod
+    def _has_special_prefix_attr(cls):
+        annots = typing.get_type_hints(cls)
+        return "prefix" in annots and annots["prefix"] is ct.AnswerPrefix
+
     def query_prefix(self) -> ct.AnswerPrefix | None:
         """
         Return the value of the `prefix` attribute if it has type
         annotation `AnswerPrefix` or return `None`.
         """
-        annots = typing.get_type_hints(type(self))
-        if "prefix" in annots and annots["prefix"] is ct.AnswerPrefix:
+        if self._has_special_prefix_attr():
             return getattr(self, "prefix")
         return None
 
@@ -201,7 +204,10 @@ class Query[T](dp.AbstractQuery[T]):
             assert isinstance(res, str)
             return textwrap.dedent(res).strip()
         if kind == "instance":
-            return DEFAULT_INSTANCE_PROMPT
+            if cls._has_special_prefix_attr():
+                return "{{query | yaml(exclude_fields=['prefix']) | trim}}"
+            else:
+                return "{{query | yaml | trim}}"
         if kind == "system" and (doc := inspect.getdoc(cls)) is not None:
             return doc
         return None
@@ -435,11 +441,31 @@ def _priming_split(prompt: str) -> tuple[str, str | None]:
     return prompt, None
 
 
-def _user_message(prompt: str) -> Sequence[md.ChatMessage]:
+def _instance_prompt(
+    query: dp.AbstractQuery[Any],
+    env: dp.TemplatesManager | None,
+    params: dict[str, object],
+    mode: dp.AnswerModeName,
+):
+    msgs: list[md.ChatMessage] = []
+    prompt = query.generate_prompt("instance", mode, params, env)
+    # Handle assistant priming
     prompt, priming = _priming_split(prompt)
-    msgs: list[md.ChatMessage] = [md.UserMessage(prompt)]
+    msgs.append(md.UserMessage(prompt))
     if priming is not None:
         msgs.append(md.AssistantMessage(Answer(None, priming)))
+    # Add prefix if needed
+    if (prefix := query.query_prefix()) is not None:
+        for elt in prefix:
+            if isinstance(elt, dp.OracleMessage):
+                msgs.append(md.AssistantMessage(elt.answer))
+            elif isinstance(elt, dp.FeedbackMessage):
+                ps = params | {"feedback": elt}
+                fmsg = query.generate_prompt("feedback", mode, ps, env)
+                msgs.append(md.UserMessage(fmsg))
+            else:
+                assert isinstance(elt, dp.ToolResult)
+                msgs.append(md.ToolMessage(elt.call, elt.result))
     return msgs
 
 
@@ -453,11 +479,10 @@ def create_prompt(
     sys = query.generate_prompt("system", None, params, env)
     msgs.append(md.SystemMessage(sys))
     for q, ans in examples:
-        prompt = q.generate_prompt("instance", ans.mode, params, env)
-        msgs.extend(_user_message(prompt))
+        msgs.extend(_instance_prompt(q, env, params, ans.mode))
         msgs.append(md.AssistantMessage(ans))
-    prompt = query.generate_prompt("instance", None, params, env)
-    msgs.extend(_user_message(prompt))
+    # TODO: handle different modes
+    msgs.extend(_instance_prompt(query, env, params, None))
     return msgs
 
 

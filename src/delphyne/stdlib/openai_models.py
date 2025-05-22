@@ -14,6 +14,7 @@ import openai.types.chat.completion_create_params as ochatp
 from delphyne.core.refs import Structured, ToolCall
 from delphyne.core.streams import Budget
 from delphyne.stdlib import models as md
+from delphyne.utils.yaml import pretty_yaml
 
 DEFAULT_MODEL = "gpt-4.1"
 
@@ -82,9 +83,13 @@ def translate_chat(
                     ]
                 return res
             case md.ToolMessage(call=call, result=result):
+                if isinstance(result, str):
+                    content = result
+                else:
+                    content = pretty_yaml(result.structured)
                 return {
                     "role": "tool",
-                    "content": json.dumps(result),
+                    "content": content,
                     "tool_call_id": gen.get_id(call),
                 }
 

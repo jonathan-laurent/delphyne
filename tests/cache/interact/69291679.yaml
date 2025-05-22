@@ -9,23 +9,7 @@
             Provide your final answer by calling the `Article` tool.
             Please carefully explain your reasoning before calling any tool.
         - role: user
-          content: |-
-            user_name: Jonathan
-            prefix:
-              - kind: oracle
-                answer:
-                  mode:
-                  content: ''
-                  tool_calls:
-                    - name: GetUserFavoriteTopic
-                      args:
-                        user_name: Jonathan
-              - kind: tool
-                call:
-                  name: GetUserFavoriteTopic
-                  args:
-                    user_name: Jonathan
-                result: Soccer
+          content: 'user_name: Jonathan'
 
       num_completions: 1
 
@@ -82,12 +66,9 @@
       - content: ''
         logprobs:
         tool_calls:
-          - name: Article
+          - name: GetUserFavoriteTopic
             args:
-              title: The Evolution of Soccer Tactics in Modern Football
-              authors:
-                - Dr. Alex Turner
-                - Maria Sanchez
+              user_name: Jonathan
         finish_reason: tool_calls
     budget:
       values:
