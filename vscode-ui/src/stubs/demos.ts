@@ -2,13 +2,26 @@ import * as vscode from 'vscode';
 
 export type TestCommandString = string;
 
+export interface ToolCall {
+  tool: string;
+  args: Record<string, unknown>;
+  __loc: vscode.Range;
+  __loc__tool: vscode.Range;
+  __loc__args: vscode.Range;
+}
+
 export interface Answer {
-  answer: string;
+  answer: string | unknown;
+  call: ToolCall[];
+  structured: "auto" | true;
   mode: string | null;
   label: string | null;
   example: boolean | null;
   __loc: vscode.Range;
   __loc__answer: vscode.Range;
+  __loc__call: vscode.Range;
+  __loc_items__call: vscode.Range[];
+  __loc__structured: vscode.Range;
   __loc__mode: vscode.Range;
   __loc__label: vscode.Range;
   __loc__example: vscode.Range;

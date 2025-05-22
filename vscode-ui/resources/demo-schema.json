@@ -3,8 +3,29 @@
     "Answer": {
       "properties": {
         "answer": {
-          "title": "Answer",
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {}
+          ],
+          "title": "Answer"
+        },
+        "call": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ToolCall"
+          },
+          "title": "Call",
+          "type": "array"
+        },
+        "structured": {
+          "default": "auto",
+          "enum": [
+            "auto",
+            true
+          ],
+          "title": "Structured"
         },
         "mode": {
           "anyOf": [
@@ -144,6 +165,24 @@
     },
     "TestCommandString": {
       "type": "string"
+    },
+    "ToolCall": {
+      "properties": {
+        "tool": {
+          "title": "Tool",
+          "type": "string"
+        },
+        "args": {
+          "title": "Args",
+          "type": "object"
+        }
+      },
+      "required": [
+        "tool",
+        "args"
+      ],
+      "title": "ToolCall",
+      "type": "object"
     }
   },
   "items": {

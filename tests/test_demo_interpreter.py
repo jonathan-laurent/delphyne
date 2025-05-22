@@ -96,6 +96,7 @@ def load_demo(demo_label: str) -> DemoExpectTest | dp.QueryDemo:
         "test_generate_pairs",
         "comp_result_in_cache",
         "comp_result_outside_cache",
+        "tool_use",
     ],
 )
 def test_server(demo_label: str):
@@ -106,7 +107,12 @@ def test_server(demo_label: str):
 
 
 @pytest.mark.parametrize(
-    "name, valid", [("MakeSum_demo", True), ("Unknown_query", False)]
+    "name, valid",
+    [
+        ("MakeSum_demo", True),
+        ("Unknown_query", False),
+        ("structured_output", True),
+    ],
 )
 def test_query_demo(name: str, valid: bool):
     demo = load_demo(name)

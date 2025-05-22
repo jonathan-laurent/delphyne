@@ -511,7 +511,7 @@ def evaluate_standalone_query_demo(
         loader = ObjectLoader(context, extra_objects)
         query = loader.load_query(demo.query, demo.args)
     except Exception as e:
-        msg = f"Failed to instantiate strategy:\n{e}"
+        msg = f"Failed to instantiate query:\n{e}"
         feedback.diagnostics.append(("error", msg))
         return feedback
     # We just check that all the answers parse

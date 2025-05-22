@@ -440,3 +440,55 @@
         query_args: {fun: expensive_computation}
       - query_name: __Computation__
         query_args: {fun: expensive_computation}
+
+
+- demonstration: structured_output
+  query: StructuredOutput
+  args:
+    topic: "Music"
+  answers:
+    - answer:
+        title: "Understanding Bach"
+        authors: ["Brigitte Mouterde"]
+
+
+- demonstration: tool_use
+  strategy: propose_article
+  args:
+    user_name: Jonathan
+  tests:
+    - run | success
+  queries:
+    - query: ProposeArticle
+      args:
+        user_name: Jonathan
+        prefix: []
+      answers:
+        - answer: ""
+          call:
+            - tool: GetUserFavoriteTopic
+              args: {user_name: Jonathan}
+    - query: ProposeArticle
+      args:
+        user_name: Jonathan
+        prefix:
+          - kind: oracle
+            answer:
+              mode: null
+              content: ""
+              tool_calls:
+                - name: GetUserFavoriteTopic
+                  args:
+                    user_name: Jonathan
+          - kind: tool
+            call:
+              name: GetUserFavoriteTopic
+              args:
+                user_name: Jonathan
+            result: Soccer
+      answers:
+      - answer: ""
+        call: [{tool: Article, args: {title: "All about Messi", authors: ["Raf"]}}]
+  expect:
+    test_feedback:
+      - diagnostics: __empty__
