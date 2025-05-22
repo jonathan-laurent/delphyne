@@ -82,6 +82,7 @@ from delphyne.stdlib.search.bestfs import (
 from delphyne.stdlib.search.dfs import (
     dfs,
 )
+from delphyne.stdlib.search.interactive import interact
 from delphyne.stdlib.search.iteration import (
     iterate,
 )

@@ -1,4 +1,4 @@
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any, Literal
 
@@ -14,8 +14,9 @@ class OracleMessage:
 @dataclass(frozen=True)
 class FeedbackMessage:
     kind: Literal["feedback"]
-    category: str
-    args: Mapping[str, Any]
+    category: str | None = None
+    description: str | None = None
+    arg: Any | None = None  # must be serializable
 
 
 @dataclass(frozen=True)
