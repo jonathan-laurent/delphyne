@@ -148,12 +148,16 @@ class Query[T](dp.AbstractQuery[T]):
             else:
                 parser = _from_generic_text_parser(attr, ans_type.final)
 
-        # If a the answer type has form `Response[..., ...]`
+        # If the answer type has form `Response[..., ...]`
+
         if ans_type.resp:
-            tcs = [
-                _parse_tool_call(ans_type.resp.tools, tc)
-                for tc in answer.tool_calls
-            ]
+            if _has_final_tool_call(ans_type, answer):
+                tcs = []
+            else:
+                tcs = [
+                    _parse_tool_call(ans_type.resp.tools, tc)
+                    for tc in answer.tool_calls
+                ]
             if tcs:
                 return cast(T, Response(answer, ToolRequests(tcs)))
             else:
@@ -267,6 +271,15 @@ def _parse_tool_call(
         if tc.name == t.tool_name():
             return _parse_or_raise(t, tc.args)
     raise dp.ParseError(description=f"Unknown tool: {tc.name}.")
+
+
+def _has_final_tool_call(ans_type: _DecomposedAnswerType, answer: dp.Answer):
+    if not isinstance(ans_type.final, type):
+        return False
+    return any(
+        tc.name == md.tool_name_of_class_name(ans_type.final.__name__)
+        for tc in answer.tool_calls
+    )
 
 
 #####

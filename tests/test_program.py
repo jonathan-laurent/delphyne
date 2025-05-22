@@ -3,7 +3,7 @@ Testing oracular programs in an end-to-end fashion
 """
 
 from pathlib import Path
-from typing import Any, ClassVar, cast
+from typing import Any, ClassVar, Never, cast
 
 import example_strategies as ex
 from why3py import dataclass
@@ -53,6 +53,7 @@ class ProposeArticle(
     dp.Query[dp.Response[Article, GetUserFavoriteTopic | Calculator]]
 ):
     user_name: str
+    prefix: dp.AnswerPrefix = ()
 
     __parser__: ClassVar[dp.ParserSpec] = "final_tool_call"
 
@@ -61,6 +62,33 @@ class ProposeArticle(
         Provide your final answer by calling the `Article` tool.
         Please carefully explain your reasoning before calling any tool.
         """
+
+
+@dp.strategy
+def get_user_favorite_topic() -> dp.Strategy[Never, object, str]:
+    return "Soccer"
+    yield
+
+
+@dp.strategy
+def propose_article(
+    user_name: str,
+) -> dp.Strategy[dp.Branch, dp.PromptingPolicy, Article]:
+    IP = dp.PromptingPolicy
+    article = yield from dp.branch(
+        dp.interact(
+            step=lambda pre: ProposeArticle(user_name, pre)(IP, lambda p: p),
+            process=lambda x: x,
+            tools={
+                GetUserFavoriteTopic: (
+                    lambda _: get_user_favorite_topic()(
+                        IP, lambda _: (dp.dfs(), None)
+                    )
+                )
+            },
+        )
+    )
+    return article
 
 
 @dataclass
@@ -92,19 +120,6 @@ PROMPT_DIR = Path(__file__).parent / "prompts"
 CACHE_DIR = Path(__file__).parent / "cache"
 
 
-def test_basic_llm_call():
-    env = dp.PolicyEnv(demonstration_files=(), prompt_dirs=(PROMPT_DIR,))
-    cache = CACHE_DIR / "basic_llm_call"
-    model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
-    pp = dp.few_shot(model)
-    bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
-    policy = dp.take(1) @ (dp.with_budget(bl) @ dp.dfs()), ex.MakeSumIP(pp)
-    stream = ex.make_sum([1, 2, 3, 4], 7).run_toplevel(env, policy)
-    res, _ = dp.collect(stream)
-    # print(list(env.tracer.export_log()))
-    assert res
-
-
 def test_query_properties():
     assert StructuredOutput(topic="AI").query_config().force_structured_output
     q2 = ex.MakeSum([1, 2, 3, 4], 7)
@@ -125,6 +140,19 @@ def _eval_query(query: dp.Query[object], cache_name: str):
     log = list(env.tracer.export_log())
     print(log)
     return res, log
+
+
+def test_basic_llm_call():
+    env = dp.PolicyEnv(demonstration_files=(), prompt_dirs=(PROMPT_DIR,))
+    cache = CACHE_DIR / "basic_llm_call"
+    model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
+    pp = dp.few_shot(model)
+    bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
+    policy = dp.take(1) @ (dp.with_budget(bl) @ dp.dfs()), ex.MakeSumIP(pp)
+    stream = ex.make_sum([1, 2, 3, 4], 7).run_toplevel(env, policy)
+    res, _ = dp.collect(stream)
+    # print(list(env.tracer.export_log()))
+    assert res
 
 
 def test_structured_output():
@@ -149,3 +177,16 @@ def test_assistant_priming():
     res, log = _eval_query(PrimingTest(style="French"), "assistant_priming")
     assert res
     assert len(log[0].metadata["request"]["chat"]) == 3  # type: ignore
+
+
+def test_interact():
+    env = dp.PolicyEnv(demonstration_files=(), prompt_dirs=(PROMPT_DIR,))
+    cache = CACHE_DIR / "interact"
+    model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
+    pp = dp.few_shot(model)
+    bl = dp.BudgetLimit({dp.NUM_REQUESTS: 2})
+    policy = dp.take(1) @ (dp.with_budget(bl) @ dp.dfs()), pp
+    stream = propose_article("Jonathan").run_toplevel(env, policy)
+    res, _ = dp.collect(stream)
+    print(list(env.tracer.export_log()))
+    assert res
