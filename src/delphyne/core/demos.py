@@ -5,16 +5,25 @@ Delphyne Demonstrations.
 import dataclasses
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Literal
 
+from delphyne.core import refs
 from delphyne.core.refs import Hint, SpaceRef
 
 type TestCommandString = str
 
 
 @dataclass
+class ToolCall:
+    tool: str
+    args: dict[str, Any]
+
+
+@dataclass
 class Answer:
-    answer: str
+    answer: str | object
+    call: Sequence[ToolCall] = ()
+    structured: Literal["auto", True] = "auto"
     mode: str | None = None
     label: str | None = None
     example: bool | None = None
@@ -96,3 +105,12 @@ type TestStep = Run | SelectSpace | IsSuccess | IsFailure | Save | Load
 
 
 type TestCommand = Sequence[TestStep]
+
+
+def translate_answer(ans: Answer) -> refs.Answer:
+    if isinstance(ans.answer, str) and ans.structured == "auto":
+        content = ans.answer
+    else:
+        content = refs.Structured(ans.answer)
+    tool_calls = tuple([refs.ToolCall(c.tool, c.args) for c in ans.call])
+    return refs.Answer(ans.mode, content, tool_calls)

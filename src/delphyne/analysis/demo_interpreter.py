@@ -156,7 +156,7 @@ class DemoHintResolver(nv.HintResolver):
             # We try to parse all answers in anticipation, to avoid
             # an error later.
             for j, a in enumerate(q.answers):
-                parsed = query.parse_answer(dp.Answer(a.mode, a.answer))
+                parsed = query.parse_answer(dm.translate_answer(a))
                 if isinstance(parsed, dp.ParseError):
                     raise DemoHintResolver.InvalidAnswer(i, j, parsed)
         # Used to populate `DemoFeedback.answer_refs`, which is needed
@@ -191,7 +191,7 @@ class DemoHintResolver(nv.HintResolver):
                     else:
                         return None
                 demo_answer = answers[answer_id]
-                answer = refs.Answer(demo_answer.mode, demo_answer.answer)
+                answer = dm.translate_answer(demo_answer)
                 self.answer_refs[(query.ref, answer)] = (i, answer_id)
                 return answer
         # We only look at implicit answers if no hint is provided.
@@ -517,7 +517,7 @@ def evaluate_standalone_query_demo(
     # We just check that all the answers parse
     for i, a in enumerate(demo.answers):
         try:
-            elt = query.parse_answer(dp.Answer(a.mode, a.answer))
+            elt = query.parse_answer(dm.translate_answer(a))
             if isinstance(elt, dp.ParseError):
                 diag = ("error", f"Parse error: {str(elt)}")
                 feedback.answer_diagnostics.append((i, diag))

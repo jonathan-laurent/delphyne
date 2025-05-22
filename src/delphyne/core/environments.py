@@ -14,7 +14,7 @@ import jinja2
 import yaml
 
 from delphyne.core import pprint, refs, traces
-from delphyne.core.demos import Demo, QueryDemo, StrategyDemo
+from delphyne.core.demos import Demo, QueryDemo, StrategyDemo, translate_answer
 from delphyne.core.refs import Answer
 from delphyne.utils.typing import pydantic_load
 from delphyne.utils.yaml import dump_yaml_object
@@ -60,9 +60,8 @@ class ExampleDatabase:
             # include the example. TODO: What if the user
             # asked to include several answers?
             return
-        answer = demo.answers[0].answer
-        mode = demo.answers[0].mode
-        self._examples[demo.query].append((demo.args, Answer(mode, answer)))
+        answer = translate_answer(demo.answers[0])
+        self._examples[demo.query].append((demo.args, answer))
 
     def add_demonstration(self, demo: Demo):
         if isinstance(demo, QueryDemo):

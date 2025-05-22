@@ -25,7 +25,7 @@ def demo_mock_oracle(
             if json.dumps(q.args) != json.dumps(query.serialize_args()):
                 continue
             for a in q.answers:
-                yield refs.Answer(a.mode, a.answer)
+                yield dm.translate_answer(a)
 
     def policy[T](
         query: dp.AttachedQuery[T],
