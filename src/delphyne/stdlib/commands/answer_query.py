@@ -54,6 +54,9 @@ async def answer_query(
     stream = policy(attached, env)
     if cmd.budget is not None:
         stream = std.stream_with_budget(stream, dp.BudgetLimit(cmd.budget))
+    if cmd.prompt_only:
+        only_one_req = dp.BudgetLimit({std.NUM_REQUESTS: 1})
+        stream = std.stream_with_budget(stream, only_one_req)
     stream = std.stream_take(stream, cmd.num_answers)
     total_budget = dp.Budget.zero()
     num_successes = 0

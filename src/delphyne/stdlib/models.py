@@ -269,7 +269,8 @@ class LLM(ABC):
 @dataclass
 class DummyModel(LLM):
     def send_request(self, req: LLMRequest) -> LLMResponse:
-        assert False, "No model was provided."
+        budget = Budget({NUM_REQUESTS: req.num_completions})
+        return LLMResponse([], budget, [])
 
 
 #####
