@@ -3,7 +3,7 @@ Testing oracular programs in an end-to-end fashion
 """
 
 from pathlib import Path
-from typing import Any, ClassVar, Never, cast
+from typing import Any, ClassVar, cast
 
 import example_strategies as ex
 from why3py import dataclass
@@ -65,12 +65,6 @@ class ProposeArticle(
 
 
 @dp.strategy
-def get_user_favorite_topic() -> dp.Strategy[Never, object, str]:
-    return "Soccer"
-    yield
-
-
-@dp.strategy
 def propose_article(
     user_name: str,
 ) -> dp.Strategy[dp.Branch, dp.PromptingPolicy, Article]:
@@ -79,13 +73,7 @@ def propose_article(
         dp.interact(
             step=lambda pre: ProposeArticle(user_name, pre)(IP, lambda p: p),
             process=lambda x: x,
-            tools={
-                GetUserFavoriteTopic: (
-                    lambda _: get_user_favorite_topic()(
-                        IP, lambda _: (dp.dfs(), None)
-                    )
-                )
-            },
+            tools={GetUserFavoriteTopic: (lambda _: dp.const_space("Soccer"))},
         )
     )
     return article

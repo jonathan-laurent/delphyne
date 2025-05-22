@@ -13,6 +13,7 @@ from delphyne.stdlib.computations import (
 from delphyne.stdlib.globals import (
     stdlib_globals,
 )
+from delphyne.stdlib.misc import const_space, const_strategy
 from delphyne.stdlib.models import (
     LLM,
     NUM_REQUESTS,
