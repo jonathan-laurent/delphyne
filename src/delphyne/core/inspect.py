@@ -127,6 +127,8 @@ def union_components(typ: Any) -> Sequence[Any]:
     and return the `T_i` sequence. If the type is not a union, returns a
     singleton with the type itself.
     """
+    if typ == typing.Never:
+        return []
     if typing.get_origin(typ) in [typing.Union, types.UnionType]:
         return typing.get_args(typ)
     return [typ]

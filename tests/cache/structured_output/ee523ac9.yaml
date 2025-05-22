@@ -32,10 +32,10 @@
     outputs:
       - content:
           structured:
-            title: 'Artificial Intelligence: Transforming the Future'
+            title: The Transformative Impact of Artificial Intelligence
             authors:
-              - John Doe
-              - Jane Smith
+              - Jane Doe
+              - John Smith
         logprobs:
         tool_calls: []
         finish_reason: stop

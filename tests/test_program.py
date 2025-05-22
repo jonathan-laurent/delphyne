@@ -50,7 +50,7 @@ class Calculator(dp.AbstractTool[str]):
 
 @dataclass
 class ProposeArticle(
-    dp.Query[Article | dp.FollowUpRequest[GetUserFavoriteTopic | Calculator]]
+    dp.Query[dp.Response[Article, GetUserFavoriteTopic | Calculator]]
 ):
     user_name: str
 
@@ -137,12 +137,12 @@ def test_propose_article_initial_step():
     # Interestingly, the answer content is often empty here despite us
     # explicitly asking for a additional reasoning. Is it because we
     # mandate tool calls? Probably, yes.
-    res, _ = _eval_query(
-        ProposeArticle(user_name="Alice"), "propose_article_initial_step"
-    )
-    v = cast(dp.FollowUpRequest[Any], res[0].value)
-    assert isinstance(v, dp.FollowUpRequest)
-    assert isinstance(v.tool_calls[0], GetUserFavoriteTopic)
+    label = "propose_article_initial_step"
+    res, _ = _eval_query(ProposeArticle(user_name="Alice"), label)
+    v = cast(dp.Response[Any, Any], res[0].value)
+    assert isinstance(v, dp.Response)
+    assert isinstance(v.parsed, dp.ToolRequests)
+    assert isinstance(v.parsed.tool_calls[0], GetUserFavoriteTopic)
 
 
 def test_assistant_priming():

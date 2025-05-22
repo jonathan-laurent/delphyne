@@ -50,6 +50,7 @@ def test_element_type_of_sequence_type(inp: Any, i, out: Any):
 @pytest.mark.parametrize(
     "inp, out",
     [
+        (typing.Never, []),
         (typing.Union[int, str], [int, str]),
         (int | str, [int, str]),
         (int | (str | bool), [int, str, bool]),

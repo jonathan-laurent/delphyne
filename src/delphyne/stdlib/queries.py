@@ -45,49 +45,51 @@ Queries can have a `__parser__` attribute, from which the `parse`,
 
 
 @dataclass
-class FollowUpRequest[T: md.AbstractTool[Any]]:
-    """
-    Object returned by a query when a follow-up is requested for
-    answering tool calls.
+class FinalAnswer[F]:
+    final: F
 
-    Tool calls are provided in `tool_calls` in the order in which they
-    are provided in `answer`.
-    """
 
-    answer: dp.Answer
+@dataclass
+class ToolRequests[T: md.AbstractTool[Any]]:
     tool_calls: Sequence[T]
 
 
 @dataclass
-class _DecomposedAnswerType:
+class Response[F, T: md.AbstractTool[Any]]:
     """
-    Decomposed view of an answer type of the form `A | FollowUpRequest[T]`.
+    Answer type for queries that allow follow-ups, giving access to both
+    the raw LLM response (to be passed pass in `AnswerPrefix`) and to
+    tool eventual tool calls.
     """
 
-    follow_up_request: bool
+    answer: dp.Answer
+    parsed: FinalAnswer[F] | ToolRequests[T]
+
+
+@dataclass
+class _DecomposedResponseType:
     tools: Sequence[type[md.AbstractTool[Any]]]
+
+
+@dataclass
+class _DecomposedAnswerType:
+    resp: _DecomposedResponseType | None
     final: TypeAnnot[Any]
 
     def __init__(self, annot: TypeAnnot[Any]):
-        follow_up_request = False
-        tools: list[type[md.AbstractTool[Any]]] | None = None
-        final_comps: list[TypeAnnot[Any]] = []
-        for comp in dpi.union_components(annot):
-            if typing.get_origin(comp) is FollowUpRequest:
-                assert tools is None
-                follow_up_request = True
-                args = typing.get_args(comp)
-                assert len(args) == 1
-                tools_raw = dpi.union_components(args[0])
-                tools = [
-                    a for a in tools_raw if issubclass(a, md.AbstractTool)
-                ]
-                assert len(tools) == len(tools_raw)
-            else:
-                final_comps.append(comp)
-        self.follow_up_request = follow_up_request
-        self.tools = tools or []
-        self.final = dpi.make_union(final_comps)
+        if typing.get_origin(annot) is Response:
+            args = typing.get_args(annot)
+            assert len(args) == 2
+            tools_raw = dpi.union_components(args[1])
+            tools: list[type[md.AbstractTool[Any]]] = [
+                a for a in tools_raw if issubclass(a, md.AbstractTool)
+            ]
+            assert len(tools) == len(tools_raw)
+            self.resp = _DecomposedResponseType(tools)
+            self.final = args[0]
+        else:
+            self.resp = None
+            self.final = annot
 
 
 class Query[T](dp.AbstractQuery[T]):
@@ -109,11 +111,12 @@ class Query[T](dp.AbstractQuery[T]):
 
     def query_tools(self) -> Sequence[type[Any]]:
         ans_type = self._decomposed_answer_type()
-        tools = [*ans_type.tools]
+        tools: list[type[Any]] = []
+        if ans_type.resp is not None:
+            tools = [*ans_type.resp.tools]
         if self._parser_attribute() == "final_tool_call":
-            final = ans_type.final
-            assert isinstance(final, type)
-            tools.append(final)
+            assert isinstance(ans_type.final, type)
+            tools.append(ans_type.final)
         return tools
 
     def parse(self, answer: Answer) -> T:
@@ -145,14 +148,17 @@ class Query[T](dp.AbstractQuery[T]):
             else:
                 parser = _from_generic_text_parser(attr, ans_type.final)
 
-        # Add tool supports if needed
-        if ans_type.follow_up_request:
+        # If a the answer type has form `Response[..., ...]`
+        if ans_type.resp:
             tcs = [
-                _parse_tool_call(ans_type.tools, tc)
+                _parse_tool_call(ans_type.resp.tools, tc)
                 for tc in answer.tool_calls
             ]
             if tcs:
-                return cast(T, FollowUpRequest(answer, tcs))
+                return cast(T, Response(answer, ToolRequests(tcs)))
+            else:
+                return cast(T, Response(answer, FinalAnswer(parser(answer))))
+
         return parser(answer)
 
     def query_config(self) -> dp.QueryConfig:

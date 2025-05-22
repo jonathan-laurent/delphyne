@@ -25,14 +25,8 @@
           ```yaml
           - Amélie
           - Étienne
-          - Camille
-          - Léon
-          - Juliette
-          - Théo
           - Chloé
-          - Bastien
-          - Gabrielle
-          - Félix
+          - Lucien
           ```
         logprobs:
         tool_calls: []

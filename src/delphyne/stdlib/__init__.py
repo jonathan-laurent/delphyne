@@ -62,9 +62,11 @@ from delphyne.stdlib.policies import (
     search_policy,
 )
 from delphyne.stdlib.queries import (
-    FollowUpRequest,
+    FinalAnswer,
     ParserSpec,
     Query,
+    Response,
+    ToolRequests,
     extract_final_block,
     few_shot,
     raw_string,
