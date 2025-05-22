@@ -15,20 +15,23 @@ def dfs[P, T](
     env: PolicyEnv,
     policy: P,
     max_depth: int | None = None,
+    max_branching: int | None = None,
 ) -> Stream[T]:
     if max_depth is not None and max_depth <= 0:
         return
+    assert max_branching is None or max_branching > 0
     match tree.node:
         case Success(x):
             yield Yield(x)
         case Failure():
             pass
         case Branch(cands):
-            for cands_msg in cands.stream(env, policy):
+            for i, cands_msg in enumerate(cands.stream(env, policy)):
                 if not isinstance(cands_msg, Yield):
                     yield cands_msg
                     continue
                 child = tree.child(cands_msg.value)
                 max_depth = max_depth - 1 if max_depth is not None else None
-                for rec_msg in dfs(max_depth)(child, env, policy):
-                    yield rec_msg
+                yield from dfs(max_depth)(child, env, policy)
+                if max_branching is not None and i + 1 >= max_branching:
+                    break
