@@ -482,5 +482,5 @@ class PrimingTest(dp.Query[list[str]]):
     __instance_prompt__: ClassVar[str] = """
     Style: {{query.style}}
     !<assistant>
-    Here are 4 baby names in this style:
+    Here are _exactly_ 4 baby boy names in this style (and nothing else):
     """

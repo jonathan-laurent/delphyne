@@ -12,7 +12,7 @@
         - role: assistant
           answer:
             mode:
-            content: 'Here are 4 baby names in this style:'
+            content: 'Here are _exactly_ 4 baby boy names in this style (and nothing else):'
             tool_calls: []
       num_completions: 1
       options: {}
@@ -23,10 +23,10 @@
     outputs:
       - content: |-
           ```yaml
-          - Amélie
-          - Étienne
-          - Chloé
           - Lucien
+          - Étienne
+          - Camille
+          - Thibault
           ```
         logprobs:
         tool_calls: []

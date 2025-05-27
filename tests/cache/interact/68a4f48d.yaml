@@ -82,10 +82,10 @@
         tool_calls:
           - name: Article
             args:
-              title: 'The Evolution of Soccer Tactics: From Classic Formations to Modern Strategies'
+              title: The Evolution of Soccer Techniques and Training Methods
               authors:
-                - Alex Morgan
-                - Jamie Carragher
+                - John Smith
+                - Emma Johnson
         finish_reason: tool_calls
     budget:
       values:
