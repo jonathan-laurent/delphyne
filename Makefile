@@ -35,7 +35,6 @@ clean-ignored:
 clean: clean-ignored
 	rm -rf build
 	rm -rf site
-	rm -rf tests/cache
 	rm -rf tests/cmd_out
 	make -C vscode-ui clean
 	make -C examples/libraries/why3py clean
@@ -67,6 +66,8 @@ stubs:
 all: install
 	make -C vscode-ui install
 
+clean-cache:
+	rm -rf tests/cache
 
 examples: all
 	make -C examples/libraries/why3py install
