@@ -143,3 +143,13 @@ def make_union(comps: Sequence[Any]) -> Any:
     if len(comps) == 1:
         return comps[0]
     return typing.Union[*comps]
+
+
+def literal_type_args(typ: Any) -> Sequence[Any] | None:
+    """
+    Take a type of the form `Literal[v1, ..., vn]` and returns the
+    sequence of `v_i`. Return `None` if the input is not well-formed.
+    """
+    if typing.get_origin(typ) is not typing.Literal:
+        return None
+    return typing.get_args(typ)

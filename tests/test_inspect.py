@@ -67,3 +67,19 @@ def test_is_sequence_type():
     assert insp.is_sequence_type(tuple[int, ...])
     assert not insp.is_sequence_type(tuple[int, str])
     assert not insp.is_sequence_type(dict[str, int])
+
+
+@pytest.mark.parametrize(
+    "inp, out",
+    [
+        (typing.Literal[1, 2, 3], [1, 2, 3]),
+        (typing.Literal["a"], ["a"]),
+        (typing.Literal[True, False], [True, False]),
+        (typing.Literal[1, "a"], [1, "a"]),
+        (int, None),
+    ],
+)
+def test_literal_type_args(inp, out):
+    res = insp.literal_type_args(inp)
+    res = list(res) if res is not None else None
+    assert res == out

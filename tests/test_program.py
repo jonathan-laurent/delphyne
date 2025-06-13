@@ -84,3 +84,17 @@ def test_interact():
     res, _ = dp.collect(stream)
     print(list(env.tracer.export_log()))
     assert res
+
+
+#####
+##### Flags
+#####
+
+
+def test_flags_static():
+    f = ex.MethodFlag()
+    assert str(f.answer_type()) == "typing.Literal[None, 'alt']"
+    assert f.default_answer() is None
+    ans = f.finite_answer_set()
+    assert ans is not None
+    assert set(ans) == {"alt", None}

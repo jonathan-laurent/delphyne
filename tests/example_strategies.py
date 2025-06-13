@@ -8,7 +8,7 @@ test the server (see `test_server`).
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, ClassVar, Never, Sequence, TypeAlias, cast
+from typing import Any, ClassVar, Literal, Never, Sequence, TypeAlias, cast
 
 import delphyne as dp
 
@@ -484,3 +484,12 @@ class PrimingTest(dp.Query[list[str]]):
     !<assistant>
     Here are _exactly_ 4 baby boy names in this style (and nothing else):
     """
+
+
+#####
+##### Flags
+#####
+
+
+class MethodFlag(dp.FlagQuery[Literal[None, "alt"]]):
+    pass

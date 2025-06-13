@@ -10,6 +10,7 @@ from delphyne.stdlib.computations import (
     compute,
     elim_compute,
 )
+from delphyne.stdlib.flags import FlagQuery
 from delphyne.stdlib.globals import (
     stdlib_globals,
 )

@@ -32,6 +32,15 @@ class ParseError(Error, Exception):
         super().__init__(label=label, description=description, meta=meta)
 
 
+@dataclass
+class NoDefaultAnswer:
+    """
+    Sentinel value for the `AbstractQuery.default_answer`.
+    """
+
+    pass
+
+
 @dataclass(frozen=True)
 class QueryConfig:
     force_structured_output: bool = False
@@ -87,3 +96,10 @@ class AbstractQuery[T](ABC):
 
     def query_tools(self) -> Sequence[type[Any]]:
         return ()
+
+    def finite_answer_set(self) -> Sequence[T] | None:
+        """ """
+        return None
+
+    def default_answer(self) -> T | NoDefaultAnswer:
+        return NoDefaultAnswer()
