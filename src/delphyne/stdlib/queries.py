@@ -517,6 +517,7 @@ def few_shot[T](
     model: md.LLM,
     mode: dp.AnswerModeName = None,
     enable_logging: bool = True,
+    temperature: float | None = None,
     num_concurrent: int = 1,
     iterative_mode: bool = False,
 ) -> dp.Stream[T]:
@@ -538,6 +539,8 @@ def few_shot[T](
     prompt = create_prompt(query.query, examples, {}, mode, mngr)
     config = query.query.query_config()
     options: md.RequestOptions = {}
+    if temperature is not None:
+        options["temperature"] = temperature
     structured_output = None
     if config.force_structured_output:
         ans_type = query.query.answer_type()

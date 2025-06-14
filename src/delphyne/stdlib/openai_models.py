@@ -158,6 +158,12 @@ class OpenAIModel(md.LLM):
                 model=options["model"],
                 messages=translate_chat(req.chat),
                 n=req.num_completions,
+                temperature=options.get("temperature", openai.NOT_GIVEN),
+                max_completion_tokens=options.get(
+                    "max_completion_tokens", openai.NOT_GIVEN
+                ),
+                logprobs=options.get("logprobs", openai.NOT_GIVEN),
+                top_logprobs=options.get("top_logprobs", openai.NOT_GIVEN),
                 tools=[_make_chat_tool(tool) for tool in req.tools],
                 response_format=_chat_response_format(req.structured_output),
                 tool_choice=options.get("tool_choice", openai.NOT_GIVEN),

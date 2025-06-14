@@ -112,6 +112,10 @@ type Chat = Sequence[ChatMessage]
 class RequestOptions(TypedDict, total=False):
     model: str
     tool_choice: Literal["auto", "none", "required"]
+    temperature: float
+    max_completion_tokens: int
+    logprobs: bool
+    top_logprobs: int  # from 0 to 20
 
 
 @dataclass(frozen=True)
