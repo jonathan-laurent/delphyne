@@ -83,7 +83,7 @@ class UserMessage:
 @dataclass(frozen=True)
 class AssistantMessage:
     role: Literal["assistant"]
-    answer: Answer
+    answer: Answer  # Note: the mode does not really matter for the LLM.
 
     def __init__(self, answer: Answer):
         # to bypass the frozen dataclass check

@@ -452,6 +452,7 @@ def _instance_prompt(
     prompt, priming = _priming_split(prompt)
     msgs.append(md.UserMessage(prompt))
     if priming is not None:
+        # What mode we pick does not really matter here.
         msgs.append(md.AssistantMessage(Answer(None, priming)))
     # Add prefix if needed
     if (prefix := query.query_prefix()) is not None:
@@ -472,16 +473,17 @@ def create_prompt(
     query: dp.AbstractQuery[Any],
     examples: Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]],
     params: dict[str, object],
+    mode: dp.AnswerModeName,
     env: dp.TemplatesManager | None,
 ) -> md.Chat:
     msgs: list[md.ChatMessage] = []
-    sys = query.generate_prompt("system", None, params, env)
+    sys = query.generate_prompt("system", mode, params, env)
     msgs.append(md.SystemMessage(sys))
     for q, ans in examples:
         msgs.extend(_instance_prompt(q, env, params, ans.mode))
         msgs.append(md.AssistantMessage(ans))
     # TODO: handle different modes
-    msgs.extend(_instance_prompt(query, env, params, None))
+    msgs.extend(_instance_prompt(query, env, params, mode))
     return msgs
 
 
@@ -509,6 +511,7 @@ def few_shot[T](
     query: dp.AttachedQuery[T],
     env: dp.PolicyEnv,
     model: md.LLM,
+    mode: dp.AnswerModeName = None,
     enable_logging: bool = True,
     iterative_mode: bool = False,
 ) -> dp.Stream[T]:
@@ -526,7 +529,7 @@ def few_shot[T](
     """
     examples = find_all_examples(env.examples, query.query)
     mngr = env.templates
-    prompt = create_prompt(query.query, examples, {}, mngr)
+    prompt = create_prompt(query.query, examples, {}, mode, mngr)
     config = query.query.query_config()
     options: md.RequestOptions = {}
     structured_output = None
