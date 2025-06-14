@@ -97,9 +97,11 @@ def load_demo(demo_label: str) -> DemoExpectTest | dp.QueryDemo:
         "comp_result_in_cache",
         "comp_result_outside_cache",
         "tool_use",
+        "flags",
+        "flags_global",
     ],
 )
-def test_server(demo_label: str):
+def test_interpreter(demo_label: str):
     demo = load_demo(demo_label)
     print("\n")
     assert isinstance(demo, DemoExpectTest)
@@ -128,4 +130,4 @@ def test_query_demo(name: str, valid: bool):
 
 if __name__ == "__main__":
     # Entry point for the debugger (see "Debug Server Tests" configuration).
-    test_server("test_iterate")
+    test_interpreter("flags_global")

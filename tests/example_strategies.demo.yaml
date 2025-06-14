@@ -492,3 +492,33 @@
   expect:
     test_feedback:
       - diagnostics: __empty__
+
+
+- demonstration: flags
+  strategy: pick_flag
+  args: {}
+  tests:
+    - run | success
+    - run '#alt' | success
+    - run '#unk'
+  queries: []
+  expect:
+    test_feedback:
+      - diagnostics: __empty__
+      - diagnostics: __empty__
+      - diagnostics:
+        - - "warning"
+
+
+- demonstration: flags_global
+  strategy: pick_flag
+  args: {}
+  tests:
+    - run | success
+  queries:
+    - query: MethodFlag
+      args: {}
+      answers: [answer: alt]
+  expect:
+    test_feedback:
+      - diagnostics: __empty__

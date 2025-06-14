@@ -35,6 +35,7 @@ def test_node_origin_roundabout(s: str):
         ("run | success", None),
         ("run | failure", None),
         ("run 'foo baz:qux'", None),
+        ("run 'foo #bar'", None),  # value hint
         ("at find_inv", None),
         ("at find_inv 'foo bar'", None),
         ("go aggr(['', 'foo bar'])", None),

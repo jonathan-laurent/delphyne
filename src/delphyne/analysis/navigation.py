@@ -11,6 +11,9 @@ import delphyne.core as dp
 import delphyne.core.demos as dm
 from delphyne.core import AnyTree, refs
 
+VAL_HINT_PREFIX = "#"
+
+
 #####
 ##### Navigator Utilities
 #####
@@ -302,19 +305,30 @@ class Navigator:
         assert self.hint_resolver is not None
         # TODO: we ignore qualifiers because they should not work this way.
         used_hint: refs.Hint | None = None
+        answer: refs.Answer | None = None
         # We first try the first hint if there is one
         if hints:
-            # We don't send the implicit answer the first time since
-            # we don't want to consume the hint.
-            answer = self.hint_resolver(query, hints[0].hint, None)
+            hint = hints[0].hint
+            if hint.startswith(VAL_HINT_PREFIX):
+                # The hint is a value hint
+                aset = query.query.finite_answer_set()
+                cand = refs.Answer(None, hint.removeprefix(VAL_HINT_PREFIX))
+                if aset is not None and cand in aset:
+                    answer = cand
+            else:
+                # We don't send the implicit answer the first time since
+                # we don't want to consume the hint.
+                answer = self.hint_resolver(query, hints[0].hint, None)
             if answer is not None:
                 used_hint = hints[0]
                 hints = hints[1:]
-        else:
-            answer = None
         # If we could not use a hint, we try with the default answer
         if answer is None:
             answer = self.hint_resolver(query, None, implicit)
+        # If we still cannot, resolve, maybe the query has a default answer
+        if answer is None:
+            if (defa := query.query.default_answer()) is not None:
+                answer = defa
         # If we still have no answer, we're stuck
         if answer is None:
             raise Stuck(tree, query.ref[1], hints)

@@ -491,10 +491,12 @@ class PrimingTest(dp.Query[list[str]]):
 #####
 
 
+@dataclass
 class MethodFlag(dp.FlagQuery[Literal["def", "alt"]]):
     pass
 
 
+@dp.strategy
 def pick_flag() -> dp.Strategy[dp.Flag[MethodFlag], object, int]:
     match (yield from dp.get_flag(MethodFlag)):
         case "def":

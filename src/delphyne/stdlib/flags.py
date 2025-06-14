@@ -40,10 +40,9 @@ class FlagQuery[T: str](Query[T]):
     def parse_answer(self, answer: dp.Answer) -> T | dp.ParseError:
         if not isinstance(answer.content, str):
             return dp.ParseError(description="Flag answer must be a string.")
-        ans = self.finite_answer_set()
-        assert ans is not None
+        ans = self.flag_values()
         if answer.content not in ans:
-            msg = f"Invalid flag value: {answer.content}."
+            msg = f"Invalid flag value: '{answer.content}'."
             return dp.ParseError(description=msg)
         return cast(T, answer.content)
 
@@ -56,7 +55,7 @@ class Flag[F: FlagQuery[Any]](dp.Node):
         query = self.flag.query
         assert isinstance(query, FlagQuery)
         name = query.name()
-        return f"{name}: {query.flag_values()}"
+        return f"{name}: {', '.join(query.flag_values())}"
 
     def navigate(self) -> dp.Navigation:
         return (yield self.flag)

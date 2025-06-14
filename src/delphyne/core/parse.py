@@ -45,7 +45,8 @@ Grammar definition with Parsy
 
 
 # Allowed identifiers
-_ident = ps.regex(r"[a-zA-Z_][a-zA-Z0-9\-\._]*")
+_ident_regex = r"[a-zA-Z_][a-zA-Z0-9\-\._]*"
+_ident = ps.regex(_ident_regex)
 
 # Utilities
 _s = ps.string
@@ -62,7 +63,8 @@ _answer_id = _s("@") >> _num.map(refs.AnswerId)
 # Hint
 _hint_qual = _ident
 _hint_qual_colon = _hint_qual << _s(":")
-_hint = ps.seq(_hint_qual_colon.optional(), _ident).combine(refs.Hint)
+_hint_val = ps.regex("#?" + _ident_regex)
+_hint = ps.seq(_hint_qual_colon.optional(), _hint_val).combine(refs.Hint)
 _hints = _s("'") >> _hint.sep_by(_space).map(tuple) << _s("'")
 _hints_ref = _hints.map(refs.HintsRef)
 
