@@ -9,6 +9,7 @@ from typing import Any, Literal
 
 import openai
 import openai.types.chat as ochat
+import openai.types.chat.chat_completion as ochatc
 import openai.types.chat.completion_create_params as ochatp
 
 from delphyne.core.refs import Structured, ToolCall
@@ -41,6 +42,21 @@ class ToolCallIdGenerator:
 
     def get_id(self, tool_call: ToolCall) -> str:
         return f"call_{self.get_raw_id(tool_call)}"
+
+
+def translate_logprob_info(
+    info: ochatc.ChoiceLogprobs,
+) -> Sequence[md.TokenInfo]:
+    assert info.content is not None
+    ret: list[md.TokenInfo] = []
+    for tok in info.content:
+        token = md.Token(bytes=tok.bytes, token=tok.token)
+        top = [
+            (md.Token(bytes=t.bytes, token=t.token), t.logprob)
+            for t in tok.top_logprobs
+        ]
+        ret.append(md.TokenInfo(token, tok.logprob, top))
+    return ret
 
 
 def translate_chat(
@@ -181,6 +197,11 @@ class OpenAIModel(md.LLM):
             )
             content = choice.message.content
             if content is None:
+                if (msg := choice.message.refusal) is not None:
+                    log.append(
+                        md.LLMResponseLogItem("error", "llm_refusal", msg)
+                    )
+                    continue
                 if finish_reason != "tool_calls":
                     log.append(md.LLMResponseLogItem("error", "empty_answer"))
                     continue
@@ -208,9 +229,13 @@ class OpenAIModel(md.LLM):
                         )
                 if not ok:
                     continue
+            logprobs: Sequence[md.TokenInfo] | None = None
+            if options.get("logprobs", False):
+                assert choice.logprobs
+                logprobs = translate_logprob_info(choice.logprobs)
             output = md.LLMOutput(
                 content=content,
-                logprobs=None,
+                logprobs=logprobs,
                 finish_reason=finish_reason,
                 tool_calls=tool_calls,
             )

@@ -157,8 +157,8 @@ type FinishReason = Literal["stop", "length", "content_filter", "tool_calls"]
 
 @dataclass
 class Token:
-    bytes: Sequence[int]
     token: str
+    bytes: Sequence[int] | None
 
 
 @dataclass
