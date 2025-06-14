@@ -209,7 +209,10 @@ class OpenAIModel(md.LLM):
                 tool_calls=tool_calls,
             )
             outputs.append(output)
-        return md.LLMResponse(outputs, budget, log)
+        usage: dict[str, Any] | None = None
+        if response.usage:
+            usage = response.usage.to_dict()
+        return md.LLMResponse(outputs, budget, log, response.model, usage)
 
     async def stream_request(
         self, chat: md.Chat, options: md.RequestOptions

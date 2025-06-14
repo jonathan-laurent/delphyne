@@ -32,7 +32,7 @@
     outputs:
       - content:
           structured:
-            title: The Multifaceted Nature of Love
+            title: The Many Facets of Love
             authors:
               - Jane Doe
               - John Smith
@@ -41,9 +41,9 @@
         finish_reason: stop
       - content:
           structured:
-            title: Understanding the Essence of Love
+            title: 'The Essence of Love: Exploring Its Many Dimensions'
             authors:
-              - Jane Doe
+              - ChatGPT
         logprobs:
         tool_calls: []
         finish_reason: stop
@@ -51,6 +51,19 @@
       values:
         num_requests: 2.0
     log_items: []
+    model_name: gpt-4.1-mini-2025-04-14
+    usage_info:
+      completion_tokens: 46
+      prompt_tokens: 99
+      total_tokens: 145
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 0
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
 
 - input:
     request:
@@ -86,15 +99,15 @@
     outputs:
       - content:
           structured:
-            title: 'The Essence of Love: Understanding Its Impact and Importance'
+            title: 'Exploring the Depths of Love: A Timeless Emotion'
             authors:
-              - OpenAI Assistant
+              - ChatGPT
         logprobs:
         tool_calls: []
         finish_reason: stop
       - content:
           structured:
-            title: Understanding the Complexity of Love
+            title: 'The Essence of Love: A Universal Journey'
             authors:
               - Jane Doe
               - John Smith
@@ -105,3 +118,16 @@
       values:
         num_requests: 2
     log_items: []
+    model_name: gpt-4.1-mini-2025-04-14
+    usage_info:
+      completion_tokens: 51
+      prompt_tokens: 99
+      total_tokens: 150
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 0
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0

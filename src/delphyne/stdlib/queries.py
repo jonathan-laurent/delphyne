@@ -495,15 +495,19 @@ def log_oracle_response(
     *,
     verbose: bool,
 ):
-    if verbose:
-        info = {
-            "request": ty.pydantic_dump(md.LLMRequest, req),
-            "response": ty.pydantic_dump(md.LLMResponse, resp),
-        }
-        log(env, "llm_response", info, loc=query)
-    # TODO: severity
-    for extra in resp.log_items:
-        log(env, extra.message, extra.metadata, loc=query)
+    with env.tracer.lock:  # to avoid interleaving logs with other threads
+        if verbose:
+            info = {
+                "request": ty.pydantic_dump(md.LLMRequest, req),
+                "response": ty.pydantic_dump(md.LLMResponse, resp),
+            }
+            log(env, "llm_response", info, loc=query)
+        # TODO: severity
+        for extra in resp.log_items:
+            log(env, extra.message, extra.metadata, loc=query)
+        if resp.usage_info is not None:
+            usage = {"model": resp.model_name, "usage": resp.usage_info}
+            log(env, "llm_usage", usage, loc=query)
 
 
 @prompting_policy

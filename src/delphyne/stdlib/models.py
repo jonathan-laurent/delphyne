@@ -243,6 +243,8 @@ class LLMResponse:
     outputs: Sequence[LLMOutput]
     budget: Budget
     log_items: list[LLMResponseLogItem]
+    model_name: str | None = None
+    usage_info: dict[str, Any] | None = None
 
 
 class LLM(ABC):
@@ -270,7 +272,7 @@ class LLM(ABC):
 class DummyModel(LLM):
     def send_request(self, req: LLMRequest) -> LLMResponse:
         budget = Budget({NUM_REQUESTS: req.num_completions})
-        return LLMResponse([], budget, [])
+        return LLMResponse([], budget, [], "<dummy>")
 
 
 #####

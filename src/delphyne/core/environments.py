@@ -173,7 +173,7 @@ class Tracer:
 
         # Different threads may be logging information or appending to
         # the trace in parallel.
-        self.lock = threading.Lock()
+        self.lock = threading.RLock()
 
     def trace_space(self, ref: refs.GlobalSpacePath) -> None:
         self.trace.convert_location(traces.Location(ref[0], ref[1]))
