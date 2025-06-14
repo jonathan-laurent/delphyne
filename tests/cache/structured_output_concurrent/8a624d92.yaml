@@ -1,0 +1,107 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: Generate an article on the given topic. Answer as a JSON object.
+        - role: user
+          content: 'topic: Love'
+      num_completions: 2
+      options: {}
+      tools: []
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 1
+
+  output:
+    outputs:
+      - content:
+          structured:
+            title: The Multifaceted Nature of Love
+            authors:
+              - Jane Doe
+              - John Smith
+        logprobs:
+        tool_calls: []
+        finish_reason: stop
+      - content:
+          structured:
+            title: Understanding the Essence of Love
+            authors:
+              - Jane Doe
+        logprobs:
+        tool_calls: []
+        finish_reason: stop
+    budget:
+      values:
+        num_requests: 2.0
+    log_items: []
+
+- input:
+    request:
+      chat:
+        - role: system
+          content: Generate an article on the given topic. Answer as a JSON object.
+        - role: user
+          content: 'topic: Love'
+      num_completions: 2
+      options: {}
+      tools: []
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 2
+
+  output:
+    outputs:
+      - content:
+          structured:
+            title: 'The Essence of Love: Understanding Its Impact and Importance'
+            authors:
+              - OpenAI Assistant
+        logprobs:
+        tool_calls: []
+        finish_reason: stop
+      - content:
+          structured:
+            title: Understanding the Complexity of Love
+            authors:
+              - Jane Doe
+              - John Smith
+        logprobs:
+        tool_calls: []
+        finish_reason: stop
+    budget:
+      values:
+        num_requests: 2
+    log_items: []

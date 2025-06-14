@@ -23,17 +23,32 @@ def test_query_properties():
     assert len(q3.query_tools()) == 3  # Counting the answer tool
 
 
-def _eval_query(query: dp.Query[object], cache_name: str):
+def _eval_query(
+    query: dp.Query[object],
+    cache_name: str,
+    budget: int = 1,
+    concurrent: int = 1,
+):
     env = dp.PolicyEnv(demonstration_files=(), prompt_dirs=(PROMPT_DIR,))
     cache = CACHE_DIR / cache_name
     model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
-    bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
-    pp = dp.with_budget(bl) @ dp.few_shot(model)
+    bl = dp.BudgetLimit({dp.NUM_REQUESTS: budget})
+    pp = dp.with_budget(bl) @ dp.few_shot(model, num_concurrent=concurrent)
     stream = query.run_toplevel(env, pp)
     res, _ = dp.collect(stream)
     log = list(env.tracer.export_log())
     print(log)
     return res, log
+
+
+def test_concurrent():
+    res, _ = _eval_query(
+        ex.StructuredOutput(topic="Love"),
+        "structured_output_concurrent",
+        budget=4,
+        concurrent=2,
+    )
+    assert len(res) == 4
 
 
 def test_basic_llm_call():

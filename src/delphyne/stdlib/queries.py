@@ -513,6 +513,7 @@ def few_shot[T](
     model: md.LLM,
     mode: dp.AnswerModeName = None,
     enable_logging: bool = True,
+    num_concurrent: int = 1,
     iterative_mode: bool = False,
 ) -> dp.Stream[T]:
     """
@@ -527,6 +528,7 @@ def few_shot[T](
     TODO: Have an example limit and randomly sample examples. TODO: We
     are currently not using prompt params.
     """
+    assert not iterative_mode or num_concurrent == 1
     examples = find_all_examples(env.examples, query.query)
     mngr = env.templates
     prompt = create_prompt(query.query, examples, {}, mode, mngr)
@@ -541,7 +543,11 @@ def few_shot[T](
         options["tool_choice"] = "required"
     tools = [md.Schema.make(t) for t in query.query.query_tools()]
     req = md.LLMRequest(
-        prompt, 1, options, tools=tools, structured_output=structured_output
+        prompt,
+        num_completions=num_concurrent,
+        options=options,
+        tools=tools,
+        structured_output=structured_output,
     )
     cost_estimate = model.estimate_budget(req)
     while True:
@@ -552,16 +558,23 @@ def few_shot[T](
         if not resp.outputs:
             log(env, "llm_no_output", loc=query)
             continue
-        output = resp.outputs[0]
-        answer = dp.Answer(None, output.content, tuple(output.tool_calls))
-        element = query.parse_answer(answer)
-        env.tracer.trace_answer(query.ref, answer)
-        if isinstance(element, dp.ParseError):
-            log(env, "parse_error", {"error": element}, loc=query)
-        else:
-            yield dp.Yield(element)
+        elements: list[dp.Tracked[T] | dp.ParseError] = []
+        answers: list[dp.Answer] = []
+        for output in resp.outputs:
+            answer = dp.Answer(mode, output.content, tuple(output.tool_calls))
+            answers.append(answer)
+            element = query.parse_answer(answer)
+            env.tracer.trace_answer(query.ref, answer)
+            if isinstance(element, dp.ParseError):
+                log(env, "parse_error", {"error": element}, loc=query)
+            elements.append(element)
+        for element in elements:
+            if not isinstance(element, dp.ParseError):
+                yield dp.Yield(element)
         # In iterative mode, we want to keep the conversation going
         if iterative_mode:
+            assert len(elements) == 1 and len(answers) == 1
+            element = elements[0]
             if isinstance(element, dp.ParseError):
                 try:
                     repair = query.query.generate_prompt(
@@ -584,4 +597,5 @@ def few_shot[T](
                 except dp.TemplateFileMissing:
                     gen_new = "Good! Can you generate a different answer now?"
                 new_message = md.UserMessage(gen_new)
-            prompt = (*prompt, md.AssistantMessage(answer), new_message)
+
+            prompt = (*prompt, md.AssistantMessage(answers[0]), new_message)
