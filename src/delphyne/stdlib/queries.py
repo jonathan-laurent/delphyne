@@ -376,7 +376,6 @@ def yaml_from_last_block[T](type: TypeAnnot[T], res: str) -> T:
 
 
 def raw_string[T](type: TypeAnnot[T], res: str) -> T:
-    __builtins__.type
     try:
         if isinstance(type, __builtins__.type):  # if `type` is a class
             return type(res)  # type: ignore

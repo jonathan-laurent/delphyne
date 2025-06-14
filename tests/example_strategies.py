@@ -491,5 +491,5 @@ class PrimingTest(dp.Query[list[str]]):
 #####
 
 
-class MethodFlag(dp.FlagQuery[Literal[None, "alt"]]):
+class MethodFlag(dp.FlagQuery[Literal["def", "alt"]]):
     pass
