@@ -176,6 +176,14 @@ class Query[T](dp.AbstractQuery[T]):
         annots = typing.get_type_hints(cls)
         return "prefix" in annots and annots["prefix"] is ct.AnswerPrefix
 
+    def finite_answer_set(self) -> Sequence[dp.Answer] | None:
+        # We handle the special case where the return type is a literal
+        # type that is a subtype of str.
+        ans = self.answer_type()
+        if (res := _match_string_literal_type(ans)) is not None:
+            return [dp.Answer(None, v) for v in res]
+        return None
+
     def query_prefix(self) -> ct.AnswerPrefix | None:
         """
         Return the value of the `prefix` attribute if it has type
@@ -288,6 +296,16 @@ def _has_final_tool_call(ans_type: _DecomposedAnswerType, answer: dp.Answer):
     )
 
 
+def _match_string_literal_type(t: Any) -> Sequence[str] | None:
+    if (
+        (vals := dpi.literal_type_args(t)) is not None
+        and len(vals) > 0
+        and all(isinstance(v, str) for v in vals)
+    ):
+        return vals
+    return None
+
+
 #####
 ##### Parsers
 #####
@@ -387,6 +405,22 @@ def raw_string[T](type: TypeAnnot[T], res: str) -> T:
 
 def trimmed_raw_string[T](type: TypeAnnot[T], res: str) -> T:
     return raw_string(type, res.strip())
+
+
+def first_word[T](type: TypeAnnot[T], res: str) -> T:
+    """
+    Parse the first word of the answer and turn it into an object of
+    type T=Literal[s1,...,sn]
+    """
+    vals = _match_string_literal_type(type)
+    assert vals is not None
+    try:
+        assert res
+        first = res.split()[0]
+        assert first in vals
+        return cast(T, first)
+    except Exception as e:
+        raise dp.ParseError(description=str(e))
 
 
 def string_from_last_block[T](type: TypeAnnot[T], res: str) -> T:
@@ -508,6 +542,48 @@ def log_oracle_response(
         if resp.usage_info is not None:
             usage = {"model": resp.model_name, "usage": resp.usage_info}
             log(env, "llm_usage", usage, loc=query)
+
+
+@prompting_policy
+def classify[T](
+    query: dp.AttachedQuery[T],
+    env: dp.PolicyEnv,
+    model: md.LLM,
+    mode: dp.AnswerModeName = None,
+    enable_logging: bool = True,
+) -> dp.Stream[T]:
+    examples = find_all_examples(env.examples, query.query)
+    mngr = env.templates
+    prompt = create_prompt(query.query, examples, {}, mode, mngr)
+    aset = query.query.finite_answer_set()
+    assert aset is not None
+    options: md.RequestOptions = {
+        "logprobs": True,
+        "top_logprobs": 20,
+        "max_completion_tokens": 1,
+        "temperature": 0.0,
+    }
+    req = md.LLMRequest(
+        prompt,
+        num_completions=1,
+        options=options,
+    )
+    cost_estimate = model.estimate_budget(req)
+    yield dp.Barrier(cost_estimate)
+    resp = model.send_request(req)
+    log_oracle_response(env, query, req, resp, verbose=enable_logging)
+    yield dp.Spent(resp.budget)
+    if not resp.outputs:
+        return
+    output = resp.outputs[0]
+    answer = dp.Answer(mode, output.content)
+    element = query.parse_answer(answer)
+    env.tracer.trace_answer(query.ref, answer)
+    if isinstance(element, dp.ParseError):
+        log(env, "parse_error", {"error": element}, loc=query)
+    else:
+        # TODO: add metadata
+        yield dp.Yield(element)
 
 
 @prompting_policy
