@@ -99,10 +99,12 @@ class Query[T](dp.AbstractQuery[T]):
     """
 
     @classmethod
-    def _parser_attribute(cls) -> ParserSpec:
+    def _parser_attribute(cls) -> ParserSpec | None:
+        parse_overriden = dpi.is_method_overridden(Query, cls, "parse")
         if hasattr(cls, "__parser__"):
+            assert not parse_overriden
             return getattr(cls, "__parser__")
-        return "structured"
+        return "structured" if not parse_overriden else None
 
     @classmethod
     def _decomposed_answer_type(cls) -> _DecomposedAnswerType:
