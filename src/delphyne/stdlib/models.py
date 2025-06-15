@@ -172,9 +172,10 @@ class TokenInfo:
 class LLMOutput:
     # TODO: structured answers for which we need to parse the content...
     content: str | Structured
-    logprobs: Sequence[TokenInfo] | None
     tool_calls: Sequence[ToolCall]
     finish_reason: FinishReason
+    logprobs: Sequence[TokenInfo] | None = None
+    reasoning_content: str | None = None  # returned by DeepSeek for example
 
 
 #####

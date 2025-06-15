@@ -234,11 +234,16 @@ class OpenAICompatibleModel(md.LLM):
             if options.get("logprobs", False):
                 assert choice.logprobs
                 logprobs = translate_logprob_info(choice.logprobs)
+            # returned by DeepSeek for example
+            reasoning_content: str | None = getattr(
+                choice.message, "reasoning_content", None
+            )
             output = md.LLMOutput(
                 content=content,
                 logprobs=logprobs,
                 finish_reason=finish_reason,
                 tool_calls=tool_calls,
+                reasoning_content=reasoning_content,
             )
             outputs.append(output)
         usage: dict[str, Any] | None = None

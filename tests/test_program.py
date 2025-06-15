@@ -154,7 +154,14 @@ def test_classifiers(name: str, right: str, wrong: str):
 #####
 
 
-@pytest.mark.parametrize("model", ["mistral-small-2503", "deepseek-chat"])
+@pytest.mark.parametrize(
+    "model",
+    [
+        "mistral-small-2503",
+        "deepseek-chat",
+        # "deepseek-reasoner",  # long latency
+    ],
+)
 def test_provider(model: dp.StandardModelName):
     cache_name = f"provider_{model}"
     query = ex.MakeSum(allowed=[1, 2, 3, 4], goal=5)
