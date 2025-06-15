@@ -1,5 +1,5 @@
 """
-Utilities to call OpenAI Models
+Utilities to call models through OpenAI-compatible APIs.
 """
 
 import json
@@ -158,7 +158,7 @@ def _make_chat_tool(
 
 
 @dataclass
-class OpenAIModel(md.LLM):
+class OpenAICompatibleModel(md.LLM):
     options: md.RequestOptions
     api_key: str | None = None
     base_url: str | None = None
@@ -268,4 +268,4 @@ type OpenAIModelName = Literal["gpt-4.1", "gpt-4.1-mini"]
 
 
 def openai_model(model: OpenAIModelName | str):
-    return OpenAIModel({"model": model})
+    return OpenAICompatibleModel({"model": model})

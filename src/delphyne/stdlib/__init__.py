@@ -57,8 +57,8 @@ from delphyne.stdlib.nodes import (
     spawn_node,
     value,
 )
-from delphyne.stdlib.openai_models import (
-    OpenAIModel,
+from delphyne.stdlib.openai_api import (
+    OpenAICompatibleModel,
     openai_model,
 )
 from delphyne.stdlib.policies import (
