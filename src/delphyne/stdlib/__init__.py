@@ -59,7 +59,6 @@ from delphyne.stdlib.nodes import (
 )
 from delphyne.stdlib.openai_api import (
     OpenAICompatibleModel,
-    openai_model,
 )
 from delphyne.stdlib.policies import (
     PromptingPolicy,
@@ -97,6 +96,7 @@ from delphyne.stdlib.search.interactive import interact
 from delphyne.stdlib.search.iteration import (
     iterate,
 )
+from delphyne.stdlib.standard_models import openai_model
 from delphyne.stdlib.strategies import (
     StrategyInstance,
     strategy,

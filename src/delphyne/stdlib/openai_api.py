@@ -5,7 +5,7 @@ Utilities to call models through OpenAI-compatible APIs.
 import json
 from collections.abc import AsyncIterable, Sequence
 from dataclasses import dataclass
-from typing import Any, Literal
+from typing import Any
 
 import openai
 import openai.types.chat as ochat
@@ -262,10 +262,3 @@ class OpenAICompatibleModel(md.LLM):
             content = chunk.choices[0].delta.content
             if content:
                 yield content
-
-
-type OpenAIModelName = Literal["gpt-4.1", "gpt-4.1-mini"]
-
-
-def openai_model(model: OpenAIModelName | str):
-    return OpenAICompatibleModel({"model": model})
