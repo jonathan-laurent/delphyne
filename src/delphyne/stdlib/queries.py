@@ -674,15 +674,15 @@ def few_shot[T](
     if config.force_tool_call:
         options["tool_choice"] = "required"
     tools = [md.Schema.make(t) for t in query.query.query_tools()]
-    req = md.LLMRequest(
-        prompt,
-        num_completions=num_concurrent,
-        options=options,
-        tools=tools,
-        structured_output=structured_output,
-    )
-    cost_estimate = model.estimate_budget(req)
     while True:
+        req = md.LLMRequest(
+            prompt,
+            num_completions=num_concurrent,
+            options=options,
+            tools=tools,
+            structured_output=structured_output,
+        )
+        cost_estimate = model.estimate_budget(req)
         yield dp.Barrier(cost_estimate)
         resp = model.send_request(req)
         log_oracle_response(env, query, req, resp, verbose=enable_logging)
