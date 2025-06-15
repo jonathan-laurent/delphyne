@@ -71,12 +71,15 @@ from delphyne.stdlib.policies import (
 )
 from delphyne.stdlib.queries import (
     FinalAnswer,
+    LogProbInfo,
     ParserSpec,
     Query,
     Response,
     ToolRequests,
+    classify,
     extract_final_block,
     few_shot,
+    first_word,
     raw_string,
     raw_yaml,
     string_from_last_block,
@@ -102,6 +105,7 @@ from delphyne.stdlib.streams import (
     StreamTransformer,
     bind_stream,
     collect,
+    collect_with_metadata,
     loop,
     stream_take,
     stream_transformer,

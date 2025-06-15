@@ -544,6 +544,41 @@ def log_oracle_response(
             log(env, "llm_usage", usage, loc=query)
 
 
+def _compute_value_distribution(
+    values: Sequence[str], info: md.TokenInfo
+) -> dict[str, float]:
+    """
+    Return a dictionary (possibly empty) mapping values to their
+    logprob, as deduced from the metadata attached to the first token of
+    the answer.
+    """
+    assert len(values) > 0
+    logdistr: dict[str, float] = {}
+    assert info.top_logprobs is not None
+    for tok, lp in info.top_logprobs:
+        cands = [v for v in values if v.startswith(tok.token)]
+        assert len(cands) <= 1
+        if not cands:
+            continue
+        v = cands[0]
+        if v not in logdistr:
+            # if values=["common", "rare"], there could be a
+            # non-negligeable logprob on token "comm" (in addition to
+            # "common") We only count the first instance.
+            logdistr[v] = lp
+    return logdistr
+
+
+@dataclass
+class LogProbInfo:
+    """
+    Note: The distribution may not sum up to 1 and even be empty. The
+    user can normalize it if needed.
+    """
+
+    logprobs: dict[dp.Answer, float]
+
+
 @prompting_policy
 def classify[T](
     query: dp.AttachedQuery[T],
@@ -557,10 +592,16 @@ def classify[T](
     prompt = create_prompt(query.query, examples, {}, mode, mngr)
     aset = query.query.finite_answer_set()
     assert aset is not None
+    vals: list[str] = []
+    for a in aset:
+        assert isinstance(a.content, str)
+        vals.append(a.content)
     options: md.RequestOptions = {
         "logprobs": True,
         "top_logprobs": 20,
-        "max_completion_tokens": 1,
+        # TODO: somehow, there seems to be a problem with this, where
+        # one can get an empty answer with "finish_reason: length":
+        # "max_completion_tokens": 1,
         "temperature": 0.0,
     }
     req = md.LLMRequest(
@@ -582,8 +623,14 @@ def classify[T](
     if isinstance(element, dp.ParseError):
         log(env, "parse_error", {"error": element}, loc=query)
     else:
+        lpinfo = output.logprobs
+        assert lpinfo is not None
+        ldistr = _compute_value_distribution(vals, lpinfo[0])
+        meta = LogProbInfo(
+            {dp.Answer(mode, v): lp for v, lp in ldistr.items()}
+        )
         # TODO: add metadata
-        yield dp.Yield(element)
+        yield dp.Yield(element, meta=meta)
 
 
 @prompting_policy

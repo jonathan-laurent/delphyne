@@ -65,6 +65,7 @@ from delphyne.core.streams import (
     Barrier,
     Budget,
     BudgetLimit,
+    SearchMetadata,
     Spent,
     Stream,
     Yield,

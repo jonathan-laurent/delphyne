@@ -503,3 +503,19 @@ def pick_flag() -> dp.Strategy[dp.Flag[MethodFlag], object, int]:
             return 0
         case "alt":
             return 1
+
+
+#####
+##### Classification
+#####
+
+
+@dataclass
+class EvalNameRarity(dp.Query[Literal["common", "rare"]]):
+    """
+    Classify the user name as either "common" or "rare".
+    Just answer with one of those words and nothing else.
+    """
+
+    user_name: str
+    __parser__: ClassVar[dp.ParserSpec] = dp.first_word

@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, cast
 
 import example_strategies as ex
+import pytest
 
 import delphyne as dp
 
@@ -111,3 +112,37 @@ def test_flags_static():
     assert str(f.answer_type()) == "typing.Literal['def', 'alt']"
     assert f.default_answer().content == "def"
     assert len(f.finite_answer_set()) == 2
+
+
+#####
+##### Classification
+#####
+
+
+def _eval_classifier_query(
+    query: dp.Query[object],
+    cache_name: str,
+):
+    env = dp.PolicyEnv(demonstration_files=(), prompt_dirs=(PROMPT_DIR,))
+    cache = CACHE_DIR / cache_name
+    model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
+    bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
+    pp = dp.with_budget(bl) @ dp.classify(model)
+    stream = query.run_toplevel(env, pp)
+    res, _ = dp.collect_with_metadata(stream)
+    log = list(env.tracer.export_log())
+    print(log)
+    assert res
+    return res[0][1]
+
+
+@pytest.mark.parametrize(
+    "name, right, wrong",
+    [("Jonathan", "common", "rare"), ("X Æ A-Xii:", "rare", "common")],
+)
+def test_classifiers(name: str, right: str, wrong: str):
+    res = _eval_classifier_query(ex.EvalNameRarity(name), "classify")
+    assert isinstance(res, dp.LogProbInfo)
+    D = {k.content: v for k, v in res.logprobs.items()}
+    print(D)
+    assert D[right] > D[wrong]

@@ -212,23 +212,32 @@ def stream_take[T](stream: dp.Stream[T], num_generated: int) -> dp.Stream[T]:
             return
 
 
-def collect[T](
+def collect_with_metadata[T](
     stream: dp.Stream[T],
     budget: dp.BudgetLimit | None = None,
     num_generated: int | None = None,
-) -> tuple[Sequence[dp.Tracked[T]], dp.Budget]:
+) -> tuple[Sequence[tuple[dp.Tracked[T], dp.SearchMetadata]], dp.Budget]:
     if budget is not None:
         stream = stream_with_budget(stream, budget)
     if num_generated is not None:
         stream = stream_take(stream, num_generated)
     total = dp.Budget.zero()
-    elts: list[dp.Tracked[T]] = []
+    elts: list[tuple[dp.Tracked[T], dp.SearchMetadata]] = []
     for msg in stream:
         if isinstance(msg, dp.Yield):
-            elts.append(msg.value)
+            elts.append((msg.value, msg.meta))
         if isinstance(msg, dp.Spent):
             total = total + msg.budget
     return elts, total
+
+
+def collect[T](
+    stream: dp.Stream[T],
+    budget: dp.BudgetLimit | None = None,
+    num_generated: int | None = None,
+) -> tuple[Sequence[dp.Tracked[T]], dp.Budget]:
+    res, spent = collect_with_metadata(stream, budget, num_generated)
+    return [elt[0] for elt in res], spent
 
 
 #####
