@@ -83,3 +83,19 @@ def test_literal_type_args(inp, out):
     res = insp.literal_type_args(inp)
     res = list(res) if res is not None else None
     assert res == out
+
+
+def test_is_method_overridden():
+    class Base:
+        def method(self):
+            pass
+
+    class Derived(Base):
+        def method(self):
+            pass
+
+    class NotOverridden(Base):
+        pass
+
+    assert insp.is_method_overridden(Base, Derived, "method")
+    assert not insp.is_method_overridden(Base, NotOverridden, "method")

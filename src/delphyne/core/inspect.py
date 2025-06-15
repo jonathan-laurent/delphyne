@@ -153,3 +153,15 @@ def literal_type_args(typ: Any) -> Sequence[Any] | None:
     if typing.get_origin(typ) is not typing.Literal:
         return None
     return typing.get_args(typ)
+
+
+def is_method_overridden(
+    base_class: type[Any], derived_class: type[Any], method_name: str
+) -> bool:
+    base_method = getattr(base_class, method_name, None)
+    derived_method = getattr(derived_class, method_name, None)
+
+    if base_method is None or derived_method is None:
+        return False  # Method doesn't exist in one of the classes
+
+    return inspect.unwrap(base_method) != inspect.unwrap(derived_method)
