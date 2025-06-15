@@ -96,7 +96,13 @@ from delphyne.stdlib.search.interactive import interact
 from delphyne.stdlib.search.iteration import (
     iterate,
 )
-from delphyne.stdlib.standard_models import openai_model
+from delphyne.stdlib.standard_models import (
+    StandardModelName,
+    deepseek_model,
+    mistral_model,
+    openai_model,
+    standard_model,
+)
 from delphyne.stdlib.strategies import (
     StrategyInstance,
     strategy,

@@ -169,6 +169,7 @@ class OpenAICompatibleModel(md.LLM):
         client = openai.OpenAI(api_key=self.api_key, base_url=self.base_url)
         options = self.options | req.options
         assert "model" in options, "No model was specified"
+        tools = [_make_chat_tool(tool) for tool in req.tools]
         try:
             response: ochat.ChatCompletion = client.chat.completions.create(
                 model=options["model"],
@@ -180,7 +181,7 @@ class OpenAICompatibleModel(md.LLM):
                 ),
                 logprobs=options.get("logprobs", openai.NOT_GIVEN),
                 top_logprobs=options.get("top_logprobs", openai.NOT_GIVEN),
-                tools=[_make_chat_tool(tool) for tool in req.tools],
+                tools=tools if tools else openai.NOT_GIVEN,
                 response_format=_chat_response_format(req.structured_output),
                 tool_choice=options.get("tool_choice", openai.NOT_GIVEN),
             )

@@ -1,0 +1,33 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target. Just answer with a list of numbers and nothing else.
+        - role: user
+          content: |-
+            List: [1, 2, 3, 4]
+            Target: 5
+      num_completions: 1
+      options: {}
+      tools: []
+      structured_output:
+    iter: 1
+  output:
+    outputs:
+      - content: '[2, 3]'
+        logprobs:
+        tool_calls: []
+        finish_reason: stop
+    budget:
+      values:
+        num_requests: 1
+    log_items: []
+    model_name: deepseek-chat
+    usage_info:
+      completion_tokens: 6
+      prompt_tokens: 56
+      total_tokens: 62
+      prompt_tokens_details:
+        cached_tokens: 0
+      prompt_cache_hit_tokens: 0
+      prompt_cache_miss_tokens: 56

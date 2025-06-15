@@ -29,10 +29,11 @@ def _eval_query(
     cache_name: str,
     budget: int = 1,
     concurrent: int = 1,
+    model_name: dp.StandardModelName = "gpt-4.1-mini",
 ):
     env = dp.PolicyEnv(demonstration_files=(), prompt_dirs=(PROMPT_DIR,))
     cache = CACHE_DIR / cache_name
-    model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
+    model = dp.CachedModel(dp.standard_model(model_name), cache)
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: budget})
     pp = dp.with_budget(bl) @ dp.few_shot(model, num_concurrent=concurrent)
     stream = query.run_toplevel(env, pp)
@@ -146,3 +147,17 @@ def test_classifiers(name: str, right: str, wrong: str):
     D = {k.content: v for k, v in res.logprobs.items()}
     print(D)
     assert D[right] > D[wrong]
+
+
+#####
+##### Diverse Providers
+#####
+
+
+@pytest.mark.parametrize("model", ["mistral-small-2503", "deepseek-chat"])
+def test_provider(model: dp.StandardModelName):
+    cache_name = f"provider_{model}"
+    query = ex.MakeSum(allowed=[1, 2, 3, 4], goal=5)
+    res, _ = _eval_query(query, cache_name, model_name=model)
+    assert res
+    print(res[0].value)
