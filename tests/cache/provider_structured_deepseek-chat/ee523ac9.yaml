@@ -1,0 +1,64 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: Generate an article on the given topic. Answer as a JSON object.
+        - role: user
+          content: 'topic: AI'
+      num_completions: 1
+      options: {}
+      tools: []
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 1
+
+  output:
+    outputs:
+      - content:
+          structured:
+            article:
+              title: The Evolution and Impact of Artificial Intelligence
+              introduction: Artificial Intelligence (AI) has transitioned from a futuristic concept to a fundamental part of our daily lives. Its evolution has been rapid, and its impact is profound, affecting industries, economies, and societal norms. This article explores the journey of AI, its current applications, and the ethical considerations it brings.
+              sections:
+                - title: The Origins of AI
+                  content: The concept of artificial intelligence dates back to ancient history, but it wasn't until the 20th century that AI began to take shape as a field of study. The term 'Artificial Intelligence' was first coined by John McCarthy in 1956 at the Dartmouth Conference. Early AI research focused on problem-solving and symbolic methods, laying the groundwork for the sophisticated systems we see today.
+                - title: Current Applications of AI
+                  content: Today, AI is ubiquitous, powering everything from search engines and social media algorithms to autonomous vehicles and smart home devices. In healthcare, AI aids in diagnosis and personalized medicine. In finance, it's used for fraud detection and algorithmic trading. The versatility of AI technologies like machine learning, natural language processing, and robotics continues to expand its applications across sectors.
+                - title: Ethical Considerations and Challenges
+                  content: As AI becomes more integrated into society, ethical concerns have emerged. Issues such as privacy, bias in AI algorithms, job displacement, and the potential for autonomous weapons raise important questions. Ensuring that AI is developed and used responsibly requires collaboration among governments, industries, and communities to establish guidelines and regulations.
+                - title: The Future of AI
+                  content: The future of AI holds limitless possibilities, from solving complex global challenges like climate change and disease to enhancing human creativity and productivity. However, realizing this potential will require addressing the ethical and technical challenges ahead. The journey of AI is far from over, and its continued evolution will shape the future of humanity.
+              conclusion: Artificial Intelligence is a transformative force that has reshaped the world in countless ways. Its development offers incredible opportunities but also poses significant challenges. As we stand on the brink of further advancements, it's crucial to navigate the path of AI with caution, ensuring it benefits all of humanity.
+        tool_calls: []
+        finish_reason: stop
+        logprobs:
+        reasoning_content:
+    budget:
+      values:
+        num_requests: 1
+    log_items: []
+    model_name: deepseek-chat
+    usage_info:
+      completion_tokens: 507
+      prompt_tokens: 30
+      total_tokens: 537
+      prompt_tokens_details:
+        cached_tokens: 0
+      prompt_cache_hit_tokens: 0
+      prompt_cache_miss_tokens: 30

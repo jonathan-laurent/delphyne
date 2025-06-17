@@ -35,7 +35,9 @@ def deepseek_model(model: DeepSeekModelName | str):
     api_key = os.getenv("DEEPSEEK_API_KEY")
     assert api_key is not None
     url = "https://api.deepseek.com"
-    return OpenAICompatibleModel({"model": model}, api_key, url)
+    return OpenAICompatibleModel(
+        {"model": model}, api_key, url, no_json_schema=True
+    )
 
 
 def _values(alias: Any) -> Sequence[str]:

@@ -123,10 +123,12 @@ def _strict_schema(schema: Any):
 
 
 def _chat_response_format(
-    structured_output: md.Schema | None,
+    structured_output: md.Schema | None, no_json_schema: bool
 ) -> ochatp.ResponseFormat:
     if structured_output is None:
         return {"type": "text"}
+    elif no_json_schema:
+        return {"type": "json_object"}
     # We do not use `description` keys.
     resp: ochatp.ResponseFormat = {
         "type": "json_schema",
@@ -159,9 +161,18 @@ def _make_chat_tool(
 
 @dataclass
 class OpenAICompatibleModel(md.LLM):
+    """
+    A Model accessible via an OpenAI-compatible API.
+
+    - `no_json_schema`: if `True`, JSON mode is used for structured
+      output instead of JSON Schema. This is useful for providers like
+      DeepSeek that do not support structured output with schemas.
+    """
+
     options: md.RequestOptions
     api_key: str | None = None
     base_url: str | None = None
+    no_json_schema: bool = False
 
     def send_request(self, req: md.LLMRequest) -> md.LLMResponse:
         # TODO: better handling of budget beyond `num_requests`
@@ -182,7 +193,9 @@ class OpenAICompatibleModel(md.LLM):
                 logprobs=options.get("logprobs", openai.NOT_GIVEN),
                 top_logprobs=options.get("top_logprobs", openai.NOT_GIVEN),
                 tools=tools if tools else openai.NOT_GIVEN,
-                response_format=_chat_response_format(req.structured_output),
+                response_format=_chat_response_format(
+                    req.structured_output, self.no_json_schema
+                ),
                 tool_choice=options.get("tool_choice", openai.NOT_GIVEN),
             )
         except (openai.RateLimitError, openai.APITimeoutError) as e:
@@ -211,7 +224,17 @@ class OpenAICompatibleModel(md.LLM):
                 req.structured_output is not None
                 and choice.message.tool_calls is None
             ):
-                content = Structured(json.loads(content))
+                try:
+                    content = Structured(json.loads(content))
+                except Exception as e:
+                    log.append(
+                        md.LLMResponseLogItem(
+                            "error",
+                            "failed_to_parse_structured_output",
+                            metadata={"content": content, "error": str(e)},
+                        )
+                    )
+                    continue  # we skip the answer
             tool_calls: list[ToolCall] = []
             if choice.message.tool_calls is not None:
                 ok = True
@@ -229,6 +252,7 @@ class OpenAICompatibleModel(md.LLM):
                             )
                         )
                 if not ok:
+                    # If we failed to parse a tool call, we skip the answer
                     continue
             logprobs: Sequence[md.TokenInfo] | None = None
             if options.get("logprobs", False):
