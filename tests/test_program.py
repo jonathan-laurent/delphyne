@@ -168,3 +168,18 @@ def test_provider(model: dp.StandardModelName):
     res, _ = _eval_query(query, cache_name, model_name=model)
     assert res
     print(res[0].value)
+
+
+@pytest.mark.parametrize(
+    "model",
+    [
+        "mistral-small-2503",
+        # "deepseek-chat",
+    ],
+)
+def test_structured_output_provider(model: dp.StandardModelName):
+    cache_name = f"provider_structured_{model}"
+    query = ex.StructuredOutput(topic="AI")
+    res, _ = _eval_query(query, cache_name, model_name=model)
+    assert res
+    print(res[0].value)

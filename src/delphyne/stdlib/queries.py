@@ -588,6 +588,7 @@ def classify[T](
     model: md.LLM,
     mode: dp.AnswerModeName = None,
     enable_logging: bool = True,
+    top_logprobs: int = 20,
 ) -> dp.Stream[T]:
     examples = find_all_examples(env.examples, query.query)
     mngr = env.templates
@@ -600,7 +601,7 @@ def classify[T](
         vals.append(a.content)
     options: md.RequestOptions = {
         "logprobs": True,
-        "top_logprobs": 20,
+        "top_logprobs": top_logprobs,
         # TODO: somehow, there seems to be a problem with this, where
         # one can get an empty answer with "finish_reason: length":
         # "max_completion_tokens": 1,
