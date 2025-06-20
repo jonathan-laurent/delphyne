@@ -176,15 +176,18 @@ class Tracer:
         self.lock = threading.RLock()
 
     def trace_space(self, ref: refs.GlobalSpacePath) -> None:
-        self.trace.convert_location(traces.Location(ref[0], ref[1]))
+        with self.lock:
+            self.trace.convert_location(traces.Location(ref[0], ref[1]))
 
     def trace_node(self, node: refs.GlobalNodePath) -> None:
-        self.trace.convert_location(traces.Location(node, None))
+        with self.lock:
+            self.trace.convert_location(traces.Location(node, None))
 
     def trace_answer(
         self, space: refs.GlobalSpacePath, answer: refs.Answer
     ) -> None:
-        self.trace.convert_answer_ref((space, answer))
+        with self.lock:
+            self.trace.convert_answer_ref((space, answer))
 
     def log(
         self,
