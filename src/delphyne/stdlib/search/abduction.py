@@ -30,7 +30,7 @@ class Abduction(dp.Node):
         dp.OpaqueSpace[Any, _Status],
     ]
     suggest: Callable[
-        [_Fact, _Feedback],
+        [_Feedback],
         dp.OpaqueSpace[Any, Sequence[_Fact]],
     ]
     search_equivalent: Callable[
@@ -53,7 +53,7 @@ class Abduction(dp.Node):
             else:
                 assert status.value == "feedback"
                 feedback = payload
-                suggestions = yield self.suggest(fact, feedback)
+                suggestions = yield self.suggest(feedback)
                 proved: list[Any] = []
                 for s in suggestions:
                     proved.append((s, (yield from aux(s))))
@@ -78,7 +78,8 @@ def abduction[Fact, Feedback, Proof, P](
         dp.OpaqueSpaceBuilder[P, AbductionStatus[Feedback, Proof]],
     ],
     suggest: Callable[
-        [Fact, Feedback], dp.OpaqueSpaceBuilder[P, Sequence[Fact]]
+        [Feedback],
+        dp.OpaqueSpaceBuilder[P, Sequence[Fact]],
     ],
     search_equivalent: Callable[
         [Sequence[Fact], Fact], dp.OpaqueSpaceBuilder[P, Fact | None]
@@ -98,6 +99,10 @@ def abduction[Fact, Feedback, Proof, P](
         disproved, or a list of suggestions are made that might be
         helpful to prove first. `None` denotes the top-level goal to be
         proved.
+
+      suggest: take some feedback from the `prove` function and return a
+        sequence of fact candidates that may be useful to prove before
+        reattempting the original proof.
 
       search_equivalent: take a collection of facts along with a new
         one, and return either the first fact of the list equivalent to

@@ -562,6 +562,7 @@ class ObtainItem(dp.Query[Sequence[str]]):
 
 @dataclass
 class AcquisitionFeedback:
+    item: str
     possessed: Sequence[str]
 
 
@@ -602,7 +603,7 @@ def try_obtain_item(
         return ("disproved", None)
     return (
         "feedback",
-        AcquisitionFeedback(possessed=[p[0] for p in possessed]),
+        AcquisitionFeedback(item, [p[0] for p in possessed]),
     )
 
 
@@ -615,8 +616,8 @@ def obtain_item(
         prove=lambda possessed, item: dp.const_space(
             try_obtain_item(market, item or goal, possessed)
         ),
-        suggest=lambda item, f: (
-            ObtainItem(market, f.possessed, item)(IP, lambda p: p)
+        suggest=lambda f: (
+            ObtainItem(market, f.possessed, f.item)(IP, lambda p: p)
         ),
         search_equivalent=lambda its, it: dp.const_space(None),
         redundant=lambda its, it: dp.const_space(False),
