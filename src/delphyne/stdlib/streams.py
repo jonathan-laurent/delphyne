@@ -240,6 +240,12 @@ def collect[T](
     return [elt[0] for elt in res], spent
 
 
+def stream_squash[T](stream: dp.Stream[Sequence[T]]) -> dp.Stream[Sequence[T]]:
+    # TODO: implementing this requires being able to convert a list of
+    # tracked object into a tracked object.
+    assert False
+
+
 #####
 ##### Standard Stream Transformers
 #####
