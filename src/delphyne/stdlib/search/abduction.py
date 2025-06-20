@@ -39,6 +39,28 @@ class Abduction(dp.Node):
         dp.OpaqueSpace[Any, bool],
     ]
 
+    def navigate(self) -> dp.Navigation:
+        def aux(fact: _Fact | None) -> dp.Navigation:
+            res = yield self.prove([], fact)
+            status, payload = res[0], res[1]
+            if status.value == "proved":
+                return payload
+            elif status.value == "disproved":
+                assert False
+            else:
+                assert status.value == "feedback"
+                feedback = payload
+                suggestions = yield self.suggest(fact, feedback)
+                proved: list[Any] = []
+                for s in suggestions:
+                    proved.append((s, (yield from aux(s))))
+                res = yield self.prove(proved, fact)
+                status, payload = res[0], res[1]
+                assert status.value == "proved"
+                return payload
+
+        return (yield from aux(None))
+
 
 type Status[Feedback, Proof] = (
     tuple[Literal["disproved"], None]
