@@ -303,6 +303,15 @@ class Navigator:
                 key = (tree.ref, refs.value_ref(value))
                 self.info.hints_rev.actions[key] = used_hints
             return value, hints
+        except (
+            NavigationError,
+            ReachedFailureNode,
+            Stuck,
+            MatchedSelector,
+            AnswerParseError,
+            dp.StrategyException,
+        ) as e:
+            raise e
         except Exception as e:
             raise NavigationError(e)
 
