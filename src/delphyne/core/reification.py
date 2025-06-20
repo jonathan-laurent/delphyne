@@ -167,7 +167,10 @@ def _recompute[N: Node, P, T](
     strategy: StrategyComp[N, P, T],
     actions: Sequence[object],
 ) -> tuple[_PreNode[N, P, T], Strategy[N, P, T]]:
-    gen = strategy.run_generator()
+    try:
+        gen = strategy.run_generator()
+    except Exception as e:
+        raise tr.StrategyException(e)
     mknode = _send_action(gen, None)
     for a in actions:
         mknode = _send_action(gen, a)
