@@ -292,6 +292,12 @@ A dynamic assembly of tracked values.
 """
 
 
+def _invalid_value(v: object) -> str:
+    if isinstance(v, list):
+        return f"Lists are not allowed as values, use tuples instead: {v}"
+    return f"Invalid value: {v}"
+
+
 def value_ref(v: Value) -> ValueRef:
     match v:
         case Tracked(_, ref):
@@ -300,6 +306,7 @@ def value_ref(v: Value) -> ValueRef:
             return None
         case tuple():
             return tuple(value_ref(o) for o in v)
+    assert False, _invalid_value(v)
 
 
 def drop_refs(v: Value) -> object:
@@ -310,6 +317,7 @@ def drop_refs(v: Value) -> object:
             return None
         case tuple():
             return tuple(drop_refs(o) for o in v)
+    assert False, _invalid_value(v)
 
 
 def value_type(v: Value) -> TypeAnnot[Any] | NoTypeInfo:
