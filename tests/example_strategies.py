@@ -542,23 +542,32 @@ class Exchange:
 
 
 @dataclass
-class ObtainItem(dp.Query[int]):
+class ObtainItem(dp.Query[Sequence[str]]):
+    """
+    You are in a market and you are presented with a list of sellers.
+    Each seller offers to exchange a specific item for a list of other
+    items. You also possess a number of items and are interested in
+    obtaining a new one.
+
+    Find a vendor that sells the item that you want and answer with a
+    list of things to acquire before you can make the exchange. For
+    example, if you already have an A but no B, you want to get a C and
+    a vendor exchanges a C for an A and a B, you should answer with [B].
+    """
+
     market: Market
-    possessed_items: list[str]
+    possessed_items: Sequence[str]
     item: str
 
 
 @dataclass
-class ObtainItemIP:
-    pass
-
-
-type AcquisitionFeedback = None
+class AcquisitionFeedback:
+    possessed: Sequence[str]
 
 
 def _trade_with(
     member: MarketMember,
-    possessed: list[tuple[str, list[Exchange]]],
+    possessed: Sequence[tuple[str, list[Exchange]]],
     wanted_item: str,
 ) -> list[Exchange] | None:
     if member.offered_item != wanted_item:
@@ -576,7 +585,7 @@ def _trade_with(
 
 
 def try_obtain_item(
-    market: Market, item: str, possessed: list[tuple[str, list[Exchange]]]
+    market: Market, item: str, possessed: Sequence[tuple[str, list[Exchange]]]
 ) -> dp.AbductionStatus[AcquisitionFeedback, list[Exchange]]:
     # If the item is already possessed, we are done.
     for it, xs in possessed:
@@ -591,12 +600,25 @@ def try_obtain_item(
     # If no one offers the item, there is no chance to obtain it.
     if not any(item == member.offered_item for member in market):
         return ("disproved", None)
-    return ("feedback", None)
+    return (
+        "feedback",
+        AcquisitionFeedback(possessed=[p[0] for p in possessed]),
+    )
 
 
 @dp.strategy
 def obtain_item(
-    market: Market, item: str
-) -> dp.Strategy[dp.Abduction, ObtainItemIP, list[Exchange]]:
-    assert False
-    yield
+    market: Market, goal: str
+) -> dp.Strategy[dp.Abduction, dp.PromptingPolicy, list[Exchange]]:
+    IP = dp.PromptingPolicy
+    exchanges = yield from dp.abduction(
+        prove=lambda possessed, item: dp.const_space(
+            try_obtain_item(market, item or goal, possessed)
+        ),
+        suggest=lambda item, f: (
+            ObtainItem(market, f.possessed, item)(IP, lambda p: p)
+        ),
+        search_equivalent=lambda its, it: dp.const_space(None),
+        redundant=lambda its, it: dp.const_space(False),
+    )
+    return exchanges
