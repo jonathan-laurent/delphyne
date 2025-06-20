@@ -522,3 +522,22 @@
   expect:
     test_feedback:
       - diagnostics: __empty__
+
+
+- demonstration: abduction
+  strategy: obtain_item
+  args:
+    market:
+      - name: Joe
+        asked_items: [apple, cherry]
+        offered_item: banana
+      - name: Eric
+        asked_items: []
+        offered_item: apple
+      - name: Alice
+        asked_items: []
+        offered_item: cherry
+    goal: banana
+  tests:
+    - run | success
+  queries: []

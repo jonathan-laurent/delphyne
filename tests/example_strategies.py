@@ -546,8 +546,8 @@ class ObtainItem(dp.Query[Sequence[str]]):
     """
     You are in a market and you are presented with a list of sellers.
     Each seller offers to exchange a specific item for a list of other
-    items. You also possess a number of items and are interested in
-    obtaining a new one.
+    items (or for free if the list is empty). You also possess a number
+    of items and are interested in obtaining a new one.
 
     Find a vendor that sells the item that you want and answer with a
     list of things to acquire before you can make the exchange. For

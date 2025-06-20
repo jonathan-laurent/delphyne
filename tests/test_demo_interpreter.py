@@ -130,4 +130,4 @@ def test_query_demo(name: str, valid: bool):
 
 if __name__ == "__main__":
     # Entry point for the debugger (see "Debug Server Tests" configuration).
-    test_interpreter("flags_global")
+    test_interpreter("abduction")
