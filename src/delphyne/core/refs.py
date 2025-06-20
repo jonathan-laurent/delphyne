@@ -62,6 +62,14 @@ An S-expression whose atoms have type `T`.
 """
 
 
+type ExtAssembly[T] = T | None | Sequence[ExtAssembly[T]]
+"""
+Generalizing `Assembly` to allow arbitrary sequences (and not just
+tuples). The distinction is important because `ValueRef` needs to be
+hashable and so cannot contain lists, while `Value` can contain lists. 
+"""
+
+
 type NodePath = tuple[ValueRef, ...]
 """
 Encodes a sequence of actions leading to a node with respect to a
@@ -286,7 +294,7 @@ class Tracked(Generic[T]):
         )
 
 
-type Value = Assembly[Tracked[Any]]
+type Value = ExtAssembly[Tracked[Any]]
 """
 A dynamic assembly of tracked values.
 """
@@ -304,7 +312,7 @@ def value_ref(v: Value) -> ValueRef:
             return ref
         case None:
             return None
-        case tuple():
+        case Sequence():
             return tuple(value_ref(o) for o in v)
     assert False, _invalid_value(v)
 
@@ -315,7 +323,7 @@ def drop_refs(v: Value) -> object:
             return value
         case None:
             return None
-        case tuple():
+        case Sequence():
             return tuple(drop_refs(o) for o in v)
     assert False, _invalid_value(v)
 
@@ -326,7 +334,7 @@ def value_type(v: Value) -> TypeAnnot[Any] | NoTypeInfo:
             return v.type_annot
         case None:
             return None
-        case tuple():
+        case Sequence():
             types = [value_type(o) for o in v]
             if any(isinstance(t, NoTypeInfo) for t in types):
                 return NoTypeInfo()
