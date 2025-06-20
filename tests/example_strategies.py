@@ -519,3 +519,84 @@ class EvalNameRarity(dp.Query[Literal["common", "rare"]]):
 
     user_name: str
     __parser__: ClassVar[dp.ParserSpec] = dp.first_word
+
+
+#####
+##### Abduction
+#####
+
+
+@dataclass
+class MarketMember:
+    name: str
+    asked_items: list[str]
+    offered_item: str
+
+
+type Market = list[MarketMember]
+
+
+@dataclass
+class Exchange:
+    person: str
+
+
+@dataclass
+class ObtainItem(dp.Query[int]):
+    market: Market
+    possessed_items: list[str]
+    item: str
+
+
+@dataclass
+class ObtainItemIP:
+    pass
+
+
+type AcquisitionFeedback = None
+
+
+def _trade_with(
+    member: MarketMember,
+    possessed: list[tuple[str, list[Exchange]]],
+    wanted_item: str,
+) -> list[Exchange] | None:
+    if member.offered_item != wanted_item:
+        return None
+    exchanges: list[Exchange] = []
+    for asked in member.asked_items:
+        for it, xs in possessed:
+            if it == asked:
+                exchanges += xs
+                break
+        else:
+            return None
+    exchanges.append(Exchange(person=member.name))
+    return exchanges
+
+
+def try_obtain_item(
+    market: Market, item: str, possessed: list[tuple[str, list[Exchange]]]
+) -> dp.AbductionStatus[AcquisitionFeedback, list[Exchange]]:
+    # If the item is already possessed, we are done.
+    for it, xs in possessed:
+        if it == item:
+            return ("proved", xs)
+    # Otherwise, if we can obtain the item in a single exchange we are
+    # still good.
+    for member in market:
+        attempt = _trade_with(member, possessed, item)
+        if attempt is not None:
+            return ("proved", attempt)
+    # If no one offers the item, there is no chance to obtain it.
+    if not any(item == member.offered_item for member in market):
+        return ("disproved", None)
+    return ("feedback", None)
+
+
+@dp.strategy
+def obtain_item(
+    market: Market, item: str
+) -> dp.Strategy[dp.Abduction, ObtainItemIP, list[Exchange]]:
+    assert False
+    yield

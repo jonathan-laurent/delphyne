@@ -86,6 +86,11 @@ from delphyne.stdlib.queries import (
     trimmed_string_from_last_block,
     yaml_from_last_block,
 )
+from delphyne.stdlib.search.abduction import (
+    Abduction,
+    AbductionStatus,
+    abduction,
+)
 from delphyne.stdlib.search.bestfs import (
     best_first_search,
 )

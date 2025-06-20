@@ -4,9 +4,10 @@ Strategies and Policies for Recursive Abduction.
 
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 import delphyne.core as dp
+from delphyne.stdlib.nodes import spawn_node
 
 # For readability of the `Abduction` definition
 type _Fact = Any
@@ -20,6 +21,8 @@ class Abduction(dp.Node):
     """
     Node for the singleton tree produced by `abduction`.
     See `abduction` for details.
+
+    An action is a successful proof of the main goal.
     """
 
     prove: Callable[
@@ -62,7 +65,7 @@ class Abduction(dp.Node):
         return (yield from aux(None))
 
 
-type Status[Feedback, Proof] = (
+type AbductionStatus[Feedback, Proof] = (
     tuple[Literal["disproved"], None]
     | tuple[Literal["proved"], Proof]
     | tuple[Literal["feedback"], Feedback]
@@ -72,7 +75,7 @@ type Status[Feedback, Proof] = (
 def abduction[Fact, Feedback, Proof, P](
     prove: Callable[
         [Sequence[tuple[Fact, Proof]], Fact | None],
-        dp.OpaqueSpaceBuilder[P, Status[Feedback, Proof]],
+        dp.OpaqueSpaceBuilder[P, AbductionStatus[Feedback, Proof]],
     ],
     suggest: Callable[
         [Fact, Feedback], dp.OpaqueSpaceBuilder[P, Sequence[Fact]]
@@ -108,4 +111,11 @@ def abduction[Fact, Feedback, Proof, P](
     Returns:
       a proof of the top-level goal.
     """
-    assert False
+    res = yield spawn_node(
+        Abduction,
+        prove=prove,
+        suggest=suggest,
+        search_equivalent=search_equivalent,
+        redundant=redundant,
+    )
+    return cast(Proof, res)
