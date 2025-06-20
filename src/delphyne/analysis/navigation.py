@@ -91,6 +91,15 @@ class EncounteredTags:
 
 
 @dataclass
+class NavigationError(Exception):
+    """
+    Exception reached while calling `navigate` on a node.
+    """
+
+    error: Exception
+
+
+@dataclass
 class Stuck(Exception):
     tree: AnyTree
     space_ref: refs.SpaceRef
@@ -279,8 +288,8 @@ class Navigator:
         encountered: EncounteredTags,
     ) -> tuple[dp.Value, Sequence[refs.Hint]]:
         original_hints = hints
-        navigator = tree.node.navigate()
         try:
+            navigator = tree.node.navigate()
             space = next(navigator)
             while True:
                 elt, hints = self.space_element_from_hints(
@@ -294,6 +303,8 @@ class Navigator:
                 key = (tree.ref, refs.value_ref(value))
                 self.info.hints_rev.actions[key] = used_hints
             return value, hints
+        except Exception as e:
+            raise NavigationError(e)
 
     def answer_from_hints(
         self,

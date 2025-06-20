@@ -263,6 +263,14 @@ def _stuck_warning(diagnostics: list[fb.Diagnostic], exn: nv.Stuck):
     diagnostics.append(("warning", msg))
 
 
+def _navigation_error(
+    diagnostics: list[fb.Diagnostic], exn: nv.NavigationError
+):
+    details = f"{repr(exn.error)}\n\n{traceback.format_exc()}"
+    msg = f"Navigation error:\n\n{details}"
+    diagnostics.append(("error", msg))
+
+
 type SavedNodes = dict[str, dp.AnyTree]
 
 
@@ -303,6 +311,9 @@ def _interpret_test_run_step(
         return tree, "stop"
     except dp.StrategyException as e:
         _strategy_exn(diagnostics, e)
+        return tree, "stop"
+    except nv.NavigationError as e:
+        _navigation_error(diagnostics, e)
         return tree, "stop"
 
 
@@ -351,6 +362,9 @@ def _interpret_test_select_step(
         return tree, "stop"
     except dp.StrategyException as e:
         _strategy_exn(diagnostics, e)
+        return tree, "stop"
+    except nv.NavigationError as e:
+        _navigation_error(diagnostics, e)
         return tree, "stop"
     except nv.InvalidSpace as e:
         tree = e.tree
