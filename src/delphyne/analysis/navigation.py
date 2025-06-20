@@ -152,6 +152,7 @@ class Navigator:
     hint_resolver: HintResolver | None = None
     id_resolver: IdentifierResolver | None = None
     info: NavigationInfo | None = None
+    tracer: dp.Tracer | None = None
 
     def resolve_atomic_value_ref(
         self, tree: AnyTree, ref: refs.AtomicValueRef
@@ -323,6 +324,8 @@ class Navigator:
         implicit: Callable[[], str] | None,
     ) -> tuple[dp.Tracked[Any], Sequence[refs.Hint]]:
         assert self.hint_resolver is not None
+        if self.tracer is not None:
+            self.tracer.trace_query(query.ref)
         # TODO: we ignore qualifiers because they should not work this way.
         used_hint: refs.Hint | None = None
         answer: refs.Answer | None = None

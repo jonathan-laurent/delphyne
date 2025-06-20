@@ -279,12 +279,14 @@ def _interpret_test_run_step(
     hint_rev: nv.HintReverseMap,
     diagnostics: list[fb.Diagnostic],
     tree: dp.AnyTree,
+    tracer: dp.Tracer,
     step: dm.Run,
 ) -> tuple[dp.AnyTree, Literal["stop", "continue"]]:
     try:
         encountered = nv.EncounteredTags()
         navigator = hint_resolver.navigator()
         navigator.info = nv.NavigationInfo(hint_rev)
+        navigator.tracer = tracer
         try:
             tree, rem = navigator.follow_hints(
                 tree, step.hints, step.until, encountered
@@ -322,11 +324,13 @@ def _interpret_test_select_step(
     hint_rev: nv.HintReverseMap,
     diagnostics: list[fb.Diagnostic],
     tree: dp.AnyTree,
+    tracer: dp.Tracer,
     step: dm.SelectSpace,
 ) -> tuple[dp.AnyTree, Literal["stop", "continue"]]:
     navigator = hint_resolver.navigator()
     nav_info = nv.NavigationInfo(hint_rev)
     navigator.info = nav_info
+    navigator.tracer = tracer
     space_ref = step.space
     space_ref_pretty = dp.pprint.space_ref(space_ref)
     try:
@@ -385,16 +389,17 @@ def _interpret_test_step(
     diagnostics: list[fb.Diagnostic],
     saved: SavedNodes,
     tree: dp.AnyTree,
+    tracer: dp.Tracer,
     step: dm.TestStep,
 ) -> tuple[dp.AnyTree, Literal["stop", "continue"]]:
     match step:
         case dm.Run():
             return _interpret_test_run_step(
-                hint_resolver, hint_rev, diagnostics, tree, step
+                hint_resolver, hint_rev, diagnostics, tree, tracer, step
             )
         case dm.SelectSpace():
             return _interpret_test_select_step(
-                hint_resolver, hint_rev, diagnostics, tree, step
+                hint_resolver, hint_rev, diagnostics, tree, tracer, step
             )
         case dm.IsSuccess():
             if not isinstance(tree.node, dp.Success):
@@ -439,7 +444,7 @@ def _evaluate_test(
         return fb.TestFeedback(diagnostics, None)
     for step in test:
         tree, status = _interpret_test_step(
-            hint_resolver, hint_rev, diagnostics, saved, tree, step
+            hint_resolver, hint_rev, diagnostics, saved, tree, tracer, step
         )
         if status == "stop":
             break

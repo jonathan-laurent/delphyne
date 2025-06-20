@@ -590,6 +590,7 @@ def classify[T](
     enable_logging: bool = True,
     top_logprobs: int = 20,
 ) -> dp.Stream[T]:
+    env.tracer.trace_query(query.ref)
     examples = find_all_examples(env.examples, query.query)
     mngr = env.templates
     prompt = create_prompt(query.query, examples, {}, mode, mngr)
@@ -660,6 +661,7 @@ def few_shot[T](
     are currently not using prompt params.
     """
     assert not iterative_mode or num_concurrent == 1
+    env.tracer.trace_query(query.ref)
     examples = find_all_examples(env.examples, query.query)
     mngr = env.templates
     prompt = create_prompt(query.query, examples, {}, mode, mngr)

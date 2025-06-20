@@ -93,8 +93,22 @@ class Trace:
             self.answer_ids[origin][answer] = id
             return id
 
+    def register_query(self, origin: QueryOrigin) -> None:
+        # Ensure that the space a query belongs to is "registered" in
+        # the trace, so that it can be shown in a browsable trace for
+        # example.
+        if origin not in self.answer_ids:
+            self.answer_ids[origin] = {}
+
     # Convert full references into id-based references, registering ids
     # on the fly as needed.
+
+    def convert_query_origin(self, ref: refs.GlobalSpacePath) -> QueryOrigin:
+        id = self.convert_global_node_path(ref[0])
+        space = self.convert_space_ref(id, ref[1])
+        origin = QueryOrigin(id, space)
+        self.register_query(origin)
+        return origin
 
     def convert_node_path(
         self, id: refs.NodeId, path: refs.NodePath

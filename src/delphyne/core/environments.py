@@ -175,11 +175,24 @@ class Tracer:
         # the trace in parallel.
         self.lock = threading.RLock()
 
+    def trace_query(self, ref: refs.GlobalSpacePath) -> None:
+        """
+        Ensure that a query at a given reference is present in the trace.
+        """
+        with self.lock:
+            self.trace.convert_query_origin(ref)
+
     def trace_space(self, ref: refs.GlobalSpacePath) -> None:
+        """
+        TODO: currently unused.
+        """
         with self.lock:
             self.trace.convert_location(traces.Location(ref[0], ref[1]))
 
     def trace_node(self, node: refs.GlobalNodePath) -> None:
+        """
+        Ensure that a node at a given reference is present in the trace.
+        """
         with self.lock:
             self.trace.convert_location(traces.Location(node, None))
 
