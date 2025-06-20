@@ -78,6 +78,7 @@ def _reify[N: Node, P, T](
     strategy: StrategyComp[N, P, T],
     root_ref: _NonEmptyGlobalPath | None,
     monitor: TreeMonitor,
+    enable_unsound_generator_caching: bool = False,
 ) -> Tree[N, P, T]:
     """
     Reify a strategy into a tree.
@@ -85,6 +86,14 @@ def _reify[N: Node, P, T](
     This version is private because it exposes the `root_ref` argument.
     Outside of these modules, trees can only be reified relative to the
     global origin.
+
+    When `enable_unsound_generator_caching` is set to `True`, an
+    optimization is enabled that is unsound in general and that allows
+    not replaying the strategy code from scratch every time a child is
+    computed (but only when _actual_ branching occurs). This
+    optimization is unsafe in general, even with pure strategy code, due
+    the way closures capture local variables in Python. Do not use this
+    option unless you know exactly what you are doing.
     """
 
     def aux(
@@ -94,7 +103,7 @@ def _reify[N: Node, P, T](
         node: N | Success[T],
         cur_generator: Strategy[N, P, T],
     ) -> Tree[N, P, T]:
-        generator_valid = True
+        generator_valid = enable_unsound_generator_caching
 
         def child(action: Value) -> Tree[N, P, T]:
             action_raw = refs.drop_refs(action)
