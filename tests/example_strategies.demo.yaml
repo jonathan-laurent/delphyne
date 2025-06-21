@@ -527,7 +527,7 @@
 - demonstration: abduction
   strategy: obtain_item
   args:
-    market:
+    market: &market
       - name: Joe
         asked_items: [apple, cherry]
         offered_item: banana
@@ -540,4 +540,14 @@
     goal: banana
   tests:
     - run | success
-  queries: []
+  queries: 
+    - query: ObtainItem
+      args:
+        market: *market
+        possessed_items: []
+        item: banana
+      answers:
+        - answer: [apple, cherry]
+  expect:
+    test_feedback:
+      - diagnostics: __empty__

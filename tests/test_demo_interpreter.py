@@ -99,6 +99,7 @@ def load_demo(demo_label: str) -> DemoExpectTest | dp.QueryDemo:
         "tool_use",
         "flags",
         "flags_global",
+        "abduction",
     ],
 )
 def test_interpreter(demo_label: str):
