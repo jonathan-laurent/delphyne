@@ -261,6 +261,8 @@ class Tracked(Generic[T]):
     (from the global origin) to the node the value is attached too.
     Having this field is useful to check at runtime that a tracked value
     passed as an argument to `child` is attached to the current node.
+
+    Since __getitem__ is defined, `Tracked` is implicitly an iterable.
     """
 
     value: T
