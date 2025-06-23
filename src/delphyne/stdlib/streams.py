@@ -2,7 +2,7 @@
 Utilities to work with streams.
 """
 
-from collections.abc import Callable, Generator, Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Protocol, overload
 
@@ -169,14 +169,22 @@ def bind_stream[A, B](
             yield new_msg
 
 
-def take_one[T](
-    stream: dp.Stream[T],
-) -> Generator[dp.Spent | dp.Barrier, None, dp.Tracked[T] | None]:
+def take_one[T](stream: dp.Stream[T]) -> dp.StreamGen[dp.Tracked[T] | None]:
     for msg in stream:
         if isinstance(msg, dp.Yield):
             return msg.value
         yield msg
     return None
+
+
+def take_all[T](stream: dp.Stream[T]) -> dp.StreamGen[Sequence[dp.Tracked[T]]]:
+    res: list[dp.Tracked[T]] = []
+    for msg in stream:
+        if isinstance(msg, dp.Yield):
+            res.append(msg.value)
+            continue
+        yield msg
+    return res
 
 
 def stream_with_budget[T](

@@ -122,6 +122,7 @@ from delphyne.stdlib.streams import (
     stream_transformer,
     stream_with_budget,
     take,
+    take_all,
     take_one,
     with_budget,
 )
