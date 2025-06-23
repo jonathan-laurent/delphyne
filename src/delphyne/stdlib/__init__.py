@@ -89,6 +89,7 @@ from delphyne.stdlib.queries import (
 from delphyne.stdlib.search.abduction import (
     Abduction,
     AbductionStatus,
+    abduct_and_saturate,
     abduction,
 )
 from delphyne.stdlib.search.bestfs import (

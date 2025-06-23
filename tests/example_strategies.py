@@ -623,3 +623,8 @@ def obtain_item(
         redundant=lambda its, it: dp.const_space(False),
     )
     return exchanges
+
+
+def obtain_item_policy(model: dp.LLM):
+    pp = dp.take(1) @ dp.few_shot(model)
+    return (dp.abduct_and_saturate(), pp)

@@ -2,6 +2,7 @@
 Testing oracular programs in an end-to-end fashion
 """
 
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any, cast
 
@@ -41,6 +42,25 @@ def _eval_query(
     log = list(env.tracer.export_log())
     print(log)
     return res, log
+
+
+def _eval_strategy[N: dp.Node, P, T](
+    strategy: dp.StrategyInstance[N, P, T],
+    policy: Callable[[dp.LLM], dp.Policy[N, P]],
+    cache_name: str,
+    max_requests: int = 1,
+    max_res: int = 1,
+    model_name: dp.StandardModelName = "gpt-4.1-mini",
+) -> tuple[Sequence[dp.Tracked[T]], str]:
+    env = dp.PolicyEnv(prompt_dirs=(), demonstration_files=())
+    cache = CACHE_DIR / cache_name
+    model = dp.CachedModel(dp.standard_model(model_name), cache)
+    stream = strategy.run_toplevel(env, policy(model))
+    budget = dp.BudgetLimit({dp.NUM_REQUESTS: max_requests})
+    ret, _spent = dp.collect(stream, budget=budget, num_generated=max_res)
+    log = list(env.tracer.export_log())
+    log_str = "\n".join(e.message for e in log)
+    return ret, log_str
 
 
 def test_concurrent():
@@ -183,3 +203,41 @@ def test_structured_output_provider(model: dp.StandardModelName):
     _, _ = _eval_query(query, cache_name, model_name=model)
     # We explicitly do not ensure that there is a result since DeepSeek
     # will likely fail to respect the schema without further prompting.
+
+
+#####
+##### Abduction
+#####
+
+
+def test_abduction():
+    """
+    Testing on the following market:
+
+        S1: -> A
+        S2: -> B
+        S3: A,D -> C
+        S4: B -> E
+        S5: A,E -> C
+        S6: C -> F
+
+    The goal is to obtain F.
+    """
+    market: ex.Market = [
+        ex.MarketMember("R1", [], "A"),
+        ex.MarketMember("R2", [], "B"),
+        ex.MarketMember("R3", ["A", "D"], "C"),
+        ex.MarketMember("R4", ["B"], "E"),
+        ex.MarketMember("R5", ["A", "E"], "C"),
+        ex.MarketMember("R6", ["C"], "F"),
+    ]
+    strategy = ex.obtain_item(market, "F")
+    policy = ex.obtain_item_policy
+    cache_name = "abduction"
+    res, log = _eval_strategy(
+        strategy, policy, cache_name, max_requests=10, max_res=1
+    )
+    # assert res
+    print(res)
+    print()
+    print(log)
