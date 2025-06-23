@@ -172,6 +172,7 @@ def abduct_and_saturate[P, Proof](
     policy: P,
     max_rollout_depth: int = 3,
     scoring_function: ScoringFunction = _default_scoring_function,
+    verbose: bool = False,
 ) -> dp.Stream[Proof]:
     """
     A standard, sequential policy to process abduction nodes.
@@ -208,6 +209,10 @@ def abduct_and_saturate[P, Proof](
     assert isinstance(tree.node, Abduction)
     node = tree.node
 
+    def dbg(msg: str):
+        if verbose:
+            log(env, msg)
+
     def all_canonical() -> Sequence[_EFact]:
         return [*candidates, *proved, *disproved, *redundant]
 
@@ -226,6 +231,7 @@ def abduct_and_saturate[P, Proof](
             return
         # We first make a redundancy check
         if (yield from is_redundant(c)):
+            dbg(f"Redundant: {c}")
             redundant.add(c)
             return
         # If not redundant, we try and prove it
@@ -237,10 +243,12 @@ def abduct_and_saturate[P, Proof](
         status, payload = res[0], res[1]
         if status.value == "disproved":
             disproved.add(c)
+            dbg(f"Disproved: {c}")
             if c is None:
                 raise _Abort()
         elif status.value == "proved":
             proved[c] = payload
+            dbg(f"Proved: {c}")
             if c is None:
                 raise _ProofFound()
         else:
@@ -303,6 +311,7 @@ def abduct_and_saturate[P, Proof](
         # facts can be created and so the only place where `tracked`
         # must be updated).
         suggs = [s.value for s in tracked_suggs]
+        dbg(f"Suggestions: {suggs}")
         for s, ts in zip(suggs, tracked_suggs):
             if s not in tracked:
                 tracked[s] = ts
@@ -320,13 +329,16 @@ def abduct_and_saturate[P, Proof](
         if len_proved_old != len(proved):
             assert len(proved) > len_proved_old
             yield from saturate()
-        return [s for s in suggs if s in candidates]
+        suggs = [s for s in suggs if s in candidates]
+        dbg(f"Filtered: {suggs}")
+        return suggs
 
     try:
         yield from add_candidate(None)
         while True:
             cur: _EFact = None
             for _ in range(max_rollout_depth):
+                dbg(f"Explore fact: {cur}")
                 suggs = yield from get_suggestions(cur)
                 if not suggs:
                     break
