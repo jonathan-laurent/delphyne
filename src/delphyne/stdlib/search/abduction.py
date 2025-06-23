@@ -330,12 +330,16 @@ def abduct_and_saturate[P, Proof](
                 suggs = yield from get_suggestions(cur)
                 if not suggs:
                     break
+                n = len(suggs)
+                for s in suggs:
+                    candidates[s].num_proposed += 1 / n
                 infos = [candidates[c] for c in suggs]
                 best = _argmax(
                     scoring_function(i.num_proposed, i.num_visited)
                     for i in infos
                 )
                 cur = suggs[best]
+                candidates[cur].num_visited += 1
     except _Abort:
         return
     except _ProofFound:
