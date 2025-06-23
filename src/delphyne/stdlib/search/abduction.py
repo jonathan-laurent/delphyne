@@ -129,6 +129,11 @@ def abduction[Fact, Feedback, Proof, P](
     return cast(Proof, res)
 
 
+#####
+##### Policies
+#####
+
+
 @dataclass
 class _CandInfo:
     feedback: dp.Tracked[_Feedback]
@@ -142,9 +147,8 @@ class _Abort(Exception): ...
 class _ProofFound(Exception): ...
 
 
-type _EFact = _Fact | None
+type _EFact = _Fact | None  # an extended fact
 type _Tracked_EFact = dp.Tracked[_Fact] | None
-type _EFactList = list[tuple[_Tracked_EFact, dp.Tracked[_Proof]]]
 
 
 class ScoringFunction(Protocol):
@@ -157,6 +161,10 @@ def _default_scoring_function(
     return -(num_visited / max(1, math.sqrt(num_proposed)))
 
 
+def _argmax(seq: Iterable[float]) -> int:
+    return max(enumerate(seq), key=lambda x: x[1])[0]
+
+
 @search_policy
 def abduct_and_saturate[P, Proof](
     tree: dp.Tree[Abduction, P, Proof],
@@ -165,7 +173,11 @@ def abduct_and_saturate[P, Proof](
     max_rollout_depth: int = 3,
     scoring_function: ScoringFunction = _default_scoring_function,
 ) -> dp.Stream[Proof]:
-    """ """
+    """
+    A standard, sequential policy to process abduction nodes.
+
+    Note: facts must be hashable.
+    """
 
     # TODO: we are currently allowing redundant facts in `proved` since
     # we never clean up `proved`. For example, if `x > 0` is established
@@ -183,7 +195,7 @@ def abduct_and_saturate[P, Proof](
     # It is easier to manipulate untracked facts and so we keep the
     # correspondence with tracked facts here.
     # Invariant: all canonical facts are included in `tracked`.
-    tracked: dict[_EFact, _Tracked_EFact] = {}
+    tracked: dict[_EFact, _Tracked_EFact] = {None: None}
 
     # The `equivalent` dict maps a fact to its canonical equivalent
     # representative that is somewhere in `candidates`, `proved`,
@@ -196,36 +208,29 @@ def abduct_and_saturate[P, Proof](
     assert isinstance(tree.node, Abduction)
     node = tree.node
 
-    def untracked(f: _Tracked_EFact) -> _EFact | None:
-        return None if f is None else f.value
-
-    def facts_list() -> _EFactList:
-        return [(tracked[f], p) for f, p in proved.items()]
-
     def all_canonical() -> Sequence[_EFact]:
-        return [*candidates.keys(), *proved.keys(), *disproved, *redundant]
+        return [*candidates, *proved, *disproved, *redundant]
 
-    def is_redundant(tc: _Tracked_EFact) -> dp.StreamGen[bool]:
-        respace = node.redundant([tracked[o] for o in proved], tc)
+    def is_redundant(f: _EFact) -> dp.StreamGen[bool]:
+        respace = node.redundant([tracked[o] for o in proved], tracked[f])
         res = yield from take_one(respace.stream(env, policy))
         if res is None:
             raise _Abort()
         return res.value
 
-    def add_candidate(
-        tc: _Tracked_EFact,
-    ) -> dp.StreamGen[None]:
-        # Take a new fact and put it into either `proved`, `disproved`
-        # or `candidates`. No propagation is performed. If a canonical
-        # fact is passed, nothing is done.
-        c = untracked(tc)
+    def add_candidate(c: _EFact) -> dp.StreamGen[None]:
+        # Take a new fact and put it into either `proved`, `disproved`,
+        # `candidates` or `redundant`. If a canonical fact is passed,
+        # nothing is done.
         if c in all_canonical():
             return
         # We first make a redundancy check
-        if (yield from is_redundant(tc)):
+        if (yield from is_redundant(c)):
             redundant.add(c)
             return
-        pstream = node.prove(facts_list(), tc).stream(env, policy)
+        # If not redundant, we try and prove it
+        facts_list = [(tracked[f], p) for f, p in proved.items()]
+        pstream = node.prove(facts_list, tracked[c]).stream(env, policy)
         res = yield from take_one(pstream)
         if res is None:
             raise _Abort()
@@ -249,6 +254,7 @@ def abduct_and_saturate[P, Proof](
         for c, i in old_candidates.items():
             yield from add_candidate(tracked[c])
             if c in candidates:
+                # Restore the counters if `c` is still a candidate
                 candidates[c].num_proposed = i.num_proposed
                 candidates[c].num_visited = i.num_visited
         return (
@@ -258,12 +264,12 @@ def abduct_and_saturate[P, Proof](
         )
 
     def saturate() -> dp.StreamGen[None]:
+        # Propagate facts until saturation
         while (yield from propagate()) == "updated":
             pass
 
-    def get_canonical(tf: _Tracked_EFact) -> dp.StreamGen[_EFact]:
+    def get_canonical(f: _EFact) -> dp.StreamGen[_EFact]:
         # The result is guaranteed to be in `tracked`
-        f = untracked(tf)
         if f in proved or f in disproved or f in candidates:
             # Case where f is a canonical fact
             return f
@@ -272,47 +278,49 @@ def abduct_and_saturate[P, Proof](
             nf = equivalent[f]
             assert nf in all_canonical()
             return equivalent[f]
-        # New fact whose ewuivalence must be tested
-        eqstream = node.search_equivalent(
-            [tracked[o] for o in all_canonical()], tf
-        ).stream(env, policy)
-        res = yield from take_one(eqstream)
+        # New fact whose equivalence must be tested
+        eqspace = node.search_equivalent(
+            [tracked[o] for o in all_canonical()], tracked[f]
+        )
+        res = yield from take_one(eqspace.stream(env, policy))
         if res is None:
-            raise _Abort
+            raise _Abort()
         if res.value is None:
-            tracked[f] = tf
             return f
         elif res.value in all_canonical():
             equivalent[f] = res.value
             return res.value
         else:
             log(env, "invalid_equivalent_call")
-            tracked[f] = tf
             return f
 
-    def get_raw_suggestions(
-        c: _EFact,
-    ) -> dp.StreamGen[Sequence[_Tracked_EFact]]:
+    def get_raw_suggestions(c: _EFact) -> dp.StreamGen[Sequence[_EFact]]:
         assert c in candidates
-        feedback = candidates[c].feedback
-        sstream = node.suggest(feedback).stream(env, policy)
+        sstream = node.suggest(candidates[c].feedback).stream(env, policy)
         res = yield from take_all(sstream)
-        suggs = [s for r in res for s in r]
+        tracked_suggs = [s for r in res for s in r]
+        # Populate the `tracked` cache (this is the only place where new
+        # facts can be created and so the only place where `tracked`
+        # must be updated).
+        suggs = [s.value for s in tracked_suggs]
+        for s, ts in zip(suggs, tracked_suggs):
+            if s not in tracked:
+                tracked[s] = ts
         return suggs
 
     def get_suggestions(c: _EFact) -> dp.StreamGen[Sequence[_EFact]]:
         assert c in candidates
         raw_suggs = yield from get_raw_suggestions(c)
-        suggs: list[_Tracked_EFact] = []
-        for ts in raw_suggs:
-            suggs.append(tracked[(yield from get_canonical(ts))])
+        suggs: list[_EFact] = []
+        for s in raw_suggs:
+            suggs.append((yield from get_canonical(s)))
         len_proved_old = len(proved)
-        for ts in suggs:
-            add_candidate(ts)
+        for s in suggs:
+            yield from add_candidate(s)
         if len_proved_old != len(proved):
             assert len(proved) > len_proved_old
-            saturate()
-        return [s for ts in suggs if (s := untracked(ts)) in candidates]
+            yield from saturate()
+        return [s for s in suggs if s in candidates]
 
     try:
         yield from add_candidate(None)
@@ -333,7 +341,3 @@ def abduct_and_saturate[P, Proof](
     except _ProofFound:
         yield dp.Yield(proved[None])
         return
-
-
-def _argmax(seq: Iterable[float]) -> int:
-    return max(enumerate(seq), key=lambda x: x[1])[0]
