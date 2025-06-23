@@ -94,3 +94,11 @@ class Barrier:
 
 
 type Stream[T] = Generator[Yield[Tracked[T]] | Spent | Barrier, None, None]
+
+
+type StreamGen[T] = Generator[Spent | Barrier, None, T]
+"""
+Type signature for a generator that can spend budget, does not yield
+results but ultimately returns a result. Useful to define the signature
+of `take_one` for example.
+"""

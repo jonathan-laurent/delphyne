@@ -68,6 +68,7 @@ from delphyne.core.streams import (
     SearchMetadata,
     Spent,
     Stream,
+    StreamGen,
     Yield,
 )
 from delphyne.core.traces import (
