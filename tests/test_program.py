@@ -71,7 +71,7 @@ def test_concurrent():
         budget=4,
         concurrent=2,
     )
-    assert len(res) == 4
+    assert len(res) == 8  # 4 requests, 2 completions each time
 
 
 def test_basic_llm_call():

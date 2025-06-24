@@ -200,7 +200,7 @@ class ModelInfo:
     def __str__(self) -> str:
         res = self.size
         if self.kind != "chat":
-            res = f"{self.kind}-{res}"
+            res = f"{self.kind}_{res}"
         return res
 
 
@@ -221,6 +221,9 @@ NUM_OUTPUT_TOKENS = "output_tokens"
 DOLLAR_PRICE = "price"
 
 
+BUDGET_ENTRY_SEPARATOR = "__"
+
+
 def budget_entry(
     category: BudgetCategory, model: ModelInfo | str | None = None
 ) -> str:
@@ -233,7 +236,7 @@ def budget_entry(
             modstr = model
         else:
             modstr = str(model)
-        res = f"{res}:{modstr}"
+        res = f"{res}{BUDGET_ENTRY_SEPARATOR}{modstr}"
     return res
 
 
@@ -242,6 +245,9 @@ class ModelPricing:
     dollars_per_input_token: float
     dollars_per_cached_input_token: float
     dollars_per_output_token: float
+
+
+PER_MILLION = 1e-6
 
 
 #####
