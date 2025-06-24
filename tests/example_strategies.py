@@ -542,7 +542,12 @@ class Exchange:
 
 
 @dataclass
-class ObtainItem(dp.Query[Sequence[str]]):
+class ItemsToFind:
+    items: Sequence[str]
+
+
+@dataclass
+class ObtainItem(dp.Query[ItemsToFind]):
     """
     You are in a market and you are presented with a list of sellers.
     Each seller offers to exchange a specific item for a list of other
@@ -617,7 +622,10 @@ def obtain_item(
             try_obtain_item(market, item or goal, possessed)
         ),
         suggest=lambda f: (
-            ObtainItem(market, f.possessed, f.item)(IP, lambda p: p)
+            dp.map_space(
+                ObtainItem(market, f.possessed, f.item)(IP, lambda p: p),
+                lambda x: x.items,
+            )
         ),
         search_equivalent=lambda its, it: dp.const_space(None),
         redundant=lambda its, it: dp.const_space(False),

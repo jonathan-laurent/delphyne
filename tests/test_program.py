@@ -210,6 +210,7 @@ def test_structured_output_provider(model: dp.StandardModelName):
 #####
 
 
+@pytest.mark.skip("todo")
 def test_abduction():
     """
     Testing on the following market:

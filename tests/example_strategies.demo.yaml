@@ -547,7 +547,7 @@
         possessed_items: []
         item: banana
       answers:
-        - answer: [apple, cherry]
+        - answer: {items: [apple, cherry]}
   expect:
     test_feedback:
       - diagnostics: __empty__
