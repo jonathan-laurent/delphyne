@@ -82,22 +82,33 @@
         tool_calls:
           - name: Article
             args:
-              title: The Evolution and Impact of Soccer Tactics in the Modern Game
+              title: The Evolution and Global Impact of Soccer
               authors:
                 - John Smith
-                - Emily Roberts
+                - Emily Johnson
         finish_reason: tool_calls
         logprobs:
         reasoning_content:
     budget:
       values:
         num_requests: 1
+        num_completions: 1
+        num_requests__medium: 1
+        num_completions__medium: 1
+        input_tokens: 188
+        input_tokens__medium: 188
+        output_tokens: 28
+        output_tokens__medium: 28
+        cached_input_tokens: 0
+        cached_input_tokens__medium: 0
+        price: 0.0003456
+        price__medium: 0.0003456
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
-      completion_tokens: 33
+      completion_tokens: 28
       prompt_tokens: 188
-      total_tokens: 221
+      total_tokens: 216
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0

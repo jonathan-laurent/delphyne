@@ -15,12 +15,22 @@
   output:
     outputs:
       - content: '[1, 4]'
-        logprobs:
         tool_calls: []
         finish_reason: stop
+        logprobs:
+        reasoning_content:
     budget:
       values:
         num_requests: 1
+        num_completions: 1
+        num_requests__small: 1
+        num_completions__small: 1
+        input_tokens: 58
+        input_tokens__small: 58
+        output_tokens: 7
+        output_tokens__small: 7
+        price: 2.6e-05
+        price__small: 2.6e-05
     log_items: []
     model_name: mistral-small-2503
     usage_info:

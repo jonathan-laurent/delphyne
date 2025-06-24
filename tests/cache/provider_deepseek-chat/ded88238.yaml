@@ -12,15 +12,28 @@
       tools: []
       structured_output:
     iter: 1
+
   output:
     outputs:
       - content: '[2, 3]'
-        logprobs:
         tool_calls: []
         finish_reason: stop
+        logprobs:
+        reasoning_content:
     budget:
       values:
         num_requests: 1
+        num_completions: 1
+        num_requests__large: 1
+        num_completions__large: 1
+        input_tokens: 56
+        input_tokens__large: 56
+        output_tokens: 6
+        output_tokens__large: 6
+        cached_input_tokens: 0
+        cached_input_tokens__large: 0
+        price: 0.000496
+        price__large: 0.000496
     log_items: []
     model_name: deepseek-chat
     usage_info:

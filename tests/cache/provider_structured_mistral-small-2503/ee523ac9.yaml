@@ -32,10 +32,9 @@
     outputs:
       - content:
           structured:
-            title: 'The Future of Artificial Intelligence: Opportunities and Challenges'
+            title: The Evolution and Impact of Artificial Intelligence
             authors:
               - Jane Doe
-              - John Smith
         tool_calls: []
         finish_reason: stop
         logprobs:
@@ -43,9 +42,18 @@
     budget:
       values:
         num_requests: 1
+        num_completions: 1
+        num_requests__small: 1
+        num_completions__small: 1
+        input_tokens: 22
+        input_tokens__small: 22
+        output_tokens: 28
+        output_tokens__small: 28
+        price: 1.9999999999999998e-05
+        price__small: 1.9999999999999998e-05
     log_items: []
     model_name: mistral-small-2503
     usage_info:
-      completion_tokens: 36
+      completion_tokens: 28
       prompt_tokens: 22
-      total_tokens: 58
+      total_tokens: 50

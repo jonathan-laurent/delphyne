@@ -29,33 +29,52 @@
     iter: 1
 
   output:
+
     outputs:
       - content:
           structured:
-            title: The Many Facets of Love
+            title: The Multifaceted Nature of Love
             authors:
               - Jane Doe
               - John Smith
-        logprobs:
         tool_calls: []
         finish_reason: stop
+        logprobs:
+        reasoning_content:
       - content:
           structured:
-            title: 'The Essence of Love: Exploring Its Many Dimensions'
+            title: Understanding the Complexity of Love
             authors:
-              - ChatGPT
-        logprobs:
+              - Jane Doe
+              - John Smith
         tool_calls: []
         finish_reason: stop
+        logprobs:
+        reasoning_content:
+
     budget:
       values:
-        num_requests: 2.0
+        num_requests: 1.0
+        num_completions: 2.0
+        num_requests__medium: 1.0
+        num_completions__medium: 1.0
+        input_tokens: 89.0
+        input_tokens__medium: 89.0
+        output_tokens: 37.0
+        output_tokens__medium: 37.0
+        cached_input_tokens: 0.0
+        cached_input_tokens__medium: 0.0
+        price: 0.0002016
+        price__medium: 0.0002016
+
     log_items: []
+
     model_name: gpt-4.1-mini-2025-04-14
+
     usage_info:
-      completion_tokens: 46
-      prompt_tokens: 99
-      total_tokens: 145
+      completion_tokens: 37
+      prompt_tokens: 89
+      total_tokens: 126
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
@@ -96,33 +115,224 @@
     iter: 2
 
   output:
+
     outputs:
       - content:
           structured:
-            title: 'Exploring the Depths of Love: A Timeless Emotion'
-            authors:
-              - ChatGPT
-        logprobs:
-        tool_calls: []
-        finish_reason: stop
-      - content:
-          structured:
-            title: 'The Essence of Love: A Universal Journey'
+            title: 'The Many Facets of Love: Exploring Its Impact and Significance'
             authors:
               - Jane Doe
               - John Smith
-        logprobs:
         tool_calls: []
         finish_reason: stop
+        logprobs:
+        reasoning_content:
+      - content:
+          structured:
+            title: 'The Essence of Love: Understanding Its Many Facets'
+            authors:
+              - Jane Doe
+              - John Smith
+        tool_calls: []
+        finish_reason: stop
+        logprobs:
+        reasoning_content:
+
     budget:
       values:
-        num_requests: 2
+        num_requests: 1.0
+        num_completions: 2.0
+        num_requests__medium: 1.0
+        num_completions__medium: 1.0
+        input_tokens: 89.0
+        input_tokens__medium: 89.0
+        output_tokens: 49.0
+        output_tokens__medium: 49.0
+        cached_input_tokens: 0.0
+        cached_input_tokens__medium: 0.0
+        price: 0.0002208
+        price__medium: 0.0002208
+
     log_items: []
+
     model_name: gpt-4.1-mini-2025-04-14
+
     usage_info:
-      completion_tokens: 51
-      prompt_tokens: 99
-      total_tokens: 150
+      completion_tokens: 49
+      prompt_tokens: 89
+      total_tokens: 138
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 0
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+
+- input:
+    request:
+      chat:
+        - role: system
+          content: Generate an article on the given topic. Answer as a JSON object.
+        - role: user
+          content: 'topic: Love'
+      num_completions: 2
+      options: {}
+      tools: []
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 3
+
+  output:
+
+    outputs:
+      - content:
+          structured:
+            title: 'Understanding Love: The Multifaceted Emotion that Shapes Humanity'
+            authors:
+              - Jane Doe
+              - John Smith
+        tool_calls: []
+        finish_reason: stop
+        logprobs:
+        reasoning_content:
+      - content:
+          structured:
+            title: The Many Facets of Love
+            authors:
+              - Alex Johnson
+              - Maria Rodriguez
+        tool_calls: []
+        finish_reason: stop
+        logprobs:
+        reasoning_content:
+
+    budget:
+      values:
+        num_requests: 1.0
+        num_completions: 2.0
+        num_requests__medium: 1.0
+        num_completions__medium: 1.0
+        input_tokens: 89.0
+        input_tokens__medium: 89.0
+        output_tokens: 42.0
+        output_tokens__medium: 42.0
+        cached_input_tokens: 0.0
+        cached_input_tokens__medium: 0.0
+        price: 0.0002096
+        price__medium: 0.0002096
+
+    log_items: []
+
+    model_name: gpt-4.1-mini-2025-04-14
+
+    usage_info:
+      completion_tokens: 42
+      prompt_tokens: 89
+      total_tokens: 131
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 0
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+
+- input:
+    request:
+      chat:
+        - role: system
+          content: Generate an article on the given topic. Answer as a JSON object.
+        - role: user
+          content: 'topic: Love'
+      num_completions: 2
+      options: {}
+      tools: []
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 4
+
+  output:
+
+    outputs:
+      - content:
+          structured:
+            title: Exploring the Many Facets of Love
+            authors:
+              - Jane Doe
+              - John Smith
+        tool_calls: []
+        finish_reason: stop
+        logprobs:
+        reasoning_content:
+      - content:
+          structured:
+            title: 'Love: A Fundamental Human Emotion'
+            authors:
+              - Jane Doe
+              - John Smith
+        tool_calls: []
+        finish_reason: stop
+        logprobs:
+        reasoning_content:
+
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 2
+        num_requests__medium: 1
+        num_completions__medium: 1
+        input_tokens: 89
+        input_tokens__medium: 89
+        output_tokens: 40
+        output_tokens__medium: 40
+        cached_input_tokens: 0
+        cached_input_tokens__medium: 0
+        price: 0.00020639999999999998
+        price__medium: 0.00020639999999999998
+
+    log_items: []
+
+    model_name: gpt-4.1-mini-2025-04-14
+
+    usage_info:
+      completion_tokens: 40
+      prompt_tokens: 89
+      total_tokens: 129
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
