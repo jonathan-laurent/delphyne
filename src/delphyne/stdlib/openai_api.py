@@ -11,13 +11,12 @@ import openai
 import openai.types.chat as ochat
 import openai.types.chat.chat_completion as ochatc
 import openai.types.chat.completion_create_params as ochatp
+from openai.types import CompletionUsage
 
 from delphyne.core.refs import Structured, ToolCall
 from delphyne.core.streams import Budget
 from delphyne.stdlib import models as md
 from delphyne.utils.yaml import pretty_yaml
-
-DEFAULT_MODEL = "gpt-4.1"
 
 
 class ToolCallIdGenerator:
@@ -161,6 +160,51 @@ def _make_chat_tool(
     return ret
 
 
+def _base_budget(
+    n: int, model_info: md.ModelInfo | None = None
+) -> dict[str, float]:
+    budget: dict[str, float] = {md.NUM_REQUESTS: 1, md.NUM_COMPLETIONS: n}
+    if model_info is not None:
+        budget[md.budget_entry("num_requests", model_info)] = 1
+        budget[md.budget_entry("num_completions", model_info)] = 1
+
+    return budget
+
+
+def _compute_spent_budget(
+    n: int,
+    model_info: md.ModelInfo | None = None,
+    pricing: md.ModelPricing | None = None,
+    usage: CompletionUsage | None = None,
+) -> dict[str, float]:
+    budget = _base_budget(n, model_info)
+
+    def add(cat: md.BudgetCategory, value: float):
+        budget[md.budget_entry(cat)] = value
+        if model_info is not None:
+            budget[md.budget_entry(cat, model_info)] = value
+
+    if usage is not None:
+        add("input_tokens", usage.prompt_tokens)
+        add("output_tokens", usage.completion_tokens)
+        if usage.prompt_tokens_details:
+            cached = usage.prompt_tokens_details.cached_tokens or 0
+            add("cached_input_tokens", cached)
+        else:
+            cached = 0
+        if pricing is not None:
+            non_cached = usage.prompt_tokens - cached
+            assert non_cached >= 0
+            price = (
+                pricing.dollars_per_cached_input_token * cached
+                + pricing.dollars_per_input_token * non_cached
+                + pricing.dollars_per_output_token * usage.completion_tokens
+            )
+            add("price", price)
+
+    return budget
+
+
 @dataclass
 class OpenAICompatibleModel(md.LLM):
     """
@@ -175,6 +219,11 @@ class OpenAICompatibleModel(md.LLM):
     api_key: str | None = None
     base_url: str | None = None
     no_json_schema: bool = False
+    model_info: md.ModelInfo | None = None
+    pricing: md.ModelPricing | None = None
+
+    def estimate_budget(self, req: md.LLMRequest) -> Budget:
+        return Budget(_base_budget(req.num_completions, self.model_info))
 
     def send_request(self, req: md.LLMRequest) -> md.LLMResponse:
         # TODO: better handling of budget beyond `num_requests`
@@ -204,7 +253,6 @@ class OpenAICompatibleModel(md.LLM):
             raise md.LLMBusyException(e)
         outputs: list[md.LLMOutput] = []
         log: list[md.LLMResponseLogItem] = []
-        budget = Budget({md.NUM_REQUESTS: req.num_completions})
         for choice in response.choices:
             finish_reason: md.FinishReason = (
                 choice.finish_reason
@@ -275,6 +323,14 @@ class OpenAICompatibleModel(md.LLM):
         usage: dict[str, Any] | None = None
         if response.usage:
             usage = response.usage.to_dict()
+        budget = Budget(
+            _compute_spent_budget(
+                req.num_completions,
+                self.model_info,
+                self.pricing,
+                response.usage,
+            )
+        )
         return md.LLMResponse(outputs, budget, log, response.model, usage)
 
     async def stream_request(

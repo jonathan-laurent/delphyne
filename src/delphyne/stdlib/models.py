@@ -188,10 +188,60 @@ class LLMOutput:
 #####
 
 
+type ModelKind = Literal["chat", "reasoning"]
+type ModelSize = Literal["small", "medium", "large"]
+
+
+@dataclass
+class ModelInfo:
+    kind: ModelKind
+    size: ModelSize
+
+    def __str__(self) -> str:
+        res = self.size
+        if self.kind != "chat":
+            res = f"{self.kind}-{res}"
+        return res
+
+
+type BudgetCategory = Literal[
+    "num_requests",
+    "num_completions",
+    "input_tokens",
+    "cached_input_tokens",
+    "output_tokens",
+    "price",
+]
+
 NUM_REQUESTS = "num_requests"
+NUM_COMPLETIONS = "num_completions"
 NUM_INPUT_TOKENS = "input_tokens"
+NUM_CACHED_INPUT_TOKENS = "cached_input_tokens"
 NUM_OUTPUT_TOKENS = "output_tokens"
 DOLLAR_PRICE = "price"
+
+
+def budget_entry(
+    category: BudgetCategory, model: ModelInfo | str | None = None
+) -> str:
+    """
+    Return a string that can be used as a key in a budget dictionary.
+    """
+    res = category
+    if model is not None:
+        if isinstance(model, str):
+            modstr = model
+        else:
+            modstr = str(model)
+        res = f"{res}:{modstr}"
+    return res
+
+
+@dataclass
+class ModelPricing:
+    dollars_per_input_token: float
+    dollars_per_cached_input_token: float
+    dollars_per_output_token: float
 
 
 #####
@@ -259,7 +309,7 @@ class LLMResponse:
 
 class LLM(ABC):
     def estimate_budget(self, req: LLMRequest) -> Budget:
-        return Budget({NUM_REQUESTS: req.num_completions})
+        return Budget({NUM_REQUESTS: 1, NUM_COMPLETIONS: req.num_completions})
 
     @abstractmethod
     def send_request(self, req: LLMRequest) -> LLMResponse:
