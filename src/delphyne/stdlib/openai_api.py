@@ -81,6 +81,8 @@ def translate_chat(
                 else:
                     # We serialize the structured answer
                     content = json.dumps(answer.content, indent=2)
+                if answer.justification is not None:
+                    content += f"\n\n{answer.justification}"
                 res: ochat.ChatCompletionMessageParam = {
                     "role": "assistant",
                     "content": content,

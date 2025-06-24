@@ -27,6 +27,7 @@ class Answer:
     mode: str | None = None
     label: str | None = None
     example: bool | None = None
+    justification: str | None = None
 
 
 @dataclass
@@ -113,4 +114,4 @@ def translate_answer(ans: Answer) -> refs.Answer:
     else:
         content = refs.Structured(ans.answer)
     tool_calls = tuple([refs.ToolCall(c.tool, c.args) for c in ans.call])
-    return refs.Answer(ans.mode, content, tool_calls)
+    return refs.Answer(ans.mode, content, tool_calls, ans.justification)

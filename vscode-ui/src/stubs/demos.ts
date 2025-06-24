@@ -17,6 +17,7 @@ export interface Answer {
   mode: string | null;
   label: string | null;
   example: boolean | null;
+  justification: string | null;
   __loc: vscode.Range;
   __loc__answer: vscode.Range;
   __loc__call: vscode.Range;
@@ -25,6 +26,7 @@ export interface Answer {
   __loc__mode: vscode.Range;
   __loc__label: vscode.Range;
   __loc__example: vscode.Range;
+  __loc__justification: vscode.Range;
 }
 
 export interface QueryDemo {

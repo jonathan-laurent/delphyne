@@ -155,6 +155,7 @@ class Answer:
     mode: AnswerModeName
     content: str | Structured
     tool_calls: tuple[ToolCall, ...] = ()
+    justification: str | None = None
 
 
 @dataclass(frozen=True)
