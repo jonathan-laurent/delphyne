@@ -9,7 +9,9 @@
         "editor.rulers": [88],
         "rewrap.wrappingColumn": 80,
     },
-    "python.testing.pytestArgs": [".", "-s"],
+    "python.testing.pytestArgs": [
+        "tests", "-s"
+    ],
     "python.testing.pytestEnabled": true,
     // Wrapping the lines of YAML files and using an indentation size
     // of 2 is important for the readability of demonstration files
@@ -31,5 +33,6 @@
     // Indicate that the Jinja templates are written in Markdown
     "files.associations": {
         "*.jinja": "jinja-md"
-    }
+    },
+    "python.testing.unittestEnabled": false
 }

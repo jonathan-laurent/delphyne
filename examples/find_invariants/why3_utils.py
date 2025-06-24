@@ -101,3 +101,64 @@ def invariant_init_obligation(obligation: Obligation) -> bool:
 def _goal_formula(descr: str) -> str:
     # Turn a goal description such as `goal vc1: <fml>` into `<fml>`.
     return descr.split(":", 1)[1].strip()
+
+
+#####
+##### Making Simple Logical Checks
+#####
+
+
+def _get_variable_names(f: Formula) -> Sequence[str]:
+    """
+    Naive heuristic to extract all variable names from a formula.
+
+    This uses a regex to find all occurences of a valid C-like identifier.
+    """
+
+    import re
+
+    pattern = r"\b[a-zA-Z_][a-zA-Z0-9_]*\b"
+    return re.findall(pattern, f)
+
+
+def is_valid_implication(assumptions: Sequence[Formula], conclusion: Formula) -> bool:
+    """
+    Check if the assumptions imply the conclusion.
+
+    This only works for integer variables. Whenever in doubt, it returns `False`.
+
+    We do so by verifying a WhyML program of this kind:
+
+    ```mlw
+    use int.Int
+
+    let prog (x: int) (y: int) =
+        assume {x >= 0};
+        assume {y >= 0};
+        assert {x + y >= 0};
+        ()
+    ```
+    """
+
+    lines: list[str] = []
+    indent: int = 0
+
+    def add(line: str) -> None:
+        nonlocal indent
+        lines.append("    " * indent + line)
+
+    vars = set([v for f in [*assumptions, conclusion] for v in _get_variable_names(f)])
+    args = " ".join(f"({v}: int)" for v in vars)
+
+    add("use int.Int")
+    add(f"let prog {args} = ")
+    indent += 1
+    for f in assumptions:
+        add(f"assume {{{f}}};")
+    add(f"assert {{{conclusion}}};")
+    add("()")
+
+    prog = "\n".join(lines)
+
+    feedback = check(prog, prog)
+    return feedback.success
