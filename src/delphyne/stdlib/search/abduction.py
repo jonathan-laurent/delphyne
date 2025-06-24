@@ -260,7 +260,7 @@ def abduct_and_saturate[P, Proof](
         old_candidates = candidates.copy()
         candidates.clear()
         for c, i in old_candidates.items():
-            yield from add_candidate(tracked[c])
+            yield from add_candidate(c)
             if c in candidates:
                 # Restore the counters if `c` is still a candidate
                 candidates[c].num_proposed = i.num_proposed
@@ -317,7 +317,8 @@ def abduct_and_saturate[P, Proof](
                 tracked[s] = ts
         return suggs
 
-    def get_suggestions(c: _EFact) -> dp.StreamGen[Sequence[_EFact]]:
+    def get_suggestions(c: _EFact) -> dp.StreamGen[dict[_EFact, int]]:
+        # Return a dict representing a multiset of suggestions
         assert c in candidates
         raw_suggs = yield from get_raw_suggestions(c)
         suggs: list[_EFact] = []
@@ -330,8 +331,13 @@ def abduct_and_saturate[P, Proof](
             assert len(proved) > len_proved_old
             yield from saturate()
         suggs = [s for s in suggs if s in candidates]
-        dbg(f"Filtered: {suggs}")
-        return suggs
+        suggs_multiset: dict[_EFact, int] = {}
+        for s in suggs:
+            if s not in suggs_multiset:
+                suggs_multiset[s] = 0
+            suggs_multiset[s] += 1
+        dbg(f"Filtered: {suggs_multiset}")
+        return suggs_multiset
 
     try:
         yield from add_candidate(None)
@@ -342,15 +348,15 @@ def abduct_and_saturate[P, Proof](
                 suggs = yield from get_suggestions(cur)
                 if not suggs:
                     break
-                n = len(suggs)
-                for s in suggs:
-                    candidates[s].num_proposed += 1 / n
+                n = sum(suggs.values())
+                for s, k in suggs.items():
+                    candidates[s].num_proposed += k / n
                 infos = [candidates[c] for c in suggs]
                 best = _argmax(
                     scoring_function(i.num_proposed, i.num_visited)
                     for i in infos
                 )
-                cur = suggs[best]
+                cur = list(suggs.keys())[best]
                 candidates[cur].num_visited += 1
     except _Abort:
         return

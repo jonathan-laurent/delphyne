@@ -3,6 +3,7 @@ Testing oracular programs in an end-to-end fashion
 """
 
 from collections.abc import Callable, Sequence
+from functools import partial
 from pathlib import Path
 from typing import Any, cast
 
@@ -210,7 +211,7 @@ def test_structured_output_provider(model: dp.StandardModelName):
 #####
 
 
-@pytest.mark.skip("todo")
+# @pytest.mark.skip("todo")
 def test_abduction():
     """
     Testing on the following market:
@@ -233,7 +234,7 @@ def test_abduction():
         ex.MarketMember("R6", ["C"], "F"),
     ]
     strategy = ex.obtain_item(market, "F")
-    policy = ex.obtain_item_policy
+    policy = partial(ex.obtain_item_policy, num_concurrent=1)
     cache_name = "abduction"
     res, log = _eval_strategy(
         strategy, policy, cache_name, max_requests=10, max_res=1

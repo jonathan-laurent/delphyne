@@ -554,10 +554,9 @@ class ObtainItem(dp.Query[ItemsToFind]):
     items (or for free if the list is empty). You also possess a number
     of items and are interested in obtaining a new one.
 
-    Find a vendor that sells the item that you want and answer with a
-    list of things to acquire before you can make the exchange. For
-    example, if you already have an A but no B, you want to get a C and
-    a vendor exchanges a C for an A and a B, you should answer with [B].
+    Find all vendors selling the item that you want and answer with a
+    list of all the things these vendors want that you do not have
+    already.
     """
 
     market: Market
@@ -633,6 +632,8 @@ def obtain_item(
     return exchanges
 
 
-def obtain_item_policy(model: dp.LLM):
-    pp = dp.take(1) @ dp.few_shot(model)
-    return (dp.abduct_and_saturate(), pp)
+def obtain_item_policy(model: dp.LLM, num_concurrent: int = 1):
+    pp = dp.take(num_concurrent) @ dp.few_shot(
+        model, num_concurrent=num_concurrent
+    )
+    return (dp.abduct_and_saturate(verbose=True), pp)
