@@ -672,7 +672,6 @@ def few_shot[T](
     structured_output = None
     if config.force_structured_output:
         ans_type = query.query.answer_type()
-        assert isinstance(ans_type, type)
         structured_output = md.Schema.make(ans_type)
     if config.force_tool_call:
         options["tool_choice"] = "required"

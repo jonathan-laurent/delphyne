@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 from collections.abc import AsyncIterable, Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal, TypedDict, cast
+from typing import Any, Literal, TypeAliasType, TypedDict, cast
 
 import pydantic
 from why3py import defaultdict
@@ -132,14 +132,19 @@ class Schema:
     schema: Any
 
     @staticmethod
-    def make(tool: type[object]) -> "Schema":
-        if issubclass(tool, AbstractTool):
+    def make(tool: TypeAnnot[object]) -> "Schema":
+        if not isinstance(tool, type):
+            # Assert that it is a type alias
+            assert isinstance(tool, TypeAliasType)
+            name = str(tool)
+            description = None
+        elif issubclass(tool, AbstractTool):
             name = tool.tool_name()
             description = tool.tool_description()
         else:
             name = tool_name_of_class_name(tool.__name__)
-            description = inspect.getdoc(tool)
-        adapter = pydantic.TypeAdapter(cast(type[AbstractTool[Any]], tool))
+            description = inspect.getdoc(cast(Any, tool))
+        adapter = pydantic.TypeAdapter(cast(Any, tool))
         return Schema(
             name=name,
             description=description,
