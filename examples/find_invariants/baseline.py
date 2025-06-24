@@ -15,7 +15,6 @@ from find_invariants import ProposeInvariants
 def prove_program_baseline(
     prog: why3.File,
 ) -> Strategy[Branch | Failure | Computation, dp.PromptingPolicy, why3.File]:
-    print("Hello")
     feedback = yield from dp.compute(why3.check, prog, prog)
     yield from dp.ensure(feedback.error is None, label="invalid_program")
     if feedback.success:
