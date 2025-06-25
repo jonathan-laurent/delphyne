@@ -118,7 +118,7 @@ def _values(alias: Any) -> Sequence[str]:
 
 
 def standard_model(
-    model: OpenAIModelName | MistralModelName | DeepSeekModelName,
+    model: StandardModelName,
 ) -> OpenAICompatibleModel:
     openai_models = _values(OpenAIModelName)
     mistral_models = _values(MistralModelName)

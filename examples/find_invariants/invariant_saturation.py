@@ -134,3 +134,19 @@ def prove_program_by_saturation(
         inner_policy_type=dp.PromptingPolicy
     )
     return why3.add_invariants(prog, invs)
+
+
+#####
+##### Policy
+#####
+
+
+def prove_program_by_saturation_policy(
+    model_name: dp.StandardModelName,
+    num_concurrent: int = 3,
+    temperature: float | None = None
+) -> dp.Policy[dp.Abduction, dp.PromptingPolicy]:
+    model = dp.standard_model(model_name)
+    pp = (dp.take(num_concurrent) @
+          dp.few_shot(model, temperature=temperature, num_concurrent=3))
+    return (dp.abduct_and_saturate(verbose=True), pp)
