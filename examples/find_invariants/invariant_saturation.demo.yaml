@@ -42,8 +42,10 @@
         - example: true
           answer:
             suggestions:
-              - [clearly_true, "z <= 0"]
-              - [propose_post, "x <> y"]
+              - trick: clearly_true
+                invariant: "z <= 0"
+              - trick: propose_post
+                invariant: "x <> y"
           justification: |
             Explanations:
               - Since `z` is only decremented and starts at `0`, invariant `z <= 0` clearly holds. It is also likely to be useful since it shows that the conditional statement within the loop body always executes.
@@ -73,7 +75,8 @@
         - example: true
           answer:
             suggestions:
-              - [cond_guard, "z <= 0"]
+              - trick: cond_guard
+                invariant: "z <= 0"
           justification: |
             Explanations:
             - From the shown obligation, Why3 cannot prove that `x <> y` is preserved by the loop body. However, this is true since the conditional statement is always executed, and thus both `x` and `y` are incremented at each iteration. In turn, the conditional statement is always executed since `z` starts at `0` and is only decremented. This suggests adding `z <= 0` as an invariant.

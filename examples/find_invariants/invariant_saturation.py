@@ -19,7 +19,11 @@ from why3_utils import File, Formula
 #####
 
 
-type Trick = str
+
+@dataclass
+class InvariantSuggestion:
+    trick: str
+    invariant: str
 
 
 @dataclass
@@ -28,7 +32,7 @@ class InvariantSuggestions:
     A sequence of suggestions, each of which consists in a trick name
     along with an invariant proposal.
     """
-    suggestions: Sequence[tuple[Trick, Formula]]
+    suggestions: Sequence[InvariantSuggestion]
 
 
 @dataclass
@@ -115,7 +119,7 @@ def _suggest_invariants(
     # We focus on the first unproved obligation
     answer = yield from dp.branch(
         SuggestInvariants(unproved[0]).using(dp.ambient_pp))
-    return [s[1] for s in answer.suggestions]
+    return [s.invariant for s in answer.suggestions]
 
 
 @strategy
