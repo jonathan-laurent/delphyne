@@ -104,7 +104,7 @@ def _suggest_invariants(
     unproved: Sequence[why3.Obligation],
 ) -> Strategy[Branch | Failure, dp.PromptingPolicy, Sequence[Formula]]:
     assert len(unproved) > 0
-    yield from dp.ensure(len(unproved) == 1, label="too_many_obligations")
+    # We focus on the first unproved obligation
     answer = yield from dp.branch(
         SuggestInvariants(unproved[0])(dp.PromptingPolicy, lambda p: p)
     )
