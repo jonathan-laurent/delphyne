@@ -2,5 +2,5 @@
 
 strategy_dirs: ["."]
 prompt_dirs: ["prompts"]
-modules: ["why3_utils", "find_invariants", "baseline"]
-demo_files: ["find_invariants"]
+modules: ["why3_utils", "find_invariants", "baseline", "invariant_saturation"]
+demo_files: ["find_invariants", "invariant_saturation"]
