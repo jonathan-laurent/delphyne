@@ -291,9 +291,11 @@ def abduct_and_saturate[P, Proof](
             assert nf in all_canonical()
             return equivalent[f]
         # New fact whose equivalence must be tested
-        eqspace = node.search_equivalent(
-            [tracked[o] for o in all_canonical()], tracked[f]
-        )
+        prev = [tracked[o] for o in all_canonical() if o is not None]
+        if not prev:
+            # First fact: no need to make equivalence call
+            return f
+        eqspace = node.search_equivalent(prev, tracked[f])
         res = yield from take_one(eqspace.stream(env, policy))
         if res is None:
             raise _Abort()
