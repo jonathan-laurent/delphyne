@@ -2,7 +2,9 @@ from collections.abc import Callable
 from typing import Never
 
 import delphyne.core as dp
-from delphyne.stdlib.nodes import Branch, branch
+from delphyne.stdlib.computations import Computation, elim_compute
+from delphyne.stdlib.nodes import Branch, Failure, branch
+from delphyne.stdlib.policies import PromptingPolicy
 from delphyne.stdlib.search.dfs import dfs
 from delphyne.stdlib.strategies import strategy
 
@@ -29,3 +31,15 @@ def map_space[P, A, B](
     space: dp.OpaqueSpaceBuilder[P, A], f: Callable[[A], B]
 ) -> dp.OpaqueSpaceBuilder[P, B]:
     return map_space_strategy(space, f)(P, lambda p: (dfs(), p))  # type: ignore
+
+
+def just_dfs[P](policy: P) -> dp.Policy[Branch | Failure, P]:
+    return (dfs(), policy)
+
+
+def just_compute[P](policy: P) -> dp.Policy[Computation, P]:
+    return (dfs() @ elim_compute, policy)
+
+
+def ambient_pp(policy: PromptingPolicy) -> PromptingPolicy:
+    return policy

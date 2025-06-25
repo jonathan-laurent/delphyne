@@ -90,6 +90,7 @@ def abduction[Fact, Feedback, Proof, P](
     redundant: Callable[
         [Sequence[Fact], Fact], dp.OpaqueSpaceBuilder[P, bool]
     ],
+    inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Abduction, P, Proof]:
     """
     Higher-order strategy for proving a fact via recursive abduction.

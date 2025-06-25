@@ -12,6 +12,9 @@ from delphyne import Abduction, Branch, Computation, Failure, Strategy, strategy
 import why3_utils as why3
 from why3_utils import File, Formula
 
+# fmt: off
+
+
 #####
 ##### The Main Query
 #####
@@ -106,8 +109,7 @@ def _suggest_invariants(
     assert len(unproved) > 0
     # We focus on the first unproved obligation
     answer = yield from dp.branch(
-        SuggestInvariants(unproved[0])(dp.PromptingPolicy, lambda p: p)
-    )
+        SuggestInvariants(unproved[0]).using(dp.ambient_pp))
     return answer.suggestions
 
 
@@ -115,19 +117,15 @@ def _suggest_invariants(
 def prove_program_by_saturation(
     prog: why3.File,
 ) -> Strategy[Abduction, dp.PromptingPolicy, why3.File]:
-    IP = dp.PromptingPolicy
     invs = yield from dp.abduction(
-        prove=lambda proved, goal: _prove_goal(prog, proved, goal)(
-            IP, lambda _: (dp.dfs() @ dp.elim_compute, None)
-        ),
-        suggest=lambda feedback: _suggest_invariants(feedback)(
-            IP, lambda p: (dp.dfs(), p)
-        ),
-        search_equivalent=lambda proved, fml: _search_equivalent(proved, fml)(
-            IP, lambda _: (dp.dfs() @ dp.elim_compute, None)
-        ),
-        redundant=lambda proved, fml: _is_redundant(proved, fml)(
-            IP, lambda _: (dp.dfs() @ dp.elim_compute, None)
-        ),
+        prove=lambda proved, goal:
+            _prove_goal(prog, proved, goal).using(dp.just_compute),
+        suggest=lambda feedback:
+            _suggest_invariants(feedback).using(dp.just_dfs),
+        search_equivalent=lambda proved, fml:
+            _search_equivalent(proved, fml).using(dp.just_compute),
+        redundant=lambda proved, fml:
+          _is_redundant(proved, fml).using(dp.just_compute),
+        inner_policy_type=dp.PromptingPolicy
     )
     return why3.add_invariants(prog, invs)
