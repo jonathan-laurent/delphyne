@@ -41,16 +41,13 @@
       answers:
         - example: true
           answer:
-            obligation_kind: post
-            obligation: "INVS -> x >= 10 -> x <> y"
-            tricks: ["abduction", "simple"]
-            suggestions: ["x <> y", "z <= 0"]
+            suggestions:
+              - [clearly_true, "z <= 0"]
+              - [propose_post, "x <> y"]
           justification: |
             Explanations:
-            - From the proof obligation name containing "assertion" and from the final assertion being annotated with "(* GOAL *)", we know that this obligation is about proving the final assertion. Thus, `obligation_kind=post`.
-            - The exact obligation is `INVS -> x >= 10 -> x <> y`. Here, `x >= 10` denotes the negation of the loop guard.
-            - One way to prove this obligation is by adding the postcondition itself (`x <> y`) to INVS. We suggest doing that (`abduction` trick).
-            - Also, we can see that `z` is only decremented in the program and so `z <= 0` is clearly a valid invariant. This looks like a useful invariant to have since it shows that the conditional within the loop is always executed (`simple` trick).
+              - Since `z` is only decremented and starts at `0`, invariant `z <= 0` clearly holds. It is also likely to be useful since it shows that the conditional statement within the loop body always executes.
+              - The post-condition `x <> y` is true initially. It is also preserved by the loop body since the conditional statement is always executed (and so both `x` and `y` are incremented at each iteration). Thus, proposing it as an invariant is reasonable.
     - query: SuggestInvariants
       args:
         unproved:
@@ -75,11 +72,8 @@
       answers:
         - example: true
           answer:
-            obligation_kind: preserved
-            obligation: "INVS -> z - 1 >= 0 -> x + 1 <> y"
-            tricks: ["abduction"]
-            suggestions: ["z <= 0"]
+            suggestions:
+              - [cond_guard, "z <= 0"]
           justification: |
             Explanations:
-            - From the proof obligation name containing "loop invariant preservation" and from the invariant being annotated with "(* GOAL *)", we know that this obligation is about proving the preservation of the loop invariant. Thus, `obligation_kind=preserved`.
-            - The exact obligation is `INVS -> z - 1 >= 0 -> x + 1 <> y`. This is because...
+            - From the shown obligation, Why3 cannot prove that `x <> y` is preserved by the loop body. However, this is true since the conditional statement is always executed, and thus both `x` and `y` are incremented at each iteration. In turn, the conditional statement is always executed since `z` starts at `0` and is only decremented. This suggests adding `z <= 0` as an invariant.

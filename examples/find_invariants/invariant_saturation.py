@@ -4,7 +4,6 @@ A saturation-based strategy for finding invariants
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Literal
 
 import delphyne as dp
 from delphyne import Branch, Computation, Failure, Strategy, strategy
@@ -20,12 +19,16 @@ from why3_utils import File, Formula
 #####
 
 
+type Trick = str
+
+
 @dataclass
 class InvariantSuggestions:
-    obligation_kind: Literal["post", "init", "preserved"]
-    obligation: str
-    tricks: Sequence[str]
-    suggestions: Sequence[why3.Formula]
+    """
+    A sequence of suggestions, each of which consists in a trick name
+    along with an invariant proposal.
+    """
+    suggestions: Sequence[tuple[Trick, Formula]]
 
 
 @dataclass
@@ -112,7 +115,7 @@ def _suggest_invariants(
     # We focus on the first unproved obligation
     answer = yield from dp.branch(
         SuggestInvariants(unproved[0]).using(dp.ambient_pp))
-    return answer.suggestions
+    return [s[1] for s in answer.suggestions]
 
 
 @strategy
