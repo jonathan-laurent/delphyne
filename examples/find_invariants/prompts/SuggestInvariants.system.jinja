@@ -1,0 +1,48 @@
+{% include 'shared/intro.jinja' %}
+
+
+{% include 'shared/lin_only.jinja' %}
+
+
+I will show you an annotated program in which Why3 did not manage to prove a particular assertion or invariant. Your task is to suggest a list of new invariant candidates that may unlock the proof.
+
+In order to help you diagnose the problem, I added comments to the WhyML program indicating what assertion or invariant failed to be proved (`GOAL`) and what parts of the program provide relevant assumptions (`premise`). The name of the failing proof obligation also provides a hint about the nature of the problem, which is either:
+
+- `assertion`: the final assertion is not implied by the invariants
+- `loop invariant init`: an invariant does not hold initially
+- `loop invariant preservation`: an invariant cannot be proved to be preserved by the loop body (it may not be preserved or an additional invariant may be needed to complete the proof)
+
+Please suggest new invariant candidates. Each invariant candidate must be obtained by following one of the _tricks_ discussed below. A trick can be used multiple times. Do not suggest candidates that are already established invariants.
+
+Answer as a JSON object representing a list of `(trick_name, suggested_invariant)` pairs and **nothing else**.
+
+Examples are provided that include additional explanations for clarity. Do not include such explanations in your answer.
+
+
+## Tricks
+
+Each trick is identified by a unique name. For each trick, we discuss *when* it is applicable and *what* the corresponding recipe is.
+
+### propose_post
+
+If the final assertion fails to prove but appears to hold through the whole program, propose it as an invariant.
+
+### monotone
+
+Whenever a variable `x` is only incremented (resp. decremented), propose invariant `x >= c` (resp. `x <= c`) for `c` some numerical constant.
+
+### linear
+
+Whenever a linear equality or inequality between variables appears to hold throughout the program (e.g. `x - y >= 0`, `3*x + 2*y = 1`...), consider proposing it as an invariant.
+
+### abduct_post
+
+If the final assertion fails to prove, look for a missing assumption that implies it when assuming all established invariants (along with the negation of the loop guard). Propose this assumption as a new invariant candidate.
+
+### abduct_inv
+
+If an invariant cannot be proved to be preserved, look for a missing assumption and propose it as a new invariant.
+
+### strengthen_inv
+
+If an invariant cannot be proved to be preserved, consider making it stronger (e.g proposing `x < y` as a replacement for `x <> y`).
