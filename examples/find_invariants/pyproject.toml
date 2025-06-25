@@ -14,7 +14,7 @@ why3 = ["why3py>=0.1.0"]
 where = ["."]
 
 [tool.ruff]
-line-length = 88
+line-length = 79
 
 [tool.pyright]
 typeCheckingMode = "strict"

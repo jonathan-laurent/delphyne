@@ -33,7 +33,9 @@ class Feedback:
 
     @property
     def success(self) -> bool:
-        return self.error is None and all(obl.proved for obl in self.obligations)
+        return self.error is None and all(
+            obl.proved for obl in self.obligations
+        )
 
 
 def check(prog: File, annotated: File) -> Feedback:
@@ -64,7 +66,9 @@ def check(prog: File, annotated: File) -> Feedback:
     if outcome.kind == "error" or outcome.kind == "mismatch":
         return Feedback(error=why3py.summary(outcome), obligations=[])
     obligations = [
-        Obligation(obl.name, obl.proved, obl.annotated, _goal_formula(obl.goal))
+        Obligation(
+            obl.name, obl.proved, obl.annotated, _goal_formula(obl.goal)
+        )
         for obl in outcome.obligations
     ]
     return Feedback(error=None, obligations=obligations)
@@ -109,9 +113,9 @@ def _goal_formula(descr: str) -> str:
 
 
 def split_final_assertion(prog: File) -> tuple[File, Formula]:
-    # Match "assert { <fml> }"" in `prog` and use a regex to replace it by
-    # "assert { true }", while also separately returning <fml>. Ensure that
-    # there is one match exactly. This is fragile!
+    # Match "assert { <fml> }"" in `prog` and use a regex to replace it
+    # by "assert { true }", while also separately returning <fml>.
+    # Ensure that there is one match exactly. This is fragile!
     import re
 
     # Pattern to match "assert { <formula> }" with flexible whitespace
@@ -121,30 +125,36 @@ def split_final_assertion(prog: File) -> tuple[File, Formula]:
 
     # Ensure there is exactly one match
     if len(matches) != 1:
-        raise ValueError(f"Expected exactly one assert statement, found {len(matches)}")
+        raise ValueError(
+            f"Expected exactly one assert statement, found {len(matches)}"
+        )
 
     match = matches[0]
     formula = match.group(1).strip()
 
     # Replace the assert statement with "assert { true }"
-    modified_prog = prog[: match.start()] + "assert { true }" + prog[match.end() :]
+    modified_prog = (
+        prog[: match.start()] + "assert { true }" + prog[match.end() :]
+    )
 
     return modified_prog, formula
 
 
 def restore_final_assertion(prog: File, fml: Formula) -> File:
-    # Match "assert { true }" and replaces `true` by `fml`. This acts as the
-    # inverse of `split_final_assertion`.
+    # Match "assert { true }" and replaces `true` by `fml`. This acts as
+    # the inverse of `split_final_assertion`.
     import re
 
     pattern = r"assert\s*\{\s*true\s*\}"
     matches = list(re.finditer(pattern, prog))
     if len(matches) != 1:
         raise ValueError(
-            f"Expected exactly one 'assert {{ true }}' statement, found {len(matches)}"
+            f"Expected exactly one assertion, found {len(matches)}"
         )
     match = matches[0]
-    restored_prog = prog[: match.start()] + f"assert {{ {fml} }}" + prog[match.end() :]
+    restored_prog = (
+        prog[: match.start()] + f"assert {{ {fml} }}" + prog[match.end() :]
+    )
     return restored_prog
 
 
@@ -157,7 +167,7 @@ def _get_variable_names(f: Formula) -> Sequence[str]:
     """
     Naive heuristic to extract all variable names from a formula.
 
-    This uses a regex to find all occurences of a valid C-like identifier.
+    Uses a regex to find all occurences of a valid C-like identifier.
     """
 
     import re
@@ -166,22 +176,19 @@ def _get_variable_names(f: Formula) -> Sequence[str]:
     return re.findall(pattern, f)
 
 
-def is_valid_implication(assumptions: Sequence[Formula], conclusion: Formula) -> bool:
+def is_valid_implication(
+    assumptions: Sequence[Formula], conclusion: Formula
+) -> bool:
     """
     Check if the assumptions imply the conclusion.
 
-    This only works for integer variables. Whenever in doubt, it returns `False`.
+    Only works for integer variables and returns `False` when in doubt.
+    Works by verifying a WhyML program of this kind:
 
-    We do so by verifying a WhyML program of this kind:
-
-    ```mlw
-    use int.Int
+    ```mlw use int.Int
 
     let prog (x: int) (y: int) =
-        assume {x >= 0};
-        assume {y >= 0};
-        assert {x + y >= 0};
-        ()
+        assume {x >= 0}; assume {y >= 0}; assert {x + y >= 0}; ()
     ```
     """
 
@@ -192,7 +199,8 @@ def is_valid_implication(assumptions: Sequence[Formula], conclusion: Formula) ->
         nonlocal indent
         lines.append("    " * indent + line)
 
-    vars = set([v for f in [*assumptions, conclusion] for v in _get_variable_names(f)])
+    all_fmls = [*assumptions, conclusion]
+    vars = set([v for f in all_fmls for v in _get_variable_names(f)])
     args = " ".join(f"({v}: int)" for v in vars)
 
     add("use int.Int")

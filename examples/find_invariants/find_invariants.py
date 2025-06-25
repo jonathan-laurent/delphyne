@@ -45,6 +45,10 @@ class ProofStateMetrics:
 type Proposal = Sequence[why3.Formula]
 
 
+type Blacklist = Sequence[Proposal]
+
+
+
 #####
 ##### Strategies
 #####
@@ -61,9 +65,11 @@ def prove_program(
         if feedback.success:
             return annotated
         remaining = [o for o in feedback.obligations if not o.proved]
-        yield from dp.ensure(len(remaining) == 1, "too many remaining obligations")
+        yield from dp.ensure(
+            len(remaining) == 1, "too many remaining obligations")
         unproved = remaining[0]
-        yield from dp.ensure(not why3.invariant_init_obligation(unproved), "init")
+        yield from dp.ensure(
+            not why3.invariant_init_obligation(unproved), "init")
         if annotated != prog:  # if invariant annotations are present
             yield from dp.value(
                 EvaluateProofState(unproved)(ProveProgIP, lambda p: p.eval),
@@ -75,20 +81,24 @@ def prove_program(
         annotated = why3.add_invariants(annotated, new_invariants)
 
 
+
+
 @strategy
 def propose_invariants(
     obligation: why3.Obligation,
     blacklist: Sequence[Proposal] | None,
-) -> Strategy[Branch | Failure, ProposeInvsIP, tuple[Proposal, Sequence[Proposal]]]:
+) -> Strategy[Branch | Failure, ProposeInvsIP, tuple[Proposal, Blacklist]]:
     if blacklist is None:
         blacklist = []
     proposal = yield from dp.branch(
-        ProposeInvariants(obligation, blacklist)(ProposeInvsIP, lambda p: p.propose))
+        ProposeInvariants(obligation, blacklist)
+            (ProposeInvsIP, lambda p: p.propose))
     sanity_check = all(why3.no_invalid_formula_symbol(inv) for inv in proposal)
     yield from dp.ensure(sanity_check, "sanity check failed")
     if blacklist:
         novel = yield from dp.branch(
-            IsProposalNovel(proposal, blacklist)(ProposeInvsIP, lambda p: p.novel))
+            IsProposalNovel(proposal, blacklist)
+                (ProposeInvsIP, lambda p: p.novel))
         yield from dp.ensure(novel, "proposal is not novel")
     return proposal, [*blacklist, proposal]
 

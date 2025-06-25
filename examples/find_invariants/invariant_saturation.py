@@ -7,7 +7,14 @@ from dataclasses import dataclass
 from typing import Literal
 
 import delphyne as dp
-from delphyne import Abduction, Branch, Computation, Failure, Strategy, strategy
+from delphyne import (
+    Abduction,
+    Branch,
+    Computation,
+    Failure,
+    Strategy,
+    strategy,
+)
 
 import why3_utils as why3
 from why3_utils import File, Formula

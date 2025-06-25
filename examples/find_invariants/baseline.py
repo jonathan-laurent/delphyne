@@ -1,7 +1,7 @@
 """
-A baseline strategy that attempts at annotating the program from scratch until
-Why3 accepts the proof. We write it in such a way to reuse the ProposeInvariants
-query and the associated demonstrations.
+A baseline strategy that attempts at annotating the program from scratch
+until Why3 accepts the proof. We write it in such a way to reuse the
+ProposeInvariants query and the associated demonstrations.
 """
 
 import delphyne as dp
