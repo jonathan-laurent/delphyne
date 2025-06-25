@@ -361,5 +361,8 @@ def abduct_and_saturate[P, Proof](
     except _Abort:
         return
     except _ProofFound:
-        yield dp.Yield(proved[None])
+        action = proved[None]
+        child = tree.child(action)
+        assert isinstance(child.node, dp.Success)
+        yield dp.Yield(child.node.success)
         return
