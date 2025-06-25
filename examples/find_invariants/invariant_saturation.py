@@ -7,14 +7,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 import delphyne as dp
-from delphyne import (
-    Abduction,
-    Branch,
-    Computation,
-    Failure,
-    Strategy,
-    strategy,
-)
+from delphyne import Branch, Computation, Failure, Strategy, strategy
 
 import why3_utils as why3
 from why3_utils import File, Formula
@@ -57,11 +50,13 @@ A sequence of unproved obligations
 """
 
 
-def _modified_program(prog: File, facts: Sequence[Formula], goal: Formula | None):
+def _modified_program(
+    prog: File, facts: Sequence[Formula], goal: Formula | None
+) -> File:
     """
-    Get an updated version of the program where all proved invariants are added
-    and only a specific goal annotation is left. Use `goal=None` if the goal is
-    the final assertion.
+    Get an updated version of the program where all proved invariants
+    are added and only a specific goal annotation is left. Use
+    `goal=None` if the goal is the final assertion.
     """
     invs = facts
     if goal is not None:
@@ -123,7 +118,7 @@ def _suggest_invariants(
 @strategy
 def prove_program_by_saturation(
     prog: why3.File,
-) -> Strategy[Abduction, dp.PromptingPolicy, why3.File]:
+) -> Strategy[dp.Abduction, dp.PromptingPolicy, why3.File]:
     invs = yield from dp.abduction(
         prove=lambda proved, goal:
             _prove_goal(prog, proved, goal).using(dp.just_compute),
