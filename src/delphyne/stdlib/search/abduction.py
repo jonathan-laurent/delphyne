@@ -218,6 +218,8 @@ def abduct_and_saturate[P, Proof](
         return [*candidates, *proved, *disproved, *redundant]
 
     def is_redundant(f: _EFact) -> dp.StreamGen[bool]:
+        if f is None:
+            return False
         respace = node.redundant([tracked[o] for o in proved], tracked[f])
         res = yield from take_one(respace.stream(env, policy))
         if res is None:
@@ -282,6 +284,7 @@ def abduct_and_saturate[P, Proof](
         if f in proved or f in disproved or f in candidates:
             # Case where f is a canonical fact
             return f
+        assert f is not None
         if f in equivalent:
             # Case where an equivalent canonical fact is known already
             nf = equivalent[f]
