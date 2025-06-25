@@ -42,3 +42,50 @@ def test_is_valid_implication(
     result = why3.is_valid_implication(assumptions, conclusion)
     print(result)
     assert result == expected
+
+
+PROG_1 = """
+use int.Int
+
+let main () diverges =
+  let ref x = any int in
+  let ref y = any int in
+  x <- 1;
+  y <- 0;
+  while y < 100000 do
+    x <- x + y;
+    y <- y + 1
+  done;
+  assert { x >= y }
+"""
+
+PROG_2 = """
+use int.Int
+
+let main () diverges =
+  let ref n = any int in
+  let ref y = any int in
+  let ref x = 1 in
+  while x <= n do
+    y <- n - x;
+    x <- x + 1
+  done;
+  if n > 0 then
+    assert { y <= n }
+"""
+
+
+@pytest.mark.parametrize(
+    "prog",
+    [PROG_1, PROG_2],
+)
+def test_split_restore_final_assertion_inverse(prog: str) -> None:
+    """
+    split_final_assertion and restore_final_assertion are inverse operations.
+    """
+    modified_prog, extracted_formula = why3.split_final_assertion(prog)
+    restored_prog = why3.restore_final_assertion(modified_prog, extracted_formula)
+    assert restored_prog == prog
+    assert "assert { true }" in modified_prog
+    assert extracted_formula.strip() != ""
+    assert extracted_formula.strip() != "true"

@@ -70,6 +70,11 @@ def check(prog: File, annotated: File) -> Feedback:
     return Feedback(error=None, obligations=obligations)
 
 
+#####
+##### Naive Program Manipulations
+#####
+
+
 def add_invariant(prog: File, inv: Formula) -> File:
     """
     Add an invariant to a single-loop program.
@@ -101,6 +106,46 @@ def invariant_init_obligation(obligation: Obligation) -> bool:
 def _goal_formula(descr: str) -> str:
     # Turn a goal description such as `goal vc1: <fml>` into `<fml>`.
     return descr.split(":", 1)[1].strip()
+
+
+def split_final_assertion(prog: File) -> tuple[File, Formula]:
+    # Match "assert { <fml> }"" in `prog` and use a regex to replace it by
+    # "assert { true }", while also separately returning <fml>. Ensure that
+    # there is one match exactly. This is fragile!
+    import re
+
+    # Pattern to match "assert { <formula> }" with flexible whitespace
+    pattern = r"assert\s*\{\s*([^}]+)\s*\}"
+
+    matches = list(re.finditer(pattern, prog))
+
+    # Ensure there is exactly one match
+    if len(matches) != 1:
+        raise ValueError(f"Expected exactly one assert statement, found {len(matches)}")
+
+    match = matches[0]
+    formula = match.group(1).strip()
+
+    # Replace the assert statement with "assert { true }"
+    modified_prog = prog[: match.start()] + "assert { true }" + prog[match.end() :]
+
+    return modified_prog, formula
+
+
+def restore_final_assertion(prog: File, fml: Formula) -> File:
+    # Match "assert { true }" and replaces `true` by `fml`. This acts as the
+    # inverse of `split_final_assertion`.
+    import re
+
+    pattern = r"assert\s*\{\s*true\s*\}"
+    matches = list(re.finditer(pattern, prog))
+    if len(matches) != 1:
+        raise ValueError(
+            f"Expected exactly one 'assert {{ true }}' statement, found {len(matches)}"
+        )
+    match = matches[0]
+    restored_prog = prog[: match.start()] + f"assert {{ {fml} }}" + prog[match.end() :]
+    return restored_prog
 
 
 #####
