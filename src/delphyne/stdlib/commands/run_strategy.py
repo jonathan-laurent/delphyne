@@ -3,14 +3,16 @@ Standard commands for running strategies.
 """
 
 import time
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from typing import Any
 
 import delphyne.analysis as analysis
 import delphyne.analysis.feedback as fb
 import delphyne.core as dp
 import delphyne.stdlib as std
 import delphyne.stdlib.tasks as ta
+from delphyne.utils.typing import NoTypeInfo, pydantic_dump
 
 DEFAULT_REFRESH_RATE_IN_SECONDS = 5
 
@@ -18,6 +20,8 @@ DEFAULT_REFRESH_RATE_IN_SECONDS = 5
 @dataclass
 class RunStrategyResponse:
     success: bool
+    values: Sequence[Any | None]
+    spent_budget: Mapping[str, float]
     raw_trace: dp.ExportableTrace
     log: Sequence[dp.ExportableLogMessage]
     browsable_trace: fb.Trace
@@ -36,7 +40,6 @@ async def run_loaded_strategy[N: dp.Node, P, T](
     exe: ta.CommandExecutionContext,
     args: RunLoadedStrategyArgs[N, P, T],
 ):
-    # TODO: respect refresh rate
     refresh_rate = exe.refresh_rate
     if refresh_rate is None:
         refresh_rate = DEFAULT_REFRESH_RATE_IN_SECONDS
@@ -52,17 +55,30 @@ async def run_loaded_strategy[N: dp.Node, P, T](
     stream = search_policy(tree, env, inner_policy)
     if args.budget is not None:
         stream = std.stream_with_budget(stream, dp.BudgetLimit(args.budget))
-    stream = std.stream_take(stream, 1)
+    stream = std.stream_take(stream, args.num_generated)
+    results: list[T] = []
     success = False
     total_budget = dp.Budget.zero()
+
+    def serialize_result(res: T) -> Any | None:
+        ret_type = args.strategy.return_type()
+        if isinstance(ret_type, NoTypeInfo):
+            return None
+        return pydantic_dump(ret_type, res)
 
     def compute_result():
         trace = env.tracer.trace
         raw_trace = trace.export()
         browsable_trace = analysis.compute_browsable_trace(trace, cache)
         log = list(env.tracer.export_log())
+        values = [serialize_result(r) for r in results]
         response = RunStrategyResponse(
-            success, raw_trace, log, browsable_trace
+            success,
+            values,
+            total_budget.values,
+            raw_trace,
+            log,
+            browsable_trace,
         )
         return ta.CommandResult([], response)
 
@@ -81,6 +97,7 @@ async def run_loaded_strategy[N: dp.Node, P, T](
         match msg:
             case dp.Yield():
                 success = True
+                results.append(msg.value.value)
             case dp.Spent(b):
                 total_budget += b
             case dp.Barrier():
