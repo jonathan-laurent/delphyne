@@ -4,7 +4,7 @@
     prog: |
       use int.Int
 
-      let example1 () diverges =
+      let example () diverges =
         let ref x = any int in
         let ref y = 3 in
         let ref z = 0 in
@@ -21,12 +21,12 @@
     - query: SuggestInvariants
       args:
         unproved:
-          name: VC for example1 (assertion)
+          name: VC for example (assertion)
           proved: false
           relevance_hints: |-
             use int.Int
       
-            let example1 () diverges =  (* GOAL *)
+            let example () diverges =  (* GOAL *)
               let ref x = any int in  (* premise *)
               let ref y = 3 in
               let ref z = 0 in
@@ -53,12 +53,12 @@
     - query: SuggestInvariants
       args:
         unproved:
-          name: VC for example1 (loop invariant preservation)
+          name: VC for example (loop invariant preservation)
           proved: false
           relevance_hints: |-
             use int.Int
       
-            let example1 () diverges =  (* GOAL *)
+            let example () diverges =  (* GOAL *)
               let ref x = any int in  (* premise *)
               let ref y = 3 in
               let ref z = 0 in
@@ -80,3 +80,168 @@
           justification: |
             Explanations:
             - From the shown obligation, Why3 cannot prove that `x <> y` is preserved by the loop body. However, this is true since the conditional statement is always executed, and thus both `x` and `y` are incremented at each iteration. In turn, the conditional statement is always executed since `z` starts at `0` and is only decremented. This suggests adding `z <= 0` as an invariant.
+
+
+
+
+# An illustration of `linear` and `relax_loop_guard`:
+# 3x-2y is constant, thus 3x-2y >= 6.
+# by relaxing the guard, we get `x < 12` and so `x <= 11`.
+# Thus, in the end, 2y <= 3x - 6 <= 3*11 - 6 = 27 so y <= 14.
+- strategy: prove_program_by_saturation
+  args:
+    prog: |
+      use int.Int
+
+      let example () diverges =
+        let ref x = any int in
+        let ref y = any int in
+        assume { x < 5 };
+        assume { x >= 2 };
+        assume { y <= 0 };
+        while x < 10 do
+          x <- x + 2;
+          y <- y - 3;
+        done;
+        assert { y <= 14 }
+  tests:
+    - run | success
+  queries: 
+    - query: SuggestInvariants
+      args:
+        unproved:
+          name: VC for example (assertion)
+          proved: false
+          relevance_hints: |-
+            use int.Int
+      
+            let example () diverges =  (* GOAL *)
+              let ref x = any int in  (* premise *)
+              let ref y = any int in  (* premise *)
+              assume { x < 5 };  (* premise *)
+              assume { x >= 2 };  (* premise *)
+              assume { y <= 0 };  (* premise *)
+              while x < 10 do  (* premise *)
+                x <- x + 2;
+                y <- y - 3;
+              done;
+              assert { y <= 14 }  (* GOAL *)
+          goal_formula: y <= 14
+      answers:
+        - example: true
+          answer:
+            suggestions:
+              - trick: linear
+                invariant: "3*x - 2*y >= 6"
+              - trick: relax_loop_guard
+                invariant: "x < 12"
+          justification: |
+            Explanations:
+              - Since `y` is decremented by 3 every time `x` in incremented by `2`, the quantity `3*x - 2*y` is constant throughout the program. Since it at least `3*2 - 2*0 = 6` initially, the inequality "3*x - 2*y >= 6" is an invariant.
+              - `x` is only incremented by `2` at each loop iteration. Thus, given the loop guard `x < 10`, we have `x < 12` at the end of any loop iteration. `x < 12` also holds initially because of assumption `x < 5` so we propose `x < 12` as an invariant.
+
+
+# An illustration of `true_or_continue`, `relax_loop_guard`, and `abduct_post`.
+# Invariant: n > 0 -> (g >= 0 || x < n)
+- strategy: prove_program_by_saturation
+  args:
+    prog: |
+      use int.Int
+
+      let example () diverges =
+        let ref n = any int in
+        let ref x = 0 in
+        let ref g = any int in
+        while x < n do
+          g <- 4;
+          x <- x + 1;
+        done;
+        if n > 0 then
+          assert { g >= 1 }
+  tests:
+    - run | success
+    - run 'indirect' | success
+  queries: 
+    - query: SuggestInvariants
+      args:
+        unproved:
+          name: VC for example (assertion)
+          proved: false
+          relevance_hints: |-
+            use int.Int
+      
+            let example () diverges =  (* GOAL *)
+              let ref n = any int in  (* premise *)
+              let ref x = 0 in
+              let ref g = any int in
+              while x < n do  (* premise *)
+                g <- 4;
+                x <- x + 1;
+              done;
+              if n > 0 then  (* premise *)
+                assert { g >= 1 }  (* GOAL *)
+          goal_formula: g >= 1
+      answers:
+        - example: true
+          answer:
+            suggestions:
+              - trick: abduct_post
+                invariant: "n > 0 -> x >= n -> g >= 1"
+        - example: false
+          label: indirect
+          answer:
+            suggestions:
+              - trick: propose_post
+                invariant: "g >= 1"
+    - query: SuggestInvariants
+      args:
+        unproved:
+          name: VC for example (loop invariant init)
+          proved: false
+          relevance_hints: |-
+            use int.Int
+      
+            let example () diverges =  (* GOAL *)
+              let ref n = any int in
+              let ref x = 0 in
+              let ref g = any int in  (* GOAL *)
+              while x < n do
+                invariant { g >= 1 }  (* GOAL *)
+                g <- 4;
+                x <- x + 1;
+              done;
+              if n > 0 then
+                assert { true }
+          goal_formula: o2 >= 1
+      answers:
+        - example: true
+          answer:
+            suggestions:
+              - trick: true_or_continue
+                invariant: "g >= 1 || x < n"
+    - query: SuggestInvariants
+      args:
+        unproved:
+          name: VC for example (loop invariant init)
+          proved: false
+          relevance_hints: |-
+            use int.Int
+      
+            let example () diverges =  (* GOAL *)
+              let ref n = any int in  (* GOAL *)
+              let ref x = 0 in  (* GOAL *)
+              let ref g = any int in  (* GOAL *)
+              while x < n do
+                invariant { g >= 1 || x < n }  (* GOAL *)
+                g <- 4;
+                x <- x + 1;
+              done;
+              if n > 0 then
+                assert { true }
+          goal_formula: o2 >= 1 || 0 < o1
+      answers:
+        - example: true
+          answer:
+            suggestions:
+              - trick: guard_inv
+                invariant: "n > 0 -> (g >= 1 || x < n)"

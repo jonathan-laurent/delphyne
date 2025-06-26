@@ -57,7 +57,7 @@ If proving an invariant `inv` requires assuming a global assumption `assum` that
 
 ### true_or_continue
 
-If a property `P` always holds after the loop but cannot be proved as an invariant because `P` does not hold initially, consider proposing `P | loop_guard` as an invariant instead.
+If a property `P` always holds after the loop but cannot be proved as an invariant because `P` does not hold initially, consider proposing `P || loop_guard` as an invariant instead.
 
 ### cond_guard
 

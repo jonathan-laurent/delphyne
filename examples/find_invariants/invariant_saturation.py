@@ -148,9 +148,12 @@ def prove_program_by_saturation(
 def prove_program_by_saturation_policy(
     model_name: dp.StandardModelName,
     num_concurrent: int = 3,
+    max_rollout_depth: int = 3,
     temperature: float | None = None
 ) -> dp.Policy[dp.Abduction, dp.PromptingPolicy]:
     model = dp.standard_model(model_name)
     pp = (dp.take(num_concurrent) @
           dp.few_shot(model, temperature=temperature, num_concurrent=3))
-    return (dp.abduct_and_saturate(verbose=True), pp)
+    sp = dp.abduct_and_saturate(
+        verbose=True, max_rollout_depth=max_rollout_depth)
+    return (sp, pp)
