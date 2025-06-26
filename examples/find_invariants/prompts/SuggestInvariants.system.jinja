@@ -18,6 +18,10 @@ Answer as a JSON object representing a list of `(trick_name, suggested_invariant
 
 Examples are provided that include additional explanations for clarity. Do not include such explanations in your answer.
 
+## Notes on Why3
+
+- The `any T` construct generates an arbitrary object of type `T`. In particular, a loop whose guard is `any bool` can run for an arbitrary number of times.
+
 
 ## Tricks
 
@@ -46,3 +50,19 @@ If an invariant cannot be proved to be preserved, look for a missing assumption 
 ### strengthen_inv
 
 If an invariant cannot be proved to be preserved, consider making it stronger (e.g proposing `x < y` as a replacement for `x <> y`).
+
+### guard_inv
+
+If proving an invariant `inv` requires assuming a global assumption `assum` that is only made _after_ the loop, consider proposing `assum -> inv` as an invariant instead.
+
+### true_or_continue
+
+If a property `P` always holds after the loop but cannot be proved as an invariant because `P` does not hold initially, consider proposing `P | loop_guard` as an invariant instead.
+
+### cond_guard
+
+If proving the preservation of an invariant candidate requires proving that a specific branch in the code cannot be taken (or is always taken), consider proposing an invariant that establishes this fact.
+
+### relax_loop_guard
+
+Suppose the loop guard is an inequality such as `expr < c` with `expr` an expression and `c` a constant. Then, if quantity `expr` cannot increase more than a constant amount `d` at each iteration, consider proposing `expr < c + d` as an invariant (and similarly for <=, > and >=).
