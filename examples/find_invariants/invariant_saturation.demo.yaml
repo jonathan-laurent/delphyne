@@ -187,6 +187,9 @@
             suggestions:
               - trick: abduct_post
                 invariant: "n > 0 -> x >= n -> g >= 1"
+          justification: |
+            Explanations:
+              - We want to add an invariant that implies the final assertion `g >= 1`, assuming `n > 0` (the guard around the assertion) and `x >= n` (the negation of the loop guard). Suggesting `g >= 1` does not work since `g >= 1` does not hold initially. We propose trying the whole obligation itself as an invariant.
         - example: false
           label: indirect
           answer:
@@ -219,6 +222,10 @@
             suggestions:
               - trick: true_or_continue
                 invariant: "g >= 1 || x < n"
+          justification: |
+            Explanations:
+              - The user tried to prove `g >= 1` as an invariant but it does not hold initially. Still, it always hold after an iteration of the loop since the loop body sets `g` to 4. Thus, I am proposing to try invariant `g >= 1 || x < n` instead.
+
     - query: SuggestInvariants
       args:
         unproved:
@@ -245,3 +252,6 @@
             suggestions:
               - trick: guard_inv
                 invariant: "n > 0 -> (g >= 1 || x < n)"
+          justification: |
+            Explanations:
+              - The user tried to prove `g >= 1 || x < n` as an invariant but it does not hold initially. Indeed, no assumption about `n` is known initially. However, a useful assumption `n > 0` is made after the loop. Thus, I propose guarding the current candidate with it and suggesting `n > 0 -> (g >= 1 || x < n)` as an invariant.
