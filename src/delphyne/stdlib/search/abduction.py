@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from typing import Any, Literal, Protocol, cast
 
 import delphyne.core as dp
+from delphyne.core.refs import drop_refs
 from delphyne.stdlib.nodes import spawn_node
 from delphyne.stdlib.policies import log, search_policy
 from delphyne.stdlib.streams import take_all, take_one
@@ -47,25 +48,52 @@ class Abduction(dp.Node):
 
     def navigate(self) -> dp.Navigation:
         def aux(fact: dp.Tracked[_Fact] | None) -> dp.Navigation:
+            # Take a fact as an argument and return a list of
+            # (proved_fact, proof) pairs.
             res = yield self.prove([], fact)
             status, payload = res[0], res[1]
             if status.value == "proved":
-                return payload
+                return [(fact, payload)]
             elif status.value == "disproved":
-                assert False
+                return []
             else:
                 assert status.value == "feedback"
                 feedback = payload
                 suggestions = yield self.suggest(feedback)
                 proved: list[Any] = []
                 for s in suggestions:
-                    proved.append((s, (yield from aux(s))))
+                    extra: Any = yield from aux(s)
+                    proved.extend(extra)
                 res = yield self.prove(proved, fact)
                 status, payload = res[0], res[1]
-                assert status.value == "proved"
-                return payload
+                if status.value == "proved":
+                    proved.append((fact, payload))
+                return _remove_duplicates(proved, by=lambda x: drop_refs(x[0]))
 
-        return (yield from aux(None))
+        proved: Any = yield from aux(None)
+        main_proof = _find_assoc(proved, None)
+        assert main_proof is not None
+        return main_proof
+
+
+def _find_assoc[A, B](assoc: Sequence[tuple[A, B]], elt: A) -> B | None:
+    for a, b in assoc:
+        if a == elt:
+            return b
+    return None
+
+
+def _remove_duplicates[T](
+    xs: Sequence[T], by: Callable[[T], object]
+) -> Sequence[T]:
+    seen: set[object] = set()
+    result: list[T] = []
+    for x in xs:
+        key = by(x)
+        if key not in seen:
+            seen.add(key)
+            result.append(x)
+    return result
 
 
 type AbductionStatus[Feedback, Proof] = (
