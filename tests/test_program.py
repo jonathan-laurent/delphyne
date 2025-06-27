@@ -53,7 +53,7 @@ def _eval_strategy[N: dp.Node, P, T](
     max_res: int = 1,
     model_name: dp.StandardModelName = "gpt-4.1-mini",
 ) -> tuple[Sequence[dp.Tracked[T]], str]:
-    env = dp.PolicyEnv(prompt_dirs=(), demonstration_files=())
+    env = dp.PolicyEnv(prompt_dirs=[PROMPT_DIR], demonstration_files=())
     cache = CACHE_DIR / cache_name
     model = dp.CachedModel(dp.standard_model(model_name), cache)
     stream = strategy.run_toplevel(env, policy(model))
@@ -243,3 +243,32 @@ def test_abduction():
     print(res)
     print()
     print(log)
+
+
+#####
+##### Sequencing
+#####
+
+
+def test_sequence():
+    strategy = ex.make_sum([1, 2, 3, 4], 7)
+
+    def policy(
+        model: dp.LLM,
+    ) -> dp.Policy[dp.Branch | dp.Failure, ex.MakeSumIP]:
+        one_req = dp.with_budget(dp.BudgetLimit({dp.NUM_REQUESTS: 1}))
+        return dp.sequence(
+            [
+                (
+                    (one_req @ dp.dfs()),
+                    ex.MakeSumIP(dp.few_shot(model, num_concurrent=k)),
+                )
+                for k in [1, 2]
+            ]
+        )
+
+    # TODO: this does not succeed since
+    res, _ = _eval_strategy(
+        strategy, policy, cache_name="sequence", max_requests=10, max_res=10
+    )
+    assert len(res) == 3
