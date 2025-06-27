@@ -90,7 +90,6 @@ def openai_model(model: OpenAIModelName | str):
 
 def mistral_model(model: MistralModelName | str):
     api_key = os.getenv("MISTRAL_API_KEY")
-    assert api_key is not None
     url = "https://api.mistral.ai/v1"
     info, pricing = _default_info_and_pricing(model)
     return OpenAICompatibleModel(
@@ -100,7 +99,6 @@ def mistral_model(model: MistralModelName | str):
 
 def deepseek_model(model: DeepSeekModelName | str):
     api_key = os.getenv("DEEPSEEK_API_KEY")
-    assert api_key is not None
     url = "https://api.deepseek.com"
     info, pricing = _default_info_and_pricing(model)
     return OpenAICompatibleModel(
