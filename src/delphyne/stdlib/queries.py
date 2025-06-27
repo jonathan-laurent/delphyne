@@ -647,6 +647,7 @@ def few_shot[T](
     temperature: float | None = None,
     num_concurrent: int = 1,
     iterative_mode: bool = False,
+    max_requests: int | None = None,
 ) -> dp.Stream[T]:
     """
     The standard few-shot prompting sequential prompting policy.
@@ -661,6 +662,7 @@ def few_shot[T](
     are currently not using prompt params.
     """
     assert not iterative_mode or num_concurrent == 1
+    assert max_requests is None or max_requests > 0
     env.tracer.trace_query(query.ref)
     examples = find_all_examples(env.examples, query.query)
     mngr = env.templates
@@ -676,7 +678,9 @@ def few_shot[T](
     if config.force_tool_call:
         options["tool_choice"] = "required"
     tools = [md.Schema.make(t) for t in query.query.query_tools()]
-    while True:
+    num_reqs = 0
+    while max_requests is None or num_reqs < max_requests:
+        num_reqs += 1
         req = md.LLMRequest(
             prompt,
             num_completions=num_concurrent,
