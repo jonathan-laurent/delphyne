@@ -2,7 +2,7 @@
 Utilities to launch experiments in Delphyne.
 
 
-An experiment is defined by a directory,
+An experiment is associated a directory.
 """
 
 import shutil
@@ -15,7 +15,7 @@ from typing import Any, Protocol, cast
 
 import yaml
 
-import delphyne.stdlib.commands.run_strategy as rs
+import delphyne.stdlib.commands as cmd
 import delphyne.stdlib.models as md
 from delphyne.stdlib.tasks import CommandExecutionContext, run_command
 from delphyne.utils.typing import pydantic_dump, pydantic_load
@@ -27,6 +27,10 @@ type _ModelWrapper = Callable[[md.LLM], md.LLM]
 
 
 EXPERIMENT_STATE_FILE = "experiment.yaml"
+STATUS_FILE = "statuses.txt"
+RESULT_FILE = "result.yaml"
+LOG_FILE = "log.txt"
+CACHE_DIR = "llm_cache"
 
 
 @dataclass
@@ -43,7 +47,9 @@ class ExperimentState:
 
 
 class _ExperimentFun(Protocol):
-    def __call__(self, cache_dir: Path, **args: Any) -> rs.RunStrategyArgs: ...
+    def __call__(
+        self, cache_dir: Path, **args: Any
+    ) -> cmd.RunStrategyArgs: ...
 
 
 @dataclass
@@ -121,14 +127,7 @@ class Experiment:
 def _print_progress(state: ExperimentState) -> None:
     num_done = sum(1 for c in state.configs.values() if c.done)
     num_total = len(state.configs)
-    print("\r" + 50 * " ", end="")
-    print(f"Done: {num_done} / {num_total}", end="")
-
-
-STATUS_FILE = "statuses.txt"
-RESULT_FILE = "result.yaml"
-LOG_FILE = "log.txt"
-CACHE_DIR = "llm_cache"
+    print(f"\rDone: {num_done} / {num_total}" + 40 * " ", end="")
 
 
 def _run_config(
@@ -147,7 +146,7 @@ def _run_config(
             file_path.unlink(missing_ok=True)
     cmdargs = cast(Any, experiment(cache_dir, **config))
     run_command(
-        rs.run_strategy,
+        cmd.run_strategy,
         cmdargs,
         context,
         dump_statuses=config_dir / STATUS_FILE,
