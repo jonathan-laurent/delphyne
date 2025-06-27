@@ -5,6 +5,7 @@ Utilities to launch experiments in Delphyne.
 An experiment is defined by a directory,
 """
 
+import shutil
 import uuid
 from collections.abc import Callable, Sequence
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -14,7 +15,6 @@ from typing import Any, Protocol, cast
 
 import yaml
 
-import delphyne as dp
 import delphyne.stdlib.commands.run_strategy as rs
 import delphyne.stdlib.models as md
 from delphyne.stdlib.tasks import CommandExecutionContext, run_command
@@ -43,9 +43,7 @@ class ExperimentState:
 
 
 class _ExperimentFun(Protocol):
-    def __call__[N: dp.Node, P](
-        self, wrap_model: _ModelWrapper, **args: Any
-    ) -> tuple[dp.StrategyComp[N, P, object], dp.Policy[N, P]]: ...
+    def __call__(self, cache_dir: Path, **args: Any) -> rs.RunStrategyArgs: ...
 
 
 @dataclass
@@ -130,6 +128,7 @@ def _print_progress(state: ExperimentState) -> None:
 STATUS_FILE = "statuses.txt"
 RESULT_FILE = "result.yaml"
 LOG_FILE = "log.txt"
+CACHE_DIR = "llm_cache"
 
 
 def _run_config(
@@ -139,20 +138,21 @@ def _run_config(
     config_dir: Path,
     config: _Config,
 ) -> str:
+    cache_dir = config_dir / CACHE_DIR
+    if cache_dir.exists():
+        shutil.rmtree(cache_dir, ignore_errors=True)
     for f in (STATUS_FILE, RESULT_FILE, LOG_FILE):
         file_path = config_dir / f
         if file_path.exists():
             file_path.unlink(missing_ok=True)
-    res = cast(Any, experiment(lambda m: m, **config))
-    strategy, policy = res
-    cmdargs = rs.RunLoadedStrategyArgs(strategy, policy, num_generated=1)
+    cmdargs = cast(Any, experiment(cache_dir, **config))
     run_command(
-        rs.run_loaded_strategy,
+        rs.run_strategy,
         cmdargs,
         context,
         dump_statuses=config_dir / STATUS_FILE,
         dump_result=config_dir / RESULT_FILE,
         dump_log=config_dir / LOG_FILE,
-        add_header=False,
+        add_header=True,
     )
     return config_name
