@@ -254,6 +254,13 @@ def stream_squash[T](stream: dp.Stream[Sequence[T]]) -> dp.Stream[Sequence[T]]:
     assert False
 
 
+def stream_sequence[T](
+    stream_builders: Sequence[Callable[[], dp.Stream[T]]],
+) -> dp.Stream[T]:
+    for s in stream_builders:
+        yield from s()
+
+
 #####
 ##### Standard Stream Transformers
 #####

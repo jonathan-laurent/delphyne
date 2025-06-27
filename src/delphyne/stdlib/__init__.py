@@ -26,6 +26,7 @@ from delphyne.stdlib.misc import (
     just_compute,
     just_dfs,
     map_space,
+    sequence,
 )
 from delphyne.stdlib.models import (
     DOLLAR_PRICE,
