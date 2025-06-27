@@ -12,7 +12,7 @@ opam init
 We recommend creating an opam switch with compiler version 5.1.1 since more recent versions were not compatible with `metaquot` last time we checked:
 
 ```
-opam switch create delphyne 5.1.1 delphyne
+opam switch create delphyne 5.1.1
 ```
 
 Then, you should install the `python-libgen` dependency, which is not on Opam, along with all other dependencies:
