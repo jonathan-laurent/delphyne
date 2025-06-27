@@ -3,9 +3,8 @@ Handling Feature Flags
 """
 
 from collections.abc import Callable, Sequence
+from dataclasses import dataclass
 from typing import Any, Never, cast
-
-from why3py import dataclass
 
 import delphyne.core as dp
 import delphyne.core.inspect as insp

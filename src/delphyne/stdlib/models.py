@@ -5,13 +5,13 @@ Standard interfaces for LLMs
 import inspect
 import time
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from collections.abc import AsyncIterable, Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal, TypeAliasType, TypedDict, cast
 
 import pydantic
-from why3py import defaultdict
 
 import delphyne.core.inspect as dpi
 from delphyne.core.refs import Answer, Structured, ToolCall
