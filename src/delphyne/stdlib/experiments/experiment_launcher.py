@@ -30,6 +30,7 @@ EXPERIMENT_STATE_FILE = "experiment.yaml"
 STATUS_FILE = "statuses.txt"
 RESULT_FILE = "result.yaml"
 LOG_FILE = "log.txt"
+EXCEPTION_FILE = "exception.txt"
 CACHE_DIR = "llm_cache"
 
 
@@ -145,13 +146,19 @@ def _run_config(
         if file_path.exists():
             file_path.unlink(missing_ok=True)
     cmdargs = cast(Any, experiment(cache_dir, **config))
-    run_command(
-        cmd.run_strategy,
-        cmdargs,
-        context,
-        dump_statuses=config_dir / STATUS_FILE,
-        dump_result=config_dir / RESULT_FILE,
-        dump_log=config_dir / LOG_FILE,
-        add_header=True,
-    )
+    try:
+        run_command(
+            cmd.run_strategy,
+            cmdargs,
+            context,
+            dump_statuses=config_dir / STATUS_FILE,
+            dump_result=config_dir / RESULT_FILE,
+            dump_log=config_dir / LOG_FILE,
+            add_header=True,
+        )
+    except Exception:
+        with open(config_dir / EXCEPTION_FILE, "w") as f:
+            import traceback
+
+            traceback.print_exc(file=f)
     return config_name
