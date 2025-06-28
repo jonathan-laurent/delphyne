@@ -21,9 +21,6 @@ import delphyne.stdlib.models as md
 from delphyne.stdlib.tasks import CommandExecutionContext, run_command
 from delphyne.utils.typing import pydantic_dump, pydantic_load
 
-type _Config = dict[str, Any]
-
-
 type _ModelWrapper = Callable[[md.LLM], md.LLM]
 
 
@@ -36,56 +33,55 @@ CACHE_DIR = "llm_cache"
 
 
 @dataclass
-class ConfigInfo:
-    params: dict[str, Any]
+class ConfigInfo[Config]:
+    params: Config
     status: Literal["todo", "done", "failed"]
 
 
 @dataclass
-class ExperimentState:
+class ExperimentState[Config]:
     name: str | None
     description: str | None
-    configs: dict[str, ConfigInfo]
+    configs: dict[str, ConfigInfo[Config]]
 
-    def inverse_mapping(self) -> Callable[[_Config], str | None]:
+    def inverse_mapping(self) -> Callable[[Config], str | None]:
         """
         Compute an inverse function mapping configurations to their
         unique names (or None if not in the state).
         """
         tab: dict[str, str] = {}
         for name, info in self.configs.items():
-            param_str = json.dumps(info.params)
-            tab[param_str] = name
+            tab[_config_unique_repr(info.params)] = name
 
-        def reverse(config: _Config) -> str | None:
-            param_str = json.dumps(config)
-            return tab.get(param_str, None)
+        def reverse(config: Config) -> str | None:
+            return tab.get(_config_unique_repr(config), None)
 
         return reverse
 
 
-class _ExperimentFun(Protocol):
+class _ExperimentFun[Config](Protocol):
     def __call__(
-        self, cache_dir: Path, **args: Any
+        self, cache_dir: Path, config: Config
     ) -> cmd.RunStrategyArgs: ...
 
 
 @dataclass
-class Experiment:
+class Experiment[Config]:
     dir: Path
     context: CommandExecutionContext
-    experiment: _ExperimentFun
-    configs: Sequence[_Config] | None = None
+    experiment: _ExperimentFun[Config]
+    config_type: type[Config]
+    configs: Sequence[Config] | None = None
     name: str | None = None
     description: str | None = None
-    config_naming: Callable[[_Config, uuid.UUID], str] | None = None
+    config_naming: Callable[[Config, uuid.UUID], str] | None = None
 
-    def __post_init__(self):
+    def load(self):
         if not self.dir_exists():
             # If we create the experiment for the first time
             print(f"Creating experiment directory: {self.dir}.")
             self.dir.mkdir(parents=True, exist_ok=True)
-            state = ExperimentState(self.name, self.description, {})
+            state = ExperimentState[Config](self.name, self.description, {})
             self.save_state(state)
         if self.configs is not None:
             self.add_configs_if_needed(self.configs)
@@ -104,7 +100,7 @@ class Experiment:
         dir.mkdir(parents=True, exist_ok=True)
         return dir
 
-    def add_configs_if_needed(self, configs: Sequence[_Config]) -> None:
+    def add_configs_if_needed(self, configs: Sequence[Config]) -> None:
         state = self.load_state()
         assert state is not None
         rev = state.inverse_mapping()
@@ -128,14 +124,17 @@ class Experiment:
     def dir_exists(self) -> bool:
         return self.dir.exists() and self.dir.is_dir()
 
-    def load_state(self) -> ExperimentState | None:
+    def state_type(self) -> type[ExperimentState[Config]]:
+        return ExperimentState[self.config_type]
+
+    def load_state(self) -> ExperimentState[Config] | None:
         with open(self.dir / EXPERIMENT_STATE_FILE, "r") as f:
             parsed = yaml.safe_load(f)
-            return pydantic_load(ExperimentState, parsed)
+            return pydantic_load(self.state_type(), parsed)
 
-    def save_state(self, state: ExperimentState) -> None:
+    def save_state(self, state: ExperimentState[Config]) -> None:
         with open(self.dir / EXPERIMENT_STATE_FILE, "w") as f:
-            yaml.safe_dump(pydantic_dump(ExperimentState, state), f)
+            yaml.safe_dump(pydantic_dump(self.state_type(), state), f)
 
     def resume(self, max_workers: int = 1, log_progress: bool = True):
         state = self.load_state()
@@ -170,7 +169,7 @@ class Experiment:
                 info.status = "todo"
         self.save_state(state)
 
-    def existing_config_name(self, config: _Config) -> str | None:
+    def existing_config_name(self, config: Config) -> str | None:
         state = self.load_state()
         assert state is not None
         for name, info in state.configs.items():
@@ -178,7 +177,7 @@ class Experiment:
                 return name
         return None
 
-    def replay_config(self, config: _Config) -> None:
+    def replay_config(self, config: Config) -> None:
         """
         Replay a configuration, reusing the cache if it exists.
 
@@ -192,7 +191,7 @@ class Experiment:
         info = state.configs[config_name]
         assert info.status == "done"
         dir = self.config_dir(config_name)
-        cmdargs = self.experiment(dir / CACHE_DIR, **info.params)
+        cmdargs = self.experiment(dir / CACHE_DIR, info.params)
         run_command(
             cmd.run_strategy,
             cmdargs,
@@ -203,7 +202,7 @@ class Experiment:
         )
 
 
-def _print_progress(state: ExperimentState) -> None:
+def _print_progress(state: ExperimentState[Any]) -> None:
     num_done = sum(1 for c in state.configs.values() if c.status != "todo")
     num_failed = sum(1 for c in state.configs.values() if c.status == "failed")
     num_total = len(state.configs)
@@ -211,12 +210,12 @@ def _print_progress(state: ExperimentState) -> None:
     print(msg + 40 * " ", end="")
 
 
-def _run_config(
+def _run_config[Config](
     context: CommandExecutionContext,
-    experiment: _ExperimentFun,
+    experiment: _ExperimentFun[Config],
     config_name: str,
     config_dir: Path,
-    config: _Config,
+    config: Config,
 ) -> tuple[str, bool]:
     cache_dir = config_dir / CACHE_DIR
     if cache_dir.exists():
@@ -225,7 +224,7 @@ def _run_config(
         file_path = config_dir / f
         if file_path.exists():
             file_path.unlink(missing_ok=True)
-    cmdargs = experiment(cache_dir, **config)
+    cmdargs = experiment(cache_dir, config)
     try:
         run_command(
             cmd.run_strategy,
@@ -244,3 +243,14 @@ def _run_config(
             traceback.print_exc(file=f)
         success = False
     return (config_name, success)
+
+
+def _config_unique_repr(config: object):
+    # We want a unique representation for the configuration We start
+    # doing a round-trip to ensure that Config(1) and Config(1.0) are
+    # treated as equal.
+    cls = type(config)
+    python = pydantic_dump(cls, config)
+    config = pydantic_load(cls, python)
+    python = pydantic_dump(cls, config)
+    return json.dumps(python)
