@@ -9,7 +9,15 @@ from collections import defaultdict
 from collections.abc import AsyncIterable, Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal, TypeAliasType, TypedDict, cast
+from typing import (
+    Any,
+    Literal,
+    TypeAliasType,
+    TypedDict,
+    cast,
+    final,
+    override,
+)
 
 import pydantic
 
@@ -175,7 +183,6 @@ class TokenInfo:
 
 @dataclass
 class LLMOutput:
-    # TODO: structured answers for which we need to parse the content...
     content: str | Structured
     tool_calls: Sequence[ToolCall]
     finish_reason: FinishReason
@@ -318,8 +325,21 @@ class LLM(ABC):
         return Budget({NUM_REQUESTS: 1, NUM_COMPLETIONS: req.num_completions})
 
     @abstractmethod
-    def send_request(self, req: LLMRequest) -> LLMResponse:
+    def add_model_defaults(self, req: LLMRequest) -> LLMRequest:
         """
+        A model can carry default values for some of the request fields
+        (e.g. the model name). Thus, requests must be processed through
+        this function right before they are executed or cached.
+        """
+        pass
+
+    @abstractmethod
+    def _send_final_request(self, req: LLMRequest) -> LLMResponse:
+        """
+        To be overriden by subclasses to implement the core
+        functionality of `send_request`, which automatically handles
+        defaults.
+
         This function is allowed to raise exceptions, including
         `LLMBusyException`.
         """
@@ -333,10 +353,26 @@ class LLM(ABC):
         """
         raise StreamingNotImplemented()
 
+    @final
+    def send_request(self, req: LLMRequest) -> LLMResponse:
+        """
+        Send a request to a model and return the response.
+
+        This function is allowed to raise exceptions, including
+        `LLMBusyException`.
+        """
+        full_req = self.add_model_defaults(req)
+        return self._send_final_request(full_req)
+
 
 @dataclass
 class DummyModel(LLM):
-    def send_request(self, req: LLMRequest) -> LLMResponse:
+    @override
+    def add_model_defaults(self, req: LLMRequest) -> LLMRequest:
+        return req
+
+    @override
+    def _send_final_request(self, req: LLMRequest) -> LLMResponse:
         budget = Budget({NUM_REQUESTS: req.num_completions})
         return LLMResponse([], budget, [], "<dummy>")
 
@@ -358,6 +394,11 @@ class WithRetry(LLM):
     exponential_factor: float = 2.0
     delay_noise: float | None = 0.1
 
+    @override
+    def add_model_defaults(self, req: LLMRequest) -> LLMRequest:
+        return self.model.add_model_defaults(req)
+
+    @override
     def estimate_budget(self, req: LLMRequest) -> Budget:
         return self.model.estimate_budget(req)
 
@@ -372,7 +413,8 @@ class WithRetry(LLM):
             yield delay
             acc *= self.exponential_factor
 
-    def send_request(self, req: LLMRequest) -> LLMResponse:
+    @override
+    def _send_final_request(self, req: LLMRequest) -> LLMResponse:
         for i, retry_delay in enumerate([*self.retry_delays(), None]):
             try:
                 ret = self.model.send_request(req)
@@ -394,6 +436,16 @@ class WithRetry(LLM):
 #####
 ##### Caching Wrapper
 #####
+
+
+@dataclass
+class LLMCache:
+    cache_dir: Path
+    num_seen: dict[LLMRequest, int]
+
+    def __init__(self, cache_dir: Path):
+        self.cache_dir = cache_dir
+        self.num_seen: dict[LLMRequest, int] = defaultdict(lambda: 0)
 
 
 @dataclass(frozen=True)
@@ -418,27 +470,30 @@ class CachedModel(LLM):
     since the model was instantiated. This way, caching works even when
     a policy samples multiple answers for the same request.
 
-    Important: two models must _not_ share the same cache directory,
-    without which their answers would become correlated.
+    Multiple models can share the same cache.
     """
 
     model: LLM
-    cache_dir: Path
+    cache: LLMCache
 
     def __post_init__(self):
-        self.num_seen: dict[LLMRequest, int] = defaultdict(lambda: 0)
-
-        @cache(dir=self.cache_dir, hash_arg=_CachedRequest.stable_repr)
+        @cache(dir=self.cache.cache_dir, hash_arg=_CachedRequest.stable_repr)
         def run_request(req: _CachedRequest) -> LLMResponse:
             base = req.request
             return self.model.send_request(base)
 
         self.run_request = run_request
 
+    @override
+    def _send_final_request(self, req: LLMRequest) -> LLMResponse:
+        self.cache.num_seen[req] += 1
+        num_seen = self.cache.num_seen[req]
+        return self.run_request(_CachedRequest(req, num_seen))
+
+    @override
     def estimate_budget(self, req: LLMRequest) -> Budget:
         return self.model.estimate_budget(req)
 
-    def send_request(self, req: LLMRequest) -> LLMResponse:
-        self.num_seen[req] += 1
-        num_seen = self.num_seen[req]
-        return self.run_request(_CachedRequest(req, num_seen))
+    @override
+    def add_model_defaults(self, req: LLMRequest) -> LLMRequest:
+        return self.model.add_model_defaults(req)

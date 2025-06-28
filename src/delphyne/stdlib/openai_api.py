@@ -4,8 +4,8 @@ Utilities to call models through OpenAI-compatible APIs.
 
 import json
 from collections.abc import AsyncIterable, Sequence
-from dataclasses import dataclass
-from typing import Any
+from dataclasses import dataclass, replace
+from typing import Any, override
 
 import openai
 import openai.types.chat as ochat
@@ -222,14 +222,18 @@ class OpenAICompatibleModel(md.LLM):
     model_info: md.ModelInfo | None = None
     pricing: md.ModelPricing | None = None
 
+    @override
+    def add_model_defaults(self, req: md.LLMRequest) -> md.LLMRequest:
+        return replace(req, options=self.options | req.options)
+
+    @override
     def estimate_budget(self, req: md.LLMRequest) -> Budget:
         return Budget(_base_budget(req.num_completions, self.model_info))
 
-    def send_request(self, req: md.LLMRequest) -> md.LLMResponse:
-        # TODO: better handling of budget beyond `num_requests`
-
+    @override
+    def _send_final_request(self, req: md.LLMRequest) -> md.LLMResponse:
         client = openai.OpenAI(api_key=self.api_key, base_url=self.base_url)
-        options = self.options | req.options
+        options = req.options
         assert "model" in options, "No model was specified"
         tools = [_make_chat_tool(tool) for tool in req.tools]
         try:

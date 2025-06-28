@@ -45,6 +45,7 @@ from delphyne.stdlib.models import (
     ChatMessage,
     FinishReason,
     LLMBusyException,
+    LLMCache,
     LLMOutput,
     LLMRequest,
     LLMResponse,

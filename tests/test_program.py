@@ -34,7 +34,7 @@ def _eval_query(
     model_name: dp.StandardModelName = "gpt-4.1-mini",
 ):
     env = dp.PolicyEnv(demonstration_files=(), prompt_dirs=(PROMPT_DIR,))
-    cache = CACHE_DIR / cache_name
+    cache = dp.LLMCache(CACHE_DIR / cache_name)
     model = dp.CachedModel(dp.standard_model(model_name), cache)
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: budget})
     pp = dp.with_budget(bl) @ dp.few_shot(model, num_concurrent=concurrent)
@@ -54,7 +54,7 @@ def _eval_strategy[N: dp.Node, P, T](
     model_name: dp.StandardModelName = "gpt-4.1-mini",
 ) -> tuple[Sequence[dp.Tracked[T]], str]:
     env = dp.PolicyEnv(prompt_dirs=[PROMPT_DIR], demonstration_files=())
-    cache = CACHE_DIR / cache_name
+    cache = dp.LLMCache(CACHE_DIR / cache_name)
     model = dp.CachedModel(dp.standard_model(model_name), cache)
     stream = strategy.run_toplevel(env, policy(model))
     budget = dp.BudgetLimit({dp.NUM_REQUESTS: max_requests})
@@ -76,7 +76,7 @@ def test_concurrent():
 
 def test_basic_llm_call():
     env = dp.PolicyEnv(demonstration_files=(), prompt_dirs=(PROMPT_DIR,))
-    cache = CACHE_DIR / "basic_llm_call"
+    cache = dp.LLMCache(CACHE_DIR / "basic_llm_call")
     model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
     pp = dp.few_shot(model)
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
@@ -113,7 +113,7 @@ def test_assistant_priming():
 
 def test_interact():
     env = dp.PolicyEnv(demonstration_files=(), prompt_dirs=(PROMPT_DIR,))
-    cache = CACHE_DIR / "interact"
+    cache = dp.LLMCache(CACHE_DIR / "interact")
     model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
     pp = dp.few_shot(model)
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: 2})
@@ -146,7 +146,7 @@ def _eval_classifier_query(
     cache_name: str,
 ):
     env = dp.PolicyEnv(demonstration_files=(), prompt_dirs=(PROMPT_DIR,))
-    cache = CACHE_DIR / cache_name
+    cache = dp.LLMCache(CACHE_DIR / cache_name)
     model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
     pp = dp.with_budget(bl) @ dp.classify(model)
