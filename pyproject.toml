@@ -17,6 +17,7 @@ dependencies = [
     "pytest>=8.2",
     "setuptools>=68.2",
     "uvicorn>=0.30",
+    "fire>=0.7.0"
 ]
 
 [tool.setuptools.packages.find]
