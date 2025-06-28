@@ -139,7 +139,6 @@ class Experiment[Config]:
     def resume(self, max_workers: int = 1, log_progress: bool = True):
         state = self.load_state()
         assert state is not None
-        all_successes = True
         with ProcessPoolExecutor(max_workers=max_workers) as executor:
             futures = [
                 executor.submit(
@@ -157,12 +156,13 @@ class Experiment[Config]:
                 _print_progress(state)
             for future in as_completed(futures):
                 name, success = future.result()
-                if not success:
-                    all_successes = False
                 state.configs[name].status = "done" if success else "failed"
                 self.save_state(state)
                 if log_progress:
                     _print_progress(state)
+            all_successes = all(
+                info.status == "done" for info in state.configs.values()
+            )
             if all_successes:
                 print("\nExperiment successful.\nProducing summary file...")
                 self.save_summary()
@@ -296,6 +296,7 @@ def _run_config[Config](
         )
         success = True
     except Exception:
+        config_dir.mkdir(parents=True, exist_ok=True)
         with open(config_dir / EXCEPTION_FILE, "w") as f:
             import traceback
 
