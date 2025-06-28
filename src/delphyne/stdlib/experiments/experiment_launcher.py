@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal, Protocol
 
+import pandas as pd
 import yaml
 
 import delphyne.stdlib.commands as cmd
@@ -212,12 +213,20 @@ class Experiment[Config]:
         """
         Save a summary of the results in a CSV file.
         """
-        import pandas as pd
 
         data = results_summary(self.dir)
         frame = pd.DataFrame(data)
         summary_file = self.dir / RESULTS_SUMMARY
         frame.to_csv(summary_file, index=False)
+
+    def load_summary(self):
+        """
+        Load the summary of the results in a DataFrame.
+        """
+
+        summary_file = self.dir / RESULTS_SUMMARY
+        data = pd.DataFrame, pd.read_csv(summary_file)  # type: ignore
+        return data
 
 
 def results_summary(exp_dir: Path) -> Sequence[dict[str, Any]]:
