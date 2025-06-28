@@ -11,7 +11,7 @@ from collections.abc import Callable, Sequence
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Protocol, cast
+from typing import Any, Literal, Protocol, cast
 
 import yaml
 
@@ -37,7 +37,7 @@ CACHE_DIR = "llm_cache"
 @dataclass
 class ConfigInfo:
     params: dict[str, Any]
-    done: bool
+    status: Literal["todo", "done", "failed"]
 
 
 @dataclass
@@ -84,7 +84,7 @@ class Experiment:
                 name = self.config_naming(c, id)
             else:
                 name = str(id)
-            configs[name] = ConfigInfo(c, done=False)
+            configs[name] = ConfigInfo(c, status="todo")
         return ExperimentState(self.name, self.description, configs)
 
     def dir_exists(self) -> bool:
@@ -113,22 +113,32 @@ class Experiment:
                     info.params,
                 )
                 for name, info in state.configs.items()
-                if not info.done
+                if info.status == "todo"
             ]
             if log_progress:
                 _print_progress(state)
             for future in as_completed(futures):
-                done = future.result()
-                state.configs[done].done = True
+                name, success = future.result()
+                state.configs[name].status = "done" if success else "failed"
                 self.save_state(state)
                 if log_progress:
                     _print_progress(state)
 
+    def mark_errors_as_todos(self):
+        state = self.load_state()
+        assert state is not None
+        for _, info in state.configs.items():
+            if info.status == "failed":
+                info.status = "todo"
+        self.save_state(state)
+
 
 def _print_progress(state: ExperimentState) -> None:
-    num_done = sum(1 for c in state.configs.values() if c.done)
+    num_done = sum(1 for c in state.configs.values() if c.status != "todo")
+    num_failed = sum(1 for c in state.configs.values() if c.status == "failed")
     num_total = len(state.configs)
-    print(f"\rDone: {num_done} / {num_total}" + 40 * " ", end="")
+    msg = f"\rDone: {num_done} / {num_total}, Failed: {num_failed}"
+    print(msg + 40 * " ", end="")
 
 
 def _run_config(
@@ -137,7 +147,7 @@ def _run_config(
     config_name: str,
     config_dir: Path,
     config: _Config,
-) -> str:
+) -> tuple[str, bool]:
     cache_dir = config_dir / CACHE_DIR
     if cache_dir.exists():
         shutil.rmtree(cache_dir, ignore_errors=True)
@@ -156,9 +166,11 @@ def _run_config(
             dump_log=config_dir / LOG_FILE,
             add_header=True,
         )
+        success = True
     except Exception:
         with open(config_dir / EXCEPTION_FILE, "w") as f:
             import traceback
 
             traceback.print_exc(file=f)
-    return config_name
+        success = False
+    return (config_name, success)
