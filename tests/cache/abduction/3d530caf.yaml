@@ -42,7 +42,8 @@
               - A
             item: E
       num_completions: 1
-      options: {}
+      options:
+        model: gpt-4.1-mini
       tools: []
       structured_output:
         name: ItemsToFind

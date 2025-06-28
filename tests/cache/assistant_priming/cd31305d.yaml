@@ -16,7 +16,8 @@
             tool_calls: []
             justification:
       num_completions: 1
-      options: {}
+      options:
+        model: gpt-4.1-mini
       tools: []
       structured_output:
     iter: 1
@@ -26,7 +27,7 @@
           ```yaml
           - Étienne
           - Lucien
-          - Amélien
+          - Marcel
           - Théo
           ```
         tool_calls: []
@@ -41,18 +42,18 @@
         num_completions__medium: 1
         input_tokens: 70
         input_tokens__medium: 70
-        output_tokens: 21
-        output_tokens__medium: 21
+        output_tokens: 19
+        output_tokens__medium: 19
         cached_input_tokens: 0
         cached_input_tokens__medium: 0
-        price: 0.0001456
-        price__medium: 0.0001456
+        price: 0.0001424
+        price__medium: 0.0001424
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
-      completion_tokens: 21
+      completion_tokens: 19
       prompt_tokens: 70
-      total_tokens: 91
+      total_tokens: 89
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0

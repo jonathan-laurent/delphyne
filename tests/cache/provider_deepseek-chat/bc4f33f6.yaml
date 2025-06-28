@@ -8,13 +8,15 @@
             List: [1, 2, 3, 4]
             Target: 5
       num_completions: 1
-      options: {}
+      options:
+        model: deepseek-chat
       tools: []
       structured_output:
     iter: 1
+
   output:
     outputs:
-      - content: '[1, 4]'
+      - content: '[2, 3]'
         tool_calls: []
         finish_reason: stop
         logprobs:
@@ -23,17 +25,23 @@
       values:
         num_requests: 1
         num_completions: 1
-        num_requests__small: 1
-        num_completions__small: 1
-        input_tokens: 58
-        input_tokens__small: 58
-        output_tokens: 7
-        output_tokens__small: 7
-        price: 2.6e-05
-        price__small: 2.6e-05
+        num_requests__large: 1
+        num_completions__large: 1
+        input_tokens: 56
+        input_tokens__large: 56
+        output_tokens: 6
+        output_tokens__large: 6
+        cached_input_tokens: 0
+        cached_input_tokens__large: 0
+        price: 0.000496
+        price__large: 0.000496
     log_items: []
-    model_name: mistral-small-2503
+    model_name: deepseek-chat
     usage_info:
-      completion_tokens: 7
-      prompt_tokens: 58
-      total_tokens: 65
+      completion_tokens: 6
+      prompt_tokens: 56
+      total_tokens: 62
+      prompt_tokens_details:
+        cached_tokens: 0
+      prompt_cache_hit_tokens: 0
+      prompt_cache_miss_tokens: 56

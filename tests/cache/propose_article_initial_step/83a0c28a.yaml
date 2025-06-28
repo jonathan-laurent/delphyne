@@ -9,11 +9,12 @@
             Provide your final answer by calling the `Article` tool.
             Please carefully explain your reasoning before calling any tool.
         - role: user
-          content: 'user_name: Jonathan'
+          content: 'user_name: Alice'
 
       num_completions: 1
 
       options:
+        model: gpt-4.1-mini
         tool_choice: required
 
       tools:
@@ -67,7 +68,7 @@
         tool_calls:
           - name: GetUserFavoriteTopic
             args:
-              user_name: Jonathan
+              user_name: Alice
         finish_reason: tool_calls
         logprobs:
         reasoning_content:

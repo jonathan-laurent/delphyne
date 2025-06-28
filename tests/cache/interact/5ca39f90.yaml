@@ -9,11 +9,27 @@
             Provide your final answer by calling the `Article` tool.
             Please carefully explain your reasoning before calling any tool.
         - role: user
-          content: 'user_name: Alice'
+          content: 'user_name: Jonathan'
+        - role: assistant
+          answer:
+            mode:
+            content: ''
+            tool_calls:
+              - name: GetUserFavoriteTopic
+                args:
+                  user_name: Jonathan
+            justification:
+        - role: tool
+          call:
+            name: GetUserFavoriteTopic
+            args:
+              user_name: Jonathan
+          result: Soccer
 
       num_completions: 1
 
       options:
+        model: gpt-4.1-mini
         tool_choice: required
 
       tools:
@@ -65,9 +81,12 @@
     outputs:
       - content: ''
         tool_calls:
-          - name: GetUserFavoriteTopic
+          - name: Article
             args:
-              user_name: Alice
+              title: The Evolution and Impact of Soccer in Modern Society
+              authors:
+                - Alex Smith
+                - Maria Garcia
         finish_reason: tool_calls
         logprobs:
         reasoning_content:
@@ -77,20 +96,20 @@
         num_completions: 1
         num_requests__medium: 1
         num_completions__medium: 1
-        input_tokens: 159
-        input_tokens__medium: 159
-        output_tokens: 17
-        output_tokens__medium: 17
+        input_tokens: 188
+        input_tokens__medium: 188
+        output_tokens: 30
+        output_tokens__medium: 30
         cached_input_tokens: 0
         cached_input_tokens__medium: 0
-        price: 0.0002816
-        price__medium: 0.0002816
+        price: 0.0003488
+        price__medium: 0.0003488
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
-      completion_tokens: 17
-      prompt_tokens: 159
-      total_tokens: 176
+      completion_tokens: 30
+      prompt_tokens: 188
+      total_tokens: 218
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0

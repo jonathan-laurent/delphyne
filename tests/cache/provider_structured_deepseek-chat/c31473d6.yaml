@@ -1,0 +1,79 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: Generate an article on the given topic. Answer as a JSON object.
+        - role: user
+          content: 'topic: AI'
+      num_completions: 1
+      options:
+        model: deepseek-chat
+      tools: []
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 1
+
+  output:
+
+    outputs:
+      - content:
+          structured:
+            article:
+              title: The Evolution and Impact of Artificial Intelligence
+              introduction: Artificial Intelligence (AI) has transformed from a futuristic concept into a fundamental part of our daily lives. Its evolution has been rapid, and its impact is profound, affecting various sectors including healthcare, finance, and entertainment. This article explores the journey of AI, its current applications, and the ethical considerations it brings.
+              body:
+                - heading: The Journey of AI
+                  content: The concept of AI dates back to ancient history, but it wasn't until the 20th century that it began to take shape as a scientific discipline. The term 'Artificial Intelligence' was first coined in 1956 by John McCarthy at the Dartmouth Conference. Since then, AI has gone through several phases of optimism and skepticism, known as 'AI winters'. However, the advent of machine learning and deep learning in the 21st century has propelled AI into new heights, enabling machines to perform tasks that were once thought to be exclusive to humans.
+                - heading: Current Applications of AI
+                  content: Today, AI is everywhere. In healthcare, AI algorithms assist in diagnosing diseases with high accuracy. In finance, AI is used for fraud detection and algorithmic trading. The entertainment industry leverages AI for personalized recommendations on platforms like Netflix and Spotify. Autonomous vehicles, powered by AI, are set to revolutionize transportation. Moreover, AI has made significant strides in natural language processing, enabling virtual assistants like Siri and Alexa to understand and respond to human speech.
+                - heading: Ethical Considerations
+                  content: With great power comes great responsibility. The rise of AI has sparked debates on privacy, job displacement, and the ethical use of AI. Concerns about bias in AI algorithms and the potential for misuse in surveillance and warfare are pressing issues. It's crucial for policymakers, technologists, and the public to engage in discussions to ensure AI is developed and used in a way that benefits humanity while minimizing harm.
+              conclusion: Artificial Intelligence is no longer just a part of science fiction; it's a reality that's reshaping our world. While it offers incredible opportunities for advancement, it also poses challenges that society must address. The future of AI depends on our ability to navigate these challenges wisely, ensuring that technology serves the greater good.
+        tool_calls: []
+        finish_reason: stop
+        logprobs:
+        reasoning_content:
+
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        num_requests__large: 1
+        num_completions__large: 1
+        input_tokens: 30
+        input_tokens__large: 30
+        output_tokens: 502
+        output_tokens__large: 502
+        cached_input_tokens: 0
+        cached_input_tokens__large: 0
+        price: 0.004255999999999999
+        price__large: 0.004255999999999999
+
+    log_items: []
+
+    model_name: deepseek-chat
+
+    usage_info:
+      completion_tokens: 502
+      prompt_tokens: 30
+      total_tokens: 532
+      prompt_tokens_details:
+        cached_tokens: 0
+      prompt_cache_hit_tokens: 0
+      prompt_cache_miss_tokens: 30
