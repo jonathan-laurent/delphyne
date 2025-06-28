@@ -52,7 +52,12 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
     process: Callable[[A], dp.OpaqueSpaceBuilder[P, B | dp.Error]],
     tools: Mapping[type[T], Callable[[Any], dp.OpaqueSpaceBuilder[P, object]]]
     | None = None,
+    inner_policy_type: type[P] | None = None,
 ) -> dp.OpaqueSpaceBuilder[P, B]:
+    """
+    Note: the `meta` field of `dp.Error` must be serializable.
+    """
+
     def policy(inner_policy: P):
         return (dfs(max_branching=1), inner_policy)
 
