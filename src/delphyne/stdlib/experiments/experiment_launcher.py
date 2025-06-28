@@ -96,9 +96,7 @@ class Experiment[Config]:
                 )
 
     def config_dir(self, config_name: str) -> Path:
-        dir = self.dir / config_name
-        dir.mkdir(parents=True, exist_ok=True)
-        return dir
+        return self.dir / config_name
 
     def add_configs_if_needed(self, configs: Sequence[Config]) -> None:
         state = self.load_state()
