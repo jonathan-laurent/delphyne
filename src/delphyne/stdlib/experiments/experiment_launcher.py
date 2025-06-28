@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal, Protocol
 
-import pandas as pd
+import pandas as pd  # type: ignore
 import yaml
 
 import delphyne.stdlib.commands as cmd
@@ -217,7 +217,7 @@ class Experiment[Config]:
         data = results_summary(self.dir)
         frame = pd.DataFrame(data)
         summary_file = self.dir / RESULTS_SUMMARY
-        frame.to_csv(summary_file, index=False)
+        frame.to_csv(summary_file, index=False)  # type: ignore
 
     def load_summary(self):
         """
