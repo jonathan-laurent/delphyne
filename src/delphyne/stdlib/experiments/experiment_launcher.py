@@ -30,6 +30,7 @@ RESULT_FILE = "result.yaml"
 LOG_FILE = "log.txt"
 EXCEPTION_FILE = "exception.txt"
 CACHE_DIR = "llm_cache"
+RESULTS_SUMMARY = "results_summary.csv"
 
 
 @dataclass
@@ -137,6 +138,7 @@ class Experiment[Config]:
     def resume(self, max_workers: int = 1, log_progress: bool = True):
         state = self.load_state()
         assert state is not None
+        all_successes = True
         with ProcessPoolExecutor(max_workers=max_workers) as executor:
             futures = [
                 executor.submit(
@@ -154,10 +156,17 @@ class Experiment[Config]:
                 _print_progress(state)
             for future in as_completed(futures):
                 name, success = future.result()
+                if not success:
+                    all_successes = False
                 state.configs[name].status = "done" if success else "failed"
                 self.save_state(state)
                 if log_progress:
                     _print_progress(state)
+            if all_successes:
+                print("\nExperiment successful. Producing summary file.")
+                self.save_summary()
+            else:
+                print("\nWarning: some configurations failed.")
 
     def mark_errors_as_todos(self):
         state = self.load_state()
@@ -198,6 +207,39 @@ class Experiment[Config]:
             dump_result=None,
             dump_log=None,
         )
+
+    def save_summary(self):
+        """
+        Save a summary of the results in a CSV file.
+        """
+        import pandas as pd
+
+        data = results_summary(self.dir)
+        frame = pd.DataFrame(data)
+        summary_file = self.dir / RESULTS_SUMMARY
+        frame.to_csv(summary_file, index=False)
+
+
+def results_summary(exp_dir: Path) -> Sequence[dict[str, Any]]:
+    # Load the experiment state as a python dict
+    state_file = exp_dir / EXPERIMENT_STATE_FILE
+    with open(state_file, "r") as f:
+        parsed = yaml.safe_load(f)
+    res: list[dict[str, Any]] = []
+    for name, info in parsed["configs"].items():
+        params = info["params"]
+        # Open the result file and parse it in yaml
+        result_file = exp_dir / name / RESULT_FILE
+        with open(result_file, "r") as f:
+            result = yaml.safe_load(f)
+        result = result["outcome"]["result"]
+        success = result["success"]
+        assert isinstance(success, bool)
+        price = result["spent_budget"]["price"]
+        assert isinstance(price, float)
+        entry = params | {"success": success, "price": price}
+        res.append(entry)
+    return res
 
 
 def _print_progress(state: ExperimentState[Any]) -> None:
