@@ -11,7 +11,7 @@ from collections.abc import Callable, Sequence
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal, Protocol, cast
+from typing import Any, Literal, Protocol
 
 import yaml
 
@@ -132,6 +132,38 @@ class Experiment:
                 info.status = "todo"
         self.save_state(state)
 
+    def existing_config_name(self, config: _Config) -> str | None:
+        state = self.load_state()
+        assert state is not None
+        for name, info in state.configs.items():
+            if info.params == config:
+                return name
+        return None
+
+    def replay_config(self, config: _Config) -> None:
+        """
+        Replay a configuration, reusing the cache if it exists.
+
+        This way, one can debug the execution of an experiment after the
+        fact, without any LLMs being called.
+        """
+        state = self.load_state()
+        assert state is not None
+        config_name = self.existing_config_name(config)
+        assert config_name is not None
+        info = state.configs[config_name]
+        assert info.status == "done"
+        dir = self.config_dir(config_name)
+        cmdargs = self.experiment(dir / CACHE_DIR, **info.params)
+        run_command(
+            cmd.run_strategy,
+            cmdargs,
+            self.context,
+            dump_statuses=None,
+            dump_result=None,
+            dump_log=None,
+        )
+
 
 def _print_progress(state: ExperimentState) -> None:
     num_done = sum(1 for c in state.configs.values() if c.status != "todo")
@@ -155,7 +187,7 @@ def _run_config(
         file_path = config_dir / f
         if file_path.exists():
             file_path.unlink(missing_ok=True)
-    cmdargs = cast(Any, experiment(cache_dir, **config))
+    cmdargs = experiment(cache_dir, **config)
     try:
         run_command(
             cmd.run_strategy,
