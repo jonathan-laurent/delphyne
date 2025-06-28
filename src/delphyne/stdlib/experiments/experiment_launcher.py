@@ -163,7 +163,7 @@ class Experiment[Config]:
                 if log_progress:
                     _print_progress(state)
             if all_successes:
-                print("\nExperiment successful. Producing summary file.")
+                print("\nExperiment successful.\nProducing summary file...")
                 self.save_summary()
             else:
                 print("\nWarning: some configurations failed.")
@@ -231,11 +231,21 @@ def results_summary(exp_dir: Path) -> Sequence[dict[str, Any]]:
         # Open the result file and parse it in yaml
         result_file = exp_dir / name / RESULT_FILE
         with open(result_file, "r") as f:
-            result = yaml.safe_load(f)
+            # Read the prefix of the file until a line is encountered
+            # starting with `raw_trace` preceded by four spaces. Indeed,
+            # the whole YAML file might be huge!
+            prefix = ""
+            while line := f.readline():
+                if line.startswith("    raw_trace"):
+                    break
+                prefix += line
+            else:
+                assert False
+            result = yaml.safe_load(prefix)
         result = result["outcome"]["result"]
         success = result["success"]
         assert isinstance(success, bool)
-        price = result["spent_budget"]["price"]
+        price = result["spent_budget"].get("price", 0.0)
         assert isinstance(price, float)
         entry = params | {"success": success, "price": price}
         res.append(entry)
