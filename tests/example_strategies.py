@@ -459,7 +459,7 @@ def propose_article(
     article = yield from dp.branch(
         dp.interact(
             step=lambda pre: ProposeArticle(user_name, pre)(IP, lambda p: p),
-            process=lambda x: x,
+            process=lambda x: dp.const_space(x),
             tools={GetUserFavoriteTopic: (lambda _: dp.const_space("Soccer"))},
         )
     )

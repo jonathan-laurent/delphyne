@@ -14,7 +14,7 @@ def _interact[P, A, B, T: md.AbstractTool[Any]](
     step: Callable[
         [dp.AnswerPrefix], dp.OpaqueSpaceBuilder[P, dq.Response[A, T]]
     ],
-    process: Callable[[A], B | dp.Error],
+    process: Callable[[A], dp.OpaqueSpaceBuilder[P, B | dp.Error]],
     tools: Mapping[type[T], Callable[[Any], dp.OpaqueSpaceBuilder[P, Any]]]
     | None,
 ) -> dp.Strategy[Branch, P, B]:
@@ -24,7 +24,7 @@ def _interact[P, A, B, T: md.AbstractTool[Any]](
         prefix += [dp.OracleMessage("oracle", resp.answer)]
         match resp.parsed:
             case dq.FinalAnswer(a):
-                res = process(a)
+                res = yield from branch(process(a))
                 if isinstance(res, dp.Error):
                     assert res.label
                     msg = dp.FeedbackMessage(
@@ -49,7 +49,7 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
     step: Callable[
         [dp.AnswerPrefix], dp.OpaqueSpaceBuilder[P, dq.Response[A, T]]
     ],
-    process: Callable[[A], B | dp.Error],
+    process: Callable[[A], dp.OpaqueSpaceBuilder[P, B | dp.Error]],
     tools: Mapping[type[T], Callable[[Any], dp.OpaqueSpaceBuilder[P, object]]]
     | None = None,
 ) -> dp.OpaqueSpaceBuilder[P, B]:
