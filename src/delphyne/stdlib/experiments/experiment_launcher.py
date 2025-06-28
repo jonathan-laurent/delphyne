@@ -5,6 +5,7 @@ Utilities to launch experiments in Delphyne.
 An experiment is associated a directory.
 """
 
+import json
 import shutil
 import uuid
 from collections.abc import Callable, Sequence
@@ -46,6 +47,22 @@ class ExperimentState:
     description: str | None
     configs: dict[str, ConfigInfo]
 
+    def inverse_mapping(self) -> Callable[[_Config], str | None]:
+        """
+        Compute an inverse function mapping configurations to their
+        unique names (or None if not in the state).
+        """
+        tab: dict[str, str] = {}
+        for name, info in self.configs.items():
+            param_str = json.dumps(info.params)
+            tab[param_str] = name
+
+        def reverse(config: _Config) -> str | None:
+            param_str = json.dumps(config)
+            return tab.get(param_str, None)
+
+        return reverse
+
 
 class _ExperimentFun(Protocol):
     def __call__(
@@ -66,26 +83,47 @@ class Experiment:
     def __post_init__(self):
         if not self.dir_exists():
             # If we create the experiment for the first time
+            print(f"Creating experiment directory: {self.dir}.")
             self.dir.mkdir(parents=True, exist_ok=True)
-            state = self.initial_state()
+            state = ExperimentState(self.name, self.description, {})
             self.save_state(state)
+        if self.configs is not None:
+            self.add_configs_if_needed(self.configs)
+            # Print a warning if the state on disk features additional configs.
+            state = self.load_state()
+            assert state is not None
+            assert len(self.configs) <= len(state.configs)
+            if len(self.configs) < len(state.configs):
+                print(
+                    f"Warning: {len(state.configs) - len(self.configs)} "
+                    "additional configuration(s) found in the state."
+                )
 
     def config_dir(self, config_name: str) -> Path:
         dir = self.dir / config_name
         dir.mkdir(parents=True, exist_ok=True)
         return dir
 
-    def initial_state(self) -> ExperimentState:
-        assert self.configs is not None
-        configs: dict[str, ConfigInfo] = {}
-        for c in self.configs:
+    def add_configs_if_needed(self, configs: Sequence[_Config]) -> None:
+        state = self.load_state()
+        assert state is not None
+        rev = state.inverse_mapping()
+        num_added = 0
+        for c in configs:
+            existing_name = rev(c)
+            if existing_name is not None:
+                continue
+            pass
+            num_added += 1
             id = uuid.uuid4()
             if self.config_naming is not None:
                 name = self.config_naming(c, id)
             else:
                 name = str(id)
-            configs[name] = ConfigInfo(c, status="todo")
-        return ExperimentState(self.name, self.description, configs)
+            state.configs[name] = ConfigInfo(c, status="todo")
+        if num_added > 0:
+            print(f"Adding {num_added} new configuration(s).")
+        self.save_state(state)
 
     def dir_exists(self) -> bool:
         return self.dir.exists() and self.dir.is_dir()
