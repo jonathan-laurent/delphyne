@@ -45,6 +45,14 @@ def ambient_pp(policy: PromptingPolicy) -> PromptingPolicy:
     return policy
 
 
+def ambient_policy[N: dp.Node, P](policy: dp.Policy[N, P]) -> dp.Policy[N, P]:
+    return policy
+
+
+def ambient[F](policy: F) -> F:
+    return policy
+
+
 type _AnyPolicy = PromptingPolicy | SearchPolicy[Any] | dp.Policy[Any, Any]
 
 

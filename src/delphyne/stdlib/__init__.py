@@ -21,6 +21,7 @@ from delphyne.stdlib.globals import (
     stdlib_globals,
 )
 from delphyne.stdlib.misc import (
+    ambient,
     ambient_pp,
     const_space,
     just_compute,

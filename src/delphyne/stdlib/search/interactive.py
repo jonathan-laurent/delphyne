@@ -5,19 +5,23 @@ import delphyne.core as dp
 import delphyne.stdlib.queries as dq
 from delphyne.stdlib import models as md
 from delphyne.stdlib.nodes import Branch, branch
-from delphyne.stdlib.search.dfs import dfs
 from delphyne.stdlib.strategies import strategy
 
 
-@strategy(name="interact")
-def _interact[P, A, B, T: md.AbstractTool[Any]](
+@strategy
+def interact[P, A, B, T: md.AbstractTool[Any]](
     step: Callable[
         [dp.AnswerPrefix], dp.OpaqueSpaceBuilder[P, dq.Response[A, T]]
     ],
     process: Callable[[A], dp.OpaqueSpaceBuilder[P, B | dp.Error]],
     tools: Mapping[type[T], Callable[[Any], dp.OpaqueSpaceBuilder[P, Any]]]
-    | None,
+    | None = None,
+    inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Branch, P, B]:
+    """
+    Note: the `meta` field of `dp.Error` must be serializable.
+    """
+
     prefix: dp.AnswerPrefix = []
     while True:
         resp = yield from branch(step(prefix))
@@ -43,22 +47,3 @@ def _interact[P, A, B, T: md.AbstractTool[Any]](
                         t.render_result(tres),
                     )
                     prefix += [msg]
-
-
-def interact[P, A, B, T: md.AbstractTool[Any]](
-    step: Callable[
-        [dp.AnswerPrefix], dp.OpaqueSpaceBuilder[P, dq.Response[A, T]]
-    ],
-    process: Callable[[A], dp.OpaqueSpaceBuilder[P, B | dp.Error]],
-    tools: Mapping[type[T], Callable[[Any], dp.OpaqueSpaceBuilder[P, object]]]
-    | None = None,
-    inner_policy_type: type[P] | None = None,
-) -> dp.OpaqueSpaceBuilder[P, B]:
-    """
-    Note: the `meta` field of `dp.Error` must be serializable.
-    """
-
-    def policy(inner_policy: P):
-        return (dfs(max_branching=1), inner_policy)
-
-    return _interact(step, process, tools).using(policy)

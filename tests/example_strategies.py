@@ -461,7 +461,7 @@ def propose_article(
             step=lambda pre: ProposeArticle(user_name, pre)(IP, lambda p: p),
             process=lambda x: dp.const_space(x),
             tools={GetUserFavoriteTopic: (lambda _: dp.const_space("Soccer"))},
-        )
+        )(IP, lambda p: (dp.dfs(max_branching=1), p))
     )
     return article
 
