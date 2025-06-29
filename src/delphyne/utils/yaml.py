@@ -14,6 +14,9 @@ import yaml
 
 
 def pretty_yaml(obj: object) -> str:
+    # return yaml.dump(obj, sort_keys=False)
+    # TODO: pyaml seems to have some bugs: we may want to get rid of it.
+    # For now, we just replace its use in specific places (e.g. `run_command`)
     return cast(Any, pyaml.dump(obj, sort_dicts=pyaml.PYAMLSort.none))
 
 

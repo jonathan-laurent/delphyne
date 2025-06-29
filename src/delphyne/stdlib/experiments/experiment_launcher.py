@@ -305,7 +305,9 @@ def _run_config[Config](
         file_path = config_dir / f
         if file_path.exists():
             file_path.unlink(missing_ok=True)
-    cmdargs = experiment(cache_dir, config)
+    # TODO: TEMPORARY: we send the path as a string despite the type
+    # annotation because to avoid YAML serialization issues.
+    cmdargs = experiment(str(cache_dir), config)  # type: ignore
     cmdargs.export_browsable_trace = export_browsable_trace
     cmdargs.export_log = export_log
     cmdargs.export_raw_trace = export_raw_trace
