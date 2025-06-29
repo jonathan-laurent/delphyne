@@ -14,8 +14,6 @@ import delphyne.stdlib as std
 import delphyne.stdlib.tasks as ta
 from delphyne.utils.typing import NoTypeInfo, pydantic_dump
 
-DEFAULT_REFRESH_RATE_IN_SECONDS = 5
-
 
 @dataclass
 class RunStrategyResponse:
@@ -40,9 +38,6 @@ async def run_loaded_strategy[N: dp.Node, P, T](
     exe: ta.CommandExecutionContext,
     args: RunLoadedStrategyArgs[N, P, T],
 ):
-    refresh_rate = exe.refresh_rate
-    if refresh_rate is None:
-        refresh_rate = DEFAULT_REFRESH_RATE_IN_SECONDS
     env = dp.PolicyEnv(
         prompt_dirs=exe.prompt_dirs,
         demonstration_files=exe.demo_files,
@@ -90,7 +85,8 @@ async def run_loaded_strategy[N: dp.Node, P, T](
         else:
             return f"{num_nodes} nodes"
 
-    last_refreshed = time.time()
+    last_refreshed_result = time.time()
+    last_refreshed_status = time.time()
     # TODO: generating each element is blocking here. Should we spawn a
     # thread for every new element?
     for msg in stream:
@@ -102,10 +98,18 @@ async def run_loaded_strategy[N: dp.Node, P, T](
                 total_budget += b
             case dp.Barrier():
                 pass
-        if time.time() - last_refreshed > refresh_rate:
+        if (
+            exe.result_refresh_period is not None
+            and time.time() - last_refreshed_result > exe.result_refresh_period
+        ):
             await task.set_result(compute_result())
-            last_refreshed = time.time()
-        await task.set_status(compute_status())
+            last_refreshed_result = time.time()
+        if (
+            exe.status_refresh_period is not None
+            and time.time() - last_refreshed_status > exe.status_refresh_period
+        ):
+            await task.set_status(compute_status())
+            last_refreshed_status = time.time()
     await task.set_result(compute_result())
 
 

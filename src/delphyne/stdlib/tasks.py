@@ -51,7 +51,9 @@ def stream_of_fun[**P, T](f: Callable[P, T]) -> StreamingTask[P, T]:
     Convert a function into a degenerate streaming task.
     """
 
-    async def stream(context: TaskContext[T], *args: P.args, **kwargs: P.kwargs):
+    async def stream(
+        context: TaskContext[T], *args: P.args, **kwargs: P.kwargs
+    ):
         try:
             ret = f(*args, **kwargs)
             await context.set_result(ret)
@@ -83,10 +85,17 @@ async def counting_generator(task: TaskContext[Never], n: int):
 
 @dataclass(frozen=True)
 class CommandExecutionContext:
+    """
+    The result refresh period indicates how often the current result is
+    computed and communicated, in seconds (`None` means never). The same
+    holds for the status refresh period.
+    """
+
     base: analysis.DemoExecutionContext
     demo_files: Sequence[Path]
     prompt_dirs: Sequence[Path]
-    refresh_rate: float | None = None
+    result_refresh_period: float | None = None
+    status_refresh_period: float | None = None
 
 
 T = typing.TypeVar("T", covariant=True)
