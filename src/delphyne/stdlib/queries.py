@@ -440,8 +440,11 @@ def trimmed_string_from_last_block[T](type: TypeAnnot[T], res: str) -> T:
 
 
 def extract_final_block(s: str) -> str | None:
-    code_blocks = re.findall(r"```[^\n]*\n(.*?)```", s, re.DOTALL)
-    return code_blocks[-1] if code_blocks else None
+    # In case the output is ill-formed, the quotes may not be balanced.
+    # This is why we use a lookahead here.
+    # See tests in `test_stdlib.py`
+    code_blocks = re.findall(r"(?=(```[^\n]*\n(.*?)```))", s, re.DOTALL)
+    return code_blocks[-1][1] if code_blocks else None
 
 
 #####
