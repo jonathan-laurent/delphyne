@@ -155,7 +155,8 @@ class Experiment[Config]:
 
     def save_state(self, state: ExperimentState[Config]) -> None:
         with open(self.dir / EXPERIMENT_STATE_FILE, "w") as f:
-            yaml.safe_dump(pydantic_dump(self.state_type(), state), f)
+            to_save = pydantic_dump(self.state_type(), state)
+            yaml.safe_dump(to_save, f, sort_keys=False)
 
     def resume(self, max_workers: int = 1, log_progress: bool = True):
         state = self.load_state()
@@ -179,20 +180,25 @@ class Experiment[Config]:
             ]
             if log_progress:
                 _print_progress(state)
-            for future in as_completed(futures):
-                name, success = future.result()
-                state.configs[name].status = "done" if success else "failed"
+            try:
+                for future in as_completed(futures):
+                    name, success = future.result()
+                    state.configs[name].status = "done" if success else "failed"
+                    if log_progress:
+                        _print_progress(state)
                 self.save_state(state)
-                if log_progress:
-                    _print_progress(state)
-            all_successes = all(
-                info.status == "done" for info in state.configs.values()
-            )
-            if all_successes:
-                print("\nExperiment successful.\nProducing summary file...")
-                self.save_summary()
-            else:
-                print("\nWarning: some configurations failed.")
+                all_successes = all(
+                    info.status == "done" for info in state.configs.values()
+                )
+                if all_successes:
+                    print("\nExperiment successful.\nProducing summary file...")
+                    self.save_summary()
+                else:
+                    print("\nWarning: some configurations failed.")
+            except KeyboardInterrupt:
+                print("\nExperiment interrupted. Saving state...")
+                self.save_state(state)
+                print("State saved.")
 
     def mark_errors_as_todos(self):
         state = self.load_state()
