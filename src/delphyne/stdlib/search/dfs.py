@@ -17,8 +17,12 @@ def dfs[P, T](
     max_depth: int | None = None,
     max_branching: int | None = None,
 ) -> Stream[T]:
-    if max_depth is not None and max_depth <= 0:
-        return
+    """
+    Depth-first search
+
+    If set, `max_depth` defines the maximum number of branching nodes
+    that can be traversed in a path to success.
+    """
     assert max_branching is None or max_branching > 0
     match tree.node:
         case Success(x):
@@ -26,6 +30,8 @@ def dfs[P, T](
         case Failure():
             pass
         case Branch(cands):
+            if max_depth is not None and max_depth <= 0:
+                return
             for i, cands_msg in enumerate(cands.stream(env, policy)):
                 if not isinstance(cands_msg, Yield):
                     yield cands_msg
