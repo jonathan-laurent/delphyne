@@ -63,7 +63,7 @@ class ExperimentState[Config]:
 
 class _ExperimentFun[Config](Protocol):
     def __call__(
-        self, cache_dir: Path, config: Config
+        self, cache_dir: Path | None, config: Config
     ) -> cmd.RunStrategyArgs: ...
 
 
@@ -77,6 +77,10 @@ class Experiment[Config]:
     name: str | None = None
     description: str | None = None
     config_naming: Callable[[Config, uuid.UUID], str] | None = None
+    cache_requests: bool = True
+    export_raw_trace: bool = True
+    export_log: bool = True
+    export_browsable_trace: bool = True
 
     def load(self):
         if not self.dir_exists():
@@ -143,11 +147,15 @@ class Experiment[Config]:
             futures = [
                 executor.submit(
                     _run_config,
-                    self.context,
-                    self.experiment,
-                    name,
-                    self.config_dir(name),
-                    info.params,
+                    context=self.context,
+                    experiment=self.experiment,
+                    config_name=name,
+                    config_dir=self.config_dir(name),
+                    config=info.params,
+                    cache_requests=self.cache_requests,
+                    export_raw_trace=self.export_raw_trace,
+                    export_log=self.export_log,
+                    export_browsable_trace=self.export_browsable_trace,
                 )
                 for name, info in state.configs.items()
                 if info.status == "todo"
@@ -254,9 +262,17 @@ def results_summary(exp_dir: Path) -> Sequence[dict[str, Any]]:
         result = result["outcome"]["result"]
         success = result["success"]
         assert isinstance(success, bool)
-        price = result["spent_budget"].get("price", 0.0)
+        spent = result["spent_budget"]
+        price = spent.get("price", 0.0)
+        num_completions = spent.get("num_completions", 0)
+        num_requests = spent.get("num_requests", 0)
         assert isinstance(price, float)
-        entry = params | {"success": success, "price": price}
+        entry = params | {
+            "success": success,
+            "price": price,
+            "num_completions": num_completions,
+            "num_requests": num_requests,
+        }
         res.append(entry)
     return res
 
@@ -275,15 +291,24 @@ def _run_config[Config](
     config_name: str,
     config_dir: Path,
     config: Config,
+    cache_requests: bool,
+    export_raw_trace: bool,
+    export_log: bool,
+    export_browsable_trace: bool,
 ) -> tuple[str, bool]:
-    cache_dir = config_dir / CACHE_DIR
-    if cache_dir.exists():
-        shutil.rmtree(cache_dir, ignore_errors=True)
+    cache_dir = None
+    if cache_requests:
+        cache_dir = config_dir / CACHE_DIR
+        if cache_dir.exists():
+            shutil.rmtree(cache_dir, ignore_errors=True)
     for f in (STATUS_FILE, RESULT_FILE, LOG_FILE):
         file_path = config_dir / f
         if file_path.exists():
             file_path.unlink(missing_ok=True)
     cmdargs = experiment(cache_dir, config)
+    cmdargs.export_browsable_trace = export_browsable_trace
+    cmdargs.export_log = export_log
+    cmdargs.export_raw_trace = export_raw_trace
     try:
         run_command(
             cmd.run_strategy,

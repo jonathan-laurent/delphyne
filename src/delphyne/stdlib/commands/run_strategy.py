@@ -20,9 +20,9 @@ class RunStrategyResponse:
     success: bool
     values: Sequence[Any | None]
     spent_budget: Mapping[str, float]
-    raw_trace: dp.ExportableTrace
-    log: Sequence[dp.ExportableLogMessage]
-    browsable_trace: fb.Trace
+    raw_trace: dp.ExportableTrace | None
+    log: Sequence[dp.ExportableLogMessage] | None
+    browsable_trace: fb.Trace | None
 
 
 @dataclass
@@ -31,6 +31,9 @@ class RunLoadedStrategyArgs[N: dp.Node, P, T]:
     policy: dp.Policy[N, P]
     num_generated: int = 1
     budget: dict[str, float] | None = None
+    export_raw_trace: bool = True
+    export_log: bool = True
+    export_browsable_trace: bool = True
 
 
 async def run_loaded_strategy[N: dp.Node, P, T](
@@ -63,9 +66,13 @@ async def run_loaded_strategy[N: dp.Node, P, T](
 
     def compute_result():
         trace = env.tracer.trace
-        raw_trace = trace.export()
-        browsable_trace = analysis.compute_browsable_trace(trace, cache)
-        log = list(env.tracer.export_log())
+        raw_trace = trace.export() if args.export_raw_trace else None
+        browsable_trace = (
+            analysis.compute_browsable_trace(trace, cache)
+            if args.export_browsable_trace
+            else None
+        )
+        log = list(env.tracer.export_log()) if args.export_log else None
         values = [serialize_result(r) for r in results]
         response = RunStrategyResponse(
             success,
@@ -121,6 +128,9 @@ class RunStrategyArgs:
     policy_args: dict[str, object]
     num_generated: int
     budget: dict[str, float]
+    export_raw_trace: bool = True
+    export_log: bool = True
+    export_browsable_trace: bool = True
 
 
 async def run_strategy(
@@ -135,6 +145,12 @@ async def run_strategy(
         task,
         exe,
         RunLoadedStrategyArgs(
-            strategy, policy, args.num_generated, args.budget
+            strategy=strategy,
+            policy=policy,
+            num_generated=args.num_generated,
+            budget=args.budget,
+            export_raw_trace=args.export_raw_trace,
+            export_log=args.export_log,
+            export_browsable_trace=args.export_browsable_trace,
         ),
     )
