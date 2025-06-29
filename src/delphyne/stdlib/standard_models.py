@@ -12,7 +12,13 @@ from delphyne.stdlib import models as md
 from delphyne.stdlib.openai_api import OpenAICompatibleModel
 
 type OpenAIModelName = Literal[
-    "gpt-4.1", "gpt-4.1-mini", "gpt-4.1-nano", "o3", "o4-mini"
+    "gpt-4.1",
+    "gpt-4o",
+    "gpt-4o-mini",
+    "gpt-4.1-mini",
+    "gpt-4.1-nano",
+    "o3",
+    "o4-mini",
 ]
 
 type MistralModelName = Literal["mistral-small-2503", "magistral-small-2506"]
@@ -59,6 +65,10 @@ def _default_info_and_pricing(
     match model:
         case "gpt-4.1":
             info = md.ModelInfo("chat", "large")
+        case "gpt-4o":
+            info = md.ModelInfo("chat", "large")
+        case "gpt-4o-mini":
+            info = md.ModelInfo("chat", "small")
         case "gpt-4.1-mini":
             info = md.ModelInfo("chat", "medium")
         case "gpt-4.1-nano":
