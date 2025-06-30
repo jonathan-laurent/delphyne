@@ -19,6 +19,8 @@ from delphyne.core.refs import Answer
 from delphyne.utils.typing import pydantic_load
 from delphyne.utils.yaml import dump_yaml_object
 
+type _QueryName = str
+
 type QueryArgs = dict[str, Any]
 
 
@@ -27,6 +29,13 @@ def _equal_query_args(args1: QueryArgs, args2: QueryArgs) -> bool:
     # same object where a tuple is used instead of a list would be
     # considered different.
     return json.dumps(args1) == json.dumps(args2)
+
+
+@dataclass
+class Example:
+    args: QueryArgs
+    answer: Answer
+    tags: Sequence[str]
 
 
 ####
@@ -48,7 +57,9 @@ class ExampleDatabase:
     """
 
     do_not_match_identical_queries: bool = False
-    _examples: dict[str, list[tuple[QueryArgs, Answer]]] = field(
+
+    # Maps each query name to a list of
+    _examples: dict[_QueryName, list[Example]] = field(
         default_factory=lambda: defaultdict(list)
     )
 
@@ -56,12 +67,14 @@ class ExampleDatabase:
         if not demo.answers:
             return
         if (ex := demo.answers[0].example) is not None and not ex:
-            # If the user explicitly asked not to
-            # include the example. TODO: What if the user
-            # asked to include several answers?
+            # If the user explicitly asked not to include the example.
+            # TODO: What if the user asked to include several answers?
+            # Right now, we only allow the first one to be added.
             return
-        answer = translate_answer(demo.answers[0])
-        self._examples[demo.query].append((demo.args, answer))
+        demo_answer = demo.answers[0]
+        answer = translate_answer(demo_answer)
+        example = Example(demo.args, answer, demo_answer.tags)
+        self._examples[demo.query].append(example)
 
     def add_demonstration(self, demo: Demo):
         if isinstance(demo, QueryDemo):
@@ -73,10 +86,10 @@ class ExampleDatabase:
 
     def examples(
         self, query_name: str, query_args: QueryArgs
-    ) -> Iterable[tuple[QueryArgs, Answer]]:
+    ) -> Iterable[Example]:
         for ex in self._examples[query_name]:
             if self.do_not_match_identical_queries:
-                if _equal_query_args(ex[0], query_args):
+                if _equal_query_args(ex.args, query_args):
                     continue
             yield ex
 

@@ -3,6 +3,7 @@ Standard queries and building blocks for prompting policies.
 """
 
 import inspect
+import random
 import re
 import textwrap
 import typing
@@ -449,16 +450,54 @@ def extract_final_block(s: str) -> str | None:
 
 
 #####
+##### Example Selectors
+#####
+
+
+type ExampleSelector = Callable[[Sequence[dp.Example]], Sequence[dp.Example]]
+
+
+def select_all_examples(
+    examples: Sequence[dp.Example],
+) -> Sequence[dp.Example]:
+    return examples
+
+
+def select_random_examples(num_examples: int) -> ExampleSelector:
+    def select(
+        examples: Sequence[dp.Example],
+    ) -> Sequence[dp.Example]:
+        if num_examples >= len(examples):
+            return examples
+        selected = random.sample(examples, num_examples)
+        return selected
+
+    return select
+
+
+def select_with_either_tags(tags: Sequence[str]):
+    def select(
+        examples: Sequence[dp.Example],
+    ) -> Sequence[dp.Example]:
+        return [ex for ex in examples if any(t in ex.tags for t in tags)]
+
+    return select
+
+
+#####
 ##### Prompting Policies
 #####
 
 
-def find_all_examples(
+def fetch_examples(
     database: dp.ExampleDatabase,
     query: dp.AbstractQuery[Any],
+    selectors: Sequence[ExampleSelector] = (),
 ) -> Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]]:
-    raw = database.examples(query.name(), query.serialize_args())
-    return [(query.parse_instance(args), ans) for args, ans in raw]
+    raw = list(database.examples(query.name(), query.serialize_args()))
+    for sel in selectors:
+        raw = sel(raw)
+    return [(query.parse_instance(ex.args), ex.answer) for ex in raw]
 
 
 def _priming_split(prompt: str) -> tuple[str, str | None]:
@@ -592,6 +631,7 @@ def classify[T](
     query: dp.AttachedQuery[T],
     env: dp.PolicyEnv,
     model: md.LLM,
+    select_examples: Sequence[ExampleSelector] = (),
     mode: dp.AnswerModeName = None,
     enable_logging: bool = True,
     top_logprobs: int = 20,
@@ -606,7 +646,7 @@ def classify[T](
     transformed into `(1-p)*D + p*dirac(e)`
     """
     env.tracer.trace_query(query.ref)
-    examples = find_all_examples(env.examples, query.query)
+    examples = fetch_examples(env.examples, query.query, select_examples)
     mngr = env.templates
     prompt = create_prompt(query.query, examples, {}, mode, mngr)
     aset = query.query.finite_answer_set()
@@ -699,6 +739,7 @@ def few_shot[T](
     query: dp.AttachedQuery[T],
     env: dp.PolicyEnv,
     model: md.LLM,
+    select_examples: Sequence[ExampleSelector] = (),
     mode: dp.AnswerModeName = None,
     enable_logging: bool = True,
     temperature: float | None = None,
@@ -721,7 +762,7 @@ def few_shot[T](
     assert not iterative_mode or num_concurrent == 1
     assert max_requests is None or max_requests > 0
     env.tracer.trace_query(query.ref)
-    examples = find_all_examples(env.examples, query.query)
+    examples = fetch_examples(env.examples, query.query)
     mngr = env.templates
     prompt = create_prompt(query.query, examples, {}, mode, mngr)
     config = query.query.query_config()

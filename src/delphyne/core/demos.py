@@ -27,6 +27,7 @@ class Answer:
     mode: str | None = None
     label: str | None = None
     example: bool | None = None
+    tags: Sequence[str] = ()
     justification: str | None = None
 
 
