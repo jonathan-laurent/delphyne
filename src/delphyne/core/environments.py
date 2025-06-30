@@ -102,9 +102,44 @@ class ExampleDatabase:
 JINJA_EXTENSION = ".jinja"
 
 
+def _load_data(data_dirs: Sequence[Path]) -> dict[str, Any]:
+    # Find all files with extension `*.data.yaml` in the data_dirs,
+    # parse them and save everything in a big dict. If two files have
+    # the same name, raise an error.
+    result: dict[str, Any] = {}
+    seen_filenames: set[str] = set()
+
+    for data_dir in data_dirs:
+        if not data_dir.exists():
+            continue
+
+        for yaml_file in data_dir.glob("*.data.yaml"):
+            filename = yaml_file.name
+
+            # Check for duplicate filenames
+            if filename in seen_filenames:
+                raise ValueError(f"Duplicate data file found: {filename}")
+
+            seen_filenames.add(filename)
+
+            # Parse the YAML file and add its contents to the result
+            try:
+                with yaml_file.open() as f:
+                    data = yaml.safe_load(f)
+                    if data is not None:
+                        # Use the filename (without extension) as the key
+                        key = yaml_file.stem.replace(".data", "")
+                        result[key] = data
+            except Exception as e:
+                raise ValueError(f"Error parsing YAML file {yaml_file}: {e}")
+
+    return result
+
+
 class TemplatesManager:
-    def __init__(self, prompt_dirs: Sequence[Path]):
+    def __init__(self, prompt_dirs: Sequence[Path], data_dirs: Sequence[Path]):
         self.prompt_folders = prompt_dirs
+        self.data = _load_data(data_dirs)
         self.env = jinja2.Environment(
             loader=jinja2.FileSystemLoader(self.prompt_folders),
             trim_blocks=True,
@@ -132,6 +167,8 @@ class TemplatesManager:
         else:
             template = self.env.get_template(template_name)
         try:
+            assert "data" not in template_args
+            template_args |= {"data": self.data}
             return template.render(template_args)
         except jinja2.TemplateNotFound as e:
             raise TemplateError(template_name, e)
@@ -259,13 +296,14 @@ class PolicyEnv:
         self,
         prompt_dirs: Sequence[Path],
         demonstration_files: Sequence[Path],
+        data_dirs: Sequence[Path],
         do_not_match_identical_queries: bool = False,
     ):
         """
         An environment accessible to a policy, containing prompt and
         example databases in particular.
         """
-        self.templates = TemplatesManager(prompt_dirs)
+        self.templates = TemplatesManager(prompt_dirs, data_dirs)
         self.examples = ExampleDatabase(do_not_match_identical_queries)
         self.tracer = Tracer()
         for path in demonstration_files:

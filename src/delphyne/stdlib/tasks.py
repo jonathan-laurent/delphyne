@@ -95,6 +95,7 @@ class CommandExecutionContext:
     base: analysis.DemoExecutionContext
     demo_files: Sequence[Path]
     prompt_dirs: Sequence[Path]
+    data_dirs: Sequence[Path]
     result_refresh_period: float | None = None
     status_refresh_period: float | None = None
 

@@ -43,6 +43,7 @@ async def run_loaded_strategy[N: dp.Node, P, T](
 ):
     env = dp.PolicyEnv(
         prompt_dirs=exe.prompt_dirs,
+        data_dirs=exe.data_dirs,
         demonstration_files=exe.demo_files,
         do_not_match_identical_queries=True,
     )

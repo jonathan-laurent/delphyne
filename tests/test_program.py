@@ -33,7 +33,9 @@ def _eval_query(
     concurrent: int = 1,
     model_name: dp.StandardModelName = "gpt-4.1-mini",
 ):
-    env = dp.PolicyEnv(demonstration_files=(), prompt_dirs=(PROMPT_DIR,))
+    env = dp.PolicyEnv(
+        demonstration_files=(), prompt_dirs=(PROMPT_DIR,), data_dirs=()
+    )
     cache = dp.LLMCache(CACHE_DIR / cache_name)
     model = dp.CachedModel(dp.standard_model(model_name), cache)
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: budget})
@@ -53,7 +55,9 @@ def _eval_strategy[N: dp.Node, P, T](
     max_res: int = 1,
     model_name: dp.StandardModelName = "gpt-4.1-mini",
 ) -> tuple[Sequence[dp.Tracked[T]], str]:
-    env = dp.PolicyEnv(prompt_dirs=[PROMPT_DIR], demonstration_files=())
+    env = dp.PolicyEnv(
+        prompt_dirs=[PROMPT_DIR], demonstration_files=(), data_dirs=()
+    )
     cache = dp.LLMCache(CACHE_DIR / cache_name)
     model = dp.CachedModel(dp.standard_model(model_name), cache)
     stream = strategy.run_toplevel(env, policy(model))
@@ -75,7 +79,9 @@ def test_concurrent():
 
 
 def test_basic_llm_call():
-    env = dp.PolicyEnv(demonstration_files=(), prompt_dirs=(PROMPT_DIR,))
+    env = dp.PolicyEnv(
+        demonstration_files=(), prompt_dirs=(PROMPT_DIR,), data_dirs=()
+    )
     cache = dp.LLMCache(CACHE_DIR / "basic_llm_call")
     model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
     pp = dp.few_shot(model)
@@ -112,7 +118,9 @@ def test_assistant_priming():
 
 
 def test_interact():
-    env = dp.PolicyEnv(demonstration_files=(), prompt_dirs=(PROMPT_DIR,))
+    env = dp.PolicyEnv(
+        demonstration_files=(), prompt_dirs=(PROMPT_DIR,), data_dirs=()
+    )
     cache = dp.LLMCache(CACHE_DIR / "interact")
     model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
     pp = dp.few_shot(model)
@@ -147,7 +155,9 @@ def _eval_classifier_query(
     temperature: float = 1.0,
     bias: tuple[str, float] | None = None,
 ):
-    env = dp.PolicyEnv(demonstration_files=(), prompt_dirs=(PROMPT_DIR,))
+    env = dp.PolicyEnv(
+        demonstration_files=(), prompt_dirs=(PROMPT_DIR,), data_dirs=()
+    )
     cache = dp.LLMCache(CACHE_DIR / cache_name)
     model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})

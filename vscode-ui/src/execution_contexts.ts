@@ -84,6 +84,7 @@ export function getExecutionContext(): ExecutionContext {
 export interface CommandExecutionContext {
   base: ExecutionContext;
   prompt_dirs: string[];
+  data_dirs: string[];
   demo_files: string[];
 }
 
@@ -92,6 +93,7 @@ export function getCommandExecutionContext(): CommandExecutionContext {
   return {
     base: { strategy_dirs: config.strategy_dirs, modules: config.modules },
     prompt_dirs: config.prompt_dirs,
+    data_dirs: config.data_dirs ?? [],
     demo_files: config.demo_files,
   };
 }

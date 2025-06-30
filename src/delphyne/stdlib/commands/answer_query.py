@@ -41,6 +41,7 @@ async def answer_query(
     query = loader.load_query(cmd.query, cmd.args)
     env = dp.PolicyEnv(
         prompt_dirs=exe.prompt_dirs,
+        data_dirs=exe.data_dirs,
         demonstration_files=exe.demo_files,
         do_not_match_identical_queries=True,
     )
