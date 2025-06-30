@@ -169,6 +169,16 @@ def bind_stream[A, B](
             yield new_msg
 
 
+def take_one_with_meta[T](
+    stream: dp.Stream[T],
+) -> dp.StreamGen[tuple[dp.Tracked[T], dp.SearchMetadata | None] | None]:
+    for msg in stream:
+        if isinstance(msg, dp.Yield):
+            return (msg.value, msg.meta)
+        yield msg
+    return None
+
+
 def take_one[T](stream: dp.Stream[T]) -> dp.StreamGen[dp.Tracked[T] | None]:
     for msg in stream:
         if isinstance(msg, dp.Yield):

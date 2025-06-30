@@ -10,6 +10,7 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Any, Literal, Protocol, cast
 
+import numpy as np
 import yaml
 
 import delphyne.core as dp
@@ -575,13 +576,15 @@ def _compute_value_distribution(
 
 
 @dataclass
-class LogProbInfo:
+class ProbInfo:
     """
     Note: The distribution may not sum up to 1 and even be empty. The
     user can normalize it if needed.
     """
 
-    logprobs: dict[dp.Answer, float]
+    # values: Sequence[]
+    # probs: np.ndarray[]
+    distr: Sequence[tuple[dp.Tracked[Any], float]]
 
 
 @prompting_policy
@@ -592,7 +595,16 @@ def classify[T](
     mode: dp.AnswerModeName = None,
     enable_logging: bool = True,
     top_logprobs: int = 20,
+    temperature: float = 1.0,
+    bias: tuple[str, float] | None = None,
 ) -> dp.Stream[T]:
+    """
+    Execute a classification query, attaching a probability distribution
+    to the attached answer.
+
+    When `bias=(e, p)` is provided, then the final distribution `D` is
+    transformed into `(1-p)*D + p*dirac(e)`
+    """
     env.tracer.trace_query(query.ref)
     examples = find_all_examples(env.examples, query.query)
     mngr = env.templates
@@ -625,19 +637,61 @@ def classify[T](
         return
     output = resp.outputs[0]
     answer = dp.Answer(mode, output.content)
-    element = query.parse_answer(answer)
     env.tracer.trace_answer(query.ref, answer)
-    if isinstance(element, dp.ParseError):
-        log(env, "parse_error", {"error": element}, loc=query)
-    else:
+
+    def parse(answer: dp.Answer) -> dp.Tracked[T]:
+        parsed = query.parse_answer(answer)
+        if isinstance(parsed, dp.ParseError):
+            log(env, "parse_error", {"error": element}, loc=query)
+            raise parsed
+        return parsed
+
+    try:
+        element = parse(answer)
         lpinfo = output.logprobs
         assert lpinfo is not None
         ldistr = _compute_value_distribution(vals, lpinfo[0])
-        meta = LogProbInfo(
-            {dp.Answer(mode, v): lp for v, lp in ldistr.items()}
-        )
-        # TODO: add metadata
+        if not ldistr:
+            assert isinstance(output.content, str)
+            ldistr = {output.content: 0.0}
+        distr = _apply_temperature(ldistr, temperature)
+        if bias is not None:
+            distr = _apply_bias(distr, bias)
+        distr_tup = [(parse(dp.Answer(mode, k)), p) for k, p in distr.items()]
+        meta = ProbInfo(distr_tup)
         yield dp.Yield(element, meta=meta)
+    except dp.ParseError:
+        return
+
+
+def _apply_temperature(
+    logprobs_dict: dict[str, float],
+    temperature: float,
+) -> dict[str, float]:
+    """
+    Turn log-probabilities into probabilities. We assume that
+    `logprobs_dict` is not empty.
+    """
+    logprobs = np.array(list(logprobs_dict.values()))
+    if temperature == 0:
+        probs = np.zeros(len(logprobs))
+        probs[np.argmax(logprobs)] = 1.0
+    else:
+        logprobs /= temperature
+        probs = np.exp(logprobs - np.max(logprobs))
+        probs = probs / probs.sum()
+    return {k: p for k, p in zip(logprobs_dict, probs)}
+
+
+def _apply_bias(
+    probs_dict: dict[str, float], bias: tuple[str, float]
+) -> dict[str, float]:
+    elt, p = bias
+    if elt not in probs_dict:
+        probs_dict[elt] = 0
+    probs_dict = {k: (1 - p) * v for k, v in probs_dict.items()}
+    probs_dict[elt] += p
+    return probs_dict
 
 
 @prompting_policy

@@ -91,8 +91,8 @@ from delphyne.stdlib.policies import (
 )
 from delphyne.stdlib.queries import (
     FinalAnswer,
-    LogProbInfo,
     ParserSpec,
+    ProbInfo,
     Query,
     Response,
     ToolRequests,
