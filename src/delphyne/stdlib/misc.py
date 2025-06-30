@@ -3,8 +3,12 @@ from typing import Any, Iterable, Never, cast, overload
 
 import delphyne.core as dp
 from delphyne.stdlib.computations import Computation, elim_compute
-from delphyne.stdlib.nodes import Branch, Failure, branch
-from delphyne.stdlib.policies import PromptingPolicy, SearchPolicy
+from delphyne.stdlib.nodes import Branch, Failure, Message, branch
+from delphyne.stdlib.policies import (
+    ContextualTreeTransformer,
+    PromptingPolicy,
+    SearchPolicy,
+)
 from delphyne.stdlib.search.dfs import dfs
 from delphyne.stdlib.strategies import strategy
 
@@ -138,3 +142,24 @@ def sequence(
         )
     else:
         return sequence_policies(cast(Iterable[dp.Policy[Any, Any]], policies))
+
+
+#####
+##### Eliminate message nodes
+#####
+
+
+def elim_messages(
+    show_in_log: bool = True,
+) -> ContextualTreeTransformer[Message, Never]:
+    def transform[N: dp.Node, P, T](
+        tree: dp.Tree[Message | N, P, T], env: dp.PolicyEnv, policy: P
+    ) -> dp.Tree[N, P, T]:
+        if isinstance(tree.node, Message):
+            if show_in_log:
+                metadata = {"attached": tree.node.data}
+                env.tracer.log(tree.node.msg, metadata=metadata)
+            return transform(tree.child(None), env, policy)
+        return tree.transform(tree.node, lambda n: transform(n, env, policy))  # type: ignore
+
+    return ContextualTreeTransformer(transform)

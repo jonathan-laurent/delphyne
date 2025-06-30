@@ -116,6 +116,7 @@ def ensure(
 @dataclass
 class Message(dp.Node):
     msg: str
+    data: object | None
 
     def navigate(self) -> dp.Navigation:
         return None
@@ -125,8 +126,10 @@ class Message(dp.Node):
         return self.msg
 
 
-def message(msg: str) -> dp.Strategy[Message, object, None]:
-    yield spawn_node(Message, msg=msg)
+def message(
+    msg: str, data: object | None = None
+) -> dp.Strategy[Message, object, None]:
+    yield spawn_node(Message, msg=msg, data=data)
 
 
 #####

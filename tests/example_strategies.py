@@ -614,7 +614,9 @@ def try_obtain_item(
 @dp.strategy
 def obtain_item(
     market: Market, goal: str
-) -> dp.Strategy[dp.Abduction, dp.PromptingPolicy, list[Exchange]]:
+) -> dp.Strategy[
+    dp.Abduction | dp.Message, dp.PromptingPolicy, list[Exchange]
+]:
     IP = dp.PromptingPolicy
     exchanges = yield from dp.abduction(
         prove=lambda possessed, item: dp.const_space(
@@ -629,6 +631,7 @@ def obtain_item(
         search_equivalent=lambda its, it: dp.const_space(None),
         redundant=lambda its, it: dp.const_space(False),
     )
+    yield from dp.message("Success!")
     return exchanges
 
 
@@ -636,4 +639,4 @@ def obtain_item_policy(model: dp.LLM, num_concurrent: int = 1):
     pp = dp.take(num_concurrent) @ dp.few_shot(
         model, num_concurrent=num_concurrent
     )
-    return (dp.abduct_and_saturate(verbose=True), pp)
+    return (dp.abduct_and_saturate(verbose=True) @ dp.elim_messages(), pp)

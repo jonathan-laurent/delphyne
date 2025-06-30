@@ -315,8 +315,8 @@ def test_sequence():
             ]
         )
 
-    # TODO: this does not succeed since
-    res, _ = _eval_strategy(
+    res, log = _eval_strategy(
         strategy, policy, cache_name="sequence", max_requests=10, max_res=10
     )
+    print(log)
     assert len(res) == 3

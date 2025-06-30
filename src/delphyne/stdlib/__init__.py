@@ -24,6 +24,7 @@ from delphyne.stdlib.misc import (
     ambient,
     ambient_pp,
     const_space,
+    elim_messages,
     just_compute,
     just_dfs,
     map_space,
