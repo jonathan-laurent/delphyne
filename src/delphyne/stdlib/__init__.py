@@ -116,6 +116,7 @@ from delphyne.stdlib.search.abduction import (
 from delphyne.stdlib.search.bestfs import (
     best_first_search,
 )
+from delphyne.stdlib.search.classification_based import sample_and_proceed
 from delphyne.stdlib.search.dfs import (
     dfs,
 )
