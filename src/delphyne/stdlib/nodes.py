@@ -224,5 +224,6 @@ class Join(dp.Node):
 def join[N: dp.Node, P, T](
     subs: Sequence[dp.StrategyComp[N, P, T]],
     meta: Callable[[P], object] | None = None,
-) -> dp.Strategy[N, P, T]:
-    yield spawn_node(Join, subs=subs, meta=meta)
+) -> dp.Strategy[N, P, Sequence[T]]:
+    ret = yield spawn_node(Join, subs=subs, meta=meta)
+    return cast(Sequence[T], ret)
