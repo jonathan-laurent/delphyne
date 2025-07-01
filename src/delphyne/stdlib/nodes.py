@@ -198,3 +198,26 @@ def value[E, P](
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Value, P, None]:
     yield spawn_node(Value, eval=eval, value=value)
+
+
+#####
+##### Join Node
+#####
+
+
+@dataclass(frozen=True)
+class Join(dp.Node):
+    subs: Sequence[dp.EmbeddedTree[Any, Any, Any]]
+    meta: object | None
+
+    def navigate(self) -> dp.Navigation:
+        ret: list[Any] = []
+        for sub in self.subs:
+            ret.append((yield sub))
+        return tuple(ret)
+
+
+def join[N: dp.Node, P, T](
+    subs: Sequence[dp.StrategyComp[N, P, T]], meta: object | None = None
+) -> dp.Strategy[N, P, T]:
+    yield spawn_node(Join, subs=subs, meta=meta)

@@ -14,6 +14,10 @@ def test_nodes():
         "disprove": nf.ParametricF(nf.SpaceF()),
         "aggregate": nf.ParametricF(nf.SpaceF()),
     }
+    assert dp.Join.fields() == {
+        "subs": nf.SequenceF(nf.EmbeddedF()),
+        "meta": nf.DataF(),
+    }
 
 
 #####
