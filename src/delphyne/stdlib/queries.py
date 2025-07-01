@@ -492,7 +492,7 @@ def select_with_either_tags(tags: Sequence[str]):
 def fetch_examples(
     database: dp.ExampleDatabase,
     query: dp.AbstractQuery[Any],
-    selectors: Sequence[ExampleSelector] = (),
+    selectors: Sequence[ExampleSelector],
 ) -> Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]]:
     raw = list(database.examples(query.name(), query.serialize_args()))
     for sel in selectors:
@@ -617,12 +617,9 @@ def _compute_value_distribution(
 @dataclass
 class ProbInfo:
     """
-    Note: The distribution may not sum up to 1 and even be empty. The
-    user can normalize it if needed.
+    Distribution probability, guaranteed to be nonempty and to sum to 1.
     """
 
-    # values: Sequence[]
-    # probs: np.ndarray[]
     distr: Sequence[tuple[dp.Tracked[Any], float]]
 
 
@@ -631,6 +628,7 @@ def classify[T](
     query: dp.AttachedQuery[T],
     env: dp.PolicyEnv,
     model: md.LLM,
+    params: dict[str, object] | None = None,
     select_examples: Sequence[ExampleSelector] = (),
     mode: dp.AnswerModeName = None,
     enable_logging: bool = True,
@@ -648,7 +646,9 @@ def classify[T](
     env.tracer.trace_query(query.ref)
     examples = fetch_examples(env.examples, query.query, select_examples)
     mngr = env.templates
-    prompt = create_prompt(query.query, examples, {}, mode, mngr)
+    if params is None:
+        params = {}
+    prompt = create_prompt(query.query, examples, params, mode, mngr)
     aset = query.query.finite_answer_set()
     assert aset is not None
     vals: list[str] = []
@@ -739,6 +739,7 @@ def few_shot[T](
     query: dp.AttachedQuery[T],
     env: dp.PolicyEnv,
     model: md.LLM,
+    params: dict[str, object] | None = None,
     select_examples: Sequence[ExampleSelector] = (),
     mode: dp.AnswerModeName = None,
     enable_logging: bool = True,
@@ -762,9 +763,11 @@ def few_shot[T](
     assert not iterative_mode or num_concurrent == 1
     assert max_requests is None or max_requests > 0
     env.tracer.trace_query(query.ref)
-    examples = fetch_examples(env.examples, query.query)
+    examples = fetch_examples(env.examples, query.query, select_examples)
     mngr = env.templates
-    prompt = create_prompt(query.query, examples, {}, mode, mngr)
+    if params is None:
+        params = {}
+    prompt = create_prompt(query.query, examples, params, mode, mngr)
     config = query.query.query_config()
     options: md.RequestOptions = {}
     if temperature is not None:
@@ -814,10 +817,10 @@ def few_shot[T](
             if isinstance(element, dp.ParseError):
                 try:
                     repair = query.query.generate_prompt(
-                        REPAIR_PROMPT,
-                        query.query.name(),
-                        {"error": element},
-                        mngr,
+                        kind=REPAIR_PROMPT,
+                        mode=mode,
+                        params={"params": params, "error": element},
+                        env=mngr,
                     )
                 except dp.TemplateFileMissing:
                     repair = (
@@ -828,7 +831,10 @@ def few_shot[T](
             else:
                 try:
                     gen_new = query.query.generate_prompt(
-                        REQUEST_OTHER_PROMPT, query.query.name(), {}, mngr
+                        kind=REQUEST_OTHER_PROMPT,
+                        mode=mode,
+                        params={"params": params},
+                        env=mngr,
                     )
                 except dp.TemplateFileMissing:
                     gen_new = "Good! Can you generate a different answer now?"
