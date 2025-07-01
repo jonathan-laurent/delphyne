@@ -293,6 +293,9 @@ class StrategyComp(Generic[N, P, T]):
     def run_generator(self) -> Strategy[N, P, T]:
         return self.comp(*self.args, **self.kwargs)
 
+    def inline(self) -> Strategy[N, P, T]:
+        return self.run_generator()
+
     def strategy_name(self) -> str | None:
         if self.name is not None:
             return self.name
