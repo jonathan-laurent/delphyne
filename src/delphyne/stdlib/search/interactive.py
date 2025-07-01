@@ -1,4 +1,5 @@
 from collections.abc import Callable, Mapping
+from dataclasses import dataclass, replace
 from typing import Any
 
 import delphyne.core as dp
@@ -8,12 +9,21 @@ from delphyne.stdlib.nodes import Branch, branch
 from delphyne.stdlib.strategies import strategy
 
 
+@dataclass(frozen=True)
+class InteractStats:
+    num_rejected: int
+    num_tool_calls: int
+
+
 @strategy
 def interact[P, A, B, T: md.AbstractTool[Any]](
     step: Callable[
-        [dp.AnswerPrefix], dp.OpaqueSpaceBuilder[P, dq.Response[A, T]]
+        [dp.AnswerPrefix, InteractStats],
+        dp.OpaqueSpaceBuilder[P, dq.Response[A, T]],
     ],
-    process: Callable[[A], dp.OpaqueSpaceBuilder[P, B | dp.Error]],
+    process: Callable[
+        [A, InteractStats], dp.OpaqueSpaceBuilder[P, B | dp.Error]
+    ],
     tools: Mapping[type[T], Callable[[Any], dp.OpaqueSpaceBuilder[P, Any]]]
     | None = None,
     inner_policy_type: type[P] | None = None,
@@ -23,17 +33,19 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
     """
 
     prefix: dp.AnswerPrefix = []
+    stats = InteractStats(num_rejected=0, num_tool_calls=0)
     while True:
-        resp = yield from branch(step(prefix))
+        resp = yield from branch(step(prefix, stats))
         prefix += [dp.OracleMessage("oracle", resp.answer)]
         match resp.parsed:
             case dq.FinalAnswer(a):
-                res = yield from branch(process(a))
+                res = yield from branch(process(a, stats))
                 if isinstance(res, dp.Error):
                     assert res.label
                     msg = dp.FeedbackMessage(
                         "feedback", res.label, res.description, res.meta
                     )
+                    stats = replace(stats, num_rejected=stats.num_rejected + 1)
                     prefix += [msg]
                 else:
                     return res
@@ -45,5 +57,8 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
                         "tool",
                         resp.answer.tool_calls[i],
                         t.render_result(tres),
+                    )
+                    stats = replace(
+                        stats, num_tool_calls=stats.num_tool_calls + 1
                     )
                     prefix += [msg]

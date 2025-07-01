@@ -458,8 +458,10 @@ def propose_article(
     IP = dp.PromptingPolicy
     article = yield from dp.branch(
         dp.interact(
-            step=lambda pre: ProposeArticle(user_name, pre)(IP, lambda p: p),
-            process=lambda x: dp.const_space(x),
+            step=lambda pre, _: ProposeArticle(user_name, pre)(
+                IP, lambda p: p
+            ),
+            process=lambda x, _: dp.const_space(x),
             tools={GetUserFavoriteTopic: (lambda _: dp.const_space("Soccer"))},
         )(IP, lambda p: (dp.dfs(max_branching=1), p))
     )

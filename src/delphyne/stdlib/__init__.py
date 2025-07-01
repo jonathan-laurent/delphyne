@@ -121,7 +121,7 @@ from delphyne.stdlib.search.classification_based import sample_and_proceed
 from delphyne.stdlib.search.dfs import (
     dfs,
 )
-from delphyne.stdlib.search.interactive import interact
+from delphyne.stdlib.search.interactive import InteractStats, interact
 from delphyne.stdlib.search.iteration import (
     iterate,
 )
