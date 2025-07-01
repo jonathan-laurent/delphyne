@@ -8,6 +8,7 @@ def test_nodes():
     assert dp.Branch.fields() == {
         "cands": nf.SpaceF(),
         "extra_tags": nf.DataF(),
+        "meta": nf.DataF(),
     }
     assert Conjecture.fields() == {
         "cands": nf.SpaceF(),

@@ -35,6 +35,7 @@ policy.
 class Branch(dp.Node):
     cands: dp.OpaqueSpace[Any, Any]
     extra_tags: Sequence[dp.Tag]
+    meta: FromPolicy[object] | None
 
     def navigate(self) -> dp.Navigation:
         return (yield self.cands)
@@ -46,9 +47,12 @@ class Branch(dp.Node):
 def branch[P, T](
     cands: dp.OpaqueSpaceBuilder[P, T],
     extra_tags: Sequence[dp.Tag] = (),
+    meta: Callable[[P], object] | None = None,
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Branch, P, T]:
-    ret = yield spawn_node(Branch, cands=cands, extra_tags=extra_tags)
+    ret = yield spawn_node(
+        Branch, cands=cands, extra_tags=extra_tags, meta=meta
+    )
     return cast(T, ret)
 
 
@@ -208,7 +212,7 @@ def value[E, P](
 @dataclass(frozen=True)
 class Join(dp.Node):
     subs: Sequence[dp.EmbeddedTree[Any, Any, Any]]
-    meta: object | None
+    meta: FromPolicy[object] | None
 
     def navigate(self) -> dp.Navigation:
         ret: list[Any] = []
@@ -218,6 +222,7 @@ class Join(dp.Node):
 
 
 def join[N: dp.Node, P, T](
-    subs: Sequence[dp.StrategyComp[N, P, T]], meta: object | None = None
+    subs: Sequence[dp.StrategyComp[N, P, T]],
+    meta: Callable[[P], object] | None = None,
 ) -> dp.Strategy[N, P, T]:
     yield spawn_node(Join, subs=subs, meta=meta)
