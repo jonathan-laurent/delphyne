@@ -6,7 +6,6 @@ import delphyne.core as dp
 import delphyne.stdlib.queries as dq
 from delphyne.stdlib import models as md
 from delphyne.stdlib.nodes import Branch, branch
-from delphyne.stdlib.strategies import strategy
 
 
 @dataclass(frozen=True)
@@ -15,7 +14,6 @@ class InteractStats:
     num_tool_calls: int
 
 
-@strategy
 def interact[P, A, B, T: md.AbstractTool[Any]](
     step: Callable[
         [dp.AnswerPrefix, InteractStats],
