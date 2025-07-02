@@ -11,7 +11,7 @@ from delphyne.stdlib.nodes import Branch, branch
 @dataclass(frozen=True)
 class InteractStats:
     num_rejected: int
-    num_tool_calls: int
+    num_tool_call_rounds: int
 
 
 def interact[P, A, B, T: md.AbstractTool[Any]](
@@ -28,7 +28,7 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
     """
 
     prefix: dp.AnswerPrefix = []
-    stats = InteractStats(num_rejected=0, num_tool_calls=0)
+    stats = InteractStats(num_rejected=0, num_tool_call_rounds=0)
     while True:
         resp = yield from branch(step(prefix, stats))
         prefix += [dp.OracleMessage("oracle", resp.answer)]
@@ -53,7 +53,7 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
                         resp.answer.tool_calls[i],
                         t.render_result(tres),
                     )
-                    stats = replace(
-                        stats, num_tool_calls=stats.num_tool_calls + 1
-                    )
                     prefix += [msg]
+                stats = replace(
+                    stats, num_tool_call_rounds=stats.num_tool_call_rounds + 1
+                )
