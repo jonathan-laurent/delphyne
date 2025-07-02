@@ -282,3 +282,13 @@ def nofail[P, T](
     return nofail_strategy(space, default=default).using(
         lambda p: (search_policy, p)
     )
+
+
+def _failing_pp[T](
+    query: dp.AttachedQuery[T], env: dp.PolicyEnv
+) -> dp.Stream[T]:
+    return
+    yield
+
+
+failing_pp = PromptingPolicy(_failing_pp)

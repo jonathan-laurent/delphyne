@@ -194,3 +194,20 @@ def ensure_compatible[**A, N: dp.Node, P](
     TODO: this decorator does not seem to work with pyright.
     """
     return lambda f: f
+
+
+#####
+##### Utilities
+#####
+
+
+def query_dependent(
+    f: Callable[[dp.AbstractQuery[object]], PromptingPolicy],
+) -> PromptingPolicy:
+    def policy[T](
+        query: dp.AttachedQuery[T], env: dp.PolicyEnv
+    ) -> dp.Stream[T]:
+        query_policy = f(query.query)
+        yield from query_policy(query, env)
+
+    return PromptingPolicy(policy)
