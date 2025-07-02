@@ -28,6 +28,8 @@ from delphyne.stdlib.misc import (
     just_compute,
     just_dfs,
     map_space,
+    nofail,
+    or_else,
     sequence,
 )
 from delphyne.stdlib.models import (
@@ -140,11 +142,13 @@ from delphyne.stdlib.strategies import (
     strategy,
 )
 from delphyne.stdlib.streams import (
+    StreamBuilder,
     StreamTransformer,
     bind_stream,
     collect,
     collect_with_metadata,
     loop,
+    stream_or_else,
     stream_take,
     stream_transformer,
     stream_with_budget,

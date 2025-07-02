@@ -5,7 +5,7 @@ A generic search algorithm that leverages stream combinators attached as
 metadata on Branch and Join nodes.
 """
 
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any, Protocol
 
@@ -14,7 +14,7 @@ from delphyne.core.streams import Stream, Yield
 from delphyne.stdlib.nodes import Branch, Failure, Join
 from delphyne.stdlib.policies import log, search_policy
 from delphyne.stdlib.queries import ProbInfo
-from delphyne.stdlib.streams import take_one, take_one_with_meta
+from delphyne.stdlib.streams import StreamBuilder, take_one, take_one_with_meta
 
 #####
 ##### Meta Annotations
@@ -38,9 +38,6 @@ class VisitOne:
     """
 
     pass
-
-
-type StreamBuilder[T] = Callable[[], Stream[T]]
 
 
 class StreamBuilderCombinator(Protocol):

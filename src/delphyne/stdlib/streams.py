@@ -14,6 +14,15 @@ from delphyne.stdlib.policies import PromptingPolicy, SearchPolicy
 #####
 
 
+type StreamBuilder[T] = Callable[[], dp.Stream[T]]
+"""
+Once an object of type `Stream[T]` is obtained, it can only be consummed
+once through `iter` (further calls of `iter` will raise
+`StopIteration`). Thus, many combinators assembling streams take stream
+builder instead of streams directly.
+"""
+
+
 class _StreamTransformerFn(Protocol):
     """
     A stream transformer takes as an argument a stream builder instead
@@ -25,7 +34,7 @@ class _StreamTransformerFn(Protocol):
 
     def __call__[T](
         self,
-        stream_builder: Callable[[], dp.Stream[T]],
+        stream_builder: StreamBuilder[T],
         env: dp.PolicyEnv,
     ) -> dp.Stream[T]: ...
 
@@ -33,7 +42,7 @@ class _StreamTransformerFn(Protocol):
 class _ParametricStreamTransformerFn[**A](Protocol):
     def __call__[T](
         self,
-        stream_builder: Callable[[], dp.Stream[T]],
+        stream_builder: StreamBuilder[T],
         env: dp.PolicyEnv,
         *args: A.args,
         **kwargs: A.kwargs,
@@ -69,7 +78,7 @@ class StreamTransformer:
 
     def __call__[T](
         self,
-        stream_builder: Callable[[], dp.Stream[T]],
+        stream_builder: StreamBuilder[T],
         env: dp.PolicyEnv,
     ) -> dp.Stream[T]:
         return self.trans(stream_builder, env)
@@ -79,7 +88,7 @@ class StreamTransformer:
         fn: _PureStreamTransformerFn,
     ) -> "StreamTransformer":
         def pure_transformer[T](
-            stream_builder: Callable[[], dp.Stream[T]],
+            stream_builder: StreamBuilder[T],
             env: dp.PolicyEnv,
         ) -> dp.Stream[T]:
             return fn(stream_builder())
@@ -92,7 +101,7 @@ class StreamTransformer:
     ) -> Callable[A, "StreamTransformer"]:
         def parametric(*args: A.args, **kwargs: A.kwargs) -> StreamTransformer:
             def pure_transformer[T](
-                stream_builder: Callable[[], dp.Stream[T]],
+                stream_builder: StreamBuilder[T],
                 env: dp.PolicyEnv,
             ) -> dp.Stream[T]:
                 return fn(stream_builder(), *args, **kwargs)
@@ -143,7 +152,7 @@ def stream_transformer[**A](
 ) -> Callable[A, StreamTransformer]:
     def parametric(*args: A.args, **kwargs: A.kwargs) -> StreamTransformer:
         def transformer[T](
-            stream_builder: Callable[[], dp.Stream[T]],
+            stream_builder: StreamBuilder[T],
             env: dp.PolicyEnv,
         ) -> dp.Stream[T]:
             return f(stream_builder, env, *args, **kwargs)
@@ -265,10 +274,23 @@ def stream_squash[T](stream: dp.Stream[Sequence[T]]) -> dp.Stream[Sequence[T]]:
 
 
 def stream_sequence[T](
-    stream_builders: Sequence[Callable[[], dp.Stream[T]]],
+    stream_builders: Sequence[StreamBuilder[T]],
 ) -> dp.Stream[T]:
     for s in stream_builders:
         yield from s()
+
+
+def stream_or_else[T](
+    main: StreamBuilder[T], fallback: StreamBuilder[T]
+) -> dp.Stream[T]:
+    some_successes = False
+    for msg in main():
+        if isinstance(msg, dp.Yield):
+            some_successes = True
+        yield msg
+    if not some_successes:
+        for msg in fallback():
+            yield msg
 
 
 #####
