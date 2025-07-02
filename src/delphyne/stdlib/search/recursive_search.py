@@ -5,6 +5,7 @@ A generic search algorithm that leverages stream combinators attached as
 metadata on Branch and Join nodes.
 """
 
+import random
 from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any, Protocol
@@ -110,3 +111,23 @@ def recursive_search[P, T](
                     return
                 elts.append(elt)
             yield from recursive_search()(tree.child(elts), env, policy)
+
+
+#####
+##### Useful Combinators
+#####
+
+
+def combine_via_repeated_sampling(
+    max_attempts: int | None = None,
+) -> StreamBuilderCombinator:
+    def combine[T](
+        streams: Sequence[StreamBuilder[T]], distr: Sequence[float]
+    ) -> dp.Stream[T]:
+        i = 0
+        while max_attempts is None or i < max_attempts:
+            i += 1
+            builder = random.choices(streams, weights=distr)[0]
+            yield from builder()
+
+    return combine
