@@ -32,7 +32,8 @@ class MakeSumIP:
 @dp.strategy
 def make_sum(
     allowed: list[int], goal: int
-) -> dp.Strategy[dp.Branch | dp.Failure, MakeSumIP, list[int]]:
+) -> "dp.Strategy[dp.Branch | dp.Failure, MakeSumIP, list[int]]":
+    # We are testing that string type annotations work too.
     xs = yield from dp.branch(
         cands=MakeSum(allowed, goal).using(lambda p: p.make_sum),
         inner_policy_type=MakeSumIP,
