@@ -9,6 +9,7 @@ import textwrap
 import typing
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
+from functools import partial
 from typing import Any, Literal, Protocol, cast
 
 import numpy as np
@@ -623,6 +624,16 @@ class ProbInfo:
     distr: Sequence[tuple[dp.Tracked[Any], float]]
 
 
+def _parse_or_log_and_raise[T](
+    answer: dp.Answer, query: dp.AttachedQuery[T], env: dp.PolicyEnv
+) -> dp.Tracked[T]:
+    parsed = query.parse_answer(answer)
+    if isinstance(parsed, dp.ParseError):
+        log(env, "parse_error", {"error": parsed}, loc=query)
+        raise parsed
+    return parsed
+
+
 @prompting_policy
 def classify[T](
     query: dp.AttachedQuery[T],
@@ -678,14 +689,7 @@ def classify[T](
     output = resp.outputs[0]
     answer = dp.Answer(mode, output.content)
     env.tracer.trace_answer(query.ref, answer)
-
-    def parse(answer: dp.Answer) -> dp.Tracked[T]:
-        parsed = query.parse_answer(answer)
-        if isinstance(parsed, dp.ParseError):
-            log(env, "parse_error", {"error": element}, loc=query)
-            raise parsed
-        return parsed
-
+    parse = partial(_parse_or_log_and_raise, query=query, env=env)
     try:
         element = parse(answer)
         lpinfo = output.logprobs
@@ -841,3 +845,38 @@ def few_shot[T](
                 new_message = md.UserMessage(gen_new)
 
             prompt = (*prompt, md.AssistantMessage(answers[0]), new_message)
+
+
+#####
+##### Constant Answers
+#####
+
+
+@prompting_policy
+def answer_with[T](
+    query: dp.AttachedQuery[T],
+    env: dp.PolicyEnv,
+    answers: Sequence[str],
+    probs: Sequence[float] | None = None,
+    mode: dp.AnswerModeName = None,
+) -> dp.Stream[T]:
+    assert answers
+    parse = partial(_parse_or_log_and_raise, query=query, env=env)
+    try:
+        tracked = [parse(dp.Answer(mode, a)) for a in answers]
+        if probs is not None:
+            assert len(tracked) == len(probs)
+            assert all(0 <= p <= 1 for p in probs)
+            max_prob = max(probs)
+            max_idx = probs.index(max_prob)
+            yield dp.Yield(
+                tracked[max_idx],
+                meta=ProbInfo(
+                    [(tracked[i], probs[i]) for i in range(len(tracked))]
+                ),
+            )
+        else:
+            for elt in tracked:
+                yield dp.Yield(elt)
+    except dp.ParseError as e:
+        assert False, f"Failed to parse hardcoded answer: {e}"
