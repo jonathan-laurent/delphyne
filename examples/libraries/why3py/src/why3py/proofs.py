@@ -55,7 +55,7 @@ def clean_identifiers(s: str) -> str:
             conversions[base + nums[0]] = base
         else:
             for i, n in enumerate(nums):
-                conversions[base + n] = f"{base}{i+1}"
+                conversions[base + n] = f"{base}{i + 1}"
     # We apply our conversion table on each identifier
     return re.sub(
         r"(?:\w|')+", lambda m: conversions.get(m.group(), m.group()), s

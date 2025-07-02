@@ -92,7 +92,9 @@ PropKind: TypeAlias = Union[
     tuple[Literal["Pgoal"], None],
 ]
 
-IndSign: TypeAlias = Union[tuple[Literal["Ind"], None], tuple[Literal["Coind"], None]]
+IndSign: TypeAlias = Union[
+    tuple[Literal["Ind"], None], tuple[Literal["Coind"], None]
+]
 
 RsKind: TypeAlias = Union[
     tuple[Literal["RKnone"], None],
@@ -192,7 +194,9 @@ TermDesc: TypeAlias = Union[
     tuple[Literal["Tbinnop"], tuple[Term, Dbinop, Term]],
     tuple[Literal["Tnot"], tuple[Term]],
     tuple[Literal["Tif"], tuple[Term, Term, Term]],
-    tuple[Literal["Tquant"], tuple[Dquant, list[Binder], list[list[Term]], Term]],
+    tuple[
+        Literal["Tquant"], tuple[Dquant, list[Binder], list[list[Term]], Term]
+    ],
     tuple[Literal["Teps"], tuple[Ident, Pty, Term]],
     tuple[Literal["Tattr"], tuple[Attr, Term]],
     tuple[Literal["Tlet"], tuple[Ident, Term, Term]],
@@ -213,7 +217,9 @@ Pre: TypeAlias = Term
 
 Post: TypeAlias = tuple[Position, list[tuple[Pattern, Term]]]
 
-Xpost: TypeAlias = tuple[Position, list[tuple[Qualid, tuple[Pattern, Term] | None]]]
+Xpost: TypeAlias = tuple[
+    Position, list[tuple[Qualid, tuple[Pattern, Term] | None]]
+]
 
 
 class Spec(TypedDict, total=True):
@@ -247,8 +253,14 @@ ExprDesc: TypeAlias = Union[
     tuple[Literal["Einnfix"], tuple[Expr, Ident, Expr]],
     tuple[Literal["Elet"], tuple[Ident, Ghost, RsKind, Expr, Expr]],
     tuple[Literal["Erec"], tuple[list["Fundef"], Expr]],
-    tuple[Literal["Efun"], tuple[list[Binder], Pty | None, Pattern, Mask, Spec, Expr]],
-    tuple[Literal["Eany"], tuple[list[Param], RsKind, Pty | None, Pattern, Mask, Spec]],
+    tuple[
+        Literal["Efun"],
+        tuple[list[Binder], Pty | None, Pattern, Mask, Spec, Expr],
+    ],
+    tuple[
+        Literal["Eany"],
+        tuple[list[Param], RsKind, Pty | None, Pattern, Mask, Spec],
+    ],
     tuple[Literal["Etuple"], tuple[list[Expr]]],
     tuple[Literal["Erecord"], tuple[list[tuple[Qualid, Expr]]]],
     tuple[Literal["Eupdate"], tuple[Expr, list[tuple[Qualid, Expr]]]],
@@ -259,14 +271,19 @@ ExprDesc: TypeAlias = Union[
     tuple[Literal["Eand"], tuple[Expr, Expr]],
     tuple[Literal["Eor"], tuple[Expr, Expr]],
     tuple[Literal["Enot"], tuple[Expr]],
-    tuple[Literal["Ematch"], tuple[Expr, list["RegBranch"], list["ExnBranch"]]],
+    tuple[
+        Literal["Ematch"], tuple[Expr, list["RegBranch"], list["ExnBranch"]]
+    ],
     tuple[Literal["Eabsurd"], None],
     tuple[Literal["Epure"], tuple[Term]],
     tuple[Literal["Eidpur"], tuple[Qualid]],
     tuple[Literal["Eraise"], tuple[Qualid, Expr | None]],
     tuple[Literal["Eexn"], tuple[Ident, Pty, Mask, Expr]],
     tuple[Literal["Eoptexn"], tuple[Ident, Mask, Expr]],
-    tuple[Literal["Efor"], tuple[Ident, Expr, ForDirection, Expr, Invariant, Expr]],
+    tuple[
+        Literal["Efor"],
+        tuple[Ident, Expr, ForDirection, Expr, Invariant, Expr],
+    ],
     tuple[Literal["Eassert"], tuple[AssertionKind, Term]],
     tuple[Literal["Escope"], tuple[Qualid, Expr]],
     tuple[Literal["Elabel"], tuple[Ident, Expr]],
@@ -294,7 +311,10 @@ class Field(TypedDict, total=True):
 
 TypeDef: TypeAlias = Union[
     tuple[Literal["TDalias"], tuple[Pty]],
-    tuple[Literal["TDalgebraic"], tuple[list[tuple[Position, Ident, list[Param]]]]],
+    tuple[
+        Literal["TDalgebraic"],
+        tuple[list[tuple[Position, Ident, list[Param]]]],
+    ],
     tuple[Literal["TDrecord"], tuple[list[Field]]],
     tuple[Literal["TDrange"], tuple[BigInt, BigInt]],
     tuple[Literal["TDfloat"], tuple[int, int]],
@@ -373,7 +393,8 @@ Decl: TypeAlias = Union[
         tuple[Position, bool, Qualid, Ident | None, list[CloneSubst]],
     ],
     tuple[
-        Literal["Duseimport"], tuple[Position, bool, list[tuple[Qualid, Ident | None]]]
+        Literal["Duseimport"],
+        tuple[Position, bool, list[tuple[Qualid, Ident | None]]],
     ],
     tuple[Literal["Dimport"], tuple[Qualid]],
     tuple[Literal["Dscope"], tuple[Position, bool, Ident, list["Decl"]]],
@@ -384,7 +405,9 @@ MlwFile: TypeAlias = Union[
     tuple[Literal["Decls"], tuple[list[Decl]]],
 ]
 
-Color: TypeAlias = Union[tuple[Literal["Premise"], None], tuple[Literal["Goal"], None]]
+Color: TypeAlias = Union[
+    tuple[Literal["Premise"], None], tuple[Literal["Goal"], None]
+]
 
 
 class Obligation(TypedDict, total=True):

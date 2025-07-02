@@ -37,8 +37,8 @@ from delphyne.core.errors import Error
 from delphyne.core.policies import (
     AbstractPromptingPolicy,
     AbstractSearchPolicy,
+    Opaque,
     OpaqueSpace,
-    OpaqueSpaceBuilder,
     Policy,
 )
 from delphyne.core.queries import (

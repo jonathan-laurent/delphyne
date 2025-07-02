@@ -78,7 +78,7 @@ def get_flag[T: str](
 
 @strategy
 def variants[A: str, P, T](
-    flag: type[FlagQuery[A]], alts: Callable[[A], dp.OpaqueSpaceBuilder[P, T]]
+    flag: type[FlagQuery[A]], alts: Callable[[A], dp.Opaque[P, T]]
 ) -> dp.Strategy[Flag[Any] | Branch, P, T]:
     val = yield from get_flag(flag)
     return (yield from branch(alts(val)))

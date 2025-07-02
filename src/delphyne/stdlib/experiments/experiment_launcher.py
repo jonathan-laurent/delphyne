@@ -103,7 +103,7 @@ class Experiment[Config]:
 
     def config_dir(self, config_name: str) -> Path:
         return self.dir / config_name
-    
+
     def clean_index(self) -> None:
         """
         Remove from the state file all configurations that are not
@@ -114,8 +114,10 @@ class Experiment[Config]:
         assert self.configs is not None
         in_config = set(_config_unique_repr(c) for c in self.configs)
         to_delete = [
-            c for c, i in state.configs.items()
-            if _config_unique_repr(i.params) not in in_config]
+            c
+            for c, i in state.configs.items()
+            if _config_unique_repr(i.params) not in in_config
+        ]
         print(f"Removing {len(to_delete)} configuration(s) from the state.")
         for c in to_delete:
             del state.configs[c]
@@ -183,7 +185,9 @@ class Experiment[Config]:
             try:
                 for future in as_completed(futures):
                     name, success = future.result()
-                    state.configs[name].status = "done" if success else "failed"
+                    state.configs[name].status = (
+                        "done" if success else "failed"
+                    )
                     if log_progress:
                         _print_progress(state)
                 self.save_state(state)
@@ -191,7 +195,9 @@ class Experiment[Config]:
                     info.status == "done" for info in state.configs.values()
                 )
                 if all_successes:
-                    print("\nExperiment successful.\nProducing summary file...")
+                    print(
+                        "\nExperiment successful.\nProducing summary file..."
+                    )
                     self.save_summary()
                 else:
                     print("\nWarning: some configurations failed.")

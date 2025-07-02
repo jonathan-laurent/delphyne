@@ -16,7 +16,7 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
         self,
         get_policy: Callable[[P2], dp.Policy[N, P]],
         inner_policy_type: type[P2] | None = None,
-    ) -> dp.OpaqueSpaceBuilder[P2, T]:
+    ) -> dp.Opaque[P2, T]:
         return dp.OpaqueSpace[P2, T].from_strategy(self, get_policy)
 
     # Pyright seems to be treating __getitem__ differently and does
@@ -26,7 +26,7 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
         self,
         inner_policy_type: type[P2],
         get_policy: Callable[[P2], dp.Policy[N, P]],
-    ) -> dp.OpaqueSpaceBuilder[P2, T]:
+    ) -> dp.Opaque[P2, T]:
         return self.using(get_policy)
 
     def run_toplevel(

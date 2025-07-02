@@ -106,18 +106,16 @@ type AbductionStatus[Feedback, Proof] = (
 def abduction[Fact, Feedback, Proof, P](
     prove: Callable[
         [Sequence[tuple[Fact, Proof]], Fact | None],
-        dp.OpaqueSpaceBuilder[P, AbductionStatus[Feedback, Proof]],
+        dp.Opaque[P, AbductionStatus[Feedback, Proof]],
     ],
     suggest: Callable[
         [Feedback],
-        dp.OpaqueSpaceBuilder[P, Sequence[Fact]],
+        dp.Opaque[P, Sequence[Fact]],
     ],
     search_equivalent: Callable[
-        [Sequence[Fact], Fact], dp.OpaqueSpaceBuilder[P, Fact | None]
+        [Sequence[Fact], Fact], dp.Opaque[P, Fact | None]
     ],
-    redundant: Callable[
-        [Sequence[Fact], Fact], dp.OpaqueSpaceBuilder[P, bool]
-    ],
+    redundant: Callable[[Sequence[Fact], Fact], dp.Opaque[P, bool]],
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Abduction, P, Proof]:
     """

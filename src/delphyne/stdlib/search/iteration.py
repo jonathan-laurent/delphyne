@@ -22,7 +22,7 @@ class Iteration(dp.Node):
 
 @strategy(name="iterate")
 def _iterate[P, S, T](
-    next: Callable[[S | None], dp.OpaqueSpaceBuilder[P, tuple[T | None, S]]],
+    next: Callable[[S | None], dp.Opaque[P, tuple[T | None, S]]],
 ) -> dp.Strategy[Iteration | Failure, P, T]:
     ret = yield spawn_node(Iteration, next=next)
     ret = cast(tuple[T | None, S], ret)
@@ -63,9 +63,9 @@ def search_iteration[P, T](
 
 
 def iterate[P, S, T](
-    next: Callable[[S | None], dp.OpaqueSpaceBuilder[P, tuple[T | None, S]]],
+    next: Callable[[S | None], dp.Opaque[P, tuple[T | None, S]]],
     transform_stream: Callable[[P], StreamTransformer | None] | None = None,
-) -> dp.OpaqueSpaceBuilder[P, T]:
+) -> dp.Opaque[P, T]:
     def iterate_policy(inner_policy: P):
         policy = search_iteration()
         if transform_stream is not None:

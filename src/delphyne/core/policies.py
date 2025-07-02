@@ -87,4 +87,4 @@ class OpaqueSpace(Generic[P, T], Space[T]):
         return lambda spawner, _: build(spawner)
 
 
-type OpaqueSpaceBuilder[P, T] = tr.Builder[OpaqueSpace[P, T]]
+type Opaque[P, T] = tr.Builder[OpaqueSpace[P, T]]

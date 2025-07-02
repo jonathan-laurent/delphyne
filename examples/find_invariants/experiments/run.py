@@ -4,7 +4,9 @@ Run the experiments for the "Oracular Programming" paper.
 
 import pathlib
 
-BENCHMARKS_FOLDER = pathlib.Path(__file__).parent.parent / "benchmarks" / "code2inv"
+BENCHMARKS_FOLDER = (
+    pathlib.Path(__file__).parent.parent / "benchmarks" / "code2inv"
+)
 BENCHMARKS_MLW = BENCHMARKS_FOLDER / "mlw"
 
 DEDUPLICATED = BENCHMARKS_FOLDER / "deduplicated.txt"

@@ -17,13 +17,10 @@ class InteractStats:
 def interact[P, A, B, T: md.AbstractTool[Any]](
     step: Callable[
         [dp.AnswerPrefix, InteractStats],
-        dp.OpaqueSpaceBuilder[P, dq.Response[A, T]],
+        dp.Opaque[P, dq.Response[A, T]],
     ],
-    process: Callable[
-        [A, InteractStats], dp.OpaqueSpaceBuilder[P, B | dp.Error]
-    ],
-    tools: Mapping[type[T], Callable[[Any], dp.OpaqueSpaceBuilder[P, Any]]]
-    | None = None,
+    process: Callable[[A, InteractStats], dp.Opaque[P, B | dp.Error]],
+    tools: Mapping[type[T], Callable[[Any], dp.Opaque[P, Any]]] | None = None,
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Branch, P, B]:
     """

@@ -70,11 +70,9 @@ class Conjecture(dp.Node):
 
 
 def make_conjecture[P, T](
-    cands: dp.OpaqueSpaceBuilder[P, T],
-    disprove: Callable[[T], dp.OpaqueSpaceBuilder[P, None]],
-    aggregate: Callable[
-        [tuple[T, ...]], dp.OpaqueSpaceBuilder[P, Sequence[T]]
-    ],
+    cands: dp.Opaque[P, T],
+    disprove: Callable[[T], dp.Opaque[P, None]],
+    aggregate: Callable[[tuple[T, ...]], dp.Opaque[P, Sequence[T]]],
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Conjecture, P, T]:
     cand = yield dp.spawn_node(

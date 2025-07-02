@@ -45,7 +45,7 @@ class Branch(dp.Node):
 
 
 def branch[P, T](
-    cands: dp.OpaqueSpaceBuilder[P, T],
+    cands: dp.Opaque[P, T],
     extra_tags: Sequence[dp.Tag] = (),
     meta: Callable[[P], object] | None = None,
     inner_policy_type: type[P] | None = None,
@@ -166,7 +166,7 @@ class Factor(dp.Node):
 
 
 def factor[E, P](
-    eval: dp.OpaqueSpaceBuilder[P, E],
+    eval: dp.Opaque[P, E],
     factor: Callable[[P], Callable[[E], float] | None],
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Factor, P, None]:
@@ -197,7 +197,7 @@ class Value(dp.Node):
 
 
 def value[E, P](
-    eval: dp.OpaqueSpaceBuilder[P, E],
+    eval: dp.Opaque[P, E],
     value: Callable[[P], Callable[[E], float] | None],
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Value, P, None]:

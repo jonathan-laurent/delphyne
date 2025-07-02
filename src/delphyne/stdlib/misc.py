@@ -22,21 +22,21 @@ def const_strategy[T](value: T) -> dp.Strategy[Never, object, T]:
     yield
 
 
-def const_space[T](value: T) -> dp.OpaqueSpaceBuilder[object, T]:
+def const_space[T](value: T) -> dp.Opaque[object, T]:
     return const_strategy(value)(object, lambda _: (dfs(), None))
 
 
 @strategy(name="map")
 def map_space_strategy[P, A, B](
-    space: dp.OpaqueSpaceBuilder[P, A], f: Callable[[A], B]
+    space: dp.Opaque[P, A], f: Callable[[A], B]
 ) -> dp.Strategy[Branch, P, B]:
     res = yield from branch(space)
     return f(res)
 
 
 def map_space[P, A, B](
-    space: dp.OpaqueSpaceBuilder[P, A], f: Callable[[A], B]
-) -> dp.OpaqueSpaceBuilder[P, B]:
+    space: dp.Opaque[P, A], f: Callable[[A], B]
+) -> dp.Opaque[P, B]:
     return map_space_strategy(space, f).using(lambda p: (dfs(), p))
 
 
@@ -263,7 +263,7 @@ class NoFailFlag(FlagQuery[NoFailFlagValue]):
 
 @strategy(name="nofail")
 def nofail_strategy[P, T](
-    space: dp.OpaqueSpaceBuilder[P, T], *, default: T
+    space: dp.Opaque[P, T], *, default: T
 ) -> dp.Strategy[Flag[NoFailFlag] | Branch, P, T]:
     flag = yield from get_flag(NoFailFlag)
     match flag:
@@ -273,9 +273,7 @@ def nofail_strategy[P, T](
             return default
 
 
-def nofail[P, T](
-    space: dp.OpaqueSpaceBuilder[P, T], *, default: T
-) -> dp.OpaqueSpaceBuilder[P, T]:
+def nofail[P, T](space: dp.Opaque[P, T], *, default: T) -> dp.Opaque[P, T]:
     try_policy = dfs() @ elim_flag(NoFailFlag, "no_fail_try")
     def_policy = dfs() @ elim_flag(NoFailFlag, "no_fail_default")
     search_policy = or_else(try_policy, def_policy)
