@@ -5,6 +5,9 @@
 import * as vscode from "vscode";
 import { loadConfig } from "./config";
 
+const DEFAULT_RESULT_REFRESH_PERIOD_IN_SECONDS = 5;
+const DEFAULT_STATUS_REFRESH_PERIOD_IN_SECONDS = 1;
+
 export interface ExecutionContext {
   strategy_dirs: string[];
   modules: string[];
@@ -86,6 +89,8 @@ export interface CommandExecutionContext {
   prompt_dirs: string[];
   data_dirs: string[];
   demo_files: string[];
+  result_refresh_period: number | null;
+  status_refresh_period: number | null;
 }
 
 export function getCommandExecutionContext(): CommandExecutionContext {
@@ -95,5 +100,13 @@ export function getCommandExecutionContext(): CommandExecutionContext {
     prompt_dirs: config.prompt_dirs,
     data_dirs: config.data_dirs ?? [],
     demo_files: config.demo_files,
+    result_refresh_period:
+      config.result_refresh_period === undefined
+        ? DEFAULT_RESULT_REFRESH_PERIOD_IN_SECONDS
+        : config.result_refresh_period,
+    status_refresh_period:
+      config.status_refresh_period === undefined
+        ? DEFAULT_STATUS_REFRESH_PERIOD_IN_SECONDS
+        : config.status_refresh_period,
   };
 }

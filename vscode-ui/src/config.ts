@@ -14,6 +14,8 @@ interface Config {
   data_dirs?: string[];
   modules: string[];
   demo_files: string[];
+  result_refresh_period?: number | null;
+  status_refresh_period?: number | null;
 }
 
 export function loadConfig(): Config {
