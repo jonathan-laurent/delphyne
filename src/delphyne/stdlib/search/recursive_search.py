@@ -150,7 +150,8 @@ def recursive_search[P, T](
             else:
                 assert False, f"Unsupported behavior for `Branch`: {meta}"
         case Join(subs):
-            meta = tree.node.meta
+            assert tree.node.meta is not None
+            meta = tree.node.meta(policy)
             if isinstance(meta, OneOfEachSequentially):
                 elts: list[dp.Tracked[Any]] = []
                 for s in subs:
