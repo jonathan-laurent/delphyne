@@ -8,6 +8,7 @@ interface for Delphyne tasks, which allows streaming updates.
 import asyncio
 import inspect
 import os
+import traceback
 import typing
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
@@ -58,8 +59,8 @@ def stream_of_fun[**P, T](f: Callable[P, T]) -> StreamingTask[P, T]:
         try:
             ret = f(*args, **kwargs)
             await context.set_result(ret)
-        except Exception as e:
-            await context.raise_internal_error(repr(e))
+        except Exception:
+            await context.raise_internal_error(traceback.format_exc())
 
     return stream
 

@@ -418,11 +418,13 @@ def first_word[T](type: TypeAnnot[T], res: str) -> T:
     type T=Literal[s1,...,sn]
     """
     vals = _match_string_literal_type(type)
-    assert vals is not None
+    if vals is None:
+        msg = f"Not recognized as a string literal type: {type}."
+        raise dp.ParseError(description=msg)
     try:
-        assert res
+        assert res, "Cannot parse an empty string."
         first = res.split()[0]
-        assert first in vals
+        assert first in vals, "Unallowed value: " + first
         return cast(T, first)
     except Exception as e:
         raise dp.ParseError(description=str(e))
