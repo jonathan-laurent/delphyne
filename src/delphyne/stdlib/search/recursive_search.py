@@ -15,7 +15,12 @@ from delphyne.core.streams import Stream, Yield
 from delphyne.stdlib.nodes import Branch, Failure, Join
 from delphyne.stdlib.policies import log, search_policy
 from delphyne.stdlib.queries import ProbInfo
-from delphyne.stdlib.streams import StreamBuilder, take_one, take_one_with_meta
+from delphyne.stdlib.streams import (
+    StreamBuilder,
+    StreamTransformer,
+    take_one,
+    take_one_with_meta,
+)
 
 #####
 ##### Meta Annotations
@@ -41,10 +46,38 @@ class VisitOne:
     pass
 
 
-class StreamBuilderCombinator(Protocol):
+class _StreamBuilderCombinatorFn(Protocol):
     def __call__[T](
-        self, streams: Sequence[StreamBuilder[T]], distr: Sequence[float]
+        self,
+        streams: Sequence[StreamBuilder[T]],
+        probs: Sequence[float],
+        env: dp.PolicyEnv,
     ) -> dp.Stream[T]: ...
+
+
+@dataclass
+class StreamBuilderCombinator:
+    combine: _StreamBuilderCombinatorFn
+
+    def __call__[T](
+        self,
+        streams: Sequence[StreamBuilder[T]],
+        probs: Sequence[float],
+        env: dp.PolicyEnv,
+    ) -> dp.Stream[T]:
+        return self.combine(streams, probs, env)
+
+    def __rmatmul__(
+        self, transformer: StreamTransformer
+    ) -> "StreamBuilderCombinator":
+        def combine[T](
+            streams: Sequence[StreamBuilder[T]],
+            probs: Sequence[float],
+            env: dp.PolicyEnv,
+        ) -> dp.Stream[T]:
+            return transformer(lambda: self.combine(streams, probs, env), env)
+
+        return StreamBuilderCombinator(combine)
 
 
 @dataclass
@@ -97,7 +130,7 @@ def recursive_search[P, T](
                     lambda: recursive_search()(tree.child(x[0]), env, policy)
                     for x in distr
                 ]
-                yield from meta.combine(streams, probs)
+                yield from meta.combine(streams, probs, env)
             else:
                 assert False, f"Unknown metadata: {meta}"
         case Join(subs):
@@ -122,12 +155,14 @@ def combine_via_repeated_sampling(
     max_attempts: int | None = None,
 ) -> StreamBuilderCombinator:
     def combine[T](
-        streams: Sequence[StreamBuilder[T]], distr: Sequence[float]
+        streams: Sequence[StreamBuilder[T]],
+        probs: Sequence[float],
+        env: dp.PolicyEnv,
     ) -> dp.Stream[T]:
         i = 0
         while max_attempts is None or i < max_attempts:
             i += 1
-            builder = random.choices(streams, weights=distr)[0]
+            builder = random.choices(streams, weights=probs)[0]
             yield from builder()
 
-    return combine
+    return StreamBuilderCombinator(combine)
