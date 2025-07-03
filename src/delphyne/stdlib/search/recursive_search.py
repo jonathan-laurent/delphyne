@@ -23,6 +23,45 @@ from delphyne.stdlib.streams import (
 )
 
 #####
+##### Streams Combinators
+#####
+
+
+class _StreamCombinatorFn(Protocol):
+    def __call__[T](
+        self,
+        streams: Sequence[StreamBuilder[T]],
+        probs: Sequence[float],
+        env: dp.PolicyEnv,
+    ) -> dp.Stream[T]: ...
+
+
+@dataclass
+class StreamCombinator:
+    combine: _StreamCombinatorFn
+
+    def __call__[T](
+        self,
+        streams: Sequence[StreamBuilder[T]],
+        probs: Sequence[float],
+        env: dp.PolicyEnv,
+    ) -> dp.Stream[T]:
+        return self.combine(streams, probs, env)
+
+    def __rmatmul__(
+        self, transformer: StreamTransformer
+    ) -> "StreamCombinator":
+        def combine[T](
+            streams: Sequence[StreamBuilder[T]],
+            probs: Sequence[float],
+            env: dp.PolicyEnv,
+        ) -> dp.Stream[T]:
+            return transformer(lambda: self.combine(streams, probs, env), env)
+
+        return StreamCombinator(combine)
+
+
+#####
 ##### Meta Annotations
 #####
 
@@ -46,48 +85,25 @@ class VisitOne:
     pass
 
 
-class _StreamBuilderCombinatorFn(Protocol):
-    def __call__[T](
-        self,
-        streams: Sequence[StreamBuilder[T]],
-        probs: Sequence[float],
-        env: dp.PolicyEnv,
-    ) -> dp.Stream[T]: ...
-
-
 @dataclass
-class StreamBuilderCombinator:
-    combine: _StreamBuilderCombinatorFn
-
-    def __call__[T](
-        self,
-        streams: Sequence[StreamBuilder[T]],
-        probs: Sequence[float],
-        env: dp.PolicyEnv,
-    ) -> dp.Stream[T]:
-        return self.combine(streams, probs, env)
-
-    def __rmatmul__(
-        self, transformer: StreamTransformer
-    ) -> "StreamBuilderCombinator":
-        def combine[T](
-            streams: Sequence[StreamBuilder[T]],
-            probs: Sequence[float],
-            env: dp.PolicyEnv,
-        ) -> dp.Stream[T]:
-            return transformer(lambda: self.combine(streams, probs, env), env)
-
-        return StreamBuilderCombinator(combine)
-
-
-@dataclass
-class FiniteStreamDistr:
+class CombineStreamDistr:
     """
     Extract one candidate annotated with `ProbInfo`, and combine
     children streams according to the provided distribution.
     """
 
-    combine: StreamBuilderCombinator
+    combine: StreamCombinator
+
+
+@dataclass
+class OneOfEachSequentially:
+    """
+    Most basic behaviour for a Join node, where one element of each
+    subspace is extracted sequentially and the resulting child visited
+    once.
+    """
+
+    pass
 
 
 #####
@@ -117,7 +133,7 @@ def recursive_search[P, T](
                 if elt is None:
                     return
                 yield from recursive_search()(tree.child(elt), env, policy)
-            elif isinstance(meta, FiniteStreamDistr):
+            elif isinstance(meta, CombineStreamDistr):
                 res = yield from take_one_with_meta(cands.stream(env, policy))
                 if res is None:
                     log(env, "classifier_failure", loc=tree)
@@ -132,18 +148,20 @@ def recursive_search[P, T](
                 ]
                 yield from meta.combine(streams, probs, env)
             else:
-                assert False, f"Unknown metadata: {meta}"
+                assert False, f"Unsupported behavior for `Branch`: {meta}"
         case Join(subs):
-            # TODO: allow customizing the behavior, and in particular
-            # generating candidates in parallel.
-            elts: list[dp.Tracked[Any]] = []
-            for s in subs:
-                substream = recursive_search()(s.spawn_tree(), env, policy)
-                elt = yield from take_one(substream)
-                if elt is None:
-                    return
-                elts.append(elt)
-            yield from recursive_search()(tree.child(elts), env, policy)
+            meta = tree.node.meta
+            if isinstance(meta, OneOfEachSequentially):
+                elts: list[dp.Tracked[Any]] = []
+                for s in subs:
+                    substream = recursive_search()(s.spawn_tree(), env, policy)
+                    elt = yield from take_one(substream)
+                    if elt is None:
+                        return
+                    elts.append(elt)
+                yield from recursive_search()(tree.child(elts), env, policy)
+            else:
+                assert False, f"Unknown behavior for `Join`: {meta}"
 
 
 #####
@@ -153,7 +171,7 @@ def recursive_search[P, T](
 
 def combine_via_repeated_sampling(
     max_attempts: int | None = None,
-) -> StreamBuilderCombinator:
+) -> StreamCombinator:
     def combine[T](
         streams: Sequence[StreamBuilder[T]],
         probs: Sequence[float],
@@ -165,4 +183,4 @@ def combine_via_repeated_sampling(
             builder = random.choices(streams, weights=probs)[0]
             yield from builder()
 
-    return StreamBuilderCombinator(combine)
+    return StreamCombinator(combine)
