@@ -203,7 +203,7 @@ class Node(ABC):
         self: N, trans: "AbstractTreeTransformer[Any, Any]"
     ) -> N:
         """
-        Apply a tree transformer to all embedded nest trees and return
+        Apply a tree transformer to all embedded trees and return
         the updated node (the argument is still valid afterwards).
         """
 
@@ -213,9 +213,12 @@ class Node(ABC):
             assert isinstance(emb, EmbeddedTree), (
                 f"Expected an EmbeddedTree, got {type(emb)}"
             )
-            return EmbeddedTree(
-                emb.strategy, emb.ref, lambda: trans(emb.spawn_tree())
+            nested = NestedTree(
+                emb.nested.strategy,
+                emb.nested.ref,
+                lambda: trans(emb.nested.spawn_tree()),
             )
+            return EmbeddedTree(nested)
 
         def convert_parametric_embedded(obj: Any) -> Callable[[Any], Any]:
             return lambda arg: convert_embedded(obj(arg))
@@ -328,11 +331,13 @@ class StrategyComp(Generic[N, P, T]):
 
 
 @dataclass(frozen=True)
-class NestedTree[N: Node, P, T](Space[T]):
+class NestedTree[N: Node, P, T]:
     """
+    A nested tree is one can back up an arbitrary space (including
+    opaque spaces).
 
     Note: one cannot count on `strategy` having the same node type as
-    `spawn_tree` since nested trees can be applies tree transformers
+    `spawn_tree` since nested trees can be applied tree transformers
     (see `Node.map_embedded`).
     """
 
@@ -348,18 +353,34 @@ class NestedTree[N: Node, P, T](Space[T]):
 
 
 @dataclass(frozen=True)
-class EmbeddedTree[N: Node, P, T](NestedTree[N, P, T]):
+class EmbeddedTree[N: Node, P, T](Space[T]):
+    """
+    An embedded tree wraps a nested tree, declaring it as such and
+    turning it into a space.
+    """
+
+    nested: NestedTree[N, P, T]
+
     @staticmethod
     def builder[N1: Node, P1, T1](
         strategy: StrategyComp[N1, P1, T1],
-    ) -> "Builder[NestedTree[N1, P1, T1]]":
-        return lambda spawn, _: spawn(strategy)
+    ) -> "Builder[EmbeddedTree[N1, P1, T1]]":
+        return lambda spawn, _: EmbeddedTree(spawn(strategy))
 
     @staticmethod
     def parametric_builder[A, N1: Node, P1, T1](
         parametric_strategy: Callable[[A], StrategyComp[N1, P1, T1]],
-    ) -> "Callable[[A], Builder[NestedTree[N1, P1, T1]]]":
+    ) -> "Callable[[A], Builder[EmbeddedTree[N1, P1, T1]]]":
         return lambda arg: EmbeddedTree.builder(parametric_strategy(arg))
+
+    def source(self) -> "NestedTree[Any, Any, T]":
+        return self.nested
+
+    def tags(self) -> Sequence[Tag]:
+        return self.nested.tags()
+
+    def spawn_tree(self) -> "Tree[N, P, T]":
+        return self.nested.spawn_tree()
 
 
 #####

@@ -340,3 +340,25 @@ def test_sequence():
     )
     print(log)
     assert len(res) == 3
+
+
+#####
+##### Embedded Trees and Transformers
+#####
+
+
+def test_embedded_tree_and_transformers():
+    strategy = ex.recursive_joins(3)
+
+    def policy(_: dp.LLM):
+        return ex.recursive_joins_policy()
+
+    res, log = _eval_strategy(
+        strategy, policy, cache_name="no_need_for_caching", max_res=1
+    )
+    print(log)
+    assert res is not None
+
+
+if __name__ == "__main__":
+    test_embedded_tree_and_transformers()

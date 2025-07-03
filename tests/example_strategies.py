@@ -678,3 +678,38 @@ def obtain_item_policy(model: dp.LLM, num_concurrent: int = 1):
         model, num_concurrent=num_concurrent
     )
     return (dp.abduct_and_saturate(verbose=True) @ dp.elim_messages(), pp)
+
+
+#####
+##### Embedded Trees and Transformers
+#####
+
+
+@dp.strategy
+def recursive_joins(
+    depth: int,
+) -> dp.Strategy[
+    dp.Join | dp.Message | dp.Computation | dp.Flag[MethodFlag], object, int
+]:
+    if depth == 0:
+        flag = yield from dp.get_flag(MethodFlag)
+        v, _ = yield from dp.compute(expensive_computation, 1)
+        return v if flag == "def" else 0
+    else:
+        yield from dp.message(f"Recursing at depth {depth}")
+        res = yield from dp.join(
+            [recursive_joins(depth - 1)] * 2, meta=lambda p: p
+        )
+        return sum(res)
+
+
+def recursive_joins_policy():
+    from delphyne.stdlib.search import recursive_search as dprs
+
+    sp = (
+        dprs.recursive_search()
+        @ dp.elim_messages()
+        @ dp.elim_compute
+        @ dp.elim_flag(MethodFlag, "def")
+    )
+    return (sp, dprs.OneOfEachSequentially())
