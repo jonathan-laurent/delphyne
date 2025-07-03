@@ -268,7 +268,7 @@ def nofail_strategy[P, T](
     flag = yield from get_flag(NoFailFlag)
     match flag:
         case "no_fail_try":
-            yield from branch(space)
+            return (yield from branch(space))
         case "no_fail_default":
             return default
 
