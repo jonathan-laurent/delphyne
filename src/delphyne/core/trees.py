@@ -187,7 +187,7 @@ class Node(ABC):
                 case nf.DataF():
                     return obj
                 case nf.SequenceF(f):
-                    return [convert(name, f, x)[i] for i, x in enumerate(obj)]
+                    return [convert(name[i], f, x) for i, x in enumerate(obj)]
                 case nf.OptionalF(f):
                     assert convert(name, f, obj) if obj is not None else None
                 case _:
