@@ -398,14 +398,16 @@ def yaml_from_last_block[T](type: TypeAnnot[T], res: str) -> T:
     return raw_yaml(type, final)
 
 
-def raw_string[T](type: TypeAnnot[T], res: str) -> T:
+def raw_string[T](type_annot: TypeAnnot[T], res: str) -> T:
     try:
-        if isinstance(type, __builtins__.type):  # if `type` is a class
-            return type(res)  # type: ignore
-        # TODO: check that `type` is a string alias
-        return res  # type: ignore
+        type_annot_resolved = dpi.resolve_aliases_in_type(type_annot)
+        if isinstance(type_annot_resolved, type):  # if `type` is a class
+            return type_annot_resolved(res)  # type: ignore
+        if type_annot_resolved is str:
+            return cast(T, res)
+        assert False, f"Not a string-convertible type: {type_annot}."
     except Exception as e:
-        raise dp.ParseError(description=str(e))
+        raise dp.ParseError(description=f"raw_string parsed failed: {str(e)}")
 
 
 def trimmed_raw_string[T](type: TypeAnnot[T], res: str) -> T:

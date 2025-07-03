@@ -36,7 +36,6 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
             case dq.FinalAnswer(a):
                 res = yield from branch(process(a, stats))
                 if isinstance(res, dp.Error):
-                    assert res.label
                     msg = dp.FeedbackMessage(
                         "feedback", res.label, res.description, res.meta
                     )
