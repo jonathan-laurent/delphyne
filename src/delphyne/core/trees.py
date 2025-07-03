@@ -210,7 +210,9 @@ class Node(ABC):
         def convert_embedded(
             emb: EmbeddedTree[Any, Any, Any],
         ) -> EmbeddedTree[Any, Any, Any]:
-            assert isinstance(emb, EmbeddedTree)
+            assert isinstance(emb, EmbeddedTree), (
+                f"Expected an EmbeddedTree, got {type(emb)}"
+            )
             return EmbeddedTree(
                 emb.strategy, emb.ref, lambda: trans(emb.spawn_tree())
             )

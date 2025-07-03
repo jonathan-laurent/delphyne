@@ -10,7 +10,7 @@ import typing
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from functools import partial
-from typing import Any, Literal, Protocol, cast
+from typing import Any, Literal, Protocol, cast, override
 
 import numpy as np
 import yaml
@@ -122,6 +122,11 @@ class Query[T](dp.AbstractQuery[T]):
             assert isinstance(ans_type.final, type)
             tools.append(ans_type.final)
         return tools
+
+    @override
+    def structured_output_type(self) -> TypeAnnot[Any] | ty.NoTypeInfo:
+        decomposed = self._decomposed_answer_type()
+        return decomposed.final
 
     def parse(self, answer: Answer) -> T:
         """
@@ -782,8 +787,8 @@ def few_shot[T](
         options["temperature"] = temperature
     structured_output = None
     if config.force_structured_output:
-        ans_type = query.query.answer_type()
-        structured_output = md.Schema.make(ans_type)
+        out_type = query.query.structured_output_type()
+        structured_output = md.Schema.make(out_type)
     if config.force_tool_call:
         options["tool_choice"] = "required"
     tools = [md.Schema.make(t) for t in query.query.query_tools()]

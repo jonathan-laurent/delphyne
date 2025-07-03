@@ -464,6 +464,47 @@ def propose_article(
 
 
 @dataclass
+class ProposeArticleStructured(
+    dp.Query[dp.Response[Article, GetUserFavoriteTopic | Calculator]]
+):
+    user_name: str
+    prefix: dp.AnswerPrefix = ()
+
+    __parser__: ClassVar[dp.ParserSpec] = "structured"
+
+    __system_prompt__: ClassVar[str] = """
+        Find the user's tastes and propose an article for them.
+        """
+
+
+@dp.strategy
+def propose_article_structured(
+    user_name: str,
+) -> dp.Strategy[dp.Branch, dp.PromptingPolicy, Article]:
+    IP = dp.PromptingPolicy
+    article = yield from dp.interact(
+        step=lambda pre, _: ProposeArticleStructured(user_name, pre)(
+            IP, lambda p: p
+        ),
+        process=lambda x, _: dp.const_space(x),
+        tools={GetUserFavoriteTopic: (lambda _: dp.const_space("Soccer"))},
+    )
+    return article
+
+
+def propose_article_policy(
+    model: dp.LLM,
+) -> dp.Policy[dp.Branch, dp.PromptingPolicy]:
+    # Valid for both `propose_article` and `propose_article_structured`
+    return (dp.dfs(max_branching=1), dp.few_shot(model))
+
+
+#####
+##### Assistant Priming
+#####
+
+
+@dataclass
 class PrimingTest(dp.Query[list[str]]):
     """
     Generate a list of nice baby names in the given style.

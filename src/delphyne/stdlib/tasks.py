@@ -126,7 +126,7 @@ class Command[A, T](Protocol):
 def command_args_type(cmd: Command[Any, Any]) -> Any:
     sig = inspect.signature(cmd)
     parameters = list(sig.parameters.keys())
-    assert len(parameters) == 3
+    assert len(parameters) == 3, f"Invalid command: {cmd}"
     hints = typing.get_type_hints(cmd)
     return hints[parameters[2]]
 

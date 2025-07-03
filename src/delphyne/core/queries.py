@@ -69,6 +69,15 @@ class AbstractQuery[T](ABC):
     def answer_type(self) -> ty.TypeAnnot[T] | ty.NoTypeInfo:
         pass
 
+    def structured_output_type(self) -> ty.TypeAnnot[Any] | ty.NoTypeInfo:
+        """
+        The type of data that the LLM is expected to produce before
+        parsing when called in structured output mode. This may differ
+        from `answer_type`, for example when tool calls are also allowed
+        and `answer_type` is decorated with `Response`.
+        """
+        return ty.NoTypeInfo()
+
     def name(self) -> str:
         """
         Return a unique name identifying the query type.

@@ -132,6 +132,16 @@ def test_interact():
     assert res
 
 
+def test_both_tool_call_and_structured_output():
+    strategy = ex.propose_article_structured("Jonathan")
+    policy = ex.propose_article_policy
+    cache_name = "both_tool_call_and_structured_output"
+    res, _log = _eval_strategy(
+        strategy, policy, cache_name, max_requests=2, max_res=1
+    )
+    assert res
+
+
 #####
 ##### Flags
 #####
