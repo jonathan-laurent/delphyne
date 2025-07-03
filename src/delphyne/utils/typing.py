@@ -31,7 +31,9 @@ def pydantic_dump[T](
     type: TypeAnnot[T], x: T, *, exclude_defaults: bool = True
 ) -> object:
     adapter = pydantic.TypeAdapter[T](type)
-    return adapter.dump_python(x, exclude_defaults=exclude_defaults)
+    return adapter.dump_python(
+        x, exclude_defaults=exclude_defaults, warnings="error"
+    )
 
 
 ValidationError = pydantic.ValidationError

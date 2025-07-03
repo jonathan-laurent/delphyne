@@ -36,7 +36,10 @@ def dump_yaml[T](
     """
     Adapter = pydantic.TypeAdapter(type)
     py = Adapter.dump_python(
-        obj, exclude_defaults=exclude_defaults, exclude_none=exclude_none
+        obj,
+        exclude_defaults=exclude_defaults,
+        exclude_none=exclude_none,
+        warnings="error",
     )
     if isinstance(py, dict):
         py = cast(dict[Any, Any], py)
