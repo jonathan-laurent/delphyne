@@ -145,11 +145,24 @@ def make_union(comps: Sequence[Any]) -> Any:
     return typing.Union[*comps]
 
 
+def resolve_aliases_in_type(typ: Any) -> Any:
+    """
+    If `typ` is the name of a simple (nongeneric) type alias,
+    recursively resolve it. Otherwise, return `typ` unchanged.
+    """
+    if isinstance(typ, typing.TypeAliasType):
+        return resolve_aliases_in_type(typ.__value__)
+    return typ
+
+
 def literal_type_args(typ: Any) -> Sequence[Any] | None:
     """
     Take a type of the form `Literal[v1, ..., vn]` and returns the
     sequence of `v_i`. Return `None` if the input is not well-formed.
+
+    Also works when provided with a type alias `type T = Literal[...]`.
     """
+    typ = resolve_aliases_in_type(typ)
     if typing.get_origin(typ) is not typing.Literal:
         return None
     return typing.get_args(typ)

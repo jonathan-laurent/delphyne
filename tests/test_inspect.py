@@ -69,6 +69,9 @@ def test_is_sequence_type():
     assert not insp.is_sequence_type(dict[str, int])
 
 
+type _TestLitType = typing.Literal[1, 2, 3]
+
+
 @pytest.mark.parametrize(
     "inp, out",
     [
@@ -76,6 +79,7 @@ def test_is_sequence_type():
         (typing.Literal["a"], ["a"]),
         (typing.Literal[True, False], [True, False]),
         (typing.Literal[1, "a"], [1, "a"]),
+        (_TestLitType, [1, 2, 3]),
         (int, None),
     ],
 )
