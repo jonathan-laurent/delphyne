@@ -8,7 +8,7 @@ metadata on Branch and Join nodes.
 import random
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Protocol
+from typing import Any
 
 import delphyne.core as dp
 from delphyne.core.streams import Stream, Yield
@@ -17,49 +17,10 @@ from delphyne.stdlib.policies import log, search_policy
 from delphyne.stdlib.queries import ProbInfo
 from delphyne.stdlib.streams import (
     StreamBuilder,
-    StreamTransformer,
+    StreamCombinator,
     take_one,
     take_one_with_meta,
 )
-
-#####
-##### Streams Combinators
-#####
-
-
-class _StreamCombinatorFn(Protocol):
-    def __call__[T](
-        self,
-        streams: Sequence[StreamBuilder[T]],
-        probs: Sequence[float],
-        env: dp.PolicyEnv,
-    ) -> dp.Stream[T]: ...
-
-
-@dataclass
-class StreamCombinator:
-    combine: _StreamCombinatorFn
-
-    def __call__[T](
-        self,
-        streams: Sequence[StreamBuilder[T]],
-        probs: Sequence[float],
-        env: dp.PolicyEnv,
-    ) -> dp.Stream[T]:
-        return self.combine(streams, probs, env)
-
-    def __rmatmul__(
-        self, transformer: StreamTransformer
-    ) -> "StreamCombinator":
-        def combine[T](
-            streams: Sequence[StreamBuilder[T]],
-            probs: Sequence[float],
-            env: dp.PolicyEnv,
-        ) -> dp.Stream[T]:
-            return transformer(lambda: self.combine(streams, probs, env), env)
-
-        return StreamCombinator(combine)
-
 
 #####
 ##### Meta Annotations

@@ -118,12 +118,18 @@ class StreamTransformer:
     @overload
     def __matmul__(self, other: PromptingPolicy) -> PromptingPolicy: ...
 
+    @overload
+    def __matmul__(self, other: "StreamCombinator") -> "StreamCombinator": ...
+
     def __matmul__[N: dp.Node](
-        self, other: SearchPolicy[N] | PromptingPolicy
-    ) -> SearchPolicy[N] | PromptingPolicy:
+        self, other: "SearchPolicy[N] | PromptingPolicy | StreamCombinator"
+    ) -> "SearchPolicy[N] | PromptingPolicy | StreamCombinator":
         if isinstance(other, SearchPolicy):
             return self.compose_with_search_policy(other)
+        elif isinstance(other, StreamCombinator):
+            return self.compose_with_stream_combinator(other)
         else:
+            assert isinstance(other, PromptingPolicy)
             return self.compose_with_prompting_policy(other)
 
     def compose_with_search_policy[N: dp.Node](
@@ -146,6 +152,18 @@ class StreamTransformer:
 
         return PromptingPolicy(policy)
 
+    def compose_with_stream_combinator(
+        self, other: "StreamCombinator"
+    ) -> "StreamCombinator":
+        def combine[T](
+            streams: Sequence[StreamBuilder[T]],
+            probs: Sequence[float],
+            env: dp.PolicyEnv,
+        ) -> dp.Stream[T]:
+            return self(lambda: other.combine(streams, probs, env), env)
+
+        return StreamCombinator(combine)
+
 
 def stream_transformer[**A](
     f: _ParametricStreamTransformerFn[A],
@@ -160,6 +178,33 @@ def stream_transformer[**A](
         return StreamTransformer(transformer)
 
     return parametric
+
+
+#####
+##### Streams Combinators
+#####
+
+
+class _StreamCombinatorFn(Protocol):
+    def __call__[T](
+        self,
+        streams: Sequence[StreamBuilder[T]],
+        probs: Sequence[float],
+        env: dp.PolicyEnv,
+    ) -> dp.Stream[T]: ...
+
+
+@dataclass
+class StreamCombinator:
+    combine: _StreamCombinatorFn
+
+    def __call__[T](
+        self,
+        streams: Sequence[StreamBuilder[T]],
+        probs: Sequence[float],
+        env: dp.PolicyEnv,
+    ) -> dp.Stream[T]:
+        return self.combine(streams, probs, env)
 
 
 #####
