@@ -246,12 +246,12 @@ class Experiment[Config]:
             dump_log=None,
         )
 
-    def save_summary(self):
+    def save_summary(self, ignore_missing: bool=False):
         """
         Save a summary of the results in a CSV file.
         """
 
-        data = results_summary(self.dir)
+        data = results_summary(self.dir, ignore_missing)
         frame = pd.DataFrame(data)
         summary_file = self.dir / RESULTS_SUMMARY
         frame.to_csv(summary_file, index=False)  # type: ignore
@@ -266,7 +266,17 @@ class Experiment[Config]:
         return data
 
 
-def results_summary(exp_dir: Path) -> Sequence[dict[str, Any]]:
+EXPORTED_BUDGET_FIELDS = [
+    "num_completions",
+    "num_requests",
+    "input_tokens",
+    "cached_input_tokens",
+    "output_tokens",
+    "price",
+]
+
+
+def results_summary(exp_dir: Path, ignore_missing: bool=False) -> Sequence[dict[str, Any]]:
     # Load the experiment state as a python dict
     state_file = exp_dir / EXPERIMENT_STATE_FILE
     with open(state_file, "r") as f:
@@ -274,6 +284,9 @@ def results_summary(exp_dir: Path) -> Sequence[dict[str, Any]]:
     res: list[dict[str, Any]] = []
     for name, info in parsed["configs"].items():
         params = info["params"]
+        if info["status"] != "done":
+            assert ignore_missing, f"Missing result for {name}."
+            continue
         # Open the result file and parse it in yaml
         result_file = exp_dir / name / RESULT_FILE
         with open(result_file, "r") as f:
@@ -293,15 +306,10 @@ def results_summary(exp_dir: Path) -> Sequence[dict[str, Any]]:
         assert isinstance(success, bool)
         spent = result["spent_budget"]
         price = spent.get("price", 0.0)
-        num_completions = spent.get("num_completions", 0)
-        num_requests = spent.get("num_requests", 0)
         assert isinstance(price, float)
-        entry = params | {
-            "success": success,
-            "price": price,
-            "num_completions": num_completions,
-            "num_requests": num_requests,
-        }
+        entry = params | {"success": success}
+        for field in EXPORTED_BUDGET_FIELDS:
+            entry[field] = spent.get(field, 0)
         res.append(entry)
     return res
 
