@@ -34,9 +34,24 @@ class StandardModelInfo:
     pricing: md.ModelPricing
 
 
-def _default_pricing(info: md.ModelInfo) -> md.ModelPricing:
+PRICING: dict[str, tuple[float, float, float]] = {
+    "gpt-4o": (2.50, 1.25, 10.00),
+    "gpt-4o-mini": (0.15, 0.075, 0.60),  # cached input = input ×50% ⇒ 0.075
+    "gpt-4.1": (1.10, 0.275, 4.40),
+    "gpt-4.1-mini": (0.80, 0.20, 3.20),
+    "gpt-4.1-nano": (0.20, 0.05, 0.80),
+    "o4-mini": (4.00, 1.00, 16.00),
+    "o3": (10.00, 2.50, 40.00),
+    "mistral-small-2503": (0.10, 0.10, 0.30),
+    "deepseek-chat": (0.27, 0.07, 1.10),
+    "deepseek-reasoner": (0.55, 0.14, 2.19),
+}
+
+
+def default_pricing(info: md.ModelInfo) -> md.ModelPricing:
     """
     Default pricing function based on OpenAI's pricing.
+    We currently use real pricing instead.
 
     https://openai.com/api/pricing/
     """
@@ -57,6 +72,21 @@ def _default_pricing(info: md.ModelInfo) -> md.ModelPricing:
         dollars_per_input_token=out * md.PER_MILLION,
         dollars_per_output_token=out * md.PER_MILLION,
     )
+
+
+def get_pricing(model_name: str) -> md.ModelPricing | None:
+    """
+    Get the pricing for a model by its name.
+    Returns None if the model is not found.
+    """
+    if model_name in PRICING:
+        inp, out, out_cached = PRICING[model_name]
+        return md.ModelPricing(
+            dollars_per_cached_input_token=out_cached * md.PER_MILLION,
+            dollars_per_input_token=inp * md.PER_MILLION,
+            dollars_per_output_token=out * md.PER_MILLION,
+        )
+    return None
 
 
 def _default_info_and_pricing(
@@ -87,7 +117,9 @@ def _default_info_and_pricing(
             info = md.ModelInfo("reasoning", "large")
         case _:
             info = None
-    pricing = _default_pricing(info) if info else None
+    pricing = get_pricing(model)
+    assert pricing is not None, f"Pricing not found for model: {model}"
+    # pricing = _default_pricing(info) if info else None
     return info, pricing
 
 
