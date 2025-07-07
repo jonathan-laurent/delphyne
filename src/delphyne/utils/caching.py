@@ -12,8 +12,6 @@ from typing import get_type_hints
 import yaml
 from pydantic import TypeAdapter
 
-from delphyne.utils.yaml import pretty_yaml
-
 
 @dataclass
 class _BucketItem[P, T]:
@@ -80,10 +78,9 @@ def cache[P, T](
             ret = func(arg)
             bucket.append(_BucketItem(arg, ret))
             with cache_file.open("w") as f:
-                # using pretty_yaml is important because `yaml.dump`
-                # uses tags to serialize tuples instead of just using
-                # lists.
-                f.write(pretty_yaml(bucket_adapter.dump_python(bucket)))
+                # Using `yaml.safe_dump` to avoid exporting tuples with tags
+                bucket_py = bucket_adapter.dump_python(bucket)
+                f.write(yaml.safe_dump(bucket_py, sort_keys=False))
             return ret
 
         return cached_func
