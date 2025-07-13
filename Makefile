@@ -38,13 +38,12 @@ clean: clean-ignored
 	rm -rf tests/cmd_out
 	make -C vscode-ui clean
 	make -C examples/libraries/why3py clean
-	make -C examples/why3 clean
+	make -C examples/find_invariants clean
 	make -C examples/mini_eqns clean
 
 
 full-clean: clean
 	make -C examples/libraries/why3py full-clean
-	make -C examples/why3 full-clean
 
 
 # Generate the demo file schema.
