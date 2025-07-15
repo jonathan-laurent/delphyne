@@ -24,7 +24,8 @@ class Error:
     ):
         if label is not None:
             assert label
-            assert not any(c in label for c in [" ", "\n", "\t"])
+            # Should we prevent some characters in labels?
+            # assert not any(c in label for c in [" ", "\n", "\t"])
         # assert label or description
         self.label = label
         self.description = description
