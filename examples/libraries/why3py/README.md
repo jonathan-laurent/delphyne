@@ -19,18 +19,18 @@ Then, you should install the `python-libgen` dependency, which is not on Opam, a
 
 ```
 opam pin add -y python-libgen https://github.com/jonathan-laurent/python-libgen.git
+```
+
+You can finally build the OCaml library by running the following within the `ocaml` subdirectory:
+
+```sh
 opam install . --deps-only
-```
-
-You can finally build the OCaml library:
-
-```
 dune build
 ```
 
-Once this is done, you can build and install the Python library:
+Once this is done, you can build and install the Python library by running the following at the root of the why3py repository:
 
-```
+```sh
 pip install -e .
 ```
 
@@ -43,7 +43,6 @@ why3 config detect
 
 If everything worked, you should be able to run the tests successfully:
 
-
 ```
 pytest tests
 ```
@@ -54,7 +53,6 @@ You can also see all the generated obligations for an example by running:
 pytest -k "prove" -rP --color=yes
 ```
 
-
 ## TODO
 
-- Right now, there is a hardcoded limit of 5000 reasoning steps (see `Prove.prove`). We could make it an option.
+- We currently use a 5 seconds timeout for checking files, which should be exposed as a parameter (see `Prove.prove`).
