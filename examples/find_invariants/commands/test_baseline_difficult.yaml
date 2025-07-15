@@ -1,0 +1,27 @@
+# delphyne-command
+
+command: run_strategy
+args:
+  strategy: prove_program_interactive
+  args:
+    prog: |
+      use int.Int
+
+      let main () diverges =
+        let ref i = any int in
+        let ref n = any int in
+        let ref sn = any int in
+        sn <- 0;
+        i <- 1;
+        while i <= n do
+          i <- i + 1;
+          sn <- sn + 1
+        done;
+        if sn <> n then
+          assert { sn = 0 }
+  policy: prove_program_interactive_policy
+  policy_args:
+    model_name: gpt-4.1-mini
+  num_generated: 1
+  budget:
+    num_requests: 20

@@ -1,0 +1,17 @@
+{% if params.feedback.arg.error %}
+Error:
+
+"""
+{{ params.feedback.arg.error }}
+"""
+{% else %}
+Some obligations failed to be proved. Here is a list of them:
+
+{% for obl in params.feedback.arg.obligations %}
+## {{ obl.name }}
+
+```mlw
+{{ obl.relevance_hints|trim }}
+```
+{% endfor %}
+{% endif %}

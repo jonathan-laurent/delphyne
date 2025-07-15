@@ -1,3 +1,5 @@
 .pytest_cache
+.DS_Store
+__pycache__
 commands/archive
-benchmarks/code2inv/selected
+experiments/output

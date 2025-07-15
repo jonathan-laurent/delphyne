@@ -2,5 +2,13 @@
 
 strategy_dirs: ["."]
 prompt_dirs: ["prompts"]
-modules: ["why3_utils", "find_invariants", "baseline", "invariant_saturation"]
-demo_files: ["find_invariants", "invariant_saturation"]
+modules:
+  - "why3_utils"
+  - "abduct_and_branch"
+  - "abduct_and_saturate"
+  - "baseline"
+  - "one_guess_baseline"
+demo_files:
+  - "abduct_and_branch"
+  - "abduct_and_saturate"
+  - "baseline"

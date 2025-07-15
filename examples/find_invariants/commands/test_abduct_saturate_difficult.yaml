@@ -2,7 +2,7 @@
 
 command: run_strategy
 args:
-  strategy: prove_program_by_saturation
+  strategy: prove_program_by_recursive_abduction
   args:
     prog: |
       use int.Int
@@ -17,7 +17,7 @@ args:
           y <- y + 1
         done;
         assert { x >= y }
-  policy: prove_program_by_saturation_policy
+  policy: prove_program_by_saturation_basic_policy
   policy_args:
     model_name: gpt-4.1-mini
     temperature: 1

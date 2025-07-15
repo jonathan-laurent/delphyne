@@ -1,8 +1,8 @@
-# Demonstrations for `find_invariants.prove_program`
+# Demonstrations for `prove_program_via_abduction_and_branching`
 
 
 # A demonstration with conditionals, which involves abducting an additional assumption
-- strategy: prove_program
+- strategy: prove_program_via_abduction_and_branching
   args:
     prog: |
       use int.Int
@@ -738,7 +738,7 @@
 
 
 # Second demonstration: invariants involving implications
-- strategy: prove_program
+- strategy: prove_program_via_abduction_and_branching
   args:
     prog: |
       use int.Int
@@ -905,7 +905,7 @@
 
 
 # Third demonstration: when disjunctions are needed
-- strategy: prove_program
+- strategy: prove_program_via_abduction_and_branching
   args:
     prog: |
       use int.Int
@@ -1109,7 +1109,7 @@
                 goal_formula: o2 >= y
 
 
-- strategy: prove_program
+- strategy: prove_program_via_abduction_and_branching
   args:
     prog: |
       use int.Int

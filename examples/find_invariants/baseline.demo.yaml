@@ -1,0 +1,211 @@
+# Demonstrations for the `prove_program_interactive` baseline.
+# Adapts all demos for `abduct_and_saturate`.
+
+- strategy: prove_program_interactive
+  args:
+    prog: |
+      use int.Int
+
+      let example () diverges =
+        let ref x = any int in
+        let ref y = 3 in
+        let ref z = 0 in
+        assume { x < 0 };
+        while x < 10 do
+          x <- x + 1;
+          z <- z - 1;
+          if z < 0 then y <- y + 1
+        done;
+        assert { x <> y }
+  tests:
+    - run | success
+    - run 'partial' | success
+  queries:
+    - query: AnnotateWithInvs
+      args:
+        prog: |
+          use int.Int
+      
+          let example () diverges =
+            let ref x = any int in
+            let ref y = 3 in
+            let ref z = 0 in
+            assume { x < 0 };
+            while x < 10 do
+              x <- x + 1;
+              z <- z - 1;
+              if z < 0 then y <- y + 1
+            done;
+            assert { x <> y }
+        prefix: []
+      answers:
+        - answer: |
+            Why is `x <> y` always true at the end of the program? It is true initially since `y = 3` and `x < 0`. What happens in the loop body then? `x` is incremented and `y` is incremented if and only if the conditional guard `z < 0` evaluates to true. When does this happen? `z` is 0 initially and is only decremented afterwards. Thus, `z <= 0` is an invariant and the conditional statement always executes (since it does if and only if `z - 1 < 0` at the start of the loop iteration). Thus, `x` and `y` are always incremented by 1 at each iteration and so `x <> y` is preserved.
+
+            Answer:
+            ```
+            - "x <> y"
+            - "z <= 0"
+            ```
+        - label: partial
+          example: false
+          answer: |
+            Let's just propose the postcondition!
+
+            ```
+            - "x <> y"
+            ```
+    - query: AnnotateWithInvs
+      args:
+        prog: |
+          use int.Int
+      
+          let example () diverges =
+            let ref x = any int in
+            let ref y = 3 in
+            let ref z = 0 in
+            assume { x < 0 };
+            while x < 10 do
+              x <- x + 1;
+              z <- z - 1;
+              if z < 0 then y <- y + 1
+            done;
+            assert { x <> y }
+        prefix:
+          - kind: oracle
+            answer:
+              mode: null
+              content: |
+                Let's just propose the postcondition!
+            
+                ```
+                - "x <> y"
+                ```
+          - kind: feedback
+            category: feedback
+            arg:
+              error: null
+              obligations:
+                - name: VC for example (loop invariant preservation)
+                  proved: false
+                  relevance_hints: |-
+                    use int.Int
+      
+                    let example () diverges =  (* GOAL *)
+                      let ref x = any int in  (* premise *)
+                      let ref y = 3 in
+                      let ref z = 0 in
+                      assume { x < 0 };  (* premise *)
+                      while x < 10 do  (* premise *)
+                        invariant { x <> y }  (* GOAL, premise *)
+                        x <- x + 1;  (* premise *)
+                        z <- z - 1;  (* premise *)
+                        if z < 0 then y <- y + 1  (* premise *)
+                      done;
+                      assert { x <> y }
+                  goal_formula: not (x + 1) = y
+      answers:
+        - example: false
+          answer: |
+            ```
+            - "x <> y"
+            - "z <= 0"
+            ```
+
+- strategy: prove_program_interactive
+  args:
+    prog: |
+      use int.Int
+
+      let example () diverges =
+        let ref x = any int in
+        let ref y = any int in
+        assume { x < 5 };
+        assume { x >= 2 };
+        assume { y <= 0 };
+        while x < 10 do
+          x <- x + 2;
+          y <- y - 3;
+        done;
+        assert { y <= 14 }
+  tests:
+    - run | success
+  queries: 
+    - query: AnnotateWithInvs
+      args:
+        prog: |
+          use int.Int
+      
+          let example () diverges =
+            let ref x = any int in
+            let ref y = any int in
+            assume { x < 5 };
+            assume { x >= 2 };
+            assume { y <= 0 };
+            while x < 10 do
+              x <- x + 2;
+              y <- y - 3;
+            done;
+            assert { y <= 14 }
+        prefix: []
+      answers:
+        - answer: |
+            Since `y` is decremented by 3 every time `x` in incremented by `2`, the quantity `3*x - 2*y` is constant throughout the program. Since it at least `3*2 - 2*0 = 6` initially, the inequality "3*x - 2*y >= 6" is an invariant.
+
+            We want to prove `y <= 14` at the end of the program. Given that the previous invariant established an upper bound for `y` as a function of `x`, establishing an upper bound for `x` would be useful too.
+
+            We can do this! Indeed, `x` is only incremented by `2` at each loop iteration. Thus, given the loop guard `x < 10`, we have `x < 12` at the end of any loop iteration. `x < 12` also holds initially because of assumption `x < 5` so we propose `x < 12` as an invariant.
+
+            Answer:
+            ```
+            - "3*x - 2*y >= 6"
+            - "x < 12"
+            ```
+
+
+- strategy: prove_program_interactive
+  args:
+    prog: |
+      use int.Int
+
+      let example () diverges =
+        let ref n = any int in
+        let ref x = 0 in
+        let ref g = any int in
+        while x < n do
+          g <- 4;
+          x <- x + 1;
+        done;
+        if n > 0 then
+          assert { g >= 1 }
+  tests:
+    - run | success
+  queries: 
+    - query: AnnotateWithInvs
+      args:
+        prog: |
+          use int.Int
+      
+          let example () diverges =
+            let ref n = any int in
+            let ref x = 0 in
+            let ref g = any int in
+            while x < n do
+              g <- 4;
+              x <- x + 1;
+            done;
+            if n > 0 then
+              assert { g >= 1 }
+        prefix: []
+      answers:
+        - answer: |
+            The final assertion is guarded by assumption `n > 0`. However, `n` never changes during the program, so we can treat this as a global assumption for now.
+
+            Why is `g >= 1` true at the end of the program? This is not necessarily true initially. However, executing any loop iteration makes it true (`g` is assigned 4). Thus, `g >= 1 || x < n` is an invariant since `x < n` is true initially (treating `n > 0` as a global assumption) and at each iteration, either `g >= 1` is true already or the guard `x < n` is true, in which case the loop body executes and makes `g >= 1` true.
+
+            However, `g >= 1 || x < n` is only an invariant assuming `n > 0` globally. But this assumption is only made AFTER the loop. Thus, we propose `n > 0 -> (g >= 1 || x < n)` as an invariant instead.
+
+            Answer:
+            ```
+            - "n > 0 -> (g >= 1 || x < n)"
+            ```

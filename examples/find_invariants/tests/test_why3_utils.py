@@ -84,9 +84,7 @@ def test_split_restore_final_assertion_inverse(prog: str) -> None:
     split_final_assertion and restore_final_assertion are inverse operations.
     """
     modified_prog, extracted_formula = why3.split_final_assertion(prog)
-    restored_prog = why3.restore_final_assertion(
-        modified_prog, extracted_formula
-    )
+    restored_prog = why3.restore_final_assertion(modified_prog, extracted_formula)
     assert restored_prog == prog
     assert "assert { true }" in modified_prog
     assert extracted_formula.strip() != ""

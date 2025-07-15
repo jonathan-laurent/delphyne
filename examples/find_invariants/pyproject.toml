@@ -4,7 +4,7 @@ version = "0.2.0"
 description = "Using Delphyne and Why3 to find loop invariants"
 authors = [{name="Jonathan Laurent", email="jonathan.laurent@cs.cmu.edu"}]
 dependencies = [
-    "delphyne>=0.2.0",
+    "delphyne>=0.5.0",
 ]
 
 [project.optional-dependencies]

@@ -55,7 +55,7 @@ type Blacklist = Sequence[Proposal]
 
 
 @strategy
-def prove_program(
+def prove_program_via_abduction_and_branching(
     prog: why3.File,
 ) -> Strategy[Branch | Value | Failure | Computation, ProveProgIP, why3.File]:
     annotated: why3.File = prog
@@ -136,7 +136,7 @@ class EvaluateProofState(dp.Query[ProofStateMetrics]):
 #####
 
 
-def prove_program_policy(
+def prove_program_via_abduction_and_branching_policy(
     fancy_model: str = "gpt-4o",
     base_model: str = "gpt-4o",
     max_depth: int = 2,
