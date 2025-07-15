@@ -41,7 +41,7 @@ The last command should create a `delphyne-xxx.vsix` extensions archive, which c
 
 ### Testing your installation
 
-To test your installation, open VSCode and set the `examples/find_invariants` folder as your workspace root. Click on the Delphyne logo on the Activity Bar to start the Delphyne extension, and open the demonstration file `find_invariants.demo.yaml`. Then, open the command palette (`Ctrl+Shift+P`) and run the command `Delphyne: Evaluate All Demonstrations in File`. Diagnostics should then appear to indicate that all tests passed (but no warning or error). Note that adding new demonstrations requires installing `why3py`, as explained in the example's README.
+To test your installation, open VSCode and set the `examples/find_invariants` folder as your workspace root. Click on the Delphyne logo on the Activity Bar to start the Delphyne extension, and open the demonstration file `abduct_and_branch.demo.yaml`. Then, open the command palette (`Ctrl+Shift+P`) and run the command `Delphyne: Evaluate All Demonstrations in File`. Diagnostics should then appear to indicate that all tests passed (but no warning or error). Note that adding new demonstrations requires installing `why3py`, as explained in the example's README.
 
 
 ## Getting Started
