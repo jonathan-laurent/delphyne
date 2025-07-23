@@ -10,6 +10,7 @@
         "editor.formatOnType": true,
         "editor.rulers": [80],
         "rewrap.wrappingColumn": 72,
+        "rewrap.autoWrap.enabled": true
     },
     "python.testing.pytestArgs": ["tests", "-s"],
     "python.testing.unittestEnabled": false,
@@ -17,7 +18,6 @@
     // "isort.args": [
     //     "--settings-path=${workspaceFolder}/pyproject.toml"
     // ],
-    "makefile.configureOnOpen": false,
     "python.analysis.packageIndexDepths": [
         {
             "name": "delphyne",

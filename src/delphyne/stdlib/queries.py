@@ -764,14 +764,16 @@ def few_shot[T](
     """
     The standard few-shot prompting sequential prompting policy.
 
+    Arguments:
+        query: The query to answer.
+        env: The policy environment.
+
     If `iterative_mode` is `False`, then the prompt is always the same
     and different answers are sampled. If `iterative_mode` is `True`,
     everything happens within a single big chat. Every parse error leads
     to some feedback while every correctly parsed answer leads to a
     message inviting the system to generate another different solution.
 
-    TODO: Have an example limit and randomly sample examples. TODO: We
-    are currently not using prompt params.
     """
     assert not iterative_mode or num_concurrent == 1
     assert max_requests is None or max_requests > 0
