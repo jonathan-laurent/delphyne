@@ -216,7 +216,7 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
     def parametric[S](
         self,
         space_name: SpaceName,
-        parametric_builder: Callable[..., tr.Builder[S]],
+        parametric_builder: Callable[..., tr.SpaceBuilder[S]],
     ) -> Callable[..., S]:
         def run_builder(*args: Any) -> S:
             args_raw = [refs.drop_refs(arg) for arg in args]
@@ -226,7 +226,7 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
             sr = refs.SpaceRef(space_name, args_ref)
 
             def spawn_tree[N: Node, P, T](
-                strategy: StrategyComp[N, P, T],
+                strategy: StrategyComp[N, P, T], extra_tags: Sequence[tr.Tag]
             ) -> tr.NestedTree[N, P, T]:
                 def spawn() -> Tree[N, P, T]:
                     new_ref = (gr, sr, ())
@@ -236,10 +236,10 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
                             return cached
                     return _reify(strategy, new_ref, self._monitor)
 
-                return tr.NestedTree(strategy, (gr, sr), spawn)
+                return tr.NestedTree(strategy, (gr, sr), spawn, extra_tags)
 
             def spawn_query[T](
-                query: tr.AbstractQuery[T],
+                query: tr.AbstractQuery[T], extra_tags: Sequence[tr.Tag]
             ) -> tr.AttachedQuery[T]:
                 def parse_answer(
                     answer: refs.Answer,
@@ -250,13 +250,17 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
                         return parsed
                     return tr.Tracked(parsed, ref, gr, query.answer_type())
 
-                return tr.AttachedQuery(query, (gr, sr), parse_answer)
+                return tr.AttachedQuery(
+                    query, (gr, sr), parse_answer, extra_tags
+                )
 
             return builder(spawn_tree, spawn_query)
 
         return run_builder
 
-    def nonparametric[S](self, name: SpaceName, builder: tr.Builder[S]) -> S:
+    def nonparametric[S](
+        self, name: SpaceName, builder: tr.SpaceBuilder[S]
+    ) -> S:
         return self.parametric(name, lambda: builder)()
 
 
@@ -278,4 +282,4 @@ def spawn_standalone_query[T](query: AbstractQuery[T]) -> tr.AttachedQuery[T]:
             return parsed
         return tr.Tracked(parsed, ref, (), query.answer_type())
 
-    return tr.AttachedQuery(query, ((), refs.MAIN_SPACE), parse_answer)
+    return tr.AttachedQuery(query, ((), refs.MAIN_SPACE), parse_answer, ())

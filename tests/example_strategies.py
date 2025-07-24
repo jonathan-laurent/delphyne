@@ -326,22 +326,26 @@ def generate_pairs() -> dp.Strategy[
     dp.Branch | dp.Factor | dp.Failure, dp.PromptingPolicy, tuple[int, int]
 ]:
     x = yield from dp.branch(
-        PickPositiveInteger(None).using(lambda p: p),
-        inner_policy_type=dp.PromptingPolicy,
+        PickPositiveInteger(None)
+        .using(lambda p: p, dp.PromptingPolicy)
+        .tagged("first")
     )
     yield from dp.factor(
-        num_confidence(None, x).using(lambda _: (dp.dfs(), None)),
+        num_confidence(None, x)
+        .using(lambda _: (dp.dfs(), None), dp.PromptingPolicy)
+        .tagged("first"),
         lambda _: lambda f: f,
-        inner_policy_type=dp.PromptingPolicy,
     )
     y = yield from dp.branch(
-        PickPositiveInteger(x).using(lambda p: p),
-        inner_policy_type=dp.PromptingPolicy,
+        PickPositiveInteger(x)
+        .using(lambda p: p, dp.PromptingPolicy)
+        .tagged("second"),
     )
     yield from dp.factor(
-        num_confidence(x, y).using(lambda _: (dp.dfs(), None)),
+        num_confidence(x, y)
+        .using(lambda _: (dp.dfs(), None), dp.PromptingPolicy)
+        .tagged("second"),
         lambda _: lambda f: f,
-        inner_policy_type=dp.PromptingPolicy,
     )
     return (x, y)
 
