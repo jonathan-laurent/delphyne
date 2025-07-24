@@ -262,15 +262,15 @@ class Query[T](dp.AbstractQuery[T]):
         get_policy: Callable[[P], dp.AbstractPromptingPolicy],
         inner_policy_type: type[P] | None = None,
     ) -> dp.Opaque[P, T]:
-        return dp.OpaqueSpace[P, T].from_query(self, get_policy)
+        """
+        Turn a strategy instance into an opaque space by providing a
+        mapping from the ambient inner policy to a prompting policy.
 
-    # EXPERIMENTAL: a shorter, call-based syntax.
-    def __call__[P](
-        self,
-        inner_policy_type: type[P],
-        get_policy: Callable[[P], dp.AbstractPromptingPolicy],
-    ) -> dp.Opaque[P, T]:
-        return self.using(get_policy, inner_policy_type)
+        The optional `inner_policy_type` argument is ignored at runtime
+        and can be used to help type checkers infer the type of the
+        ambient inner policy.
+        """
+        return dp.OpaqueSpace[P, T].from_query(self, get_policy)
 
     def run_toplevel(
         self,

@@ -72,15 +72,15 @@ def prove_program_via_abduction_and_branching(
             not why3.invariant_init_obligation(unproved), "init")
         if annotated != prog:  # if invariant annotations are present
             yield from dp.value(
-                EvaluateProofState(unproved)(ProveProgIP, lambda p: p.eval),
+                EvaluateProofState(unproved)
+                    .using(lambda p: p.eval, ProveProgIP),
                 lambda p: p.quantify_eval)
         new_invariants = yield from dp.branch(
             dp.iterate(
-                lambda prior: propose_invariants(unproved, prior)(
-                    ProveProgIP, lambda p: p.propose)))
+                lambda prior:
+                    propose_invariants(unproved, prior)
+                        .using(lambda p: p.propose, ProveProgIP)))
         annotated = why3.add_invariants(annotated, new_invariants)
-
-
 
 
 @strategy
@@ -92,13 +92,13 @@ def propose_invariants(
         blacklist = []
     proposal = yield from dp.branch(
         ProposeInvariants(obligation, blacklist)
-            (ProposeInvsIP, lambda p: p.propose))
+            .using(lambda p: p.propose, ProposeInvsIP))
     sanity_check = all(why3.no_invalid_formula_symbol(inv) for inv in proposal)
     yield from dp.ensure(sanity_check, "sanity check failed")
     if blacklist:
         novel = yield from dp.branch(
             IsProposalNovel(proposal, blacklist)
-                (ProposeInvsIP, lambda p: p.novel))
+                .using(lambda p: p.novel, ProposeInvsIP))
         yield from dp.ensure(novel, "proposal is not novel")
     return proposal, [*blacklist, proposal]
 

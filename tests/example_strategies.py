@@ -326,18 +326,22 @@ def generate_pairs() -> dp.Strategy[
     dp.Branch | dp.Factor | dp.Failure, dp.PromptingPolicy, tuple[int, int]
 ]:
     x = yield from dp.branch(
-        PickPositiveInteger(None)(IP := dp.PromptingPolicy, lambda p: p)
+        PickPositiveInteger(None).using(lambda p: p),
+        inner_policy_type=dp.PromptingPolicy,
     )
     yield from dp.factor(
-        num_confidence(None, x)(IP, lambda _: (dp.dfs(), None)),
+        num_confidence(None, x).using(lambda _: (dp.dfs(), None)),
         lambda _: lambda f: f,
+        inner_policy_type=dp.PromptingPolicy,
     )
     y = yield from dp.branch(
-        PickPositiveInteger(x)(IP, lambda p: p),
+        PickPositiveInteger(x).using(lambda p: p),
+        inner_policy_type=dp.PromptingPolicy,
     )
     yield from dp.factor(
-        num_confidence(x, y)(IP, lambda _: (dp.dfs(), None)),
+        num_confidence(x, y).using(lambda _: (dp.dfs(), None)),
         lambda _: lambda f: f,
+        inner_policy_type=dp.PromptingPolicy,
     )
     return (x, y)
 
@@ -454,9 +458,10 @@ class ProposeArticle(
 def propose_article(
     user_name: str,
 ) -> dp.Strategy[dp.Branch, dp.PromptingPolicy, Article]:
-    IP = dp.PromptingPolicy
     article = yield from dp.interact(
-        step=lambda pre, _: ProposeArticle(user_name, pre)(IP, lambda p: p),
+        step=lambda pre, _: ProposeArticle(user_name, pre).using(
+            dp.ambient_pp
+        ),
         process=lambda x, _: dp.const_space(x),
         tools={GetUserFavoriteTopic: (lambda _: dp.const_space("Soccer"))},
     )
@@ -481,10 +486,9 @@ class ProposeArticleStructured(
 def propose_article_structured(
     user_name: str,
 ) -> dp.Strategy[dp.Branch, dp.PromptingPolicy, Article]:
-    IP = dp.PromptingPolicy
     article = yield from dp.interact(
-        step=lambda pre, _: ProposeArticleStructured(user_name, pre)(
-            IP, lambda p: p
+        step=lambda pre, _: ProposeArticleStructured(user_name, pre).using(
+            dp.ambient_pp
         ),
         process=lambda x, _: dp.const_space(x),
         tools={GetUserFavoriteTopic: (lambda _: dp.const_space("Soccer"))},
@@ -657,17 +661,18 @@ def obtain_item(
 ]:
     IP = dp.PromptingPolicy
     exchanges = yield from dp.abduction(
-        prove=lambda possessed, item: dp.const_space(
-            try_obtain_item(market, item or goal, possessed)
+        prove=lambda possessed, item: (
+            dp.const_space(try_obtain_item(market, item or goal, possessed))
         ),
         suggest=lambda f: (
             dp.map_space(
-                ObtainItem(market, f.possessed, f.item)(IP, lambda p: p),
+                ObtainItem(market, f.possessed, f.item).using(lambda p: p),
                 lambda x: x.items,
             )
         ),
         search_equivalent=lambda its, it: dp.const_space(None),
         redundant=lambda its, it: dp.const_space(False),
+        inner_policy_type=IP,
     )
     yield from dp.message("Success!")
     return exchanges

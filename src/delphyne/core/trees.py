@@ -286,6 +286,8 @@ class NodeBuilder(Generic[N, P]):
 @dataclass(frozen=True)
 class StrategyComp(Generic[N, P, T]):
     """
+    A *strategy computation* hello.
+
     A strategy computation also stores metadata for navigation and
     debugging.
     """

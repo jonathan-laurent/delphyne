@@ -24,7 +24,7 @@ def prove_program_one_guess(
     unproved = remaining[0]
     yield from dp.ensure(len(remaining) == 1)
     invariants = yield from dp.branch(
-        ProposeInvariants(unproved, [])(dp.PromptingPolicy, lambda p: p)
+        ProposeInvariants(unproved, []).using(lambda p: p, dp.PromptingPolicy),
     )
     annotated = why3.add_invariants(prog, invariants)
     feedback = yield from dp.compute(why3.check, prog, annotated)

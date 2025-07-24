@@ -23,7 +23,7 @@ def const_strategy[T](value: T) -> dp.Strategy[Never, object, T]:
 
 
 def const_space[T](value: T) -> dp.Opaque[object, T]:
-    return const_strategy(value)(object, lambda _: (dfs(), None))
+    return const_strategy(value).using(just_dfs)
 
 
 @strategy(name="map")

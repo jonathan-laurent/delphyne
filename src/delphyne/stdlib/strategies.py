@@ -1,5 +1,5 @@
 """
-Defining the `@strategy` decorator.
+Standard Wrappers for Strategy Computations and Functions.
 """
 
 import functools
@@ -12,22 +12,32 @@ import delphyne.core as dp
 
 @dataclass(frozen=True)
 class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
+    """
+    A subclass of [`StrategyComp`][delphyne.core.StrategyComp] that adds
+    convenience features such as the `using` method to build opaque
+    spaces.
+    """
+
     def using[P2](
         self,
         get_policy: Callable[[P2], dp.Policy[N, P]],
         inner_policy_type: type[P2] | None = None,
     ) -> dp.Opaque[P2, T]:
+        """
+        Turn a strategy instance into an opaque space by providing a
+        mapping from the ambient inner policy to an appropriate policy.
+
+        The optional `inner_policy_type` argument is ignored at runtime
+        and can be used to help type checkers infer the type of the
+        ambient inner policy.
+
+        ??? info "Design Note"
+            Using operators such as `&` or `@` instead of using does not
+            work well since some type checkers (e.g., Pyright) perform
+            worse inference when using those instead of a standard
+            method.
+        """
         return dp.OpaqueSpace[P2, T].from_strategy(self, get_policy)
-
-    # Pyright seems to be treating __getitem__ differently and does
-    # worse inference than for using. Same for operators like &, @...
-
-    def __call__[P2](
-        self,
-        inner_policy_type: type[P2],
-        get_policy: Callable[[P2], dp.Policy[N, P]],
-    ) -> dp.Opaque[P2, T]:
-        return self.using(get_policy)
 
     def run_toplevel(
         self,
@@ -35,11 +45,19 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
         policy: dp.Policy[N, P],
         monitor: dp.TreeMonitor = dp.TreeMonitor(),
     ) -> dp.Stream[T]:
+        """
+        Utility method to reify a strategy into a tree and run it using
+        a given policy.
+        """
         tree = dp.reify(self, monitor)
         return policy[0](tree, env, policy[1])
 
 
 class _StrategyDecorator(Protocol):
+    """
+    Type of the `@strategy(...)` decorator.
+    """
+
     def __call__[**A, N: dp.Node, P, T](
         self,
         f: Callable[A, dp.Strategy[N, P, T]],
@@ -57,6 +75,10 @@ def strategy(*, name: str | None) -> _StrategyDecorator: ...
 
 
 def strategy(*dec_args: Any, **dec_kwargs: Any) -> Any:
+    """
+    Standard decorator for wrapping strategy functions into functions
+    returning [`StrategyInstance`][delphyne.stdlib.StrategyInstance].
+    """
     # Using functools.wraps is important so that the object loader can
     # get the type hints to properly instantiate arguments.
     if not dec_kwargs and len(dec_args) == 1 and callable(dec_args[0]):
@@ -74,14 +96,3 @@ def strategy(*dec_args: Any, **dec_kwargs: Any) -> Any:
             )
         )
     assert False, "Wrong use of @strategy."
-
-
-# def strategy[**A, N: dp.Node, P, T](
-#     f: Callable[A, dp.Strategy[N, P, T]],
-# ) -> Callable[A, StrategyInstance[N, P, T]]:
-#     def wrapped(
-#         *args: A.args, **kwargs: A.kwargs
-#     ) -> StrategyInstance[N, P, T]:
-#         return StrategyInstance(f, args, kwargs)
-
-#     return wrapped
