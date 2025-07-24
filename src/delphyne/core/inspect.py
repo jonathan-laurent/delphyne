@@ -70,7 +70,8 @@ def function_args_dict(
 ) -> dict[str, Any]:
     """
     Force fitting all arguments into a single dictionary, using a
-    signature to name positional arguments.
+    signature to name positional arguments. No typing annotations are
+    required.
     """
     sig = inspect.signature(f)
     ret: dict[str, Any] = {}

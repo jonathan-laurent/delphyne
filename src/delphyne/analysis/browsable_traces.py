@@ -9,7 +9,6 @@ from the former format to the latter.
 """
 
 import pprint
-import typing
 from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
@@ -405,7 +404,7 @@ class _TraceTranslator:
         # We get the strategy instance arguments and use typing hints to
         # render them properly.
         args_raw = strategy.strategy_arguments()
-        hints = typing.get_type_hints(strategy.comp)
+        hints = strategy.strategy_argument_types()
         args = {a: _value_repr(v, hints[a]) for a, v in args_raw.items()}
         # We obtain the root id of the nested tree, which can be `None`
         # if the tree hasn't been explored.

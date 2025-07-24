@@ -3,11 +3,13 @@ Standard Wrappers for Strategy Computations and Functions.
 """
 
 import functools
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Any, Protocol, overload
 
 import delphyne.core as dp
+from delphyne.core import inspect
+from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
 
 @dataclass(frozen=True)
@@ -66,33 +68,91 @@ class _StrategyDecorator(Protocol):
 
 @overload
 def strategy[**A, N: dp.Node, P, T](
-    f: Callable[A, dp.Strategy[N, P, T]],
+    f: Callable[A, dp.Strategy[N, P, T]], /
 ) -> Callable[A, StrategyInstance[N, P, T]]: ...
 
 
 @overload
-def strategy(*, name: str | None) -> _StrategyDecorator: ...
+def strategy(
+    *,
+    name: str | None = None,
+    ret: TypeAnnot[Any] | NoTypeInfo = NoTypeInfo(),
+    inherit_tags: Sequence[str] = (),
+) -> _StrategyDecorator: ...
 
 
 def strategy(*dec_args: Any, **dec_kwargs: Any) -> Any:
     """
-    Standard decorator for wrapping strategy functions into functions
-    returning [`StrategyInstance`][delphyne.stdlib.StrategyInstance].
+    Standard parametric decorator for wrapping strategy functions into
+    functions returning
+    [`StrategyInstance`][delphyne.stdlib.StrategyInstance].
+
+    Parameters:
+        name (optional): Name of the strategy. If not provided, the
+            __name__ attribute of the strategy function is used instead.
+        ret (optional): Return type of the strategy function. If not
+            provided, it is obtained by inspecting type annotations.
+        inherit_tags (optional): Names of the space arguments from `f`
+            whose tags should be inherited.
+
+    ??? info
+        `strategy()(f)` can be shortened as `@strategy(f)`, at the cost
+        of a pretty complex type signature for `strategy`.
     """
+
     # Using functools.wraps is important so that the object loader can
     # get the type hints to properly instantiate arguments.
+    error_msg = "Invalid use of the @strategy decorator."
+    # If no positional argument is provided, we have a call of the form
+    # `@strategy(...)(f)`. Otherwise, we have a call of the form
+    # `@strategy(f)`.
+    assert len(dec_args) in [0, 1], error_msg
+
+    # @strategy(f) case
     if not dec_kwargs and len(dec_args) == 1 and callable(dec_args[0]):
         f: Any = dec_args[0]
-        return functools.wraps(f)(
-            lambda *args, **kwargs: StrategyInstance(f, args, kwargs)
-        )
-    elif not dec_args:
-        return lambda f: functools.wraps(f)(  # type: ignore
-            lambda *args, **kwargs: StrategyInstance(  # type: ignore
-                f,  # type: ignore
+        name = inspect.function_name(f)
+        tags = (name,) if name else ()
+
+        def wrapped(*args: Any, **kwargs: Any):
+            return StrategyInstance(
+                f,
                 args,
                 kwargs,
-                name=dec_kwargs.get("name"),  # type: ignore
+                _name=None,
+                _return_type=NoTypeInfo(),
+                _tags=tags,
             )
-        )
-    assert False, "Wrong use of @strategy."
+
+        return functools.wraps(f)(wrapped)
+
+    # @strategy(...)(f) case
+    elif not dec_args:
+
+        def decorator(f: Any):
+            def wrapped(*args: Any, **kwargs: Any):
+                name = dec_kwargs.get("name")
+                if name is None:
+                    name = inspect.function_name(f)
+                tags = (name,) if name else ()
+                # Inherit tags from space arguments if needed.
+                args_dict = inspect.function_args_dict(f, args, kwargs)
+                for arg_name in dec_kwargs.get("inherit_tags", ()):
+                    assert arg_name in args_dict
+                    arg = args_dict[arg_name]
+                    assert isinstance(arg, dp.Space)
+                    tags = (*tags, *arg.tags())
+                return StrategyInstance(
+                    f,
+                    args,
+                    kwargs,
+                    _name=name,
+                    _return_type=dec_kwargs.get("ret", NoTypeInfo()),
+                    _tags=tags,
+                )
+
+            return functools.wraps(f)(wrapped)
+
+        return decorator
+
+    assert False, error_msg

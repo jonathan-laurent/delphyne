@@ -2,10 +2,11 @@
 The core tree datastructure.
 """
 
+import typing
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Generator, Iterable, Sequence
-from dataclasses import dataclass
-from typing import Any, Generic, Protocol, TypeVar, cast
+from dataclasses import dataclass, replace
+from typing import Any, Generic, Protocol, Self, TypeVar, cast
 
 from delphyne.core import inspect, refs
 from delphyne.core import node_fields as nf
@@ -276,8 +277,7 @@ class NodeBuilder(Generic[N, P]):
     Strategies do not directly yield nodes since building a node
     requires knowing its reference along with the associated hooks.
 
-    We add a phantom type `P` for tracking a strategy's inner policy
-    type.
+    Phantom type `P` tracks the ambient inner policy type.
     """
 
     build_node: "Callable[[AbstractBuilderExecutor], N]"
@@ -286,45 +286,136 @@ class NodeBuilder(Generic[N, P]):
 @dataclass(frozen=True)
 class StrategyComp(Generic[N, P, T]):
     """
-    A *strategy computation* hello.
+    A *strategy computation* that can be reified into a search tree,
+    obtained by instantiating a strategy function.
 
-    A strategy computation also stores metadata for navigation and
-    debugging.
+    Such objects atr usually not created directly but using the
+    [`@strategy` decorator][delphyne.stdlib.strategy] from the standard
+    library. Metadata information can be provided as: a name for the
+    strategy, a return type and a list of tags.
+
+    ??? note
+        The name of the `_comp` function is inspected by methods such as
+        `strategy_name`. Its signature (i.e., the name of its arguments)
+        is inspected by `strategy_arguments`. When provided, type
+        annotations are inspected by methods such as `return_type` and
+        `inner_policy_type`. Thus, passing an anonymous function as
+        `_comp` is not recommended.
+
+    ??? note
+
     """
 
-    comp: Callable[..., Strategy[N, P, T]]
-    args: tuple[Any, ...]
-    kwargs: dict[str, Any]
-    name: str | None = None
+    _comp: Callable[..., Strategy[N, P, T]]
+    _args: tuple[Any, ...]
+    _kwargs: dict[str, Any]
+    _name: str | None
+    _return_type: TypeAnnot[T] | NoTypeInfo
+    _tags: Sequence[Tag]
 
-    def run_generator(self) -> Strategy[N, P, T]:
-        return self.comp(*self.args, **self.kwargs)
+    ##### External API
 
     def inline(self) -> Strategy[N, P, T]:
+        """
+        Inline a strategy computation within another, by executing the
+        underlying coroutine.
+
+        Example:
+
+        ```
+        # Invoking a sub-strategy by branching over an opaque space.
+        y = yield from branch(sub_strategy(foo, bar).using(...))
+        # Invoking a sub-strategy via inlining (the signature and inner
+        # policy types of the sub strategy must be identical).
+        y = yield from sub_strategy(foo, bar).inline()
+        ```
+        """
         return self.run_generator()
 
-    def strategy_name(self) -> str | None:
-        if self.name is not None:
-            return self.name
-        return inspect.function_name(self.comp)
+    ##### For internal use in `core` and in the standard library
 
-    def strategy_arguments(self) -> dict[str, Any]:
-        return inspect.function_args_dict(self.comp, self.args, self.kwargs)
+    def run_generator(self) -> Strategy[N, P, T]:
+        """
+        Run the coroutine associated with the strategy computation. This
+        method is mostly used by [`reify`][delphyne.core.reify] and
+        should not be needed outside of Delphyne's internals.
+        """
+        return self._comp(*self._args, **self._kwargs)
 
     def tags(self) -> Sequence[Tag]:
-        return [name] if (name := self.strategy_name()) is not None else []
+        """
+        Return all tags associated with the strategy computation.
+        """
+        return self._tags
+
+    def tagged(self, *tags: Tag) -> Self:
+        return replace(self, _tags=(*self._tags, *tags))
+
+    ### Inspection methods
+
+    def strategy_name(self) -> str | None:
+        """
+        Return the name of the instantiated strategy function, using the
+        `name` attribute if provided or using `comp.__name__` otherwise.
+        """
+        if self._name is not None:
+            return self._name
+        return inspect.function_name(self._comp)
+
+    def strategy_arguments(self) -> dict[str, Any]:
+        """
+        Return the dictionary of arguments that was used to instantiate
+        the undelrying strategy function (using inspection for naming
+        positional arguments).
+        """
+        return inspect.function_args_dict(self._comp, self._args, self._kwargs)
+
+    def strategy_argument_types(
+        self,
+    ) -> dict[str, TypeAnnot[Any] | NoTypeInfo]:
+        """
+        Return a dictionary with the same keys as
+        [`strategy_arguments`](delphyne.core.StrategyComp.strategy_arguments)
+        that maps every strategy argument to its type annotation (or
+        `NoTypeInfo` if none is provided).
+        """
+        hints = typing.get_type_hints(self._comp)
+        return {
+            a: hints.get(a, NoTypeInfo()) for a in self.strategy_arguments()
+        }
 
     def return_type(self) -> TypeAnnot[T] | NoTypeInfo:
-        ret_type = inspect.function_return_type(self.comp)
-        if isinstance(ret_type, NoTypeInfo):
+        """
+        Return the return type of the strategy computation, using the
+        provided metadata or using inspection otherwise (in case a type
+        annotation of the form `Strategy[..., ..., T]` is provided).
+
+        This information is useful for serializing success values after
+        running the strategy computation (see [`run_strategy`
+        command][delphyne.stdlib.commands.run_strategy]) or for
+        providing superior printing of values in the Delphyne tree view.
+        """
+        if not isinstance(self._return_type, NoTypeInfo):
+            return self._return_type
+        strategy_type = inspect.function_return_type(self._comp)
+        if isinstance(strategy_type, NoTypeInfo):
             return NoTypeInfo()
-        return inspect.return_type_of_strategy_type(ret_type)
+        return inspect.return_type_of_strategy_type(strategy_type)
 
     def inner_policy_type(self) -> TypeAnnot[T] | NoTypeInfo:
-        ret_type = inspect.function_return_type(self.comp)
-        if isinstance(ret_type, NoTypeInfo):
+        """
+        Return the inner policy type of the strategy computation, using
+        inspection (when a type annotation of the form `Strategy[..., P,
+        ...]` is provided).
+
+        This information is not currently used but could be leveraged in
+        the future to dynamically check the compatibility of an
+        associated policy.
+        """
+        strategy_type = inspect.function_return_type(self._comp)
+        if isinstance(strategy_type, NoTypeInfo):
             return NoTypeInfo()
-        return inspect.inner_policy_type_of_strategy_type(ret_type)
+        return inspect.inner_policy_type_of_strategy_type(strategy_type)
 
 
 #####
