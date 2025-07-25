@@ -85,6 +85,19 @@ class EncounteredTags:
     )
 
 
+def _tag_selectors_match(
+    selectors: dm.TagSelectors,
+    tags: Sequence[str],
+    encountered: dict[str, int],
+):
+    for clause in selectors:
+        num = clause.num if clause.num is not None else 1
+        tag = clause.tag
+        if not (tag in tags and encountered[tag] == num):
+            return False
+    return True
+
+
 #####
 ##### Navigator Exceptions
 #####
@@ -230,7 +243,6 @@ class Navigator:
             encountered.space_tags[tag] += 1
         match source:
             case dp.AttachedQuery():
-                # TODO: figure out whether to inject an implicit answer
                 implicit = None
                 if isinstance(tree.node, dp.ComputationNode):
                     implicit = tree.node.run_computation
@@ -239,13 +251,12 @@ class Navigator:
                 tree = source.spawn_tree()
                 # New selector
                 sub_selector: dm.NodeSelector | None = None
-                for tag in space.tags():
-                    if isinstance(selector, dm.WithinSpace):
-                        ssel = selector.space
-                        num = ssel.num if ssel.num is not None else 1
-                        tot_encountered = encountered.space_tags[tag]
-                        if ssel.tag == tag and num == tot_encountered:
-                            sub_selector = selector.selector
+                if isinstance(
+                    selector, dm.WithinSpace
+                ) and _tag_selectors_match(
+                    selector.space, space.tags(), encountered.space_tags
+                ):
+                    sub_selector = selector.selector
                 final, hints = self.follow_hints(
                     tree, hints, sub_selector, EncounteredTags()
                 )
@@ -266,14 +277,14 @@ class Navigator:
                 return tree, hints
             else:
                 raise ReachedFailureNode(tree, hints)
-        # We see test whether we've reached our target node
         # We register that the tags were encountered
-        for tag in tree.node.get_tags():
+        tags = tree.node.get_tags()
+        for tag in tags:
             encountered.node_tags[tag] += 1
-            if isinstance(selector, dm.TagSelector):
-                num = selector.num if selector.num is not None else 1
-                if selector.tag == tag and num == encountered.node_tags[tag]:
-                    raise MatchedSelector(tree, hints)
+        # We see test whether we've reached our target node
+        if selector and not isinstance(selector, dm.WithinSpace):
+            if _tag_selectors_match(selector, tags, encountered.node_tags):
+                raise MatchedSelector(tree, hints)
         value, hints = self.action_from_hints(
             tree, hints, selector, encountered
         )

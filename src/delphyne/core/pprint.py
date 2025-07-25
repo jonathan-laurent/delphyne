@@ -137,15 +137,19 @@ def tag_selector(selector: demos.TagSelector) -> str:
     return ret
 
 
+def tag_selectors(selectors: demos.TagSelectors) -> str:
+    return "&".join(tag_selector(sel) for sel in selectors)
+
+
 def node_selector(selector: demos.NodeSelector) -> str:
-    if isinstance(selector, demos.TagSelector):
-        return tag_selector(selector)
-    else:
+    if isinstance(selector, demos.WithinSpace):
         return (
-            tag_selector(selector.space)
+            tag_selectors(selector.space)
             + "/"
             + node_selector(selector.selector)
         )
+    else:
+        return tag_selectors(selector)
 
 
 def test_step(ts: demos.TestStep) -> str:

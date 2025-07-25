@@ -20,7 +20,7 @@ Utilities
 
 
 def _node_selector_from_path(
-    sels: list[demos.TagSelector],
+    sels: list[demos.TagSelectors],
 ) -> demos.NodeSelector:
     if len(sels) == 1:
         return sels[0]
@@ -106,7 +106,8 @@ _node_origin = _child | _nested
 # Node selectors
 _tag_sel = ps.seq(_ident, (_s("#") >> _num).optional())
 _tag_sel = _tag_sel.combine(demos.TagSelector)
-_node_sel = _tag_sel.sep_by(_s("/"), min=1).map(_node_selector_from_path)
+_tag_sels = _tag_sel.sep_by(_s("&"), min=1)
+_node_sel = _tag_sels.sep_by(_s("/"), min=1).map(_node_selector_from_path)
 
 
 # Test commands

@@ -56,18 +56,21 @@ type Demo = QueryDemo | StrategyDemo
 type DemoFile = list[Demo]
 
 
-@dataclass
+@dataclass(frozen=True)
 class TagSelector:
     tag: str
     num: int | None
 
 
-type NodeSelector = TagSelector | WithinSpace
+type TagSelectors = Sequence[TagSelector]
+
+
+type NodeSelector = TagSelectors | WithinSpace
 
 
 @dataclass
 class WithinSpace:
-    space: TagSelector
+    space: TagSelectors
     selector: NodeSelector
 
 
