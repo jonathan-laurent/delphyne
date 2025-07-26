@@ -83,7 +83,7 @@ def strategy(
     *,
     name: str | None = None,
     ret: TypeAnnot[Any] | NoTypeInfo = NoTypeInfo(),
-    inherit_tags: Sequence[str] = (),
+    inherit_tags: Callable[..., Sequence[dp.SpaceBuilder[Any]]] | None = None,
 ) -> _StrategyDecorator: ...
 
 
@@ -98,8 +98,9 @@ def strategy(*dec_args: Any, **dec_kwargs: Any) -> Any:
             __name__ attribute of the strategy function is used instead.
         ret (optional): Return type of the strategy function. If not
             provided, it is obtained by inspecting type annotations.
-        inherit_tags (optional): Names of the space arguments from `f`
-            whose tags should be inherited.
+        inherit_tags (optional): A function that maps all arguments from
+            the decorated strategy function to a sequence of space
+            builders from which tags must be inherited.
 
     ??? info
         `strategy()(f)` can be shortened as `@strategy(f)`, at the cost
@@ -142,12 +143,12 @@ def strategy(*dec_args: Any, **dec_kwargs: Any) -> Any:
                     name = inspect.function_name(f)
                 tags = (name,) if name else ()
                 # Inherit tags from space arguments if needed.
-                args_dict = inspect.function_args_dict(f, args, kwargs)
-                for arg_name in dec_kwargs.get("inherit_tags", ()):
-                    assert arg_name in args_dict
-                    arg = args_dict[arg_name]
-                    assert isinstance(arg, dp.Space)
-                    tags = (*tags, *arg.tags())
+                inherited_fun = dec_kwargs.get("inherit_tags", None)
+                if inherited_fun is not None:
+                    inherited = inherited_fun(*args, **kwargs)
+                    for space in inherited:
+                        assert isinstance(space, dp.SpaceBuilder)
+                        tags = (*tags, *space.tags)
                 return StrategyInstance(
                     f,
                     args,

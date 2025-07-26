@@ -1,4 +1,4 @@
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Any, cast
 
@@ -20,7 +20,11 @@ class Iteration(dp.Node):
         return (yield self.next(None))
 
 
-@strategy(name="iterate")
+def _iterate_inherited_tags(next: Any) -> Sequence[dp.SpaceBuilder[Any]]:
+    return [next(None)]
+
+
+@strategy(name="iterate", inherit_tags=_iterate_inherited_tags)
 def _iterate[P, S, T](
     next: Callable[[S | None], dp.Opaque[P, tuple[T | None, S]]],
 ) -> dp.Strategy[Iteration | Failure, P, T]:
