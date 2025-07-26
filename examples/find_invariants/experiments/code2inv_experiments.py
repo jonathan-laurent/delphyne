@@ -49,13 +49,12 @@ class Config:
     seed: int
 
 
-def experiment(cache_dir: Path | None, config: Config):
+def experiment(config: Config):
     args: Any = {"prog": benchs[config.bench_name]}
     policy_args: Any = {
         "model_name": config.model_name,
         "temperature": config.temp,
         "num_concurrent": config.num_concurrent,
-        "cache_dir": cache_dir,
     }
     return cmd.RunStrategyArgs(  # type: ignore
         strategy="prove_program_by_recursive_abduction",
@@ -95,14 +94,13 @@ class EnsembleConfig:
     seed: int
 
 
-def ensemble_experiment(cache_dir: Path | None, config: EnsembleConfig):
+def ensemble_experiment(config: EnsembleConfig):
     args: Any = {"prog": benchs[config.bench_name]}
     policy_args: Any = {
         "model_cycle": config.model_cycle,
         "temperature": config.temperature,
         "num_concurrent": config.num_concurrent,
         "max_requests_per_attempt": config.max_requests_per_attempt,
-        "cache_dir": cache_dir,
     }
     return cmd.RunStrategyArgs(  # type: ignore
         strategy="prove_program_by_recursive_abduction",
@@ -144,13 +142,12 @@ class BaselineConfig:
     max_dollar_budget: float | None = 0.2
 
 
-def baseline_experiment(cache_dir: Path | None, config: BaselineConfig):
+def baseline_experiment(config: BaselineConfig):
     args: Any = {"prog": benchs[config.bench_name]}
     policy_args: Any = {
         "model_name": config.model_name,
         "temperature": config.temperature,
         "max_feedback_cycles": config.max_feedback_cycles,
-        "cache_dir": cache_dir,
         "loop": config.loop,
     }
     budget: dict[str, float] = {}

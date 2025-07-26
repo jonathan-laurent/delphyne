@@ -8,7 +8,6 @@ https://arxiv.org/pdf/2502.05310
 import itertools
 from collections.abc import Sequence
 from dataclasses import dataclass
-from pathlib import Path
 
 import delphyne as dp
 from delphyne import Branch, Computation, Failure, Strategy, strategy
@@ -155,12 +154,8 @@ def prove_program_by_saturation_basic_policy(
     num_concurrent: int = 4,
     max_rollout_depth: int = 3,
     temperature: float | None = None,
-    cache_dir: Path | None = None,
 ) -> dp.Policy[dp.Abduction, dp.PromptingPolicy]:
     model = dp.standard_model(model_name)
-    if cache_dir is not None:
-        cache = dp.LLMCache(cache_dir)
-        model = dp.CachedModel(model, cache)
     pp = dp.few_shot(
         model,
         temperature=temperature,
@@ -177,12 +172,8 @@ def prove_program_by_saturation_ensemble_policy(
     max_rollout_depth: int = 3,
     max_requests_per_attempt: int = 4,
     temperature: float | None = None,
-    cache_dir: Path | None = None,
 ):
     mcycle = [dp.standard_model(m) for (m, k) in model_cycle for _ in range(k)]
-    if cache_dir is not None:
-        cache = dp.LLMCache(cache_dir)
-        mcycle = [dp.CachedModel(m, cache) for m in mcycle]
 
     def pp(model: dp.LLM):
         return dp.few_shot(

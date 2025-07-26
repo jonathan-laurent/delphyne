@@ -6,7 +6,6 @@ succeeds.
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from pathlib import Path
 from typing import ClassVar, Never
 
 import delphyne as dp
@@ -65,12 +64,8 @@ def prove_program_interactive_policy(
     temperature: float | None = None,
     max_feedback_cycles: int = 3,
     loop: bool = False,
-    cache_dir: Path | None = None,
 ):
     model = dp.standard_model(model_name)
-    if cache_dir is not None:
-        cache = dp.LLMCache(cache_dir)
-        model = dp.CachedModel(model, cache)
 
     # `interact` branches twice per feedback cycle
     sp = dfs(max_depth=2*(max_feedback_cycles+1))

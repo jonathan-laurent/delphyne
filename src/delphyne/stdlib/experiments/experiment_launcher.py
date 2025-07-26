@@ -10,7 +10,7 @@ import shutil
 import uuid
 from collections.abc import Callable, Sequence
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Literal, Protocol
 
@@ -62,13 +62,19 @@ class ExperimentState[Config]:
 
 
 class _ExperimentFun[Config](Protocol):
-    def __call__(
-        self, cache_dir: Path | None, config: Config
-    ) -> cmd.RunStrategyArgs: ...
+    """
+    The `requests_cache` argument is overriden.
+    """
+
+    def __call__(self, config: Config) -> cmd.RunStrategyArgs: ...
 
 
 @dataclass
 class Experiment[Config]:
+    """
+    The `context.requests_cache_dir` argument is overriden.
+    """
+
     dir: Path
     context: CommandExecutionContext
     experiment: _ExperimentFun[Config]
@@ -81,6 +87,11 @@ class Experiment[Config]:
     export_raw_trace: bool = True
     export_log: bool = True
     export_browsable_trace: bool = True
+
+    def __post_init__(self):
+        # We override the cache requests directory.
+        assert self.context.requests_cache_dir is None
+        self.context = replace(self.context, requests_cache_dir=self.dir)
 
     def load(self):
         if not self.dir_exists():
@@ -235,18 +246,18 @@ class Experiment[Config]:
         assert config_name is not None
         info = state.configs[config_name]
         assert info.status == "done"
-        dir = self.config_dir(config_name)
-        cmdargs = self.experiment(dir / CACHE_DIR, info.params)
+        cmdargs = self.experiment(info.params)
+        cmdargs.requests_cache = CACHE_DIR
         run_command(
-            cmd.run_strategy,
-            cmdargs,
-            self.context,
+            command=cmd.run_strategy,
+            args=cmdargs,
+            ctx=self.context,
             dump_statuses=None,
             dump_result=None,
             dump_log=None,
         )
 
-    def save_summary(self, ignore_missing: bool=False):
+    def save_summary(self, ignore_missing: bool = False):
         """
         Save a summary of the results in a CSV file.
         """
@@ -276,7 +287,9 @@ EXPORTED_BUDGET_FIELDS = [
 ]
 
 
-def results_summary(exp_dir: Path, ignore_missing: bool=False) -> Sequence[dict[str, Any]]:
+def results_summary(
+    exp_dir: Path, ignore_missing: bool = False
+) -> Sequence[dict[str, Any]]:
     # Load the experiment state as a python dict
     state_file = exp_dir / EXPERIMENT_STATE_FILE
     with open(state_file, "r") as f:
@@ -342,17 +355,17 @@ def _run_config[Config](
         file_path = config_dir / f
         if file_path.exists():
             file_path.unlink(missing_ok=True)
-    # TODO: TEMPORARY: we send the path as a string despite the type
-    # annotation because to avoid YAML serialization issues.
-    cmdargs = experiment(str(cache_dir), config)  # type: ignore
+    cmdargs = experiment(config)
+    if cache_requests:
+        cmdargs.requests_cache = CACHE_DIR
     cmdargs.export_browsable_trace = export_browsable_trace
     cmdargs.export_log = export_log
     cmdargs.export_raw_trace = export_raw_trace
     try:
         run_command(
-            cmd.run_strategy,
-            cmdargs,
-            context,
+            command=cmd.run_strategy,
+            args=cmdargs,
+            ctx=context,
             dump_statuses=config_dir / STATUS_FILE,
             dump_result=config_dir / RESULT_FILE,
             dump_log=config_dir / LOG_FILE,
