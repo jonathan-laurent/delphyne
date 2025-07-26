@@ -248,6 +248,7 @@ class Experiment[Config]:
         assert info.status == "done"
         cmdargs = self.experiment(info.params)
         cmdargs.requests_cache = CACHE_DIR
+        cmdargs.requests_cache_mode = "replay"
         run_command(
             command=cmd.run_strategy,
             args=cmdargs,
@@ -358,6 +359,7 @@ def _run_config[Config](
     cmdargs = experiment(config)
     if cache_requests:
         cmdargs.requests_cache = CACHE_DIR
+    cmdargs.requests_cache_mode = "create"
     cmdargs.export_browsable_trace = export_browsable_trace
     cmdargs.export_log = export_log
     cmdargs.export_raw_trace = export_raw_trace

@@ -291,6 +291,9 @@ class InvalidDemoFile(Exception):
     exn: Exception
 
 
+type CacheMode = Literal["read_write", "off", "create", "replay"]
+
+
 class PolicyEnv:
     def __init__(
         self,
@@ -299,8 +302,9 @@ class PolicyEnv:
         data_dirs: Sequence[Path],
         requests_cache_dir: Path | None = None,
         requests_cache_name: str | None = None,
+        requests_cache_mode: CacheMode = "read_write",
         do_not_match_identical_queries: bool = False,
-        make_requests_cache: Callable[[Path], object] | None = None,
+        make_requests_cache: Callable[[Path, CacheMode], object] | None = None,
     ):
         """
         An environment accessible to a policy, containing prompt and
@@ -317,7 +321,9 @@ class PolicyEnv:
             )
             path = requests_cache_dir / requests_cache_name
             assert make_requests_cache is not None
-            self.requests_cache = make_requests_cache(path)
+            self.requests_cache = make_requests_cache(
+                path, requests_cache_mode
+            )
         for path in demonstration_files:
             try:
                 with path.open() as f:

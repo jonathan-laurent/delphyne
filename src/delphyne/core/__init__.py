@@ -22,6 +22,7 @@ from delphyne.core.demos import (
     StrategyDemo,
 )
 from delphyne.core.environments import (
+    CacheMode,
     Example,
     ExampleDatabase,
     ExportableLogMessage,
