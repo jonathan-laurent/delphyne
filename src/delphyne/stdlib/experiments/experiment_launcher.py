@@ -68,7 +68,7 @@ class _ExperimentFun[Config](Protocol):
     The `requests_cache` argument is overriden.
     """
 
-    def __call__(self, config: Config) -> cmd.RunStrategyArgs: ...
+    def __call__(self, config: Config, /) -> cmd.RunStrategyArgs: ...
 
 
 @dataclass

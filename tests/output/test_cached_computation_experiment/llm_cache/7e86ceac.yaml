@@ -1,0 +1,28 @@
+- input:
+    request:
+      chat:
+      - role: system
+        content: "fun: expensive_computation\nargs:\n  n: 4\n"
+      - role: user
+        content: "fun: expensive_computation\nargs:\n  n: 4\n"
+      num_completions: 1
+      options: {}
+      tools: []
+      structured_output: null
+    iter: 1
+  output:
+    outputs:
+    - content: '- 4
+
+        - 5
+
+        '
+      tool_calls: []
+      finish_reason: stop
+      logprobs: null
+      reasoning_content: null
+    budget:
+      values: {}
+    log_items: []
+    model_name: null
+    usage_info: null

@@ -5,14 +5,16 @@ Computation Nodes
 from collections.abc import Callable
 from dataclasses import dataclass
 from functools import partial
-from typing import Any, Never, cast
+from typing import Any, Never, cast, override
 
 import yaml
 import yaml.parser
 
 import delphyne.core as dp
 import delphyne.core.inspect as insp
+import delphyne.stdlib.models as md
 import delphyne.stdlib.policies as pol
+import delphyne.stdlib.queries as dq
 import delphyne.utils.typing as ty
 from delphyne.stdlib.nodes import spawn_node
 from delphyne.utils.yaml import dump_yaml
@@ -36,7 +38,7 @@ class __Computation__(dp.AbstractQuery[object]):
         params: dict[str, object],
         env: dp.TemplatesManager | None = None,
     ):
-        return ""
+        return dump_yaml(Any, self.__dict__)
 
     def answer_type(self):
         return object
@@ -63,6 +65,26 @@ class Computation(dp.ComputationNode):
         serialized = dump_yaml(self._ret_type, ret)
         return serialized
 
+    def run_computation_with_cache(self, cache: md.LLMCache | None) -> str:
+        """
+        Run the computation using a fake oracle so that the LLM caching
+        mechanism can be reused.
+        """
+        chat = dq.create_prompt(
+            self.query.attached.query,
+            examples=[],
+            params={},
+            mode=None,
+            env=None,
+        )
+        req = md.LLMRequest(chat=chat, num_completions=1, options={})
+        model = ComputationOracle(self.run_computation)
+        resp = model.send_request(req, cache)
+        assert len(resp.outputs) == 1
+        answer = resp.outputs[0].content
+        assert isinstance(answer, str)
+        return answer
+
 
 def compute[**P, T](
     f: Callable[P, T], *args: P.args, **kwargs: P.kwargs
@@ -81,6 +103,28 @@ def compute[**P, T](
     return cast(T, ret)
 
 
+@dataclass
+class ComputationOracle(md.LLM):
+    computation: Callable[[], str]
+
+    @override
+    def add_model_defaults(self, req: md.LLMRequest) -> md.LLMRequest:
+        return req
+
+    @override
+    def _send_final_request(self, req: md.LLMRequest) -> md.LLMResponse:
+        res = self.computation()
+        return md.LLMResponse(
+            outputs=[
+                md.LLMOutput(content=res, tool_calls=[], finish_reason="stop")
+            ],
+            budget=dp.Budget({}),
+            log_items=[],
+            model_name=None,
+            usage_info=None,
+        )
+
+
 @pol.contextual_tree_transformer
 def elim_compute(
     env: dp.PolicyEnv,
@@ -91,7 +135,10 @@ def elim_compute(
         tree: dp.Tree[Computation | N, P, T],
     ) -> dp.Tree[N, P, T]:
         if isinstance(tree.node, Computation):
-            answer = tree.node.run_computation()
+            cache = None
+            if not force_bypass_cache:
+                cache = dq.get_request_cache(env)
+            answer = tree.node.run_computation_with_cache(cache)
             tracked = tree.node.query.attached.parse_answer(
                 dp.Answer(None, answer)
             )
