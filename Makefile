@@ -1,4 +1,4 @@
-.PHONY: install-dev-deps clean clean-ignored test full-clean all examples schemas stubs install doc-logo cloc deploy-doc
+.PHONY: install-dev-deps clean clean-ignored test full-test full-clean all examples schemas stubs install doc-logo cloc deploy-doc
 
 TO_CLEAN := \
 	-name '__pycache__' -o \
@@ -26,6 +26,10 @@ install-dev-deps:
 test:
 	pytest tests
 	make -C examples/find_invariants test
+
+
+full-test: test
+	make -C examples/find_invariants full-test
 
 
 clean-ignored:

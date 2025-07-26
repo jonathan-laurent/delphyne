@@ -1,4 +1,4 @@
-.PHONY: clean clean-ignored delete-exp test full-test
+.PHONY: clean clean-ignored delete-exp test full-test replay-test-exp test-exp
 
 TO_CLEAN := \
 	-name '__pycache__' -o \
@@ -15,8 +15,12 @@ test-exp:
 	python experiments/test_abduction_experiment.py run --max_workers=2
 	python experiments/test_baseline_experiment.py run --max_workers=1
 
+replay-test-exp:
+	python experiments/test_abduction_experiment.py replay
+	python experiments/test_baseline_experiment.py replay
+
 delete-test-exp:
-	rm -rf experiments/output/test_abduction_experiment  experiments/output/test_baseline_experiment
+	rm -rf experiments/output/test-output
 
 # Test demonstrations, in a way that does not require Why3 to be installed.
 test:
@@ -24,5 +28,5 @@ test:
 # Contains implicit answers...
 # python -m delphyne check-demo --strategy-dirs=[.] --modules=[abduct_and_saturate] --file=abduct_and_saturate.demo.yaml --ensure-no-error
 
-full-test: test
+full-test: test replay-test-exp
 	pytest tests

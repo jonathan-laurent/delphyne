@@ -1,12 +1,10 @@
 from pathlib import Path
 
-from code2inv_experiments import (
-    AbductionConfig,
-    make_code2inv_abduction_experiment,
-)
+import code2inv_experiments as c2i
+from delphyne.stdlib.experiments.experiment_launcher import quick_experiment
 
 configs = [
-    AbductionConfig(
+    c2i.AbductionConfig(
         bench_name=bench,
         model_cycle=[("gpt-4.1-nano", 2), ("gpt-4.1-mini", 1)],
         temperature=1.5,
@@ -19,6 +17,12 @@ configs = [
 ]
 
 if __name__ == "__main__":
-    exp_name = Path(__file__).stem
-    exp = make_code2inv_abduction_experiment(exp_name, configs)
-    exp.run_cli()
+    quick_experiment(
+        c2i.abduction_experiment,
+        configs,
+        name=Path(__file__).stem,
+        workspace_root=Path(__file__).parent.parent,
+        modules=c2i.MODULES,
+        demo_files=c2i.DEMO_FILES,
+        output_dir=Path("experiments") / "test-output",
+    ).run_cli()

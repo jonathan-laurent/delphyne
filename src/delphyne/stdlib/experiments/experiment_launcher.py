@@ -18,6 +18,7 @@ import fire  # type: ignore
 import pandas as pd  # type: ignore
 import yaml
 
+import delphyne.analysis as analysis
 import delphyne.stdlib.commands as cmd
 import delphyne.stdlib.models as md
 from delphyne.stdlib.tasks import CommandExecutionContext, run_command
@@ -112,6 +113,7 @@ class Experiment[Config]:
                     f"Warning: {len(state.configs) - len(self.configs)} "
                     "additional configuration(s) found in the state."
                 )
+        return self
 
     def config_dir(self, config_name: str) -> Path:
         return self.dir / config_name
@@ -234,7 +236,7 @@ class Experiment[Config]:
                 return name
         return None
 
-    def replay_config(self, config: Config) -> None:
+    def replay_config_by_name(self, config_name: str) -> None:
         """
         Replay a configuration, reusing the cache if it exists.
 
@@ -243,7 +245,6 @@ class Experiment[Config]:
         """
         state = self.load_state()
         assert state is not None
-        config_name = self.existing_config_name(config)
         assert config_name is not None
         info = state.configs[config_name]
         assert info.status == "done"
@@ -258,6 +259,18 @@ class Experiment[Config]:
             dump_result=None,
             dump_log=None,
         )
+
+    def replay_config(self, config: Config) -> None:
+        config_name = self.existing_config_name(config)
+        assert config_name is not None
+        self.replay_config_by_name(config_name)
+
+    def replay_all_configs(self):
+        state = self.load_state()
+        assert state is not None
+        for config_name in state.configs:
+            print(f"Replaying configuration: {config_name}...")
+            self.replay_config_by_name(config_name)
 
     def save_summary(self, ignore_missing: bool = False):
         """
@@ -425,3 +438,63 @@ class ExperimentCLI:
         if retry_errors:
             self.experiment.mark_errors_as_todos()
         self.experiment.resume(max_workers=max_workers)
+
+    def replay(self, config: str | None = None):
+        self.experiment.load()
+        if config is None:
+            self.experiment.replay_all_configs()
+        else:
+            self.experiment.replay_config_by_name(config)
+
+
+def quick_experiment[Config](
+    fun: _ExperimentFun[Config],
+    configs: Sequence[Config],
+    *,
+    name: str,
+    workspace_root: Path,
+    modules: Sequence[str],
+    demo_files: Sequence[str],
+    output_dir: Path | str | None = None,
+    strategy_dirs: Sequence[Path | str] | None = None,
+    demo_dirs: Sequence[Path | str] | None = None,
+    data_dirs: Sequence[Path | str] | None = None,
+    prompt_dirs: Sequence[Path | str] | None = None,
+    config_naming: Callable[[Config, uuid.UUID], str] | None = None,
+    config_type: type[Config] | None = None,
+) -> Experiment[Config]:
+    if strategy_dirs is None:
+        strategy_dirs = ["."]
+    if demo_dirs is None:
+        demo_dirs = ["."]
+    if data_dirs is None:
+        data_dirs = ["data"]
+    if prompt_dirs is None:
+        prompt_dirs = ["prompts"]
+    if output_dir is None:
+        output_dir = Path("experiments") / "output"
+    context = CommandExecutionContext(
+        base=analysis.DemoExecutionContext(
+            strategy_dirs=[workspace_root / d for d in strategy_dirs],
+            modules=modules,
+        ),
+        demo_files=[workspace_root / (f + ".demo.yaml") for f in demo_files],
+        prompt_dirs=[workspace_root / d for d in prompt_dirs],
+        data_dirs=[workspace_root / d for d in data_dirs],
+        requests_cache_dir=None,
+        result_refresh_period=None,
+        status_refresh_period=None,
+    )
+    if config_type is None:
+        assert configs, "Empty list of configurations."
+        config_type = type(configs[0])
+
+    return Experiment(
+        name=name,
+        dir=workspace_root / output_dir / name,
+        context=context,
+        experiment=fun,
+        config_type=config_type,
+        configs=configs,
+        config_naming=config_naming,
+    )

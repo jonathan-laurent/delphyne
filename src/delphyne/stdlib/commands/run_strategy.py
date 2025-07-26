@@ -157,6 +157,7 @@ async def run_strategy(
             num_generated=args.num_generated,
             budget=args.budget,
             requests_cache=args.requests_cache,
+            requests_cache_mode=args.requests_cache_mode,
             export_raw_trace=args.export_raw_trace,
             export_log=args.export_log,
             export_browsable_trace=args.export_browsable_trace,

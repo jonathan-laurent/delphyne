@@ -1,0 +1,31 @@
+name: test_abduction_experiment
+description: null
+configs:
+  8330c5db-3e08-433f-8b8f-5eb6086915e2:
+    params:
+      bench_name: '1'
+      model_cycle:
+      - - gpt-4.1-nano
+        - 2
+      - - gpt-4.1-mini
+        - 1
+      temperature: 1.5
+      num_concurrent: 4
+      max_requests_per_attempt: 4
+      max_dollar_budget: 0.1
+      seed: 0
+    status: done
+  260f2792-28f2-4e79-89bb-fc5c7fb63d08:
+    params:
+      bench_name: '7'
+      model_cycle:
+      - - gpt-4.1-nano
+        - 2
+      - - gpt-4.1-mini
+        - 1
+      temperature: 1.5
+      num_concurrent: 4
+      max_requests_per_attempt: 4
+      max_dollar_budget: 0.1
+      seed: 0
+    status: done

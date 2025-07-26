@@ -1,0 +1,11 @@
+name: test_baseline_experiment
+description: null
+configs:
+  f1404ded-151e-451d-bf3a-59d15c3ecccc:
+    params:
+      bench_name: '1'
+      model_name: mistral-small-2503
+      temperature: 1.0
+      max_feedback_cycles: 3
+      seed: 0
+    status: done

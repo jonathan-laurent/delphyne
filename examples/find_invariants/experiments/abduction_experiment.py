@@ -1,13 +1,10 @@
 from pathlib import Path
 
-import code2inv
-from code2inv_experiments import (
-    AbductionConfig,
-    make_code2inv_abduction_experiment,
-)
+import code2inv_experiments as c2i
+from delphyne.stdlib.experiments.experiment_launcher import quick_experiment
 
 configs = [
-    AbductionConfig(
+    c2i.AbductionConfig(
         bench_name=bench,
         model_cycle=[("gpt-4o-mini", 1)],
         temperature=temp,
@@ -16,7 +13,7 @@ configs = [
         max_dollar_budget=0.2,
         seed=seed,
     )
-    for bench in code2inv.load_all_benchmarks()
+    for bench in c2i.BENCHS
     for seed in range(3)
     for num_concurrent in [8]
     for temp in [1.5, 1.7]
@@ -24,6 +21,11 @@ configs = [
 ]
 
 if __name__ == "__main__":
-    exp_name = Path(__file__).stem
-    exp = make_code2inv_abduction_experiment(exp_name, configs)
-    exp.run_cli()
+    quick_experiment(
+        c2i.abduction_experiment,
+        configs,
+        name=Path(__file__).stem,
+        workspace_root=Path(__file__).parent.parent,
+        modules=c2i.MODULES,
+        demo_files=c2i.DEMO_FILES,
+    ).run_cli()
