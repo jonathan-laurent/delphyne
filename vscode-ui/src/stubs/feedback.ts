@@ -31,6 +31,7 @@ export interface NestedTree {
   kind: "nested";
   strategy: string;
   args: Record<string, ValueRepr>;
+  tags: string[];
   node_id: TraceNodeId | null;
 }
 
@@ -44,6 +45,7 @@ export interface Query {
   kind: "query";
   name: string;
   args: Record<string, unknown>;
+  tags: string[];
   answers: Answer[];
 }
 
@@ -69,6 +71,7 @@ export interface Node {
   summary_message: string | null;
   leaf_node: boolean;
   label: string | null;
+  tags: string[];
   properties: [Reference, NodeProperty][];
   actions: Action[];
   origin: NodeOrigin;

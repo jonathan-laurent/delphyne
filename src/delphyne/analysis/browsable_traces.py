@@ -385,6 +385,7 @@ class _TraceTranslator:
             kind=node.effect_name(),
             success_value=success,
             summary_message=node.summary_message(),
+            tags=list(node.get_tags()),
             leaf_node=node.leaf_node(),
             label="&".join(ts) if (ts := node.get_tags()) else None,
             properties=props,
@@ -397,6 +398,7 @@ class _TraceTranslator:
         id: refs.NodeId,
         ref: refs.SpaceRef,
         strategy: dp.StrategyComp[Any, Any, Any],
+        tags: Sequence[dp.Tag],
     ) -> fb.NodeProperty:
         strategy_name = strategy.strategy_name()
         if strategy_name is None:
@@ -410,13 +412,20 @@ class _TraceTranslator:
         # if the tree hasn't been explored.
         root_id = self.rev_map.nested_trees[id].get(ref)
         root_id_raw = root_id.id if root_id is not None else None
-        return fb.NestedTree("nested", strategy_name, args, root_id_raw)
+        return fb.NestedTree(
+            kind="nested",
+            strategy=strategy_name,
+            args=args,
+            tags=list(tags),
+            node_id=root_id_raw,
+        )
 
     def translate_query(
         self,
         id: refs.NodeId,
         ref: refs.SpaceRef,
         query: dp.AbstractQuery[Any],
+        tags: Sequence[dp.Tag],
     ) -> fb.NodeProperty:
         name = query.name()
         args = query.serialize_args()
@@ -441,7 +450,13 @@ class _TraceTranslator:
                 else:
                     hint_str = (hint.hint,)
             answers.append(fb.Answer(aid.id, hint_str, parsed_repr))
-        return fb.Query("query", name, args, answers)
+        return fb.Query(
+            kind="query",
+            name=name,
+            args=args,
+            tags=list(tags),
+            answers=answers,
+        )
 
     def translate_space(
         self, id: refs.NodeId, ref: refs.SpaceRef
@@ -451,9 +466,13 @@ class _TraceTranslator:
         space = nav.resolve_space_ref(tree, ref)
         match source := space.source():
             case dp.NestedTree():
-                prop = self.translate_strategy_comp(id, ref, source.strategy)
+                prop = self.translate_strategy_comp(
+                    id, ref, source.strategy, space.tags()
+                )
             case dp.AttachedQuery():
-                prop = self.translate_query(id, ref, source.query)
+                prop = self.translate_query(
+                    id, ref, source.query, space.tags()
+                )
         ref_str = fb.Reference(dp.pprint.space_ref(ref), None)
         if self.simplifier is not None:
             full_nref = self.trace.expand_node_id(id)

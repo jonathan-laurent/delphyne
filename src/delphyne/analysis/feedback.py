@@ -80,6 +80,7 @@ class NestedTree:
     kind: Literal["nested"]
     strategy: str
     args: dict[str, ValueRepr]
+    tags: list[str]
     node_id: TraceNodeId | None  # None if the subtree hasn't been explored
 
 
@@ -107,6 +108,7 @@ class Query:
 
     kind: Literal["query"]
     name: str
+    tags: list[str]
     args: dict[str, object]
     answers: list[Answer]
 
@@ -163,6 +165,7 @@ class Node:
     summary_message: str | None
     leaf_node: bool
     label: str | None
+    tags: list[str]
     properties: list[tuple[Reference, NodeProperty]]
     actions: list[Action]
     origin: NodeOrigin
