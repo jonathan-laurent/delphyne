@@ -31,6 +31,7 @@ class RunLoadedStrategyArgs[N: dp.Node, P, T]:
     policy: dp.Policy[N, P]
     num_generated: int = 1
     budget: dict[str, float] | None = None
+    requests_cache: str | None = None
     export_raw_trace: bool = True
     export_log: bool = True
     export_browsable_trace: bool = True
@@ -45,6 +46,8 @@ async def run_loaded_strategy[N: dp.Node, P, T](
         prompt_dirs=exe.prompt_dirs,
         data_dirs=exe.data_dirs,
         demonstration_files=exe.demo_files,
+        requests_cache_dir=exe.requests_cache_dir,
+        requests_cache_name=args.requests_cache,
         do_not_match_identical_queries=True,
     )
     cache: dp.TreeCache = {}
@@ -127,6 +130,7 @@ class RunStrategyArgs:
     policy_args: dict[str, object]
     num_generated: int
     budget: dict[str, float]
+    requests_cache: str | None = None
     export_raw_trace: bool = True
     export_log: bool = True
     export_browsable_trace: bool = True

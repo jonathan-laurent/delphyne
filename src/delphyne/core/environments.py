@@ -297,6 +297,8 @@ class PolicyEnv:
         prompt_dirs: Sequence[Path],
         demonstration_files: Sequence[Path],
         data_dirs: Sequence[Path],
+        requests_cache_dir: Path | None = None,
+        requests_cache_name: str | None = None,
         do_not_match_identical_queries: bool = False,
     ):
         """
@@ -306,6 +308,12 @@ class PolicyEnv:
         self.templates = TemplatesManager(prompt_dirs, data_dirs)
         self.examples = ExampleDatabase(do_not_match_identical_queries)
         self.tracer = Tracer()
+        self.requests_cache_name = requests_cache_name
+        self.requests_cache_dir = requests_cache_dir
+        if requests_cache_name is not None:
+            assert requests_cache_dir is not None, (
+                "No directory specified for the requests cache."
+            )
         for path in demonstration_files:
             try:
                 with path.open() as f:
