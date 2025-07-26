@@ -4,7 +4,7 @@ The core tree datastructure.
 
 import typing
 from abc import ABC, abstractmethod
-from collections.abc import Callable, Generator, Iterable, Sequence
+from collections.abc import Callable, Generator, Sequence
 from dataclasses import dataclass, replace
 from typing import Any, Generic, Protocol, TypeVar, cast
 
@@ -144,16 +144,6 @@ class Node(ABC):
         if (primary := self.primary_space()) is not None:
             return [*primary.tags(), *self.get_extra_tags()]
         return self.get_extra_tags()
-
-    def base_spaces(self) -> "Iterable[Space[object]]":
-        """
-        Spaces that are always displayed in the UI, even if they do not
-        appear in the trace. By default, the primary space is treated
-        as the only base space (when specified).
-        """
-        if (space := self.primary_space()) is not None:
-            return (space,)
-        return ()
 
     # Methods that should not be overriden
 
@@ -596,9 +586,6 @@ class Success[T]:
         return self.__class__.__name__
 
     def get_tags(self) -> Sequence[Tag]:
-        return ()
-
-    def base_spaces(self) -> "Iterable[Space[object]]":
         return ()
 
     def nested_space(

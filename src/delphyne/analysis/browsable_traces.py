@@ -358,18 +358,11 @@ class _TraceTranslator:
             success = _value_repr(value, node.success.type_annot)
         else:
             success = None
-        # Computing properties. We show the base spaces in any case and
-        # then we add autodetected spaces.
-        prop_refs = {
-            self.trace.convert_global_space_path(c.source().ref): None
-            for c in node.base_spaces()
-        }
-        for sref in self.spaces[id]:
-            prop_refs[sref] = None
         # We populate `self.space_prop_ids`. It is important that nodes
         # are translated in topological order. Indeed, when a node is
         # processed and its origin is translated (`translate_origin`),
         # the property id of its originator is needed.
+        prop_refs = {k: None for k in self.spaces[id]}
         for i, ref in enumerate(prop_refs):
             self.space_prop_ids[(id, ref)] = i
         # Now we can translate properties
