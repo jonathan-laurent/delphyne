@@ -5,7 +5,7 @@ Policy environments.
 import json
 import threading
 from collections import defaultdict
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
@@ -300,6 +300,7 @@ class PolicyEnv:
         requests_cache_dir: Path | None = None,
         requests_cache_name: str | None = None,
         do_not_match_identical_queries: bool = False,
+        make_requests_cache: Callable[[Path], object] | None = None,
     ):
         """
         An environment accessible to a policy, containing prompt and
@@ -308,12 +309,15 @@ class PolicyEnv:
         self.templates = TemplatesManager(prompt_dirs, data_dirs)
         self.examples = ExampleDatabase(do_not_match_identical_queries)
         self.tracer = Tracer()
-        self.requests_cache_name = requests_cache_name
-        self.requests_cache_dir = requests_cache_dir
+        # Load the cache
+        self.requests_cache = None
         if requests_cache_name is not None:
             assert requests_cache_dir is not None, (
                 "No directory specified for the requests cache."
             )
+            path = requests_cache_dir / requests_cache_name
+            assert make_requests_cache is not None
+            self.requests_cache = make_requests_cache(path)
         for path in demonstration_files:
             try:
                 with path.open() as f:

@@ -643,6 +643,12 @@ def _parse_or_log_and_raise[T](
     return parsed
 
 
+def get_request_cache(env: dp.PolicyEnv) -> md.LLMCache | None:
+    cache = env.requests_cache
+    assert cache is None or isinstance(cache, md.LLMCache)
+    return cache
+
+
 @prompting_policy
 def classify[T](
     query: dp.AttachedQuery[T],
@@ -690,7 +696,7 @@ def classify[T](
     )
     cost_estimate = model.estimate_budget(req)
     yield dp.Barrier(cost_estimate)
-    resp = model.send_request(req)
+    resp = model.send_request(req, get_request_cache(env))
     log_oracle_response(env, query, req, resp, verbose=enable_logging)
     yield dp.Spent(resp.budget)
     if not resp.outputs:
@@ -806,7 +812,7 @@ def few_shot[T](
         )
         cost_estimate = model.estimate_budget(req)
         yield dp.Barrier(cost_estimate)
-        resp = model.send_request(req)
+        resp = model.send_request(req, get_request_cache(env))
         log_oracle_response(env, query, req, resp, verbose=enable_logging)
         yield dp.Spent(resp.budget)
         if not resp.outputs:

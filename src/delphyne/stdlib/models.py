@@ -298,8 +298,6 @@ class LLMRequest:
     that can be plugged into a pydantic adapter.
     """
 
-    # TODO: add support for getting tokens.
-
     chat: Chat
     num_completions: int
     options: RequestOptions
@@ -338,7 +336,7 @@ class LLM(ABC):
         """
         To be overriden by subclasses to implement the core
         functionality of `send_request`, which automatically handles
-        defaults.
+        defaults and caching.
 
         This function is allowed to raise exceptions, including
         `LLMBusyException`.
@@ -354,13 +352,17 @@ class LLM(ABC):
         raise StreamingNotImplemented()
 
     @final
-    def send_request(self, req: LLMRequest) -> LLMResponse:
+    def send_request(
+        self, req: LLMRequest, cache: "LLMCache | None"
+    ) -> LLMResponse:
         """
         Send a request to a model and return the response.
 
         This function is allowed to raise exceptions, including
         `LLMBusyException`.
         """
+        if cache is not None:
+            self = CachedModel(self, cache)
         full_req = self.add_model_defaults(req)
         return self._send_final_request(full_req)
 
@@ -417,7 +419,7 @@ class WithRetry(LLM):
     def _send_final_request(self, req: LLMRequest) -> LLMResponse:
         for i, retry_delay in enumerate([*self.retry_delays(), None]):
             try:
-                ret = self.model.send_request(req)
+                ret = self.model.send_request(req, None)
                 if i > 0:
                     ret.log_items.append(
                         LLMResponseLogItem(
@@ -480,7 +482,7 @@ class CachedModel(LLM):
         @cache(dir=self.cache.cache_dir, hash_arg=_CachedRequest.stable_repr)
         def run_request(req: _CachedRequest) -> LLMResponse:
             base = req.request
-            return self.model.send_request(base)
+            return self.model.send_request(base, None)
 
         self.run_request = run_request
 

@@ -49,6 +49,7 @@ async def run_loaded_strategy[N: dp.Node, P, T](
         requests_cache_dir=exe.requests_cache_dir,
         requests_cache_name=args.requests_cache,
         do_not_match_identical_queries=True,
+        make_requests_cache=std.LLMCache,
     )
     cache: dp.TreeCache = {}
     monitor = dp.TreeMonitor(cache, hooks=[dp.tracer_hook(env.tracer)])
@@ -152,6 +153,7 @@ async def run_strategy(
             policy=policy,
             num_generated=args.num_generated,
             budget=args.budget,
+            requests_cache=args.requests_cache,
             export_raw_trace=args.export_raw_trace,
             export_log=args.export_log,
             export_browsable_trace=args.export_browsable_trace,
