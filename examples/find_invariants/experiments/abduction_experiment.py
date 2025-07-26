@@ -4,7 +4,6 @@ import code2inv
 from code2inv_experiments import (
     AbductionConfig,
     make_code2inv_abduction_experiment,
-    run_app,
 )
 
 configs = [
@@ -27,4 +26,4 @@ configs = [
 if __name__ == "__main__":
     exp_name = Path(__file__).stem
     exp = make_code2inv_abduction_experiment(exp_name, configs)
-    run_app(exp)
+    exp.run_cli()

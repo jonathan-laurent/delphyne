@@ -2,7 +2,6 @@
 Code2Inv Experiments
 """
 
-import argparse
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -131,88 +130,3 @@ def make_code2inv_baseline_experiment(
         configs=configs,
         config_naming=lambda c, id: f"{c.bench_name}_{c.model_name}_{id}",
     )
-
-
-#####
-##### Creating CLIs
-#####
-
-
-def run_app(exp: exp.Experiment[Any]):
-    parser = argparse.ArgumentParser(
-        description="Run experiment with configurable max_workers"
-    )
-    parser.add_argument(
-        "--max-workers",
-        type=int,
-        default=2,
-        help="Maximum number of worker threads (default: 2)",
-    )
-    parser.add_argument(
-        "--cache-requests",
-        type=bool,
-        default=True,
-        help="Whether to cache requests (default: True)",
-    )
-    parser.add_argument(
-        "--export-raw-trace",
-        type=bool,
-        default=False,
-        help="Whether to export raw trace (default: False)",
-    )
-    parser.add_argument(
-        "--export-log",
-        type=bool,
-        default=True,
-        help="Whether to export log (default: True)",
-    )
-    parser.add_argument(
-        "--export-browsable-trace",
-        type=bool,
-        default=False,
-        help="Whether to export browsable trace (default: False)",
-    )
-    parser.add_argument(
-        "--cache-only",
-        action="store_true",
-        help="Only export cache (sets cache_requests=True, all other exports=False)",
-    )
-    parser.add_argument(
-        "--minimal-output",
-        action="store_true",
-        help="Minimal output mode (sets all export options to False)",
-    )
-    parser.add_argument(
-        "--retry-errors",
-        action="store_true",
-        help="Mark errors as todos to retry them",
-    )
-    args = parser.parse_args()
-
-    # Handle special modes
-    if args.cache_only:
-        cache_requests = True
-        export_raw_trace = False
-        export_log = False
-        export_browsable_trace = False
-    elif args.minimal_output:
-        cache_requests = False
-        export_raw_trace = False
-        export_log = False
-        export_browsable_trace = False
-    else:
-        cache_requests = args.cache_requests
-        export_raw_trace = args.export_raw_trace
-        export_log = args.export_log
-        export_browsable_trace = args.export_browsable_trace
-
-    # Set experiment fields before loading
-    exp.cache_requests = cache_requests
-    exp.export_raw_trace = export_raw_trace
-    exp.export_log = export_log
-    exp.export_browsable_trace = export_browsable_trace
-
-    exp.load()
-    if args.retry_errors:
-        exp.mark_errors_as_todos()
-    exp.resume(max_workers=args.max_workers)

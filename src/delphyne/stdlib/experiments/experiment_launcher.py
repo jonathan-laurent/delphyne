@@ -14,6 +14,7 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Literal, Protocol
 
+import fire  # type: ignore
 import pandas as pd  # type: ignore
 import yaml
 
@@ -277,6 +278,12 @@ class Experiment[Config]:
         data = pd.DataFrame, pd.read_csv(summary_file)  # type: ignore
         return data
 
+    def run_cli(self):
+        """
+        Run the experiment as a CLI application.
+        """
+        fire.Fire(ExperimentCLI(self))  # type: ignore
+
 
 EXPORTED_BUDGET_FIELDS = [
     "num_completions",
@@ -393,3 +400,28 @@ def _config_unique_repr(config: object):
     config = pydantic_load(cls, python)
     python = pydantic_dump(cls, config)
     return json.dumps(python)
+
+
+class ExperimentCLI:
+    def __init__(self, experiment: Experiment[Any]):
+        self.experiment = experiment
+
+    def __call__(self):
+        self.run()
+
+    def run(
+        self,
+        max_workers: int = 1,
+        retry_errors: bool = False,
+        cache: bool = True,
+        verbose_output: bool = False,
+    ):
+        self.experiment.cache_requests = cache
+        self.experiment.export_raw_trace = verbose_output
+        self.experiment.export_browsable_trace = verbose_output
+        self.experiment.export_log = True
+
+        self.experiment.load()
+        if retry_errors:
+            self.experiment.mark_errors_as_todos()
+        self.experiment.resume(max_workers=max_workers)

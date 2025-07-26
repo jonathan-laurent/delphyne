@@ -3,7 +3,6 @@ from pathlib import Path
 from code2inv_experiments import (
     BaselineConfig,
     make_code2inv_baseline_experiment,
-    run_app,
 )
 
 configs = [
@@ -22,4 +21,4 @@ configs = [
 if __name__ == "__main__":
     exp_name = Path(__file__).stem
     exp = make_code2inv_baseline_experiment(exp_name, configs)
-    run_app(exp)
+    exp.run_cli()

@@ -11,6 +11,10 @@ clean-ignored:
 
 clean: clean-ignored
 
+test-exp:
+	python experiments/test_abduction_experiment.py run --max_workers=2
+	python experiments/test_baseline_experiment.py run --max_workers=1
+
 delete-test-exp:
 	rm -rf experiments/output/test_abduction_experiment  experiments/output/test_baseline_experiment
 
