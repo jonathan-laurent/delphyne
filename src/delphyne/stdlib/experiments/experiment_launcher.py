@@ -115,6 +115,15 @@ class Experiment[Config]:
                 )
         return self
 
+    def is_done(self) -> bool:
+        """
+        Check if the experiment is done, i.e., all configurations are
+        marked as "done".
+        """
+        state = self.load_state()
+        assert state is not None
+        return all(info.status == "done" for info in state.configs.values())
+
     def config_dir(self, config_name: str) -> Path:
         return self.dir / config_name
 
@@ -291,6 +300,21 @@ class Experiment[Config]:
         data = pd.DataFrame, pd.read_csv(summary_file)  # type: ignore
         return data
 
+    def get_status(self) -> dict[str, int]:
+        """
+        Get the status of the experiment configurations.
+
+        Returns:
+            A dictionary with keys 'todo', 'done', 'failed' and their counts
+        """
+        state = self.load_state()
+        assert state is not None
+        statuses = state.configs.values()
+        num_todo = sum(1 for c in statuses if c.status == "todo")
+        num_done = sum(1 for c in statuses if c.status == "done")
+        num_failed = sum(1 for c in statuses if c.status == "failed")
+        return {"todo": num_todo, "done": num_done, "failed": num_failed}
+
     def run_cli(self):
         """
         Run the experiment as a CLI application.
@@ -438,6 +462,15 @@ class ExperimentCLI:
         if retry_errors:
             self.experiment.mark_errors_as_todos()
         self.experiment.resume(max_workers=max_workers)
+
+    def status(self):
+        status_counts = self.experiment.get_status()
+        print(
+            f"Experiment '{self.experiment.name}':\n"
+            f"  - {status_counts['todo']} configurations to do\n"
+            f"  - {status_counts['done']} configurations done\n"
+            f"  - {status_counts['failed']} configurations failed"
+        )
 
     def replay(self, config: str | None = None):
         self.experiment.load()
