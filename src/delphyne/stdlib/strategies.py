@@ -58,6 +58,12 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
 class _StrategyDecorator(Protocol):
     """
     Type of the `@strategy(...)` decorator.
+
+    Note that this definition cannot be inlined in the return type of
+    `@strategy`, without which variables such as `P` and `T` would not
+    be correctly scoped and inferred (type checkers such as Pyright
+    would set them to `Unknown` if they cannot be inferred from `args`
+    in `@strategy(*args)(f)`).
     """
 
     def __call__[**A, N: dp.Node, P, T](

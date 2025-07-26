@@ -49,12 +49,13 @@ P = TypeVar("P", contravariant=True)
 class OpaqueSpace(Generic[P, T], Space[T]):
     stream: Callable[[PolicyEnv, P], Stream[T]]
     _source: NestedTree[Any, Any, T] | AttachedQuery[T]
+    _tags: Sequence[tr.Tag]
 
     def source(self) -> NestedTree[Any, Any, T] | AttachedQuery[T]:
         return self._source
 
     def tags(self) -> Sequence[tr.Tag]:
-        return self._source.tags()
+        return self._tags
 
     @staticmethod
     def from_query[P1, T1](
@@ -62,14 +63,19 @@ class OpaqueSpace(Generic[P, T], Space[T]):
         get_policy: Callable[[P1], AbstractPromptingPolicy],
     ) -> "tr.SpaceBuilder[OpaqueSpace[P1, T1]]":
         def build(
-            spawner: tr.QuerySpawner, extra_tags: Sequence[tr.Tag]
+            spawner: tr.QuerySpawner, tags: Sequence[tr.Tag]
         ) -> OpaqueSpace[P1, T1]:
-            attached = spawner(query, extra_tags)
+            attached = spawner(query)
             return OpaqueSpace(
-                (lambda env, pol: get_policy(pol)(attached, env)), attached
+                stream=(lambda env, pol: get_policy(pol)(attached, env)),
+                _source=attached,
+                _tags=tags,
             )
 
-        return tr.SpaceBuilder(lambda _, spawner, tags: build(spawner, tags))
+        return tr.SpaceBuilder(
+            build=lambda _, spawner, tags: build(spawner, tags),
+            tags=query.default_tags(),
+        )
 
     @staticmethod
     def from_strategy[N: Node, P1, P2, T1](
@@ -77,18 +83,21 @@ class OpaqueSpace(Generic[P, T], Space[T]):
         get_policy: Callable[[P1], tuple[AbstractSearchPolicy[N], P2]],
     ) -> "tr.SpaceBuilder[OpaqueSpace[P1, T1]]":
         def build(
-            spawner: tr.NestedTreeSpawner, extra_tags: Sequence[tr.Tag]
+            spawner: tr.NestedTreeSpawner, tags: Sequence[tr.Tag]
         ) -> OpaqueSpace[P1, T1]:
-            nested = spawner(strategy, extra_tags)
+            nested = spawner(strategy)
 
             def stream(env: PolicyEnv, policy: P1) -> Stream[T1]:
                 tree = nested.spawn_tree()
                 search_pol, inner_pol = get_policy(policy)
                 return search_pol(tree, env, inner_pol)
 
-            return OpaqueSpace(stream, nested)
+            return OpaqueSpace(stream, nested, tags)
 
-        return tr.SpaceBuilder(lambda spawner, _, tags: build(spawner, tags))
+        return tr.SpaceBuilder(
+            build=lambda spawner, _, tags: build(spawner, tags),
+            tags=strategy.default_tags(),
+        )
 
 
 type Opaque[P, T] = tr.SpaceBuilder[OpaqueSpace[P, T]]

@@ -96,5 +96,6 @@ from delphyne.core.trees import (
     StrategyException,
     Success,
     Tag,
+    TransparentQuery,
     Tree,
 )

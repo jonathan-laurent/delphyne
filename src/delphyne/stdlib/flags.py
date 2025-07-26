@@ -48,10 +48,10 @@ class FlagQuery[T: str](Query[T]):
 
 @dataclass(frozen=True)
 class Flag[F: FlagQuery[Any]](dp.Node):
-    flag: dp.AttachedQuery[Any]
+    flag: dp.TransparentQuery[Any]
 
     def summary_message(self) -> str:
-        query = self.flag.query
+        query = self.flag.attached.query
         assert isinstance(query, FlagQuery)
         name = query.name()
         return f"{name}: {', '.join(query.flag_values())}"
@@ -71,7 +71,7 @@ class Flag[F: FlagQuery[Any]](dp.Node):
 def get_flag[T: str](
     flag: type[FlagQuery[T]],
 ) -> dp.Strategy[Flag[Any], object, T]:
-    query = dp.AttachedQuery.build(flag())
+    query = dp.TransparentQuery.build(flag())
     ret = yield spawn_node(Flag, flag=query)
     return cast(T, ret)
 
@@ -94,11 +94,11 @@ def pure_elim_flag[F: FlagQuery[Any], N: dp.Node, P, T](
 ) -> dp.Tree[N, P, T]:
     if isinstance(tree.node, Flag):
         node = cast(Flag[Any], tree.node)  # type: ignore
-        if isinstance(query := node.flag.query, flag):
+        if isinstance(query := node.flag.attached, flag):
             node = cast(Flag[F], node)
             answer = dp.Answer(None, val)
             assert answer in query.finite_answer_set()
-            tracked = node.flag.parse_answer(answer)
+            tracked = node.flag.attached.parse_answer(answer)
             assert not isinstance(tracked, dp.ParseError)
             return pure_elim_flag(flag, val, tree.child(tracked))
     return tree.transform(tree.node, lambda n: pure_elim_flag(flag, val, n))  # type: ignore

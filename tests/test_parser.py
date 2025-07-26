@@ -46,6 +46,8 @@ def test_node_origin_roundabout(s: str):
         # Advanced node selectors
         ("at tag#2", None),
         ("at tag#1/iter/node#3", None),
+        ("at tag1&tag2/iter", None),
+        ("at tag1#1&tag2#2/iter", None),
     ],
 )
 def test_parser(inp: str, out: str | None):

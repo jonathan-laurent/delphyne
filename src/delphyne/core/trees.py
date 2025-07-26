@@ -20,13 +20,19 @@ from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 #####
 
 
+type Tag = str
+"""
+Tags for better navigation in traces and in the demo language.
+"""
+
+
 class Space[T](ABC):
     """
     Abstract type for a space.
     """
 
     @abstractmethod
-    def tags(self) -> "Sequence[Tag]":
+    def tags(self) -> Sequence[Tag]:
         pass
 
     @abstractmethod
@@ -35,7 +41,7 @@ class Space[T](ABC):
 
 
 @dataclass(frozen=True)
-class AttachedQuery[T](Space[T]):
+class AttachedQuery[T]:
     """
     Wrapper for a query attached to a specific space.
     """
@@ -43,25 +49,29 @@ class AttachedQuery[T](Space[T]):
     query: AbstractQuery[T]
     ref: refs.GlobalSpacePath
     parse_answer: Callable[[refs.Answer], Tracked[T] | ParseError]
-    extra_tags: "Sequence[Tag]"
 
-    def tags(self) -> "Sequence[Tag]":
-        return self.query.tags()
 
-    def source(self):
-        return self
+@dataclass(frozen=True)
+class TransparentQuery[T](Space[T]):
+    attached: AttachedQuery[T]
+    _tags: "Sequence[Tag]"
+
+    def source(self) -> AttachedQuery[T]:
+        return self.attached
+
+    def tags(self) -> Sequence[Tag]:
+        return self._tags
 
     @staticmethod
     def build[T1](
         query: AbstractQuery[T1],
-    ) -> "SpaceBuilder[AttachedQuery[T1]]":
-        return SpaceBuilder(lambda _, spawner, tags: spawner(query, tags))
-
-
-type Tag = str
-"""
-Tags for better navigation in traces and in the demo language.
-"""
+    ) -> "SpaceBuilder[TransparentQuery[T1]]":
+        return SpaceBuilder(
+            build=lambda _, spawner, tags: TransparentQuery(
+                spawner(query), tags
+            ),
+            tags=query.default_tags(),
+        )
 
 
 #####
@@ -218,12 +228,11 @@ class Node(ABC):
                 f"Expected an EmbeddedTree, got {type(emb)}"
             )
             nested = NestedTree(
-                emb.nested.strategy,
-                emb.nested.ref,
-                lambda: trans(emb.nested.spawn_tree()),
-                emb.nested.extra_tags,
+                strategy=emb.nested.strategy,
+                ref=emb.nested.ref,
+                spawn_tree=lambda: trans(emb.nested.spawn_tree()),
             )
-            return EmbeddedTree(nested)
+            return EmbeddedTree(nested, _tags=emb.tags())
 
         def convert_parametric_embedded(obj: Any) -> Callable[[Any], Any]:
             return lambda arg: convert_embedded(obj(arg))
@@ -346,9 +355,10 @@ class StrategyComp(Generic[N, P, T]):
         """
         return self._comp(*self._args, **self._kwargs)
 
-    def tags(self) -> Sequence[Tag]:
+    def default_tags(self) -> Sequence[Tag]:
         """
-        Return all tags associated with the strategy computation.
+        Return all default tags associated with the strategy
+        computation.
         """
         return self._tags
 
@@ -438,13 +448,6 @@ class NestedTree[N: Node, P, T]:
     strategy: StrategyComp[Node, P, T]
     ref: refs.GlobalSpacePath
     spawn_tree: "Callable[[], Tree[N, P, T]]"
-    extra_tags: Sequence[Tag]
-
-    def source(self) -> "NestedTree[Any, Any, T]":
-        return self
-
-    def tags(self) -> Sequence[Tag]:
-        return (*self.strategy.tags(), *self.extra_tags)
 
 
 @dataclass(frozen=True)
@@ -455,13 +458,15 @@ class EmbeddedTree[N: Node, P, T](Space[T]):
     """
 
     nested: NestedTree[N, P, T]
+    _tags: Sequence[Tag]
 
     @staticmethod
     def builder[N1: Node, P1, T1](
         strategy: StrategyComp[N1, P1, T1],
     ) -> "SpaceBuilder[EmbeddedTree[N1, P1, T1]]":
-        return SpaceBuilder(
-            lambda spawn, _, tags: EmbeddedTree(spawn(strategy, tags))
+        return SpaceBuilder[EmbeddedTree[N1, P1, T1]](
+            build=lambda spawn, _, tags: EmbeddedTree(spawn(strategy), tags),
+            tags=strategy.default_tags(),
         )
 
     @staticmethod
@@ -474,7 +479,7 @@ class EmbeddedTree[N: Node, P, T](Space[T]):
         return self.nested
 
     def tags(self) -> Sequence[Tag]:
-        return self.nested.tags()
+        return self._tags
 
     def spawn_tree(self) -> "Tree[N, P, T]":
         return self.nested.spawn_tree()
@@ -487,14 +492,12 @@ class EmbeddedTree[N: Node, P, T](Space[T]):
 
 class NestedTreeSpawner(Protocol):
     def __call__[N: Node, P, T](
-        self, strategy: "StrategyComp[N, P, T]", extra_tags: Sequence[Tag]
+        self, strategy: "StrategyComp[N, P, T]"
     ) -> "NestedTree[N, P, T]": ...
 
 
 class QuerySpawner(Protocol):
-    def __call__[T](
-        self, query: AbstractQuery[T], extra_tags: Sequence[Tag]
-    ) -> "AttachedQuery[T]": ...
+    def __call__[T](self, query: AbstractQuery[T]) -> "AttachedQuery[T]": ...
 
 
 @dataclass(frozen=True)
@@ -505,15 +508,15 @@ class SpaceBuilder[S]:
     """
 
     build: Callable[[NestedTreeSpawner, QuerySpawner, Sequence[Tag]], S]
-    extra_tags: Sequence[Tag] = ()
+    tags: Sequence[Tag]
 
     def tagged(self, *tags: Tag) -> "SpaceBuilder[S]":
-        return replace(self, extra_tags=(*self.extra_tags, *tags))
+        return replace(self, tags=(*self.tags, *tags))
 
     def __call__(
         self, spawner: NestedTreeSpawner, query_spawner: QuerySpawner
     ) -> S:
-        return self.build(spawner, query_spawner, self.extra_tags)
+        return self.build(spawner, query_spawner, self.tags)
 
 
 class AbstractBuilderExecutor(ABC):

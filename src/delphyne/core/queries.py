@@ -87,7 +87,7 @@ class AbstractQuery[T](ABC):
         """
         return self.__class__.__name__
 
-    def tags(self) -> Sequence[str]:
+    def default_tags(self) -> Sequence[str]:
         return [self.name()]
 
     @abstractmethod

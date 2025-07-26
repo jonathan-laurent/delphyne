@@ -51,7 +51,7 @@ class __Computation__(dp.AbstractQuery[object]):
 
 @dataclass
 class Computation(dp.ComputationNode):
-    query: dp.AttachedQuery[Any]
+    query: dp.TransparentQuery[Any]
     _comp: Callable[[], Any]
     _ret_type: ty.TypeAnnot[Any]
 
@@ -73,7 +73,7 @@ def compute[**P, T](
     fun_args = insp.function_args_dict(f, args, kwargs)
     fun = insp.function_name(f)
     assert fun is not None
-    query = dp.AttachedQuery.build(__Computation__(fun, fun_args))
+    query = dp.TransparentQuery.build(__Computation__(fun, fun_args))
     unparsed = yield spawn_node(
         Computation, query=query, _comp=comp, _ret_type=ret_type
     )
@@ -86,7 +86,9 @@ def pure_elim_compute[N: dp.Node, P, T](
 ) -> dp.Tree[N, P, T]:
     if isinstance(tree.node, Computation):
         answer = tree.node.run_computation()
-        tracked = tree.node.query.parse_answer(dp.Answer(None, answer))
+        tracked = tree.node.query.attached.parse_answer(
+            dp.Answer(None, answer)
+        )
         assert not isinstance(tracked, dp.ParseError)
         return pure_elim_compute(tree.child(tracked))
 

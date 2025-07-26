@@ -226,7 +226,7 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
             sr = refs.SpaceRef(space_name, args_ref)
 
             def spawn_tree[N: Node, P, T](
-                strategy: StrategyComp[N, P, T], extra_tags: Sequence[tr.Tag]
+                strategy: StrategyComp[N, P, T],
             ) -> tr.NestedTree[N, P, T]:
                 def spawn() -> Tree[N, P, T]:
                     new_ref = (gr, sr, ())
@@ -236,10 +236,10 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
                             return cached
                     return _reify(strategy, new_ref, self._monitor)
 
-                return tr.NestedTree(strategy, (gr, sr), spawn, extra_tags)
+                return tr.NestedTree(strategy, (gr, sr), spawn)
 
             def spawn_query[T](
-                query: tr.AbstractQuery[T], extra_tags: Sequence[tr.Tag]
+                query: tr.AbstractQuery[T],
             ) -> tr.AttachedQuery[T]:
                 def parse_answer(
                     answer: refs.Answer,
@@ -250,9 +250,7 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
                         return parsed
                     return tr.Tracked(parsed, ref, gr, query.answer_type())
 
-                return tr.AttachedQuery(
-                    query, (gr, sr), parse_answer, extra_tags
-                )
+                return tr.AttachedQuery(query, (gr, sr), parse_answer)
 
             return builder(spawn_tree, spawn_query)
 
@@ -282,4 +280,4 @@ def spawn_standalone_query[T](query: AbstractQuery[T]) -> tr.AttachedQuery[T]:
             return parsed
         return tr.Tracked(parsed, ref, (), query.answer_type())
 
-    return tr.AttachedQuery(query, ((), refs.MAIN_SPACE), parse_answer, ())
+    return tr.AttachedQuery(query, ((), refs.MAIN_SPACE), parse_answer)
