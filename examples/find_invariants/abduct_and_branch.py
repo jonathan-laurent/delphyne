@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import ClassVar
 
 import delphyne as dp
-from delphyne import Branch, Computation, Failure, Strategy, Value, strategy
+from delphyne import Branch, Compute, Fail, Strategy, Value, strategy
 
 import why3_utils as why3
 
@@ -27,7 +27,7 @@ class ProposeInvsIP:
 
 @dataclass
 class ProveProgIP:
-    propose: "dp.Policy[Branch | Failure, ProposeInvsIP]"
+    propose: "dp.Policy[Branch | Fail, ProposeInvsIP]"
     eval: dp.PromptingPolicy
     quantify_eval: "Callable[[ProofStateMetrics], float] | None"
 
@@ -57,7 +57,7 @@ type Blacklist = Sequence[Proposal]
 @strategy
 def prove_program_via_abduction_and_branching(
     prog: why3.File,
-) -> Strategy[Branch | Value | Failure | Computation, ProveProgIP, why3.File]:
+) -> Strategy[Branch | Value | Fail | Compute, ProveProgIP, why3.File]:
     annotated: why3.File = prog
     while True:
         feedback = yield from dp.compute(why3.check, prog, annotated)
@@ -87,7 +87,7 @@ def prove_program_via_abduction_and_branching(
 def propose_invariants(
     obligation: why3.Obligation,
     blacklist: Sequence[Proposal] | None,
-) -> Strategy[Branch | Failure, ProposeInvsIP, tuple[Proposal, Blacklist]]:
+) -> Strategy[Branch | Fail, ProposeInvsIP, tuple[Proposal, Blacklist]]:
     if blacklist is None:
         blacklist = []
     proposal = yield from dp.branch(
@@ -146,7 +146,7 @@ def prove_program_via_abduction_and_branching_policy(
     max_nonroot_proposals: int = 3,
     enable_state_evaluation: bool = False,
     min_value: float = 0.3,
-) -> dp.Policy[Branch | Value | Failure | Computation, ProveProgIP]:
+) -> dp.Policy[Branch | Value | Fail | Compute, ProveProgIP]:
 
     def compute_value(metrics: ProofStateMetrics) -> float:
         prob = 1

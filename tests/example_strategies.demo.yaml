@@ -62,7 +62,7 @@
       nodes:
         1: {kind: Branch}
         2: {kind: Success}
-        3: {kind: Failure}
+        3: {kind: Fail}
         4: {kind: Success}
     test_feedback:
       - node_id: 2
@@ -98,7 +98,7 @@
     trace:
       nodes:
         1: {kind: Branch}
-        2: {kind: Failure}
+        2: {kind: Fail}
         3: {kind: Success}
     test_feedback:
       - node_id: 2

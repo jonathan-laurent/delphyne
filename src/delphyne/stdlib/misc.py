@@ -3,9 +3,9 @@ from dataclasses import dataclass
 from typing import Any, Iterable, Literal, Never, cast, overload
 
 import delphyne.core as dp
-from delphyne.stdlib.computations import Computation, elim_compute
+from delphyne.stdlib.computations import Compute, elim_compute
 from delphyne.stdlib.flags import Flag, FlagQuery, elim_flag, get_flag
-from delphyne.stdlib.nodes import Branch, Failure, Message, branch
+from delphyne.stdlib.nodes import Branch, Fail, Message, branch
 from delphyne.stdlib.policies import (
     PromptingPolicy,
     PureTreeTransformerFn,
@@ -41,11 +41,11 @@ def map_space[P, A, B](
     return map_space_strategy(space, f).using(lambda p: (dfs(), p))
 
 
-def just_dfs[P](policy: P) -> dp.Policy[Branch | Failure, P]:
+def just_dfs[P](policy: P) -> dp.Policy[Branch | Fail, P]:
     return (dfs(), policy)
 
 
-def just_compute[P](policy: P) -> dp.Policy[Computation, P]:
+def just_compute[P](policy: P) -> dp.Policy[Compute, P]:
     return (dfs() @ elim_compute(), policy)
 
 

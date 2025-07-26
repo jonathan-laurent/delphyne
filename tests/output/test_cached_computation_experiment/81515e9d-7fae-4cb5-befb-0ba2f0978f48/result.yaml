@@ -60,7 +60,7 @@ outcome:
     browsable_trace:
       nodes:
         1:
-          kind: Computation
+          kind: Compute
           success_value: null
           summary_message: null
           leaf_node: false
@@ -105,7 +105,7 @@ outcome:
             destination: 2
           origin: root
         2:
-          kind: Computation
+          kind: Compute
           success_value: null
           summary_message: null
           leaf_node: false
@@ -153,7 +153,7 @@ outcome:
           - 1
           - 0
         3:
-          kind: Computation
+          kind: Compute
           success_value: null
           summary_message: null
           leaf_node: false

@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import ClassVar, Never
 
 import delphyne as dp
-from delphyne import Branch, Computation, Strategy, dfs, strategy
+from delphyne import Branch, Compute, Strategy, dfs, strategy
 
 import why3_utils as why3
 
@@ -44,7 +44,7 @@ class AnnotateWithInvs(dp.Query[dp.Response[Sequence[why3.Formula], Never]]):
 @strategy
 def check_invariants(
     prog: why3.File, invariants: Sequence[why3.Formula]
-) -> dp.Strategy[Computation, object, why3.File | dp.Error]:
+) -> dp.Strategy[Compute, object, why3.File | dp.Error]:
     annotated = why3.add_invariants(prog, invariants)
     feedback = yield from dp.compute(why3.check, prog, annotated)
     if feedback.success:

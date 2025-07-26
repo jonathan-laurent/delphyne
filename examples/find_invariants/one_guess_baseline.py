@@ -6,7 +6,7 @@ the associated demonstrations.
 """
 
 import delphyne as dp
-from delphyne import Branch, Computation, Failure, Strategy, strategy
+from delphyne import Branch, Compute, Fail, Strategy, strategy
 
 import why3_utils as why3
 from abduct_and_branch import ProposeInvariants
@@ -15,7 +15,7 @@ from abduct_and_branch import ProposeInvariants
 @strategy
 def prove_program_one_guess(
     prog: why3.File,
-) -> Strategy[Branch | Failure | Computation, dp.PromptingPolicy, why3.File]:
+) -> Strategy[Branch | Fail | Compute, dp.PromptingPolicy, why3.File]:
     feedback = yield from dp.compute(why3.check, prog, prog)
     yield from dp.ensure(feedback.error is None, label="invalid_program")
     if feedback.success:
@@ -34,7 +34,7 @@ def prove_program_one_guess(
 
 def prove_program_one_guess_policy(
     model_name: str = "gpt-4o",
-) -> dp.Policy[Branch | Failure | Computation, dp.PromptingPolicy]:
+) -> dp.Policy[Branch | Fail | Compute, dp.PromptingPolicy]:
     model = dp.openai_model(model_name)
     pp = dp.few_shot(model)
     return (dp.dfs() @ dp.elim_compute(), pp)

@@ -9,7 +9,7 @@ from typing import Any
 
 import delphyne.core as dp
 from delphyne.core import refs
-from delphyne.stdlib.nodes import Branch, Factor, Failure, Value
+from delphyne.stdlib.nodes import Branch, Factor, Fail, Value
 from delphyne.stdlib.policies import search_policy
 from delphyne.stdlib.streams import take_one
 
@@ -28,7 +28,7 @@ class NodeState:
     confidence: float
     stream: dp.Stream[Any]
     node: Branch  # equal to tree.node, with a more precise type
-    tree: dp.Tree[Branch | Factor | Value | Failure, Any, Any]
+    tree: dp.Tree[Branch | Factor | Value | Fail, Any, Any]
 
 
 @dataclass(frozen=True, order=True)
@@ -44,7 +44,7 @@ class PriorityItem:
 
 @search_policy
 def best_first_search[P, T](
-    tree: dp.Tree[Branch | Factor | Value | Failure, P, T],
+    tree: dp.Tree[Branch | Factor | Value | Fail, P, T],
     env: dp.PolicyEnv,
     policy: P,
     child_confidence_prior: Callable[[int, int], float],
@@ -82,14 +82,14 @@ def best_first_search[P, T](
     pqueue: list[PriorityItem] = []  # a heap
 
     def push_fresh_node(
-        tree: dp.Tree[Branch | Factor | Value | Failure, Any, Any],
+        tree: dp.Tree[Branch | Factor | Value | Fail, Any, Any],
         confidence: float,
         depth: int,
     ) -> dp.Stream[T]:
         match tree.node:
             case dp.Success():
                 yield dp.Yield(tree.node.success)
-            case Failure():
+            case Fail():
                 pass
             case Factor() | Value():
                 if isinstance(tree.node, Value):

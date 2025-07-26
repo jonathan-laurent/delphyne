@@ -10,7 +10,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 
 import delphyne as dp
-from delphyne import Branch, Computation, Failure, Strategy, strategy
+from delphyne import Branch, Compute, Fail, Strategy, strategy
 
 import why3_utils as why3
 from why3_utils import File, Formula
@@ -56,7 +56,7 @@ def prove_program_by_recursive_abduction(
 @strategy
 def _prove_goal(
     prog: File, proved: Sequence[tuple[Formula, _Proof]], goal: Formula | None
-) -> Strategy[Computation, object, dp.AbductionStatus[_Feedback, _Proof]]:
+) -> Strategy[Compute, object, dp.AbductionStatus[_Feedback, _Proof]]:
     invs = [p[0] for p in proved]
     aux_prog = _modified_program(prog, invs, goal)
     feedback = yield from dp.compute(why3.check, aux_prog, aux_prog)
@@ -72,7 +72,7 @@ def _prove_goal(
 @strategy
 def _suggest_invariants(
     unproved: Sequence[why3.Obligation],
-) -> Strategy[Branch | Failure, dp.PromptingPolicy, Sequence[Formula]]:
+) -> Strategy[Branch | Fail, dp.PromptingPolicy, Sequence[Formula]]:
     assert len(unproved) > 0
     # We focus on the first unproved obligation
     answer = yield from dp.branch(
@@ -83,7 +83,7 @@ def _suggest_invariants(
 @strategy
 def _search_equivalent(
     proved: Sequence[Formula], fml: Formula
-) -> Strategy[Computation, object, Formula | None]:
+) -> Strategy[Compute, object, Formula | None]:
     for p in proved:
         limpl = yield from dp.compute(why3.is_valid_implication, [p], fml)
         rimpl = yield from dp.compute(why3.is_valid_implication, [fml], p)
@@ -95,7 +95,7 @@ def _search_equivalent(
 @strategy
 def _is_redundant(
     proved: Sequence[Formula], fml: Formula
-) -> Strategy[Computation, object, bool]:
+) -> Strategy[Compute, object, bool]:
     red = yield from dp.compute(why3.is_valid_implication, proved, fml)
     return red
 

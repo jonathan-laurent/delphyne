@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Any, cast
 
 import delphyne.core as dp
-from delphyne.stdlib.nodes import Failure, fail, spawn_node
+from delphyne.stdlib.nodes import Fail, fail, spawn_node
 from delphyne.stdlib.policies import search_policy
 from delphyne.stdlib.strategies import strategy
 from delphyne.stdlib.streams import StreamTransformer
@@ -27,7 +27,7 @@ def _iterate_inherited_tags(next: Any) -> Sequence[dp.SpaceBuilder[Any]]:
 @strategy(name="iterate", inherit_tags=_iterate_inherited_tags)
 def _iterate[P, S, T](
     next: Callable[[S | None], dp.Opaque[P, tuple[T | None, S]]],
-) -> dp.Strategy[Iteration | Failure, P, T]:
+) -> dp.Strategy[Iteration | Fail, P, T]:
     ret = yield spawn_node(Iteration, next=next)
     ret = cast(tuple[T | None, S], ret)
     yielded, _new_state = ret
@@ -39,7 +39,7 @@ def _iterate[P, S, T](
 
 @search_policy
 def search_iteration[P, T](
-    tree: dp.Tree[Iteration | Failure, P, T],
+    tree: dp.Tree[Iteration | Fail, P, T],
     env: dp.PolicyEnv,
     policy: P,
 ) -> dp.Stream[T]:

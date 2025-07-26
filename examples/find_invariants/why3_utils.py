@@ -24,7 +24,7 @@ class Feedback:
 
     def __str__(self):
         # TODO: this nicer representation is not used in the tree
-        # explorer because of the way `Computation` nodes work.
+        # explorer because of the way `Compute` nodes work.
         if self.error is not None:
             return self.error
         num_obl = len(self.obligations)

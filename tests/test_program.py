@@ -323,7 +323,7 @@ def test_sequence():
 
     def policy(
         model: dp.LLM,
-    ) -> dp.Policy[dp.Branch | dp.Failure, ex.MakeSumIP]:
+    ) -> dp.Policy[dp.Branch | dp.Fail, ex.MakeSumIP]:
         one_req = dp.with_budget(dp.BudgetLimit({dp.NUM_REQUESTS: 1}))
         return dp.sequence(
             [

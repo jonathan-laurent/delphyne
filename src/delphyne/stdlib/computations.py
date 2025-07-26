@@ -52,7 +52,7 @@ class __Computation__(dp.AbstractQuery[object]):
 
 
 @dataclass
-class Computation(dp.ComputationNode):
+class Compute(dp.ComputationNode):
     query: dp.TransparentQuery[Any]
     _comp: Callable[[], Any]
     _ret_type: ty.TypeAnnot[Any]
@@ -88,7 +88,7 @@ class Computation(dp.ComputationNode):
 
 def compute[**P, T](
     f: Callable[P, T], *args: P.args, **kwargs: P.kwargs
-) -> dp.Strategy[Computation, object, T]:
+) -> dp.Strategy[Compute, object, T]:
     comp = partial(f, *args, **kwargs)
     ret_type = insp.function_return_type(f)
     assert not isinstance(ret_type, ty.NoTypeInfo)
@@ -97,7 +97,7 @@ def compute[**P, T](
     assert fun is not None
     query = dp.TransparentQuery.build(__Computation__(fun, fun_args))
     unparsed = yield spawn_node(
-        Computation, query=query, _comp=comp, _ret_type=ret_type
+        Compute, query=query, _comp=comp, _ret_type=ret_type
     )
     ret = ty.pydantic_load(ret_type, unparsed)
     return cast(T, ret)
@@ -130,11 +130,11 @@ def elim_compute(
     env: dp.PolicyEnv,
     policy: Any,
     force_bypass_cache: bool = False,
-) -> pol.PureTreeTransformerFn[Computation, Never]:
+) -> pol.PureTreeTransformerFn[Compute, Never]:
     def transform[N: dp.Node, P, T](
-        tree: dp.Tree[Computation | N, P, T],
+        tree: dp.Tree[Compute | N, P, T],
     ) -> dp.Tree[N, P, T]:
-        if isinstance(tree.node, Computation):
+        if isinstance(tree.node, Compute):
             cache = None
             if not force_bypass_cache:
                 cache = dq.get_request_cache(env)

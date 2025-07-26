@@ -12,7 +12,7 @@ from typing import Any
 
 import delphyne.core as dp
 from delphyne.core.streams import Stream, Yield
-from delphyne.stdlib.nodes import Branch, Failure, Join
+from delphyne.stdlib.nodes import Branch, Fail, Join
 from delphyne.stdlib.policies import log, search_policy
 from delphyne.stdlib.queries import ProbInfo
 from delphyne.stdlib.streams import (
@@ -74,14 +74,14 @@ class OneOfEachSequentially:
 
 @search_policy
 def recursive_search[P, T](
-    tree: dp.Tree[Branch | Join | Failure, P, T],
+    tree: dp.Tree[Branch | Join | Fail, P, T],
     env: dp.PolicyEnv,
     policy: P,
 ) -> Stream[T]:
     match tree.node:
         case dp.Success(x):
             yield Yield(x)
-        case Failure():
+        case Fail():
             return
         case Branch(cands):
             assert tree.node.meta is not None

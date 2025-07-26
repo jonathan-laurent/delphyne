@@ -6,7 +6,7 @@ Delphyne standard library.
 # pyright: reportUnusedImport=false
 
 from delphyne.stdlib.computations import (
-    Computation,
+    Compute,
     compute,
     elim_compute,
 )
@@ -71,7 +71,7 @@ from delphyne.stdlib.models import (
 from delphyne.stdlib.nodes import (
     Branch,
     Factor,
-    Failure,
+    Fail,
     Join,
     Message,
     Value,
