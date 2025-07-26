@@ -105,14 +105,23 @@ class ObjectLoader:
         f = self.find_object(name)
         try:
             args = tp.parse_function_args(f, args)
-            return f(**args)
+            comp = f(**args)
+            assert isinstance(comp, dp.StrategyComp), (
+                f"Object {name} is not a strategy function."
+                + " Did you forget to use the @strategy decorator?"
+            )
+            return cast(Any, comp)
         except Exception as e:
             raise StrategyLoadingError(str(e))
 
     def load_query(
         self, name: str, args: dict[str, Any]
     ) -> dp.AbstractQuery[Any]:
-        q = cast(type[dp.AbstractQuery[Any]], self.find_object(name))
+        obj = self.find_object(name)
+        assert issubclass(obj, dp.AbstractQuery), (
+            f"Object {name} is not a query type."
+        )
+        q = cast(type[dp.AbstractQuery[Any]], obj)
         return q.parse_instance(args)
 
 

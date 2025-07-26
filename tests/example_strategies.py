@@ -10,6 +10,12 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, ClassVar, Literal, Never, Sequence, TypeAlias, cast
 
+# Reexporting untyped strategies
+# ruff: noqa: F401
+from example_strategies_untyped import (
+    trivial_untyped_strategy,  # type: ignore
+)
+
 import delphyne as dp
 
 #####

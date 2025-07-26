@@ -12,7 +12,7 @@ import delphyne.analysis.feedback as fb
 import delphyne.core as dp
 import delphyne.stdlib as std
 import delphyne.stdlib.tasks as ta
-from delphyne.utils.typing import NoTypeInfo, pydantic_dump
+from delphyne.utils.typing import pydantic_dump
 
 
 @dataclass
@@ -61,8 +61,6 @@ async def run_loaded_strategy[N: dp.Node, P, T](
 
     def serialize_result(res: T) -> Any | None:
         ret_type = args.strategy.return_type()
-        if isinstance(ret_type, NoTypeInfo):
-            return None
         return pydantic_dump(ret_type, res)
 
     def compute_result():

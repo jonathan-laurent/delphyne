@@ -1,6 +1,6 @@
 import typing
-from collections.abc import Callable
-from typing import Any
+from collections.abc import Callable, Sequence
+from typing import Any, cast
 
 import pydantic
 
@@ -28,8 +28,14 @@ class NoTypeInfo:
 
 
 def pydantic_dump[T](
-    type: TypeAnnot[T], x: T, *, exclude_defaults: bool = True
+    type: TypeAnnot[T] | NoTypeInfo, x: T, *, exclude_defaults: bool = True
 ) -> object:
+    if isinstance(type, NoTypeInfo):
+        assert valid_json_object(object), (
+            "Unable to serialize a non-JSON object "
+            + f"without a type annotation: {object}"
+        )
+        return object
     adapter = pydantic.TypeAdapter[T](type)
     return adapter.dump_python(
         x, exclude_defaults=exclude_defaults, warnings="error"
@@ -39,10 +45,12 @@ def pydantic_dump[T](
 ValidationError = pydantic.ValidationError
 
 
-def pydantic_load[T](type: TypeAnnot[T], s: object) -> T:
+def pydantic_load[T](type: TypeAnnot[T] | NoTypeInfo, s: object) -> T:
     """
     Raises ValidationError.
     """
+    if isinstance(type, NoTypeInfo):
+        type = Any
     adapter = pydantic.TypeAdapter[T](type)
     return adapter.validate_python(s)
 
@@ -53,8 +61,23 @@ def parse_function_args(
     hints = typing.get_type_hints(f)
     pargs: dict[str, Any] = {}
     for k in args:
-        if k not in hints:
-            raise ValueError(f"Unknown argument: {k}")
-        T = pydantic.TypeAdapter(hints[k])
-        pargs[k] = T.validate_python(args[k])
+        hint = hints.get(k, NoTypeInfo())
+        pargs[k] = pydantic_load(hint, args[k])
     return pargs
+
+
+def valid_json_object(obj: object) -> bool:
+    match obj:
+        case int() | float() | str() | bool() | None:
+            return True
+        case dict():
+            obj = cast(dict[object, object], obj)
+            return all(
+                isinstance(k, str) and valid_json_object(v)
+                for k, v in obj.items()
+            )
+        case tuple() | list():
+            obj = cast(Sequence[object], obj)
+            return all(valid_json_object(v) for v in obj)
+        case _:
+            return False

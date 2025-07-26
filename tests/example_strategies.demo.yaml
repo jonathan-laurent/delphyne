@@ -555,3 +555,16 @@
   expect:
     test_feedback:
       - diagnostics: __empty__
+
+
+- demonstration: trivial_untyped_strategy
+  strategy: trivial_untyped_strategy
+  args:
+    string: "hello"
+    integer: 42
+  tests:
+    - run | success
+  queries: []
+  expect:
+    test_feedback:
+      - diagnostics: __empty__

@@ -12,7 +12,7 @@ import pprint
 from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import Any, cast
+from typing import Any
 
 import delphyne.core as dp
 from delphyne.analysis import feedback as fb
@@ -138,23 +138,6 @@ class RefSimplifier:
 #####
 
 
-def _check_valid_json(obj: object) -> bool:
-    match obj:
-        case int() | float() | str() | bool() | None:
-            return True
-        case dict():
-            obj = cast(dict[object, object], obj)
-            return all(
-                isinstance(k, str) and _check_valid_json(v)
-                for k, v in obj.items()
-            )
-        case tuple() | list():
-            obj = cast(Sequence[object], obj)
-            return all(_check_valid_json(v) for v in obj)
-        case _:
-            return False
-
-
 def _value_repr[T](
     obj: T, typ: tp.TypeAnnot[T] | tp.NoTypeInfo
 ) -> fb.ValueRepr:
@@ -165,7 +148,7 @@ def _value_repr[T](
     if not isinstance(typ, tp.NoTypeInfo):
         try:
             json = tp.pydantic_dump(typ, obj)
-            assert _check_valid_json(json)
+            assert tp.valid_json_object(json)
             value.json = json
             value.json_provided = True
         except Exception:
