@@ -12,7 +12,7 @@ clean-ignored:
 clean: clean-ignored
 
 delete-test-exp:
-	rm -rf experiments/output/test experiments/output/test-baseline experiments/output/test-ensemble
+	rm -rf experiments/output/test_abduction_experiment  experiments/output/test_baseline_experiment
 
 # Test demonstrations, in a way that does not require Why3 to be installed.
 test:

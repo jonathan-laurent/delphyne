@@ -35,56 +35,12 @@ benchs = code2inv.load_all_benchmarks()
 
 
 #####
-##### Experiments wih basic policy
+##### Experiments with the Abduction-Based Agent
 #####
 
 
 @dataclass
-class Config:
-    bench_name: str
-    model_name: str
-    temp: float
-    num_concurrent: int
-    max_requests: int
-    seed: int
-
-
-def experiment(config: Config):
-    args: Any = {"prog": benchs[config.bench_name]}
-    policy_args: Any = {
-        "model_name": config.model_name,
-        "temperature": config.temp,
-        "num_concurrent": config.num_concurrent,
-    }
-    return cmd.RunStrategyArgs(  # type: ignore
-        strategy="prove_program_by_recursive_abduction",
-        args=args,
-        policy="prove_program_by_saturation_basic_policy",
-        policy_args=policy_args,
-        num_generated=1,
-        budget={dp.NUM_REQUESTS: config.max_requests},
-    )
-
-
-def make_code2inv_experiment(name: str, configs: Sequence[Config]):
-    return exp.Experiment(
-        name=name,
-        dir=output_dir / name,
-        context=context,
-        experiment=experiment,
-        config_type=Config,
-        configs=configs,
-        config_naming=lambda c, id: f"{c.bench_name}_{id}",
-    )
-
-
-#####
-##### Experiments wih ensemble policy
-#####
-
-
-@dataclass
-class EnsembleConfig:
+class AbductionConfig:
     bench_name: str
     model_cycle: Sequence[tuple[str, int]]
     temperature: float
@@ -94,7 +50,7 @@ class EnsembleConfig:
     seed: int
 
 
-def ensemble_experiment(config: EnsembleConfig):
+def abduction_experiment(config: AbductionConfig):
     args: Any = {"prog": benchs[config.bench_name]}
     policy_args: Any = {
         "model_cycle": config.model_cycle,
@@ -105,22 +61,22 @@ def ensemble_experiment(config: EnsembleConfig):
     return cmd.RunStrategyArgs(  # type: ignore
         strategy="prove_program_by_recursive_abduction",
         args=args,
-        policy="prove_program_by_saturation_ensemble_policy",
+        policy="prove_program_by_saturation",
         policy_args=policy_args,
         num_generated=1,
         budget={dp.DOLLAR_PRICE: config.max_dollar_budget},
     )
 
 
-def make_code2inv_ensemble_experiment(
-    name: str, configs: Sequence[EnsembleConfig]
+def make_code2inv_abduction_experiment(
+    name: str, configs: Sequence[AbductionConfig]
 ):
     return exp.Experiment(
         name=name,
         dir=output_dir / name,
         context=context,
-        experiment=ensemble_experiment,
-        config_type=EnsembleConfig,
+        experiment=abduction_experiment,
+        config_type=AbductionConfig,
         configs=configs,
         config_naming=lambda c, id: f"{c.bench_name}_{id}",
     )

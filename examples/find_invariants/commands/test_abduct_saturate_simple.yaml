@@ -13,7 +13,7 @@ args:
           x <- x + 1;
         done;
         assert { x >= 0 }
-  policy: prove_program_by_saturation_basic_policy
+  policy: prove_program_by_saturation_policy
   policy_args:
     model_name: mistral-small-2503
   num_generated: 1

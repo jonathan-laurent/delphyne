@@ -1,6 +1,11 @@
+from pathlib import Path
+
 import code2inv
-from code2inv_experiments import (BaselineConfig,
-                                  make_code2inv_baseline_experiment, run_app)
+from code2inv_experiments import (
+    BaselineConfig,
+    make_code2inv_baseline_experiment,
+    run_app,
+)
 
 SMALL = ["gpt-4o-mini"]
 LARGE = ["gpt-4o", "o3"]
@@ -23,5 +28,6 @@ configs = [
 ]
 
 if __name__ == "__main__":
-    exp = make_code2inv_baseline_experiment("baseline_final_tuned", configs)
+    exp_name = Path(__file__).stem
+    exp = make_code2inv_baseline_experiment(exp_name, configs)
     run_app(exp)

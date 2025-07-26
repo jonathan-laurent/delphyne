@@ -1,11 +1,13 @@
+from pathlib import Path
+
 from code2inv_experiments import (
-    EnsembleConfig,
-    make_code2inv_ensemble_experiment,
+    AbductionConfig,
+    make_code2inv_abduction_experiment,
     run_app,
 )
 
 configs = [
-    EnsembleConfig(
+    AbductionConfig(
         bench_name=bench,
         model_cycle=[("gpt-4.1-nano", 2), ("gpt-4.1-mini", 1)],
         temperature=1.5,
@@ -18,5 +20,6 @@ configs = [
 ]
 
 if __name__ == "__main__":
-    exp = make_code2inv_ensemble_experiment("test-ensemble", configs)
+    exp_name = Path(__file__).stem
+    exp = make_code2inv_abduction_experiment(exp_name, configs)
     run_app(exp)
