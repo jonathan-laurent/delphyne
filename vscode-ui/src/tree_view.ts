@@ -25,7 +25,6 @@ import { ROOT_ID } from "./common";
 
 const USE_PROPERTY_ICONS = true;
 const COLLAPSE_BY_DEFAULT = true;
-const NAME_FIRST = true;
 const DEFAULT_LABEL = "' '"; // alt: __default__
 const ANON_LABEL = ""; // alt: __anon__
 const LEAVES_LABEL = "results";
@@ -584,6 +583,13 @@ export type NodeViewItem =
   | SuccessItem
   | FailureItem;
 
+function spaceLabelFromNameAndTags(name: string, tags: string[]): string {
+  if (tags.length == 1 && tags[0] === name) {
+    return name;
+  }
+  return `${name} (${tags.join("&")})`;
+}
+
 class NodeView implements vscode.TreeDataProvider<NodeViewItem> {
   constructor(private parent: TreeView) {}
 
@@ -606,20 +612,19 @@ class NodeView implements vscode.TreeDataProvider<NodeViewItem> {
             }
             break;
           case "nested":
-            item.description = element.prop.strategy;
             if (USE_PROPERTY_ICONS) {
               item.iconPath = new vscode.ThemeIcon(NESTED_TREE_ICON);
             }
-            if (NAME_FIRST) {
-              item.label = item.description;
-              item.description = element.label;
-            }
+            item.label = spaceLabelFromNameAndTags(
+              element.prop.strategy,
+              element.prop.tags,
+            );
+            item.description = element.label;
             if (element.node_id !== null) {
               item.contextValue = NODE_CONTEXT_VALUE;
             }
             break;
           case "query":
-            item.description = element.prop.name;
             if (USE_PROPERTY_ICONS) {
               item.iconPath = new vscode.ThemeIcon(QUERY_ICON);
             }
@@ -627,10 +632,11 @@ class NodeView implements vscode.TreeDataProvider<NodeViewItem> {
               element.prop,
               this.parent.getPointedTree()!,
             );
-            if (NAME_FIRST) {
-              item.label = item.description;
-              item.description = element.label;
-            }
+            item.label = spaceLabelFromNameAndTags(
+              element.prop.name,
+              element.prop.tags,
+            );
+            item.description = element.label;
             break;
         }
         return item;
