@@ -33,7 +33,7 @@ def test_search_synthesis():
 def test_cached_computations():
     env = dp.PolicyEnv(demonstration_files=(), prompt_dirs=(), data_dirs=())
     # tr = Trans[N, M](dp.elim_compute)
-    policy = (dp.dfs() @ dp.elim_compute, None)
+    policy = (dp.dfs() @ dp.elim_compute(), None)
     stream = ex.test_cached_computations(1).run_toplevel(env, policy)
     res, _ = dp.collect(stream)
     assert res

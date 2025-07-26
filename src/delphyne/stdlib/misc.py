@@ -46,7 +46,7 @@ def just_dfs[P](policy: P) -> dp.Policy[Branch | Failure, P]:
 
 
 def just_compute[P](policy: P) -> dp.Policy[Computation, P]:
-    return (dfs() @ elim_compute, policy)
+    return (dfs() @ elim_compute(), policy)
 
 
 def ambient_pp(policy: PromptingPolicy) -> PromptingPolicy:

@@ -179,4 +179,4 @@ def prove_program_via_abduction_and_branching_policy(
         child_confidence_prior=child_confidence_prior,
         max_depth=max_depth)
 
-    return (bestfs @ dp.elim_compute, prove_prog_ip)
+    return (bestfs @ dp.elim_compute(), prove_prog_ip)

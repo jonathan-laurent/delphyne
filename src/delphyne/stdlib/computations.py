@@ -12,9 +12,9 @@ import yaml.parser
 
 import delphyne.core as dp
 import delphyne.core.inspect as insp
+import delphyne.stdlib.policies as pol
 import delphyne.utils.typing as ty
 from delphyne.stdlib.nodes import spawn_node
-from delphyne.stdlib.policies import ContextualTreeTransformer
 from delphyne.utils.yaml import dump_yaml
 
 
@@ -81,20 +81,23 @@ def compute[**P, T](
     return cast(T, ret)
 
 
-def pure_elim_compute[N: dp.Node, P, T](
-    tree: dp.Tree[Computation | N, P, T],
-) -> dp.Tree[N, P, T]:
-    if isinstance(tree.node, Computation):
-        answer = tree.node.run_computation()
-        tracked = tree.node.query.attached.parse_answer(
-            dp.Answer(None, answer)
-        )
-        assert not isinstance(tracked, dp.ParseError)
-        return pure_elim_compute(tree.child(tracked))
+@pol.contextual_tree_transformer
+def elim_compute(
+    env: dp.PolicyEnv,
+    policy: Any,
+    force_bypass_cache: bool = False,
+) -> pol.PureTreeTransformerFn[Computation, Never]:
+    def transform[N: dp.Node, P, T](
+        tree: dp.Tree[Computation | N, P, T],
+    ) -> dp.Tree[N, P, T]:
+        if isinstance(tree.node, Computation):
+            answer = tree.node.run_computation()
+            tracked = tree.node.query.attached.parse_answer(
+                dp.Answer(None, answer)
+            )
+            assert not isinstance(tracked, dp.ParseError)
+            return transform(tree.child(tracked))
 
-    return tree.transform(tree.node, pure_elim_compute)
+        return tree.transform(tree.node, transform)
 
-
-elim_compute = ContextualTreeTransformer[Computation, Never].pure(
-    pure_elim_compute
-)
+    return transform

@@ -1,4 +1,4 @@
-.PHONY: install-dev-deps clean clean-ignored test full-test full-clean all examples schemas stubs install doc-logo cloc deploy-doc
+.PHONY: install-dev-deps pyright clean clean-ignored test full-test full-clean all examples schemas stubs install doc-logo cloc deploy-doc
 
 TO_CLEAN := \
 	-name '__pycache__' -o \
@@ -16,6 +16,13 @@ STUBS_FOLDER := vscode-ui/src/stubs
 
 install:
 	pip install -e .
+
+
+pyright:
+	@echo "Checking main project"
+	pyright
+	@echo "\n\nChecking find_invariants"
+	pyright examples/find_invariants
 
 
 install-dev-deps:

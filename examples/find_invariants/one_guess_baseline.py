@@ -37,4 +37,4 @@ def prove_program_one_guess_policy(
 ) -> dp.Policy[Branch | Failure | Computation, dp.PromptingPolicy]:
     model = dp.openai_model(model_name)
     pp = dp.few_shot(model)
-    return (dp.dfs() @ dp.elim_compute, pp)
+    return (dp.dfs() @ dp.elim_compute(), pp)

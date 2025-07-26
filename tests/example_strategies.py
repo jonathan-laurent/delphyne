@@ -390,7 +390,7 @@ def test_cached_computations(
 
 @dp.ensure_compatible(test_cached_computations)
 def test_cached_computations_policy():
-    return (dp.dfs() @ dp.elim_compute, None)
+    return (dp.dfs() @ dp.elim_compute(), None)
 
 
 #####
@@ -724,7 +724,7 @@ def recursive_joins_policy():
     sp = (
         dprs.recursive_search()
         @ dp.elim_messages()
-        @ dp.elim_compute
+        @ dp.elim_compute()
         @ dp.elim_flag(MethodFlag, "def")
     )
     return (sp, dprs.OneOfEachSequentially())
