@@ -8,8 +8,8 @@ from typing import Any, Never, cast
 
 import delphyne.core as dp
 import delphyne.core.inspect as insp
+import delphyne.stdlib.policies as pol
 from delphyne.stdlib.nodes import Branch, branch, spawn_node
-from delphyne.stdlib.policies import ContextualTreeTransformer
 from delphyne.stdlib.queries import Query
 from delphyne.stdlib.strategies import strategy
 
@@ -87,27 +87,30 @@ def variants[A: str, P, T](
 # Change: make all flags strings. The first flag is the default value.
 
 
-def pure_elim_flag[F: FlagQuery[Any], N: dp.Node, P, T](
+@pol.contextual_tree_transformer
+def elim_flag[F: FlagQuery[Any]](
+    env: dp.PolicyEnv,
+    policy: Any,
     flag: type[F],
     val: str,
-    tree: dp.Tree[Flag[F] | N, P, T],
-) -> dp.Tree[N, P, T]:
-    if isinstance(tree.node, Flag):
-        node = cast(Flag[Any], tree.node)  # type: ignore
-        if isinstance(query := node.flag.attached, flag):
-            node = cast(Flag[F], node)
-            answer = dp.Answer(None, val)
-            assert answer in query.finite_answer_set()
-            tracked = node.flag.attached.parse_answer(answer)
-            assert not isinstance(tracked, dp.ParseError)
-            return pure_elim_flag(flag, val, tree.child(tracked))
-    return tree.transform(tree.node, lambda n: pure_elim_flag(flag, val, n))  # type: ignore
-
-
-def elim_flag[F: FlagQuery[Any]](
-    flag: type[F], val: str
-) -> ContextualTreeTransformer[Flag[F], Never]:
+) -> pol.PureTreeTransformerFn[Flag[F], Never]:
     assert val in flag.flag_values()
-    return ContextualTreeTransformer[Flag[F], Never].pure(
-        lambda tree: pure_elim_flag(flag, val, tree)  # type: ignore
-    )
+
+    def transform[N: dp.Node, P, T](
+        tree: dp.Tree[Flag[F] | N, P, T],
+    ) -> dp.Tree[N, P, T]:
+        if isinstance(tree.node, Flag):
+            tree = cast(dp.Tree[Any, P, T], tree)
+            node = cast(Flag[Any], tree.node)
+            if isinstance(query := node.flag.attached, flag):
+                node = cast(Flag[F], node)
+                answer = dp.Answer(None, val)
+                assert answer in query.finite_answer_set()
+                tracked = node.flag.attached.parse_answer(answer)
+                assert not isinstance(tracked, dp.ParseError)
+                return transform(tree.child(tracked))
+        tree = cast(dp.Tree[Any, P, T], tree)
+        node = cast(Any, tree.node)
+        return tree.transform(node, transform)
+
+    return transform

@@ -88,8 +88,11 @@ from delphyne.stdlib.openai_api import (
     OpenAICompatibleModel,
 )
 from delphyne.stdlib.policies import (
+    ContextualTreeTransformer,
     PromptingPolicy,
+    PureTreeTransformerFn,
     SearchPolicy,
+    contextual_tree_transformer,
     ensure_compatible,
     log,
     prompting_policy,

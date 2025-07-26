@@ -7,9 +7,10 @@ from delphyne.stdlib.computations import Computation, elim_compute
 from delphyne.stdlib.flags import Flag, FlagQuery, elim_flag, get_flag
 from delphyne.stdlib.nodes import Branch, Failure, Message, branch
 from delphyne.stdlib.policies import (
-    ContextualTreeTransformer,
     PromptingPolicy,
+    PureTreeTransformerFn,
     SearchPolicy,
+    contextual_tree_transformer,
 )
 from delphyne.stdlib.search.dfs import dfs
 from delphyne.stdlib.strategies import strategy
@@ -232,20 +233,23 @@ def or_else(main: _AnyPolicy, other: _AnyPolicy) -> _AnyPolicy:
 #####
 
 
+@contextual_tree_transformer
 def elim_messages(
+    env: dp.PolicyEnv,
+    policy: Any,
     show_in_log: bool = True,
-) -> ContextualTreeTransformer[Message, Never]:
+) -> PureTreeTransformerFn[Message, Never]:
     def transform[N: dp.Node, P, T](
-        tree: dp.Tree[Message | N, P, T], env: dp.PolicyEnv, policy: P
+        tree: dp.Tree[Message | N, P, T],
     ) -> dp.Tree[N, P, T]:
         if isinstance(tree.node, Message):
             if show_in_log:
                 metadata = {"attached": tree.node.data}
                 env.tracer.log(tree.node.msg, metadata=metadata)
-            return transform(tree.child(None), env, policy)
-        return tree.transform(tree.node, lambda n: transform(n, env, policy))  # type: ignore
+            return transform(tree.child(None))
+        return tree.transform(tree.node, transform)
 
-    return ContextualTreeTransformer(transform)
+    return transform
 
 
 #####

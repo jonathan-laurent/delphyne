@@ -7,51 +7,68 @@ from dataclasses import dataclass
 from typing import Any, Protocol
 
 import delphyne.core as dp
+from delphyne.core import Node, PolicyEnv
 
 #####
 ##### Tree Transformers
 #####
 
 
-class PureTreeTransformerFn[A: dp.Node, B: dp.Node](Protocol):
-    def __call__[N: dp.Node, P, T](
+class PureTreeTransformerFn[A: Node, B: Node](Protocol):
+    def __call__[N: Node, P, T](
         self, tree: dp.Tree[A | N, P, T]
     ) -> dp.Tree[B | N, P, T]: ...
 
 
-class ContextualTreeTransformerFn[A: dp.Node, B: dp.Node](Protocol):
-    def __call__[N: dp.Node, P, T](
-        self, tree: dp.Tree[A | N, P, T], env: dp.PolicyEnv, policy: P
-    ) -> dp.Tree[B | N, P, T]: ...
+class _ContextualTreeTransformerFn[A: Node, B: Node](Protocol):
+    def __call__(
+        self, env: PolicyEnv, policy: Any
+    ) -> PureTreeTransformerFn[A, B]: ...
+
+
+class _ParametricContextualTreeTransformerFn[A: Node, B: Node, **C](Protocol):
+    def __call__(
+        self, env: PolicyEnv, policy: Any, *args: C.args, **kwargs: C.kwargs
+    ) -> PureTreeTransformerFn[A, B]: ...
 
 
 @dataclass
-class ContextualTreeTransformer[A: dp.Node, B: dp.Node]:
-    fn: ContextualTreeTransformerFn[A, B]
+class ContextualTreeTransformer[A: Node, B: Node]:
+    fn: _ContextualTreeTransformerFn[A, B]
 
     @staticmethod
     def pure(
         fn: PureTreeTransformerFn[A, B],
     ) -> "ContextualTreeTransformer[A, B]":
-        def contextual[N: dp.Node, P, T](
-            tree: dp.Tree[A | N, P, T], env: dp.PolicyEnv, policy: P
-        ) -> dp.Tree[B | N, P, T]:
-            return fn(tree)
+        def contextual(env: PolicyEnv, policy: Any):
+            return fn
 
         return ContextualTreeTransformer(contextual)
 
-    def __rmatmul__[N: dp.Node](
+    def __rmatmul__[N: Node](
         self, search_policy: "SearchPolicy[B | N]"
     ) -> "SearchPolicy[A | N]":
         def new_search_policy[P, T](
             tree: dp.Tree[A | N, P, T],
-            env: dp.PolicyEnv,
+            env: PolicyEnv,
             policy: P,
         ) -> dp.Stream[T]:
-            new_tree = self.fn(tree, env, policy)
+            new_tree = self.fn(env, policy)(tree)
             return search_policy(new_tree, env, policy)
 
         return SearchPolicy(new_search_policy)
+
+
+def contextual_tree_transformer[A: Node, B: Node, **C](
+    f: _ParametricContextualTreeTransformerFn[A, B, C], /
+) -> Callable[C, ContextualTreeTransformer[A, B]]:
+    def parametric(*args: C.args, **kwargs: C.kwargs):
+        def contextual(env: PolicyEnv, policy: Any):
+            return f(env, policy, *args, **kwargs)
+
+        return ContextualTreeTransformer(contextual)
+
+    return parametric
 
 
 #####
@@ -60,36 +77,36 @@ class ContextualTreeTransformer[A: dp.Node, B: dp.Node]:
 
 
 @dataclass(frozen=True)
-class SearchPolicy[N: dp.Node](dp.AbstractSearchPolicy[N]):
+class SearchPolicy[N: Node](dp.AbstractSearchPolicy[N]):
     fn: dp.AbstractSearchPolicy[N]
 
     def __call__[P, T](
         self,
         tree: "dp.Tree[N, P, T]",
-        env: dp.PolicyEnv,
+        env: PolicyEnv,
         policy: P,
     ) -> dp.Stream[T]:
         return self.fn(tree, env, policy)
 
 
-class _ParametricSearchPolicyFn[N: dp.Node, **A](Protocol):
+class _ParametricSearchPolicyFn[N: Node, **A](Protocol):
     def __call__[P, T](
         self,
         tree: dp.Tree[N, P, T],
-        env: dp.PolicyEnv,
+        env: PolicyEnv,
         policy: P,
         *args: A.args,
         **kwargs: A.kwargs,
     ) -> dp.Stream[T]: ...
 
 
-class _ParametricSearchPolicy[N: dp.Node, **A](Protocol):
+class _ParametricSearchPolicy[N: Node, **A](Protocol):
     def __call__(
         self, *args: A.args, **kwargs: A.kwargs
     ) -> SearchPolicy[N]: ...
 
 
-def search_policy[N: dp.Node, **A](
+def search_policy[N: Node, **A](
     fn: _ParametricSearchPolicyFn[N, A],
 ) -> _ParametricSearchPolicy[N, A]:
     """
@@ -100,7 +117,7 @@ def search_policy[N: dp.Node, **A](
 
     def parametric(*args: A.args, **kwargs: A.kwargs) -> SearchPolicy[N]:
         def policy[T](
-            tree: dp.Tree[N, Any, T], env: dp.PolicyEnv, policy: Any
+            tree: dp.Tree[N, Any, T], env: PolicyEnv, policy: Any
         ) -> dp.Stream[T]:
             return fn(tree, env, policy, *args, **kwargs)
 
@@ -119,7 +136,7 @@ class PromptingPolicy(dp.AbstractPromptingPolicy):
     fn: dp.AbstractPromptingPolicy
 
     def __call__[T](
-        self, query: dp.AttachedQuery[T], env: dp.PolicyEnv
+        self, query: dp.AttachedQuery[T], env: PolicyEnv
     ) -> dp.Stream[T]:
         return self.fn(query, env)
 
@@ -128,7 +145,7 @@ class _ParametricPromptingPolicyFn[**A](Protocol):
     def __call__[T](
         self,
         query: dp.AttachedQuery[T],
-        env: dp.PolicyEnv,
+        env: PolicyEnv,
         *args: A.args,
         **kwargs: A.kwargs,
     ) -> dp.Stream[T]: ...
@@ -145,7 +162,7 @@ def prompting_policy[**A](
 ) -> _ParametricPromptingPolicy[A]:
     def parametric(*args: A.args, **kwargs: A.kwargs) -> PromptingPolicy:
         def policy[T](
-            query: dp.AttachedQuery[T], env: dp.PolicyEnv
+            query: dp.AttachedQuery[T], env: PolicyEnv
         ) -> dp.Stream[T]:
             return fn(query, env, *args, **kwargs)
 
@@ -160,7 +177,7 @@ def prompting_policy[**A](
 
 
 def log(
-    env: dp.PolicyEnv,
+    env: PolicyEnv,
     message: str,
     metadata: dict[str, Any] | None = None,
     loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
@@ -180,10 +197,10 @@ def log(
 #####
 
 
-type _ParametricPolicy[**A, N: dp.Node, P] = Callable[A, dp.Policy[N, P]]
+type _ParametricPolicy[**A, N: Node, P] = Callable[A, dp.Policy[N, P]]
 
 
-def ensure_compatible[**A, N: dp.Node, P](
+def ensure_compatible[**A, N: Node, P](
     strategy: Callable[..., dp.StrategyComp[N, P, object]],
 ) -> Callable[[_ParametricPolicy[A, N, P]], _ParametricPolicy[A, N, P]]:
     """
@@ -204,9 +221,7 @@ def ensure_compatible[**A, N: dp.Node, P](
 def query_dependent(
     f: Callable[[dp.AbstractQuery[object]], PromptingPolicy],
 ) -> PromptingPolicy:
-    def policy[T](
-        query: dp.AttachedQuery[T], env: dp.PolicyEnv
-    ) -> dp.Stream[T]:
+    def policy[T](query: dp.AttachedQuery[T], env: PolicyEnv) -> dp.Stream[T]:
         query_policy = f(query.query)
         yield from query_policy(query, env)
 
