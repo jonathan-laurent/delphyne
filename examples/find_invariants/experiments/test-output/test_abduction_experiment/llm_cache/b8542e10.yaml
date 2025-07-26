@@ -353,10 +353,19 @@
     - content:
         structured:
           suggestions:
+          - trick: linear
+            invariant: x >= y
+      tool_calls: []
+      finish_reason: stop
+      logprobs: null
+      reasoning_content: null
+    - content:
+        structured:
+          suggestions:
           - trick: monotone
-            invariant: y >= 0
-          - trick: linear
             invariant: x >= y
+          - trick: linear
+            invariant: x - y <= 0
       tool_calls: []
       finish_reason: stop
       logprobs: null
@@ -366,14 +375,7 @@
           suggestions:
           - trick: linear
             invariant: x >= y
-      tool_calls: []
-      finish_reason: stop
-      logprobs: null
-      reasoning_content: null
-    - content:
-        structured:
-          suggestions:
-          - trick: linear
+          - trick: propose_post
             invariant: x >= y
       tool_calls: []
       finish_reason: stop
@@ -383,7 +385,7 @@
         structured:
           suggestions:
           - trick: linear
-            invariant: x >= y
+            invariant: x >= y * (y - 1) / 2
       tool_calls: []
       finish_reason: stop
       logprobs: null
@@ -396,18 +398,18 @@
         num_completions__small: 1
         input_tokens: 3273
         input_tokens__small: 3273
-        output_tokens: 157
-        output_tokens__small: 157
+        output_tokens: 195
+        output_tokens__small: 195
         cached_input_tokens: 0
         cached_input_tokens__small: 0
-        price: 0.00066245
-        price__small: 0.00066245
+        price: 0.00066435
+        price__small: 0.00066435
     log_items: []
     model_name: gpt-4.1-nano-2025-04-14
     usage_info:
-      completion_tokens: 157
+      completion_tokens: 195
       prompt_tokens: 3273
-      total_tokens: 3430
+      total_tokens: 3468
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0

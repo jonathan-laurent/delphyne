@@ -353,39 +353,37 @@
     - content:
         structured:
           suggestions:
-          - trick: propose_post
+          - trick: abduct_inv
             invariant: x >= y
+          - trick: monotone
+            invariant: y <= 100000
+      tool_calls: []
+      finish_reason: stop
+      logprobs: null
+      reasoning_content: null
+    - content:
+        structured:
+          suggestions:
           - trick: linear
-            invariant: x >= 1
+            invariant: x >= (y * (y - 1)) / 2 + 1
+      tool_calls: []
+      finish_reason: stop
+      logprobs: null
+      reasoning_content: null
+    - content:
+        structured:
+          suggestions:
           - trick: linear
+            invariant: x >= y
+      tool_calls: []
+      finish_reason: stop
+      logprobs: null
+      reasoning_content: null
+    - content:
+        structured:
+          suggestions:
+          - trick: monotone
             invariant: y >= 0
-      tool_calls: []
-      finish_reason: stop
-      logprobs: null
-      reasoning_content: null
-    - content:
-        structured:
-          suggestions:
-          - trick: linear
-            invariant: x >= y
-      tool_calls: []
-      finish_reason: stop
-      logprobs: null
-      reasoning_content: null
-    - content:
-        structured:
-          suggestions:
-          - trick: linear
-            invariant: x >= y
-      tool_calls: []
-      finish_reason: stop
-      logprobs: null
-      reasoning_content: null
-    - content:
-        structured:
-          suggestions:
-          - trick: linear
-            invariant: x >= y*(y - 1)/2 + 1
       tool_calls: []
       finish_reason: stop
       logprobs: null
@@ -398,18 +396,18 @@
         num_completions__medium: 1
         input_tokens: 3273
         input_tokens__medium: 3273
-        output_tokens: 187
-        output_tokens__medium: 187
+        output_tokens: 173
+        output_tokens__medium: 173
         cached_input_tokens: 0
         cached_input_tokens__medium: 0
-        price: 0.0026558
-        price__medium: 0.0026558
+        price: 0.002653
+        price__medium: 0.002653
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
-      completion_tokens: 187
+      completion_tokens: 173
       prompt_tokens: 3273
-      total_tokens: 3460
+      total_tokens: 3446
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0

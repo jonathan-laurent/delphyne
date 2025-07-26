@@ -356,21 +356,8 @@
     - content:
         structured:
           suggestions:
-          - trick: linear
-            invariant: x + y >= 0
-          - trick: linear
-            invariant: x <= y + 20
-      tool_calls: []
-      finish_reason: stop
-      logprobs: null
-      reasoning_content: null
-    - content:
-        structured:
-          suggestions:
-          - trick: weakening
-            invariant: y >= 0
-          - trick: linear
-            invariant: x == y
+          - trick: true_or_continue
+            invariant: y <> 0 || x <> 20
       tool_calls: []
       finish_reason: stop
       logprobs: null
@@ -379,9 +366,7 @@
         structured:
           suggestions:
           - trick: propose_post
-            invariant: x = 20 -> y <> 0
-          - trick: linear
-            invariant: x + y = 20
+            invariant: x >= 0 && x <= 20 && y >= 0 && y <= 30
       tool_calls: []
       finish_reason: stop
       logprobs: null
@@ -389,8 +374,17 @@
     - content:
         structured:
           suggestions:
+          - trick: propose_post
+            invariant: x >= 0 && x <= 20 && y >= 0 && y <= 20
           - trick: linear
-            invariant: x >= 0 && x <= 20 && y >= 0 && y <= 30
+            invariant: x - y = 0
+      tool_calls: []
+      finish_reason: stop
+      logprobs: null
+      reasoning_content: null
+    - content:
+        structured:
+          suggestions:
           - trick: propose_post
             invariant: y <> 0
       tool_calls: []
@@ -405,18 +399,18 @@
         num_completions__small: 1
         input_tokens: 3322
         input_tokens__small: 3322
-        output_tokens: 334
-        output_tokens__small: 334
+        output_tokens: 204
+        output_tokens__small: 204
         cached_input_tokens: 2944
         cached_input_tokens__small: 2944
-        price: 0.0024475
-        price__small: 0.0024475
+        price: 0.002441
+        price__small: 0.002441
     log_items: []
     model_name: gpt-4.1-nano-2025-04-14
     usage_info:
-      completion_tokens: 334
+      completion_tokens: 204
       prompt_tokens: 3322
-      total_tokens: 3656
+      total_tokens: 3526
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0

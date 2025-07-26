@@ -28,5 +28,5 @@ test:
 # Contains implicit answers...
 # python -m delphyne check-demo --strategy-dirs=[.] --modules=[abduct_and_saturate] --file=abduct_and_saturate.demo.yaml --ensure-no-error
 
-full-test: test replay-test-exp
+full-test: test test-exp replay-test-exp
 	pytest tests
