@@ -16,6 +16,20 @@ export function initLogChannels() {
   }
 }
 
+export function logInfo(message: string, alert: boolean = false) {
+  log.info(message);
+  if (alert) {
+    vscode.window.showInformationMessage(message);
+  }
+}
+
+export function logWarning(message: string, alert: boolean = false) {
+  log.warn(message);
+  if (alert) {
+    vscode.window.showWarningMessage(message);
+  }
+}
+
 export function showAlert(message: string) {
   log.error(message);
   vscode.window.showErrorMessage(message, "Show Log").then((value) => {

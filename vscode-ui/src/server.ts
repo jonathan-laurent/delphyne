@@ -3,7 +3,7 @@
 //////
 
 import * as vscode from "vscode";
-import { log, serverLogChannel } from "./logging";
+import { log, logInfo, logWarning, serverLogChannel } from "./logging";
 import { spawn, ChildProcessWithoutNullStreams } from "child_process";
 import {
   Task,
@@ -27,16 +27,44 @@ const SERVER_ADDRESS = "http://localhost:8000";
 export class DelphyneServer {
   private tasksManager: TasksManager;
   private nextSimpleQueryId = 0;
-  constructor(
-    context: vscode.ExtensionContext,
-    private process: ChildProcessWithoutNullStreams | null,
-  ) {
+  private process: ChildProcessWithoutNullStreams | null = null;
+  constructor(context: vscode.ExtensionContext) {
     this.tasksManager = new TasksManager(context);
+  }
+
+  async start(verboseAlerts: boolean) {
+    if (this.process) {
+      logInfo("The Delphyne server is already running.", verboseAlerts);
+      return;
+    }
+    const running = await isServerAlreadyRunning();
+    if (running) {
+      logInfo(
+        "The Delphyne server is already running outside VSCode.",
+        verboseAlerts,
+      );
+    } else {
+      const python = await findPythonCommand(verboseAlerts);
+      const res = await startServerProcess(python, verboseAlerts);
+      if (!res || typeof res === "number") {
+        logWarning(
+          `The Delphyne server exited with code ${res}. ` +
+            "Check the logs for more details.",
+          verboseAlerts,
+        );
+      } else {
+        this.process = res;
+      }
+    }
   }
 
   kill(): boolean | undefined {
     log.info("Attempting to terminate the Delphyne server.");
-    return this.process?.kill();
+    const ret = this.process?.kill();
+    if (ret === true) {
+      this.process = null;
+    }
+    return ret;
   }
 
   async callServer(query: string, payload: any) {
@@ -161,23 +189,6 @@ export class DelphyneServer {
 /// Starting the server process
 //////
 
-export async function startServer(
-  context: vscode.ExtensionContext,
-): Promise<DelphyneServer | null> {
-  let process: ChildProcessWithoutNullStreams | null = null;
-  const running = await isServerAlreadyRunning();
-  if (running) {
-    log.info("The Delphyne server is already running outside VSCode.");
-  } else {
-    const python = await findPythonCommand();
-    process = await startServerProcess(python);
-    if (!process) {
-      return null;
-    }
-  }
-  return new DelphyneServer(context, process);
-}
-
 // Determine whether the Delphyne server is runnig at the expected address.
 async function isServerAlreadyRunning(): Promise<boolean> {
   try {
@@ -190,7 +201,7 @@ async function isServerAlreadyRunning(): Promise<boolean> {
   }
 }
 
-async function findPythonCommand(): Promise<string> {
+async function findPythonCommand(verboseAlerts: boolean): Promise<string> {
   const pythonExtension = vscode.extensions.getExtension("ms-python.python");
   if (pythonExtension) {
     if (!pythonExtension.isActive) {
@@ -203,9 +214,10 @@ async function findPythonCommand(): Promise<string> {
     log.info("Using the Python environment at", pythonPath);
     return pythonPath;
   } else {
-    log.warn(
+    logWarning(
       "Python VSCode extension not found. " +
         "Attempting to use the `python` command to launch the server.",
+      verboseAlerts,
     );
     return "python";
   }
@@ -213,7 +225,8 @@ async function findPythonCommand(): Promise<string> {
 
 async function startServerProcess(
   python: string,
-): Promise<ChildProcessWithoutNullStreams | null> {
+  verboseAlerts: boolean,
+): Promise<ChildProcessWithoutNullStreams | number | null> {
   return new Promise((resolve) => {
     const server = spawn(python, ["-m", "delphyne.server"]);
     server.stdout.on("data", (data) => {
@@ -223,13 +236,16 @@ async function startServerProcess(
       serverLogChannel?.append(`${data}`);
       // This string is inserted by Uvicorn
       if (data.toString().includes("Application startup complete.")) {
-        log.info("Delphyne server started successfully at", SERVER_ADDRESS);
+        logInfo(
+          `Delphyne server started successfully at ${SERVER_ADDRESS}`,
+          verboseAlerts,
+        );
         resolve(server);
       }
     });
     server.on("close", (code) => {
       log.info(`Delphyne server exited with code ${code}`);
-      resolve(null);
+      resolve(code);
     });
   });
 }

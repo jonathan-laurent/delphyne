@@ -4,8 +4,14 @@
 
 import * as vscode from "vscode";
 import { TreeView } from "./tree_view";
-import { showAlert, initLogChannels, log } from "./logging";
-import { startServer, DelphyneServer } from "./server";
+import {
+  showAlert,
+  initLogChannels,
+  log,
+  logInfo,
+  logWarning,
+} from "./logging";
+import { DelphyneServer } from "./server";
 import { DemosManager } from "./demos_manager";
 import * as testCommands from "./dev_tests";
 import { DemosActionsProvider } from "./demos_actions";
@@ -13,28 +19,6 @@ import { ElementsManager } from "./elements_manager";
 import { registerTreeViewCommands } from "./tree_view_commands";
 import { CommandsManager } from "./commands";
 import { autoFold } from "./folding";
-
-//////
-/// Helper functions
-//////
-
-function showStatusBarMessage(
-  text: string,
-  duration: number = 2000,
-): vscode.StatusBarItem {
-  const statusBarItem = vscode.window.createStatusBarItem(
-    vscode.StatusBarAlignment.Left,
-  );
-  statusBarItem.text = text;
-  statusBarItem.show();
-
-  setTimeout(() => {
-    statusBarItem.hide();
-    statusBarItem.dispose();
-  }, duration);
-
-  return statusBarItem;
-}
 
 //////
 /// Activation code
@@ -47,11 +31,8 @@ export async function activate(context: vscode.ExtensionContext) {
   initLogChannels();
   log.debug("Activating Delphyne extension...");
   const treeView = new TreeView(context);
-  const server = await startServer(context);
-  if (!server) {
-    showAlert("Failed to start the Delphyne server.");
-    return;
-  }
+  const server = new DelphyneServer(context);
+  await server.start(false);
   const diagnosticCollection: vscode.DiagnosticCollection =
     vscode.languages.createDiagnosticCollection("delphyne");
   context.subscriptions.push(diagnosticCollection);
@@ -120,12 +101,14 @@ export async function activate(context: vscode.ExtensionContext) {
   // Start and kill the server
   context.subscriptions.push(
     vscode.commands.registerCommand("delphyne.killServer", () => {
-      killServer(server);
+      killServerCommand(server);
     }),
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("delphyne.startServer", async () => {}),
+    vscode.commands.registerCommand("delphyne.startServer", async () => {
+      await startServerCommand(server);
+    }),
   );
 }
 
@@ -152,7 +135,7 @@ async function evaluateCommand(server: DelphyneServer) {
   }
 }
 
-function killServer(server: DelphyneServer) {
+function killServerCommand(server: DelphyneServer) {
   // Show status bar message while killing
   const loadingStatusBar = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Left,
@@ -166,9 +149,10 @@ function killServer(server: DelphyneServer) {
 
   const killCommand = '"sudo kill -9 $(sudo lsof -t -i :8000)"';
   if (killResult === undefined) {
-    showAlert(
+    logWarning(
       "No server instance is managed by the Delphyne extension. " +
         `Is an external instance running? If so, consider killing it using ${killCommand}.`,
+      true,
     );
   } else if (killResult === false) {
     showAlert(
@@ -176,6 +160,10 @@ function killServer(server: DelphyneServer) {
         `Consider running ${killCommand}.`,
     );
   } else {
-    showStatusBarMessage("Delphyne server killed.");
+    logInfo("Delphyne server killed.", true);
   }
+}
+
+async function startServerCommand(server: DelphyneServer) {
+  await server.start(true);
 }
