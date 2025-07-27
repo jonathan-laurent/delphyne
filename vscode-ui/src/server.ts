@@ -3,7 +3,13 @@
 //////
 
 import * as vscode from "vscode";
-import { log, logInfo, logWarning, serverLogChannel } from "./logging";
+import {
+  log,
+  logInfo,
+  logWarning,
+  serverLogChannel,
+  showAlert,
+} from "./logging";
 import { spawn, ChildProcessWithoutNullStreams } from "child_process";
 import {
   Task,
@@ -47,10 +53,12 @@ export class DelphyneServer {
       const python = await findPythonCommand(verboseAlerts);
       const res = await startServerProcess(python, verboseAlerts);
       if (!res || typeof res === "number") {
-        logWarning(
-          `The Delphyne server exited with code ${res}. ` +
-            "Check the logs for more details.",
-          verboseAlerts,
+        showAlert(
+          `The Delphyne server could not start (code ${res}). ` +
+            "Make sure the right Python environment is selected. " +
+            'Use the "Delphyne: Start Server" command to try again. ' +
+            "Check the logs for more details " +
+            '(both "Delphyne" and "Delphyne Server" channels).',
         );
       } else {
         this.process = res;
