@@ -4,14 +4,36 @@ Code2Inv Experiments
 
 from collections.abc import Sequence
 from dataclasses import dataclass
+from pathlib import Path
 
 import code2inv
 import delphyne as dp
 import delphyne.stdlib.commands as cmd
+from delphyne.stdlib.experiments.experiment_launcher import (
+    Experiment,
+    ExperimentFun,
+)
 
 BENCHS = code2inv.load_all_benchmarks()
 MODULES = ["abduct_and_saturate", "baseline"]
-DEMO_FILES = MODULES
+DEMO_FILES = [Path(m) for m in MODULES]
+
+
+def make_experiment[C](
+    experiment: ExperimentFun[C], configs: Sequence[C], exp_file: str
+) -> Experiment[C]:
+    workspace_root = Path(exp_file).parent.parent
+    exp_name = Path(exp_file).stem
+    context = dp.CommandExecutionContext(
+        modules=MODULES, demo_files=DEMO_FILES
+    ).with_root(workspace_root)
+    return Experiment(
+        experiment=experiment,
+        context=context,
+        configs=configs,
+        name=exp_name,
+        output_dir=workspace_root / "experiments" / "test-output" / exp_name,
+    )
 
 
 #####

@@ -11,7 +11,7 @@ import pytest
 
 import delphyne as dp
 import delphyne.stdlib.commands as cmd
-from delphyne.stdlib.experiments.experiment_launcher import quick_experiment
+from delphyne.stdlib.experiments.experiment_launcher import Experiment
 
 #####
 ##### Experiment Examples
@@ -79,24 +79,25 @@ def test_experiment_launcher(
     exp_fun: Callable[[Any], cmd.RunStrategyArgs],
     configs: Sequence[Any],
 ):
-    experiment = quick_experiment(
-        exp_fun,
-        configs,
-        name=name,
-        workspace_root=Path(__file__).parent,
+    root = Path(__file__).parent
+    context = dp.CommandExecutionContext(
         modules=["example_strategies"],
-        demo_files=[],
-        output_dir=Path("output"),
+    ).with_root(root)
+    experiment = Experiment(
+        experiment=exp_fun,
+        context=context,
+        configs=configs,
+        name=name,
+        output_dir=root / "output" / name,
     )
     experiment.load()
     experiment.get_status()
-    # Run the experiment or replay if already done
     if experiment.is_done():
         print("Experiment already completed, replaying all configs...")
         experiment.replay_all_configs()
     else:
         print("Running experiment...")
         experiment.resume(max_workers=2, log_progress=False)
-        print(f"Experiment completed successfully in {experiment.dir}")
+        print("Experiment completed successfully.")
     experiment.get_status()
     assert experiment.is_done()

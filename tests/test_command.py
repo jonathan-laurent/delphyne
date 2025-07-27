@@ -8,7 +8,6 @@ import delphyne.stdlib.tasks as ta
 TEMP_OUT_DIR = Path(__file__).parent / "cmd_out"
 STRATEGY_FILE = "example_strategies"
 TESTS_FOLDER = Path(__file__).parent
-CONTEXT = dp.DemoExecutionContext([TESTS_FOLDER], [STRATEGY_FILE])
 
 
 def test_counting_command():
@@ -16,9 +15,7 @@ def test_counting_command():
     dp.run_command(
         ta.test_command,
         ta.TestCommandArgs(10, delay=1e-4),
-        dp.CommandExecutionContext(
-            dp.DemoExecutionContext([], []), [], [], [], None
-        ),
+        dp.CommandExecutionContext(),
         dump_statuses=TEMP_OUT_DIR / "counting_statuses.txt",
         dump_result=TEMP_OUT_DIR / "counting_result.yaml",
         dump_log=TEMP_OUT_DIR / "counting_log.txt",
@@ -38,7 +35,9 @@ def test_run_strategy():
             policy_args={},
             budget={},
         ),
-        dp.CommandExecutionContext(CONTEXT, [], [], [], None),
+        dp.CommandExecutionContext(
+            modules=[STRATEGY_FILE],
+        ).with_root(TESTS_FOLDER),
         dump_statuses=TEMP_OUT_DIR / "strategy_statuses.txt",
         dump_result=TEMP_OUT_DIR / "strategy_result.yaml",
         dump_log=TEMP_OUT_DIR / "strategy_log.txt",

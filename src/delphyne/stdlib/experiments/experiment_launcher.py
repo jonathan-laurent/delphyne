@@ -18,12 +18,11 @@ import fire  # type: ignore
 import pandas as pd  # type: ignore
 import yaml
 
-import delphyne.analysis as analysis
 import delphyne.stdlib.commands as cmd
 import delphyne.stdlib.models as md
 from delphyne.core import CacheFormat
 from delphyne.stdlib.tasks import CommandExecutionContext, run_command
-from delphyne.utils.typing import pydantic_dump, pydantic_load
+from delphyne.utils.typing import NoTypeInfo, pydantic_dump, pydantic_load
 
 type _ModelWrapper = Callable[[md.LLM], md.LLM]
 
@@ -64,7 +63,7 @@ class ExperimentState[Config]:
         return reverse
 
 
-class _ExperimentFun[Config](Protocol):
+class ExperimentFun[Config](Protocol):
     """
     The `requests_cache` argument is overriden.
     """
@@ -72,17 +71,17 @@ class _ExperimentFun[Config](Protocol):
     def __call__(self, config: Config, /) -> cmd.RunStrategyArgs: ...
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Experiment[Config]:
     """
     The `context.requests_cache_dir` argument is overriden.
     """
 
-    dir: Path
+    experiment: ExperimentFun[Config]
+    output_dir: Path  # absolute path expected
     context: CommandExecutionContext
-    experiment: _ExperimentFun[Config]
-    config_type: type[Config]
     configs: Sequence[Config] | None = None
+    config_type: type[Config] | NoTypeInfo = NoTypeInfo()
     name: str | None = None
     description: str | None = None
     config_naming: Callable[[Config, uuid.UUID], str] | None = None
@@ -95,13 +94,16 @@ class Experiment[Config]:
     def __post_init__(self):
         # We override the cache root directory.
         assert self.context.cache_root is None
-        self.context = replace(self.context, cache_root=self.dir)
+        self.context = replace(self.context, cache_root=self.output_dir)
+        if isinstance(self.config_type, NoTypeInfo):
+            if self.configs:
+                self.config_type = type(self.configs[0])
 
     def load(self):
         if not self.dir_exists():
             # If we create the experiment for the first time
-            print(f"Creating experiment directory: {self.dir}.")
-            self.dir.mkdir(parents=True, exist_ok=True)
+            print(f"Creating experiment directory: {self.output_dir}.")
+            self.output_dir.mkdir(parents=True, exist_ok=True)
             state = ExperimentState[Config](self.name, self.description, {})
             self.save_state(state)
         if self.configs is not None:
@@ -127,7 +129,7 @@ class Experiment[Config]:
         return all(info.status == "done" for info in state.configs.values())
 
     def config_dir(self, config_name: str) -> Path:
-        return self.dir / config_name
+        return self.output_dir / config_name
 
     def clean_index(self) -> None:
         """
@@ -170,18 +172,21 @@ class Experiment[Config]:
         self.save_state(state)
 
     def dir_exists(self) -> bool:
-        return self.dir.exists() and self.dir.is_dir()
+        return self.output_dir.exists() and self.output_dir.is_dir()
 
     def state_type(self) -> type[ExperimentState[Config]]:
+        assert not isinstance(self.config_type, NoTypeInfo), (
+            "Please set `Experiment.config_type`."
+        )
         return ExperimentState[self.config_type]
 
     def load_state(self) -> ExperimentState[Config] | None:
-        with open(self.dir / EXPERIMENT_STATE_FILE, "r") as f:
+        with open(self.output_dir / EXPERIMENT_STATE_FILE, "r") as f:
             parsed = yaml.safe_load(f)
             return pydantic_load(self.state_type(), parsed)
 
     def save_state(self, state: ExperimentState[Config]) -> None:
-        with open(self.dir / EXPERIMENT_STATE_FILE, "w") as f:
+        with open(self.output_dir / EXPERIMENT_STATE_FILE, "w") as f:
             to_save = pydantic_dump(self.state_type(), state)
             yaml.safe_dump(to_save, f, sort_keys=False)
 
@@ -290,9 +295,9 @@ class Experiment[Config]:
         Save a summary of the results in a CSV file.
         """
 
-        data = results_summary(self.dir, ignore_missing)
+        data = results_summary(self.output_dir, ignore_missing)
         frame = pd.DataFrame(data)
-        summary_file = self.dir / RESULTS_SUMMARY
+        summary_file = self.output_dir / RESULTS_SUMMARY
         frame.to_csv(summary_file, index=False)  # type: ignore
 
     def load_summary(self):
@@ -300,7 +305,7 @@ class Experiment[Config]:
         Load the summary of the results in a DataFrame.
         """
 
-        summary_file = self.dir / RESULTS_SUMMARY
+        summary_file = self.output_dir / RESULTS_SUMMARY
         data = pd.DataFrame, pd.read_csv(summary_file)  # type: ignore
         return data
 
@@ -386,7 +391,7 @@ def _print_progress(state: ExperimentState[Any]) -> None:
 
 def _run_config[Config](
     context: CommandExecutionContext,
-    experiment: _ExperimentFun[Config],
+    experiment: ExperimentFun[Config],
     config_name: str,
     config_dir: Path,
     config: Config,
@@ -485,58 +490,3 @@ class ExperimentCLI:
             self.experiment.replay_all_configs()
         else:
             self.experiment.replay_config_by_name(config)
-
-
-def quick_experiment[Config](
-    fun: _ExperimentFun[Config],
-    configs: Sequence[Config],
-    *,
-    name: str,
-    workspace_root: Path,
-    modules: Sequence[str],
-    demo_files: Sequence[str],
-    output_dir: Path | str | None = None,
-    strategy_dirs: Sequence[Path | str] | None = None,
-    demo_dirs: Sequence[Path | str] | None = None,
-    data_dirs: Sequence[Path | str] | None = None,
-    prompt_dirs: Sequence[Path | str] | None = None,
-    config_naming: Callable[[Config, uuid.UUID], str] | None = None,
-    config_type: type[Config] | None = None,
-    cache_format: CacheFormat = "db",
-) -> Experiment[Config]:
-    if strategy_dirs is None:
-        strategy_dirs = ["."]
-    if demo_dirs is None:
-        demo_dirs = ["."]
-    if data_dirs is None:
-        data_dirs = ["data"]
-    if prompt_dirs is None:
-        prompt_dirs = ["prompts"]
-    if output_dir is None:
-        output_dir = Path("experiments") / "output"
-    context = CommandExecutionContext(
-        base=analysis.DemoExecutionContext(
-            strategy_dirs=[workspace_root / d for d in strategy_dirs],
-            modules=modules,
-        ),
-        demo_files=[workspace_root / (f + ".demo.yaml") for f in demo_files],
-        prompt_dirs=[workspace_root / d for d in prompt_dirs],
-        data_dirs=[workspace_root / d for d in data_dirs],
-        cache_root=None,
-        result_refresh_period=None,
-        status_refresh_period=None,
-    )
-    if config_type is None:
-        assert configs, "Empty list of configurations."
-        config_type = type(configs[0])
-
-    return Experiment(
-        name=name,
-        dir=workspace_root / output_dir / name,
-        context=context,
-        experiment=fun,
-        config_type=config_type,
-        configs=configs,
-        config_naming=config_naming,
-        cache_format=cache_format,
-    )

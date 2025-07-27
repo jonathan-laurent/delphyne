@@ -19,6 +19,8 @@ from delphyne.core.refs import Answer
 from delphyne.utils.typing import pydantic_load
 from delphyne.utils.yaml import dump_yaml_object
 
+DEMO_FILE_EXT = ".demo.yaml"
+
 type _QueryName = str
 
 type QueryArgs = dict[str, Any]
@@ -322,6 +324,8 @@ class PolicyEnv:
                 cache_dir, cache_mode, cache_format
             )
         for path in demonstration_files:
+            if not path.suffix.endswith(DEMO_FILE_EXT):
+                path = path.with_suffix(DEMO_FILE_EXT)
             try:
                 with path.open() as f:
                     content = yaml.safe_load(f)

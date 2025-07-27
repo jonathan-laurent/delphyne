@@ -16,9 +16,9 @@ from delphyne.analysis import feedback as fb
 from delphyne.utils import typing as ty
 from delphyne.utils.yaml import dump_yaml
 
-STRATEGY_FILE = "example_strategies"
+STRATEGY_MODULE = "example_strategies"
 TESTS_FOLDER = Path(__file__).parent
-CONTEXT = analysis.DemoExecutionContext([TESTS_FOLDER], [STRATEGY_FILE])
+CONTEXT = analysis.DemoExecutionContext([TESTS_FOLDER], [STRATEGY_MODULE])
 
 
 def check_object_included(small: object, big: object, path: str = "expect"):
@@ -67,7 +67,7 @@ class DemoExpectTest(dp.StrategyDemo):
 
 
 def load_demo(demo_label: str) -> DemoExpectTest | dp.QueryDemo:
-    DEMO_FILE = Path(__file__).parent / f"{STRATEGY_FILE}.demo.yaml"
+    DEMO_FILE = Path(__file__).parent / f"{STRATEGY_MODULE}.demo.yaml"
     demos_json = yaml.safe_load(open(DEMO_FILE, "r").read())
     demos = ty.pydantic_load(list[DemoExpectTest | dp.QueryDemo], demos_json)
     for demo in demos:

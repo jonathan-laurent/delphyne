@@ -22,6 +22,11 @@ import delphyne.analysis.feedback as fb
 import delphyne.stdlib.tasks as ta
 import delphyne.utils.typing as ty
 
+DEFAULT_STRATEGY_DIRS = (Path("."),)
+DEFAULT_PROMPTS_DIRS = (Path("prompts"),)
+DEFAULT_DATA_DIRS = (Path("data"),)
+
+
 #####
 ##### Tasks
 #####
@@ -85,7 +90,7 @@ async def counting_generator(task: TaskContext[Never], n: int):
 #####
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class CommandExecutionContext:
     """
     The result refresh period indicates how often the current result is
@@ -93,13 +98,33 @@ class CommandExecutionContext:
     holds for the status refresh period.
     """
 
-    base: analysis.DemoExecutionContext
-    demo_files: Sequence[Path]
-    prompt_dirs: Sequence[Path]
-    data_dirs: Sequence[Path]
+    modules: Sequence[str] = ()
+    demo_files: Sequence[Path] = ()
+    strategy_dirs: Sequence[Path] = DEFAULT_STRATEGY_DIRS
+    prompt_dirs: Sequence[Path] = DEFAULT_PROMPTS_DIRS
+    data_dirs: Sequence[Path] = DEFAULT_DATA_DIRS
     cache_root: Path | None = None
     result_refresh_period: float | None = None
     status_refresh_period: float | None = None
+
+    @property
+    def base(self) -> analysis.DemoExecutionContext:
+        return analysis.DemoExecutionContext(self.strategy_dirs, self.modules)
+
+    def with_root(self, root: Path) -> "CommandExecutionContext":
+        """
+        Make all paths absolute given a path to the workspace root.
+        """
+        return CommandExecutionContext(
+            modules=self.modules,
+            demo_files=[root / f for f in self.demo_files],
+            strategy_dirs=[root / d for d in self.strategy_dirs],
+            prompt_dirs=[root / d for d in self.prompt_dirs],
+            data_dirs=[root / d for d in self.data_dirs],
+            cache_root=None if self.cache_root is None else self.cache_root,
+            result_refresh_period=self.result_refresh_period,
+            status_refresh_period=self.status_refresh_period,
+        )
 
 
 T = typing.TypeVar("T", covariant=True)

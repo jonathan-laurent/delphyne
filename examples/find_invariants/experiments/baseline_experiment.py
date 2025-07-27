@@ -1,7 +1,4 @@
-from pathlib import Path
-
 import code2inv_experiments as c2i
-from delphyne.stdlib.experiments.experiment_launcher import quick_experiment
 
 SMALL = ["gpt-4o-mini"]
 LARGE = ["gpt-4o", "o3"]
@@ -24,11 +21,4 @@ configs = [
 ]
 
 if __name__ == "__main__":
-    quick_experiment(
-        c2i.baseline_experiment,
-        configs,
-        name=Path(__file__).stem,
-        workspace_root=Path(__file__).parent.parent,
-        modules=c2i.MODULES,
-        demo_files=c2i.DEMO_FILES,
-    ).run_cli()
+    c2i.make_experiment(c2i.baseline_experiment, configs, __file__).run_cli()
