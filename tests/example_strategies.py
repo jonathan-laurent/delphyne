@@ -17,6 +17,7 @@ from example_strategies_untyped import (
 )
 
 import delphyne as dp
+from delphyne import Branch, Fail, Strategy, strategy
 
 #####
 ##### MakeSum
@@ -35,10 +36,10 @@ class MakeSumIP:
     make_sum: dp.PromptingPolicy
 
 
-@dp.strategy
+@strategy
 def make_sum(
     allowed: list[int], goal: int
-) -> "dp.Strategy[dp.Branch | dp.Fail, MakeSumIP, list[int]]":
+) -> "Strategy[Branch | Fail, MakeSumIP, list[int]]":
     # We are testing that string type annotations work too.
     xs = yield from dp.branch(
         cands=MakeSum(allowed, goal).using(lambda p: p.make_sum),
@@ -80,7 +81,7 @@ def make_conjecture[P, T](
     disprove: Callable[[T], dp.Opaque[P, None]],
     aggregate: Callable[[tuple[T, ...]], dp.Opaque[P, Sequence[T]]],
     inner_policy_type: type[P] | None = None,
-) -> dp.Strategy[Conjecture, P, T]:
+) -> Strategy[Conjecture, P, T]:
     cand = yield dp.spawn_node(
         Conjecture, cands=cands, disprove=disprove, aggregate=aggregate
     )
@@ -130,15 +131,15 @@ State: TypeAlias = dict[str, int]
 
 @dataclass
 class SynthetizeFunIP:
-    conjecture: dp.Policy[dp.Fail | dp.Branch, dp.PromptingPolicy]
-    disprove: dp.Policy[dp.Fail | dp.Branch, dp.PromptingPolicy]
+    conjecture: dp.Policy[Fail | Branch, dp.PromptingPolicy]
+    disprove: dp.Policy[Fail | Branch, dp.PromptingPolicy]
     aggregate: dp.PromptingPolicy
 
 
-@dp.strategy
+@strategy
 def synthetize_fun(
     vars: Vars, prop: IntPred
-) -> dp.Strategy[Conjecture, SynthetizeFunIP, IntFun]:
+) -> Strategy[Conjecture, SynthetizeFunIP, IntFun]:
     """
     The goal is to synthetize the body of a function f that respects
     properties for all inputs.
@@ -158,10 +159,10 @@ def synthetize_fun(
     return (vars, res)
 
 
-@dp.strategy
+@strategy
 def conjecture_expr(
     vars: Vars, prop: IntPred
-) -> dp.Strategy[dp.Branch | dp.Fail, dp.PromptingPolicy, Expr]:
+) -> Strategy[Branch | Fail, dp.PromptingPolicy, Expr]:
     expr = yield from dp.branch(ConjectureExpr(vars, prop).using(one_pp))
     yield from dp.ensure(expr_safe(expr), label="possibly-unsafe-expr")
     try:
@@ -171,10 +172,10 @@ def conjecture_expr(
     return expr
 
 
-@dp.strategy
+@strategy
 def find_counterexample(
     vars: Vars, prop: IntPred, expr: Expr
-) -> dp.Strategy[dp.Branch | dp.Fail, dp.PromptingPolicy, None]:
+) -> Strategy[Branch | Fail, dp.PromptingPolicy, None]:
     cand = yield from dp.branch(ProposeCex(prop, (vars, expr)).using(one_pp))
     try:
         yield from dp.ensure(
@@ -250,12 +251,10 @@ class PickBoyName(dp.Query[str]):
     __parser__: ClassVar = dp.raw_yaml
 
 
-@dp.strategy
+@strategy
 def pick_boy_name(
     names: Sequence[str], picked_already: Sequence[str] | None
-) -> dp.Strategy[
-    dp.Branch | dp.Fail, dp.PromptingPolicy, tuple[str, Sequence[str]]
-]:
+) -> Strategy[Branch | Fail, dp.PromptingPolicy, tuple[str, Sequence[str]]]:
     if picked_already is None:
         picked_already = []
     assert not isinstance(picked_already, str)
@@ -267,10 +266,10 @@ def pick_boy_name(
     return name, [*picked_already, name]
 
 
-@dp.strategy
+@strategy
 def pick_nice_boy_name(
     names: Sequence[str],
-) -> dp.Strategy[dp.Branch | dp.Fail, "PickNiceBoyNameIP", str]:
+) -> Strategy[Branch | Fail, "PickNiceBoyNameIP", str]:
     name = yield from dp.branch(
         dp.iterate(
             lambda prev: pick_boy_name(names, prev).using(
@@ -284,7 +283,7 @@ def pick_nice_boy_name(
 
 @dataclass
 class PickNiceBoyNameIP:
-    pick_boy_name: dp.Policy[dp.Branch | dp.Fail, dp.PromptingPolicy]
+    pick_boy_name: dp.Policy[Branch | Fail, dp.PromptingPolicy]
 
 
 #####
@@ -315,10 +314,10 @@ class PickPositiveInteger(dp.Query[int]):
     __parser__: ClassVar = dp.raw_yaml
 
 
-@dp.strategy
+@strategy
 def num_confidence(
     prev: int | None, new: int
-) -> dp.Strategy[Never, object, float]:
+) -> Strategy[Never, object, float]:
     # Depth 0
     if prev is None:
         return 0.1 if new == 1 else 1
@@ -327,9 +326,9 @@ def num_confidence(
     yield
 
 
-@dp.strategy
-def generate_pairs() -> dp.Strategy[
-    dp.Branch | dp.Factor | dp.Fail, dp.PromptingPolicy, tuple[int, int]
+@strategy
+def generate_pairs() -> Strategy[
+    Branch | dp.Factor | Fail, dp.PromptingPolicy, tuple[int, int]
 ]:
     x = yield from dp.branch(
         PickPositiveInteger(None)
@@ -378,10 +377,10 @@ def expensive_computation(n: int) -> tuple[int, int]:
     return (n, n + 1)
 
 
-@dp.strategy
+@strategy
 def test_cached_computations(
     n: int,
-) -> dp.Strategy[dp.Compute, object, int]:
+) -> Strategy[dp.Compute, object, int]:
     a, b = yield from dp.compute(expensive_computation, n)
     c, d = yield from dp.compute(expensive_computation, n)
     e, f = yield from dp.compute(expensive_computation, n + 1)
@@ -398,14 +397,14 @@ def test_cached_computations_policy():
 #####
 
 
-@dp.strategy
-def trivial_strategy() -> dp.Strategy[Never, object, int]:
+@strategy
+def trivial_strategy() -> Strategy[Never, object, int]:
     return 42
     yield
 
 
-@dp.strategy
-def buggy_strategy() -> dp.Strategy[dp.Fail, object, int]:
+@strategy
+def buggy_strategy() -> Strategy[Fail, object, int]:
     yield from dp.ensure(True, label="unreachable")
     assert False
 
@@ -464,10 +463,10 @@ class ProposeArticle(
         """
 
 
-@dp.strategy
+@strategy
 def propose_article(
     user_name: str,
-) -> dp.Strategy[dp.Branch, dp.PromptingPolicy, Article]:
+) -> Strategy[Branch, dp.PromptingPolicy, Article]:
     article = yield from dp.interact(
         step=lambda pre, _: ProposeArticle(user_name, pre).using(
             dp.ambient_pp
@@ -492,10 +491,10 @@ class ProposeArticleStructured(
         """
 
 
-@dp.strategy
+@strategy
 def propose_article_structured(
     user_name: str,
-) -> dp.Strategy[dp.Branch, dp.PromptingPolicy, Article]:
+) -> Strategy[Branch, dp.PromptingPolicy, Article]:
     article = yield from dp.interact(
         step=lambda pre, _: ProposeArticleStructured(user_name, pre).using(
             dp.ambient_pp
@@ -508,7 +507,7 @@ def propose_article_structured(
 
 def propose_article_policy(
     model: dp.LLM,
-) -> dp.Policy[dp.Branch, dp.PromptingPolicy]:
+) -> dp.Policy[Branch, dp.PromptingPolicy]:
     # Valid for both `propose_article` and `propose_article_structured`
     return (dp.dfs(max_branching=1), dp.few_shot(model))
 
@@ -548,8 +547,8 @@ class MethodFlag(dp.FlagQuery[Literal["def", "alt"]]):
     pass
 
 
-@dp.strategy
-def pick_flag() -> dp.Strategy[dp.Flag[MethodFlag], object, int]:
+@strategy
+def pick_flag() -> Strategy[dp.Flag[MethodFlag], object, int]:
     match (yield from dp.get_flag(MethodFlag)):
         case "def":
             return 0
@@ -663,12 +662,10 @@ def try_obtain_item(
     )
 
 
-@dp.strategy
+@strategy
 def obtain_item(
     market: Market, goal: str
-) -> dp.Strategy[
-    dp.Abduction | dp.Message, dp.PromptingPolicy, list[Exchange]
-]:
+) -> Strategy[dp.Abduction | dp.Message, dp.PromptingPolicy, list[Exchange]]:
     IP = dp.PromptingPolicy
     exchanges = yield from dp.abduction(
         prove=lambda possessed, item: (
@@ -700,10 +697,10 @@ def obtain_item_policy(model: dp.LLM, num_concurrent: int = 1):
 #####
 
 
-@dp.strategy
+@strategy
 def recursive_joins(
     depth: int,
-) -> dp.Strategy[
+) -> Strategy[
     dp.Join | dp.Message | dp.Compute | dp.Flag[MethodFlag], object, int
 ]:
     if depth == 0:

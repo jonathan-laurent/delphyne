@@ -9,6 +9,7 @@ configs = [
         model_name=model,
         temperature=1,
         max_feedback_cycles=3,
+        loop=False,
         seed=0,
     )
     for model in ["mistral-small-2503"]
