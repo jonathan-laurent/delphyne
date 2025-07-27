@@ -31,8 +31,8 @@ class RunLoadedStrategyArgs[N: dp.Node, P, T]:
     policy: dp.Policy[N, P]
     num_generated: int = 1
     budget: dict[str, float] | None = None
-    requests_cache: str | None = None
-    requests_cache_mode: dp.CacheMode = "read_write"
+    cache_dir: str | None = None
+    cache_mode: dp.CacheMode = "read_write"
     export_raw_trace: bool = True
     export_log: bool = True
     export_browsable_trace: bool = True
@@ -43,15 +43,18 @@ async def run_loaded_strategy[N: dp.Node, P, T](
     exe: ta.CommandExecutionContext,
     args: RunLoadedStrategyArgs[N, P, T],
 ):
+    cache_dir = None
+    if args.cache_dir is not None:
+        assert exe.cache_root is not None, "Nonspecified cache root."
+        cache_dir = exe.cache_root / args.cache_dir
     env = dp.PolicyEnv(
         prompt_dirs=exe.prompt_dirs,
         data_dirs=exe.data_dirs,
         demonstration_files=exe.demo_files,
-        requests_cache_dir=exe.requests_cache_dir,
-        requests_cache_name=args.requests_cache,
-        requests_cache_mode=args.requests_cache_mode,
+        cache_dir=cache_dir,
+        cache_mode=args.cache_mode,
         do_not_match_identical_queries=True,
-        make_requests_cache=std.LLMCache,
+        make_cache=std.LLMCache,
     )
     cache: dp.TreeCache = {}
     monitor = dp.TreeMonitor(cache, hooks=[dp.tracer_hook(env.tracer)])
@@ -133,8 +136,8 @@ class RunStrategyArgs:
     policy_args: dict[str, object]
     num_generated: int
     budget: dict[str, float]
-    requests_cache: str | None = None
-    requests_cache_mode: dp.CacheMode = "read_write"
+    cache_dir: str | None = None
+    cache_mode: dp.CacheMode = "read_write"
     export_raw_trace: bool = True
     export_log: bool = True
     export_browsable_trace: bool = True
@@ -156,8 +159,8 @@ async def run_strategy(
             policy=policy,
             num_generated=args.num_generated,
             budget=args.budget,
-            requests_cache=args.requests_cache,
-            requests_cache_mode=args.requests_cache_mode,
+            cache_dir=args.cache_dir,
+            cache_mode=args.cache_mode,
             export_raw_trace=args.export_raw_trace,
             export_log=args.export_log,
             export_browsable_trace=args.export_browsable_trace,

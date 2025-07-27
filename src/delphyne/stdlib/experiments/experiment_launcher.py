@@ -32,7 +32,7 @@ STATUS_FILE = "statuses.txt"
 RESULT_FILE = "result.yaml"
 LOG_FILE = "log.txt"
 EXCEPTION_FILE = "exception.txt"
-CACHE_DIR = "llm_cache"
+CACHE_DIR = "cache"
 RESULTS_SUMMARY = "results_summary.csv"
 
 
@@ -91,9 +91,9 @@ class Experiment[Config]:
     export_browsable_trace: bool = True
 
     def __post_init__(self):
-        # We override the cache requests directory.
-        assert self.context.requests_cache_dir is None
-        self.context = replace(self.context, requests_cache_dir=self.dir)
+        # We override the cache root directory.
+        assert self.context.cache_root is None
+        self.context = replace(self.context, cache_root=self.dir)
 
     def load(self):
         if not self.dir_exists():
@@ -258,8 +258,8 @@ class Experiment[Config]:
         info = state.configs[config_name]
         assert info.status == "done"
         cmdargs = self.experiment(info.params)
-        cmdargs.requests_cache = CACHE_DIR
-        cmdargs.requests_cache_mode = "replay"
+        cmdargs.cache_dir = config_name + "/" + CACHE_DIR
+        cmdargs.cache_mode = "replay"
         run_command(
             command=cmd.run_strategy,
             args=cmdargs,
@@ -402,8 +402,9 @@ def _run_config[Config](
             file_path.unlink(missing_ok=True)
     cmdargs = experiment(config)
     if cache_requests:
-        cmdargs.requests_cache = CACHE_DIR
-    cmdargs.requests_cache_mode = "create"
+        # A relative path is expected!
+        cmdargs.cache_dir = config_name + "/" + CACHE_DIR
+    cmdargs.cache_mode = "create"
     cmdargs.export_browsable_trace = export_browsable_trace
     cmdargs.export_log = export_log
     cmdargs.export_raw_trace = export_raw_trace
@@ -514,7 +515,7 @@ def quick_experiment[Config](
         demo_files=[workspace_root / (f + ".demo.yaml") for f in demo_files],
         prompt_dirs=[workspace_root / d for d in prompt_dirs],
         data_dirs=[workspace_root / d for d in data_dirs],
-        requests_cache_dir=None,
+        cache_root=None,
         result_refresh_period=None,
         status_refresh_period=None,
     )

@@ -97,7 +97,7 @@ class CommandExecutionContext:
     demo_files: Sequence[Path]
     prompt_dirs: Sequence[Path]
     data_dirs: Sequence[Path]
-    requests_cache_dir: Path | None = None
+    cache_root: Path | None = None
     result_refresh_period: float | None = None
     status_refresh_period: float | None = None
 

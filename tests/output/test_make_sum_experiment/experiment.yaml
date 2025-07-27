@@ -1,7 +1,7 @@
 name: test_make_sum_experiment
 description: null
 configs:
-  3673e7cd-454d-413e-9c33-5b99737ee44f:
+  adde5eaa-5d11-474a-90f4-fad88c10cec3:
     params:
       allowed:
       - 1
@@ -11,7 +11,7 @@ configs:
       - 5
       goal: 5
     status: done
-  fd834357-289f-40b0-8314-49d1cebc7c40:
+  4413b528-e144-462b-9f3c-30db03843405:
     params:
       allowed:
       - 9

@@ -300,11 +300,10 @@ class PolicyEnv:
         prompt_dirs: Sequence[Path],
         demonstration_files: Sequence[Path],
         data_dirs: Sequence[Path],
-        requests_cache_dir: Path | None = None,
-        requests_cache_name: str | None = None,
-        requests_cache_mode: CacheMode = "read_write",
+        cache_dir: Path | None = None,
+        cache_mode: CacheMode = "read_write",
+        make_cache: Callable[[Path, CacheMode], object] | None = None,
         do_not_match_identical_queries: bool = False,
-        make_requests_cache: Callable[[Path, CacheMode], object] | None = None,
     ):
         """
         An environment accessible to a policy, containing prompt and
@@ -313,17 +312,10 @@ class PolicyEnv:
         self.templates = TemplatesManager(prompt_dirs, data_dirs)
         self.examples = ExampleDatabase(do_not_match_identical_queries)
         self.tracer = Tracer()
-        # Load the cache
         self.requests_cache = None
-        if requests_cache_name is not None:
-            assert requests_cache_dir is not None, (
-                "No directory specified for the requests cache."
-            )
-            path = requests_cache_dir / requests_cache_name
-            assert make_requests_cache is not None
-            self.requests_cache = make_requests_cache(
-                path, requests_cache_mode
-            )
+        if cache_dir is not None:
+            assert make_cache is not None
+            self.requests_cache = make_cache(cache_dir, cache_mode)
         for path in demonstration_files:
             try:
                 with path.open() as f:

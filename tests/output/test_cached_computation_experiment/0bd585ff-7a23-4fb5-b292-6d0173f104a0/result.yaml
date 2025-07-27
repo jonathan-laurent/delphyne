@@ -10,8 +10,8 @@ args:
   num_generated: 1
   budget:
     price: 0
-  requests_cache: llm_cache
-  requests_cache_mode: create
+  cache_dir: 0bd585ff-7a23-4fb5-b292-6d0173f104a0/cache
+  cache_mode: create
 outcome:
   diagnostics: []
   result:
