@@ -22,7 +22,7 @@ from typing import (
 import pydantic
 
 import delphyne.core.inspect as dpi
-from delphyne.core.environments import CacheMode
+from delphyne.core.environments import CacheFormat, CacheMode
 from delphyne.core.refs import Answer, Structured, ToolCall
 from delphyne.core.streams import Budget
 from delphyne.utils.caching import cache
@@ -444,13 +444,20 @@ class WithRetry(LLM):
 @dataclass
 class LLMCache:
     cache_dir: Path
-    num_seen: dict[LLMRequest, int]
     mode: CacheMode
+    format: CacheFormat
+    num_seen: dict[LLMRequest, int]
 
-    def __init__(self, cache_dir: Path, mode: CacheMode = "read_write"):
+    def __init__(
+        self,
+        cache_dir: Path,
+        mode: CacheMode = "read_write",
+        format: CacheFormat = "yaml",
+    ):
         self.cache_dir = cache_dir
-        self.num_seen: dict[LLMRequest, int] = defaultdict(lambda: 0)
         self.mode = mode
+        self.format = format
+        self.num_seen: dict[LLMRequest, int] = defaultdict(lambda: 0)
 
 
 @dataclass(frozen=True)
@@ -486,6 +493,7 @@ class CachedModel(LLM):
             dir=self.cache.cache_dir,
             hash_arg=_CachedRequest.stable_repr,
             mode=self.cache.mode,
+            format=self.cache.format,
         )
         def run_request(req: _CachedRequest) -> LLMResponse:
             base = req.request

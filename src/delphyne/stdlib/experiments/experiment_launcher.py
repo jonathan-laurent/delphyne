@@ -21,6 +21,7 @@ import yaml
 import delphyne.analysis as analysis
 import delphyne.stdlib.commands as cmd
 import delphyne.stdlib.models as md
+from delphyne.core import CacheFormat
 from delphyne.stdlib.tasks import CommandExecutionContext, run_command
 from delphyne.utils.typing import pydantic_dump, pydantic_load
 
@@ -89,6 +90,7 @@ class Experiment[Config]:
     export_raw_trace: bool = True
     export_log: bool = True
     export_browsable_trace: bool = True
+    cache_format: CacheFormat = "db"
 
     def __post_init__(self):
         # We override the cache root directory.
@@ -199,6 +201,7 @@ class Experiment[Config]:
                     export_raw_trace=self.export_raw_trace,
                     export_log=self.export_log,
                     export_browsable_trace=self.export_browsable_trace,
+                    cache_format=self.cache_format,
                 )
                 for name, info in state.configs.items()
                 if info.status == "todo"
@@ -260,6 +263,7 @@ class Experiment[Config]:
         cmdargs = self.experiment(info.params)
         cmdargs.cache_dir = config_name + "/" + CACHE_DIR
         cmdargs.cache_mode = "replay"
+        cmdargs.cache_format = self.cache_format
         run_command(
             command=cmd.run_strategy,
             args=cmdargs,
@@ -390,6 +394,7 @@ def _run_config[Config](
     export_raw_trace: bool,
     export_log: bool,
     export_browsable_trace: bool,
+    cache_format: CacheFormat,
 ) -> tuple[str, bool]:
     cache_dir = None
     if cache_requests:
@@ -408,6 +413,7 @@ def _run_config[Config](
     cmdargs.export_browsable_trace = export_browsable_trace
     cmdargs.export_log = export_log
     cmdargs.export_raw_trace = export_raw_trace
+    cmdargs.cache_format = cache_format
     try:
         run_command(
             command=cmd.run_strategy,
@@ -496,6 +502,7 @@ def quick_experiment[Config](
     prompt_dirs: Sequence[Path | str] | None = None,
     config_naming: Callable[[Config, uuid.UUID], str] | None = None,
     config_type: type[Config] | None = None,
+    cache_format: CacheFormat = "db",
 ) -> Experiment[Config]:
     if strategy_dirs is None:
         strategy_dirs = ["."]
@@ -531,4 +538,5 @@ def quick_experiment[Config](
         config_type=config_type,
         configs=configs,
         config_naming=config_naming,
+        cache_format=cache_format,
     )

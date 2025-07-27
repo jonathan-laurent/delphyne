@@ -292,6 +292,7 @@ class InvalidDemoFile(Exception):
 
 
 type CacheMode = Literal["read_write", "off", "create", "replay"]
+type CacheFormat = Literal["yaml", "db"]
 
 
 class PolicyEnv:
@@ -302,7 +303,9 @@ class PolicyEnv:
         data_dirs: Sequence[Path],
         cache_dir: Path | None = None,
         cache_mode: CacheMode = "read_write",
-        make_cache: Callable[[Path, CacheMode], object] | None = None,
+        cache_format: CacheFormat = "yaml",
+        make_cache: Callable[[Path, CacheMode, CacheFormat], object]
+        | None = None,
         do_not_match_identical_queries: bool = False,
     ):
         """
@@ -315,7 +318,9 @@ class PolicyEnv:
         self.requests_cache = None
         if cache_dir is not None:
             assert make_cache is not None
-            self.requests_cache = make_cache(cache_dir, cache_mode)
+            self.requests_cache = make_cache(
+                cache_dir, cache_mode, cache_format
+            )
         for path in demonstration_files:
             try:
                 with path.open() as f:

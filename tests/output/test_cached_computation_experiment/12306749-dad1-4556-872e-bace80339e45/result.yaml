@@ -10,8 +10,9 @@ args:
   num_generated: 1
   budget:
     price: 0
-  cache_dir: 0bd585ff-7a23-4fb5-b292-6d0173f104a0/cache
+  cache_dir: 12306749-dad1-4556-872e-bace80339e45/cache
   cache_mode: create
+  cache_format: db
 outcome:
   diagnostics: []
   result:

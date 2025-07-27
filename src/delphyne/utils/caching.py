@@ -13,7 +13,7 @@ from typing import Any, Literal, get_type_hints
 import yaml
 from pydantic import TypeAdapter
 
-DATABASE_FILE_NAME = "cache.db"
+DATABASE_FILE_NAME = "cache"  # dbm will add the *.db extension
 
 
 @dataclass

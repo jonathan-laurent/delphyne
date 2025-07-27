@@ -33,6 +33,7 @@ class RunLoadedStrategyArgs[N: dp.Node, P, T]:
     budget: dict[str, float] | None = None
     cache_dir: str | None = None
     cache_mode: dp.CacheMode = "read_write"
+    cache_format: dp.CacheFormat = "yaml"
     export_raw_trace: bool = True
     export_log: bool = True
     export_browsable_trace: bool = True
@@ -53,6 +54,7 @@ async def run_loaded_strategy[N: dp.Node, P, T](
         demonstration_files=exe.demo_files,
         cache_dir=cache_dir,
         cache_mode=args.cache_mode,
+        cache_format=args.cache_format,
         do_not_match_identical_queries=True,
         make_cache=std.LLMCache,
     )
@@ -138,6 +140,7 @@ class RunStrategyArgs:
     budget: dict[str, float]
     cache_dir: str | None = None
     cache_mode: dp.CacheMode = "read_write"
+    cache_format: dp.CacheFormat = "yaml"
     export_raw_trace: bool = True
     export_log: bool = True
     export_browsable_trace: bool = True
@@ -161,6 +164,7 @@ async def run_strategy(
             budget=args.budget,
             cache_dir=args.cache_dir,
             cache_mode=args.cache_mode,
+            cache_format=args.cache_format,
             export_raw_trace=args.export_raw_trace,
             export_log=args.export_log,
             export_browsable_trace=args.export_browsable_trace,
