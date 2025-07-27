@@ -2,10 +2,11 @@
 Standard Command Line Tools for Delphyne
 """
 
-from collections.abc import Sequence
 from pathlib import Path
 
 import fire  # type: ignore
+
+from delphyne.scripts.load_configs import load_config
 
 
 class DelphyneApp:
@@ -13,9 +14,8 @@ class DelphyneApp:
     Delphyne Command Line Application
     """
 
-    def __init__(self, strategy_dirs: Sequence[Path], modules: Sequence[str]):
-        self.strategy_dirs = strategy_dirs
-        self.modules = modules
+    def __init__(self, workspace_dir: Path | None = None):
+        self.workspace_dir = workspace_dir or Path.cwd()
 
     def check_demo(
         self,
@@ -28,7 +28,8 @@ class DelphyneApp:
         """
         from delphyne.scripts.demonstrations import check_demo_file
 
-        feedback = check_demo_file(file, self.strategy_dirs, self.modules)
+        config = load_config(self.workspace_dir)
+        feedback = check_demo_file(file, config.strategy_dirs, config.modules)
         num_errors = len(feedback.errors)
         num_warnings = len(feedback.warnings)
         print(f"{num_errors} error(s), {num_warnings} warning(s)", end="\n\n")

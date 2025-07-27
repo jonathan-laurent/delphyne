@@ -24,9 +24,8 @@ delete-test-exp:
 
 # Test demonstrations, in a way that does not require Why3 to be installed.
 test:
-	python -m delphyne check-demo --strategy-dirs=[.] --modules=[abduct_and_branch] --file=abduct_and_branch.demo.yaml --ensure-no-error
-# Contains implicit answers...
-# python -m delphyne check-demo --strategy-dirs=[.] --modules=[abduct_and_saturate] --file=abduct_and_saturate.demo.yaml --ensure-no-error
+	python -m delphyne check-demo abduct_and_branch.demo.yaml --ensure-no-error
+# Other demos contain implicit answers...
 
 full-test: test test-exp replay-test-exp
 	pytest tests
