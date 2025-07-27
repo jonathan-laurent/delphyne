@@ -23,6 +23,8 @@ import { getEditorForUri } from "./edit_utils";
 const DEFAULT_COMMAND = { command: null, args: {} };
 const EXECUTE_COMMAND_ENDPOINT = "execute-command";
 const RUN_STRATEGY_DEFAULT_NUM_REQUESTS = 10;
+const DELPHYNE_COMMAND_FILE_EXTENSION = ".exec.yaml";
+const DELPHYNE_COMMAND_HEADER = "delphyne-command";
 
 // TODO: this is hardcoded for now
 function taskOptions(name: string, args: { [key: string]: any }) {
@@ -65,8 +67,6 @@ export interface CommandFile extends CommandSpec {
 //////
 /// Commands Manager
 //////
-
-const DELPHYNE_COMMAND_HEADER = "delphyne-command";
 
 export class CommandsManager implements vscode.CodeActionProvider {
   constructor(
@@ -296,7 +296,11 @@ async function createCommandBuffer(cmd: unknown, execute: boolean = false) {
 
 function isCommandFile(document: vscode.TextDocument) {
   // Return `true` if the file starts with a number of empty lines and comments
-  // (starting with `#`), one of them being `# ${DELPHYNE_COMMAND_HEADER}`
+  // (starting with `#`), one of them being `# ${DELPHYNE_COMMAND_HEADER}`.
+  // Also return true if the extension is `*.exec.yaml`.
+  if (document.uri.path.endsWith(DELPHYNE_COMMAND_FILE_EXTENSION)) {
+    return true;
+  }
   const lines = document.getText().split("\n");
   let foundHeader = false;
   for (const line of lines) {

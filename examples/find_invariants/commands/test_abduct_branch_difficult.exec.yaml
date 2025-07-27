@@ -1,5 +1,3 @@
-# delphyne-command
-
 command: run_strategy
 args:
   strategy: prove_program_via_abduction_and_branching
@@ -8,14 +6,13 @@ args:
       use int.Int
 
       let main () diverges =
-        let ref a = any int in
-        let ref b = a * a + 2 in
-        let ref x = 0 in
-        while b < 50 do
-          x <- x * (b - 1) + 1;
-          b <- b + 1;
+        let ref x = 1 in
+        let ref y = 1 in
+        while y < 100000 do
+          x <- x + y;
+          y <- y + 1
         done;
-        assert { x >= 0 }
+        assert { x >= y }
   policy: prove_program_via_abduction_and_branching_policy
   policy_args: {}
   num_generated: 1
