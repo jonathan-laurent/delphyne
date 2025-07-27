@@ -178,24 +178,15 @@ export class CommandsManager implements vscode.CodeActionProvider {
           result: result.result,
         };
       }
-      const edit = new vscode.WorkspaceEdit();
+
       // This is needed in case the document is closed and reopened, in which case the old
       // document object becomes invalid.
       const document = await vscode.workspace.openTextDocument(uri);
-      const fullRange = new vscode.Range(
-        document.positionAt(0),
-        document.positionAt(document.getText().length),
-      );
-      const newContent: CommandFile = {
-        command: parsed.command,
-        args: parsed.args,
-        outcome: outcome,
-      };
-      const newText =
-        `# ${DELPHYNE_COMMAND_HEADER}\n\n` + prettyYaml(newContent); // TODO: more robust
-      edit.replace(document.uri, fullRange, newText);
-      await vscode.workspace.applyEdit(edit);
+      const outcomeObj = { outcome: outcome };
+      const outcomeYaml = "\n" + prettyYaml(outcomeObj);
+      await clearAfterOutcomeAndAppend(document, outcomeYaml);
     };
+
     await updateEditor(null, "pending");
     const task = this.server.launchTask(
       { name, arg, origin },
@@ -214,20 +205,7 @@ export class CommandsManager implements vscode.CodeActionProvider {
   }
 
   async clearOutput(document: vscode.TextDocument) {
-    // Remove all the lines in the document, starting with the line that is equal to
-    // "outcome:"
-    const lines = document.getText().split("\n");
-    const idx = lines.findIndex((line) => line.trim() === "outcome:");
-    if (idx === -1) {
-      return;
-    }
-    const edit = new vscode.WorkspaceEdit();
-    const fullRange = new vscode.Range(
-      document.positionAt(0),
-      document.positionAt(document.getText().length),
-    );
-    edit.replace(document.uri, fullRange, lines.slice(0, idx).join("\n"));
-    await vscode.workspace.applyEdit(edit);
+    await clearAfterOutcomeAndAppend(document, "");
   }
 
   showTraceAction(document: vscode.TextDocument): vscode.CodeAction | null {
@@ -274,6 +252,30 @@ function uriBase(uri: vscode.Uri): string {
   }
   const baseName = fileName.split(".")[0];
   return baseName;
+}
+
+async function clearAfterOutcomeAndAppend(
+  document: vscode.TextDocument,
+  textToAppend: string,
+) {
+  const lines = document.getText().split("\n");
+  const outcomeIdx = lines.findIndex((line) => line.trim() === "outcome:");
+
+  // If "outcome:" is found, keep everything before it, otherwise keep the whole document
+  const baseContent =
+    outcomeIdx === -1
+      ? lines.join("\n")
+      : lines.slice(0, outcomeIdx).join("\n");
+
+  const newContent = baseContent + textToAppend;
+
+  const edit = new vscode.WorkspaceEdit();
+  const fullRange = new vscode.Range(
+    document.positionAt(0),
+    document.positionAt(document.getText().length),
+  );
+  edit.replace(document.uri, fullRange, newContent);
+  await vscode.workspace.applyEdit(edit);
 }
 
 function serializeCommand(cmd: CommandSpec): SerializedCommand {
