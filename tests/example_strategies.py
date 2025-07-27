@@ -744,3 +744,61 @@ def recursive_joins_policy():
         @ dp.elim_flag(MethodFlag, "def")
     )
     return (sp, dprs.OneOfEachSequentially())
+
+
+#####
+##### DictIPs
+#####
+
+
+@dataclass
+class GenerateNumber(dp.Query[int]):
+    """
+    Generate a number between min_val and max_val (inclusive). Just
+    answer with the number and nothing else.
+    """
+
+    min_val: int
+    max_val: int
+    __parser__: ClassVar = dp.raw_yaml
+
+
+@dataclass
+class GenerateNumberIP:
+    generate_number: dp.PromptingPolicy
+
+
+@strategy
+def generate_number(
+    min_val: int, max_val: int
+) -> Strategy[Branch | Fail, dp.DictIP, int]:
+    num = yield from dp.branch(GenerateNumber(min_val, max_val).using(...))
+    yield from dp.ensure(min_val <= num <= max_val, "number_out_of_range")
+    return num
+
+
+@strategy
+def dual_number_generation() -> Strategy[
+    Branch | Fail, dp.DictIP, tuple[int, int]
+]:
+    low_num = yield from dp.branch(
+        generate_number(1, 50).using(...).tagged("low")
+    )
+    high_num = yield from dp.branch(
+        generate_number(51, 100).using(...).tagged("high")
+    )
+    yield from dp.ensure(low_num < high_num, label="numbers_not_ordered")
+    return (low_num, high_num)
+
+
+@dp.ensure_compatible(dual_number_generation)
+def dual_number_generation_policy(model: dp.LLM, shared: bool):
+    sub = (dp.dfs(), {"GenerateNumber": dp.few_shot(model)})
+    if shared:
+        ip = {"generate_number": sub}
+    else:
+        ip = {
+            "generate_number&low": sub,
+            "generate_number&high": sub,
+        }
+    return (dp.dfs(), ip)

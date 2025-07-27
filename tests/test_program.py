@@ -367,12 +367,25 @@ def test_embedded_tree_and_transformers():
 
 def test_make_sum_dict_ip():
     strategy = ex.make_sum_dict_ip([1, 2, 3, 4], 7)
-
     res, log = _eval_strategy(
         strategy,
         ex.make_sum_dict_ip_policy,
         cache_name="make_sum_dict_ip",
         max_requests=2,
+        max_res=1,
+    )
+    print(log)
+    assert res
+
+
+@pytest.mark.parametrize("shared", [True, False])
+def test_dual_number_generation(shared: bool):
+    strategy = ex.dual_number_generation()
+    res, log = _eval_strategy(
+        strategy,
+        partial(ex.dual_number_generation_policy, shared=shared),
+        cache_name="dual_number_generation",
+        max_requests=4,
         max_res=1,
     )
     print(log)

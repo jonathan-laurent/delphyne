@@ -2,7 +2,7 @@
 Utilities for writing policies.
 """
 
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Protocol
 
@@ -218,7 +218,7 @@ def ensure_compatible[**A, N: Node, P](
 #####
 
 
-type DictIP = dict[str, Any]
+type DictIP = Mapping[str, dp.Policy[Any, Any] | PromptingPolicy]
 
 
 def _dict_ip_key_match(key: str, tags: Sequence[dp.Tag]) -> bool:
@@ -231,6 +231,8 @@ def dict_subpolicy(ip: DictIP, tags: Sequence[dp.Tag]) -> Any:
     Retrieve a sub-policy from a dictionary internal policy, using the
     tags of a particular space.
     """
+    # TODO: add a type check to make sure we get a prompting policy or a
+    # policy out of it (whatever appropriate)?
     matches = [k for k in ip if _dict_ip_key_match(k, tags)]
     if not matches:
         raise ValueError(
