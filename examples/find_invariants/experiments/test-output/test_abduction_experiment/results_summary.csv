@@ -1,3 +1,3 @@
 bench_name,model_cycle,temperature,num_concurrent,max_requests_per_attempt,max_dollar_budget,seed,success,num_completions,num_requests,input_tokens,cached_input_tokens,output_tokens,price
-1,"[['gpt-4.1-nano', 2], ['gpt-4.1-mini', 1]]",1.5,4,4,0.1,0,True,28,7,23101,12160,1434,0.029323099999999998
-7,"[['gpt-4.1-nano', 2], ['gpt-4.1-mini', 1]]",1.5,4,4,0.1,0,True,12,3,10010,8960,663,0.007411149999999999
+1,"[['gpt-4.1-nano', 2], ['gpt-4.1-mini', 1]]",1.5,4,4,0.1,0,True,16,4,13246,9088,1049,0.00815445
+7,"[['gpt-4.1-nano', 2], ['gpt-4.1-mini', 1]]",1.5,4,4,0.1,0,True,24,6,19981,15360,1238,0.02310075

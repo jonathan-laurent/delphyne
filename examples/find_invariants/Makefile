@@ -20,7 +20,7 @@ replay-test-exp:
 	python experiments/test_baseline_experiment.py replay
 
 delete-test-exp:
-	rm -rf experiments/output/test-output
+	rm -rf experiments/test-output
 
 # Test demonstrations, in a way that does not require Why3 to be installed.
 test:
