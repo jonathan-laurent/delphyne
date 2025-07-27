@@ -5,10 +5,12 @@ Standard Wrappers for Strategy Computations and Functions.
 import functools
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Any, Protocol, overload
+from types import EllipsisType
+from typing import Any, Protocol, cast, overload
 
 import delphyne.core as dp
 from delphyne.core import inspect
+from delphyne.stdlib.policies import DictIP, dict_subpolicy
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
 
@@ -20,9 +22,21 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
     spaces.
     """
 
+    @overload
+    def using(self, get_policy: EllipsisType, /) -> dp.Opaque[DictIP, T]: ...
+
+    @overload
     def using[P2](
         self,
-        get_policy: Callable[[P2], dp.Policy[N, P]],
+        get_policy: Callable[[P2], dp.Policy[N, P]] | EllipsisType,
+        /,
+        inner_policy_type: type[P2] | None = None,
+    ) -> dp.Opaque[P2, T]: ...
+
+    def using[P2](
+        self,
+        get_policy: Callable[[P2], dp.Policy[N, P]] | EllipsisType,
+        /,
         inner_policy_type: type[P2] | None = None,
     ) -> dp.Opaque[P2, T]:
         """
@@ -39,6 +53,10 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
             worse inference when using those instead of a standard
             method.
         """
+        if isinstance(get_policy, EllipsisType):
+            return dp.OpaqueSpace[P2, T].from_strategy(
+                self, cast(Any, dict_subpolicy)
+            )
         return dp.OpaqueSpace[P2, T].from_strategy(
             self, lambda p, _: get_policy(p)
         )

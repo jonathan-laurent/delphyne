@@ -360,5 +360,20 @@ def test_embedded_tree_and_transformers():
     assert res is not None
 
 
-if __name__ == "__main__":
-    test_embedded_tree_and_transformers()
+#####
+##### DictIPs
+#####
+
+
+def test_make_sum_dict_ip():
+    strategy = ex.make_sum_dict_ip([1, 2, 3, 4], 7)
+
+    res, log = _eval_strategy(
+        strategy,
+        ex.make_sum_dict_ip_policy,
+        cache_name="make_sum_dict_ip",
+        max_requests=2,
+        max_res=1,
+    )
+    print(log)
+    assert res

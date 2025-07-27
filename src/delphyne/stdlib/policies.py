@@ -2,7 +2,7 @@
 Utilities for writing policies.
 """
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Any, Protocol
 
@@ -211,6 +211,39 @@ def ensure_compatible[**A, N: Node, P](
     TODO: this decorator does not seem to work with pyright.
     """
     return lambda f: f
+
+
+#####
+##### Inner Policy Dictionaries
+#####
+
+
+type DictIP = dict[str, Any]
+
+
+def _dict_ip_key_match(key: str, tags: Sequence[dp.Tag]) -> bool:
+    key_tags = key.split("&")
+    return set(key_tags).issubset(set(tags))
+
+
+def dict_subpolicy(ip: DictIP, tags: Sequence[dp.Tag]) -> Any:
+    """
+    Retrieve a sub-policy from a dictionary internal policy, using the
+    tags of a particular space.
+    """
+    matches = [k for k in ip if _dict_ip_key_match(k, tags)]
+    if not matches:
+        raise ValueError(
+            f"Missing sub-policy for space with tags {tags}.\n"
+            + f"Provided keys are: {list(ip)}"
+        )
+    if len(matches) > 1:
+        raise ValueError(
+            f"Multiple sub-policies match tags {tags}.\n"
+            + f"Matching keys are: {matches}\n"
+            + f"Provided keys are: {list(ip)}"
+        )
+    return ip[matches[0]]
 
 
 #####

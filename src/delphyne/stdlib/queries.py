@@ -10,7 +10,8 @@ import typing
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from functools import partial
-from typing import Any, Literal, Protocol, cast, override
+from types import EllipsisType
+from typing import Any, Literal, Protocol, cast, overload, override
 
 import numpy as np
 import yaml
@@ -19,8 +20,9 @@ import delphyne.core as dp
 import delphyne.core.chats as ct
 import delphyne.core.inspect as dpi
 import delphyne.stdlib.models as md
+import delphyne.stdlib.policies as pol
 from delphyne.core.refs import Answer
-from delphyne.stdlib.policies import log, prompting_policy
+from delphyne.stdlib.policies import DictIP, log, prompting_policy
 from delphyne.utils import typing as ty
 from delphyne.utils.typing import TypeAnnot, ValidationError
 
@@ -257,9 +259,21 @@ class Query[T](dp.AbstractQuery[T]):
     def answer_type(self) -> TypeAnnot[T]:
         return self._answer_type()
 
+    @overload
+    def using(self, get_policy: EllipsisType, /) -> dp.Opaque[DictIP, T]: ...
+
+    @overload
+    def using[P2](
+        self,
+        get_policy: Callable[[P2], dp.AbstractPromptingPolicy] | EllipsisType,
+        /,
+        inner_policy_type: type[P2] | None = None,
+    ) -> dp.Opaque[P2, T]: ...
+
     def using[P](
         self,
-        get_policy: Callable[[P], dp.AbstractPromptingPolicy],
+        get_policy: Callable[[P], dp.AbstractPromptingPolicy] | EllipsisType,
+        /,
         inner_policy_type: type[P] | None = None,
     ) -> dp.Opaque[P, T]:
         """
@@ -270,6 +284,10 @@ class Query[T](dp.AbstractQuery[T]):
         and can be used to help type checkers infer the type of the
         ambient inner policy.
         """
+        if isinstance(get_policy, EllipsisType):
+            return dp.OpaqueSpace[P, T].from_query(
+                self, cast(Any, pol.dict_subpolicy)
+            )
         return dp.OpaqueSpace[P, T].from_query(
             self, lambda p, _: get_policy(p)
         )

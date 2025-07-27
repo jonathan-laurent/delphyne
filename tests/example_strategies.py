@@ -57,6 +57,25 @@ def make_sum_policy():
 
 
 #####
+##### MakeSum with DictIP
+#####
+
+
+@strategy
+def make_sum_dict_ip(
+    allowed: list[int], goal: int
+) -> Strategy[Branch | Fail, dp.DictIP, list[int]]:
+    xs = yield from dp.branch(MakeSum(allowed, goal).using(...))
+    yield from dp.ensure(all(x in allowed for x in xs), label="forbidden_num")
+    yield from dp.ensure(sum(xs) == goal, label="wrong_sum")
+    return xs
+
+
+def make_sum_dict_ip_policy(model: dp.LLM):
+    return (dp.dfs(), {"MakeSum": dp.few_shot(model)})
+
+
+#####
 ##### Adding support for conjecture nodes
 #####
 
