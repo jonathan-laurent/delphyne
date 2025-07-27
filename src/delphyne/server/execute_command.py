@@ -4,6 +4,7 @@ Custom Delphyne Commands
 
 import traceback
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 import delphyne.analysis as analysis
@@ -22,9 +23,11 @@ class CommandSpec:
 async def execute_command(
     task: ta.TaskContext[ta.CommandResult[Any]],
     exe: ta.CommandExecutionContext,
+    workspace_root: Path,
     cmd: CommandSpec,
 ):
     try:
+        exe = exe.with_root(workspace_root)
         loader = analysis.ObjectLoader(exe.base, extra_objects=STD_COMMANDS)
         command = loader.find_object(cmd.command)
         args_type = ta.command_args_type(command)

@@ -155,9 +155,9 @@ async def run_strategy(
     strategy = loader.load_strategy_instance(args.strategy, args.args)
     policy = loader.load_and_call_function(args.policy, args.policy_args)
     await run_loaded_strategy(
-        task,
-        exe,
-        RunLoadedStrategyArgs(
+        task=task,
+        exe=exe,
+        args=RunLoadedStrategyArgs(
             strategy=strategy,
             policy=policy,
             num_generated=args.num_generated,

@@ -154,7 +154,7 @@ def command_args_type(cmd: Command[Any, Any]) -> Any:
     parameters = list(sig.parameters.keys())
     assert len(parameters) == 3, f"Invalid command: {cmd}"
     hints = typing.get_type_hints(cmd)
-    return hints[parameters[2]]
+    return hints[parameters[-1]]
 
 
 def command_result_type(cmd: Command[Any, Any]) -> Any:
@@ -181,6 +181,7 @@ def run_command[A, T](
     command: Command[A, T],
     args: A,
     ctx: CommandExecutionContext,
+    workspace_root: Path | None = None,
     dump_statuses: Path | None = None,
     dump_result: Path | None = None,
     dump_log: Path | None = None,

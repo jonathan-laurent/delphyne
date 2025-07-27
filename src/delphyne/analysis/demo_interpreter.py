@@ -45,6 +45,12 @@ class DemoExecutionContext:
     strategy_dirs: Sequence[Path]
     modules: Sequence[str]
 
+    def with_root(self, root: Path) -> "DemoExecutionContext":
+        return DemoExecutionContext(
+            strategy_dirs=[root / p for p in self.strategy_dirs],
+            modules=self.modules,
+        )
+
 
 class ObjectLoader:
     def __init__(

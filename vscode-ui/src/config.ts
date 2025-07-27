@@ -1,61 +1,81 @@
 //////
-/// Configuration
+/// Metadata parsing
 //////
 
 import * as vscode from "vscode";
+import { showAlertAndPanic, log } from "./logging";
+import * as yaml from "yaml";
 import * as fs from "fs";
 import * as path from "path";
-import * as yaml from "yaml";
-import { showAlertAndPanic } from "./logging";
 
-interface Config {
-  strategy_dirs: string[];
-  prompt_dirs: string[];
+const CONFIG_FILE_NAME = "delphyne.yaml";
+const DEFAULT_RESULT_REFRESH_PERIOD_IN_SECONDS = 5;
+const DEFAULT_STATUS_REFRESH_PERIOD_IN_SECONDS = 1;
+
+/////
+// Configuration File and Command Execution Contexts
+/////
+
+export interface CommandExecutionContext {
+  modules?: string[];
+  demo_files?: string[];
+  strategy_dirs?: string[];
+  prompt_dirs?: string[];
   data_dirs?: string[];
-  modules: string[];
-  demo_files: string[];
+  cache_root?: string;
   result_refresh_period?: number | null;
   status_refresh_period?: number | null;
 }
 
-export function loadConfig(): Config {
+export interface Config extends CommandExecutionContext {}
+
+export function getWorkspaceRoot(): string {
   const workspaceFolders = vscode.workspace.workspaceFolders;
   if (!workspaceFolders) {
     showAlertAndPanic("No workspace is opened.");
   }
+  return workspaceFolders[0].uri.fsPath;
+}
 
-  const workspaceRoot = workspaceFolders[0].uri.fsPath;
-  const configFilePath = path.join(workspaceRoot, "delphyne.yaml");
+export function loadConfig(): Config {
+  const workspaceRoot = getWorkspaceRoot();
+  const configFilePath = path.join(workspaceRoot, CONFIG_FILE_NAME);
 
+  let config: Config = {};
   if (!fs.existsSync(configFilePath)) {
-    showAlertAndPanic(
-      `Config file 'delphyne.yaml' not found at the root of the workspace.`,
+    log.info(
+      "Config file 'delphyne.yaml' not found at the root of the workspace. Using the default configuration.",
     );
+  } else {
+    const configFileContent = fs.readFileSync(configFilePath, "utf8");
+    config = yaml.parse(configFileContent);
   }
-
-  const configFileContent = fs.readFileSync(configFilePath, "utf8");
-  const config: Config = yaml.parse(configFileContent) as Config;
-
-  // Convert strategy_dirs, prompt_dirs and data_dirs to absolute paths
-  config.strategy_dirs = config.strategy_dirs.map((dir) =>
-    path.resolve(workspaceRoot, dir),
-  );
-  config.prompt_dirs = config.prompt_dirs.map((dir) =>
-    path.resolve(workspaceRoot, dir),
-  );
-  if (config.data_dirs) {
-    config.data_dirs = config.data_dirs.map((dir) =>
-      path.resolve(workspaceRoot, dir),
-    );
+  if (config.result_refresh_period === undefined) {
+    config.result_refresh_period = DEFAULT_RESULT_REFRESH_PERIOD_IN_SECONDS;
   }
-  // Convert demo_files to absolute paths with .demo.yaml extension and check existence
-  config.demo_files = config.demo_files.map((file) => {
-    const demoFilePath = path.resolve(workspaceRoot, `${file}.demo.yaml`);
-    if (!fs.existsSync(demoFilePath)) {
-      showAlertAndPanic(`Demo file '${demoFilePath}' does not exist.`);
-    }
-    return demoFilePath;
-  });
-
+  if (config.status_refresh_period === undefined) {
+    config.status_refresh_period = DEFAULT_STATUS_REFRESH_PERIOD_IN_SECONDS;
+  }
   return config;
+}
+
+export function getCommandExecutionContext(): CommandExecutionContext {
+  return loadConfig();
+}
+
+//////
+/// Demonstration Execution Contexts
+//////
+
+export interface ExecutionContext {
+  strategy_dirs?: string[];
+  modules?: string[];
+}
+
+export function getExecutionContext(): ExecutionContext {
+  const config = loadConfig();
+  return {
+    strategy_dirs: config.strategy_dirs,
+    modules: config.modules,
+  };
 }

@@ -7,7 +7,11 @@ import { DemosManager } from "./demos_manager";
 import { DelphyneServer } from "./server";
 import { DemoElement, queryOfDemoElement } from "./elements";
 import { DemoFeedback, StrategyDemoFeedback } from "./stubs/feedback";
-import { ExecutionContext, getExecutionContext } from "./execution_contexts";
+import {
+  ExecutionContext,
+  getExecutionContext,
+  getWorkspaceRoot,
+} from "./config";
 import { StrategyDemo } from "./stubs/demos";
 import { PointedTree, TreeInfo, TreeView } from "./tree_view";
 import { ROOT_ID } from "./common";
@@ -232,7 +236,7 @@ async function evaluateDemo(
     },
     {},
     "demo-feedback",
-    { demo, context: executionContext },
+    { demo, context: executionContext, workspace_root: getWorkspaceRoot() },
   );
   const outcome = await task.outcome;
   const feedback = outcome.result as DemoFeedback;

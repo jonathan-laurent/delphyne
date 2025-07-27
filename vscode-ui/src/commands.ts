@@ -16,7 +16,7 @@ import {
   prettyYaml,
   serializeWithoutLocInfo,
 } from "./yaml_utils";
-import { getCommandExecutionContext } from "./execution_contexts";
+import { getCommandExecutionContext, getWorkspaceRoot } from "./config";
 import { ROOT_ID } from "./common";
 import { getEditorForUri } from "./edit_utils";
 
@@ -154,7 +154,11 @@ export class CommandsManager implements vscode.CodeActionProvider {
       command: serializeCommand(parsed),
     };
     const query = EXECUTE_COMMAND_ENDPOINT;
-    const payload = { spec: parsed, context: context };
+    const payload = {
+      spec: parsed,
+      context: context,
+      workspace_root: getWorkspaceRoot(),
+    };
 
     const updateEditor = async (
       result: CommandResultFromServer | null,
