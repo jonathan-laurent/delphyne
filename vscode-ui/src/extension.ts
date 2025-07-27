@@ -15,6 +15,28 @@ import { CommandsManager } from "./commands";
 import { autoFold } from "./folding";
 
 //////
+/// Helper functions
+//////
+
+function showStatusBarMessage(
+  text: string,
+  duration: number = 2000,
+): vscode.StatusBarItem {
+  const statusBarItem = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Left,
+  );
+  statusBarItem.text = text;
+  statusBarItem.show();
+
+  setTimeout(() => {
+    statusBarItem.hide();
+    statusBarItem.dispose();
+  }, duration);
+
+  return statusBarItem;
+}
+
+//////
 /// Activation code
 //////
 
@@ -94,6 +116,17 @@ export async function activate(context: vscode.ExtensionContext) {
       autoFold(demosManager);
     }),
   );
+
+  // Start and kill the server
+  context.subscriptions.push(
+    vscode.commands.registerCommand("delphyne.killServer", () => {
+      killServer(server);
+    }),
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("delphyne.startServer", async () => {}),
+  );
 }
 
 export function deactivate() {
@@ -116,5 +149,33 @@ async function evaluateCommand(server: DelphyneServer) {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
     return;
+  }
+}
+
+function killServer(server: DelphyneServer) {
+  // Show status bar message while killing
+  const loadingStatusBar = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Left,
+  );
+  loadingStatusBar.text = "$(loading~spin) Killing Delphyne server...";
+  loadingStatusBar.show();
+  const killResult = server.kill();
+  // Hide the loading message now that kill operation is complete
+  loadingStatusBar.hide();
+  loadingStatusBar.dispose();
+
+  const killCommand = '"sudo kill -9 $(sudo lsof -t -i :8000)"';
+  if (killResult === undefined) {
+    showAlert(
+      "No server instance is managed by the Delphyne extension. " +
+        `Is an external instance running? If so, consider killing it using ${killCommand}.`,
+    );
+  } else if (killResult === false) {
+    showAlert(
+      "The Delphyne server could not be killed.\n" +
+        `Consider running ${killCommand}.`,
+    );
+  } else {
+    showStatusBarMessage("Delphyne server killed.");
   }
 }

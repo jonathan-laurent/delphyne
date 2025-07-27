@@ -289,6 +289,14 @@
         "command": "delphyne.cancelTask",
         "title": "Cancel Task",
         "icon": "$(trashcan)"
+      },
+      {
+        "command": "delphyne.killServer",
+        "title": "Delphyne: Kill Server"
+      },
+      {
+        "command": "delphyne.startServer",
+        "title": "Delphyne: Start Server"
       }
     ]
   },

@@ -34,9 +34,9 @@ export class DelphyneServer {
     this.tasksManager = new TasksManager(context);
   }
 
-  kill() {
-    log.info("Terminating the Delphyne server.");
-    this.process?.kill();
+  kill(): boolean | undefined {
+    log.info("Attempting to terminate the Delphyne server.");
+    return this.process?.kill();
   }
 
   async callServer(query: string, payload: any) {
@@ -170,7 +170,7 @@ export async function startServer(
     log.info("The Delphyne server is already running outside VSCode.");
   } else {
     const python = await findPythonCommand();
-    const process = await startServerProcess(python);
+    process = await startServerProcess(python);
     if (!process) {
       return null;
     }
@@ -228,7 +228,7 @@ async function startServerProcess(
       }
     });
     server.on("close", (code) => {
-      log.error(`Delphyne server exited with code ${code}`);
+      log.info(`Delphyne server exited with code ${code}`);
       resolve(null);
     });
   });
