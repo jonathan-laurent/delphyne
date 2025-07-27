@@ -16,7 +16,7 @@ import {
   prettyYaml,
   serializeWithoutLocInfo,
 } from "./yaml_utils";
-import { getCommandExecutionContext, getWorkspaceRoot } from "./config";
+import { getLocalCommandExecutionContext, getWorkspaceRoot } from "./config";
 import { ROOT_ID } from "./common";
 import { getEditorForUri } from "./edit_utils";
 
@@ -144,7 +144,7 @@ export class CommandsManager implements vscode.CodeActionProvider {
       return;
     }
     this.running.add(uri);
-    const context = getCommandExecutionContext();
+    const context = getLocalCommandExecutionContext(document);
     const parsed = YAML.parse(document.getText()) as CommandFile;
     const name = parsed.command;
     const arg = uriBase(uri);

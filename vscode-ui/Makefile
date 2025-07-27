@@ -1,4 +1,4 @@
-.PHONY: clean install extension
+.PHONY: clean install extension check
 
 clean:
 	rm -rf out
@@ -7,6 +7,9 @@ clean:
 
 full-clean: clean
 	rm -rf node_modules
+
+check:
+	npx tsc --noEmit
 
 install:
 	npm install

@@ -85,3 +85,56 @@ suite("Parse YAML with anchors", () => {
     console.log(ex);
   });
 });
+
+// --- extractConfigBlock tests ---
+import { extractConfigBlock } from "../config";
+
+suite("extractConfigBlock", () => {
+  test("Extracts simple config block", () => {
+    const doc = `# @config\n# foo: bar\n# baz: qux\n# @end\nother: value`;
+    const result = extractConfigBlock(doc);
+    assert.strictEqual(result, "foo: bar\nbaz: qux");
+  });
+
+  test("Handles blank lines and comments before block", () => {
+    const doc = `\n#\n# @config\n# foo: bar\n# @end`;
+    const result = extractConfigBlock(doc);
+    assert.strictEqual(result, "foo: bar");
+  });
+
+  test("Returns null if @config not at top", () => {
+    const doc = `foo: bar\n# @config\n# baz: qux\n# @end`;
+    const result = extractConfigBlock(doc);
+    assert.strictEqual(result, null);
+  });
+
+  test("Returns null if @end missing", () => {
+    const doc = `# @config\n# foo: bar`;
+    const result = extractConfigBlock(doc);
+    assert.strictEqual(result, null);
+  });
+
+  test("Handles empty config block", () => {
+    const doc = `# @config\n# @end`;
+    const result = extractConfigBlock(doc);
+    assert.strictEqual(result, "");
+  });
+
+  test("Handles lines with just #", () => {
+    const doc = `# @config\n# foo: bar\n#\n# baz: qux\n# @end`;
+    const result = extractConfigBlock(doc);
+    assert.strictEqual(result, "foo: bar\n\nbaz: qux");
+  });
+
+  test("Returns null if non-comment before @config", () => {
+    const doc = `\nfoo: bar\n# @config\n# baz: qux\n# @end`;
+    const result = extractConfigBlock(doc);
+    assert.strictEqual(result, null);
+  });
+
+  test("Returns null if non-comment inside block", () => {
+    const doc = `# @config\n# foo: bar\nbaz: qux\n# @end`;
+    const result = extractConfigBlock(doc);
+    assert.strictEqual(result, null);
+  });
+});

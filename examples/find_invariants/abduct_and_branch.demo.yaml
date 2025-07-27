@@ -1,6 +1,5 @@
 # Demonstrations for `prove_program_via_abduction_and_branching`
 
-
 # A demonstration with conditionals, which involves abducting an additional assumption
 - strategy: prove_program_via_abduction_and_branching
   args:

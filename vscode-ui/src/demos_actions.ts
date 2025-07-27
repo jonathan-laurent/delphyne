@@ -9,7 +9,7 @@ import { DemoElement, queryOfDemoElement } from "./elements";
 import { DemoFeedback, StrategyDemoFeedback } from "./stubs/feedback";
 import {
   ExecutionContext,
-  getExecutionContext,
+  getLocalExecutionContext,
   getWorkspaceRoot,
 } from "./config";
 import { StrategyDemo } from "./stubs/demos";
@@ -27,9 +27,6 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
     private treeView: TreeView,
     private server: DelphyneServer,
   ) {}
-  // Memorize on what element `viewTestDestination` was called, to be used by
-  // `rerunLastTest`.
-  private lastTestElement: DemoElement | null = null;
 
   public provideCodeActions(
     document: vscode.TextDocument,
@@ -37,7 +34,7 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
   ): vscode.CodeAction[] | undefined {
     const element = this.demosManager.getElementAt(document.uri, range.start);
     if (element) {
-      const exe = getExecutionContext();
+      const exe = getLocalExecutionContext(document);
       const evaluateDemo = this.evaluateDemoAction(element, exe);
       const viewTreeRoot = this.viewTreeRoot(element);
       const viewTestDestination = this.viewTestDestination(element);
@@ -248,11 +245,11 @@ async function evaluateAllDemos(
   server: DelphyneServer,
   demosManager: DemosManager,
 ) {
-  const exe = getExecutionContext();
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
     return;
   }
+  const exe = getLocalExecutionContext(editor.document);
   const elements = demosManager.getAllDemoElements(editor.document.uri);
   if (!elements) {
     return;
