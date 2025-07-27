@@ -2,15 +2,18 @@
 Simple utility for caching values.
 """
 
+import dbm
 import functools
 import hashlib
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal, get_type_hints
+from typing import Any, Literal, get_type_hints
 
 import yaml
 from pydantic import TypeAdapter
+
+DATABASE_FILE_NAME = "cache.db"
 
 
 @dataclass
@@ -35,12 +38,63 @@ Caching mode:
 """
 
 
-def cache[P, T](
+type CacheFormat = Literal["yaml", "db"]
+"""
+Format used to store the cache on disk:
+
+- `yaml`: the cache is stored in YAML files, one file per hash
+- `db`: the cache is stored in a database
+"""
+
+
+def cache_db[P, T](
+    dir: Path,
+    mode: CacheMode = "read_write",
+) -> Callable[[Callable[[P], T]], Callable[[P], T]]:
+    def decorator(func: Callable[[P], T]) -> Callable[[P], T]:
+        arg_type, ret_type = _inspect_arg_and_ret_types(func)
+        arg_adapter = TypeAdapter[P](arg_type)
+        ret_adapter = TypeAdapter[T](ret_type)
+
+        @functools.wraps(func)
+        def cached_func(arg: P) -> T:
+            if mode == "off":
+                return func(arg)
+            dir.mkdir(parents=True, exist_ok=True)
+            database_file = dir / DATABASE_FILE_NAME
+            with dbm.open(database_file, "c") as db:
+                arg_json = arg_adapter.dump_json(arg)
+                if arg_json in db:
+                    assert mode != "create", "Cache entry already exists."
+                    ret_json = db[arg_json]
+                    ret = ret_adapter.validate_json(ret_json)
+                    return ret
+                assert mode != "replay", (
+                    f"Cache entry not found for:\n\n {arg}"
+                )
+                ret = func(arg)
+                ret_json = ret_adapter.dump_json(ret)
+                db[arg_json] = ret_json
+                return ret
+
+        return cached_func
+
+    return decorator
+
+
+def _inspect_arg_and_ret_types(func: Callable[[Any], Any]) -> tuple[Any, Any]:
+    arg_types = list(get_type_hints(func).items())
+    assert len(arg_types) == 2, "Function must have exactly one argument"
+    arg_type = arg_types[0][1]
+    ret_type = arg_types[1][1]
+    return arg_type, ret_type
+
+
+def cache_yaml[P, T](
     dir: Path,
     hash_arg: Callable[[P], bytes] | None = None,
     hash_len: int = 8,
     mode: CacheMode = "read_write",
-    # Pyright has trouble with more precise typing of `hash_by`
 ) -> Callable[[Callable[[P], T]], Callable[[P], T]]:
     """
     A decorator that adds hard-disk caching to a function.
@@ -58,10 +112,7 @@ def cache[P, T](
     """
 
     def decorator(func: Callable[[P], T]) -> Callable[[P], T]:
-        arg_types = list(get_type_hints(func).items())
-        assert len(arg_types) == 2, "Function must have exactly one argument"
-        arg_type = arg_types[0][1]
-        ret_type = arg_types[1][1]
+        arg_type, ret_type = _inspect_arg_and_ret_types(func)
         arg_adapter = TypeAdapter[P](arg_type)
         bucket_adapter = TypeAdapter[_Bucket[P, T]](
             list[_BucketItem[arg_type, ret_type]]
@@ -108,3 +159,19 @@ def cache[P, T](
         return cached_func
 
     return decorator
+
+
+def cache[P, T](
+    dir: Path,
+    hash_arg: Callable[[P], bytes] | None = None,
+    hash_len: int = 8,
+    mode: CacheMode = "read_write",
+    format: CacheFormat = "yaml",
+) -> Callable[[Callable[[P], T]], Callable[[P], T]]:
+    if format == "yaml":
+        return cache_yaml(
+            dir=dir, hash_arg=hash_arg, hash_len=hash_len, mode=mode
+        )
+    elif format == "db":
+        return cache_db(dir=dir, mode=mode)
+    assert False
