@@ -39,7 +39,9 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
             worse inference when using those instead of a standard
             method.
         """
-        return dp.OpaqueSpace[P2, T].from_strategy(self, get_policy)
+        return dp.OpaqueSpace[P2, T].from_strategy(
+            self, lambda p, _: get_policy(p)
+        )
 
     def run_toplevel(
         self,

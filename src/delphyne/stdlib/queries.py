@@ -270,7 +270,9 @@ class Query[T](dp.AbstractQuery[T]):
         and can be used to help type checkers infer the type of the
         ambient inner policy.
         """
-        return dp.OpaqueSpace[P, T].from_query(self, get_policy)
+        return dp.OpaqueSpace[P, T].from_query(
+            self, lambda p, _: get_policy(p)
+        )
 
     def run_toplevel(
         self,
