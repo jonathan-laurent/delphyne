@@ -5,8 +5,13 @@ Standard Command Line Tools for Delphyne
 from pathlib import Path
 
 import fire  # type: ignore
+import yaml
 
+import delphyne.stdlib as std
+import delphyne.utils.typing as ty
+from delphyne.scripts.demonstrations import check_demo_file
 from delphyne.scripts.load_configs import load_config
+from delphyne.server.execute_command import CommandSpec
 
 
 class DelphyneApp:
@@ -26,8 +31,6 @@ class DelphyneApp:
         """
         Check a demo file.
         """
-        from delphyne.scripts.demonstrations import check_demo_file
-
         config = load_config(self.workspace_dir)
         feedback = check_demo_file(file, config.strategy_dirs, config.modules)
         num_errors = len(feedback.errors)
@@ -43,6 +46,20 @@ class DelphyneApp:
             exit(1)
         if ensure_no_warning and num_warnings > 0:
             exit(1)
+
+    def exec_command(self, file: Path, no_output: bool = False):
+        """
+        Execute a command file.
+        """
+        config = load_config(self.workspace_dir)
+        with open(file, "r") as f:
+            spec = ty.pydantic_load(CommandSpec, yaml.safe_load(f))
+        cmd, args = spec.load(config.base)
+        res = std.run_command(cmd, args, config)
+        res_type = std.CommandResult[std.command_result_type(cmd) | None]
+        res_yaml = yaml.dump(ty.pydantic_dump(res_type, res))
+        if not no_output:
+            print(res_yaml)
 
 
 if __name__ == "__main__":

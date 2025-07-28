@@ -19,6 +19,15 @@ class CommandSpec:
     command: str
     args: dict[str, object]
 
+    def load(
+        self, ctx: analysis.DemoExecutionContext
+    ) -> tuple[ta.Command[Any, Any], Any]:
+        loader = analysis.ObjectLoader(ctx, extra_objects=STD_COMMANDS)
+        command = loader.find_object(self.command)
+        args_type = ta.command_args_type(command)
+        args = ty.pydantic_load(args_type, self.args)
+        return (command, args)
+
 
 async def execute_command(
     task: ta.TaskContext[ta.CommandResult[Any]],
@@ -28,10 +37,7 @@ async def execute_command(
 ):
     try:
         exe = exe.with_root(workspace_root)
-        loader = analysis.ObjectLoader(exe.base, extra_objects=STD_COMMANDS)
-        command = loader.find_object(cmd.command)
-        args_type = ta.command_args_type(command)
-        args = ty.pydantic_load(args_type, cmd.args)
+        command, args = cmd.load(exe.base)
         await command(task, exe, args)
     except analysis.ObjectNotFound as e:
         error = ("error", f"Not found: {e}")

@@ -174,5 +174,7 @@ from delphyne.stdlib.tasks import (
     StreamingTask,
     TaskContext,
     TaskMessage,
+    command_args_type,
+    command_result_type,
     run_command,
 )

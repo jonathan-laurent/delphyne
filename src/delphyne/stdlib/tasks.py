@@ -181,7 +181,6 @@ def run_command[A, T](
     command: Command[A, T],
     args: A,
     ctx: CommandExecutionContext,
-    workspace_root: Path | None = None,
     dump_statuses: Path | None = None,
     dump_result: Path | None = None,
     dump_log: Path | None = None,
