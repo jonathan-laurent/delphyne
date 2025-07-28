@@ -13,11 +13,15 @@ clean: clean-ignored
 
 test-exp:
 	python experiments/test_abduction_experiment.py run --max_workers=2
+	@echo "\n"
 	python experiments/test_baseline_experiment.py run --max_workers=1
+	@echo "\n"
 
 replay-test-exp:
 	python experiments/test_abduction_experiment.py replay
+	@echo "\n"
 	python experiments/test_baseline_experiment.py replay
+	@echo "\n"
 
 delete-test-exp:
 	rm -rf experiments/test-output
@@ -27,5 +31,5 @@ test:
 	python -m delphyne check-demo abduct_and_branch.demo.yaml --ensure-no-error
 # Other demos contain implicit answers...
 
-full-test: test test-exp replay-test-exp
+full-test: replay-test-exp test-exp test
 	pytest tests
