@@ -13,6 +13,8 @@ from typing import Any, Literal, get_type_hints
 import yaml
 from pydantic import TypeAdapter
 
+from delphyne.utils.pretty_yaml import pretty_yaml
+
 DATABASE_FILE_NAME = "cache"  # dbm will add the *.db extension
 
 
@@ -151,9 +153,8 @@ def cache_yaml[P, T](
             ret = func(arg)
             bucket.append(_BucketItem(arg, ret))
             with cache_file.open("w") as f:
-                # Using `yaml.safe_dump` to avoid exporting tuples with tags
                 bucket_py = bucket_adapter.dump_python(bucket)
-                f.write(yaml.safe_dump(bucket_py, sort_keys=False))
+                f.write(pretty_yaml(bucket_py))
             return ret
 
         return cached_func

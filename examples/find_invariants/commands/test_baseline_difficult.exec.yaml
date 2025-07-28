@@ -24,4 +24,4 @@ args:
     model_name: gpt-4.1-mini
   num_generated: 1
   budget:
-    num_requests: 20
+    num_requests: 5

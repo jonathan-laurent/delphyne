@@ -64,13 +64,13 @@ def test_make_sum():
             space: cands
             answers:
               1:
-                mode:
+                mode: null
                 content: '[4, 6]'
               2:
-                mode:
+                mode: null
                 content: '[4, 8]'
               3:
-                mode:
+                mode: null
                 content: '[9, 2]'
         """
     )

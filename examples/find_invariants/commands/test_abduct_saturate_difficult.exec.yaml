@@ -22,4 +22,4 @@ args:
     num_concurrent: 4
   num_generated: 1
   budget:
-    num_requests: 3
+    num_requests: 5

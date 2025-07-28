@@ -3,6 +3,7 @@ Standard Command Line Tools for Delphyne
 """
 
 import sys
+from dataclasses import replace
 from functools import partial
 from pathlib import Path
 
@@ -14,6 +15,7 @@ import delphyne.utils.typing as ty
 from delphyne.scripts.demonstrations import check_demo_file
 from delphyne.scripts.load_configs import load_config
 from delphyne.server.execute_command import CommandSpec
+from delphyne.utils.yaml import pretty_yaml
 
 
 class DelphyneApp:
@@ -49,29 +51,41 @@ class DelphyneApp:
         if self.ensure_no_warning and num_warnings > 0:
             exit(1)
 
-    def check_demo(self, file: Path):
+    def check_demo(self, file: str):
         """
         Check a demo file.
         """
-        config = load_config(self.workspace_dir, local_config_from=file)
-        feedback = check_demo_file(file, config.strategy_dirs, config.modules)
+        file_path = Path(file)
+        config = load_config(self.workspace_dir, local_config_from=file_path)
+        feedback = check_demo_file(
+            file_path, config.strategy_dirs, config.modules
+        )
         self._process_diagnostics(feedback.warnings, feedback.errors)
 
     def exec_command(
         self,
-        file: Path,
+        file: str,
         no_output: bool = False,
+        cache: bool = False,
     ):
         """
         Execute a command file.
         """
-        config = load_config(self.workspace_dir, local_config_from=file)
+        file_path = Path(file)
+        config = load_config(self.workspace_dir, local_config_from=file_path)
+        if cache:
+            config = replace(config, cache_root=file_path.parent / "cache")
         with open(file, "r") as f:
             spec = ty.pydantic_load(CommandSpec, yaml.safe_load(f))
         cmd, args = spec.load(config.base)
+        if cache:
+            assert hasattr(args, "cache_dir")
+            assert hasattr(args, "cache_format")
+            args.cache_dir = file_path.stem
+            args.cache_format = "db"
         res = std.run_command(cmd, args, config)
         res_type = std.CommandResult[std.command_result_type(cmd) | None]
-        res_yaml = yaml.dump(ty.pydantic_dump(res_type, res))
+        res_yaml = pretty_yaml(ty.pydantic_dump(res_type, res))
         if not no_output:
             print(res_yaml)
         errors = [d[1] for d in res.diagnostics if d[0] == "error"]

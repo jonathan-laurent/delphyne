@@ -16,4 +16,4 @@ args:
     model_name: mistral-small-2503
   num_generated: 1
   budget:
-    num_requests: 20
+    num_requests: 5

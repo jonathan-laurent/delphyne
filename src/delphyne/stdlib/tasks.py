@@ -15,12 +15,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Concatenate, Literal, Never, Protocol
 
-import yaml
-
 import delphyne.analysis as analysis
 import delphyne.analysis.feedback as fb
 import delphyne.stdlib.tasks as ta
 import delphyne.utils.typing as ty
+from delphyne.utils.yaml import pretty_yaml
 
 DEFAULT_STRATEGY_DIRS = (Path("."),)
 DEFAULT_PROMPTS_DIRS = (Path("prompts"),)
@@ -223,7 +222,7 @@ def run_command[A, T](
                     }
                 os.makedirs(dump_result.parent, exist_ok=True)
                 with open(dump_result, "w") as f:
-                    ret_yaml = yaml.safe_dump(ret, sort_keys=False)
+                    ret_yaml = pretty_yaml(ret)
                     f.write("# delphyne-command\n\n" + ret_yaml)
 
         async def raise_internal_error(self, message: str) -> None:

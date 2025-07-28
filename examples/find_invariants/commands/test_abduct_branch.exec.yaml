@@ -18,4 +18,4 @@ args:
   policy_args: {}
   num_generated: 1
   budget:
-    num_requests: 60
+    num_requests: 5

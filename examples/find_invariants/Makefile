@@ -1,4 +1,4 @@
-.PHONY: clean clean-ignored delete-exp test full-test replay-test-exp test-exp
+.PHONY: clean clean-ignored delete-exp test full-test replay-test-exp test-exp execute-commands FORCE
 
 TO_CLEAN := \
 	-name '__pycache__' -o \
@@ -23,6 +23,16 @@ replay-test-exp:
 	python experiments/test_baseline_experiment.py replay
 	@echo "\n"
 
+# python -m delphyne exec-command commands/test_abduct_branch.exec.yaml --cache --no-output --ensure-no-erro
+CMD_FILES := $(filter-out commands/test_abduct_branch_difficult.exec.yaml,$(wildcard commands/*.exec.yaml))
+
+execute-commands: $(CMD_FILES)
+
+commands/%.exec.yaml: FORCE
+	python -m delphyne exec-command $@ --cache --no-output --ensure-no-error
+
+FORCE:
+
 delete-test-exp:
 	rm -rf experiments/test-output
 
@@ -31,5 +41,5 @@ test:
 	python -m delphyne check-demo abduct_and_branch.demo.yaml --ensure-no-error
 # Other demos contain implicit answers...
 
-full-test: replay-test-exp test-exp test
+full-test: execute-commands replay-test-exp test-exp test
 	pytest tests

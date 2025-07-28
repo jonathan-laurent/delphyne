@@ -8,16 +8,10 @@ We use pyaml to dump YAML with a more human-readable format.
 from collections.abc import Iterable
 from typing import Any, cast
 
-import pyaml
 import pydantic
 import yaml
 
-
-def pretty_yaml(obj: object) -> str:
-    # return yaml.dump(obj, sort_keys=False)
-    # TODO: pyaml seems to have some bugs: we may want to get rid of it.
-    # For now, we just replace its use in specific places (e.g. `run_command`)
-    return cast(Any, pyaml.dump(obj, sort_dicts=pyaml.PYAMLSort.none))
+from delphyne.utils.pretty_yaml import pretty_yaml
 
 
 def dump_yaml[T](
