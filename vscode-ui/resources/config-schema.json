@@ -1,0 +1,93 @@
+{
+  "properties": {
+    "modules": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Modules",
+      "type": "array"
+    },
+    "demo_files": {
+      "default": [],
+      "items": {
+        "format": "path",
+        "type": "string"
+      },
+      "title": "Demo Files",
+      "type": "array"
+    },
+    "strategy_dirs": {
+      "default": [
+        "."
+      ],
+      "items": {
+        "format": "path",
+        "type": "string"
+      },
+      "title": "Strategy Dirs",
+      "type": "array"
+    },
+    "prompt_dirs": {
+      "default": [
+        "prompts"
+      ],
+      "items": {
+        "format": "path",
+        "type": "string"
+      },
+      "title": "Prompt Dirs",
+      "type": "array"
+    },
+    "data_dirs": {
+      "default": [
+        "data"
+      ],
+      "items": {
+        "format": "path",
+        "type": "string"
+      },
+      "title": "Data Dirs",
+      "type": "array"
+    },
+    "cache_root": {
+      "anyOf": [
+        {
+          "format": "path",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cache Root"
+    },
+    "result_refresh_period": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Result Refresh Period"
+    },
+    "status_refresh_period": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Status Refresh Period"
+    }
+  },
+  "title": "Delphyne Configuration File",
+  "type": "object"
+}

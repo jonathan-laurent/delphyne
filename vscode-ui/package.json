@@ -18,6 +18,10 @@
       {
         "fileMatch": "*.demo.yaml",
         "url": "./resources/demo-schema.json"
+      },
+      {
+        "fileMatch": "delphyne.yaml",
+        "url": "./resources/config-schema.json"
       }
     ],
     "snippets": [

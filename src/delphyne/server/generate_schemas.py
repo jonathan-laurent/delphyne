@@ -10,6 +10,7 @@ import sys
 import pydantic
 
 from delphyne.core.demos import DemoFile
+from delphyne.stdlib import CommandExecutionContext
 
 
 def demo_file_schema():
@@ -18,9 +19,17 @@ def demo_file_schema():
     return schema
 
 
+def config_file_schema():
+    schema = pydantic.TypeAdapter(CommandExecutionContext).json_schema()
+    schema["title"] = "Delphyne Configuration File"
+    return schema
+
+
 if __name__ == "__main__":
     match sys.argv:
         case [_, "demo_file"]:
             print(json.dumps(demo_file_schema(), indent=2))
+        case [_, "config_file"]:
+            print(json.dumps(config_file_schema(), indent=2))
         case _:
             pass

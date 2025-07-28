@@ -63,6 +63,8 @@ schemas:
 	mkdir -p $(SCHEMAS_FOLDER)
 	python -m delphyne.server.generate_schemas demo_file > \
 	    $(SCHEMAS_FOLDER)/demo-schema.json
+	python -m delphyne.server.generate_schemas config_file > \
+	    $(SCHEMAS_FOLDER)/config-schema.json
 
 
 # Generate stubs by using GPT-4 to translate Python types into TypeScript.

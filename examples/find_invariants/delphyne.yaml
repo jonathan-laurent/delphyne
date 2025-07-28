@@ -12,3 +12,4 @@ demo_files:
   - "abduct_and_branch"
   - "abduct_and_saturate"
   - "baseline"
+cache_root: "commands/cache"
