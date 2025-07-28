@@ -22,7 +22,7 @@ import delphyne.core.inspect as dpi
 import delphyne.stdlib.models as md
 import delphyne.stdlib.policies as pol
 from delphyne.core.refs import Answer
-from delphyne.stdlib.policies import DictIP, log, prompting_policy
+from delphyne.stdlib.policies import IPDict, log, prompting_policy
 from delphyne.utils import typing as ty
 from delphyne.utils.typing import TypeAnnot, ValidationError
 
@@ -260,7 +260,7 @@ class Query[T](dp.AbstractQuery[T]):
         return self._answer_type()
 
     @overload
-    def using(self, get_policy: EllipsisType, /) -> dp.Opaque[DictIP, T]: ...
+    def using(self, get_policy: EllipsisType, /) -> dp.Opaque[IPDict, T]: ...
 
     @overload
     def using[P2](

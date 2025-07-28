@@ -17,7 +17,7 @@ from example_strategies_untyped import (
 )
 
 import delphyne as dp
-from delphyne import Branch, Fail, Strategy, strategy
+from delphyne import Branch, Fail, IPDict, Strategy, strategy
 
 #####
 ##### MakeSum
@@ -57,14 +57,14 @@ def make_sum_policy():
 
 
 #####
-##### MakeSum with DictIP
+##### MakeSum with IPDict
 #####
 
 
 @strategy
 def make_sum_dict_ip(
     allowed: list[int], goal: int
-) -> Strategy[Branch | Fail, dp.DictIP, list[int]]:
+) -> Strategy[Branch | Fail, IPDict, list[int]]:
     xs = yield from dp.branch(MakeSum(allowed, goal).using(...))
     yield from dp.ensure(all(x in allowed for x in xs), label="forbidden_num")
     yield from dp.ensure(sum(xs) == goal, label="wrong_sum")
@@ -771,7 +771,7 @@ class GenerateNumberIP:
 @strategy
 def generate_number(
     min_val: int, max_val: int
-) -> Strategy[Branch | Fail, dp.DictIP, int]:
+) -> Strategy[Branch | Fail, IPDict, int]:
     num = yield from dp.branch(GenerateNumber(min_val, max_val).using(...))
     yield from dp.ensure(min_val <= num <= max_val, "number_out_of_range")
     return num
@@ -779,7 +779,7 @@ def generate_number(
 
 @strategy
 def dual_number_generation() -> Strategy[
-    Branch | Fail, dp.DictIP, tuple[int, int]
+    Branch | Fail, IPDict, tuple[int, int]
 ]:
     low_num = yield from dp.branch(
         generate_number(1, 50).using(...).tagged("low")

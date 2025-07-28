@@ -89,7 +89,7 @@ from delphyne.stdlib.openai_api import (
 )
 from delphyne.stdlib.policies import (
     ContextualTreeTransformer,
-    DictIP,
+    IPDict,
     PromptingPolicy,
     PureTreeTransformerFn,
     SearchPolicy,

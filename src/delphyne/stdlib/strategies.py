@@ -10,7 +10,7 @@ from typing import Any, Protocol, cast, overload
 
 import delphyne.core as dp
 from delphyne.core import inspect
-from delphyne.stdlib.policies import DictIP, dict_subpolicy
+from delphyne.stdlib.policies import IPDict, dict_subpolicy
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
 
@@ -23,7 +23,7 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
     """
 
     @overload
-    def using(self, get_policy: EllipsisType, /) -> dp.Opaque[DictIP, T]: ...
+    def using(self, get_policy: EllipsisType, /) -> dp.Opaque[IPDict, T]: ...
 
     @overload
     def using[P2](

@@ -218,7 +218,7 @@ def ensure_compatible[**A, N: Node, P](
 #####
 
 
-type DictIP = Mapping[str, dp.Policy[Any, Any] | PromptingPolicy]
+type IPDict = Mapping[str, dp.Policy[Any, Any] | PromptingPolicy]
 
 
 def _dict_ip_key_match(key: str, tags: Sequence[dp.Tag]) -> bool:
@@ -226,7 +226,7 @@ def _dict_ip_key_match(key: str, tags: Sequence[dp.Tag]) -> bool:
     return set(key_tags).issubset(set(tags))
 
 
-def dict_subpolicy(ip: DictIP, tags: Sequence[dp.Tag]) -> Any:
+def dict_subpolicy(ip: IPDict, tags: Sequence[dp.Tag]) -> Any:
     """
     Retrieve a sub-policy from a dictionary internal policy, using the
     tags of a particular space.
