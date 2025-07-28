@@ -67,8 +67,8 @@
               - C
         tool_calls: []
         finish_reason: stop
-        logprobs:
-        reasoning_content:
+        logprobs: null
+        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -81,8 +81,8 @@
         output_tokens__medium: 6
         cached_input_tokens: 0
         cached_input_tokens__medium: 0
-        price: 0.0004736
-        price__medium: 0.0004736
+        price: 0.0002332
+        price__medium: 0.0002332
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:

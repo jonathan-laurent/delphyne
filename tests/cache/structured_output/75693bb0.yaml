@@ -28,7 +28,6 @@
           title: Article
           type: object
     iter: 1
-
   output:
     outputs:
       - content:
@@ -39,8 +38,8 @@
               - John Smith
         tool_calls: []
         finish_reason: stop
-        logprobs:
-        reasoning_content:
+        logprobs: null
+        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -53,8 +52,8 @@
         output_tokens__medium: 20
         cached_input_tokens: 0
         cached_input_tokens__medium: 0
-        price: 0.00017439999999999998
-        price__medium: 0.00017439999999999998
+        price: 7.52e-05
+        price__medium: 7.52e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:

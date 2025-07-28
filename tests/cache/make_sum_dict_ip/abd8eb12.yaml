@@ -1,14 +1,13 @@
 - input:
     request:
       chat:
-      - role: system
-        content: Given a list of numbers and a target number, you must find a sub-list
-          whose elements sum up to the target. Just answer with a list of numbers
-          and nothing else.
-      - role: user
-        content: 'List: [1, 2, 3, 4]
-
-          Target: 7'
+        - role: system
+          content: Given a list of numbers and a target number, you must find a sub-list whose elements
+            sum up to the target. Just answer with a list of numbers and nothing else.
+        - role: user
+          content: |-
+            List: [1, 2, 3, 4]
+            Target: 7
       num_completions: 1
       options:
         model: gpt-4.1-mini
@@ -17,11 +16,11 @@
     iter: 1
   output:
     outputs:
-    - content: '[3, 4]'
-      tool_calls: []
-      finish_reason: stop
-      logprobs: null
-      reasoning_content: null
+      - content: '[3, 4]'
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
     budget:
       values:
         num_requests: 1

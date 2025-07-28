@@ -1,7 +1,5 @@
 - input:
-
     request:
-
       chat:
         - role: system
           content: |-
@@ -10,13 +8,10 @@
             Please carefully explain your reasoning before calling any tool.
         - role: user
           content: 'user_name: Alice'
-
       num_completions: 1
-
       options:
         model: gpt-4.1-mini
         tool_choice: required
-
       tools:
         - name: GetUserFavoriteTopic
           description: Retrieve the favorite topic of a given user.
@@ -57,11 +52,8 @@
               - authors
             title: Article
             type: object
-
-      structured_output:
-
+      structured_output: null
     iter: 1
-
   output:
     outputs:
       - content: ''
@@ -70,8 +62,8 @@
             args:
               user_name: Alice
         finish_reason: tool_calls
-        logprobs:
-        reasoning_content:
+        logprobs: null
+        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -84,8 +76,8 @@
         output_tokens__medium: 17
         cached_input_tokens: 0
         cached_input_tokens__medium: 0
-        price: 0.0002816
-        price__medium: 0.0002816
+        price: 0.0001306
+        price__medium: 0.0001306
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:

@@ -28,20 +28,8 @@
           title: Article
           type: object
     iter: 1
-
   output:
-
     outputs:
-      - content:
-          structured:
-            title: 'The Essence of Love: Understanding Its Multifaceted Nature'
-            authors:
-              - Jane Doe
-              - John Smith
-        tool_calls: []
-        finish_reason: stop
-        logprobs:
-        reasoning_content:
       - content:
           structured:
             title: The Many Facets of Love
@@ -50,9 +38,18 @@
               - John Smith
         tool_calls: []
         finish_reason: stop
-        logprobs:
-        reasoning_content:
-
+        logprobs: null
+        reasoning_content: null
+      - content:
+          structured:
+            title: Understanding the Multifaceted Nature of Love
+            authors:
+              - Jane Doe
+              - John Smith
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
     budget:
       values:
         num_requests: 1.0
@@ -61,21 +58,18 @@
         num_completions__medium: 1.0
         input_tokens: 89.0
         input_tokens__medium: 89.0
-        output_tokens: 42.0
-        output_tokens__medium: 42.0
+        output_tokens: 39.0
+        output_tokens__medium: 39.0
         cached_input_tokens: 0.0
         cached_input_tokens__medium: 0.0
-        price: 0.0002096
-        price__medium: 0.0002096
-
+        price: 7.9e-05
+        price__medium: 7.9e-05
     log_items: []
-
     model_name: gpt-4.1-mini-2025-04-14
-
     usage_info:
-      completion_tokens: 42
+      completion_tokens: 39
       prompt_tokens: 89
-      total_tokens: 131
+      total_tokens: 128
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
@@ -84,7 +78,6 @@
       prompt_tokens_details:
         audio_tokens: 0
         cached_tokens: 0
-
 - input:
     request:
       chat:
@@ -115,31 +108,28 @@
           title: Article
           type: object
     iter: 2
-
   output:
-
     outputs:
       - content:
           structured:
-            title: Understanding the Many Dimensions of Love
+            title: Understanding the Essence of Love
             authors:
-              - Jane Smith
-              - Robert Johnson
+              - Dr. Emily Carter
+              - Prof. James Mitchell
         tool_calls: []
         finish_reason: stop
-        logprobs:
-        reasoning_content:
+        logprobs: null
+        reasoning_content: null
       - content:
           structured:
-            title: 'The Essence of Love: Exploring Its Depths and Impact'
+            title: Understanding the Essence of Love
             authors:
               - Jane Doe
               - John Smith
         tool_calls: []
         finish_reason: stop
-        logprobs:
-        reasoning_content:
-
+        logprobs: null
+        reasoning_content: null
     budget:
       values:
         num_requests: 1.0
@@ -148,21 +138,18 @@
         num_completions__medium: 1.0
         input_tokens: 89.0
         input_tokens__medium: 89.0
-        output_tokens: 43.0
-        output_tokens__medium: 43.0
+        output_tokens: 40.0
+        output_tokens__medium: 40.0
         cached_input_tokens: 0.0
         cached_input_tokens__medium: 0.0
-        price: 0.00021119999999999998
-        price__medium: 0.00021119999999999998
-
+        price: 7.92e-05
+        price__medium: 7.92e-05
     log_items: []
-
     model_name: gpt-4.1-mini-2025-04-14
-
     usage_info:
-      completion_tokens: 43
+      completion_tokens: 40
       prompt_tokens: 89
-      total_tokens: 132
+      total_tokens: 129
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
@@ -171,7 +158,6 @@
       prompt_tokens_details:
         audio_tokens: 0
         cached_tokens: 0
-
 - input:
     request:
       chat:
@@ -202,20 +188,18 @@
           title: Article
           type: object
     iter: 3
-
   output:
-
     outputs:
       - content:
           structured:
-            title: Exploring the Depths of Love
+            title: 'The Essence of Love: Exploring Its Depths and Dimensions'
             authors:
-              - Jane Doe
-              - John Smith
+              - Jane Smith
+              - Robert Johnson
         tool_calls: []
         finish_reason: stop
-        logprobs:
-        reasoning_content:
+        logprobs: null
+        reasoning_content: null
       - content:
           structured:
             title: The Many Facets of Love
@@ -224,9 +208,8 @@
               - John Smith
         tool_calls: []
         finish_reason: stop
-        logprobs:
-        reasoning_content:
-
+        logprobs: null
+        reasoning_content: null
     budget:
       values:
         num_requests: 1.0
@@ -235,21 +218,18 @@
         num_completions__medium: 1.0
         input_tokens: 89.0
         input_tokens__medium: 89.0
-        output_tokens: 39.0
-        output_tokens__medium: 39.0
+        output_tokens: 43.0
+        output_tokens__medium: 43.0
         cached_input_tokens: 0.0
         cached_input_tokens__medium: 0.0
-        price: 0.0002048
-        price__medium: 0.0002048
-
+        price: 7.979999999999999e-05
+        price__medium: 7.979999999999999e-05
     log_items: []
-
     model_name: gpt-4.1-mini-2025-04-14
-
     usage_info:
-      completion_tokens: 39
+      completion_tokens: 43
       prompt_tokens: 89
-      total_tokens: 128
+      total_tokens: 132
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
@@ -258,7 +238,6 @@
       prompt_tokens_details:
         audio_tokens: 0
         cached_tokens: 0
-
 - input:
     request:
       chat:
@@ -289,31 +268,28 @@
           title: Article
           type: object
     iter: 4
-
   output:
-
     outputs:
       - content:
           structured:
-            title: Exploring the Essence of Love
+            title: The Multifaceted Nature of Love
             authors:
               - Jane Doe
               - John Smith
         tool_calls: []
         finish_reason: stop
-        logprobs:
-        reasoning_content:
+        logprobs: null
+        reasoning_content: null
       - content:
           structured:
-            title: Understanding the Essence of Love
+            title: The Multifaceted Nature of Love
             authors:
               - Jane Doe
               - John Smith
         tool_calls: []
         finish_reason: stop
-        logprobs:
-        reasoning_content:
-
+        logprobs: null
+        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -322,21 +298,18 @@
         num_completions__medium: 1
         input_tokens: 89
         input_tokens__medium: 89
-        output_tokens: 37
-        output_tokens__medium: 37
+        output_tokens: 38
+        output_tokens__medium: 38
         cached_input_tokens: 0
         cached_input_tokens__medium: 0
-        price: 0.0002016
-        price__medium: 0.0002016
-
+        price: 7.879999999999999e-05
+        price__medium: 7.879999999999999e-05
     log_items: []
-
     model_name: gpt-4.1-mini-2025-04-14
-
     usage_info:
-      completion_tokens: 37
+      completion_tokens: 38
       prompt_tokens: 89
-      total_tokens: 126
+      total_tokens: 127
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0

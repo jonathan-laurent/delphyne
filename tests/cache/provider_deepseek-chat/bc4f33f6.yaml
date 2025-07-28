@@ -2,7 +2,8 @@
     request:
       chat:
         - role: system
-          content: Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target. Just answer with a list of numbers and nothing else.
+          content: Given a list of numbers and a target number, you must find a sub-list whose elements
+            sum up to the target. Just answer with a list of numbers and nothing else.
         - role: user
           content: |-
             List: [1, 2, 3, 4]
@@ -11,16 +12,15 @@
       options:
         model: deepseek-chat
       tools: []
-      structured_output:
+      structured_output: null
     iter: 1
-
   output:
     outputs:
       - content: '[2, 3]'
         tool_calls: []
         finish_reason: stop
-        logprobs:
-        reasoning_content:
+        logprobs: null
+        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -33,8 +33,8 @@
         output_tokens__large: 6
         cached_input_tokens: 0
         cached_input_tokens__large: 0
-        price: 0.000496
-        price__large: 0.000496
+        price: 1.554e-05
+        price__large: 1.554e-05
     log_items: []
     model_name: deepseek-chat
     usage_info:

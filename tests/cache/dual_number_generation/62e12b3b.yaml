@@ -1,14 +1,14 @@
 - input:
     request:
       chat:
-      - role: system
-        content: 'Generate a number between min_val and max_val (inclusive). Just
-
-          answer with the number and nothing else.'
-      - role: user
-        content: 'min_val: 1
-
-          max_val: 50'
+        - role: system
+          content: |-
+            Generate a number between min_val and max_val (inclusive). Just
+            answer with the number and nothing else.
+        - role: user
+          content: |-
+            min_val: 1
+            max_val: 50
       num_completions: 1
       options:
         model: gpt-4.1-mini
@@ -17,11 +17,11 @@
     iter: 1
   output:
     outputs:
-    - content: '27'
-      tool_calls: []
-      finish_reason: stop
-      logprobs: null
-      reasoning_content: null
+      - content: '37'
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
     budget:
       values:
         num_requests: 1

@@ -1,18 +1,13 @@
 - input:
-
     request:
-
       chat:
         - role: system
           content: Find the user's tastes and propose an article for them.
         - role: user
           content: 'user_name: Jonathan'
-
       num_completions: 1
-
       options:
         model: gpt-4.1-mini
-
       tools:
         - name: GetUserFavoriteTopic
           description: Retrieve the favorite topic of a given user.
@@ -36,7 +31,6 @@
               - expr
             title: Calculator
             type: object
-
       structured_output:
         name: Article
         description: 'Article(title: str, authors: list[str])'
@@ -55,9 +49,7 @@
             - authors
           title: Article
           type: object
-
     iter: 1
-
   output:
     outputs:
       - content: ''
@@ -66,8 +58,8 @@
             args:
               user_name: Jonathan
         finish_reason: tool_calls
-        logprobs:
-        reasoning_content:
+        logprobs: null
+        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -80,8 +72,8 @@
         output_tokens__medium: 17
         cached_input_tokens: 0
         cached_input_tokens__medium: 0
-        price: 0.0002848
-        price__medium: 0.0002848
+        price: 0.0001322
+        price__medium: 0.0001322
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
