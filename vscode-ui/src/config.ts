@@ -114,8 +114,8 @@ export interface ExecutionContext {
 
 function executionContextOfConfig(config: Config): ExecutionContext {
   return {
-    strategy_dirs: config.strategy_dirs,
-    modules: config.modules,
+    strategy_dirs: config.strategy_dirs ?? [],
+    modules: config.modules ?? [],
   };
 }
 
