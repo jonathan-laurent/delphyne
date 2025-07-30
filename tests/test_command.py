@@ -10,15 +10,16 @@ STRATEGY_FILE = "example_strategies"
 TESTS_FOLDER = Path(__file__).parent
 
 
-def test_counting_command():
+def test_counting_command(delay: float = 1e-4):
     rmtree(TEMP_OUT_DIR, ignore_errors=True)
     dp.run_command(
         ta.test_command,
-        ta.TestCommandArgs(10, delay=1e-4),
+        ta.TestCommandArgs(10, delay=delay),
         dp.CommandExecutionContext(),
         dump_statuses=TEMP_OUT_DIR / "counting_statuses.txt",
         dump_result=TEMP_OUT_DIR / "counting_result.yaml",
         dump_log=TEMP_OUT_DIR / "counting_log.txt",
+        on_status=lambda s: print(s, end="\r"),
     )
     rmtree(TEMP_OUT_DIR, ignore_errors=True)
 
@@ -43,3 +44,7 @@ def test_run_strategy():
         dump_log=TEMP_OUT_DIR / "strategy_log.txt",
     )
     rmtree(TEMP_OUT_DIR, ignore_errors=True)
+
+
+if __name__ == "__main__":
+    test_counting_command(delay=1)

@@ -24,6 +24,13 @@ that the task can be cancelled if the connection breaks.
 class _BasicTaskContext[T](tasks.TaskContext[T]):
     def __init__(self):
         self.messages_queue = asyncio.Queue[TaskMessage[T]]()
+        self._interrupted = asyncio.Event()
+
+    def interrupt(self):
+        return self._interrupted.set()
+
+    def interruption_requested(self) -> bool:
+        return self._interrupted.is_set()
 
     def log(self, message: str) -> None:
         self.messages_queue.put_nowait(("log", message))

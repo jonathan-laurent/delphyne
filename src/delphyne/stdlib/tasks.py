@@ -32,6 +32,11 @@ DEFAULT_DATA_DIRS = (Path("data"),)
 
 
 class TaskContext[T](typing.Protocol):
+    # To be called externally
+    def interrupt(self) -> None: ...
+
+    # To be called internally
+    def interruption_requested(self) -> bool: ...
     def log(self, message: str) -> None: ...
     async def set_status(self, message: str) -> None: ...
     async def set_result(self, result: T) -> None: ...
@@ -195,6 +200,7 @@ def run_command[A, T](
     dump_log: Path | None = None,
     on_status: Callable[[str], None] | None = None,
     add_header: bool = True,
+    handle_sigint: bool = True,
 ) -> CommandResult[T | None]:
     """
     A simple way to run a command, blocking and dumping logs on disk.
@@ -205,6 +211,13 @@ def run_command[A, T](
     class Handler:
         def __init__(self):
             self.result: CommandResult[T | None] = CommandResult([], None)
+            self.interrupted = False
+
+        def interrupt(self) -> None:
+            self.interrupted = True
+
+        def interruption_requested(self) -> bool:
+            return self.interrupted
 
         def log(self, message: str) -> None:
             if dump_log is not None:
@@ -242,8 +255,36 @@ def run_command[A, T](
             self.result = CommandResult([error], None)
 
     handler = Handler()
-    asyncio.run(command(handler, ctx, args))
+    if not handle_sigint:
+        asyncio.run(command(handler, ctx, args))
+    else:
+        watch_sigint(
+            task=lambda: asyncio.run(command(handler, ctx, args)),
+            on_sigint=lambda: handler.interrupt(),
+        )
     return handler.result
+
+
+def watch_sigint(
+    task: Callable[[], None], on_sigint: Callable[[], None]
+) -> None:
+    import threading
+
+    done = threading.Event()
+
+    def wrapped():
+        task()
+        done.set()
+
+    t = threading.Thread(target=wrapped)
+
+    t.start()
+    try:
+        done.wait()
+    except KeyboardInterrupt:
+        print("Interrupted")
+        on_sigint()
+        done.wait()
 
 
 #####

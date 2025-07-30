@@ -125,7 +125,8 @@ async def run_loaded_strategy[N: dp.Node, P, T](
                 total_budget += b
             case dp.Barrier():
                 pass
-        if (
+        interrupted = task.interruption_requested()
+        if interrupted or (
             exe.result_refresh_period is not None
             and time.time() - last_refreshed_result > exe.result_refresh_period
         ):
@@ -137,6 +138,8 @@ async def run_loaded_strategy[N: dp.Node, P, T](
         ):
             await task.set_status(compute_status())
             last_refreshed_status = time.time()
+        if interrupted:
+            break
     await task.set_result(compute_result())
 
 
