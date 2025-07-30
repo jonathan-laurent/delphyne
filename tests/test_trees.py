@@ -7,6 +7,7 @@ Testing reification and the `Tree` datastructure
 import textwrap
 
 import example_strategies as ex
+import pytest
 from example_strategies import make_sum, synthetize_fun
 
 import delphyne as dp
@@ -102,3 +103,34 @@ def test_synthetize_fun():
     tracer.trace.check_consistency()
     pretty_trace = dump_yaml(dp.ExportableTrace, tracer.trace.export())
     print(pretty_trace)
+
+
+def test_dual_number_generation_wrong_answer():
+    tracer = dp.Tracer()
+    cache: dp.TreeCache = {}
+    monitor = dp.TreeMonitor(cache=cache, hooks=[dp.tracer_hook(tracer)])
+    root = dp.reify(ex.dual_number_generation(), monitor)
+    assert isinstance(root.node, dp.Branch)
+
+    assert isinstance(root.node.cands, dp.OpaqueSpace)
+    low_nested = root.node.cands.source()
+    assert isinstance(low_nested, dp.NestedTree)
+    low_node = low_nested.spawn_tree()
+    assert isinstance(low_node.node, dp.Branch)
+    low_query = low_node.node.cands.source()
+    assert isinstance(low_query, dp.AttachedQuery)
+
+    low_answer = low_query.parse_answer(dp.Answer(None, "25"))
+    assert not isinstance(low_answer, dp.ParseError)
+    with pytest.raises(refs.LocalityError):
+        root.child(low_answer)
+    low_success = low_node.child(low_answer)
+    assert isinstance(low_success.node, dp.Success)
+    low_answer_bis = low_success.node.success
+
+    low_child = root.child(low_answer_bis)
+    assert isinstance(low_child.node, dp.Branch)
+    with pytest.raises(refs.LocalityError):
+        low_child.child(low_answer)
+    with pytest.raises(refs.LocalityError):
+        low_child.child(low_answer_bis)

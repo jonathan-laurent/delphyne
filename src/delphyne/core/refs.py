@@ -303,6 +303,31 @@ A dynamic assembly of tracked values.
 """
 
 
+@dataclass(frozen=True)
+class LocalityError(Exception):
+    expected_node_ref: GlobalNodePath
+    node_ref: GlobalNodePath
+    local_ref: AtomicValueRef
+
+
+def check_local_value(val: Value, node: GlobalNodePath):
+    match val:
+        case None:
+            pass
+        case Sequence():
+            for v in val:
+                check_local_value(v, node)
+        case Tracked():
+            if val.node != node:
+                raise LocalityError(
+                    expected_node_ref=node,
+                    node_ref=val.node,
+                    local_ref=val.ref,
+                )
+        case _:
+            assert False
+
+
 def _invalid_value(v: object) -> str:
     if isinstance(v, list):
         return f"Lists are not allowed as values, use tuples instead: {v}"
@@ -341,7 +366,7 @@ def value_type(v: Value) -> TypeAnnot[Any] | NoTypeInfo:
             types = [value_type(o) for o in v]
             if any(isinstance(t, NoTypeInfo) for t in types):
                 return NoTypeInfo()
-            return tuple[*types]  # type: ignore
+            return Sequence[*types]  # type: ignore
 
 
 #####

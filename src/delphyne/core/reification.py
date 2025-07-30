@@ -106,6 +106,7 @@ def _reify[N: Node, P, T](
         generator_valid = enable_unsound_generator_caching
 
         def child(action: Value) -> Tree[N, P, T]:
+            refs.check_local_value(action, _nonempty_path(ref))
             action_raw = refs.drop_refs(action)
             action_ref = refs.value_ref(action)
             del action
@@ -219,6 +220,8 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
         parametric_builder: Callable[..., tr.SpaceBuilder[S]],
     ) -> Callable[..., S]:
         def run_builder(*args: Any) -> S:
+            for arg in args:
+                refs.check_local_value(arg, _nonempty_path(self._ref))
             args_raw = [refs.drop_refs(arg) for arg in args]
             args_ref = tuple(refs.value_ref(arg) for arg in args)
             builder = parametric_builder(*args_raw)
