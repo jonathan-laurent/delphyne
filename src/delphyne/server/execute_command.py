@@ -29,7 +29,7 @@ class CommandSpec:
         return (command, args)
 
 
-async def execute_command(
+def execute_command(
     task: ta.TaskContext[ta.CommandResult[Any]],
     exe: ta.CommandExecutionContext,
     workspace_root: Path,
@@ -38,22 +38,22 @@ async def execute_command(
     try:
         exe = exe.with_root(workspace_root)
         command, args = cmd.load(exe.base)
-        await command(task, exe, args)
+        command(task, exe, args)
     except analysis.ObjectNotFound as e:
         error = ("error", f"Not found: {e}")
-        await task.set_result(ta.CommandResult([error], None))
+        task.set_result(ta.CommandResult([error], None))
     except dp.InvalidDemoFile as e:
         error = ("error", f"Invalid demonstration file: {e.file}")
-        await task.set_result(ta.CommandResult([error], None))
+        task.set_result(ta.CommandResult([error], None))
     except dp.TemplateError as e:
         error = ("error", f"Invalid prompt template `{e.name}`:\n{e.exn}")
-        await task.set_result(ta.CommandResult([error], None))
+        task.set_result(ta.CommandResult([error], None))
     except dp.TemplateFileMissing as e:
         error = ("error", f"Prompt template file missing: {e.file}")
-        await task.set_result(ta.CommandResult([error], None))
+        task.set_result(ta.CommandResult([error], None))
     except Exception as e:
         error = (
             "error",
             f"Internal error: {repr(e)}\n\n{traceback.format_exc()}",
         )
-        await task.set_result(ta.CommandResult([error], None))
+        task.set_result(ta.CommandResult([error], None))

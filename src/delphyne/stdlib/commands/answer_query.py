@@ -31,7 +31,7 @@ class AnswerQueryResponse:
     log: Sequence[dp.ExportableLogMessage]
 
 
-async def answer_query(
+def answer_query(
     task: ta.TaskContext[ta.CommandResult[AnswerQueryResponse]],
     exe: ta.CommandExecutionContext,
     cmd: AnswerQueryArgs,
@@ -81,6 +81,6 @@ async def answer_query(
                 total_budget += b
             case dp.Barrier():
                 pass
-        await task.set_result(compute_result())
-        await task.set_status(compute_status())
-    await task.set_result(compute_result())
+        task.set_result(compute_result())
+        task.set_status(compute_status())
+    task.set_result(compute_result())

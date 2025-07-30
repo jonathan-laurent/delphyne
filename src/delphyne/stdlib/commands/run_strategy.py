@@ -39,7 +39,7 @@ class RunLoadedStrategyArgs[N: dp.Node, P, T]:
     export_browsable_trace: bool = True
 
 
-async def run_loaded_strategy[N: dp.Node, P, T](
+def run_loaded_strategy[N: dp.Node, P, T](
     task: ta.TaskContext[ta.CommandResult[RunStrategyResponse]],
     exe: ta.CommandExecutionContext,
     args: RunLoadedStrategyArgs[N, P, T],
@@ -130,17 +130,17 @@ async def run_loaded_strategy[N: dp.Node, P, T](
             exe.result_refresh_period is not None
             and time.time() - last_refreshed_result > exe.result_refresh_period
         ):
-            await task.set_result(compute_result())
+            task.set_result(compute_result())
             last_refreshed_result = time.time()
         if (
             exe.status_refresh_period is not None
             and time.time() - last_refreshed_status > exe.status_refresh_period
         ):
-            await task.set_status(compute_status())
+            task.set_status(compute_status())
             last_refreshed_status = time.time()
         if interrupted:
             break
-    await task.set_result(compute_result())
+    task.set_result(compute_result())
 
 
 @dataclass
@@ -159,7 +159,7 @@ class RunStrategyArgs:
     export_browsable_trace: bool = True
 
 
-async def run_strategy(
+def run_strategy(
     task: ta.TaskContext[ta.CommandResult[RunStrategyResponse]],
     exe: ta.CommandExecutionContext,
     args: RunStrategyArgs,
@@ -167,7 +167,7 @@ async def run_strategy(
     loader = analysis.ObjectLoader(exe.base)
     strategy = loader.load_strategy_instance(args.strategy, args.args)
     policy = loader.load_and_call_function(args.policy, args.policy_args)
-    await run_loaded_strategy(
+    run_loaded_strategy(
         task=task,
         exe=exe,
         args=RunLoadedStrategyArgs(

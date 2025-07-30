@@ -5,9 +5,9 @@ In order to better integrate with the UI, we propose a standard
 interface for Delphyne tasks, which allows streaming updates.
 """
 
-import asyncio
 import inspect
 import os
+import time
 import traceback
 import typing
 from collections.abc import Callable, Sequence
@@ -38,15 +38,12 @@ class TaskContext[T](typing.Protocol):
     # To be called internally
     def interruption_requested(self) -> bool: ...
     def log(self, message: str) -> None: ...
-    async def set_status(self, message: str) -> None: ...
-    async def set_result(self, result: T) -> None: ...
-    async def raise_internal_error(self, message: str) -> None: ...
+    def set_status(self, message: str) -> None: ...
+    def set_result(self, result: T) -> None: ...
+    def raise_internal_error(self, message: str) -> None: ...
 
 
-type StreamingTask[**P, T] = Callable[
-    Concatenate[TaskContext[T], P],
-    typing.Coroutine[None, None, None],
-]
+type StreamingTask[**P, T] = Callable[Concatenate[TaskContext[T], P], None]
 
 
 type TaskMessage[T] = (
@@ -62,27 +59,25 @@ def stream_of_fun[**P, T](f: Callable[P, T]) -> StreamingTask[P, T]:
     Convert a function into a degenerate streaming task.
     """
 
-    async def stream(
-        context: TaskContext[T], *args: P.args, **kwargs: P.kwargs
-    ):
+    def stream(context: TaskContext[T], *args: P.args, **kwargs: P.kwargs):
         try:
             ret = f(*args, **kwargs)
-            await context.set_result(ret)
+            context.set_result(ret)
         except Exception:
-            await context.raise_internal_error(traceback.format_exc())
+            context.raise_internal_error(traceback.format_exc())
 
     return stream
 
 
-async def counting_generator(task: TaskContext[Never], n: int):
+def counting_generator(task: TaskContext[Never], n: int):
     """
     A basic task example, to be used for testing.
     """
     try:
         for i in range(n):
-            await asyncio.sleep(1)
+            time.sleep(1)
             print(f"Send: {i}", flush=True)
-            await task.set_status(str(i))
+            task.set_status(str(i))
             task.log(f"Sent: {i}")
             i += 1
     finally:
@@ -145,7 +140,7 @@ class CommandResult(typing.Generic[T]):
 
 
 class Command[A, T](Protocol):
-    async def __call__(
+    def __call__(
         self,
         task: ta.TaskContext[CommandResult[T]],
         exe: CommandExecutionContext,
@@ -200,7 +195,7 @@ def run_command[A, T](
     dump_log: Path | None = None,
     on_status: Callable[[str], None] | None = None,
     add_header: bool = True,
-    handle_sigint: bool = True,
+    handle_sigint: bool = False,
 ) -> CommandResult[T | None]:
     """
     A simple way to run a command, blocking and dumping logs on disk.
@@ -225,7 +220,7 @@ def run_command[A, T](
                 with open(dump_log, "a") as f:
                     f.write(message + "\n")
 
-        async def set_status(self, message: str) -> None:
+        def set_status(self, message: str) -> None:
             if dump_statuses is not None:
                 os.makedirs(dump_statuses.parent, exist_ok=True)
                 with open(dump_statuses, "a") as f:
@@ -233,7 +228,7 @@ def run_command[A, T](
             if on_status is not None:
                 on_status(message)
 
-        async def set_result(self, result: CommandResult[T]) -> None:
+        def set_result(self, result: CommandResult[T]) -> None:
             self.result = result
             if dump_result is not None:
                 ret_ty = command_optional_result_wrapper_type(command)
@@ -250,16 +245,16 @@ def run_command[A, T](
                     ret_yaml = pretty_yaml(ret)
                     f.write("# delphyne-command\n\n" + ret_yaml)
 
-        async def raise_internal_error(self, message: str) -> None:
+        def raise_internal_error(self, message: str) -> None:
             error = ("error", f"Internal error: {message}")
             self.result = CommandResult([error], None)
 
     handler = Handler()
     if not handle_sigint:
-        asyncio.run(command(handler, ctx, args))
+        command(handler, ctx, args)
     else:
         watch_sigint(
-            task=lambda: asyncio.run(command(handler, ctx, args)),
+            task=lambda: command(handler, ctx, args),
             on_sigint=lambda: handler.interrupt(),
         )
     return handler.result
@@ -298,16 +293,16 @@ class TestCommandArgs:
     delay: float = 1.0
 
 
-async def test_command(
+def test_command(
     task: ta.TaskContext[CommandResult[list[int]]],
     exe: ta.CommandExecutionContext,
     args: TestCommandArgs,
 ):
-    await task.set_status("counting...")
+    task.set_status("counting...")
     for i in range(args.n):
-        await asyncio.sleep(args.delay)
-        await task.set_result(CommandResult([], list(range(i + 1))))
+        time.sleep(args.delay)
+        task.set_result(CommandResult([], list(range(i + 1))))
         print(i)
-    await task.set_status("done")
-    await asyncio.sleep(args.delay)
+    task.set_status("done")
+    time.sleep(args.delay)
     print("done")
