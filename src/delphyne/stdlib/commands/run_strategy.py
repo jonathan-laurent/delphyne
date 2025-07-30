@@ -97,14 +97,20 @@ async def run_loaded_strategy[N: dp.Node, P, T](
     def compute_status():
         num_nodes = len(env.tracer.trace.nodes)
         num_requests = total_budget.values.get(std.NUM_REQUESTS)
+        price = total_budget.values.get(std.DOLLAR_PRICE)
+
+        ret: list[str] = [f"{num_nodes} nodes"]
         if num_requests is not None:
             # If num_requests is a float equal to an int, cast to int
             # for display
             if isinstance(num_requests, float) and num_requests.is_integer():
                 num_requests = int(num_requests)
-            return f"{num_nodes} nodes, {num_requests} requests"
-        else:
-            return f"{num_nodes} nodes"
+            ret += [f"{num_requests} requests"]
+        if price is not None:
+            price *= 100  # in cents
+            ret += [f"{price:.2g}¢"]
+
+        return ", ".join(ret)
 
     last_refreshed_result = time.time()
     last_refreshed_status = time.time()

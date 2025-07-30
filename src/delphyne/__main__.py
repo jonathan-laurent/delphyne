@@ -98,6 +98,7 @@ class DelphyneApp:
             return
         if update:
             no_output = True
+            no_header = False
         if cache and not config.cache_root:
             config = replace(config, cache_root=file_path.parent / "cache")
         with open(file, "r") as f:
