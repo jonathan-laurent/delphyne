@@ -301,6 +301,10 @@
       {
         "command": "delphyne.startServer",
         "title": "Delphyne: Start Server"
+      },
+      {
+        "command": "delphyne.showRootDirectory",
+        "title": "Delphyne: Show Root Directory for Current File"
       }
     ]
   },

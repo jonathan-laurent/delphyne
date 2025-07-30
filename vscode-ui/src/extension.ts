@@ -3,6 +3,7 @@
 //////
 
 import * as vscode from "vscode";
+import * as path from "path";
 import { TreeView } from "./tree_view";
 import {
   showAlert,
@@ -19,6 +20,7 @@ import { ElementsManager } from "./elements_manager";
 import { registerTreeViewCommands } from "./tree_view_commands";
 import { CommandsManager } from "./commands";
 import { autoFold } from "./folding";
+import { getWorkspaceRoot } from "./config";
 
 //////
 /// Activation code
@@ -110,6 +112,13 @@ export async function activate(context: vscode.ExtensionContext) {
       await startServerCommand(server);
     }),
   );
+
+  // Show root directory command
+  context.subscriptions.push(
+    vscode.commands.registerCommand("delphyne.showRootDirectory", () => {
+      showRootDirectoryCommand();
+    }),
+  );
 }
 
 export function deactivate() {
@@ -166,4 +175,17 @@ function killServerCommand(server: DelphyneServer) {
 
 async function startServerCommand(server: DelphyneServer) {
   await server.start(true);
+}
+
+function showRootDirectoryCommand() {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    vscode.window.showInformationMessage("No file is currently open.");
+    return;
+  }
+
+  const filePath = editor.document.fileName;
+  const rootDir = getWorkspaceRoot(filePath);
+
+  vscode.window.showInformationMessage(`Root directory: ${rootDir}`);
 }
