@@ -13,6 +13,46 @@ const DEFAULT_RESULT_REFRESH_PERIOD_IN_SECONDS = 5;
 const DEFAULT_STATUS_REFRESH_PERIOD_IN_SECONDS = 1;
 
 /////
+// Workspace Detection
+/////
+
+/**
+ * Find the project root directory by looking for the delphyne.yaml file.
+ * Searches up the directory tree from the starting directory.
+ */
+export function findRootDir(startingDir: string): string | null {
+  let currentDir = path.resolve(startingDir);
+  const root = path.parse(currentDir).root;
+  while (currentDir !== root) {
+    const configPath = path.join(currentDir, CONFIG_FILE_NAME);
+    if (fs.existsSync(configPath)) {
+      return currentDir;
+    }
+    currentDir = path.dirname(currentDir);
+  }
+  return null;
+}
+
+function getGlobalWorkspaceRoot(): string {
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  if (!workspaceFolders) {
+    showAlertAndPanic("No workspace is opened.");
+  }
+  return workspaceFolders[0].uri.fsPath;
+}
+
+export function getWorkspaceRoot(filePath: string | null): string {
+  let dir: string;
+  if (!filePath) {
+    dir = getGlobalWorkspaceRoot();
+  } else {
+    dir = findRootDir(filePath) ?? getGlobalWorkspaceRoot();
+  }
+  // log.info("Using root directory: " + dir); // A bit too noisy...
+  return dir;
+}
+
+/////
 // Configuration File and Command Execution Contexts
 /////
 
@@ -29,18 +69,8 @@ export interface CommandExecutionContext {
 
 export interface Config extends CommandExecutionContext {}
 
-export function getWorkspaceRoot(): string {
-  const workspaceFolders = vscode.workspace.workspaceFolders;
-  if (!workspaceFolders) {
-    showAlertAndPanic("No workspace is opened.");
-  }
-  return workspaceFolders[0].uri.fsPath;
-}
-
-export function loadConfig(): Config {
-  const workspaceRoot = getWorkspaceRoot();
-  const configFilePath = path.join(workspaceRoot, CONFIG_FILE_NAME);
-
+function loadConfig(rootDir: string): Config {
+  const configFilePath = path.join(rootDir, CONFIG_FILE_NAME);
   let config: Config = {};
   if (!fs.existsSync(configFilePath)) {
     log.info(
@@ -49,6 +79,9 @@ export function loadConfig(): Config {
   } else {
     const configFileContent = fs.readFileSync(configFilePath, "utf8");
     config = yaml.parse(configFileContent);
+    if (!config) {
+      config = {}; // An empty YAML file will be parsed as null, so we default to an empty object
+    }
   }
   if (config.result_refresh_period === undefined) {
     config.result_refresh_period = DEFAULT_RESULT_REFRESH_PERIOD_IN_SECONDS;
@@ -66,7 +99,8 @@ export function loadConfig(): Config {
 // not valid YAML, raise an error.
 export function loadLocalConfig(doc: vscode.TextDocument): Config {
   // Start with the global config
-  const globalConfig = loadConfig();
+  const rootDir = getWorkspaceRoot(doc.fileName);
+  const globalConfig = loadConfig(rootDir);
   const text = doc.getText();
   const configBlock = extractConfigBlock(text);
   if (!configBlock) {

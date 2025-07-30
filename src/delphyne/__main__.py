@@ -15,7 +15,7 @@ import delphyne.stdlib as std
 import delphyne.utils.typing as ty
 from delphyne.scripts.command_utils import command_file_header
 from delphyne.scripts.demonstrations import check_demo_file
-from delphyne.scripts.load_configs import load_config
+from delphyne.scripts.load_configs import find_workspace_dir, load_config
 from delphyne.server.execute_command import CommandSpec
 from delphyne.utils.misc import StatusIndicator
 from delphyne.utils.yaml import pretty_yaml
@@ -34,7 +34,7 @@ class DelphyneApp:
         ensure_no_error: bool = False,
         ensure_no_warning: bool = False,
     ):
-        self.workspace_dir = workspace_dir or Path.cwd()
+        self.workspace_dir = workspace_dir
         self.ensure_no_error = ensure_no_error
         self.ensure_no_warning = ensure_no_warning
 
@@ -61,12 +61,24 @@ class DelphyneApp:
         if self.ensure_no_warning and num_warnings > 0:
             exit(1)
 
+    def _workspace_dir_for(self, file: Path) -> Path:
+        """
+        Get the workspace directory for a given file.
+        """
+        workspace_dir = self.workspace_dir
+        if workspace_dir is None:
+            workspace_dir = find_workspace_dir(file)
+        if workspace_dir is None:
+            workspace_dir = Path.cwd()
+        return workspace_dir
+
     def check(self, file: str):
         """
         Check a demo file.
         """
         file_path = Path(file)
-        config = load_config(self.workspace_dir, local_config_from=file_path)
+        workspace_dir = self._workspace_dir_for(file_path)
+        config = load_config(workspace_dir, local_config_from=file_path)
         feedback = check_demo_file(
             file_path, config.strategy_dirs, config.modules
         )
@@ -87,7 +99,8 @@ class DelphyneApp:
         Execute a command file.
         """
         file_path = Path(file)
-        config = load_config(self.workspace_dir, local_config_from=file_path)
+        workspace_dir = self._workspace_dir_for(file_path)
+        config = load_config(workspace_dir, local_config_from=file_path)
         config = replace(
             config,
             status_refresh_period=STATUS_REFRESH_PERIOD_IN_SECONDS,

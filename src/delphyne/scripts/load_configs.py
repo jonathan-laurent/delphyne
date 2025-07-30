@@ -36,6 +36,23 @@ def load_config(
 
 
 #####
+##### Finding workspace directory
+#####
+
+
+def find_workspace_dir(starting_dir: Path) -> Path | None:
+    """
+    Find the workspace directory by looking for the delphyne.yaml file.
+    """
+    current_dir = starting_dir.resolve()
+    while current_dir != current_dir.parent:
+        if (current_dir / WORKSPACE_FILE).exists():
+            return current_dir
+        current_dir = current_dir.parent
+    return None
+
+
+#####
 ##### Extracting local configuration blocks
 #####
 

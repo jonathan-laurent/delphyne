@@ -157,7 +157,7 @@ export class CommandsManager implements vscode.CodeActionProvider {
     const payload = {
       spec: parsed,
       context: context,
-      workspace_root: getWorkspaceRoot(),
+      workspace_root: getWorkspaceRoot(document.fileName),
     };
 
     const updateEditor = async (

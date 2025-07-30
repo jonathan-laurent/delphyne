@@ -233,7 +233,11 @@ async function evaluateDemo(
     },
     {},
     "demo-feedback",
-    { demo, context: executionContext, workspace_root: getWorkspaceRoot() },
+    {
+      demo,
+      context: executionContext,
+      workspace_root: getWorkspaceRoot(element.uri.fsPath),
+    },
   );
   const outcome = await task.outcome;
   const feedback = outcome.result as DemoFeedback;
