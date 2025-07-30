@@ -175,6 +175,7 @@ from delphyne.stdlib.tasks import (
     TaskContext,
     TaskMessage,
     command_args_type,
+    command_optional_result_wrapper_type,
     command_result_type,
     run_command,
 )

@@ -21,13 +21,13 @@ test-exp:
 	python experiments/test_baseline_experiment.py replay
 	@echo "\n"
 
-# python -m delphyne exec-command commands/test_abduct_branch.exec.yaml --cache --no-output --ensure-no-erro
+# delphyne run commands/test_abduct_branch.exec.yaml --cache --no-output --ensure-no-erro
 CMD_FILES := $(filter-out commands/test_abduct_branch_difficult.exec.yaml,$(wildcard commands/*.exec.yaml))
 
 execute-commands: $(CMD_FILES)
 
 commands/%.exec.yaml: FORCE
-	python -m delphyne exec-command $@ --cache --no-output --ensure-no-error
+	delphyne run $@ --cache --no-output --ensure-no-error
 
 FORCE:
 
@@ -36,7 +36,7 @@ delete-test-exp:
 
 # Test demonstrations, in a way that does not require Why3 to be installed.
 test:
-	python -m delphyne check-demo abduct_and_branch.demo.yaml --ensure-no-error
+	delphyne check abduct_and_branch.demo.yaml --ensure-no-error
 # Other demos contain implicit answers...
 
 full-test: execute-commands test-exp test

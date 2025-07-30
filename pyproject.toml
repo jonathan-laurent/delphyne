@@ -44,3 +44,6 @@ include = ["src/**", "tests/**"]
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[project.scripts]
+delphyne = "delphyne.__main__:main"

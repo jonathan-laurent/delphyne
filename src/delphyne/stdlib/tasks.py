@@ -172,6 +172,16 @@ def command_result_type(cmd: Command[Any, Any]) -> Any:
     return typing.get_args(cmd_res_type)[0]
 
 
+def command_optional_result_wrapper_type(
+    cmd: Command[Any, Any],
+) -> type[CommandResult[Any | None]]:
+    """
+    Return `CommandResult[T | None]` where `T = command_result_type(cmd)`.
+    """
+    ret_type = command_result_type(cmd)
+    return CommandResult[ret_type | None]
+
+
 def command_name(cmd: Command[Any, Any]) -> str:
     return cmd.__name__  # type: ignore
 
@@ -210,8 +220,7 @@ def run_command[A, T](
         async def set_result(self, result: CommandResult[T]) -> None:
             self.result = result
             if dump_result is not None:
-                ret_ty = command_result_type(command)
-                ret_ty = CommandResult[ret_ty | None]
+                ret_ty = command_optional_result_wrapper_type(command)
                 ret: Any = ty.pydantic_dump(ret_ty, result)
                 if add_header:
                     args_type = command_args_type(command)
