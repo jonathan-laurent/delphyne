@@ -1,4 +1,4 @@
-def clear_command_file_outcome(doc: str) -> str:
+def command_file_header(doc: str) -> str:
     """
     Remove all lines, following and including the first single line
     equal to `outcome:` (with possibly trailing whitespace).

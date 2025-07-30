@@ -193,6 +193,7 @@ def run_command[A, T](
     dump_statuses: Path | None = None,
     dump_result: Path | None = None,
     dump_log: Path | None = None,
+    on_status: Callable[[str], None] | None = None,
     add_header: bool = True,
 ) -> CommandResult[T | None]:
     """
@@ -216,6 +217,8 @@ def run_command[A, T](
                 os.makedirs(dump_statuses.parent, exist_ok=True)
                 with open(dump_statuses, "a") as f:
                     f.write(message + "\n")
+            if on_status is not None:
+                on_status(message)
 
         async def set_result(self, result: CommandResult[T]) -> None:
             self.result = result

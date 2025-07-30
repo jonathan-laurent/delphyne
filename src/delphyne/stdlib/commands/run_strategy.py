@@ -98,6 +98,10 @@ async def run_loaded_strategy[N: dp.Node, P, T](
         num_nodes = len(env.tracer.trace.nodes)
         num_requests = total_budget.values.get(std.NUM_REQUESTS)
         if num_requests is not None:
+            # If num_requests is a float equal to an int, cast to int
+            # for display
+            if isinstance(num_requests, float) and num_requests.is_integer():
+                num_requests = int(num_requests)
             return f"{num_nodes} nodes, {num_requests} requests"
         else:
             return f"{num_nodes} nodes"

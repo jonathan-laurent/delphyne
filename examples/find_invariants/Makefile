@@ -27,7 +27,8 @@ CMD_FILES := $(filter-out commands/test_abduct_branch_difficult.exec.yaml,$(wild
 execute-commands: $(CMD_FILES)
 
 commands/%.exec.yaml: FORCE
-	delphyne run $@ --cache --no-output --ensure-no-error
+	delphyne run $@ --cache --filter=[values] --no-header --ensure-no-error
+	@echo "\n"
 
 FORCE:
 
