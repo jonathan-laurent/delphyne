@@ -79,6 +79,20 @@ class TransparentQuery[T](Space[T]):
 #####
 
 
+@dataclass(frozen=True)
+class NavigationError(Exception):
+    """
+    Exception raised when an error occurs during navigation.
+
+    For internal errors that should not occur within normal use,
+    assertions shoule be used instead. This exception is meant to
+    represent errors that can occur during normal use, and reported in
+    the user interface.
+    """
+
+    message: str
+
+
 class Node(ABC):
     """
     Abstract type for a node.

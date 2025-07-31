@@ -72,7 +72,10 @@ class Abduction(dp.Node):
 
         proved: Any = yield from aux(None)
         main_proof = _find_assoc(proved, None)
-        assert main_proof is not None
+        if main_proof is None:
+            raise dp.NavigationError(
+                "No proof for the main goal was produced."
+            )
         return main_proof
 
 

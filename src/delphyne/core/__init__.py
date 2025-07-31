@@ -88,6 +88,7 @@ from delphyne.core.trees import (
     ComputationNode,
     EmbeddedTree,
     Navigation,
+    NavigationError,
     NestedTree,
     Node,
     NodeBuilder,

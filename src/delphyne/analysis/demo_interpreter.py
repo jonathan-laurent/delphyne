@@ -279,9 +279,9 @@ def _stuck_warning(diagnostics: list[fb.Diagnostic], exn: nv.Stuck):
 
 
 def _navigation_error(
-    diagnostics: list[fb.Diagnostic], exn: nv.NavigationError
+    diagnostics: list[fb.Diagnostic], exn: dp.NavigationError
 ):
-    details = f"{repr(exn.error)}\n\n{traceback.format_exc()}"
+    details = f"{repr(exn.message)}\n\n{traceback.format_exc()}"
     msg = f"Navigation error:\n\n{details}"
     diagnostics.append(("error", msg))
 
@@ -329,7 +329,7 @@ def _interpret_test_run_step(
     except dp.StrategyException as e:
         _strategy_exn(diagnostics, e)
         return tree, "stop"
-    except nv.NavigationError as e:
+    except dp.NavigationError as e:
         _navigation_error(diagnostics, e)
         return tree, "stop"
 
@@ -382,7 +382,7 @@ def _interpret_test_select_step(
     except dp.StrategyException as e:
         _strategy_exn(diagnostics, e)
         return tree, "stop"
-    except nv.NavigationError as e:
+    except dp.NavigationError as e:
         _navigation_error(diagnostics, e)
         return tree, "stop"
     except nv.InvalidSpace as e:

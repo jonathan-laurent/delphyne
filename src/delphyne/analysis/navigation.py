@@ -104,15 +104,6 @@ def _tag_selectors_match(
 
 
 @dataclass
-class NavigationError(Exception):
-    """
-    Exception reached while calling `navigate` on a node.
-    """
-
-    error: Exception
-
-
-@dataclass
 class Stuck(Exception):
     tree: AnyTree
     space_ref: refs.SpaceRef
@@ -315,17 +306,6 @@ class Navigator:
                 key = (tree.ref, refs.value_ref(value))
                 self.info.hints_rev.actions[key] = used_hints
             return value, hints
-        except (
-            NavigationError,
-            ReachedFailureNode,
-            Stuck,
-            MatchedSelector,
-            AnswerParseError,
-            dp.StrategyException,
-        ) as e:
-            raise e
-        except Exception as e:
-            raise NavigationError(e)
 
     def answer_from_hints(
         self,
