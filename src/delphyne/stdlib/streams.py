@@ -225,7 +225,7 @@ def bind_stream[A, B](
 
 def take_one_with_meta[T](
     stream: dp.Stream[T],
-) -> dp.StreamGen[tuple[dp.Tracked[T], dp.SearchMetadata | None] | None]:
+) -> dp.StreamGen[tuple[dp.Tracked[T], dp.SearchMeta | None] | None]:
     for msg in stream:
         if isinstance(msg, dp.Yield):
             return (msg.value, msg.meta)
@@ -288,13 +288,13 @@ def collect_with_metadata[T](
     stream: dp.Stream[T],
     budget: dp.BudgetLimit | None = None,
     num_generated: int | None = None,
-) -> tuple[Sequence[tuple[dp.Tracked[T], dp.SearchMetadata]], dp.Budget]:
+) -> tuple[Sequence[tuple[dp.Tracked[T], dp.SearchMeta | None]], dp.Budget]:
     if budget is not None:
         stream = stream_with_budget(stream, budget)
     if num_generated is not None:
         stream = stream_take(stream, num_generated)
     total = dp.Budget.zero()
-    elts: list[tuple[dp.Tracked[T], dp.SearchMetadata]] = []
+    elts: list[tuple[dp.Tracked[T], dp.SearchMeta | None]] = []
     for msg in stream:
         if isinstance(msg, dp.Yield):
             elts.append((msg.value, msg.meta))

@@ -12,7 +12,7 @@ from typing import Any
 
 import delphyne.core as dp
 from delphyne.core.streams import Stream, Yield
-from delphyne.stdlib.nodes import Branch, Fail, Join
+from delphyne.stdlib.nodes import Branch, Fail, Join, NodeMeta
 from delphyne.stdlib.policies import log, search_policy
 from delphyne.stdlib.queries import ProbInfo
 from delphyne.stdlib.streams import (
@@ -28,7 +28,7 @@ from delphyne.stdlib.streams import (
 
 
 @dataclass
-class GiveUp:
+class GiveUp(NodeMeta):
     """
     Instruct to treat a Branch node as a failure node.
     """
@@ -37,7 +37,7 @@ class GiveUp:
 
 
 @dataclass
-class VisitOne:
+class VisitOne(NodeMeta):
     """
     Annotation for a branching node, indicating that only one child must
     be visited.
@@ -47,7 +47,7 @@ class VisitOne:
 
 
 @dataclass
-class CombineStreamDistr:
+class CombineStreamDistr(NodeMeta):
     """
     Extract one candidate annotated with `ProbInfo`, and combine
     children streams according to the provided distribution.
@@ -57,7 +57,7 @@ class CombineStreamDistr:
 
 
 @dataclass
-class OneOfEachSequentially:
+class OneOfEachSequentially(NodeMeta):
     """
     Most basic behaviour for a Join node, where one element of each
     subspace is extracted sequentially and the resulting child visited

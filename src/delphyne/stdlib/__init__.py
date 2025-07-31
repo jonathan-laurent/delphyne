@@ -74,6 +74,7 @@ from delphyne.stdlib.nodes import (
     Fail,
     Join,
     Message,
+    NodeMeta,
     Value,
     branch,
     ensure,

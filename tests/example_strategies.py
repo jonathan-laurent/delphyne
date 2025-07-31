@@ -721,7 +721,9 @@ def obtain_item_policy(model: dp.LLM, num_concurrent: int = 1):
 def recursive_joins(
     depth: int,
 ) -> Strategy[
-    dp.Join | dp.Message | dp.Compute | dp.Flag[MethodFlag], object, int
+    dp.Join | dp.Message | dp.Compute | dp.Flag[MethodFlag],
+    dp.NodeMeta,
+    int,
 ]:
     if depth == 0:
         flag = yield from dp.get_flag(MethodFlag)

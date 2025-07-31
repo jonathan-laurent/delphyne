@@ -645,7 +645,7 @@ def _compute_value_distribution(
 
 
 @dataclass
-class ProbInfo:
+class ProbInfo(dp.SearchMeta):
     """
     Distribution probability, guaranteed to be nonempty and to sum to 1.
     """

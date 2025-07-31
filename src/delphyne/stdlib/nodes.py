@@ -26,6 +26,17 @@ policy.
 """
 
 
+class NodeMeta:
+    """
+    Abstract class for any type of arbitrary metadata that can be
+    attached to nodes. Not using `object` in particular is important to
+    prevent errors when instantiating function fields of parametric
+    policies.
+    """
+
+    pass
+
+
 #####
 ##### Branch Node
 #####
@@ -35,7 +46,7 @@ policy.
 class Branch(dp.Node):
     cands: dp.OpaqueSpace[Any, Any]
     extra_tags: Sequence[dp.Tag]
-    meta: FromPolicy[object] | None
+    meta: FromPolicy[NodeMeta] | None
 
     def navigate(self) -> dp.Navigation:
         return (yield self.cands)
@@ -47,7 +58,7 @@ class Branch(dp.Node):
 def branch[P, T](
     cands: dp.Opaque[P, T],
     extra_tags: Sequence[dp.Tag] = (),
-    meta: Callable[[P], object] | None = None,
+    meta: Callable[[P], NodeMeta] | None = None,
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Branch, P, T]:
     ret = yield spawn_node(
@@ -212,7 +223,7 @@ def value[E, P](
 @dataclass(frozen=True)
 class Join(dp.Node):
     subs: Sequence[dp.EmbeddedTree[Any, Any, Any]]
-    meta: FromPolicy[object] | None
+    meta: FromPolicy[NodeMeta] | None
 
     def navigate(self) -> dp.Navigation:
         ret: list[Any] = []
@@ -223,7 +234,7 @@ class Join(dp.Node):
 
 def join[N: dp.Node, P, T](
     subs: Sequence[dp.StrategyComp[N, P, T]],
-    meta: Callable[[P], object] | None = None,
+    meta: Callable[[P], NodeMeta] | None = None,
 ) -> dp.Strategy[N, P, Sequence[T]]:
     ret = yield spawn_node(Join, subs=subs, meta=meta)
     return cast(Sequence[T], ret)
