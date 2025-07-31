@@ -4,6 +4,7 @@ from typing import Any, cast
 
 import delphyne.core as dp
 from delphyne.stdlib.nodes import Fail, fail, spawn_node
+from delphyne.stdlib.opaque import Opaque, OpaqueSpace
 from delphyne.stdlib.policies import search_policy
 from delphyne.stdlib.strategies import strategy
 from delphyne.stdlib.streams import StreamTransformer
@@ -13,7 +14,7 @@ from delphyne.stdlib.streams import StreamTransformer
 class Iteration(dp.Node):
     next: Callable[
         [dp.Tracked[Any] | None],
-        dp.OpaqueSpace[Any, tuple[Any | None, Any]],
+        OpaqueSpace[Any, tuple[Any | None, Any]],
     ]
 
     def navigate(self) -> dp.Navigation:
@@ -26,7 +27,7 @@ def _iterate_inherited_tags(next: Any) -> Sequence[dp.SpaceBuilder[Any]]:
 
 @strategy(name="iterate", inherit_tags=_iterate_inherited_tags)
 def _iterate[P, S, T](
-    next: Callable[[S | None], dp.Opaque[P, tuple[T | None, S]]],
+    next: Callable[[S | None], Opaque[P, tuple[T | None, S]]],
 ) -> dp.Strategy[Iteration | Fail, P, T]:
     ret = yield spawn_node(Iteration, next=next)
     ret = cast(tuple[T | None, S], ret)
@@ -46,7 +47,7 @@ def search_iteration[P, T](
     assert isinstance(tree.node, Iteration)
     state: dp.Tracked[Any] | None = None
     while True:
-        for msg in tree.node.next(state).stream(env, policy):
+        for msg in tree.node.next(state).stream(env, policy).generate():
             if isinstance(msg, dp.Yield):
                 # TODO: here, `msg` contains the value we are interested
                 # in so it is tempting to just yield it. However, this
@@ -67,9 +68,9 @@ def search_iteration[P, T](
 
 
 def iterate[P, S, T](
-    next: Callable[[S | None], dp.Opaque[P, tuple[T | None, S]]],
+    next: Callable[[S | None], Opaque[P, tuple[T | None, S]]],
     transform_stream: Callable[[P], StreamTransformer | None] | None = None,
-) -> dp.Opaque[P, T]:
+) -> Opaque[P, T]:
     def iterate_policy(inner_policy: P):
         policy = search_iteration()
         if transform_stream is not None:

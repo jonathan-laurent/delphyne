@@ -4,37 +4,32 @@ Utilities to work with streams.
 
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Protocol, overload
+from typing import Protocol
 
 import delphyne.core as dp
-from delphyne.stdlib.policies import PromptingPolicy, SearchPolicy
+
+#####
+##### Search Streams
+#####
+
+
+@dataclass(frozen=True)
+class SearchStream[T](dp.AbstractSearchStream[T]):
+    _generate: Callable[[], dp.Stream[T]]
+
+    def generate(self) -> dp.Stream[T]:
+        return self._generate()
+
 
 #####
 ##### Stream transformers
 #####
 
 
-type StreamBuilder[T] = Callable[[], dp.Stream[T]]
-"""
-Once an object of type `Stream[T]` is obtained, it can only be consummed
-once through `iter` (further calls of `iter` will raise
-`StopIteration`). Thus, many combinators assembling streams take stream
-builder instead of streams directly.
-"""
-
-
 class _StreamTransformerFn(Protocol):
-    """
-    A stream transformer takes as an argument a stream builder instead
-    of a stream so that it can instantiate the stream several times,
-    allowing to implement `loop`. Also, having access to the policy
-    environment can be useful (e.g. to access particular configuration
-    or template files).
-    """
-
     def __call__[T](
         self,
-        stream_builder: StreamBuilder[T],
+        stream: SearchStream[T],
         env: dp.PolicyEnv,
     ) -> dp.Stream[T]: ...
 
@@ -42,26 +37,8 @@ class _StreamTransformerFn(Protocol):
 class _ParametricStreamTransformerFn[**A](Protocol):
     def __call__[T](
         self,
-        stream_builder: StreamBuilder[T],
+        stream: SearchStream[T],
         env: dp.PolicyEnv,
-        *args: A.args,
-        **kwargs: A.kwargs,
-    ) -> dp.Stream[T]: ...
-
-
-class _PureStreamTransformerFn(Protocol):
-    """
-    Special case of _pure_ stream transformer functions that do not need
-    to replicate the source stream or access the policy environment.
-    """
-
-    def __call__[T](self, stream: dp.Stream[T]) -> dp.Stream[T]: ...
-
-
-class _PureParametricStreamTransformerFn[**A](Protocol):
-    def __call__[T](
-        self,
-        stream: dp.Stream[T],
         *args: A.args,
         **kwargs: A.kwargs,
     ) -> dp.Stream[T]: ...
@@ -69,100 +46,26 @@ class _PureParametricStreamTransformerFn[**A](Protocol):
 
 @dataclass
 class StreamTransformer:
-    """
-    Wraps a stream transformer function (`_StreamTransformerFn`) so that
-    it can compose nicely with search policies using the `@` operator.
-    """
-
     trans: _StreamTransformerFn
 
     def __call__[T](
         self,
-        stream_builder: StreamBuilder[T],
+        stream: SearchStream[T],
         env: dp.PolicyEnv,
-    ) -> dp.Stream[T]:
-        return self.trans(stream_builder, env)
+    ) -> SearchStream[T]:
+        return SearchStream(lambda: self.trans(stream, env))
 
-    @staticmethod
-    def pure(
-        fn: _PureStreamTransformerFn,
-    ) -> "StreamTransformer":
-        def pure_transformer[T](
-            stream_builder: StreamBuilder[T],
+    def __matmul__(self, other: "StreamTransformer") -> "StreamTransformer":
+        if not isinstance(other, StreamTransformer):  # type: ignore[reportUnnecessaryInstance]
+            return NotImplemented
+
+        def transformer[T](
+            stream: SearchStream[T],
             env: dp.PolicyEnv,
         ) -> dp.Stream[T]:
-            return fn(stream_builder())
+            return self(other(stream, env), env).generate()
 
-        return StreamTransformer(pure_transformer)
-
-    @staticmethod
-    def pure_parametric[**A](
-        fn: _PureParametricStreamTransformerFn[A],
-    ) -> Callable[A, "StreamTransformer"]:
-        def parametric(*args: A.args, **kwargs: A.kwargs) -> StreamTransformer:
-            def pure_transformer[T](
-                stream_builder: StreamBuilder[T],
-                env: dp.PolicyEnv,
-            ) -> dp.Stream[T]:
-                return fn(stream_builder(), *args, **kwargs)
-
-            return StreamTransformer(pure_transformer)
-
-        return parametric
-
-    @overload
-    def __matmul__[N: dp.Node](
-        self, other: SearchPolicy[N]
-    ) -> SearchPolicy[N]: ...
-
-    @overload
-    def __matmul__(self, other: PromptingPolicy) -> PromptingPolicy: ...
-
-    @overload
-    def __matmul__(self, other: "StreamCombinator") -> "StreamCombinator": ...
-
-    def __matmul__[N: dp.Node](
-        self, other: "SearchPolicy[N] | PromptingPolicy | StreamCombinator"
-    ) -> "SearchPolicy[N] | PromptingPolicy | StreamCombinator":
-        if isinstance(other, SearchPolicy):
-            return self.compose_with_search_policy(other)
-        elif isinstance(other, StreamCombinator):
-            return self.compose_with_stream_combinator(other)
-        else:
-            assert isinstance(other, PromptingPolicy)
-            return self.compose_with_prompting_policy(other)
-
-    def compose_with_search_policy[N: dp.Node](
-        self, other: SearchPolicy[N]
-    ) -> SearchPolicy[N]:
-        def policy[P, T](
-            tree: dp.Tree[N, P, T], env: dp.PolicyEnv, policy: P
-        ) -> dp.Stream[T]:
-            return self.trans(lambda: other(tree, env, policy), env)
-
-        return SearchPolicy(policy)
-
-    def compose_with_prompting_policy(
-        self, other: PromptingPolicy
-    ) -> PromptingPolicy:
-        def policy[P, T](
-            query: dp.AttachedQuery[T], env: dp.PolicyEnv
-        ) -> dp.Stream[T]:
-            return self.trans(lambda: other(query, env), env)
-
-        return PromptingPolicy(policy)
-
-    def compose_with_stream_combinator(
-        self, other: "StreamCombinator"
-    ) -> "StreamCombinator":
-        def combine[T](
-            streams: Sequence[StreamBuilder[T]],
-            probs: Sequence[float],
-            env: dp.PolicyEnv,
-        ) -> dp.Stream[T]:
-            return self(lambda: other.combine(streams, probs, env), env)
-
-        return StreamCombinator(combine)
+        return StreamTransformer(transformer)
 
 
 def stream_transformer[**A](
@@ -170,10 +73,10 @@ def stream_transformer[**A](
 ) -> Callable[A, StreamTransformer]:
     def parametric(*args: A.args, **kwargs: A.kwargs) -> StreamTransformer:
         def transformer[T](
-            stream_builder: StreamBuilder[T],
+            stream: SearchStream[T],
             env: dp.PolicyEnv,
         ) -> dp.Stream[T]:
-            return f(stream_builder, env, *args, **kwargs)
+            return f(stream, env, *args, **kwargs)
 
         return StreamTransformer(transformer)
 
@@ -188,7 +91,7 @@ def stream_transformer[**A](
 class _StreamCombinatorFn(Protocol):
     def __call__[T](
         self,
-        streams: Sequence[StreamBuilder[T]],
+        streams: Sequence[SearchStream[T]],
         probs: Sequence[float],
         env: dp.PolicyEnv,
     ) -> dp.Stream[T]: ...
@@ -200,11 +103,24 @@ class StreamCombinator:
 
     def __call__[T](
         self,
-        streams: Sequence[StreamBuilder[T]],
+        streams: Sequence[SearchStream[T]],
         probs: Sequence[float],
         env: dp.PolicyEnv,
-    ) -> dp.Stream[T]:
-        return self.combine(streams, probs, env)
+    ) -> SearchStream[T]:
+        return SearchStream(lambda: self.combine(streams, probs, env))
+
+    def __rmatmul__(self, other: StreamTransformer) -> "StreamCombinator":
+        if not isinstance(other, StreamTransformer):  # type: ignore[reportUnnecessaryInstance]
+            return NotImplemented
+
+        def combinator[T](
+            streams: Sequence[SearchStream[T]],
+            probs: Sequence[float],
+            env: dp.PolicyEnv,
+        ) -> dp.Stream[T]:
+            return other(self(streams, probs, env), env).generate()
+
+        return StreamCombinator(combinator)
 
 
 #####
@@ -318,15 +234,18 @@ def stream_squash[T](stream: dp.Stream[Sequence[T]]) -> dp.Stream[Sequence[T]]:
     assert False
 
 
+type _StreamBuilder[T] = Callable[[], dp.Stream[T]]
+
+
 def stream_sequence[T](
-    stream_builders: Sequence[StreamBuilder[T]],
+    stream_builders: Sequence[_StreamBuilder[T]],
 ) -> dp.Stream[T]:
     for s in stream_builders:
         yield from s()
 
 
 def stream_or_else[T](
-    main: StreamBuilder[T], fallback: StreamBuilder[T]
+    main: _StreamBuilder[T], fallback: _StreamBuilder[T]
 ) -> dp.Stream[T]:
     some_successes = False
     for msg in main():
@@ -343,14 +262,27 @@ def stream_or_else[T](
 #####
 
 
-with_budget = StreamTransformer.pure_parametric(stream_with_budget)
+@stream_transformer
+def with_budget[T](
+    stream: SearchStream[T],
+    env: dp.PolicyEnv,
+    budget: dp.BudgetLimit,
+):
+    return stream_with_budget(stream.generate(), budget)
 
-take = StreamTransformer.pure_parametric(stream_take)
+
+@stream_transformer
+def take[T](
+    stream: SearchStream[T],
+    env: dp.PolicyEnv,
+    num_generated: int,
+):
+    return stream_take(stream.generate(), num_generated)
 
 
 @stream_transformer
 def loop[T](
-    stream_builder: Callable[[], dp.Stream[T]],
+    stream: SearchStream[T],
     env: dp.PolicyEnv,
     n: int | None = None,
 ) -> dp.Stream[T]:
@@ -361,4 +293,4 @@ def loop[T](
     i = 0
     while (n is None) or (i < n):
         i += 1
-        yield from stream_builder()
+        yield from stream.generate()

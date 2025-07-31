@@ -85,6 +85,7 @@ from delphyne.stdlib.nodes import (
     spawn_node,
     value,
 )
+from delphyne.stdlib.opaque import Opaque, OpaqueSpace
 from delphyne.stdlib.openai_api import (
     OpenAICompatibleModel,
 )
@@ -154,7 +155,6 @@ from delphyne.stdlib.strategies import (
     strategy,
 )
 from delphyne.stdlib.streams import (
-    StreamBuilder,
     StreamTransformer,
     bind_stream,
     collect,

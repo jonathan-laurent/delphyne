@@ -41,7 +41,7 @@ def _eval_query(
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: budget})
     pp = dp.with_budget(bl) @ dp.few_shot(model, num_concurrent=concurrent)
     stream = query.run_toplevel(env, pp)
-    res, _ = dp.collect(stream)
+    res, _ = dp.collect(stream.generate())
     log = list(env.tracer.export_log())
     print(log)
     return res, log
@@ -62,7 +62,9 @@ def _eval_strategy[N: dp.Node, P, T](
     model = dp.CachedModel(dp.standard_model(model_name), cache)
     stream = strategy.run_toplevel(env, policy(model))
     budget = dp.BudgetLimit({dp.NUM_REQUESTS: max_requests})
-    ret, _spent = dp.collect(stream, budget=budget, num_generated=max_res)
+    ret, _spent = dp.collect(
+        stream.generate(), budget=budget, num_generated=max_res
+    )
     log = list(env.tracer.export_log())
     log_str = "\n".join(e.message for e in log)
     return ret, log_str
@@ -86,10 +88,9 @@ def test_basic_llm_call():
     model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
     pp = dp.few_shot(model)
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
-    # TODO ASSOC
-    policy = dp.take(1) @ (dp.with_budget(bl) @ dp.dfs()) & ex.MakeSumIP(pp)
+    policy = dp.take(1) @ dp.with_budget(bl) @ dp.dfs() & ex.MakeSumIP(pp)
     stream = ex.make_sum([1, 2, 3, 4], 7).run_toplevel(env, policy)
-    res, _ = dp.collect(stream)
+    res, _ = dp.collect(stream.generate())
     # print(list(env.tracer.export_log()))
     assert res
 
@@ -126,9 +127,9 @@ def test_interact():
     model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
     pp = dp.few_shot(model)
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: 2})
-    policy = dp.take(1) @ (dp.with_budget(bl) @ dp.dfs()) & pp
+    policy = dp.take(1) @ dp.with_budget(bl) @ dp.dfs() & pp
     stream = ex.propose_article("Jonathan").run_toplevel(env, policy)
-    res, _ = dp.collect(stream)
+    res, _ = dp.collect(stream.generate())
     print(list(env.tracer.export_log()))
     assert res
 
@@ -176,7 +177,7 @@ def _eval_classifier_query(
         model, temperature=temperature, bias=bias
     )
     stream = query.run_toplevel(env, pp)
-    res, _ = dp.collect_with_metadata(stream)
+    res, _ = dp.collect_with_metadata(stream.generate())
     log = list(env.tracer.export_log())
     print(log)
     assert res
@@ -270,7 +271,7 @@ def test_provider(model: dp.StandardModelName):
 def test_structured_output_provider(model: dp.StandardModelName):
     cache_name = f"provider_structured_{model}"
     query = ex.StructuredOutput(topic="AI")
-    _, _ = _eval_query(query, cache_name, model_name=model)
+    _ = _eval_query(query, cache_name, model_name=model)
     # We explicitly do not ensure that there is a result since DeepSeek
     # will likely fail to respect the schema without further prompting.
 

@@ -10,6 +10,7 @@ from typing import Any, Literal, Protocol, cast
 import delphyne.core as dp
 from delphyne.core.refs import drop_refs
 from delphyne.stdlib.nodes import spawn_node
+from delphyne.stdlib.opaque import Opaque, OpaqueSpace
 from delphyne.stdlib.policies import log, search_policy
 from delphyne.stdlib.streams import take_all, take_one
 
@@ -31,19 +32,19 @@ class Abduction(dp.Node):
 
     prove: Callable[
         [Sequence[tuple[_Fact, _Proof]], _Fact | None],
-        dp.OpaqueSpace[Any, _Status],
+        OpaqueSpace[Any, _Status],
     ]
     suggest: Callable[
         [_Feedback],
-        dp.OpaqueSpace[Any, Sequence[_Fact]],
+        OpaqueSpace[Any, Sequence[_Fact]],
     ]
     search_equivalent: Callable[
         [Sequence[_Fact], _Fact],
-        dp.OpaqueSpace[Any, _Fact | None],
+        OpaqueSpace[Any, _Fact | None],
     ]
     redundant: Callable[
         [Sequence[_Fact], _Fact],
-        dp.OpaqueSpace[Any, bool],
+        OpaqueSpace[Any, bool],
     ]
 
     def navigate(self) -> dp.Navigation:
@@ -109,16 +110,16 @@ type AbductionStatus[Feedback, Proof] = (
 def abduction[Fact, Feedback, Proof, P](
     prove: Callable[
         [Sequence[tuple[Fact, Proof]], Fact | None],
-        dp.Opaque[P, AbductionStatus[Feedback, Proof]],
+        Opaque[P, AbductionStatus[Feedback, Proof]],
     ],
     suggest: Callable[
         [Feedback],
-        dp.Opaque[P, Sequence[Fact]],
+        Opaque[P, Sequence[Fact]],
     ],
     search_equivalent: Callable[
-        [Sequence[Fact], Fact], dp.Opaque[P, Fact | None]
+        [Sequence[Fact], Fact], Opaque[P, Fact | None]
     ],
-    redundant: Callable[[Sequence[Fact], Fact], dp.Opaque[P, bool]],
+    redundant: Callable[[Sequence[Fact], Fact], Opaque[P, bool]],
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Abduction, P, Proof]:
     """
@@ -250,7 +251,7 @@ def abduct_and_saturate[P, Proof](
         if f is None:
             return False
         respace = node.redundant([tracked[o] for o in proved], tracked[f])
-        res = yield from take_one(respace.stream(env, policy))
+        res = yield from take_one(respace.stream(env, policy).generate())
         if res is None:
             raise _Abort()
         return res.value
@@ -269,7 +270,7 @@ def abduct_and_saturate[P, Proof](
         # If not redundant, we try and prove it
         facts_list = [(tracked[f], p) for f, p in proved.items()]
         pstream = node.prove(facts_list, tracked[c]).stream(env, policy)
-        res = yield from take_one(pstream)
+        res = yield from take_one(pstream.generate())
         if res is None:
             raise _Abort()
         status, payload = res[0], res[1]
@@ -325,7 +326,7 @@ def abduct_and_saturate[P, Proof](
             # First fact: no need to make equivalence call
             return f
         eqspace = node.search_equivalent(prev, tracked[f])
-        res = yield from take_one(eqspace.stream(env, policy))
+        res = yield from take_one(eqspace.stream(env, policy).generate())
         if res is None:
             raise _Abort()
         if res.value is None:
@@ -340,7 +341,7 @@ def abduct_and_saturate[P, Proof](
     def get_raw_suggestions(c: _EFact) -> dp.StreamGen[Sequence[_EFact]]:
         assert c in candidates
         sstream = node.suggest(candidates[c].feedback).stream(env, policy)
-        res = yield from take_all(sstream)
+        res = yield from take_all(sstream.generate())
         tracked_suggs = [s for r in res for s in r]
         # Populate the `tracked` cache (this is the only place where new
         # facts can be created and so the only place where `tracked`

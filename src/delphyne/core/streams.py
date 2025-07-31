@@ -3,6 +3,7 @@ Defining Policies for Delphyne
 """
 
 import math
+from abc import ABC, abstractmethod
 from collections.abc import Generator, Mapping
 from dataclasses import dataclass
 
@@ -106,3 +107,9 @@ Type signature for a generator that can spend budget, does not yield
 results but ultimately returns a result. Useful to define the signature
 of `take_one` for example.
 """
+
+
+class AbstractSearchStream[T](ABC):
+    @abstractmethod
+    def generate(self) -> Stream[T]:
+        pass

@@ -6,6 +6,7 @@ import delphyne.core as dp
 import delphyne.stdlib.queries as dq
 from delphyne.stdlib import models as md
 from delphyne.stdlib.nodes import Branch, branch
+from delphyne.stdlib.opaque import Opaque
 
 
 @dataclass
@@ -17,10 +18,10 @@ class InteractStats:
 def interact[P, A, B, T: md.AbstractTool[Any]](
     step: Callable[
         [dp.AnswerPrefix, InteractStats],
-        dp.Opaque[P, dq.Response[A, T]],
+        Opaque[P, dq.Response[A, T]],
     ],
-    process: Callable[[A, InteractStats], dp.Opaque[P, B | dp.Error]],
-    tools: Mapping[type[T], Callable[[Any], dp.Opaque[P, Any]]] | None = None,
+    process: Callable[[A, InteractStats], Opaque[P, B | dp.Error]],
+    tools: Mapping[type[T], Callable[[Any], Opaque[P, Any]]] | None = None,
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Branch, P, B]:
     """

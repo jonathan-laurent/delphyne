@@ -22,7 +22,9 @@ import delphyne.core.inspect as dpi
 import delphyne.stdlib.models as md
 import delphyne.stdlib.policies as pol
 from delphyne.core.refs import Answer
+from delphyne.stdlib.opaque import Opaque, OpaqueSpace
 from delphyne.stdlib.policies import IPDict, log, prompting_policy
+from delphyne.stdlib.streams import SearchStream
 from delphyne.utils import typing as ty
 from delphyne.utils.typing import TypeAnnot, ValidationError
 
@@ -260,22 +262,22 @@ class Query[T](dp.AbstractQuery[T]):
         return self._answer_type()
 
     @overload
-    def using(self, get_policy: EllipsisType, /) -> dp.Opaque[IPDict, T]: ...
+    def using(self, get_policy: EllipsisType, /) -> Opaque[IPDict, T]: ...
 
     @overload
     def using[P2](
         self,
-        get_policy: Callable[[P2], dp.AbstractPromptingPolicy] | EllipsisType,
+        get_policy: Callable[[P2], pol.PromptingPolicy] | EllipsisType,
         /,
         inner_policy_type: type[P2] | None = None,
-    ) -> dp.Opaque[P2, T]: ...
+    ) -> Opaque[P2, T]: ...
 
     def using[P](
         self,
-        get_policy: Callable[[P], dp.AbstractPromptingPolicy] | EllipsisType,
+        get_policy: Callable[[P], pol.PromptingPolicy] | EllipsisType,
         /,
         inner_policy_type: type[P] | None = None,
-    ) -> dp.Opaque[P, T]:
+    ) -> Opaque[P, T]:
         """
         Turn a strategy instance into an opaque space by providing a
         mapping from the ambient inner policy to a prompting policy.
@@ -285,18 +287,16 @@ class Query[T](dp.AbstractQuery[T]):
         ambient inner policy.
         """
         if isinstance(get_policy, EllipsisType):
-            return dp.OpaqueSpace[P, T].from_query(
+            return OpaqueSpace[P, T].from_query(
                 self, cast(Any, pol.dict_subpolicy)
             )
-        return dp.OpaqueSpace[P, T].from_query(
-            self, lambda p, _: get_policy(p)
-        )
+        return OpaqueSpace[P, T].from_query(self, lambda p, _: get_policy(p))
 
     def run_toplevel(
         self,
         env: dp.PolicyEnv,
-        policy: dp.AbstractPromptingPolicy,
-    ) -> dp.Stream[T]:
+        policy: pol.PromptingPolicy,
+    ) -> SearchStream[T]:
         attached = dp.spawn_standalone_query(self)
         return policy(attached, env)
 

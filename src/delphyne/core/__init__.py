@@ -40,8 +40,6 @@ from delphyne.core.policies import (
     AbstractPolicy,
     AbstractPromptingPolicy,
     AbstractSearchPolicy,
-    Opaque,
-    OpaqueSpace,
 )
 from delphyne.core.queries import (
     AbstractQuery,
@@ -65,6 +63,7 @@ from delphyne.core.reification import (
     tracer_hook,
 )
 from delphyne.core.streams import (
+    AbstractSearchStream,
     Barrier,
     Budget,
     BudgetLimit,

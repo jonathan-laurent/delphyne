@@ -10,6 +10,7 @@ import delphyne.core as dp
 import delphyne.core.inspect as insp
 import delphyne.stdlib.policies as pol
 from delphyne.stdlib.nodes import Branch, branch, spawn_node
+from delphyne.stdlib.opaque import Opaque
 from delphyne.stdlib.queries import Query
 from delphyne.stdlib.strategies import strategy
 
@@ -78,7 +79,7 @@ def get_flag[T: str](
 
 @strategy
 def variants[A: str, P, T](
-    flag: type[FlagQuery[A]], alts: Callable[[A], dp.Opaque[P, T]]
+    flag: type[FlagQuery[A]], alts: Callable[[A], Opaque[P, T]]
 ) -> dp.Strategy[Flag[Any] | Branch, P, T]:
     val = yield from get_flag(flag)
     return (yield from branch(alts(val)))

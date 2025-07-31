@@ -6,6 +6,7 @@ import delphyne.core as dp
 from delphyne.stdlib.computations import Compute, elim_compute
 from delphyne.stdlib.flags import Flag, FlagQuery, elim_flag, get_flag
 from delphyne.stdlib.nodes import Branch, Fail, Message, branch
+from delphyne.stdlib.opaque import Opaque
 from delphyne.stdlib.policies import (
     Policy,
     PromptingPolicy,
@@ -25,21 +26,21 @@ def const_strategy[T](value: T) -> dp.Strategy[Never, object, T]:
     yield
 
 
-def const_space[T](value: T) -> dp.Opaque[object, T]:
+def const_space[T](value: T) -> Opaque[object, T]:
     return const_strategy(value).using(just_dfs)
 
 
 @strategy(name="map")
 def map_space_strategy[P, A, B](
-    space: dp.Opaque[P, A], f: Callable[[A], B]
+    space: Opaque[P, A], f: Callable[[A], B]
 ) -> dp.Strategy[Branch, P, B]:
     res = yield from branch(space)
     return f(res)
 
 
 def map_space[P, A, B](
-    space: dp.Opaque[P, A], f: Callable[[A], B]
-) -> dp.Opaque[P, B]:
+    space: Opaque[P, A], f: Callable[[A], B]
+) -> Opaque[P, B]:
     return map_space_strategy(space, f).using(lambda p: dfs() & p)
 
 
@@ -80,7 +81,7 @@ def sequence_prompting_policies(
         query: dp.AttachedQuery[T], env: dp.PolicyEnv
     ) -> dp.Stream[T]:
         for pp in policies:
-            yield from pp(query, env)
+            yield from pp(query, env).generate()
 
     return PromptingPolicy(policy)
 
@@ -92,7 +93,7 @@ def sequence_search_policies[N: dp.Node](
         tree: dp.Tree[N, Any, T], env: dp.PolicyEnv, policy: Any
     ) -> dp.Stream[T]:
         for sp in policies:
-            yield from sp(tree, env, policy)
+            yield from sp(tree, env, policy).generate()
 
     return SearchPolicy(policy)
 
@@ -108,7 +109,7 @@ def sequence_policies[N: dp.Node, P](
     ) -> dp.Stream[T]:
         assert policy is None
         for p in policies:
-            yield from p.search(tree, env, p.inner)
+            yield from p.search(tree, env, p.inner).generate()
 
     return search() & cast(P, None)
 
@@ -163,7 +164,8 @@ def prompting_policy_or_else(
         query: dp.AttachedQuery[T], env: dp.PolicyEnv
     ) -> dp.Stream[T]:
         yield from stream_or_else(
-            lambda: main(query, env), lambda: other(query, env)
+            lambda: main(query, env).generate(),
+            lambda: other(query, env).generate(),
         )
 
     return PromptingPolicy(policy)
@@ -176,7 +178,8 @@ def search_policy_or_else[N: dp.Node](
         tree: dp.Tree[N, Any, T], env: dp.PolicyEnv, policy: Any
     ) -> dp.Stream[T]:
         yield from stream_or_else(
-            lambda: main(tree, env, policy), lambda: other(tree, env, policy)
+            lambda: main(tree, env, policy).generate(),
+            lambda: other(tree, env, policy).generate(),
         )
 
     return SearchPolicy(policy)
@@ -193,8 +196,8 @@ def policy_or_else[N: dp.Node, P](
     ) -> dp.Stream[T]:
         assert policy is None
         yield from stream_or_else(
-            lambda: main.search(tree, env, main.inner),
-            lambda: other.search(tree, env, other.inner),
+            lambda: main.search(tree, env, main.inner).generate(),
+            lambda: other.search(tree, env, other.inner).generate(),
         )
 
     return sp() & cast(P, None)
@@ -269,7 +272,7 @@ class NoFailFlag(FlagQuery[NoFailFlagValue]):
 
 @strategy(name="nofail")
 def nofail_strategy[P, T](
-    space: dp.Opaque[P, T], *, default: T
+    space: Opaque[P, T], *, default: T
 ) -> dp.Strategy[Flag[NoFailFlag] | Branch, P, T]:
     flag = yield from get_flag(NoFailFlag)
     match flag:
@@ -279,7 +282,7 @@ def nofail_strategy[P, T](
             return default
 
 
-def nofail[P, T](space: dp.Opaque[P, T], *, default: T) -> dp.Opaque[P, T]:
+def nofail[P, T](space: Opaque[P, T], *, default: T) -> Opaque[P, T]:
     try_policy = dfs() @ elim_flag(NoFailFlag, "no_fail_try")
     def_policy = dfs() @ elim_flag(NoFailFlag, "no_fail_default")
     search_policy = or_else(try_policy, def_policy)

@@ -22,7 +22,9 @@ def sample_and_proceed[N: dp.Node, P, T](
         case dp.Success(x):
             yield dp.Yield(x)
         case dp.Branch(cands):
-            res = yield from take_one_with_meta(cands.stream(env, policy))
+            res = yield from take_one_with_meta(
+                cands.stream(env, policy).generate()
+            )
             if res is None:
                 log(env, "classifier_failure", loc=tree)
                 return
@@ -33,6 +35,8 @@ def sample_and_proceed[N: dp.Node, P, T](
             probs = [x[1] for x in distr]
             k = np.random.choice(len(values), p=probs)
             selected = values[k]
-            yield from proceed_with(tree.child(selected), env, policy)
+            yield from proceed_with(
+                tree.child(selected), env, policy
+            ).generate()
         case _:
             assert False, "Expected branching or success node at the root."

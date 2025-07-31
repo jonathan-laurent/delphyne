@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Any, Never, cast
 
 import delphyne.core as dp
+from delphyne.stdlib.opaque import Opaque, OpaqueSpace
 
 #####
 ##### Utilities
@@ -44,7 +45,7 @@ class NodeMeta:
 
 @dataclass(frozen=True)
 class Branch(dp.Node):
-    cands: dp.OpaqueSpace[Any, Any]
+    cands: OpaqueSpace[Any, Any]
     extra_tags: Sequence[dp.Tag]
     meta: FromPolicy[NodeMeta] | None
 
@@ -56,7 +57,7 @@ class Branch(dp.Node):
 
 
 def branch[P, T](
-    cands: dp.Opaque[P, T],
+    cands: Opaque[P, T],
     extra_tags: Sequence[dp.Tag] = (),
     meta: Callable[[P], NodeMeta] | None = None,
     inner_policy_type: type[P] | None = None,
@@ -165,7 +166,7 @@ class Factor(dp.Node):
     whole node is ignored.
     """
 
-    eval: dp.OpaqueSpace[Any, Any]
+    eval: OpaqueSpace[Any, Any]
     factor: FromPolicy[Callable[[Any], float] | None]
 
     def navigate(self) -> dp.Navigation:
@@ -177,7 +178,7 @@ class Factor(dp.Node):
 
 
 def factor[E, P](
-    eval: dp.Opaque[P, E],
+    eval: Opaque[P, E],
     factor: Callable[[P], Callable[[E], float] | None],
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Factor, P, None]:
@@ -196,7 +197,7 @@ class Value(dp.Node):
     the whole value of the branch instead of just multiplying it.
     """
 
-    eval: dp.OpaqueSpace[Any, Any]
+    eval: OpaqueSpace[Any, Any]
     value: FromPolicy[Callable[[Any], float] | None]
 
     def navigate(self) -> dp.Navigation:
@@ -208,7 +209,7 @@ class Value(dp.Node):
 
 
 def value[E, P](
-    eval: dp.Opaque[P, E],
+    eval: Opaque[P, E],
     value: Callable[[P], Callable[[E], float] | None],
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Value, P, None]:

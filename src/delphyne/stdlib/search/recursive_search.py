@@ -16,7 +16,7 @@ from delphyne.stdlib.nodes import Branch, Fail, Join, NodeMeta
 from delphyne.stdlib.policies import log, search_policy
 from delphyne.stdlib.queries import ProbInfo
 from delphyne.stdlib.streams import (
-    StreamBuilder,
+    SearchStream,
     StreamCombinator,
     take_one,
     take_one_with_meta,
@@ -90,12 +90,16 @@ def recursive_search[P, T](
             if isinstance(meta, GiveUp):
                 return
             elif isinstance(meta, VisitOne):
-                elt = yield from take_one(cands_space)
+                elt = yield from take_one(cands_space.generate())
                 if elt is None:
                     return
-                yield from recursive_search()(tree.child(elt), env, policy)
+                yield from recursive_search()(
+                    tree.child(elt), env, policy
+                ).generate()
             elif isinstance(meta, CombineStreamDistr):
-                res = yield from take_one_with_meta(cands.stream(env, policy))
+                res = yield from take_one_with_meta(
+                    cands.stream(env, policy).generate()
+                )
                 if res is None:
                     log(env, "classifier_failure", loc=tree)
                     return
@@ -104,10 +108,10 @@ def recursive_search[P, T](
                 distr = pinfo.distr
                 probs = [x[1] for x in distr]
                 streams = [
-                    lambda: recursive_search()(tree.child(x[0]), env, policy)
+                    recursive_search()(tree.child(x[0]), env, policy)
                     for x in distr
                 ]
-                yield from meta.combine(streams, probs, env)
+                yield from meta.combine(streams, probs, env).generate()
             else:
                 assert False, f"Unsupported behavior for `Branch`: {meta}"
         case Join(subs):
@@ -117,11 +121,13 @@ def recursive_search[P, T](
                 elts: list[dp.Tracked[Any]] = []
                 for s in subs:
                     substream = recursive_search()(s.spawn_tree(), env, policy)
-                    elt = yield from take_one(substream)
+                    elt = yield from take_one(substream.generate())
                     if elt is None:
                         return
                     elts.append(elt)
-                yield from recursive_search()(tree.child(elts), env, policy)
+                yield from recursive_search()(
+                    tree.child(elts), env, policy
+                ).generate()
             else:
                 assert False, f"Unknown behavior for `Join`: {meta}"
 
@@ -135,14 +141,14 @@ def combine_via_repeated_sampling(
     max_attempts: int | None = None,
 ) -> StreamCombinator:
     def combine[T](
-        streams: Sequence[StreamBuilder[T]],
+        streams: Sequence[SearchStream[T]],
         probs: Sequence[float],
         env: dp.PolicyEnv,
     ) -> dp.Stream[T]:
         i = 0
         while max_attempts is None or i < max_attempts:
             i += 1
-            builder = random.choices(streams, weights=probs)[0]
-            yield from builder()
+            stream = random.choices(streams, weights=probs)[0]
+            yield from stream.generate()
 
     return StreamCombinator(combine)

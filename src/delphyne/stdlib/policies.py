@@ -8,6 +8,7 @@ from typing import Any, Generic, Protocol, TypeVar
 
 import delphyne.core as dp
 from delphyne.core import Node, PolicyEnv
+from delphyne.stdlib.streams import SearchStream, StreamTransformer
 
 #####
 ##### Policies
@@ -33,86 +34,49 @@ class Policy(Generic[N_po, P_po], dp.AbstractPolicy[N_po, P_po]):
 
 
 #####
-##### Tree Transformers
-#####
-
-
-class PureTreeTransformerFn[A: Node, B: Node](Protocol):
-    def __call__[N: Node, P, T](
-        self, tree: dp.Tree[A | N, P, T]
-    ) -> dp.Tree[B | N, P, T]: ...
-
-
-class _ContextualTreeTransformerFn[A: Node, B: Node](Protocol):
-    def __call__(
-        self, env: PolicyEnv, policy: Any
-    ) -> PureTreeTransformerFn[A, B]: ...
-
-
-class _ParametricContextualTreeTransformerFn[A: Node, B: Node, **C](Protocol):
-    def __call__(
-        self, env: PolicyEnv, policy: Any, *args: C.args, **kwargs: C.kwargs
-    ) -> PureTreeTransformerFn[A, B]: ...
-
-
-@dataclass
-class ContextualTreeTransformer[A: Node, B: Node]:
-    fn: _ContextualTreeTransformerFn[A, B]
-
-    @staticmethod
-    def pure(
-        fn: PureTreeTransformerFn[A, B],
-    ) -> "ContextualTreeTransformer[A, B]":
-        def contextual(env: PolicyEnv, policy: Any):
-            return fn
-
-        return ContextualTreeTransformer(contextual)
-
-    def __rmatmul__[N: Node](
-        self, search_policy: "SearchPolicy[B | N]"
-    ) -> "SearchPolicy[A | N]":
-        def new_search_policy[P, T](
-            tree: dp.Tree[A | N, P, T],
-            env: PolicyEnv,
-            policy: P,
-        ) -> dp.Stream[T]:
-            new_tree = self.fn(env, policy)(tree)
-            return search_policy(new_tree, env, policy)
-
-        return SearchPolicy(new_search_policy)
-
-
-def contextual_tree_transformer[A: Node, B: Node, **C](
-    f: _ParametricContextualTreeTransformerFn[A, B, C], /
-) -> Callable[C, ContextualTreeTransformer[A, B]]:
-    def parametric(*args: C.args, **kwargs: C.kwargs):
-        def contextual(env: PolicyEnv, policy: Any):
-            return f(env, policy, *args, **kwargs)
-
-        return ContextualTreeTransformer(contextual)
-
-    return parametric
-
-
-#####
 ##### Search Policies
 #####
 
 
 @dataclass(frozen=True)
 class SearchPolicy[N: Node](dp.AbstractSearchPolicy[N]):
-    fn: dp.AbstractSearchPolicy[N]
+    fn: "_SearchPolicyFn[N]"
 
     def __call__[P, T](
         self,
         tree: "dp.Tree[N, P, T]",
         env: PolicyEnv,
         policy: P,
-    ) -> dp.Stream[T]:
-        return self.fn(tree, env, policy)
+    ) -> SearchStream[T]:
+        return SearchStream(lambda: self.fn(tree, env, policy))
 
     def __and__[P](self, other: P) -> "Policy[N, P]":
         return Policy(self, other)
+
+    def __rmatmul__(self, other: StreamTransformer) -> "SearchPolicy[N]":
+        if not isinstance(other, StreamTransformer):  # type: ignore[reportUnnecessaryInstance]
+            return NotImplemented
+        return self.compose_with_stream_transformer(other)
+
+    def compose_with_stream_transformer(
+        self,
+        trans: StreamTransformer,
+    ) -> "SearchPolicy[N]":
+        def policy[P, T](
+            tree: dp.Tree[N, P, T], env: dp.PolicyEnv, policy: P
+        ) -> dp.Stream[T]:
+            return trans(self(tree, env, policy), env).generate()
+
+        return SearchPolicy(policy)
+
+
+class _SearchPolicyFn[N: Node](Protocol):
+    def __call__[P, T](
+        self,
+        tree: dp.Tree[N, P, T],
+        env: PolicyEnv,
+        policy: P,
+    ) -> dp.Stream[T]: ...
 
 
 class _ParametricSearchPolicyFn[N: Node, **A](Protocol):
@@ -159,12 +123,36 @@ def search_policy[N: Node, **A](
 
 @dataclass(frozen=True)
 class PromptingPolicy(dp.AbstractPromptingPolicy):
-    fn: dp.AbstractPromptingPolicy
+    fn: "_PromptingPolicyFn"
 
     def __call__[T](
         self, query: dp.AttachedQuery[T], env: PolicyEnv
-    ) -> dp.Stream[T]:
-        return self.fn(query, env)
+    ) -> SearchStream[T]:
+        return SearchStream(lambda: self.fn(query, env))
+
+    def __rmatmul__(self, other: StreamTransformer) -> "PromptingPolicy":
+        if not isinstance(other, StreamTransformer):  # type: ignore[reportUnnecessaryInstance]
+            return NotImplemented
+        return self.compose_with_stream_transformer(other)
+
+    def compose_with_stream_transformer(
+        self,
+        trans: StreamTransformer,
+    ) -> "PromptingPolicy":
+        def policy[T](
+            query: dp.AttachedQuery[T], env: PolicyEnv
+        ) -> dp.Stream[T]:
+            return trans(self(query, env), env).generate()
+
+        return PromptingPolicy(policy)
+
+
+class _PromptingPolicyFn(Protocol):
+    def __call__[T](
+        self,
+        query: dp.AttachedQuery[T],
+        env: PolicyEnv,
+    ) -> dp.Stream[T]: ...
 
 
 class _ParametricPromptingPolicyFn[**A](Protocol):
@@ -193,6 +181,71 @@ def prompting_policy[**A](
             return fn(query, env, *args, **kwargs)
 
         return PromptingPolicy(policy)
+
+    return parametric
+
+
+#####
+##### Tree Transformers
+#####
+
+
+class PureTreeTransformerFn[A: Node, B: Node](Protocol):
+    def __call__[N: Node, P, T](
+        self, tree: dp.Tree[A | N, P, T]
+    ) -> dp.Tree[B | N, P, T]: ...
+
+
+class _ContextualTreeTransformerFn[A: Node, B: Node](Protocol):
+    def __call__(
+        self, env: PolicyEnv, policy: Any
+    ) -> PureTreeTransformerFn[A, B]: ...
+
+
+class _ParametricContextualTreeTransformerFn[A: Node, B: Node, **C](Protocol):
+    def __call__(
+        self, env: PolicyEnv, policy: Any, *args: C.args, **kwargs: C.kwargs
+    ) -> PureTreeTransformerFn[A, B]: ...
+
+
+@dataclass
+class ContextualTreeTransformer[A: Node, B: Node]:
+    fn: _ContextualTreeTransformerFn[A, B]
+
+    @staticmethod
+    def pure(
+        fn: PureTreeTransformerFn[A, B],
+    ) -> "ContextualTreeTransformer[A, B]":
+        def contextual(env: PolicyEnv, policy: Any):
+            return fn
+
+        return ContextualTreeTransformer(contextual)
+
+    def __rmatmul__[N: Node](
+        self, search_policy: "SearchPolicy[B | N]"
+    ) -> "SearchPolicy[A | N]":
+        if not isinstance(search_policy, SearchPolicy):  # type: ignore[reportUnnecessaryInstance]
+            return NotImplemented
+
+        def new_search_policy[P, T](
+            tree: dp.Tree[A | N, P, T],
+            env: PolicyEnv,
+            policy: P,
+        ) -> dp.Stream[T]:
+            new_tree = self.fn(env, policy)(tree)
+            return search_policy(new_tree, env, policy).generate()
+
+        return SearchPolicy(new_search_policy)
+
+
+def contextual_tree_transformer[A: Node, B: Node, **C](
+    f: _ParametricContextualTreeTransformerFn[A, B, C], /
+) -> Callable[C, ContextualTreeTransformer[A, B]]:
+    def parametric(*args: C.args, **kwargs: C.kwargs):
+        def contextual(env: PolicyEnv, policy: Any):
+            return f(env, policy, *args, **kwargs)
+
+        return ContextualTreeTransformer(contextual)
 
     return parametric
 
@@ -284,6 +337,6 @@ def query_dependent(
 ) -> PromptingPolicy:
     def policy[T](query: dp.AttachedQuery[T], env: PolicyEnv) -> dp.Stream[T]:
         query_policy = f(query.query)
-        yield from query_policy(query, env)
+        return query_policy(query, env).generate()
 
     return PromptingPolicy(policy)

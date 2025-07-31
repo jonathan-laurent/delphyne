@@ -10,7 +10,13 @@ from typing import Any, Protocol, cast, overload
 
 import delphyne.core as dp
 from delphyne.core import inspect
-from delphyne.stdlib.policies import IPDict, Policy, dict_subpolicy
+from delphyne.stdlib.opaque import Opaque, OpaqueSpace
+from delphyne.stdlib.policies import (
+    IPDict,
+    Policy,
+    SearchStream,
+    dict_subpolicy,
+)
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
 
@@ -23,7 +29,7 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
     """
 
     @overload
-    def using(self, get_policy: EllipsisType, /) -> dp.Opaque[IPDict, T]: ...
+    def using(self, get_policy: EllipsisType, /) -> Opaque[IPDict, T]: ...
 
     @overload
     def using[P2](
@@ -31,14 +37,14 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
         get_policy: Callable[[P2], Policy[N, P]] | EllipsisType,
         /,
         inner_policy_type: type[P2] | None = None,
-    ) -> dp.Opaque[P2, T]: ...
+    ) -> Opaque[P2, T]: ...
 
     def using[P2](
         self,
         get_policy: Callable[[P2], Policy[N, P]] | EllipsisType,
         /,
         inner_policy_type: type[P2] | None = None,
-    ) -> dp.Opaque[P2, T]:
+    ) -> Opaque[P2, T]:
         """
         Turn a strategy instance into an opaque space by providing a
         mapping from the ambient inner policy to an appropriate policy.
@@ -54,10 +60,10 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
             method.
         """
         if isinstance(get_policy, EllipsisType):
-            return dp.OpaqueSpace[P2, T].from_strategy(
+            return OpaqueSpace[P2, T].from_strategy(
                 self, cast(Any, dict_subpolicy)
             )
-        return dp.OpaqueSpace[P2, T].from_strategy(
+        return OpaqueSpace[P2, T].from_strategy(
             self, lambda p, _: get_policy(p)
         )
 
@@ -66,7 +72,7 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
         env: dp.PolicyEnv,
         policy: Policy[N, P],
         monitor: dp.TreeMonitor = dp.TreeMonitor(),
-    ) -> dp.Stream[T]:
+    ) -> SearchStream[T]:
         """
         Utility method to reify a strategy into a tree and run it using
         a given policy.
