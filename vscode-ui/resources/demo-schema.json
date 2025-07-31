@@ -178,7 +178,8 @@
       "required": [
         "strategy",
         "args",
-        "tests"
+        "tests",
+        "queries"
       ],
       "title": "StrategyDemo",
       "type": "object"

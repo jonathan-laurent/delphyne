@@ -2,7 +2,6 @@
 Delphyne Demonstrations.
 """
 
-import dataclasses
 from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any, Literal
@@ -44,9 +43,7 @@ class StrategyDemo:
     strategy: str
     args: dict[str, Any]
     tests: list[TestCommandString]
-    queries: list[QueryDemo] = dataclasses.field(
-        default_factory=list[QueryDemo]
-    )
+    queries: list[QueryDemo]
     demonstration: str | None = None  # optional label
 
 
