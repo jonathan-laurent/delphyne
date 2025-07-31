@@ -134,3 +134,50 @@ def test_dual_number_generation_wrong_answer():
         low_child.child(low_answer)
     with pytest.raises(refs.LocalityError):
         low_child.child(low_answer_bis)
+
+
+def test_imperative_strategy():
+    tracer = dp.Tracer()
+    cache: dp.TreeCache = {}
+    monitor = dp.TreeMonitor(cache=cache, hooks=[dp.tracer_hook(tracer)])
+    root = dp.reify(ex.imperative_strategy(), monitor)
+    assert isinstance(root.node, dp.Branch)
+
+    # Get the root query space for MakeSum
+    root_space = root.node.cands.source()
+    assert isinstance(root_space, dp.AttachedQuery)
+
+    # Check that the original allowed list is [1, 2, 3]
+    assert isinstance(root_space.query, ex.MakeSum)
+    assert root_space.query.allowed == [1, 2, 3]
+
+    # Take the [1, 2] branch for MakeSum
+    makesum_answer = root_space.parse_answer(dp.Answer(None, "[1, 2]"))
+    assert not isinstance(makesum_answer, dp.ParseError)
+    makesum_child = root.child(makesum_answer)
+    assert isinstance(makesum_child.node, dp.Branch)
+
+    # Now we should be at the DummyChoice branch
+    dummy_space = makesum_child.node.cands.source()
+    assert isinstance(dummy_space, dp.AttachedQuery)
+    assert isinstance(dummy_space.query, ex.DummyChoice)
+
+    # Test first DummyChoice branch: answer with true
+    dummy_answer1 = dummy_space.parse_answer(dp.Answer(None, "true"))
+    assert not isinstance(dummy_answer1, dp.ParseError)
+    success1 = makesum_child.child(dummy_answer1)
+    assert isinstance(success1.node, dp.Success)
+
+    # Test second DummyChoice branch: answer with false
+    dummy_answer2 = dummy_space.parse_answer(dp.Answer(None, "false"))
+    assert not isinstance(dummy_answer2, dp.ParseError)
+    success2 = makesum_child.child(dummy_answer2)
+    # NOTE: the test below would fail without performing the deepcopy in
+    # `reification/_send_action`.
+    assert isinstance(success2.node, dp.Success)
+
+    # Verify that the original query's allowed field is still [1, 2, 3]
+    # and has not been modified by the strategy execution
+    assert root_space.query.allowed == [1, 2, 3]
+
+    tracer.trace.check_consistency()

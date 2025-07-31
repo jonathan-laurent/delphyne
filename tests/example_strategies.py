@@ -802,3 +802,33 @@ def dual_number_generation_policy(model: dp.LLM, shared: bool):
             "generate_number&high": sub,
         }
     return (dp.dfs(), ip)
+
+
+#####
+##### Testing Imperative Strategies
+#####
+
+
+class DummyChoice(dp.Query[bool]):
+    __parser__: ClassVar = dp.raw_yaml
+
+
+@strategy
+def imperative_strategy() -> Strategy[Branch | Fail, IPDict, None]:
+    goal = 3
+    allowed = [1, 2, 3]
+    res = yield from dp.branch(MakeSum(allowed, goal).using(...))
+    goal += 4
+    # `allowed` can be safely mutated, without the query getting
+    # affected. Indeed, the strategy's coroutine is rerun from the start
+    # each time and so the `allowed` list before and after `yield from`
+    # are not the same.
+    allowed.append(4)
+    #  Values returned by `yield` (actions) can be safely mutated since
+    #  they are deep-copied in the tree internal structure. Without such
+    #  copy, the second explored branch of the choice below would fail
+    #  the test since `4` would have been appended twice to `res`.
+    res.append(4)
+    _choice = yield from dp.branch(DummyChoice().using(...))
+    yield from dp.ensure(sum(res) == goal, label="wrong_sum")
+    return

@@ -3,6 +3,7 @@ Reify strategies into trees using thermometer continuations.
 """
 
 from collections.abc import Callable, Sequence
+from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any, cast
 
@@ -45,11 +46,17 @@ class TreeMonitor:
 def reify[N: Node, P, T](
     strategy: StrategyComp[N, P, T],
     monitor: TreeMonitor = TreeMonitor(),
+    allow_noncopyable_actions: bool = False,
 ) -> Tree[N, P, T]:
     """
     Reify a strategy into a tree.
     """
-    return _reify(strategy, None, monitor)
+    return _reify(
+        strategy=strategy,
+        root_ref=None,
+        monitor=monitor,
+        allow_noncopyable_actions=allow_noncopyable_actions,
+    )
 
 
 def tracer_hook(tracer: en.Tracer) -> Callable[[Tree[Any, Any, Any]], None]:
@@ -78,6 +85,7 @@ def _reify[N: Node, P, T](
     strategy: StrategyComp[N, P, T],
     root_ref: _NonEmptyGlobalPath | None,
     monitor: TreeMonitor,
+    allow_noncopyable_actions: bool,
     enable_unsound_generator_caching: bool = False,
 ) -> Tree[N, P, T]:
     """
@@ -109,6 +117,14 @@ def _reify[N: Node, P, T](
             refs.check_local_value(action, _nonempty_path(ref))
             action_raw = refs.drop_refs(action)
             action_ref = refs.value_ref(action)
+            # We deepcopy actions and do not allow them to contain
+            # functions by default.
+            # Indeed, functions may
+            if not allow_noncopyable_actions:
+                assert _is_copyable(action_raw), (
+                    f"Noncopyable action: {action_raw}"
+                )
+            action_raw = deepcopy(action_raw)
             del action
             assert node.valid_action(action_raw), (
                 "Invalid action for node of type "
@@ -135,7 +151,9 @@ def _reify[N: Node, P, T](
             else:
                 pre_node, new_gen = _recompute(strategy, new_actions)
             ret_type = strategy.return_type()
-            new_node = _finalize_node(pre_node, new_ref, ret_type, monitor)
+            new_node = _finalize_node(
+                pre_node, new_ref, ret_type, monitor, allow_noncopyable_actions
+            )
             return aux(strategy, new_actions, new_ref, new_node, new_gen)
 
         tree = Tree(node, child, _nonempty_path(ref))
@@ -149,8 +167,27 @@ def _reify[N: Node, P, T](
         root_ref = ((), refs.MAIN_SPACE, ())
     pre_node, gen = _recompute(strategy, ())
     ret_type = strategy.return_type()
-    node = _finalize_node(pre_node, root_ref, ret_type, monitor)
+    node = _finalize_node(
+        pre_node, root_ref, ret_type, monitor, allow_noncopyable_actions
+    )
     return aux(strategy, (), root_ref, node, gen)
+
+
+def _is_copyable(obj: object) -> bool:
+    """
+    To know if an object can be deepcopied safely, we try and serialize
+    it using pydantic. Indeed, some objects such as functions (and
+    closures in particular) can be passed to `deepcopy` without causing
+    an exception to be raised, but are not independent copies.
+    """
+    import pydantic
+
+    adapter = pydantic.TypeAdapter[Any](Any)
+    try:
+        adapter.dump_json(obj)
+        return True
+    except Exception:
+        return False
 
 
 @dataclass
@@ -165,7 +202,7 @@ def _send_action[N: Node, P, T](
     gen: Strategy[N, P, T], action: object
 ) -> _PreNode[N, P, T]:
     try:
-        return gen.send(action)
+        return gen.send(deepcopy(action))
     except StopIteration as e:
         v = cast(T, e.value)
         return _PreSuccess(v)
@@ -192,9 +229,12 @@ def _finalize_node[N: Node, P, T](
     ref: _NonEmptyGlobalPath,
     type: TypeAnnot[T] | NoTypeInfo,
     monitor: TreeMonitor,
+    allow_noncopyable_actions: bool,
 ) -> N | Success[T]:
     if not isinstance(pre_node, _PreSuccess):
-        return pre_node.build_node(_BuilderExecutor(ref, monitor))
+        return pre_node.build_node(
+            _BuilderExecutor(ref, monitor, allow_noncopyable_actions)
+        )
     (gr, sr, nr) = ref
     ser = refs.SpaceElementRef(sr, nr)
     return Success(refs.Tracked(pre_node.value, ser, gr, type))
@@ -213,6 +253,7 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
 
     _ref: "_NonEmptyGlobalPath"
     _monitor: "TreeMonitor"
+    _allow_noncopyable_actions: bool
 
     def parametric[S](
         self,
@@ -224,6 +265,11 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
                 refs.check_local_value(arg, _nonempty_path(self._ref))
             args_raw = [refs.drop_refs(arg) for arg in args]
             args_ref = tuple(refs.value_ref(arg) for arg in args)
+            # We deepcopy the arguments to prevent them being mutated.
+            # We allow some of them to contain functions (left
+            # unmodified by deepcopy) since this is very useful in
+            # general but such functions must _not_ be stateful.
+            args_raw = [deepcopy(arg) for arg in args_raw]
             builder = parametric_builder(*args_raw)
             gr = _nonempty_path(self._ref)
             sr = refs.SpaceRef(space_name, args_ref)
@@ -237,7 +283,12 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
                         cached = cache.get(_nonempty_path(new_ref))
                         if cached is not None:
                             return cached
-                    return _reify(strategy, new_ref, self._monitor)
+                    return _reify(
+                        strategy,
+                        new_ref,
+                        self._monitor,
+                        self._allow_noncopyable_actions,
+                    )
 
                 return tr.NestedTree(strategy, (gr, sr), spawn)
 

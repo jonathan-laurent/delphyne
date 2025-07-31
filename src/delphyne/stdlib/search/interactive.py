@@ -1,5 +1,5 @@
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from typing import Any
 
 import delphyne.core as dp
@@ -8,7 +8,7 @@ from delphyne.stdlib import models as md
 from delphyne.stdlib.nodes import Branch, branch
 
 
-@dataclass(frozen=True)
+@dataclass
 class InteractStats:
     num_rejected: int
     num_tool_call_rounds: int
@@ -39,7 +39,7 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
                     msg = dp.FeedbackMessage(
                         "feedback", res.label, res.description, res.meta
                     )
-                    stats = replace(stats, num_rejected=stats.num_rejected + 1)
+                    stats.num_rejected += 1
                     prefix += [msg]
                 else:
                     return res
@@ -53,6 +53,4 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
                         t.render_result(tres),
                     )
                     prefix += [msg]
-                stats = replace(
-                    stats, num_tool_call_rounds=stats.num_tool_call_rounds + 1
-                )
+                stats.num_tool_call_rounds += 1
