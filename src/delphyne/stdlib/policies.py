@@ -4,10 +4,33 @@ Utilities for writing policies.
 
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any, Protocol
+from typing import Any, Generic, Protocol, TypeVar
 
 import delphyne.core as dp
 from delphyne.core import Node, PolicyEnv
+
+#####
+##### Policies
+#####
+
+
+N_po = TypeVar("N_po", bound=Node, contravariant=True)
+P_po = TypeVar("P_po", covariant=True)
+
+
+@dataclass(frozen=True)
+class Policy(Generic[N_po, P_po], dp.AbstractPolicy[N_po, P_po]):
+    _search: "SearchPolicy[N_po]"
+    _inner: P_po
+
+    @property
+    def search(self) -> "SearchPolicy[N_po]":
+        return self._search
+
+    @property
+    def inner(self) -> P_po:
+        return self._inner
+
 
 #####
 ##### Tree Transformers
@@ -87,6 +110,9 @@ class SearchPolicy[N: Node](dp.AbstractSearchPolicy[N]):
         policy: P,
     ) -> dp.Stream[T]:
         return self.fn(tree, env, policy)
+
+    def __and__[P](self, other: P) -> "Policy[N, P]":
+        return Policy(self, other)
 
 
 class _ParametricSearchPolicyFn[N: Node, **A](Protocol):
@@ -197,7 +223,7 @@ def log(
 #####
 
 
-type _ParametricPolicy[**A, N: Node, P] = Callable[A, dp.Policy[N, P]]
+type _ParametricPolicy[**A, N: Node, P] = Callable[A, Policy[N, P]]
 
 
 def ensure_compatible[**A, N: Node, P](
@@ -218,7 +244,7 @@ def ensure_compatible[**A, N: Node, P](
 #####
 
 
-type IPDict = Mapping[str, dp.Policy[Any, Any] | PromptingPolicy]
+type IPDict = Mapping[str, Policy[Any, Any] | PromptingPolicy]
 
 
 def _dict_ip_key_match(key: str, tags: Sequence[dp.Tag]) -> bool:

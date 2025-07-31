@@ -10,7 +10,7 @@ from typing import Any, Protocol, cast, overload
 
 import delphyne.core as dp
 from delphyne.core import inspect
-from delphyne.stdlib.policies import IPDict, dict_subpolicy
+from delphyne.stdlib.policies import IPDict, Policy, dict_subpolicy
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
 
@@ -28,14 +28,14 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
     @overload
     def using[P2](
         self,
-        get_policy: Callable[[P2], dp.Policy[N, P]] | EllipsisType,
+        get_policy: Callable[[P2], Policy[N, P]] | EllipsisType,
         /,
         inner_policy_type: type[P2] | None = None,
     ) -> dp.Opaque[P2, T]: ...
 
     def using[P2](
         self,
-        get_policy: Callable[[P2], dp.Policy[N, P]] | EllipsisType,
+        get_policy: Callable[[P2], Policy[N, P]] | EllipsisType,
         /,
         inner_policy_type: type[P2] | None = None,
     ) -> dp.Opaque[P2, T]:
@@ -64,7 +64,7 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
     def run_toplevel(
         self,
         env: dp.PolicyEnv,
-        policy: dp.Policy[N, P],
+        policy: Policy[N, P],
         monitor: dp.TreeMonitor = dp.TreeMonitor(),
     ) -> dp.Stream[T]:
         """
@@ -72,7 +72,7 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
         a given policy.
         """
         tree = dp.reify(self, monitor)
-        return policy[0](tree, env, policy[1])
+        return policy.search(tree, env, policy.inner)
 
 
 class _StrategyDecorator(Protocol):

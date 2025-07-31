@@ -171,7 +171,7 @@ def prove_program_via_abduction_and_branching_policy(
     )
     proposal_limit = dp.BudgetLimit({n: max_requests_per_proposal})
     prove_prog_ip = ProveProgIP(
-        propose=(dp.with_budget(proposal_limit) @ dp.dfs(), propose_ip),
+        propose=dp.with_budget(proposal_limit) @ dp.dfs() & propose_ip,
         eval=dp.take(1) @ dp.few_shot(base),
         quantify_eval=compute_value if enable_state_evaluation else None,
     )
@@ -179,4 +179,4 @@ def prove_program_via_abduction_and_branching_policy(
         child_confidence_prior=child_confidence_prior,
         max_depth=max_depth)
 
-    return (bestfs @ dp.elim_compute(), prove_prog_ip)
+    return bestfs @ dp.elim_compute() & prove_prog_ip

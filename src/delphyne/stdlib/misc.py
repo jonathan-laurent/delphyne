@@ -7,10 +7,12 @@ from delphyne.stdlib.computations import Compute, elim_compute
 from delphyne.stdlib.flags import Flag, FlagQuery, elim_flag, get_flag
 from delphyne.stdlib.nodes import Branch, Fail, Message, branch
 from delphyne.stdlib.policies import (
+    Policy,
     PromptingPolicy,
     PureTreeTransformerFn,
     SearchPolicy,
     contextual_tree_transformer,
+    search_policy,
 )
 from delphyne.stdlib.search.dfs import dfs
 from delphyne.stdlib.strategies import strategy
@@ -38,22 +40,22 @@ def map_space_strategy[P, A, B](
 def map_space[P, A, B](
     space: dp.Opaque[P, A], f: Callable[[A], B]
 ) -> dp.Opaque[P, B]:
-    return map_space_strategy(space, f).using(lambda p: (dfs(), p))
+    return map_space_strategy(space, f).using(lambda p: dfs() & p)
 
 
-def just_dfs[P](policy: P) -> dp.Policy[Branch | Fail, P]:
-    return (dfs(), policy)
+def just_dfs[P](policy: P) -> Policy[Branch | Fail, P]:
+    return dfs() & policy
 
 
-def just_compute[P](policy: P) -> dp.Policy[Compute, P]:
-    return (dfs() @ elim_compute(), policy)
+def just_compute[P](policy: P) -> Policy[Compute, P]:
+    return dfs() @ elim_compute() & policy
 
 
 def ambient_pp(policy: PromptingPolicy) -> PromptingPolicy:
     return policy
 
 
-def ambient_policy[N: dp.Node, P](policy: dp.Policy[N, P]) -> dp.Policy[N, P]:
+def ambient_policy[N: dp.Node, P](policy: Policy[N, P]) -> Policy[N, P]:
     return policy
 
 
@@ -61,7 +63,7 @@ def ambient[F](policy: F) -> F:
     return policy
 
 
-type _AnyPolicy = PromptingPolicy | SearchPolicy[Any] | dp.Policy[Any, Any]
+type _AnyPolicy = PromptingPolicy | SearchPolicy[Any] | Policy[Any, Any]
 
 
 #####
@@ -96,18 +98,19 @@ def sequence_search_policies[N: dp.Node](
 
 
 def sequence_policies[N: dp.Node, P](
-    policies: Iterable[dp.Policy[N, P]],
-) -> dp.Policy[N, P]:
+    policies: Iterable[Policy[N, P]],
+) -> Policy[N, P]:
     # TODO: this is not the cleanest implementation since we lie about
     # the return type by returning a dummy internal policy.
-    def search_policy[T](
+    @search_policy
+    def search[T](
         tree: dp.Tree[N, Any, T], env: dp.PolicyEnv, policy: Any
     ) -> dp.Stream[T]:
         assert policy is None
-        for sp, ip in policies:
-            yield from sp(tree, env, ip)
+        for p in policies:
+            yield from p.search(tree, env, p.inner)
 
-    return (search_policy, cast(P, None))
+    return search() & cast(P, None)
 
 
 @overload
@@ -126,8 +129,8 @@ def sequence[N: dp.Node](
 
 @overload
 def sequence[N: dp.Node, P](
-    policies: Iterable[dp.Policy[N, P]],
-) -> dp.Policy[N, P]:
+    policies: Iterable[Policy[N, P]],
+) -> Policy[N, P]:
     pass
 
 
@@ -145,7 +148,7 @@ def sequence(
             cast(Iterable[SearchPolicy[Any]], policies)
         )
     else:
-        return sequence_policies(cast(Iterable[dp.Policy[Any, Any]], policies))
+        return sequence_policies(cast(Iterable[Policy[Any, Any]], policies))
 
 
 #####
@@ -180,22 +183,21 @@ def search_policy_or_else[N: dp.Node](
 
 
 def policy_or_else[N: dp.Node, P](
-    main: dp.Policy[N, P], other: dp.Policy[N, P]
-) -> dp.Policy[N, P]:
+    main: Policy[N, P], other: Policy[N, P]
+) -> Policy[N, P]:
     # TODO: this is not the cleanest implementation since we lie about
     # the return type by returning a dummy internal policy.
-    def search_policy[T](
+    @search_policy
+    def sp[T](
         tree: dp.Tree[N, Any, T], env: dp.PolicyEnv, policy: Any
     ) -> dp.Stream[T]:
         assert policy is None
-        main_sp, main_ip = main
-        other_sp, other_ip = other
         yield from stream_or_else(
-            lambda: main_sp(tree, env, main_ip),
-            lambda: other_sp(tree, env, other_ip),
+            lambda: main.search(tree, env, main.inner),
+            lambda: other.search(tree, env, other.inner),
         )
 
-    return (search_policy, cast(P, None))
+    return sp() & cast(P, None)
 
 
 @overload
@@ -212,8 +214,8 @@ def or_else[N: dp.Node](
 
 @overload
 def or_else[N: dp.Node, P](
-    main: dp.Policy[N, P], other: dp.Policy[N, P]
-) -> dp.Policy[N, P]:
+    main: Policy[N, P], other: Policy[N, P]
+) -> Policy[N, P]:
     pass
 
 
@@ -282,7 +284,7 @@ def nofail[P, T](space: dp.Opaque[P, T], *, default: T) -> dp.Opaque[P, T]:
     def_policy = dfs() @ elim_flag(NoFailFlag, "no_fail_default")
     search_policy = or_else(try_policy, def_policy)
     return nofail_strategy(space, default=default).using(
-        lambda p: (search_policy, p)
+        lambda p: search_policy & p
     )
 
 

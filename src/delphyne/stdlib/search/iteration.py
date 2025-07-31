@@ -76,6 +76,6 @@ def iterate[P, S, T](
             trans = transform_stream(inner_policy)
             if trans is not None:
                 policy = trans @ policy
-        return (policy, inner_policy)
+        return policy & inner_policy
 
     return _iterate(next).using(iterate_policy)

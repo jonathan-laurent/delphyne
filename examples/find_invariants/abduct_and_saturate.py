@@ -175,4 +175,4 @@ def prove_program_by_saturation(
     sp = dp.with_budget(per_attempt) @ dp.abduct_and_saturate(
         verbose=True, max_rollout_depth=max_rollout_depth)
     
-    return dp.sequence((sp, pp(m)) for m in itertools.cycle(mcycle))
+    return dp.sequence(sp & pp(m) for m in itertools.cycle(mcycle))

@@ -2,6 +2,7 @@
 Policies and opaque spaces.
 """
 
+from abc import ABC
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Any, Generic, Protocol, TypeVar
@@ -17,11 +18,20 @@ from delphyne.core.trees import AttachedQuery, NestedTree, Node, Space, Tree
 #####
 
 
-type Policy[N: Node, P] = tuple[AbstractSearchPolicy[N], P]
-"""
-A policy for trees with effects `N` is a pair of a search policy
-handling `N` along with an inner policy object of type `P`.
-"""
+N_po = TypeVar("N_po", bound=Node, contravariant=True)
+P_po = TypeVar("P_po", covariant=True)
+
+
+class AbstractPolicy(Generic[N_po, P_po], ABC):
+    """
+    A policy for trees with effects `N` gathers a search policy handling
+    `N` along with an inner policy object of type `P`.
+    """
+
+    @property
+    def search(self) -> "AbstractSearchPolicy[N_po]": ...
+    @property
+    def inner(self) -> P_po: ...
 
 
 class AbstractSearchPolicy[N: tr.Node](Protocol):
@@ -80,9 +90,7 @@ class OpaqueSpace(Generic[P, T], Space[T]):
     @staticmethod
     def from_strategy[N: Node, P1, P2, T1](
         strategy: tr.StrategyComp[N, P2, T1],
-        get_policy: Callable[
-            [P1, Sequence[tr.Tag]], tuple[AbstractSearchPolicy[N], P2]
-        ],
+        get_policy: Callable[[P1, Sequence[tr.Tag]], AbstractPolicy[N, P2]],
     ) -> "tr.SpaceBuilder[OpaqueSpace[P1, T1]]":
         def build(
             spawner: tr.NestedTreeSpawner, tags: Sequence[tr.Tag]
@@ -91,8 +99,8 @@ class OpaqueSpace(Generic[P, T], Space[T]):
 
             def stream(env: PolicyEnv, policy: P1) -> Stream[T1]:
                 tree = nested.spawn_tree()
-                search_pol, inner_pol = get_policy(policy, tags)
-                return search_pol(tree, env, inner_pol)
+                sub = get_policy(policy, tags)
+                return sub.search(tree, env, sub.inner)
 
             return OpaqueSpace(stream, nested, tags)
 

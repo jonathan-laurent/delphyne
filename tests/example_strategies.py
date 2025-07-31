@@ -53,7 +53,7 @@ def make_sum(
 @dp.ensure_compatible(make_sum)
 def make_sum_policy():
     model = dp.openai_model("gpt-4o-mini")
-    return (dp.dfs(), MakeSumIP(dp.few_shot(model)))
+    return dp.dfs() & MakeSumIP(dp.few_shot(model))
 
 
 #####
@@ -72,7 +72,7 @@ def make_sum_dict_ip(
 
 
 def make_sum_dict_ip_policy(model: dp.LLM):
-    return (dp.dfs(), {"MakeSum": dp.few_shot(model)})
+    return dp.dfs() & {"MakeSum": dp.few_shot(model)}
 
 
 #####
@@ -356,7 +356,7 @@ def generate_pairs() -> Strategy[
     )
     yield from dp.factor(
         num_confidence(None, x)
-        .using(lambda _: (dp.dfs(), None), dp.PromptingPolicy)
+        .using(lambda _: dp.dfs() & None, dp.PromptingPolicy)
         .tagged("first"),
         lambda _: lambda f: f,
     )
@@ -367,7 +367,7 @@ def generate_pairs() -> Strategy[
     )
     yield from dp.factor(
         num_confidence(x, y)
-        .using(lambda _: (dp.dfs(), None), dp.PromptingPolicy)
+        .using(lambda _: (dp.dfs() & None), dp.PromptingPolicy)
         .tagged("second"),
         lambda _: lambda f: f,
     )
@@ -384,7 +384,7 @@ def generate_pairs_policy(pp: dp.PromptingPolicy):
         assert False
 
     bestfs = dp.best_first_search(child_prior)
-    return (bestfs, pp)
+    return bestfs & pp
 
 
 #####
@@ -408,7 +408,7 @@ def test_cached_computations(
 
 @dp.ensure_compatible(test_cached_computations)
 def test_cached_computations_policy():
-    return (dp.dfs() @ dp.elim_compute(), None)
+    return dp.dfs() @ dp.elim_compute() & None
 
 
 #####
@@ -529,7 +529,7 @@ def propose_article_policy(
     model: dp.LLM,
 ) -> dp.Policy[Branch, dp.PromptingPolicy]:
     # Valid for both `propose_article` and `propose_article_structured`
-    return (dp.dfs(max_branching=1), dp.few_shot(model))
+    return dp.dfs(max_branching=1) & dp.few_shot(model)
 
 
 #####
@@ -709,7 +709,7 @@ def obtain_item_policy(model: dp.LLM, num_concurrent: int = 1):
     pp = dp.take(num_concurrent) @ dp.few_shot(
         model, num_concurrent=num_concurrent
     )
-    return (dp.abduct_and_saturate(verbose=True) @ dp.elim_messages(), pp)
+    return dp.abduct_and_saturate(verbose=True) @ dp.elim_messages() & pp
 
 
 #####
@@ -746,7 +746,7 @@ def recursive_joins_policy():
         @ dp.elim_compute()
         @ dp.elim_flag(MethodFlag, "def")
     )
-    return (sp, dprs.OneOfEachSequentially())
+    return sp & dprs.OneOfEachSequentially()
 
 
 #####
@@ -796,7 +796,7 @@ def dual_number_generation() -> Strategy[
 
 @dp.ensure_compatible(dual_number_generation)
 def dual_number_generation_policy(model: dp.LLM, shared: bool):
-    sub = (dp.dfs(), {"GenerateNumber": dp.few_shot(model)})
+    sub = dp.dfs() & {"GenerateNumber": dp.few_shot(model)}
     if shared:
         ip = {"generate_number": sub}
     else:
@@ -804,7 +804,7 @@ def dual_number_generation_policy(model: dp.LLM, shared: bool):
             "generate_number&low": sub,
             "generate_number&high": sub,
         }
-    return (dp.dfs(), ip)
+    return dp.dfs() & ip
 
 
 #####

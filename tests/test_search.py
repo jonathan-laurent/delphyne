@@ -19,11 +19,11 @@ def test_search_synthesis():
     prop = (["a", "b"], "F(a, b) == F(b, a) and F(0, 1) == 2")
     pp = mock.demo_mock_oracle(demo)
     inner_policy = ex.SynthetizeFunIP(
-        conjecture=(dp.dfs(), pp),
-        disprove=(dp.dfs(), pp),
+        conjecture=dp.dfs() & pp,
+        disprove=dp.dfs() & pp,
         aggregate=pp,
     )
-    policy = (ex.just_guess(), inner_policy)
+    policy = ex.just_guess() & inner_policy
     stream = ex.synthetize_fun(vars, prop).run_toplevel(env, policy)
     res, _ = dp.collect(stream, num_generated=1)
     assert res
@@ -33,7 +33,7 @@ def test_search_synthesis():
 def test_cached_computations():
     env = dp.PolicyEnv(demonstration_files=(), prompt_dirs=(), data_dirs=())
     # tr = Trans[N, M](dp.elim_compute)
-    policy = (dp.dfs() @ dp.elim_compute(), None)
+    policy = dp.dfs() @ dp.elim_compute() & None
     stream = ex.test_cached_computations(1).run_toplevel(env, policy)
     res, _ = dp.collect(stream)
     assert res

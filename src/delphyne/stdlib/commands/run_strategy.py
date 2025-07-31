@@ -5,7 +5,7 @@ Standard commands for running strategies.
 import time
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 import delphyne.analysis as analysis
 import delphyne.analysis.feedback as fb
@@ -28,7 +28,7 @@ class RunStrategyResponse:
 @dataclass
 class RunLoadedStrategyArgs[N: dp.Node, P, T]:
     strategy: dp.StrategyComp[N, P, T]
-    policy: dp.Policy[N, P]
+    policy: dp.AbstractPolicy[N, P]
     num_generated: int = 1
     budget: dict[str, float] | None = None
     cache_dir: str | None = None
@@ -61,8 +61,8 @@ def run_loaded_strategy[N: dp.Node, P, T](
     cache: dp.TreeCache = {}
     monitor = dp.TreeMonitor(cache, hooks=[dp.tracer_hook(env.tracer)])
     tree = dp.reify(args.strategy, monitor)
-    search_policy, inner_policy = args.policy
-    stream = search_policy(tree, env, inner_policy)
+    policy = args.policy
+    stream = policy.search(tree, env, policy.inner)
     if args.budget is not None:
         stream = std.stream_with_budget(stream, dp.BudgetLimit(args.budget))
     stream = std.stream_take(stream, args.num_generated)
@@ -167,6 +167,8 @@ def run_strategy(
     loader = analysis.ObjectLoader(exe.base)
     strategy = loader.load_strategy_instance(args.strategy, args.args)
     policy = loader.load_and_call_function(args.policy, args.policy_args)
+    assert isinstance(policy, dp.AbstractPolicy)
+    policy = cast(dp.AbstractPolicy[Any, Any], policy)
     run_loaded_strategy(
         task=task,
         exe=exe,

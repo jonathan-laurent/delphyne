@@ -72,4 +72,4 @@ def prove_program_interactive_policy(
     if loop:
         sp = dp.loop() @ sp
     pp = dp.few_shot(model, temperature=temperature, max_requests=1)
-    return (sp, pp)
+    return sp & pp

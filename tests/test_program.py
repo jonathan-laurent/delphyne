@@ -86,7 +86,8 @@ def test_basic_llm_call():
     model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
     pp = dp.few_shot(model)
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
-    policy = dp.take(1) @ (dp.with_budget(bl) @ dp.dfs()), ex.MakeSumIP(pp)
+    # TODO ASSOC
+    policy = dp.take(1) @ (dp.with_budget(bl) @ dp.dfs()) & ex.MakeSumIP(pp)
     stream = ex.make_sum([1, 2, 3, 4], 7).run_toplevel(env, policy)
     res, _ = dp.collect(stream)
     # print(list(env.tracer.export_log()))
@@ -125,7 +126,7 @@ def test_interact():
     model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
     pp = dp.few_shot(model)
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: 2})
-    policy = dp.take(1) @ (dp.with_budget(bl) @ dp.dfs()), pp
+    policy = dp.take(1) @ (dp.with_budget(bl) @ dp.dfs()) & pp
     stream = ex.propose_article("Jonathan").run_toplevel(env, policy)
     res, _ = dp.collect(stream)
     print(list(env.tracer.export_log()))
@@ -327,10 +328,8 @@ def test_sequence():
         one_req = dp.with_budget(dp.BudgetLimit({dp.NUM_REQUESTS: 1}))
         return dp.sequence(
             [
-                (
-                    (one_req @ dp.dfs()),
-                    ex.MakeSumIP(dp.few_shot(model, num_concurrent=k)),
-                )
+                one_req @ dp.dfs()
+                & ex.MakeSumIP(dp.few_shot(model, num_concurrent=k))
                 for k in [1, 2]
             ]
         )

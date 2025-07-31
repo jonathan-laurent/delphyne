@@ -37,11 +37,11 @@ from delphyne.core.environments import (
 )
 from delphyne.core.errors import Error
 from delphyne.core.policies import (
+    AbstractPolicy,
     AbstractPromptingPolicy,
     AbstractSearchPolicy,
     Opaque,
     OpaqueSpace,
-    Policy,
 )
 from delphyne.core.queries import (
     AbstractQuery,
