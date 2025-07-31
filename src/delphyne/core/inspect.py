@@ -62,7 +62,18 @@ def inner_policy_type_of_strategy_type[T](
 
 def first_parameter_of_base_class(cls: Any) -> Any:
     base = cls.__orig_bases__[0]  # type: ignore
-    return typing.get_args(base)[0]
+    annot = typing.get_args(base)[0]
+    # In case the annotation is a string or forward reference, we do not
+    # have a standard way to resolve it, so we use an internal function
+    # from `typing` for now.
+    if isinstance(annot, str):
+        annot = typing.ForwardRef(annot)
+    if isinstance(annot, typing.ForwardRef):
+        import sys
+
+        globalns = sys.modules[cls.__module__].__dict__
+        return typing._eval_type(annot, globalns=globalns, localns=None)  # type: ignore
+    return annot
 
 
 def function_args_dict(

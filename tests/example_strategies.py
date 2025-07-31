@@ -25,7 +25,7 @@ from delphyne import Branch, Fail, IPDict, Strategy, strategy
 
 
 @dataclass
-class MakeSum(dp.Query[list[int]]):
+class MakeSum(dp.Query["list[int]"]):
     allowed: list[int]
     goal: int
     __parser__: ClassVar = dp.raw_yaml
@@ -439,8 +439,9 @@ class Article:
     authors: list[str]
 
 
+# string type annotations are supported.
 @dataclass
-class StructuredOutput(dp.Query[Article]):
+class StructuredOutput(dp.Query["Article"]):
     """
     Generate an article on the given topic. Answer as a JSON object.
     """
