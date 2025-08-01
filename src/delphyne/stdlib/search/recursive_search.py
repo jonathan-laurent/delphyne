@@ -125,6 +125,8 @@ def recursive_search[P, T](
                 ).gen()
             else:
                 assert False, f"Unknown behavior for `Join`: {meta}"
+        case _:
+            assert False, f"Unsupported node type: {type(tree.node)}."
 
 
 #####

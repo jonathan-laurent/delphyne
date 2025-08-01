@@ -355,6 +355,7 @@ def test_embedded_tree_and_transformers():
         strategy, policy, cache_name="no_need_for_caching", max_res=1
     )
     print(log)
+    assert res
 
 
 #####

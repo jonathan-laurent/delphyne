@@ -103,7 +103,7 @@ def elim_flag[F: FlagQuery[Any]](
         if isinstance(tree.node, Flag):
             tree = cast(dp.Tree[Any, P, T], tree)
             node = cast(Flag[Any], tree.node)
-            if isinstance(query := node.flag.attached, flag):
+            if isinstance(query := node.flag.attached.query, flag):
                 node = cast(Flag[F], node)
                 answer = dp.Answer(None, val)
                 assert answer in query.finite_answer_set()
