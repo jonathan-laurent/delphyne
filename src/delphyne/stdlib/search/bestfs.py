@@ -87,7 +87,7 @@ def best_first_search[P, T](
     ) -> dp.Stream[T]:
         match tree.node:
             case dp.Success():
-                yield dp.Yield(dp.SearchValue(tree.node.success))
+                yield dp.Yield(dp.Solution(tree.node.success))
             case Fail():
                 pass
             case Factor() | Value():
@@ -103,9 +103,9 @@ def best_first_search[P, T](
                     if eval is None:
                         return
                     if isinstance(tree.node, Value):
-                        confidence = penalty_fun(eval.value.value)
+                        confidence = penalty_fun(eval.tracked.value)
                     else:
-                        confidence *= penalty_fun(eval.value.value)
+                        confidence *= penalty_fun(eval.tracked.value)
                 yield from push_fresh_node(tree.child(None), confidence, depth)
             case Branch():
                 if max_depth is not None and depth > max_depth:
@@ -144,7 +144,7 @@ def best_first_search[P, T](
             while True:
                 msg = next(state.stream)
                 if isinstance(msg, dp.Yield):
-                    cand = msg.value.value
+                    cand = msg.solution.tracked
                     break
                 yield msg
                 if isinstance(msg, dp.Barrier):

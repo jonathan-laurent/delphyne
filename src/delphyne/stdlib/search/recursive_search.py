@@ -78,7 +78,7 @@ def recursive_search[P, T](
 ) -> Stream[T]:
     match tree.node:
         case dp.Success(x):
-            yield Yield(dp.SearchValue(x))
+            yield Yield(dp.Solution(x))
         case Fail():
             return
         case Branch(cands):
@@ -91,7 +91,7 @@ def recursive_search[P, T](
                 elt = yield from cands_space.first()
                 if elt is None:
                     return
-                rec = recursive_search()(tree.child(elt.value), env, policy)
+                rec = recursive_search()(tree.child(elt.tracked), env, policy)
                 yield from rec.gen()
             elif isinstance(meta, CombineStreamDistr):
                 res = yield from cands.stream(env, policy).first()
@@ -119,7 +119,7 @@ def recursive_search[P, T](
                     elt = yield from substream.first()
                     if elt is None:
                         return
-                    elts.append(elt.value)
+                    elts.append(elt.tracked)
                 yield from recursive_search()(
                     tree.child(elts), env, policy
                 ).gen()

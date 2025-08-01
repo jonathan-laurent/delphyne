@@ -54,7 +54,7 @@ def _eval_strategy[N: dp.Node, P, T](
     max_requests: int = 1,
     max_res: int = 1,
     model_name: dp.StandardModelName = "gpt-4.1-mini",
-) -> tuple[Sequence[dp.SearchValue[T]], str]:
+) -> tuple[Sequence[dp.Solution[T]], str]:
     env = dp.PolicyEnv(
         prompt_dirs=[PROMPT_DIR], demonstration_files=(), data_dirs=()
     )
@@ -96,7 +96,7 @@ def test_basic_llm_call():
 def test_structured_output():
     res, _ = _eval_query(ex.StructuredOutput(topic="AI"), "structured_output")
     assert res
-    print(res[0].value.value)
+    print(res[0].tracked.value)
 
 
 def test_propose_article_initial_step():
@@ -105,7 +105,7 @@ def test_propose_article_initial_step():
     # mandate tool calls? Probably, yes.
     label = "propose_article_initial_step"
     res, _ = _eval_query(ex.ProposeArticle(user_name="Alice"), label)
-    v = cast(dp.Response[Any, Any], res[0].value.value)
+    v = cast(dp.Response[Any, Any], res[0].tracked.value)
     assert isinstance(v, dp.Response)
     assert isinstance(v.parsed, dp.ToolRequests)
     assert isinstance(v.parsed.tool_calls[0], ex.GetUserFavoriteTopic)
@@ -256,7 +256,7 @@ def test_provider(model: dp.StandardModelName):
     query = ex.MakeSum(allowed=[1, 2, 3, 4], goal=5)
     res, _ = _eval_query(query, cache_name, model_name=model)
     assert res
-    print(res[0].value.value)
+    print(res[0].tracked.value)
 
 
 @pytest.mark.parametrize(

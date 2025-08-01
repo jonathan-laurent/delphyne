@@ -27,7 +27,7 @@ def test_search_synthesis():
     stream = ex.synthetize_fun(vars, prop).run_toplevel(env, policy)
     res, _ = stream.collect(num_generated=1)
     assert res
-    print(res[0].value.value)
+    print(res[0].tracked.value)
 
 
 def test_cached_computations():
@@ -37,7 +37,7 @@ def test_cached_computations():
     stream = ex.test_cached_computations(1).run_toplevel(env, policy)
     res, _ = stream.collect()
     assert res
-    print(res[0].value.value)
+    print(res[0].tracked.value)
 
 
 def test_bestfs():
@@ -60,6 +60,6 @@ def test_bestfs():
     stream = ex.generate_pairs().run_toplevel(env, policy)
     budget = dp.BudgetLimit({dp.NUM_REQUESTS: REQUESTS_LIMIT})
     ret, spent = stream.collect(budget=budget)
-    res = [x.value.value for x in ret]
+    res = [x.tracked.value for x in ret]
     assert res == [(1, 1), (2, 1), (2, 2), (1, 2), (2, 3)]
     assert spent[dp.NUM_REQUESTS] == REQUESTS_LIMIT

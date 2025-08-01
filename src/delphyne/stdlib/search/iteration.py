@@ -55,12 +55,12 @@ def search_iteration[P, T](
                 # properly point to a success node. In our Haskell
                 # implementation, such a bug would be caught by the type
                 # system. Here, we catch it dynamically.
-                yielded_and_new_state = msg.value.value
+                yielded_and_new_state = msg.solution.tracked
                 state = yielded_and_new_state[1]
                 child = tree.child(yielded_and_new_state)
                 assert not isinstance(child.node, Iteration)
                 if isinstance(child.node, dp.Success):
-                    yield dp.Yield(dp.SearchValue(child.node.success))
+                    yield dp.Yield(dp.Solution(child.node.success))
                 break
             else:
                 yield msg

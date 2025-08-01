@@ -121,7 +121,7 @@ def run_loaded_strategy[N: dp.Node, P, T](
         match msg:
             case dp.Yield():
                 success = True
-                results.append(msg.value.value.value)
+                results.append(msg.solution.tracked.value)
             case dp.Spent(b):
                 total_budget += b
             case dp.Barrier():

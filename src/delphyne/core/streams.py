@@ -83,14 +83,14 @@ class SearchMeta:
 
 
 @dataclass(frozen=True)
-class SearchValue[T]:
-    value: Tracked[T]
+class Solution[T]:
+    tracked: Tracked[T]
     meta: SearchMeta | None = None
 
 
 @dataclass(frozen=True)
 class Yield[T]:
-    value: SearchValue[T]
+    solution: Solution[T]
 
 
 @dataclass(frozen=True)

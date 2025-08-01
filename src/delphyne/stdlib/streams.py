@@ -30,10 +30,10 @@ class SearchStream[T](dp.AbstractSearchStream[T]):
 
     ## Collecting values
 
-    def first(self) -> dp.StreamGen[dp.SearchValue[T] | None]:
+    def first(self) -> dp.StreamGen[dp.Solution[T] | None]:
         return stream_take_one(self.gen())
 
-    def all(self) -> dp.StreamGen[Sequence[dp.SearchValue[T]]]:
+    def all(self) -> dp.StreamGen[Sequence[dp.Solution[T]]]:
         return stream_take_all(self.gen())
 
     def collect(
@@ -50,7 +50,7 @@ class SearchStream[T](dp.AbstractSearchStream[T]):
     ## Combinators
 
     def bind[T2](
-        self, f: Callable[[dp.SearchValue[T]], dp.Stream[T2]]
+        self, f: Callable[[dp.Solution[T]], dp.Stream[T2]]
     ) -> "SearchStream[T2]":
         return SearchStream(lambda: stream_bind(self.gen(), f))
 
@@ -163,33 +163,33 @@ class StreamCombinator:
 
 
 def stream_bind[A, B](
-    stream: dp.Stream[A], f: Callable[[dp.SearchValue[A]], dp.Stream[B]]
+    stream: dp.Stream[A], f: Callable[[dp.Solution[A]], dp.Stream[B]]
 ) -> dp.Stream[B]:
     for msg in stream:
         if not isinstance(msg, dp.Yield):
             yield msg
             continue
-        for new_msg in f(msg.value):
+        for new_msg in f(msg.solution):
             yield new_msg
 
 
 def stream_take_one[T](
     stream: dp.Stream[T],
-) -> dp.StreamGen[dp.SearchValue[T] | None]:
+) -> dp.StreamGen[dp.Solution[T] | None]:
     for msg in stream:
         if isinstance(msg, dp.Yield):
-            return msg.value
+            return msg.solution
         yield msg
     return None
 
 
 def stream_take_all[T](
     stream: dp.Stream[T],
-) -> dp.StreamGen[Sequence[dp.SearchValue[T]]]:
-    res: list[dp.SearchValue[T]] = []
+) -> dp.StreamGen[Sequence[dp.Solution[T]]]:
+    res: list[dp.Solution[T]] = []
     for msg in stream:
         if isinstance(msg, dp.Yield):
-            res.append(msg.value)
+            res.append(msg.solution)
             continue
         yield msg
     return res
@@ -230,12 +230,12 @@ def stream_take[T](stream: dp.Stream[T], num_generated: int) -> dp.Stream[T]:
 
 def stream_collect[T](
     stream: dp.Stream[T],
-) -> tuple[Sequence[dp.SearchValue[T]], dp.Budget]:
+) -> tuple[Sequence[dp.Solution[T]], dp.Budget]:
     total = dp.Budget.zero()
-    elts: list[dp.SearchValue[T]] = []
+    elts: list[dp.Solution[T]] = []
     for msg in stream:
         if isinstance(msg, dp.Yield):
-            elts.append(msg.value)
+            elts.append(msg.solution)
         if isinstance(msg, dp.Spent):
             total = total + msg.budget
     return elts, total

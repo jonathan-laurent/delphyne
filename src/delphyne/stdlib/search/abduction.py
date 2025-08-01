@@ -253,7 +253,7 @@ def abduct_and_saturate[P, Proof](
         res = yield from respace.stream(env, policy).first()
         if res is None:
             raise _Abort()
-        return res.value.value
+        return res.tracked.value
 
     def add_candidate(c: _EFact) -> dp.StreamGen[None]:
         # Take a new fact and put it into either `proved`, `disproved`,
@@ -272,7 +272,7 @@ def abduct_and_saturate[P, Proof](
         res = yield from pstream.first()
         if res is None:
             raise _Abort()
-        status, payload = res.value[0], res.value[1]
+        status, payload = res.tracked[0], res.tracked[1]
         if status.value == "disproved":
             disproved.add(c)
             dbg(f"Disproved: {c}")
@@ -328,7 +328,7 @@ def abduct_and_saturate[P, Proof](
         res = yield from eqspace.stream(env, policy).first()
         if res is None:
             raise _Abort()
-        res = res.value
+        res = res.tracked
         if res.value is None:
             return f
         elif res.value in all_canonical():
@@ -342,7 +342,7 @@ def abduct_and_saturate[P, Proof](
         assert c in candidates
         sstream = node.suggest(candidates[c].feedback).stream(env, policy)
         res = yield from sstream.all()
-        tracked_suggs = [s for r in res for s in r.value]
+        tracked_suggs = [s for r in res for s in r.tracked]
         # Populate the `tracked` cache (this is the only place where new
         # facts can be created and so the only place where `tracked`
         # must be updated).
@@ -400,5 +400,5 @@ def abduct_and_saturate[P, Proof](
         action = proved[None]
         child = tree.child(action)
         assert isinstance(child.node, dp.Success)
-        yield dp.Yield(dp.SearchValue(child.node.success))
+        yield dp.Yield(dp.Solution(child.node.success))
         return
