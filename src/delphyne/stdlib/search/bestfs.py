@@ -10,7 +10,7 @@ from typing import Any
 import delphyne.core as dp
 from delphyne.core import refs
 from delphyne.stdlib.nodes import Branch, Factor, Fail, Value
-from delphyne.stdlib.policies import search_policy
+from delphyne.stdlib.policies import search_policy, unsupported_node
 
 
 @dataclass(frozen=True)
@@ -124,6 +124,8 @@ def best_first_search[P, T](
                 item_confidence = confidence * prior
                 item = PriorityItem(-item_confidence, counter, state)
                 heapq.heappush(pqueue, item)
+            case _:
+                unsupported_node(tree.node)
 
     def reinsert_node(state: NodeState) -> None:
         nonlocal counter

@@ -4,7 +4,7 @@ Utilities for writing policies.
 
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any, Generic, Protocol, TypeVar
+from typing import Any, Generic, NoReturn, Protocol, TypeVar
 
 import delphyne.core as dp
 from delphyne.core import Node, PolicyEnv
@@ -340,3 +340,7 @@ def query_dependent(
         return query_policy(query, env).gen()
 
     return PromptingPolicy(policy)
+
+
+def unsupported_node(node: dp.Node) -> NoReturn:
+    assert False, f"Unsupported node type: {type(node)}."

@@ -6,7 +6,7 @@ from delphyne.core.environments import PolicyEnv
 from delphyne.core.streams import SearchValue, Stream, Yield
 from delphyne.core.trees import Success, Tree
 from delphyne.stdlib.nodes import Branch, Fail
-from delphyne.stdlib.policies import search_policy
+from delphyne.stdlib.policies import search_policy, unsupported_node
 
 
 @search_policy
@@ -49,3 +49,5 @@ def dfs[P, T](
                     and branches_explored >= max_branching
                 ):
                     break
+        case _:
+            unsupported_node(tree.node)

@@ -13,7 +13,7 @@ from typing import Any
 import delphyne.core as dp
 from delphyne.core.streams import Stream, Yield
 from delphyne.stdlib.nodes import Branch, Fail, Join, NodeMeta
-from delphyne.stdlib.policies import log, search_policy
+from delphyne.stdlib.policies import log, search_policy, unsupported_node
 from delphyne.stdlib.queries import ProbInfo
 from delphyne.stdlib.streams import (
     SearchStream,
@@ -126,7 +126,7 @@ def recursive_search[P, T](
             else:
                 assert False, f"Unknown behavior for `Join`: {meta}"
         case _:
-            assert False, f"Unsupported node type: {type(tree.node)}."
+            unsupported_node(tree.node)
 
 
 #####
