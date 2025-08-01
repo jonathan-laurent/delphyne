@@ -89,11 +89,6 @@ class Solution[T]:
 
 
 @dataclass(frozen=True)
-class Yield[T]:
-    solution: Solution[T]
-
-
-@dataclass(frozen=True)
 class Spent:
     budget: Budget
 
@@ -103,7 +98,7 @@ class Barrier:
     budget: Budget
 
 
-type Stream[T] = Generator[Yield[T] | Spent | Barrier, None, None]
+type Stream[T] = Generator[Solution[T] | Spent | Barrier, None, None]
 
 
 type StreamGen[T] = Generator[Spent | Barrier, None, T]

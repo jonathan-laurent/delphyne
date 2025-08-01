@@ -72,7 +72,6 @@ from delphyne.core.streams import (
     Spent,
     Stream,
     StreamGen,
-    Yield,
 )
 from delphyne.core.traces import (
     ExportableTrace,

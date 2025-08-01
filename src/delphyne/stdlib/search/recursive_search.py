@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from typing import Any
 
 import delphyne.core as dp
-from delphyne.core.streams import Stream, Yield
+from delphyne.core.streams import Stream
 from delphyne.stdlib.nodes import Branch, Fail, Join, NodeMeta
 from delphyne.stdlib.policies import log, search_policy, unsupported_node
 from delphyne.stdlib.queries import ProbInfo
@@ -78,7 +78,7 @@ def recursive_search[P, T](
 ) -> Stream[T]:
     match tree.node:
         case dp.Success(x):
-            yield Yield(dp.Solution(x))
+            yield dp.Solution(x)
         case Fail():
             return
         case Branch(cands):

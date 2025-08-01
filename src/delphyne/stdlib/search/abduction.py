@@ -400,5 +400,5 @@ def abduct_and_saturate[P, Proof](
         action = proved[None]
         child = tree.child(action)
         assert isinstance(child.node, dp.Success)
-        yield dp.Yield(dp.Solution(child.node.success))
+        yield dp.Solution(child.node.success)
         return

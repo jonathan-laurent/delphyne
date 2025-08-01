@@ -87,7 +87,7 @@ def best_first_search[P, T](
     ) -> dp.Stream[T]:
         match tree.node:
             case dp.Success():
-                yield dp.Yield(dp.Solution(tree.node.success))
+                yield dp.Solution(tree.node.success)
             case Fail():
                 pass
             case Factor() | Value():
@@ -143,8 +143,8 @@ def best_first_search[P, T](
             # We make an atomic attempt at generating a new candidate
             while True:
                 msg = next(state.stream)
-                if isinstance(msg, dp.Yield):
-                    cand = msg.solution.tracked
+                if isinstance(msg, dp.Solution):
+                    cand = msg.tracked
                     break
                 yield msg
                 if isinstance(msg, dp.Barrier):

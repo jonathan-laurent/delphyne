@@ -738,7 +738,7 @@ def classify[T](
             distr = _apply_bias(distr, bias)
         distr_tup = [(parse(dp.Answer(mode, k)), p) for k, p in distr.items()]
         meta = ProbInfo(distr_tup)
-        yield dp.Yield(dp.Solution(element, meta))
+        yield dp.Solution(element, meta)
     except dp.ParseError:
         return
 
@@ -850,7 +850,7 @@ def few_shot[T](
             elements.append(element)
         for element in elements:
             if not isinstance(element, dp.ParseError):
-                yield dp.Yield(dp.Solution(element))
+                yield dp.Solution(element)
         # In iterative mode, we want to keep the conversation going
         if iterative_mode:
             assert len(elements) == 1 and len(answers) == 1
@@ -906,16 +906,15 @@ def answer_with[T](
             assert all(0 <= p <= 1 for p in probs)
             max_prob = max(probs)
             max_idx = probs.index(max_prob)
-            yield dp.Yield(
-                dp.Solution(
-                    tracked[max_idx],
-                    meta=ProbInfo(
-                        [(tracked[i], probs[i]) for i in range(len(tracked))]
-                    ),
+            yield dp.Solution(
+                tracked[max_idx],
+                meta=ProbInfo(
+                    [(tracked[i], probs[i]) for i in range(len(tracked))]
                 ),
             )
+
         else:
             for elt in tracked:
-                yield dp.Yield(dp.Solution(elt))
+                yield dp.Solution(elt)
     except dp.ParseError as e:
         assert False, f"Failed to parse hardcoded answer: {e}"

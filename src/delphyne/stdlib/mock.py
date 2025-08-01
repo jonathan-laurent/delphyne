@@ -45,7 +45,7 @@ def demo_mock_oracle(
             yield dp.Spent(budget)
             parsed = query.parse_answer(answer)
             if not isinstance(parsed, dp.ParseError):
-                yield dp.Yield(dp.Solution(parsed))
+                yield dp.Solution(parsed)
 
     return PromptingPolicy(policy)
 
@@ -62,4 +62,4 @@ def fixed_oracle[T](
         yield dp.Spent(budget)
         parsed = query.parse_answer(answer)
         if not isinstance(parsed, dp.ParseError):
-            yield dp.Yield(dp.Solution(parsed))
+            yield dp.Solution(parsed)

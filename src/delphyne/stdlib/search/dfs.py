@@ -3,7 +3,7 @@ Depth-First Search Algorithm
 """
 
 from delphyne.core.environments import PolicyEnv
-from delphyne.core.streams import Solution, Stream, Yield
+from delphyne.core.streams import Solution, Stream
 from delphyne.core.trees import Success, Tree
 from delphyne.stdlib.nodes import Branch, Fail
 from delphyne.stdlib.policies import search_policy, unsupported_node
@@ -26,7 +26,7 @@ def dfs[P, T](
     assert max_branching is None or max_branching > 0
     match tree.node:
         case Success(x):
-            yield Yield(Solution(x))
+            yield Solution(x)
         case Fail():
             pass
         case Branch(cands):
@@ -34,10 +34,10 @@ def dfs[P, T](
                 return
             branches_explored = 0
             for cands_msg in cands.stream(env, policy).gen():
-                if not isinstance(cands_msg, Yield):
+                if not isinstance(cands_msg, Solution):
                     yield cands_msg
                     continue
-                child = tree.child(cands_msg.solution.tracked)
+                child = tree.child(cands_msg.tracked)
                 rec = dfs(
                     max_depth=max_depth - 1 if max_depth is not None else None,
                     max_branching=max_branching,

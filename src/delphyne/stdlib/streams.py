@@ -166,10 +166,10 @@ def stream_bind[A, B](
     stream: dp.Stream[A], f: Callable[[dp.Solution[A]], dp.Stream[B]]
 ) -> dp.Stream[B]:
     for msg in stream:
-        if not isinstance(msg, dp.Yield):
+        if not isinstance(msg, dp.Solution):
             yield msg
             continue
-        for new_msg in f(msg.solution):
+        for new_msg in f(msg):
             yield new_msg
 
 
@@ -177,8 +177,8 @@ def stream_take_one[T](
     stream: dp.Stream[T],
 ) -> dp.StreamGen[dp.Solution[T] | None]:
     for msg in stream:
-        if isinstance(msg, dp.Yield):
-            return msg.solution
+        if isinstance(msg, dp.Solution):
+            return msg
         yield msg
     return None
 
@@ -188,8 +188,8 @@ def stream_take_all[T](
 ) -> dp.StreamGen[Sequence[dp.Solution[T]]]:
     res: list[dp.Solution[T]] = []
     for msg in stream:
-        if isinstance(msg, dp.Yield):
-            res.append(msg.solution)
+        if isinstance(msg, dp.Solution):
+            res.append(msg)
             continue
         yield msg
     return res
@@ -221,7 +221,7 @@ def stream_take[T](stream: dp.Stream[T], num_generated: int) -> dp.Stream[T]:
     count = 0
     assert num_generated > 0
     for msg in stream:
-        if isinstance(msg, dp.Yield):
+        if isinstance(msg, dp.Solution):
             count += 1
         yield msg
         if count >= num_generated:
@@ -234,8 +234,8 @@ def stream_collect[T](
     total = dp.Budget.zero()
     elts: list[dp.Solution[T]] = []
     for msg in stream:
-        if isinstance(msg, dp.Yield):
-            elts.append(msg.solution)
+        if isinstance(msg, dp.Solution):
+            elts.append(msg)
         if isinstance(msg, dp.Spent):
             total = total + msg.budget
     return elts, total
@@ -256,7 +256,7 @@ def stream_or_else[T](
 ) -> dp.Stream[T]:
     some_successes = False
     for msg in main():
-        if isinstance(msg, dp.Yield):
+        if isinstance(msg, dp.Solution):
             some_successes = True
         yield msg
     if not some_successes:

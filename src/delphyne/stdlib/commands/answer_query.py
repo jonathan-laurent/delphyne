@@ -77,7 +77,7 @@ def answer_query(
 
     for msg in stream:
         match msg:
-            case dp.Yield():
+            case dp.Solution():
                 num_successes += 1
             case dp.Spent(b):
                 total_budget += b

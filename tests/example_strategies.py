@@ -116,7 +116,7 @@ def just_guess[P, T](
     """
     match tree.node:
         case dp.Success(x):
-            yield dp.Yield(dp.Solution(x))
+            yield dp.Solution(x)
         case Conjecture(candidate):
             rec = candidate.stream(env, policy).bind(
                 lambda y: just_guess()(

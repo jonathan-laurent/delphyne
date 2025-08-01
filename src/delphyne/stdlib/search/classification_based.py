@@ -19,7 +19,7 @@ def sample_and_proceed[N: dp.Node, P, T](
 ) -> dp.Stream[T]:
     match tree.node:
         case dp.Success(x):
-            yield dp.Yield(dp.Solution(x))
+            yield dp.Solution(x)
         case dp.Branch(cands):
             res = yield from cands.stream(env, policy).first()
             if res is None:

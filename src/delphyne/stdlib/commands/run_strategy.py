@@ -119,9 +119,9 @@ def run_loaded_strategy[N: dp.Node, P, T](
     # thread for every new element?
     for msg in stream:
         match msg:
-            case dp.Yield():
+            case dp.Solution():
                 success = True
-                results.append(msg.solution.tracked.value)
+                results.append(msg.tracked.value)
             case dp.Spent(b):
                 total_budget += b
             case dp.Barrier():
