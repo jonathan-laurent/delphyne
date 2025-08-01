@@ -18,8 +18,6 @@ from delphyne.stdlib.queries import ProbInfo
 from delphyne.stdlib.streams import (
     SearchStream,
     StreamCombinator,
-    take_one,
-    take_one_with_meta,
 )
 
 #####
@@ -80,7 +78,7 @@ def recursive_search[P, T](
 ) -> Stream[T]:
     match tree.node:
         case dp.Success(x):
-            yield Yield(x)
+            yield Yield(dp.SearchValue(x))
         case Fail():
             return
         case Branch(cands):
@@ -90,20 +88,17 @@ def recursive_search[P, T](
             if isinstance(meta, GiveUp):
                 return
             elif isinstance(meta, VisitOne):
-                elt = yield from take_one(cands_space.gen())
+                elt = yield from cands_space.first()
                 if elt is None:
                     return
-                yield from recursive_search()(
-                    tree.child(elt), env, policy
-                ).gen()
+                rec = recursive_search()(tree.child(elt.value), env, policy)
+                yield from rec.gen()
             elif isinstance(meta, CombineStreamDistr):
-                res = yield from take_one_with_meta(
-                    cands.stream(env, policy).gen()
-                )
+                res = yield from cands.stream(env, policy).first()
                 if res is None:
                     log(env, "classifier_failure", loc=tree)
                     return
-                _, pinfo = res
+                pinfo = res.meta
                 assert isinstance(pinfo, ProbInfo), "Missing logprobs."
                 distr = pinfo.distr
                 probs = [x[1] for x in distr]
@@ -121,10 +116,10 @@ def recursive_search[P, T](
                 elts: list[dp.Tracked[Any]] = []
                 for s in subs:
                     substream = recursive_search()(s.spawn_tree(), env, policy)
-                    elt = yield from take_one(substream.gen())
+                    elt = yield from substream.first()
                     if elt is None:
                         return
-                    elts.append(elt)
+                    elts.append(elt.value)
                 yield from recursive_search()(
                     tree.child(elts), env, policy
                 ).gen()

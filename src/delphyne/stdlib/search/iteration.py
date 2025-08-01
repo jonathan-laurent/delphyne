@@ -49,19 +49,18 @@ def search_iteration[P, T](
     while True:
         for msg in tree.node.next(state).stream(env, policy).gen():
             if isinstance(msg, dp.Yield):
-                # TODO: here, `msg` contains the value we are interested
+                # Here, `msg` contains the value we are interested
                 # in so it is tempting to just yield it. However, this
                 # is not allowed since the attached reference would not
                 # properly point to a success node. In our Haskell
                 # implementation, such a bug would be caught by the type
-                # system. Here, we should at least add some proper
-                # dynamic checks to ensure it does not happen.
-                yielded_and_new_state = msg.value
+                # system. Here, we catch it dynamically.
+                yielded_and_new_state = msg.value.value
                 state = yielded_and_new_state[1]
                 child = tree.child(yielded_and_new_state)
                 assert not isinstance(child.node, Iteration)
                 if isinstance(child.node, dp.Success):
-                    yield dp.Yield(child.node.success)
+                    yield dp.Yield(dp.SearchValue(child.node.success))
                 break
             else:
                 yield msg

@@ -41,7 +41,7 @@ def _eval_query(
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: budget})
     pp = dp.with_budget(bl) @ dp.few_shot(model, num_concurrent=concurrent)
     stream = query.run_toplevel(env, pp)
-    res, _ = dp.collect(stream.gen())
+    res, _ = stream.collect()
     log = list(env.tracer.export_log())
     print(log)
     return res, log
@@ -54,7 +54,7 @@ def _eval_strategy[N: dp.Node, P, T](
     max_requests: int = 1,
     max_res: int = 1,
     model_name: dp.StandardModelName = "gpt-4.1-mini",
-) -> tuple[Sequence[dp.Tracked[T]], str]:
+) -> tuple[Sequence[dp.SearchValue[T]], str]:
     env = dp.PolicyEnv(
         prompt_dirs=[PROMPT_DIR], demonstration_files=(), data_dirs=()
     )
@@ -62,9 +62,7 @@ def _eval_strategy[N: dp.Node, P, T](
     model = dp.CachedModel(dp.standard_model(model_name), cache)
     stream = strategy.run_toplevel(env, policy(model))
     budget = dp.BudgetLimit({dp.NUM_REQUESTS: max_requests})
-    ret, _spent = dp.collect(
-        stream.gen(), budget=budget, num_generated=max_res
-    )
+    ret, _spent = stream.collect(budget=budget, num_generated=max_res)
     log = list(env.tracer.export_log())
     log_str = "\n".join(e.message for e in log)
     return ret, log_str
@@ -90,7 +88,7 @@ def test_basic_llm_call():
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
     policy = dp.take(1) @ dp.with_budget(bl) @ dp.dfs() & ex.MakeSumIP(pp)
     stream = ex.make_sum([1, 2, 3, 4], 7).run_toplevel(env, policy)
-    res, _ = dp.collect(stream.gen())
+    res, _ = stream.collect()
     # print(list(env.tracer.export_log()))
     assert res
 
@@ -98,7 +96,7 @@ def test_basic_llm_call():
 def test_structured_output():
     res, _ = _eval_query(ex.StructuredOutput(topic="AI"), "structured_output")
     assert res
-    print(res[0].value)
+    print(res[0].value.value)
 
 
 def test_propose_article_initial_step():
@@ -107,7 +105,7 @@ def test_propose_article_initial_step():
     # mandate tool calls? Probably, yes.
     label = "propose_article_initial_step"
     res, _ = _eval_query(ex.ProposeArticle(user_name="Alice"), label)
-    v = cast(dp.Response[Any, Any], res[0].value)
+    v = cast(dp.Response[Any, Any], res[0].value.value)
     assert isinstance(v, dp.Response)
     assert isinstance(v.parsed, dp.ToolRequests)
     assert isinstance(v.parsed.tool_calls[0], ex.GetUserFavoriteTopic)
@@ -129,7 +127,7 @@ def test_interact():
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: 2})
     policy = dp.take(1) @ dp.with_budget(bl) @ dp.dfs() & pp
     stream = ex.propose_article("Jonathan").run_toplevel(env, policy)
-    res, _ = dp.collect(stream.gen())
+    res, _ = stream.collect()
     print(list(env.tracer.export_log()))
     assert res
 
@@ -177,11 +175,11 @@ def _eval_classifier_query(
         model, temperature=temperature, bias=bias
     )
     stream = query.run_toplevel(env, pp)
-    res, _ = dp.collect_with_metadata(stream.gen())
+    res, _ = stream.collect()
     log = list(env.tracer.export_log())
     print(log)
     assert res
-    return res[0][1]
+    return res[0].meta
 
 
 @pytest.mark.parametrize(
@@ -258,7 +256,7 @@ def test_provider(model: dp.StandardModelName):
     query = ex.MakeSum(allowed=[1, 2, 3, 4], goal=5)
     res, _ = _eval_query(query, cache_name, model_name=model)
     assert res
-    print(res[0].value)
+    print(res[0].value.value)
 
 
 @pytest.mark.parametrize(
@@ -357,7 +355,6 @@ def test_embedded_tree_and_transformers():
         strategy, policy, cache_name="no_need_for_caching", max_res=1
     )
     print(log)
-    assert res is not None
 
 
 #####

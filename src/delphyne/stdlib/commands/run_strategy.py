@@ -10,7 +10,8 @@ from typing import Any, cast
 import delphyne.analysis as analysis
 import delphyne.analysis.feedback as fb
 import delphyne.core as dp
-import delphyne.stdlib as std
+import delphyne.stdlib.models as md
+import delphyne.stdlib.streams as dps
 import delphyne.stdlib.tasks as ta
 from delphyne.utils.typing import pydantic_dump
 
@@ -56,7 +57,7 @@ def run_loaded_strategy[N: dp.Node, P, T](
         cache_mode=args.cache_mode,
         cache_format=args.cache_format,
         do_not_match_identical_queries=True,
-        make_cache=std.LLMCache,
+        make_cache=md.LLMCache,
     )
     cache: dp.TreeCache = {}
     monitor = dp.TreeMonitor(cache, hooks=[dp.tracer_hook(env.tracer)])
@@ -64,8 +65,8 @@ def run_loaded_strategy[N: dp.Node, P, T](
     policy = args.policy
     stream = policy.search(tree, env, policy.inner).gen()
     if args.budget is not None:
-        stream = std.stream_with_budget(stream, dp.BudgetLimit(args.budget))
-    stream = std.stream_take(stream, args.num_generated)
+        stream = dps.stream_with_budget(stream, dp.BudgetLimit(args.budget))
+    stream = dps.stream_take(stream, args.num_generated)
     results: list[T] = []
     success = False
     total_budget = dp.Budget.zero()
@@ -96,8 +97,8 @@ def run_loaded_strategy[N: dp.Node, P, T](
 
     def compute_status():
         num_nodes = len(env.tracer.trace.nodes)
-        num_requests = total_budget.values.get(std.NUM_REQUESTS)
-        price = total_budget.values.get(std.DOLLAR_PRICE)
+        num_requests = total_budget.values.get(md.NUM_REQUESTS)
+        price = total_budget.values.get(md.DOLLAR_PRICE)
 
         ret: list[str] = [f"{num_nodes} nodes"]
         if num_requests is not None:
@@ -120,7 +121,7 @@ def run_loaded_strategy[N: dp.Node, P, T](
         match msg:
             case dp.Yield():
                 success = True
-                results.append(msg.value.value)
+                results.append(msg.value.value.value)
             case dp.Spent(b):
                 total_budget += b
             case dp.Barrier():

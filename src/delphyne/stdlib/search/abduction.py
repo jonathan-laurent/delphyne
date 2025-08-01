@@ -12,7 +12,6 @@ from delphyne.core.refs import drop_refs
 from delphyne.stdlib.nodes import spawn_node
 from delphyne.stdlib.opaque import Opaque, OpaqueSpace
 from delphyne.stdlib.policies import log, search_policy
-from delphyne.stdlib.streams import take_all, take_one
 
 # For readability of the `Abduction` definition
 type _Fact = Any
@@ -251,10 +250,10 @@ def abduct_and_saturate[P, Proof](
         if f is None:
             return False
         respace = node.redundant([tracked[o] for o in proved], tracked[f])
-        res = yield from take_one(respace.stream(env, policy).gen())
+        res = yield from respace.stream(env, policy).first()
         if res is None:
             raise _Abort()
-        return res.value
+        return res.value.value
 
     def add_candidate(c: _EFact) -> dp.StreamGen[None]:
         # Take a new fact and put it into either `proved`, `disproved`,
@@ -270,10 +269,10 @@ def abduct_and_saturate[P, Proof](
         # If not redundant, we try and prove it
         facts_list = [(tracked[f], p) for f, p in proved.items()]
         pstream = node.prove(facts_list, tracked[c]).stream(env, policy)
-        res = yield from take_one(pstream.gen())
+        res = yield from pstream.first()
         if res is None:
             raise _Abort()
-        status, payload = res[0], res[1]
+        status, payload = res.value[0], res.value[1]
         if status.value == "disproved":
             disproved.add(c)
             dbg(f"Disproved: {c}")
@@ -326,9 +325,10 @@ def abduct_and_saturate[P, Proof](
             # First fact: no need to make equivalence call
             return f
         eqspace = node.search_equivalent(prev, tracked[f])
-        res = yield from take_one(eqspace.stream(env, policy).gen())
+        res = yield from eqspace.stream(env, policy).first()
         if res is None:
             raise _Abort()
+        res = res.value
         if res.value is None:
             return f
         elif res.value in all_canonical():
@@ -341,8 +341,8 @@ def abduct_and_saturate[P, Proof](
     def get_raw_suggestions(c: _EFact) -> dp.StreamGen[Sequence[_EFact]]:
         assert c in candidates
         sstream = node.suggest(candidates[c].feedback).stream(env, policy)
-        res = yield from take_all(sstream.gen())
-        tracked_suggs = [s for r in res for s in r]
+        res = yield from sstream.all()
+        tracked_suggs = [s for r in res for s in r.value]
         # Populate the `tracked` cache (this is the only place where new
         # facts can be created and so the only place where `tracked`
         # must be updated).
@@ -400,5 +400,5 @@ def abduct_and_saturate[P, Proof](
         action = proved[None]
         child = tree.child(action)
         assert isinstance(child.node, dp.Success)
-        yield dp.Yield(child.node.success)
+        yield dp.Yield(dp.SearchValue(child.node.success))
         return

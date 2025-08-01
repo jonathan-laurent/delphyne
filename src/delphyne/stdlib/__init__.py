@@ -156,17 +156,8 @@ from delphyne.stdlib.strategies import (
 )
 from delphyne.stdlib.streams import (
     StreamTransformer,
-    bind_stream,
-    collect,
-    collect_with_metadata,
-    loop,
-    stream_or_else,
-    stream_take,
     stream_transformer,
-    stream_with_budget,
     take,
-    take_all,
-    take_one,
     with_budget,
 )
 from delphyne.stdlib.tasks import (

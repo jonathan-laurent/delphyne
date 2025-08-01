@@ -83,9 +83,14 @@ class SearchMeta:
 
 
 @dataclass(frozen=True)
-class Yield[T]:
-    value: T
+class SearchValue[T]:
+    value: Tracked[T]
     meta: SearchMeta | None = None
+
+
+@dataclass(frozen=True)
+class Yield[T]:
+    value: SearchValue[T]
 
 
 @dataclass(frozen=True)
@@ -98,7 +103,7 @@ class Barrier:
     budget: Budget
 
 
-type Stream[T] = Generator[Yield[Tracked[T]] | Spent | Barrier, None, None]
+type Stream[T] = Generator[Yield[T] | Spent | Barrier, None, None]
 
 
 type StreamGen[T] = Generator[Spent | Barrier, None, T]

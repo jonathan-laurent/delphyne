@@ -8,7 +8,6 @@ import delphyne as dp
 from delphyne.stdlib.nodes import Branch
 from delphyne.stdlib.policies import log, search_policy
 from delphyne.stdlib.queries import ProbInfo
-from delphyne.stdlib.streams import take_one_with_meta
 
 
 @search_policy
@@ -20,15 +19,13 @@ def sample_and_proceed[N: dp.Node, P, T](
 ) -> dp.Stream[T]:
     match tree.node:
         case dp.Success(x):
-            yield dp.Yield(x)
+            yield dp.Yield(dp.SearchValue(x))
         case dp.Branch(cands):
-            res = yield from take_one_with_meta(
-                cands.stream(env, policy).gen()
-            )
+            res = yield from cands.stream(env, policy).first()
             if res is None:
                 log(env, "classifier_failure", loc=tree)
                 return
-            _, meta = res
+            meta = res.meta
             assert isinstance(meta, ProbInfo), "Missing logprobs."
             distr = meta.distr
             values = [x[0] for x in distr]

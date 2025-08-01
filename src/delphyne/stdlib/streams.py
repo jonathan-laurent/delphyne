@@ -20,6 +20,40 @@ class SearchStream[T](dp.AbstractSearchStream[T]):
     def gen(self) -> dp.Stream[T]:
         return self._generate()
 
+    ## Transforming the stream
+
+    def with_budget(self, budget: dp.BudgetLimit):
+        return SearchStream(lambda: stream_with_budget(self.gen(), budget))
+
+    def take(self, num_generated: int):
+        return SearchStream(lambda: stream_take(self.gen(), num_generated))
+
+    ## Collecting values
+
+    def first(self) -> dp.StreamGen[dp.SearchValue[T] | None]:
+        return stream_take_one(self.gen())
+
+    def all(self) -> dp.StreamGen[Sequence[dp.SearchValue[T]]]:
+        return stream_take_all(self.gen())
+
+    def collect(
+        self,
+        budget: dp.BudgetLimit | None = None,
+        num_generated: int | None = None,
+    ):
+        if budget is not None:
+            self = self.with_budget(budget)
+        if num_generated is not None:
+            self = self.take(num_generated)
+        return stream_collect(self.gen())
+
+    ## Combinators
+
+    def bind[T2](
+        self, f: Callable[[dp.SearchValue[T]], dp.Stream[T2]]
+    ) -> "SearchStream[T2]":
+        return SearchStream(lambda: stream_bind(self.gen(), f))
+
 
 #####
 ##### Stream transformers
@@ -128,8 +162,8 @@ class StreamCombinator:
 #####
 
 
-def bind_stream[A, B](
-    stream: dp.Stream[A], f: Callable[[dp.Tracked[A]], dp.Stream[B]]
+def stream_bind[A, B](
+    stream: dp.Stream[A], f: Callable[[dp.SearchValue[A]], dp.Stream[B]]
 ) -> dp.Stream[B]:
     for msg in stream:
         if not isinstance(msg, dp.Yield):
@@ -139,17 +173,9 @@ def bind_stream[A, B](
             yield new_msg
 
 
-def take_one_with_meta[T](
+def stream_take_one[T](
     stream: dp.Stream[T],
-) -> dp.StreamGen[tuple[dp.Tracked[T], dp.SearchMeta | None] | None]:
-    for msg in stream:
-        if isinstance(msg, dp.Yield):
-            return (msg.value, msg.meta)
-        yield msg
-    return None
-
-
-def take_one[T](stream: dp.Stream[T]) -> dp.StreamGen[dp.Tracked[T] | None]:
+) -> dp.StreamGen[dp.SearchValue[T] | None]:
     for msg in stream:
         if isinstance(msg, dp.Yield):
             return msg.value
@@ -157,8 +183,10 @@ def take_one[T](stream: dp.Stream[T]) -> dp.StreamGen[dp.Tracked[T] | None]:
     return None
 
 
-def take_all[T](stream: dp.Stream[T]) -> dp.StreamGen[Sequence[dp.Tracked[T]]]:
-    res: list[dp.Tracked[T]] = []
+def stream_take_all[T](
+    stream: dp.Stream[T],
+) -> dp.StreamGen[Sequence[dp.SearchValue[T]]]:
+    res: list[dp.SearchValue[T]] = []
     for msg in stream:
         if isinstance(msg, dp.Yield):
             res.append(msg.value)
@@ -200,38 +228,17 @@ def stream_take[T](stream: dp.Stream[T], num_generated: int) -> dp.Stream[T]:
             return
 
 
-def collect_with_metadata[T](
+def stream_collect[T](
     stream: dp.Stream[T],
-    budget: dp.BudgetLimit | None = None,
-    num_generated: int | None = None,
-) -> tuple[Sequence[tuple[dp.Tracked[T], dp.SearchMeta | None]], dp.Budget]:
-    if budget is not None:
-        stream = stream_with_budget(stream, budget)
-    if num_generated is not None:
-        stream = stream_take(stream, num_generated)
+) -> tuple[Sequence[dp.SearchValue[T]], dp.Budget]:
     total = dp.Budget.zero()
-    elts: list[tuple[dp.Tracked[T], dp.SearchMeta | None]] = []
+    elts: list[dp.SearchValue[T]] = []
     for msg in stream:
         if isinstance(msg, dp.Yield):
-            elts.append((msg.value, msg.meta))
+            elts.append(msg.value)
         if isinstance(msg, dp.Spent):
             total = total + msg.budget
     return elts, total
-
-
-def collect[T](
-    stream: dp.Stream[T],
-    budget: dp.BudgetLimit | None = None,
-    num_generated: int | None = None,
-) -> tuple[Sequence[dp.Tracked[T]], dp.Budget]:
-    res, spent = collect_with_metadata(stream, budget, num_generated)
-    return [elt[0] for elt in res], spent
-
-
-def stream_squash[T](stream: dp.Stream[Sequence[T]]) -> dp.Stream[Sequence[T]]:
-    # TODO: implementing this requires being able to convert a list of
-    # tracked object into a tracked object.
-    assert False
 
 
 type _StreamBuilder[T] = Callable[[], dp.Stream[T]]

@@ -25,9 +25,9 @@ def test_search_synthesis():
     )
     policy = ex.just_guess() & inner_policy
     stream = ex.synthetize_fun(vars, prop).run_toplevel(env, policy)
-    res, _ = dp.collect(stream.gen(), num_generated=1)
+    res, _ = stream.collect(num_generated=1)
     assert res
-    print(res[0].value)
+    print(res[0].value.value)
 
 
 def test_cached_computations():
@@ -35,9 +35,9 @@ def test_cached_computations():
     # tr = Trans[N, M](dp.elim_compute)
     policy = dp.dfs() @ dp.elim_compute() & None
     stream = ex.test_cached_computations(1).run_toplevel(env, policy)
-    res, _ = dp.collect(stream.gen())
+    res, _ = stream.collect()
     assert res
-    print(res[0].value)
+    print(res[0].value.value)
 
 
 def test_bestfs():
@@ -59,7 +59,7 @@ def test_bestfs():
     policy = ex.generate_pairs_policy(pp)
     stream = ex.generate_pairs().run_toplevel(env, policy)
     budget = dp.BudgetLimit({dp.NUM_REQUESTS: REQUESTS_LIMIT})
-    ret, spent = dp.collect(stream.gen(), budget=budget)
-    res = [x.value for x in ret]
+    ret, spent = stream.collect(budget=budget)
+    res = [x.value.value for x in ret]
     assert res == [(1, 1), (2, 1), (2, 2), (1, 2), (2, 3)]
     assert spent[dp.NUM_REQUESTS] == REQUESTS_LIMIT
