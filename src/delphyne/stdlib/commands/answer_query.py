@@ -52,7 +52,7 @@ def answer_query(
     policy = std.few_shot(
         model=model, enable_logging=True, iterative_mode=cmd.iterative_mode
     )
-    stream = policy(attached, env).generate()
+    stream = policy(attached, env).gen()
     if cmd.budget is not None:
         stream = std.stream_with_budget(stream, dp.BudgetLimit(cmd.budget))
     if cmd.prompt_only:

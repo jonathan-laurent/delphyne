@@ -17,7 +17,7 @@ import delphyne.core as dp
 class SearchStream[T](dp.AbstractSearchStream[T]):
     _generate: Callable[[], dp.Stream[T]]
 
-    def generate(self) -> dp.Stream[T]:
+    def gen(self) -> dp.Stream[T]:
         return self._generate()
 
 
@@ -63,7 +63,7 @@ class StreamTransformer:
             stream: SearchStream[T],
             env: dp.PolicyEnv,
         ) -> dp.Stream[T]:
-            return self(other(stream, env), env).generate()
+            return self(other(stream, env), env).gen()
 
         return StreamTransformer(transformer)
 
@@ -118,7 +118,7 @@ class StreamCombinator:
             probs: Sequence[float],
             env: dp.PolicyEnv,
         ) -> dp.Stream[T]:
-            return other(self(streams, probs, env), env).generate()
+            return other(self(streams, probs, env), env).gen()
 
         return StreamCombinator(combinator)
 
@@ -268,7 +268,7 @@ def with_budget[T](
     env: dp.PolicyEnv,
     budget: dp.BudgetLimit,
 ):
-    return stream_with_budget(stream.generate(), budget)
+    return stream_with_budget(stream.gen(), budget)
 
 
 @stream_transformer
@@ -277,7 +277,7 @@ def take[T](
     env: dp.PolicyEnv,
     num_generated: int,
 ):
-    return stream_take(stream.generate(), num_generated)
+    return stream_take(stream.gen(), num_generated)
 
 
 @stream_transformer
@@ -293,4 +293,4 @@ def loop[T](
     i = 0
     while (n is None) or (i < n):
         i += 1
-        yield from stream.generate()
+        yield from stream.gen()

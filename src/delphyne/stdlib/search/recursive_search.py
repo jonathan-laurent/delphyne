@@ -90,15 +90,15 @@ def recursive_search[P, T](
             if isinstance(meta, GiveUp):
                 return
             elif isinstance(meta, VisitOne):
-                elt = yield from take_one(cands_space.generate())
+                elt = yield from take_one(cands_space.gen())
                 if elt is None:
                     return
                 yield from recursive_search()(
                     tree.child(elt), env, policy
-                ).generate()
+                ).gen()
             elif isinstance(meta, CombineStreamDistr):
                 res = yield from take_one_with_meta(
-                    cands.stream(env, policy).generate()
+                    cands.stream(env, policy).gen()
                 )
                 if res is None:
                     log(env, "classifier_failure", loc=tree)
@@ -111,7 +111,7 @@ def recursive_search[P, T](
                     recursive_search()(tree.child(x[0]), env, policy)
                     for x in distr
                 ]
-                yield from meta.combine(streams, probs, env).generate()
+                yield from meta.combine(streams, probs, env).gen()
             else:
                 assert False, f"Unsupported behavior for `Branch`: {meta}"
         case Join(subs):
@@ -121,13 +121,13 @@ def recursive_search[P, T](
                 elts: list[dp.Tracked[Any]] = []
                 for s in subs:
                     substream = recursive_search()(s.spawn_tree(), env, policy)
-                    elt = yield from take_one(substream.generate())
+                    elt = yield from take_one(substream.gen())
                     if elt is None:
                         return
                     elts.append(elt)
                 yield from recursive_search()(
                     tree.child(elts), env, policy
-                ).generate()
+                ).gen()
             else:
                 assert False, f"Unknown behavior for `Join`: {meta}"
 
@@ -149,6 +149,6 @@ def combine_via_repeated_sampling(
         while max_attempts is None or i < max_attempts:
             i += 1
             stream = random.choices(streams, weights=probs)[0]
-            yield from stream.generate()
+            yield from stream.gen()
 
     return StreamCombinator(combine)

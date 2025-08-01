@@ -119,8 +119,8 @@ def just_guess[P, T](
             yield dp.Yield(x)
         case Conjecture(candidate):
             yield from dp.bind_stream(
-                candidate.stream(env, policy).generate(),
-                lambda y: just_guess()(tree.child(y), env, policy).generate(),
+                candidate.stream(env, policy).gen(),
+                lambda y: just_guess()(tree.child(y), env, policy).gen(),
             )
 
 

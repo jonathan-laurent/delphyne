@@ -62,7 +62,7 @@ def run_loaded_strategy[N: dp.Node, P, T](
     monitor = dp.TreeMonitor(cache, hooks=[dp.tracer_hook(env.tracer)])
     tree = dp.reify(args.strategy, monitor)
     policy = args.policy
-    stream = policy.search(tree, env, policy.inner).generate()
+    stream = policy.search(tree, env, policy.inner).gen()
     if args.budget is not None:
         stream = std.stream_with_budget(stream, dp.BudgetLimit(args.budget))
     stream = std.stream_take(stream, args.num_generated)

@@ -47,7 +47,7 @@ def search_iteration[P, T](
     assert isinstance(tree.node, Iteration)
     state: dp.Tracked[Any] | None = None
     while True:
-        for msg in tree.node.next(state).stream(env, policy).generate():
+        for msg in tree.node.next(state).stream(env, policy).gen():
             if isinstance(msg, dp.Yield):
                 # TODO: here, `msg` contains the value we are interested
                 # in so it is tempting to just yield it. However, this

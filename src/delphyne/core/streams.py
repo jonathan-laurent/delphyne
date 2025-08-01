@@ -111,5 +111,5 @@ of `take_one` for example.
 
 class AbstractSearchStream[T](ABC):
     @abstractmethod
-    def generate(self) -> Stream[T]:
+    def gen(self) -> Stream[T]:
         pass

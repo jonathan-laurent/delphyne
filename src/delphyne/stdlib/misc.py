@@ -81,7 +81,7 @@ def sequence_prompting_policies(
         query: dp.AttachedQuery[T], env: dp.PolicyEnv
     ) -> dp.Stream[T]:
         for pp in policies:
-            yield from pp(query, env).generate()
+            yield from pp(query, env).gen()
 
     return PromptingPolicy(policy)
 
@@ -93,7 +93,7 @@ def sequence_search_policies[N: dp.Node](
         tree: dp.Tree[N, Any, T], env: dp.PolicyEnv, policy: Any
     ) -> dp.Stream[T]:
         for sp in policies:
-            yield from sp(tree, env, policy).generate()
+            yield from sp(tree, env, policy).gen()
 
     return SearchPolicy(policy)
 
@@ -109,7 +109,7 @@ def sequence_policies[N: dp.Node, P](
     ) -> dp.Stream[T]:
         assert policy is None
         for p in policies:
-            yield from p.search(tree, env, p.inner).generate()
+            yield from p.search(tree, env, p.inner).gen()
 
     return search() & cast(P, None)
 
@@ -164,8 +164,8 @@ def prompting_policy_or_else(
         query: dp.AttachedQuery[T], env: dp.PolicyEnv
     ) -> dp.Stream[T]:
         yield from stream_or_else(
-            lambda: main(query, env).generate(),
-            lambda: other(query, env).generate(),
+            lambda: main(query, env).gen(),
+            lambda: other(query, env).gen(),
         )
 
     return PromptingPolicy(policy)
@@ -178,8 +178,8 @@ def search_policy_or_else[N: dp.Node](
         tree: dp.Tree[N, Any, T], env: dp.PolicyEnv, policy: Any
     ) -> dp.Stream[T]:
         yield from stream_or_else(
-            lambda: main(tree, env, policy).generate(),
-            lambda: other(tree, env, policy).generate(),
+            lambda: main(tree, env, policy).gen(),
+            lambda: other(tree, env, policy).gen(),
         )
 
     return SearchPolicy(policy)
@@ -196,8 +196,8 @@ def policy_or_else[N: dp.Node, P](
     ) -> dp.Stream[T]:
         assert policy is None
         yield from stream_or_else(
-            lambda: main.search(tree, env, main.inner).generate(),
-            lambda: other.search(tree, env, other.inner).generate(),
+            lambda: main.search(tree, env, main.inner).gen(),
+            lambda: other.search(tree, env, other.inner).gen(),
         )
 
     return sp() & cast(P, None)

@@ -41,7 +41,7 @@ def _eval_query(
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: budget})
     pp = dp.with_budget(bl) @ dp.few_shot(model, num_concurrent=concurrent)
     stream = query.run_toplevel(env, pp)
-    res, _ = dp.collect(stream.generate())
+    res, _ = dp.collect(stream.gen())
     log = list(env.tracer.export_log())
     print(log)
     return res, log
@@ -63,7 +63,7 @@ def _eval_strategy[N: dp.Node, P, T](
     stream = strategy.run_toplevel(env, policy(model))
     budget = dp.BudgetLimit({dp.NUM_REQUESTS: max_requests})
     ret, _spent = dp.collect(
-        stream.generate(), budget=budget, num_generated=max_res
+        stream.gen(), budget=budget, num_generated=max_res
     )
     log = list(env.tracer.export_log())
     log_str = "\n".join(e.message for e in log)
@@ -90,7 +90,7 @@ def test_basic_llm_call():
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
     policy = dp.take(1) @ dp.with_budget(bl) @ dp.dfs() & ex.MakeSumIP(pp)
     stream = ex.make_sum([1, 2, 3, 4], 7).run_toplevel(env, policy)
-    res, _ = dp.collect(stream.generate())
+    res, _ = dp.collect(stream.gen())
     # print(list(env.tracer.export_log()))
     assert res
 
@@ -129,7 +129,7 @@ def test_interact():
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: 2})
     policy = dp.take(1) @ dp.with_budget(bl) @ dp.dfs() & pp
     stream = ex.propose_article("Jonathan").run_toplevel(env, policy)
-    res, _ = dp.collect(stream.generate())
+    res, _ = dp.collect(stream.gen())
     print(list(env.tracer.export_log()))
     assert res
 
@@ -177,7 +177,7 @@ def _eval_classifier_query(
         model, temperature=temperature, bias=bias
     )
     stream = query.run_toplevel(env, pp)
-    res, _ = dp.collect_with_metadata(stream.generate())
+    res, _ = dp.collect_with_metadata(stream.gen())
     log = list(env.tracer.export_log())
     print(log)
     assert res

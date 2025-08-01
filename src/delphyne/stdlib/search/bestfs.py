@@ -99,7 +99,7 @@ def best_first_search[P, T](
                 # Evaluate metrics if a penalty function is provided
                 if penalty_fun is not None:
                     eval_stream = tree.node.eval.stream(env, policy)
-                    eval = yield from take_one(eval_stream.generate())
+                    eval = yield from take_one(eval_stream.gen())
                     # If we failed to evaluate the metrics, we give up.
                     if eval is None:
                         return
@@ -115,7 +115,7 @@ def best_first_search[P, T](
                     depth=depth,
                     children=[],
                     confidence=confidence,
-                    stream=tree.node.cands.stream(env, policy).generate(),
+                    stream=tree.node.cands.stream(env, policy).gen(),
                     node=tree.node,
                     tree=tree,
                 )

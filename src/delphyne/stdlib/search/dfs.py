@@ -33,16 +33,16 @@ def dfs[P, T](
             if max_depth is not None and max_depth <= 0:
                 return
             branches_explored = 0
-            for cands_msg in cands.stream(env, policy).generate():
+            for cands_msg in cands.stream(env, policy).gen():
                 if not isinstance(cands_msg, Yield):
                     yield cands_msg
                     continue
                 child = tree.child(cands_msg.value)
-                new_max_depth = (
-                    max_depth - 1 if max_depth is not None else None
+                rec = dfs(
+                    max_depth=max_depth - 1 if max_depth is not None else None,
+                    max_branching=max_branching,
                 )
-                rec = dfs(new_max_depth, max_branching)
-                yield from rec(child, env, policy).generate()
+                yield from rec(child, env, policy).gen()
                 branches_explored += 1
                 if (
                     max_branching is not None
