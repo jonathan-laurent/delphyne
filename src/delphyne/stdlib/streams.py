@@ -188,8 +188,9 @@ def stream_bind[A, B](
             case Spent():
                 num_pending -= 1
                 yield msg
-        while generated:
-            yield from f(generated.pop(0))
+        if num_pending == 0:
+            while generated:
+                yield from f(generated.pop(0))
     assert not generated
     assert num_pending == 0
 
