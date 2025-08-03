@@ -342,6 +342,10 @@ def abduct_and_saturate[P, Proof](
         assert c in candidates
         sstream = node.suggest(candidates[c].feedback).stream(env, policy)
         res = yield from sstream.all()
+        if not res:
+            # If no suggestions are returned, we are out of budget and
+            # abort so as to not call this again in a loop.
+            raise _Abort()
         tracked_suggs = [s for r in res for s in r.tracked]
         # Populate the `tracked` cache (this is the only place where new
         # facts can be created and so the only place where `tracked`
