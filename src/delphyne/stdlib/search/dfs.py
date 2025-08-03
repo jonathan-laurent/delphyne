@@ -32,22 +32,14 @@ def dfs[P, T](
         case Branch(cands):
             if max_depth is not None and max_depth <= 0:
                 return
-            branches_explored = 0
-            for cands_msg in cands.stream(env, policy).gen():
-                if not isinstance(cands_msg, Solution):
-                    yield cands_msg
-                    continue
-                child = tree.child(cands_msg.tracked)
-                rec = dfs(
+            cands = cands.stream(env, policy)
+            if max_branching is not None:
+                cands = cands.take(max_branching, strict=True)
+            yield from cands.bind(
+                lambda a: dfs(
                     max_depth=max_depth - 1 if max_depth is not None else None,
                     max_branching=max_branching,
-                )
-                yield from rec(child, env, policy).gen()
-                branches_explored += 1
-                if (
-                    max_branching is not None
-                    and branches_explored >= max_branching
-                ):
-                    break
+                )(tree.child(a.tracked), env, policy).gen()
+            ).gen()
         case _:
             unsupported_node(tree.node)

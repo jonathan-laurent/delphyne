@@ -38,14 +38,16 @@ class Budget:
         return Budget(values)
 
     def __le__(self, limit: "BudgetLimit") -> bool:
-        assert isinstance(limit, BudgetLimit)
+        if not isinstance(limit, BudgetLimit):  # pyright: ignore[reportUnnecessaryIsInstance]
+            return NotImplemented
         for k, v in limit.values.items():
             if self[k] > v:
                 return False
         return True
 
     def __ge__(self, other: "Budget") -> bool:
-        assert isinstance(other, Budget)
+        if not isinstance(other, Budget):  # pyright: ignore[reportUnnecessaryIsInstance]
+            return NotImplemented
         for k, v in other.values.items():
             if self[k] < v:
                 return False

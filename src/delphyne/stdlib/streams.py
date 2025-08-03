@@ -26,8 +26,10 @@ class SearchStream[T](dp.AbstractSearchStream[T]):
     def with_budget(self, budget: dp.BudgetLimit):
         return SearchStream(lambda: stream_with_budget(self.gen(), budget))
 
-    def take(self, num_generated: int):
-        return SearchStream(lambda: stream_take(self.gen(), num_generated))
+    def take(self, num_generated: int, strict: bool = True):
+        return SearchStream(
+            lambda: stream_take(self.gen(), num_generated, strict)
+        )
 
     ## Collecting values
 
@@ -91,7 +93,7 @@ class StreamTransformer:
         return SearchStream(lambda: self.trans(stream, env))
 
     def __matmul__(self, other: "StreamTransformer") -> "StreamTransformer":
-        if not isinstance(other, StreamTransformer):  # type: ignore[reportUnnecessaryInstance]
+        if not isinstance(other, StreamTransformer):  # pyright: ignore[reportUnnecessaryIsInstance]
             return NotImplemented
 
         def transformer[T](
@@ -145,7 +147,7 @@ class StreamCombinator:
         return SearchStream(lambda: self.combine(streams, probs, env))
 
     def __rmatmul__(self, other: StreamTransformer) -> "StreamCombinator":
-        if not isinstance(other, StreamTransformer):  # type: ignore[reportUnnecessaryInstance]
+        if not isinstance(other, StreamTransformer):  # pyright: ignore[reportUnnecessaryIsInstance]
             return NotImplemented
 
         def combinator[T](
@@ -163,15 +165,33 @@ class StreamCombinator:
 #####
 
 
+# def _wait_balance(pending_barriers: int):
+#     pass
+
+
 def stream_bind[A, B](
     stream: dp.Stream[A], f: Callable[[dp.Solution[A]], dp.Stream[B]]
 ) -> dp.Stream[B]:
+    generated: list[dp.Solution[A]] = []
+    num_pending = 0
     for msg in stream:
-        if not isinstance(msg, dp.Solution):
-            yield msg
-            continue
-        for new_msg in f(msg):
-            yield new_msg
+        match msg:
+            case dp.Solution():
+                generated.append(msg)
+            case Barrier():
+                num_pending += 1
+                if generated:
+                    # We don't allow new spending before `generated` is
+                    # emptied.
+                    msg.allow = False
+                yield msg
+            case Spent():
+                num_pending -= 1
+                yield msg
+        while generated:
+            yield from f(generated.pop(0))
+    assert not generated
+    assert num_pending == 0
 
 
 def stream_take_one[T](
@@ -203,19 +223,36 @@ def stream_with_budget[T](
     See `with_budget` for a version wrapped as a stream transformer.
     """
     total_spent = dp.Budget.zero()
+    # Map the id of a barrier to the frozen budget.
+    pending: dict[int, dp.Budget] = {}
+
     for msg in stream:
         match msg:
+            case Barrier(pred):
+                bound = (
+                    total_spent
+                    + pred
+                    + sum(pending.values(), start=dp.Budget.zero())
+                )
+                if not (bound <= budget):
+                    msg.allow = False
+                pending[id(msg)] = (
+                    msg.budget if msg.allow else dp.Budget.zero()
+                )
             case Spent(spent):
                 total_spent = total_spent + spent
-            case Barrier(pred):
-                if not (total_spent + pred <= budget):
-                    return
+                matching = id(msg.barrier)
+                assert matching in pending
+                del pending[matching]
             case _:
                 pass
         yield msg
+    assert not pending
 
 
-def stream_take[T](stream: dp.Stream[T], num_generated: int) -> dp.Stream[T]:
+def stream_take[T](
+    stream: dp.Stream[T], num_generated: int, strict: bool = True
+) -> dp.Stream[T]:
     """
     See `take` for a version wrapped as a stream transformer.
     """
@@ -224,9 +261,12 @@ def stream_take[T](stream: dp.Stream[T], num_generated: int) -> dp.Stream[T]:
     for msg in stream:
         if isinstance(msg, dp.Solution):
             count += 1
-        yield msg
-        if count >= num_generated:
-            return
+        if isinstance(msg, Barrier) and count >= num_generated:
+            msg.allow = False
+        if not (
+            strict and isinstance(msg, dp.Solution) and count > num_generated
+        ):
+            yield msg
 
 
 def stream_collect[T](

@@ -54,7 +54,7 @@ class SearchPolicy[N: Node](dp.AbstractSearchPolicy[N]):
         return Policy(self, other)
 
     def __rmatmul__(self, other: StreamTransformer) -> "SearchPolicy[N]":
-        if not isinstance(other, StreamTransformer):  # type: ignore[reportUnnecessaryInstance]
+        if not isinstance(other, StreamTransformer):  # pyright: ignore[reportUnnecessaryIsInstance]
             return NotImplemented
         return self.compose_with_stream_transformer(other)
 
@@ -131,7 +131,7 @@ class PromptingPolicy(dp.AbstractPromptingPolicy):
         return SearchStream(lambda: self.fn(query, env))
 
     def __rmatmul__(self, other: StreamTransformer) -> "PromptingPolicy":
-        if not isinstance(other, StreamTransformer):  # type: ignore[reportUnnecessaryInstance]
+        if not isinstance(other, StreamTransformer):  # pyright: ignore[reportUnnecessaryIsInstance]
             return NotImplemented
         return self.compose_with_stream_transformer(other)
 
@@ -224,7 +224,7 @@ class ContextualTreeTransformer[A: Node, B: Node]:
     def __rmatmul__[N: Node](
         self, search_policy: "SearchPolicy[B | N]"
     ) -> "SearchPolicy[A | N]":
-        if not isinstance(search_policy, SearchPolicy):  # type: ignore[reportUnnecessaryInstance]
+        if not isinstance(search_policy, SearchPolicy):  # pyright: ignore[reportUnnecessaryIsInstance]
             return NotImplemented
 
         def new_search_policy[P, T](
