@@ -257,16 +257,25 @@ def stream_take[T](
     See `take` for a version wrapped as a stream transformer.
     """
     count = 0
-    assert num_generated > 0
+    num_pending = 0
+    if not (num_generated > 0):
+        return
     for msg in stream:
-        if isinstance(msg, dp.Solution):
-            count += 1
-        if isinstance(msg, Barrier) and count >= num_generated:
-            msg.allow = False
-        if not (
-            strict and isinstance(msg, dp.Solution) and count > num_generated
-        ):
-            yield msg
+        match msg:
+            case Barrier():
+                if count >= num_generated:
+                    msg.allow = False
+                num_pending += 1
+                yield msg
+            case Spent():
+                num_pending -= 1
+                yield msg
+            case dp.Solution():
+                count += 1
+                if not (strict and count > num_generated):
+                    yield msg
+        if num_pending == 0 and count >= num_generated:
+            break
 
 
 def stream_collect[T](
