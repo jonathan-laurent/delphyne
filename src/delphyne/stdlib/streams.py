@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Protocol
 
 import delphyne.core as dp
+from delphyne.core.streams import Barrier, Spent
 
 #####
 ##### Search Streams
@@ -204,9 +205,9 @@ def stream_with_budget[T](
     total_spent = dp.Budget.zero()
     for msg in stream:
         match msg:
-            case dp.Spent(spent):
+            case Spent(spent):
                 total_spent = total_spent + spent
-            case dp.Barrier(pred):
+            case Barrier(pred):
                 if not (total_spent + pred <= budget):
                     return
             case _:
@@ -236,7 +237,7 @@ def stream_collect[T](
     for msg in stream:
         if isinstance(msg, dp.Solution):
             elts.append(msg)
-        if isinstance(msg, dp.Spent):
+        if isinstance(msg, Spent):
             total = total + msg.budget
     return elts, total
 
@@ -301,3 +302,27 @@ def loop[T](
     while (n is None) or (i < n):
         i += 1
         yield from stream.gen()
+
+
+#####
+##### Utils
+#####
+
+
+@dataclass(frozen=True)
+class SpendingDeclined:
+    pass
+
+
+def spend_on[T](
+    f: Callable[[], tuple[T, dp.Budget]], /, estimate: dp.Budget
+) -> dp.StreamGen[T | SpendingDeclined]:
+    barrier = Barrier(estimate, allow=True)
+    yield barrier
+    if barrier.allow:
+        value, spent = f()
+        yield Spent(budget=spent, barrier=barrier)
+        return value
+    else:
+        yield Spent(budget=dp.Budget.zero(), barrier=barrier)
+        return SpendingDeclined()

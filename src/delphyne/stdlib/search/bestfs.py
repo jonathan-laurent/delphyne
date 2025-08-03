@@ -1,5 +1,7 @@
 """
 An implementation of best-first search.
+
+TODO: use stream combinators instead of manually going through messages.
 """
 
 import heapq
@@ -9,6 +11,7 @@ from typing import Any
 
 import delphyne.core as dp
 from delphyne.core import refs
+from delphyne.core.streams import Barrier
 from delphyne.stdlib.nodes import Branch, Factor, Fail, Value
 from delphyne.stdlib.policies import search_policy, unsupported_node
 
@@ -147,7 +150,7 @@ def best_first_search[P, T](
                     cand = msg.tracked
                     break
                 yield msg
-                if isinstance(msg, dp.Barrier):
+                if isinstance(msg, Barrier):
                     cand = None
                     break
         except StopIteration:

@@ -12,6 +12,7 @@ import delphyne.stdlib.queries as qu
 import delphyne.stdlib.standard_models as stdm
 import delphyne.stdlib.streams as st
 import delphyne.stdlib.tasks as ta
+from delphyne.core.streams import Barrier, Solution, Spent
 
 DEFAULT_OPENAI_MODEL = "gpt-4o"
 
@@ -77,11 +78,11 @@ def answer_query(
 
     for msg in stream:
         match msg:
-            case dp.Solution():
+            case Solution():
                 num_successes += 1
-            case dp.Spent(b):
+            case Spent(b):
                 total_budget += b
-            case dp.Barrier():
+            case Barrier():
                 pass
         task.set_result(compute_result())
         task.set_status(compute_status())

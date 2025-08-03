@@ -11,6 +11,7 @@ import delphyne.core.demos as dm
 import delphyne.core.refs as refs
 from delphyne.stdlib.models import NUM_REQUESTS
 from delphyne.stdlib.policies import PromptingPolicy, prompting_policy
+from delphyne.stdlib.streams import SpendingDeclined, spend_on
 
 
 def demo_mock_oracle(
@@ -41,8 +42,9 @@ def demo_mock_oracle(
             answer = answers[n - 1 - i if rev_search else i]
             i = (i + 1) % n
             budget = dp.Budget({NUM_REQUESTS: 1})
-            yield dp.Barrier(budget)
-            yield dp.Spent(budget)
+            res = yield from spend_on(lambda: (None, budget), budget)
+            if isinstance(res, SpendingDeclined):
+                return
             parsed = query.parse_answer(answer)
             if not isinstance(parsed, dp.ParseError):
                 yield dp.Solution(parsed)
@@ -58,8 +60,9 @@ def fixed_oracle[T](
 ) -> dp.Stream[T]:
     for answer in oracle(query.query):
         budget = dp.Budget({NUM_REQUESTS: 1})
-        yield dp.Barrier(budget)
-        yield dp.Spent(budget)
+        res = yield from spend_on(lambda: (None, budget), budget)
+        if isinstance(res, SpendingDeclined):
+            return
         parsed = query.parse_answer(answer)
         if not isinstance(parsed, dp.ParseError):
             yield dp.Solution(parsed)

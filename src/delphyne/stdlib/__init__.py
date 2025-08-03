@@ -155,7 +155,9 @@ from delphyne.stdlib.strategies import (
     strategy,
 )
 from delphyne.stdlib.streams import (
+    SpendingDeclined,
     StreamTransformer,
+    spend_on,
     stream_transformer,
     take,
     with_budget,

@@ -13,6 +13,7 @@ import delphyne.core as dp
 import delphyne.stdlib.models as md
 import delphyne.stdlib.streams as dps
 import delphyne.stdlib.tasks as ta
+from delphyne.core.streams import Barrier, Solution, Spent
 from delphyne.utils.typing import pydantic_dump
 
 
@@ -119,12 +120,12 @@ def run_loaded_strategy[N: dp.Node, P, T](
     # thread for every new element?
     for msg in stream:
         match msg:
-            case dp.Solution():
+            case Solution():
                 success = True
                 results.append(msg.tracked.value)
-            case dp.Spent(b):
+            case Spent(b):
                 total_budget += b
-            case dp.Barrier():
+            case Barrier():
                 pass
         interrupted = task.interruption_requested()
         if interrupted or (

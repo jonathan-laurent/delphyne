@@ -24,7 +24,7 @@ import delphyne.stdlib.policies as pol
 from delphyne.core.refs import Answer
 from delphyne.stdlib.opaque import Opaque, OpaqueSpace
 from delphyne.stdlib.policies import IPDict, log, prompting_policy
-from delphyne.stdlib.streams import SearchStream
+from delphyne.stdlib.streams import SearchStream, SpendingDeclined, spend_on
 from delphyne.utils import typing as ty
 from delphyne.utils.typing import TypeAnnot, ValidationError
 
@@ -669,6 +669,19 @@ def get_request_cache(env: dp.PolicyEnv) -> md.LLMCache | None:
     return cache
 
 
+def _send_request(
+    model: md.LLM, req: md.LLMRequest, env: dp.PolicyEnv
+) -> dp.StreamGen[md.LLMResponse | SpendingDeclined]:
+    res = yield from spend_on(
+        lambda: (
+            resp := model.send_request(req, get_request_cache(env)),
+            resp.budget,
+        ),
+        estimate=model.estimate_budget(req),
+    )
+    return res
+
+
 @prompting_policy
 def classify[T](
     query: dp.AttachedQuery[T],
@@ -714,11 +727,10 @@ def classify[T](
         num_completions=1,
         options=options,
     )
-    cost_estimate = model.estimate_budget(req)
-    yield dp.Barrier(cost_estimate)
-    resp = model.send_request(req, get_request_cache(env))
+    resp = yield from _send_request(model, req, env)
+    if isinstance(resp, SpendingDeclined):
+        return
     log_oracle_response(env, query, req, resp, verbose=enable_logging)
-    yield dp.Spent(resp.budget)
     if not resp.outputs:
         return
     output = resp.outputs[0]
@@ -830,11 +842,10 @@ def few_shot[T](
             tools=tools,
             structured_output=structured_output,
         )
-        cost_estimate = model.estimate_budget(req)
-        yield dp.Barrier(cost_estimate)
-        resp = model.send_request(req, get_request_cache(env))
+        resp = yield from _send_request(model, req, env)
+        if isinstance(resp, SpendingDeclined):
+            return
         log_oracle_response(env, query, req, resp, verbose=enable_logging)
-        yield dp.Spent(resp.budget)
         if not resp.outputs:
             log(env, "llm_no_output", loc=query)
             continue

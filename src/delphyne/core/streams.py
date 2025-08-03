@@ -88,20 +88,22 @@ class Solution[T]:
     meta: SearchMeta | None = None
 
 
+@dataclass(frozen=False)
+class Barrier:
+    budget: Budget
+    allow: bool
+
+
 @dataclass(frozen=True)
 class Spent:
     budget: Budget
+    barrier: Barrier
 
 
-@dataclass(frozen=True)
-class Barrier:
-    budget: Budget
+type Stream[T] = Generator[Solution[T] | Barrier | Spent, None, None]
 
 
-type Stream[T] = Generator[Solution[T] | Spent | Barrier, None, None]
-
-
-type StreamGen[T] = Generator[Spent | Barrier, None, T]
+type StreamGen[T] = Generator[Barrier | Spent, None, T]
 """
 Type signature for a generator that can spend budget, does not yield
 results but ultimately returns a result. Useful to define the signature

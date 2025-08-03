@@ -64,12 +64,10 @@ from delphyne.core.reification import (
 )
 from delphyne.core.streams import (
     AbstractSearchStream,
-    Barrier,
     Budget,
     BudgetLimit,
     SearchMeta,
     Solution,
-    Spent,
     Stream,
     StreamGen,
 )
