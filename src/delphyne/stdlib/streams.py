@@ -2,7 +2,7 @@
 Utilities to work with streams.
 """
 
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from typing import Protocol
 
@@ -56,6 +56,16 @@ class SearchStream[T](dp.AbstractSearchStream[T]):
         self, f: Callable[[dp.Solution[T]], dp.Stream[T2]]
     ) -> "SearchStream[T2]":
         return SearchStream(lambda: stream_bind(self.gen(), f))
+
+    @staticmethod
+    def sequence[U](
+        streams: Iterable["SearchStream[U]"], *, stop_on_reject: bool = True
+    ) -> "SearchStream[U]":
+        return SearchStream(
+            lambda: stream_sequence(
+                (s.gen for s in streams), stop_on_reject=stop_on_reject
+            )
+        )
 
 
 #####
@@ -295,13 +305,6 @@ def stream_collect[T](
 type _StreamBuilder[T] = Callable[[], dp.Stream[T]]
 
 
-def stream_sequence[T](
-    stream_builders: Sequence[_StreamBuilder[T]],
-) -> dp.Stream[T]:
-    for s in stream_builders:
-        yield from s()
-
-
 def stream_or_else[T](
     main: _StreamBuilder[T], fallback: _StreamBuilder[T]
 ) -> dp.Stream[T]:
@@ -313,6 +316,31 @@ def stream_or_else[T](
     if not some_successes:
         for msg in fallback():
             yield msg
+
+
+def monitor_acceptance[T](
+    stream: dp.Stream[T], on_accept: Callable[[], None]
+) -> dp.Stream[T]:
+    for msg in stream:
+        if isinstance(msg, Barrier):
+            if msg.allow:
+                on_accept()
+        yield msg
+
+
+def stream_sequence[T](
+    streams: Iterable[_StreamBuilder[T]], *, stop_on_reject: bool = True
+) -> dp.Stream[T]:
+    for mk in streams:
+        accepted = False
+
+        def on_accept():
+            nonlocal accepted
+            accepted = True
+
+        yield from monitor_acceptance(mk(), on_accept)
+        if stop_on_reject and not accepted:
+            break
 
 
 #####

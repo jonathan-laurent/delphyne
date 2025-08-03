@@ -17,7 +17,7 @@ from delphyne.stdlib.policies import (
 )
 from delphyne.stdlib.search.dfs import dfs
 from delphyne.stdlib.strategies import strategy
-from delphyne.stdlib.streams import stream_or_else
+from delphyne.stdlib.streams import SearchStream, stream_or_else
 
 
 @strategy(name="const")
@@ -71,45 +71,46 @@ type _AnyPolicy = PromptingPolicy | SearchPolicy[Any] | Policy[Any, Any]
 ##### Sequencing
 #####
 
-# TODO: this is way too much boilerplate for a relatively simple feature
-
 
 def sequence_prompting_policies(
-    policies: Iterable[PromptingPolicy],
+    policies: Iterable[PromptingPolicy], *, stop_on_reject: bool = True
 ) -> PromptingPolicy:
     def policy[T](
         query: dp.AttachedQuery[T], env: dp.PolicyEnv
     ) -> dp.Stream[T]:
-        for pp in policies:
-            yield from pp(query, env).gen()
+        yield from SearchStream.sequence(
+            (pp(query, env) for pp in policies), stop_on_reject=stop_on_reject
+        ).gen()
 
     return PromptingPolicy(policy)
 
 
 def sequence_search_policies[N: dp.Node](
-    policies: Iterable[SearchPolicy[N]],
+    policies: Iterable[SearchPolicy[N]], *, stop_on_reject: bool = True
 ) -> SearchPolicy[N]:
     def policy[T](
         tree: dp.Tree[N, Any, T], env: dp.PolicyEnv, policy: Any
     ) -> dp.Stream[T]:
-        for sp in policies:
-            yield from sp(tree, env, policy).gen()
+        yield from SearchStream.sequence(
+            (sp(tree, env, policy) for sp in policies),
+            stop_on_reject=stop_on_reject,
+        ).gen()
 
     return SearchPolicy(policy)
 
 
 def sequence_policies[N: dp.Node, P](
-    policies: Iterable[Policy[N, P]],
+    policies: Iterable[Policy[N, P]], *, stop_on_reject: bool = True
 ) -> Policy[N, P]:
-    # TODO: this is not the cleanest implementation since we lie about
-    # the return type by returning a dummy internal policy.
     @search_policy
     def search[T](
         tree: dp.Tree[N, Any, T], env: dp.PolicyEnv, policy: Any
     ) -> dp.Stream[T]:
         assert policy is None
-        for p in policies:
-            yield from p.search(tree, env, p.inner).gen()
+        yield from SearchStream.sequence(
+            (p.search(tree, env, p.inner) for p in policies),
+            stop_on_reject=stop_on_reject,
+        ).gen()
 
     return search() & cast(P, None)
 
@@ -117,6 +118,8 @@ def sequence_policies[N: dp.Node, P](
 @overload
 def sequence(
     policies: Iterable[PromptingPolicy],
+    *,
+    stop_on_reject: bool = True,
 ) -> PromptingPolicy:
     pass
 
@@ -124,6 +127,8 @@ def sequence(
 @overload
 def sequence[N: dp.Node](
     policies: Iterable[SearchPolicy[N]],
+    *,
+    stop_on_reject: bool = True,
 ) -> SearchPolicy[N]:
     pass
 
@@ -131,25 +136,35 @@ def sequence[N: dp.Node](
 @overload
 def sequence[N: dp.Node, P](
     policies: Iterable[Policy[N, P]],
+    *,
+    stop_on_reject: bool = True,
 ) -> Policy[N, P]:
     pass
 
 
 def sequence(
     policies: Iterable[_AnyPolicy],
+    *,
+    stop_on_reject: bool = True,
 ) -> _AnyPolicy:
     it = iter(policies)
     first = next(it)
     if isinstance(first, PromptingPolicy):
         return sequence_prompting_policies(
-            cast(Iterable[PromptingPolicy], policies)
+            cast(Iterable[PromptingPolicy], policies),
+            stop_on_reject=stop_on_reject,
         )
     elif isinstance(first, SearchPolicy):
         return sequence_search_policies(
-            cast(Iterable[SearchPolicy[Any]], policies)
+            cast(Iterable[SearchPolicy[Any]], policies),
+            stop_on_reject=stop_on_reject,
         )
     else:
-        return sequence_policies(cast(Iterable[Policy[Any, Any]], policies))
+        assert isinstance(first, Policy)
+        return sequence_policies(
+            cast(Iterable[Policy[Any, Any]], policies),
+            stop_on_reject=stop_on_reject,
+        )
 
 
 #####
