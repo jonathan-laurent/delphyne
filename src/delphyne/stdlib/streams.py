@@ -371,15 +371,19 @@ def loop[T](
     stream: SearchStream[T],
     env: dp.PolicyEnv,
     n: int | None = None,
+    *,
+    stop_on_reject: bool = True,
 ) -> dp.Stream[T]:
     """
     Stream transformer that repeatedly respawns the underlying stream,
     up to an (optional) limit.
     """
-    i = 0
-    while (n is None) or (i < n):
-        i += 1
-        yield from stream.gen()
+    import itertools
+
+    it = itertools.count() if n is None else range(n)
+    yield from SearchStream.sequence(
+        (stream for _ in it), stop_on_reject=stop_on_reject
+    ).gen()
 
 
 #####
