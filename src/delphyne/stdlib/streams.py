@@ -68,6 +68,15 @@ class SearchStream[T](dp.AbstractSearchStream[T]):
     def all(self) -> dp.StreamGen[Sequence[dp.Solution[T]]]:
         return stream_take_all(self.gen())
 
+    def next(
+        self,
+    ) -> dp.StreamGen[
+        "tuple[Sequence[dp.Solution[T]], dp.Budget, SearchStream[T] | None]"
+    ]:
+        gen, budg, rest = yield from stream_next(self.gen())
+        new_rest = None if rest is None else SearchStream(lambda: rest)
+        return gen, budg, new_rest
+
     ## Static Methods
 
     @staticmethod
@@ -282,6 +291,8 @@ def stream_take_one[T](
         match msg:
             case Barrier():
                 num_pending += 1
+                if generated:
+                    msg.allow = False
                 yield msg
             case Spent():
                 num_pending -= 1
@@ -424,3 +435,45 @@ def stream_sequence[T](
         yield from monitor_acceptance(mk(), on_accept)
         if stop_on_reject and not accepted:
             break
+
+
+def _stream_cons[T](
+    elt: dp.Solution[T] | Spent | Barrier, stream: dp.Stream[T]
+) -> dp.Stream[T]:
+    yield elt
+    yield from stream
+
+
+def stream_next[T](
+    stream: dp.Stream[T],
+) -> dp.StreamGen[
+    tuple[Sequence[dp.Solution[T]], dp.Budget, dp.Stream[T] | None]
+]:
+    total_spent = dp.Budget.zero()
+    num_pending = 0
+    done: bool = False  # We want to see at least one barrier
+    generated: list[dp.Solution[T]] = []
+    while True:
+        msg = next(stream, None)
+        match msg:
+            case None:
+                assert num_pending == 0
+                return generated, total_spent, None
+            case Barrier():
+                if done:
+                    if num_pending == 0:
+                        return (
+                            generated,
+                            total_spent,
+                            _stream_cons(msg, stream),
+                        )
+                    else:
+                        msg.allow = False
+                num_pending += 1
+                done = True
+                yield msg
+            case Spent():
+                num_pending -= 1
+                yield msg
+            case dp.Solution():
+                generated.append(msg)

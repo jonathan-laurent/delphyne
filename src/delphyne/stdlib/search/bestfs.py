@@ -11,9 +11,9 @@ from typing import Any
 
 import delphyne.core as dp
 from delphyne.core import refs
-from delphyne.core.streams import Barrier
 from delphyne.stdlib.nodes import Branch, Factor, Fail, Value
 from delphyne.stdlib.policies import search_policy, unsupported_node
+from delphyne.stdlib.streams import SearchStream
 
 
 @dataclass(frozen=True)
@@ -28,9 +28,10 @@ class NodeState:
     depth: int
     children: list[refs.GlobalNodePath]  # can be mutated
     confidence: float
-    stream: dp.Stream[Any]
+    stream: list[SearchStream[Any] | None]  # using one element (mutated)
     node: Branch  # equal to tree.node, with a more precise type
     tree: dp.Tree[Branch | Factor | Value | Fail, Any, Any]
+    next_actions: list[dp.Tracked[Any]]  # can be mutated
 
 
 @dataclass(frozen=True, order=True)
@@ -117,9 +118,10 @@ def best_first_search[P, T](
                     depth=depth,
                     children=[],
                     confidence=confidence,
-                    stream=tree.node.cands.stream(env, policy).gen(),
+                    stream=[tree.node.cands.stream(env, policy)],
                     node=tree.node,
                     tree=tree,
+                    next_actions=[],
                 )
                 nonlocal counter
                 counter += 1
@@ -138,25 +140,19 @@ def best_first_search[P, T](
         item = PriorityItem(-item_confidence, counter, state)
         heapq.heappush(pqueue, item)
 
-    # Pust the root into the queue.
+    # Put the root into the queue.
     yield from push_fresh_node(tree, 1.0, 0)
     while pqueue:
         state = heapq.heappop(pqueue).node_state
-        try:
-            # We make an atomic attempt at generating a new candidate
-            while True:
-                msg = next(state.stream)
-                if isinstance(msg, dp.Solution):
-                    cand = msg.tracked
-                    break
-                yield msg
-                if isinstance(msg, Barrier):
-                    cand = None
-                    break
-        except StopIteration:
-            # No need to put the node back in the queue
-            continue
-        if cand is not None:
+        if not state.next_actions:
+            if not state.stream[0]:
+                # No more actions to take, we do not put the node back.
+                continue
+            generated, _, next = yield from state.stream[0].next()
+            state.next_actions.extend([a.tracked for a in generated])
+            state.stream[0] = next
+        if state.next_actions:
+            cand = state.next_actions.pop(0)
             child = state.tree.child(cand)
             state.children.append(child.ref)
             yield from push_fresh_node(child, 1, state.depth + 1)
