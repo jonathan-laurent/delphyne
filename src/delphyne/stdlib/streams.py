@@ -2,6 +2,7 @@
 Utilities to work with streams.
 """
 
+import itertools
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from typing import Protocol
@@ -56,6 +57,16 @@ class SearchStream[T](dp.AbstractSearchStream[T]):
         self, f: Callable[[dp.Solution[T]], dp.Stream[T2]]
     ) -> "SearchStream[T2]":
         return SearchStream(lambda: stream_bind(self.gen(), f))
+
+    def loop(
+        self, n: int | None = None, *, stop_on_reject: bool = True
+    ) -> "SearchStream[T]":
+        it = itertools.count() if n is None else range(n)
+        return SearchStream(
+            lambda: stream_sequence(
+                (self.gen for _ in it), stop_on_reject=stop_on_reject
+            )
+        )
 
     @staticmethod
     def sequence[U](
@@ -175,10 +186,6 @@ class StreamCombinator:
 #####
 
 
-# def _wait_balance(pending_barriers: int):
-#     pass
-
-
 def stream_bind[A, B](
     stream: dp.Stream[A], f: Callable[[dp.Solution[A]], dp.Stream[B]]
 ) -> dp.Stream[B]:
@@ -208,11 +215,22 @@ def stream_bind[A, B](
 def stream_take_one[T](
     stream: dp.Stream[T],
 ) -> dp.StreamGen[dp.Solution[T] | None]:
+    num_pending = 0
+    generated: list[dp.Solution[T]] = []
     for msg in stream:
-        if isinstance(msg, dp.Solution):
-            return msg
-        yield msg
-    return None
+        match msg:
+            case Barrier():
+                num_pending += 1
+                yield msg
+            case Spent():
+                num_pending -= 1
+                yield msg
+            case dp.Solution():
+                generated.append(msg)
+        if generated and num_pending == 0:
+            break
+    assert num_pending == 0
+    return None if not generated else generated[0]
 
 
 def stream_take_all[T](
@@ -287,6 +305,7 @@ def stream_take[T](
                     yield msg
         if num_pending == 0 and count >= num_generated:
             break
+    assert num_pending == 0
 
 
 def stream_collect[T](
@@ -322,10 +341,13 @@ def monitor_acceptance[T](
     stream: dp.Stream[T], on_accept: Callable[[], None]
 ) -> dp.Stream[T]:
     for msg in stream:
+        # It is important to check `allow` AFTER yielding the message
+        # because we are interested in whether the FINAL client accepts
+        # the request.
+        yield msg
         if isinstance(msg, Barrier):
             if msg.allow:
                 on_accept()
-        yield msg
 
 
 def stream_sequence[T](
@@ -362,8 +384,9 @@ def take[T](
     stream: SearchStream[T],
     env: dp.PolicyEnv,
     num_generated: int,
+    strict: bool = True,
 ):
-    return stream_take(stream.gen(), num_generated)
+    return stream_take(stream.gen(), num_generated, strict)
 
 
 @stream_transformer
@@ -378,12 +401,8 @@ def loop[T](
     Stream transformer that repeatedly respawns the underlying stream,
     up to an (optional) limit.
     """
-    import itertools
 
-    it = itertools.count() if n is None else range(n)
-    yield from SearchStream.sequence(
-        (stream for _ in it), stop_on_reject=stop_on_reject
-    ).gen()
+    return stream.loop(n, stop_on_reject=stop_on_reject).gen()
 
 
 #####
