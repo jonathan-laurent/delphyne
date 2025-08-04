@@ -22,6 +22,19 @@ class SearchStream[T](dp.AbstractSearchStream[T]):
     def gen(self) -> dp.Stream[T]:
         return self._generate()
 
+    ## Collecting all elements
+
+    def collect(
+        self,
+        budget: dp.BudgetLimit | None = None,
+        num_generated: int | None = None,
+    ) -> tuple[Sequence[dp.Solution[T]], dp.Budget]:
+        if budget is not None:
+            self = self.with_budget(budget)
+        if num_generated is not None:
+            self = self.take(num_generated)
+        return stream_collect(self.gen())
+
     ## Transforming the stream
 
     def with_budget(self, budget: dp.BudgetLimit):
@@ -32,32 +45,6 @@ class SearchStream[T](dp.AbstractSearchStream[T]):
             lambda: stream_take(self.gen(), num_generated, strict)
         )
 
-    ## Collecting values
-
-    def first(self) -> dp.StreamGen[dp.Solution[T] | None]:
-        return stream_take_one(self.gen())
-
-    def all(self) -> dp.StreamGen[Sequence[dp.Solution[T]]]:
-        return stream_take_all(self.gen())
-
-    def collect(
-        self,
-        budget: dp.BudgetLimit | None = None,
-        num_generated: int | None = None,
-    ):
-        if budget is not None:
-            self = self.with_budget(budget)
-        if num_generated is not None:
-            self = self.take(num_generated)
-        return stream_collect(self.gen())
-
-    ## Combinators
-
-    def bind[T2](
-        self, f: Callable[[dp.Solution[T]], dp.Stream[T2]]
-    ) -> "SearchStream[T2]":
-        return SearchStream(lambda: stream_bind(self.gen(), f))
-
     def loop(
         self, n: int | None = None, *, stop_on_reject: bool = True
     ) -> "SearchStream[T]":
@@ -67,6 +54,21 @@ class SearchStream[T](dp.AbstractSearchStream[T]):
                 (self.gen for _ in it), stop_on_reject=stop_on_reject
             )
         )
+
+    def bind[T2](
+        self, f: Callable[[dp.Solution[T]], dp.Stream[T2]]
+    ) -> "SearchStream[T2]":
+        return SearchStream(lambda: stream_bind(self.gen(), f))
+
+    ## Monadic Methods
+
+    def first(self) -> dp.StreamGen[dp.Solution[T] | None]:
+        return stream_take_one(self.gen())
+
+    def all(self) -> dp.StreamGen[Sequence[dp.Solution[T]]]:
+        return stream_take_all(self.gen())
+
+    ## Static Methods
 
     @staticmethod
     def sequence[U](
@@ -182,8 +184,67 @@ class StreamCombinator:
 
 
 #####
-##### Stream Utilities
+##### Standard Stream Transformers
 #####
+
+
+@stream_transformer
+def with_budget[T](
+    stream: SearchStream[T],
+    env: dp.PolicyEnv,
+    budget: dp.BudgetLimit,
+):
+    return stream_with_budget(stream.gen(), budget)
+
+
+@stream_transformer
+def take[T](
+    stream: SearchStream[T],
+    env: dp.PolicyEnv,
+    num_generated: int,
+    strict: bool = True,
+):
+    return stream_take(stream.gen(), num_generated, strict)
+
+
+@stream_transformer
+def loop[T](
+    stream: SearchStream[T],
+    env: dp.PolicyEnv,
+    n: int | None = None,
+    *,
+    stop_on_reject: bool = True,
+) -> dp.Stream[T]:
+    """
+    Stream transformer that repeatedly respawns the underlying stream,
+    up to an (optional) limit.
+    """
+
+    return stream.loop(n, stop_on_reject=stop_on_reject).gen()
+
+
+#####
+##### Basic Operations on Streams
+#####
+
+
+@dataclass(frozen=True)
+class SpendingDeclined:
+    pass
+
+
+def spend_on[T](
+    f: Callable[[], tuple[T, dp.Budget]], /, estimate: dp.Budget
+) -> dp.StreamGen[T | SpendingDeclined]:
+    barrier = Barrier(estimate, allow=True)
+    yield barrier
+    if barrier.allow:
+        value, spent = f()
+        yield Spent(budget=spent, barrier=barrier)
+        return value
+    else:
+        yield Spent(budget=dp.Budget.zero(), barrier=barrier)
+        return SpendingDeclined()
 
 
 def stream_bind[A, B](
@@ -363,67 +424,3 @@ def stream_sequence[T](
         yield from monitor_acceptance(mk(), on_accept)
         if stop_on_reject and not accepted:
             break
-
-
-#####
-##### Standard Stream Transformers
-#####
-
-
-@stream_transformer
-def with_budget[T](
-    stream: SearchStream[T],
-    env: dp.PolicyEnv,
-    budget: dp.BudgetLimit,
-):
-    return stream_with_budget(stream.gen(), budget)
-
-
-@stream_transformer
-def take[T](
-    stream: SearchStream[T],
-    env: dp.PolicyEnv,
-    num_generated: int,
-    strict: bool = True,
-):
-    return stream_take(stream.gen(), num_generated, strict)
-
-
-@stream_transformer
-def loop[T](
-    stream: SearchStream[T],
-    env: dp.PolicyEnv,
-    n: int | None = None,
-    *,
-    stop_on_reject: bool = True,
-) -> dp.Stream[T]:
-    """
-    Stream transformer that repeatedly respawns the underlying stream,
-    up to an (optional) limit.
-    """
-
-    return stream.loop(n, stop_on_reject=stop_on_reject).gen()
-
-
-#####
-##### Utils
-#####
-
-
-@dataclass(frozen=True)
-class SpendingDeclined:
-    pass
-
-
-def spend_on[T](
-    f: Callable[[], tuple[T, dp.Budget]], /, estimate: dp.Budget
-) -> dp.StreamGen[T | SpendingDeclined]:
-    barrier = Barrier(estimate, allow=True)
-    yield barrier
-    if barrier.allow:
-        value, spent = f()
-        yield Spent(budget=spent, barrier=barrier)
-        return value
-    else:
-        yield Spent(budget=dp.Budget.zero(), barrier=barrier)
-        return SpendingDeclined()
