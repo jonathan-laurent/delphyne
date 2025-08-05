@@ -89,6 +89,12 @@ class SearchStream[T](dp.AbstractSearchStream[T]):
             )
         )
 
+    @staticmethod
+    def parallel[U](streams: Sequence["SearchStream[U]"]) -> "SearchStream[U]":
+        return SearchStream(
+            lambda: stream_parallel([s.gen() for s in streams])
+        )
+
 
 #####
 ##### Stream transformers
