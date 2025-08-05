@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from typing import Protocol
 
 import delphyne.core as dp
-from delphyne.core.streams import Barrier, Spent
+from delphyne.core.streams import Barrier, BarrierId, Spent
 
 #####
 ##### Search Streams
@@ -245,14 +245,14 @@ class SpendingDeclined:
 def spend_on[T](
     f: Callable[[], tuple[T, dp.Budget]], /, estimate: dp.Budget
 ) -> dp.StreamGen[T | SpendingDeclined]:
-    barrier = Barrier(estimate, allow=True)
+    barrier = Barrier(estimate)
     yield barrier
     if barrier.allow:
         value, spent = f()
-        yield Spent(budget=spent, barrier=barrier)
+        yield Spent(budget=spent, barrier_id=barrier.id)
         return value
     else:
-        yield Spent(budget=dp.Budget.zero(), barrier=barrier)
+        yield Spent(budget=dp.Budget.zero(), barrier_id=barrier.id)
         return SpendingDeclined()
 
 
@@ -267,11 +267,11 @@ def stream_bind[A, B](
                 generated.append(msg)
             case Barrier():
                 num_pending += 1
+                yield msg
                 if generated:
                     # We don't allow new spending before `generated` is
                     # emptied.
                     msg.allow = False
-                yield msg
             case Spent():
                 num_pending -= 1
                 yield msg
@@ -291,9 +291,9 @@ def stream_take_one[T](
         match msg:
             case Barrier():
                 num_pending += 1
+                yield msg
                 if generated:
                     msg.allow = False
-                yield msg
             case Spent():
                 num_pending -= 1
                 yield msg
@@ -325,9 +325,10 @@ def stream_with_budget[T](
     """
     total_spent = dp.Budget.zero()
     # Map the id of a barrier to the frozen budget.
-    pending: dict[int, dp.Budget] = {}
+    pending: dict[BarrierId, dp.Budget] = {}
 
     for msg in stream:
+        yield msg
         match msg:
             case Barrier(pred):
                 bound = (
@@ -337,17 +338,13 @@ def stream_with_budget[T](
                 )
                 if not (bound <= budget):
                     msg.allow = False
-                pending[id(msg)] = (
-                    msg.budget if msg.allow else dp.Budget.zero()
-                )
+                pending[msg.id] = msg.budget if msg.allow else dp.Budget.zero()
             case Spent(spent):
                 total_spent = total_spent + spent
-                matching = id(msg.barrier)
-                assert matching in pending
-                del pending[matching]
+                assert msg.barrier_id in pending
+                del pending[msg.barrier_id]
             case _:
                 pass
-        yield msg
     assert not pending
 
 
@@ -364,13 +361,13 @@ def stream_take[T](
     for msg in stream:
         match msg:
             case Barrier():
+                yield msg
                 if count >= num_generated:
                     msg.allow = False
                 num_pending += 1
-                yield msg
             case Spent():
-                num_pending -= 1
                 yield msg
+                num_pending -= 1
             case dp.Solution():
                 count += 1
                 if not (strict and count > num_generated):
@@ -468,12 +465,108 @@ def stream_next[T](
                             _stream_cons(msg, stream),
                         )
                     else:
+                        yield msg
                         msg.allow = False
+                else:
+                    yield msg
                 num_pending += 1
                 done = True
-                yield msg
             case Spent():
-                num_pending -= 1
                 yield msg
+                num_pending -= 1
             case dp.Solution():
                 generated.append(msg)
+
+
+#####
+##### Parralel Streams
+#####
+
+
+type _StreamElt[T] = dp.Solution[T] | Barrier | Spent
+
+
+def stream_parallel[T](streams: Sequence[dp.Stream[T]]) -> dp.Stream[T]:
+    import threading
+    from queue import Queue
+    from threading import Event
+
+    # Each worker can push a pair of a message to transmit and of an
+    # event to set whenever the client responded to the message. When
+    # the worker is done, it pushes `None`.
+    queue: Queue[tuple[_StreamElt[T], Event] | None] = Queue()
+
+    # Number of workers that are still active.
+    rem = len(streams)
+
+    # Lock for protecting access to `progressed` and `sleeping`.
+    lock = threading.Lock()
+    # Whether progress was made since the last time `sleeping` was reset
+    # (in the form of a new `Sent` message being sent to the client).
+    # WHen set to true, one can retry all sleeping barriers. Otherwise,
+    # one must decline at least one.
+    progressed: bool = False
+    # Each sleeping worker adds an element to this list, which is a
+    # queue indicating whether or not the barrier element should be
+    # forcibly declined.
+    sleeping: list[Queue[bool]] = []
+
+    def progress_made() -> None:
+        nonlocal progressed
+        with lock:
+            progressed = True
+
+    def sleep() -> bool:
+        resp = Queue[bool]()
+        with lock:
+            sleeping.append(resp)
+        return resp.get()
+
+    def check_sleeping() -> None:
+        nonlocal progressed
+        with lock:
+            if len(sleeping) != rem:
+                return
+            for i, q in enumerate(sleeping):
+                q.put(True if not progressed and i == 0 else False)
+            sleeping.clear()
+            progressed = False
+
+    def send(msg: _StreamElt[T]) -> None:
+        ev = Event()
+        queue.put((msg, ev))
+        # We wait this event to be sure that the message was received by
+        # the client and `msg.allow` is set.
+        ev.wait()
+
+    def worker(stream: dp.Stream[T]):
+        for msg in stream:
+            send(msg)
+            if isinstance(msg, Spent):
+                progress_made()
+            if isinstance(msg, Barrier) and not msg.allow:
+                while not msg.allow:
+                    force_cancel = sleep()
+                    if force_cancel:
+                        break
+                    send(Spent(dp.Budget.zero(), msg.id))
+                    msg.allow = True
+                    send(msg)
+        queue.put(None)
+
+    # Launch all workers
+    for s in streams:
+        thread = threading.Thread(target=worker, args=(s,))
+        thread.start()
+
+    # Forward messages from workers until all of them are done.
+    rem = len(streams)
+    while rem > 0:
+        elt = queue.get()
+        if elt is None:
+            rem -= 1
+            check_sleeping()
+        else:
+            msg, ev = elt
+            yield msg
+            ev.set()

@@ -84,6 +84,9 @@ class SearchMeta:
     pass
 
 
+type BarrierId = int
+
+
 @dataclass(frozen=True)
 class Solution[T]:
     tracked: Tracked[T]
@@ -94,12 +97,21 @@ class Solution[T]:
 class Barrier:
     budget: Budget
     allow: bool
+    id: BarrierId
+
+    def __init__(self, budget: Budget, id: BarrierId | None = None):
+        import builtins
+
+        self.budget = budget
+        self.allow = True
+        self.id = id if id is not None else builtins.id(self)
+        pass
 
 
 @dataclass(frozen=True)
 class Spent:
     budget: Budget
-    barrier: Barrier
+    barrier_id: BarrierId
 
 
 type Stream[T] = Generator[Solution[T] | Barrier | Spent, None, None]
