@@ -809,6 +809,16 @@ def dual_number_generation_policy(model: dp.LLM, shared: bool):
     return dp.dfs() & ip
 
 
+@dp.ensure_compatible(dual_number_generation)
+def dual_number_generation_parallel_policy(model: dp.LLM):
+    sub = dp.take(2) @ dp.dfs() & {"GenerateNumber": dp.few_shot(model)}
+    ip = {
+        "generate_number&low": sub,
+        "generate_number&high": sub,
+    }
+    return dp.par_dfs() & ip
+
+
 #####
 ##### Testing Imperative Strategies
 #####

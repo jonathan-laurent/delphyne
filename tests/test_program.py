@@ -388,3 +388,21 @@ def test_dual_number_generation(shared: bool):
     )
     print(log)
     assert res
+
+
+#####
+##### Parralel Policies
+#####
+
+
+def test_dual_number_parallel_generation():
+    strategy = ex.dual_number_generation()
+    res, _log = _eval_strategy(
+        strategy,
+        ex.dual_number_generation_parallel_policy,
+        cache_name="dual_number_parallel_generation",
+        max_requests=10,
+        max_res=10,
+    )
+    assert res
+    assert len(res) == 4

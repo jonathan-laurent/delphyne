@@ -7,6 +7,7 @@ from delphyne.core.streams import Solution, Stream
 from delphyne.core.trees import Success, Tree
 from delphyne.stdlib.nodes import Branch, Fail
 from delphyne.stdlib.policies import search_policy, unsupported_node
+from delphyne.stdlib.streams import SearchStream
 
 
 @search_policy
@@ -40,6 +41,26 @@ def dfs[P, T](
                     max_depth=max_depth - 1 if max_depth is not None else None,
                     max_branching=max_branching,
                 )(tree.child(a.tracked), env, policy).gen()
+            ).gen()
+        case _:
+            unsupported_node(tree.node)
+
+
+@search_policy
+def par_dfs[P, T](
+    tree: Tree[Branch | Fail, P, T],
+    env: PolicyEnv,
+    policy: P,
+) -> Stream[T]:
+    match tree.node:
+        case Success(x):
+            yield Solution(x)
+        case Fail():
+            pass
+        case Branch(cands):
+            cands = yield from cands.stream(env, policy).all()
+            yield from SearchStream.parallel(
+                [par_dfs()(tree.child(a.tracked), env, policy) for a in cands]
             ).gen()
         case _:
             unsupported_node(tree.node)
