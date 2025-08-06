@@ -526,13 +526,14 @@ def stream_parallel[T](streams: Sequence[dp.Stream[T]]) -> dp.Stream[T]:
         resp = Queue[bool]()
         with lock:
             sleeping.append(resp)
+        check_sleeping()
         return resp.get()
 
     def check_sleeping() -> None:
         nonlocal progressed
+        if len(sleeping) != rem:
+            return
         with lock:
-            if len(sleeping) != rem:
-                return
             for i, q in enumerate(sleeping):
                 q.put(True if not progressed and i == 0 else False)
             sleeping.clear()
