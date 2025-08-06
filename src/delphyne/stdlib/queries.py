@@ -249,7 +249,9 @@ class Query[T](dp.AbstractQuery[T]):
         }
         if (glob := self.globals()) is not None:
             args["globals"] = glob
-        return env.prompt(kind, self.name(), args, self._default_prompt(kind))
+        return env.prompt(
+            kind, self.query_name(), args, self._default_prompt(kind)
+        )
 
     def serialize_args(self) -> dict[str, object]:
         return cast(dict[str, object], ty.pydantic_dump(type(self), self))
@@ -524,7 +526,7 @@ def fetch_examples(
     query: dp.AbstractQuery[Any],
     selectors: Sequence[ExampleSelector],
 ) -> Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]]:
-    raw = list(database.examples(query.name(), query.serialize_args()))
+    raw = list(database.examples(query.query_name(), query.serialize_args()))
     for sel in selectors:
         raw = sel(raw)
     return [(query.parse_instance(ex.args), ex.answer) for ex in raw]

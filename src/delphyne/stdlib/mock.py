@@ -21,7 +21,7 @@ def demo_mock_oracle(
 ) -> PromptingPolicy:
     def find_answers(query: dp.AbstractQuery[Any]) -> Iterable[refs.Answer]:
         for q in demo.queries:
-            if q.query != query.name():
+            if q.query != query.query_name():
                 continue
             if json.dumps(q.args) != json.dumps(query.serialize_args()):
                 continue

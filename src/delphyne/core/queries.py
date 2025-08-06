@@ -78,7 +78,7 @@ class AbstractQuery[T](ABC):
         """
         return ty.NoTypeInfo()
 
-    def name(self) -> str:
+    def query_name(self) -> str:
         """
         Return a unique name identifying the query type.
 
@@ -88,7 +88,7 @@ class AbstractQuery[T](ABC):
         return self.__class__.__name__
 
     def default_tags(self) -> Sequence[str]:
-        return [self.name()]
+        return [self.query_name()]
 
     @abstractmethod
     def parse_answer(self, answer: Answer) -> T | ParseError:

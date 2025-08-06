@@ -54,7 +54,7 @@ class Flag[F: FlagQuery[Any]](dp.Node):
     def summary_message(self) -> str:
         query = self.flag.attached.query
         assert isinstance(query, FlagQuery)
-        name = query.name()
+        name = query.query_name()
         return f"{name}: {', '.join(query.flag_values())}"
 
     def navigate(self) -> dp.Navigation:

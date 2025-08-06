@@ -403,7 +403,7 @@ class _TraceTranslator:
         query: dp.AbstractQuery[Any],
         tags: Sequence[dp.Tag],
     ) -> fb.NodeProperty:
-        name = query.name()
+        name = query.query_name()
         args = query.serialize_args()
         answers: list[fb.Answer] = []
         origin = dp.QueryOrigin(id, ref)

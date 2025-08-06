@@ -155,7 +155,7 @@ class SerializedQuery:
     @staticmethod
     def make(query: dp.AbstractQuery[Any]) -> "SerializedQuery":
         args = json.dumps(query.serialize_args())
-        return SerializedQuery(query.name(), args)
+        return SerializedQuery(query.query_name(), args)
 
 
 class DemoHintResolver(nv.HintResolver):
@@ -223,7 +223,9 @@ class DemoHintResolver(nv.HintResolver):
             except Exception as e:
                 raise dp.StrategyException(e)
             implicit = fb.ImplicitAnswer(
-                query.query.name(), query.query.serialize_args(), ans_text
+                query.query.query_name(),
+                query.query.serialize_args(),
+                ans_text,
             )
             self.implicit.append((serialized, implicit))
             return refs.Answer(None, ans_text)
