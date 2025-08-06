@@ -20,7 +20,7 @@ import yaml
 
 import delphyne.stdlib.commands as cmd
 import delphyne.stdlib.models as md
-from delphyne.core import CacheFormat
+from delphyne.stdlib.commands.run_strategy import CacheFormat
 from delphyne.stdlib.tasks import CommandExecutionContext, run_command
 from delphyne.utils.typing import NoTypeInfo, pydantic_dump, pydantic_load
 

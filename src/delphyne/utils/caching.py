@@ -2,7 +2,6 @@
 Simple utility for caching values.
 """
 
-import dbm
 import functools
 import hashlib
 from collections.abc import Callable
@@ -40,17 +39,13 @@ Caching mode:
 """
 
 
-type CacheFormat = Literal["yaml", "db"]
-"""
-Format used to store the cache on disk:
-
-- `yaml`: the cache is stored in YAML files, one file per hash
-- `db`: the cache is stored in a database
-"""
+def cache_database_file(dir: Path) -> Path:
+    dir.mkdir(parents=True, exist_ok=True)
+    return dir / DATABASE_FILE_NAME
 
 
 def cache_db[P, T](
-    dir: Path,
+    database: Any,
     mode: CacheMode = "read_write",
 ) -> Callable[[Callable[[P], T]], Callable[[P], T]]:
     def decorator(func: Callable[[P], T]) -> Callable[[P], T]:
@@ -62,22 +57,17 @@ def cache_db[P, T](
         def cached_func(arg: P) -> T:
             if mode == "off":
                 return func(arg)
-            dir.mkdir(parents=True, exist_ok=True)
-            database_file = dir / DATABASE_FILE_NAME
-            with dbm.open(database_file, "c") as db:
-                arg_json = arg_adapter.dump_json(arg)
-                if arg_json in db:
-                    assert mode != "create", "Cache entry already exists."
-                    ret_json = db[arg_json]
-                    ret = ret_adapter.validate_json(ret_json)
-                    return ret
-                assert mode != "replay", (
-                    f"Cache entry not found for:\n\n {arg}"
-                )
-                ret = func(arg)
-                ret_json = ret_adapter.dump_json(ret)
-                db[arg_json] = ret_json
+            arg_json = arg_adapter.dump_json(arg)
+            if arg_json in database:
+                assert mode != "create", "Cache entry already exists."
+                ret_json = database[arg_json]
+                ret = ret_adapter.validate_json(ret_json)
                 return ret
+            assert mode != "replay", f"Cache entry not found for:\n\n {arg}"
+            ret = func(arg)
+            ret_json = ret_adapter.dump_json(ret)
+            database[arg_json] = ret_json
+            return ret
 
         return cached_func
 
@@ -162,17 +152,50 @@ def cache_yaml[P, T](
     return decorator
 
 
+#####
+##### Generic Interface
+#####
+
+
+@dataclass(frozen=True)
+class CacheDb:
+    """
+    Wraps a dbm cache database. Build using:
+
+        with open(caching.cache_database_file(dir), "c") as db:
+            info = CacheDb(db)
+            ...
+    """
+
+    database: Any  # dbm._Database
+
+
+@dataclass(frozen=True)
+class CacheYaml:
+    cache_dir: Path
+
+
+type CacheInfo = CacheDb | CacheYaml
+
+
+@dataclass(frozen=True)
+class CacheSpec:
+    info: CacheInfo
+    mode: CacheMode = "read_write"
+
+
 def cache[P, T](
-    dir: Path,
+    cache_spec: CacheSpec,
     hash_arg: Callable[[P], bytes] | None = None,
     hash_len: int = 8,
-    mode: CacheMode = "read_write",
-    format: CacheFormat = "yaml",
 ) -> Callable[[Callable[[P], T]], Callable[[P], T]]:
-    if format == "yaml":
-        return cache_yaml(
-            dir=dir, hash_arg=hash_arg, hash_len=hash_len, mode=mode
-        )
-    elif format == "db":
-        return cache_db(dir=dir, mode=mode)
-    assert False
+    match cache_spec.info:
+        case CacheDb(database):
+            return cache_db(database, cache_spec.mode)
+        case CacheYaml(cache_dir):
+            return cache_yaml(
+                cache_dir,
+                mode=cache_spec.mode,
+                hash_arg=hash_arg,
+                hash_len=hash_len,
+            )

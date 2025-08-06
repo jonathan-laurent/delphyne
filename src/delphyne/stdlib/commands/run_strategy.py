@@ -2,10 +2,11 @@
 Standard commands for running strategies.
 """
 
+import dbm
 import time
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any, cast
+from typing import Any, Literal, cast
 
 import delphyne.analysis as analysis
 import delphyne.analysis.feedback as fb
@@ -13,8 +14,17 @@ import delphyne.core as dp
 import delphyne.stdlib.models as md
 import delphyne.stdlib.streams as dps
 import delphyne.stdlib.tasks as ta
+import delphyne.utils.caching as ca
 from delphyne.core.streams import Barrier, Solution, Spent
 from delphyne.utils.typing import pydantic_dump
+
+type CacheFormat = Literal["yaml", "db"]
+"""
+Format used to store the cache on disk:
+
+- `yaml`: the cache is stored in YAML files, one file per hash
+- `db`: the cache is stored in a database
+"""
 
 
 @dataclass
@@ -34,29 +44,24 @@ class RunLoadedStrategyArgs[N: dp.Node, P, T]:
     num_generated: int = 1
     budget: dict[str, float] | None = None
     cache_dir: str | None = None
-    cache_mode: dp.CacheMode = "read_write"
-    cache_format: dp.CacheFormat = "yaml"
+    cache_mode: ca.CacheMode = "read_write"
+    cache_format: CacheFormat = "yaml"
     export_raw_trace: bool = True
     export_log: bool = True
     export_browsable_trace: bool = True
 
 
-def run_loaded_strategy[N: dp.Node, P, T](
+def run_loaded_strategy_with_cache[N: dp.Node, P, T](
     task: ta.TaskContext[ta.CommandResult[RunStrategyResponse]],
     exe: ta.CommandExecutionContext,
     args: RunLoadedStrategyArgs[N, P, T],
+    cache_spec: ca.CacheSpec | None,
 ):
-    cache_dir = None
-    if args.cache_dir is not None:
-        assert exe.cache_root is not None, "Nonspecified cache root."
-        cache_dir = exe.cache_root / args.cache_dir
     env = dp.PolicyEnv(
         prompt_dirs=exe.prompt_dirs,
         data_dirs=exe.data_dirs,
         demonstration_files=exe.demo_files,
-        cache_dir=cache_dir,
-        cache_mode=args.cache_mode,
-        cache_format=args.cache_format,
+        cache=cache_spec,
         do_not_match_identical_queries=True,
         make_cache=md.LLMCache,
     )
@@ -145,6 +150,34 @@ def run_loaded_strategy[N: dp.Node, P, T](
     task.set_result(compute_result())
 
 
+def run_loaded_strategy[N: dp.Node, P, T](
+    task: ta.TaskContext[ta.CommandResult[RunStrategyResponse]],
+    exe: ta.CommandExecutionContext,
+    args: RunLoadedStrategyArgs[N, P, T],
+):
+    cache_spec = None
+    db: Any | None = None
+    if args.cache_dir is not None:
+        assert exe.cache_root is not None, "Nonspecified cache root."
+        cache_dir = exe.cache_root / args.cache_dir
+        if args.cache_format == "yaml":
+            cache_info = ca.CacheYaml(cache_dir)
+        else:
+            db = dbm.open(ca.cache_database_file(cache_dir), "c")
+            cache_info = ca.CacheDb(db)
+        cache_spec = ca.CacheSpec(cache_info, mode=args.cache_mode)
+    try:
+        run_loaded_strategy_with_cache(
+            task=task,
+            exe=exe,
+            args=args,
+            cache_spec=cache_spec,
+        )
+    finally:
+        if db is not None:
+            db.close()
+
+
 @dataclass
 class RunStrategyArgs:
     strategy: str
@@ -154,8 +187,8 @@ class RunStrategyArgs:
     num_generated: int
     budget: dict[str, float]
     cache_dir: str | None = None
-    cache_mode: dp.CacheMode = "read_write"
-    cache_format: dp.CacheFormat = "yaml"
+    cache_mode: ca.CacheMode = "read_write"
+    cache_format: CacheFormat = "yaml"
     export_raw_trace: bool = True
     export_log: bool = True
     export_browsable_trace: bool = True

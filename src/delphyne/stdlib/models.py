@@ -8,7 +8,6 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import AsyncIterable, Iterable, Sequence
 from dataclasses import dataclass
-from pathlib import Path
 from typing import (
     Any,
     Literal,
@@ -22,10 +21,9 @@ from typing import (
 import pydantic
 
 import delphyne.core.inspect as dpi
-from delphyne.core.environments import CacheFormat, CacheMode
 from delphyne.core.refs import Answer, Structured, ToolCall
 from delphyne.core.streams import Budget
-from delphyne.utils.caching import cache
+from delphyne.utils.caching import CacheSpec, cache
 from delphyne.utils.typing import TypeAnnot, pydantic_dump
 
 #####
@@ -443,20 +441,11 @@ class WithRetry(LLM):
 
 @dataclass
 class LLMCache:
-    cache_dir: Path
-    mode: CacheMode
-    format: CacheFormat
+    spec: CacheSpec
     num_seen: dict[LLMRequest, int]
 
-    def __init__(
-        self,
-        cache_dir: Path,
-        mode: CacheMode = "read_write",
-        format: CacheFormat = "yaml",
-    ):
-        self.cache_dir = cache_dir
-        self.mode = mode
-        self.format = format
+    def __init__(self, spec: CacheSpec):
+        self.spec = spec
         self.num_seen: dict[LLMRequest, int] = defaultdict(lambda: 0)
 
 
@@ -490,10 +479,8 @@ class CachedModel(LLM):
 
     def __post_init__(self):
         @cache(
-            dir=self.cache.cache_dir,
+            cache_spec=self.cache.spec,
             hash_arg=_CachedRequest.stable_repr,
-            mode=self.cache.mode,
-            format=self.cache.format,
         )
         def run_request(req: _CachedRequest) -> LLMResponse:
             base = req.request

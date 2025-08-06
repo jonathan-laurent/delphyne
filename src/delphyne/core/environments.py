@@ -16,6 +16,7 @@ import yaml
 from delphyne.core import pprint, refs, traces
 from delphyne.core.demos import Demo, QueryDemo, StrategyDemo, translate_answer
 from delphyne.core.refs import Answer
+from delphyne.utils.caching import CacheSpec
 from delphyne.utils.typing import pydantic_load
 from delphyne.utils.yaml import dump_yaml_object
 
@@ -293,21 +294,15 @@ class InvalidDemoFile(Exception):
     exn: Exception
 
 
-type CacheMode = Literal["read_write", "off", "create", "replay"]
-type CacheFormat = Literal["yaml", "db"]
-
-
 class PolicyEnv:
     def __init__(
         self,
+        *,
         prompt_dirs: Sequence[Path],
         demonstration_files: Sequence[Path],
         data_dirs: Sequence[Path],
-        cache_dir: Path | None = None,
-        cache_mode: CacheMode = "read_write",
-        cache_format: CacheFormat = "yaml",
-        make_cache: Callable[[Path, CacheMode, CacheFormat], object]
-        | None = None,
+        cache: CacheSpec | None = None,
+        make_cache: Callable[[CacheSpec], object] | None = None,
         do_not_match_identical_queries: bool = False,
     ):
         """
@@ -318,11 +313,9 @@ class PolicyEnv:
         self.examples = ExampleDatabase(do_not_match_identical_queries)
         self.tracer = Tracer()
         self.requests_cache = None
-        if cache_dir is not None:
+        if cache is not None:
             assert make_cache is not None
-            self.requests_cache = make_cache(
-                cache_dir, cache_mode, cache_format
-            )
+            self.requests_cache = make_cache(cache)
         for path in demonstration_files:
             if not path.suffix.endswith(DEMO_FILE_EXT):
                 path = path.with_suffix(DEMO_FILE_EXT)
