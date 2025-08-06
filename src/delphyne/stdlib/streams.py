@@ -500,7 +500,7 @@ def stream_parallel[T](streams: Sequence[dp.Stream[T]]) -> dp.Stream[T]:
     # Each worker can push a pair of a message to transmit and of an
     # event to set whenever the client responded to the message. When
     # the worker is done, it pushes `None`.
-    queue: Queue[tuple[_StreamElt[T], Event] | None] = Queue()
+    queue: Queue[tuple[_StreamElt[T], Event] | None | Exception] = Queue()
 
     # Number of workers that are still active.
     rem = len(streams)
@@ -546,19 +546,22 @@ def stream_parallel[T](streams: Sequence[dp.Stream[T]]) -> dp.Stream[T]:
         ev.wait()
 
     def worker(stream: dp.Stream[T]):
-        for msg in stream:
-            send(msg)
-            if isinstance(msg, Spent):
-                progress_made()
-            if isinstance(msg, Barrier) and not msg.allow:
-                while not msg.allow:
-                    force_cancel = sleep()
-                    if force_cancel:
-                        break
-                    send(Spent(dp.Budget.zero(), msg.id))
-                    msg.allow = True
-                    send(msg)
-        queue.put(None)
+        try:
+            for msg in stream:
+                send(msg)
+                if isinstance(msg, Spent):
+                    progress_made()
+                if isinstance(msg, Barrier) and not msg.allow:
+                    while not msg.allow:
+                        force_cancel = sleep()
+                        if force_cancel:
+                            break
+                        send(Spent(dp.Budget.zero(), msg.id))
+                        msg.allow = True
+                        send(msg)
+            queue.put(None)
+        except Exception as e:
+            queue.put(e)
 
     # Launch all workers
     for s in streams:
@@ -572,6 +575,8 @@ def stream_parallel[T](streams: Sequence[dp.Stream[T]]) -> dp.Stream[T]:
         if elt is None:
             rem -= 1
             check_sleeping()
+        elif isinstance(elt, Exception):
+            raise elt
         else:
             msg, ev = elt
             yield msg
