@@ -42,7 +42,7 @@ from delphyne.core.policies import (
 from delphyne.core.queries import (
     AbstractQuery,
     ParseError,
-    QueryConfig,
+    QuerySettings,
 )
 from delphyne.core.refs import (
     Answer,

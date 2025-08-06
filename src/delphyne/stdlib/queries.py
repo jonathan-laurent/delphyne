@@ -178,9 +178,9 @@ class Query[T](dp.AbstractQuery[T]):
 
         return parser(answer)
 
-    def query_config(self) -> dp.QueryConfig:
+    def query_settings(self) -> dp.QuerySettings:
         attr = self._parser_attribute()
-        return dp.QueryConfig(
+        return dp.QuerySettings(
             force_structured_output=(attr == "structured"),
             force_tool_call=(attr == "final_tool_call"),
         )
@@ -823,7 +823,7 @@ def few_shot[T](
     if params is None:
         params = {}
     prompt = create_prompt(query.query, examples, params, mode, mngr)
-    config = query.query.query_config()
+    config = query.query.query_settings()
     options: md.RequestOptions = {}
     if temperature is not None:
         options["temperature"] = temperature

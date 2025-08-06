@@ -33,7 +33,7 @@ class ParseError(Error, Exception):
 
 
 @dataclass(frozen=True)
-class QueryConfig:
+class QuerySettings:
     force_structured_output: bool = False
     force_tool_call: bool = False
 
@@ -55,8 +55,8 @@ class AbstractQuery[T](ABC):
     def query_prefix(self) -> AnswerPrefix | None:
         return None
 
-    def query_config(self) -> QueryConfig:
-        return QueryConfig()
+    def query_settings(self) -> QuerySettings:
+        return QuerySettings()
 
     def serialize_args(self) -> dict[str, object]:
         return cast(dict[str, object], ty.pydantic_dump(type(self), self))

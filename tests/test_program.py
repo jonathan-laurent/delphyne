@@ -24,11 +24,11 @@ def _make_cache(name: str) -> dp.LLMCache:
 
 def test_query_properties():
     q1 = ex.StructuredOutput(topic="AI")
-    assert q1.query_config().force_structured_output
+    assert q1.query_settings().force_structured_output
     q2 = ex.MakeSum([1, 2, 3, 4], 7)
-    assert not q2.query_config().force_structured_output
+    assert not q2.query_settings().force_structured_output
     q3 = ex.ProposeArticle(user_name="Alice")
-    assert q3.query_config().force_tool_call
+    assert q3.query_settings().force_tool_call
     assert len(q3.query_tools()) == 3  # Counting the answer tool
 
 
