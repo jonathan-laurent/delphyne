@@ -158,6 +158,7 @@ from delphyne.stdlib.streams import (
     SearchStream,
     SpendingDeclined,
     StreamTransformer,
+    loop,
     spend_on,
     stream_transformer,
     take,
