@@ -166,7 +166,14 @@ class Query[T](dp.AbstractQuery[T]):
     def _decomposed_answer_type(cls) -> _DecomposedAnswerType:
         return _DecomposedAnswerType(cls._answer_type())
 
-    ### Derived from autoconfig
+    ### Parsing Answers
+
+    @override
+    def parse_answer(self, answer: dp.Answer) -> T | dp.ParseError:
+        try:
+            return self.parse(answer)
+        except dp.ParseError as e:
+            return e
 
     def parse(self, answer: Answer) -> T:
         """
@@ -216,6 +223,8 @@ class Query[T](dp.AbstractQuery[T]):
 
         return parser(answer)
 
+    ### Query Settings
+
     @override
     def query_settings(self, mode: dp.AnswerModeName) -> dp.QuerySettings:
         config = self.query_config(mode)
@@ -248,19 +257,12 @@ class Query[T](dp.AbstractQuery[T]):
             tools.append(ans_type.final)
         return tools
 
+    ### Query Prefixes
+
     @classmethod
     def _has_special_prefix_attr(cls):
         annots = typing.get_type_hints(cls)
         return "prefix" in annots and annots["prefix"] is ct.AnswerPrefix
-
-    @override
-    def finite_answer_set(self) -> Sequence[dp.Answer] | None:
-        # We handle the special case where the return type is a literal
-        # type that is a subtype of str.
-        ans = self.answer_type()
-        if (res := _match_string_literal_type(ans)) is not None:
-            return [dp.Answer(None, v) for v in res]
-        return None
 
     @override
     def query_prefix(self) -> ct.AnswerPrefix | None:
@@ -272,33 +274,7 @@ class Query[T](dp.AbstractQuery[T]):
             return getattr(self, "prefix")
         return None
 
-    @override
-    def parse_answer(self, answer: dp.Answer) -> T | dp.ParseError:
-        try:
-            return self.parse(answer)
-        except dp.ParseError as e:
-            return e
-
-    def globals(self) -> dict[str, object] | None:
-        return None
-
-    @classmethod
-    def _default_prompt(
-        cls, kind: Literal["system", "instance"] | str
-    ) -> str | None:
-        attr_name = f"__{kind}_prompt__"
-        if hasattr(cls, attr_name):
-            res = getattr(cls, attr_name)
-            assert isinstance(res, str)
-            return textwrap.dedent(res).strip()
-        if kind == "instance":
-            if cls._has_special_prefix_attr():
-                return "{{query | yaml(exclude_fields=['prefix']) | trim}}"
-            else:
-                return "{{query | yaml | trim}}"
-        if kind == "system" and (doc := inspect.getdoc(cls)) is not None:
-            return doc
-        return None
+    ### Producing Prompts
 
     @override
     def generate_prompt(
@@ -320,6 +296,29 @@ class Query[T](dp.AbstractQuery[T]):
             kind, self.query_name(), args, self._default_prompt(kind)
         )
 
+    @classmethod
+    def _default_prompt(
+        cls, kind: Literal["system", "instance"] | str
+    ) -> str | None:
+        attr_name = f"__{kind}_prompt__"
+        if hasattr(cls, attr_name):
+            res = getattr(cls, attr_name)
+            assert isinstance(res, str)
+            return textwrap.dedent(res).strip()
+        if kind == "instance":
+            if cls._has_special_prefix_attr():
+                return "{{query | yaml(exclude_fields=['prefix']) | trim}}"
+            else:
+                return "{{query | yaml | trim}}"
+        if kind == "system" and (doc := inspect.getdoc(cls)) is not None:
+            return doc
+        return None
+
+    def globals(self) -> dict[str, object] | None:
+        return None
+
+    ### Other Simple Overloads
+
     @override
     def serialize_args(self) -> dict[str, object]:
         return cast(dict[str, object], ty.pydantic_dump(type(self), self))
@@ -331,6 +330,17 @@ class Query[T](dp.AbstractQuery[T]):
     @override
     def answer_type(self) -> TypeAnnot[T]:
         return self._answer_type()
+
+    @override
+    def finite_answer_set(self) -> Sequence[dp.Answer] | None:
+        # We handle the special case where the return type is a literal
+        # type that is a subtype of str.
+        ans = self.answer_type()
+        if (res := _match_string_literal_type(ans)) is not None:
+            return [dp.Answer(None, v) for v in res]
+        return None
+
+    ### Generating Opaque Spaces
 
     @overload
     def using(self, get_policy: EllipsisType, /) -> Opaque[IPDict, T]: ...
