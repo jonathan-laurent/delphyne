@@ -34,20 +34,8 @@ ASSISTANT_PRIMING_STR = "!<assistant>"
 
 
 #####
-##### Standard Queries
+##### Response Type
 #####
-
-
-type _StandardParserName = Literal["structured", "final_tool_call"]
-
-
-type ParserSpec = (
-    _StandardParserName | GenericTextParser | Callable[[str], Any]
-)
-"""
-Queries can have a `__parser__` attribute, from which the `parse`,
-`query_tools` and `query_config` methods are deduced.
-"""
 
 
 @dataclass
@@ -72,6 +60,24 @@ class Response[F, T: md.AbstractTool[Any]]:
     parsed: FinalAnswer[F] | ToolRequests[T]
 
 
+#####
+##### Query Configuration
+#####
+
+
+@dataclass(frozen=True)
+class QueryConfig:
+    parser: "ParserSpec"
+
+
+type _StandardParserName = Literal["structured", "final_tool_call"]
+
+
+type ParserSpec = (
+    _StandardParserName | GenericTextParser | Callable[[str], Any]
+)
+
+
 @dataclass
 class _DecomposedResponseType:
     tools: Sequence[type[md.AbstractTool[Any]]]
@@ -79,8 +85,14 @@ class _DecomposedResponseType:
 
 @dataclass
 class _DecomposedAnswerType:
-    resp: _DecomposedResponseType | None
+    """
+    Represents an answer type (type parameter of `Query`) of the form
+    `F` or `Response[F, T1|...|Tn]`: `final` contains `F` and `resp`
+    contains the list of all Ti.
+    """
+
     final: TypeAnnot[Any]
+    resp: _DecomposedResponseType | None
 
     def __init__(self, annot: TypeAnnot[Any]):
         if typing.get_origin(annot) is Response:
@@ -98,6 +110,11 @@ class _DecomposedAnswerType:
             self.final = annot
 
 
+#####
+##### Standard Queries
+#####
+
+
 class Query[T](dp.AbstractQuery[T]):
     """
     Base class for queries, which adds convenience features on top of
@@ -105,24 +122,59 @@ class Query[T](dp.AbstractQuery[T]):
     hints and from the special __parser__ class attribute.
     """
 
-    @classmethod
-    def _parser_attribute(cls) -> ParserSpec | None:
+    ### Inspection methods
+
+    def query_config(self, mode: dp.AnswerModeName) -> QueryConfig | None:
+        """
+        By default, we obtain the configuration by looking for a
+        __config__ field, which might be either a single configuration
+        or a dictionary mapping modes to configurations. Instead, if
+        only the parser is specified, we can use __parser__.
+        """
+        cls = type(self)
         parse_overriden = dpi.is_method_overridden(Query, cls, "parse")
-        if hasattr(cls, "__parser__"):
+        if parse_overriden:
+            assert not hasattr(self, "__config__")
+            assert not hasattr(self, "__parser__")
+            return None
+        if hasattr(self, "__config__"):
+            assert not hasattr(self, "__parser__"), (
+                "Cannot have both __config__ and __parser__ attributes."
+            )
+            config_attr = getattr(self, "__config__")
+            if isinstance(config_attr, QueryConfig):
+                return config_attr
+            else:
+                assert isinstance(config_attr, dict)
+                config_attr = cast(Any, config_attr)
+                return config_attr[mode]
+        elif hasattr(self, "__parser__"):
+            parse_overriden = dpi.is_method_overridden(Query, cls, "parse")
             assert not parse_overriden
-            return getattr(cls, "__parser__")
-        return "structured" if not parse_overriden else None
+            parser_attr = getattr(cls, "__parser__")
+            if isinstance(parser_attr, dict):
+                parser_attr = cast(Any, parser_attr)
+                parser = parser_attr[mode]
+            else:
+                parser = parser_attr
+            _check_valid_parser_spec(parser)
+            return QueryConfig(parser)
+        else:
+            return QueryConfig("structured")
 
     @classmethod
     def _decomposed_answer_type(cls) -> _DecomposedAnswerType:
         return _DecomposedAnswerType(cls._answer_type())
 
-    def query_tools(self) -> Sequence[type[Any]]:
+    ### Derived from autoconfig
+
+    def query_tools(self, mode: dp.AnswerModeName) -> Sequence[type[Any]]:
         ans_type = self._decomposed_answer_type()
         tools: list[type[Any]] = []
         if ans_type.resp is not None:
             tools = [*ans_type.resp.tools]
-        if self._parser_attribute() == "final_tool_call":
+        config = self.query_config(mode)
+        if config is not None and config.parser == "final_tool_call":
             assert isinstance(ans_type.final, type)
             tools.append(ans_type.final)
         return tools
@@ -140,7 +192,9 @@ class Query[T](dp.AbstractQuery[T]):
         """
 
         # Decompose the specified answer type
-        attr = self._parser_attribute()
+        config = self.query_config(answer.mode)
+        assert config is not None
+        attr = config.parser
         ans_type = self._decomposed_answer_type()
 
         # Compute base parsing function `parser`
@@ -178,8 +232,10 @@ class Query[T](dp.AbstractQuery[T]):
 
         return parser(answer)
 
-    def query_settings(self) -> dp.QuerySettings:
-        attr = self._parser_attribute()
+    def query_settings(self, mode: dp.AnswerModeName) -> dp.QuerySettings:
+        config = self.query_config(mode)
+        assert config is not None
+        attr = config.parser
         return dp.QuerySettings(
             force_structured_output=(attr == "structured"),
             force_tool_call=(attr == "final_tool_call"),
@@ -326,6 +382,10 @@ def _has_final_tool_call(ans_type: _DecomposedAnswerType, answer: dp.Answer):
         tc.name == md.tool_name_of_class_name(ans_type.final.__name__)
         for tc in answer.tool_calls
     )
+
+
+def _check_valid_parser_spec(obj: Any):
+    assert isinstance(obj, str) or callable(obj)
 
 
 def _match_string_literal_type(t: Any) -> Sequence[str] | None:
@@ -823,17 +883,17 @@ def few_shot[T](
     if params is None:
         params = {}
     prompt = create_prompt(query.query, examples, params, mode, mngr)
-    config = query.query.query_settings()
+    settings = query.query.query_settings(mode)
     options: md.RequestOptions = {}
     if temperature is not None:
         options["temperature"] = temperature
     structured_output = None
-    if config.force_structured_output:
+    if settings.force_structured_output:
         out_type = query.query.structured_output_type()
         structured_output = md.Schema.make(out_type)
-    if config.force_tool_call:
+    if settings.force_tool_call:
         options["tool_choice"] = "required"
-    tools = [md.Schema.make(t) for t in query.query.query_tools()]
+    tools = [md.Schema.make(t) for t in query.query.query_tools(mode)]
     num_reqs = 0
     while max_requests is None or num_reqs < max_requests:
         num_reqs += 1

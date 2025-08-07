@@ -52,12 +52,6 @@ class AbstractQuery[T](ABC):
     ) -> str:
         pass
 
-    def query_prefix(self) -> AnswerPrefix | None:
-        return None
-
-    def query_settings(self) -> QuerySettings:
-        return QuerySettings()
-
     def serialize_args(self) -> dict[str, object]:
         return cast(dict[str, object], ty.pydantic_dump(type(self), self))
 
@@ -68,6 +62,15 @@ class AbstractQuery[T](ABC):
     @abstractmethod
     def answer_type(self) -> ty.TypeAnnot[T] | ty.NoTypeInfo:
         pass
+
+    def query_prefix(self) -> AnswerPrefix | None:
+        return None
+
+    def query_settings(self, mode: AnswerModeName) -> QuerySettings:
+        return QuerySettings()
+
+    def query_tools(self, mode: AnswerModeName) -> Sequence[type[Any]]:
+        return ()
 
     def structured_output_type(self) -> ty.TypeAnnot[Any] | ty.NoTypeInfo:
         """
@@ -93,9 +96,6 @@ class AbstractQuery[T](ABC):
     @abstractmethod
     def parse_answer(self, answer: Answer) -> T | ParseError:
         pass
-
-    def query_tools(self) -> Sequence[type[Any]]:
-        return ()
 
     def finite_answer_set(self) -> Sequence[Answer] | None:
         """ """
