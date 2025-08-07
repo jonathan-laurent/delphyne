@@ -74,6 +74,10 @@ class AbstractQuery[T](ABC):
     def answer_type(self) -> ty.TypeAnnot[T] | ty.NoTypeInfo:
         pass
 
+    @abstractmethod
+    def query_modes(self) -> Sequence[AnswerModeName]:
+        pass
+
     def query_prefix(self) -> AnswerPrefix | None:
         return None
 

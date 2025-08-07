@@ -175,6 +175,7 @@ class Query[T](dp.AbstractQuery[T]):
 
     @override
     def parse_answer(self, answer: dp.Answer) -> T | dp.ParseError:
+        assert answer.mode in self.query_modes()
         try:
             return self.parse(answer)
         except dp.ParseError as e:
@@ -322,7 +323,7 @@ class Query[T](dp.AbstractQuery[T]):
     def globals(self) -> dict[str, object] | None:
         return None
 
-    ### Other Simple Overloads
+    ### Other Simple Overrides
 
     @override
     def serialize_args(self) -> dict[str, object]:
@@ -344,6 +345,12 @@ class Query[T](dp.AbstractQuery[T]):
         if (res := _match_string_literal_type(ans)) is not None:
             return [dp.Answer(None, v) for v in res]
         return None
+
+    @override
+    def query_modes(self) -> Sequence[dp.AnswerModeName]:
+        if self.__modes__ is not None:
+            return self.__modes__
+        return [None]
 
     ### Generating Opaque Spaces
 

@@ -31,6 +31,7 @@ class __Computation__(dp.AbstractQuery[object]):
     fun: str
     args: dict[str, Any]
 
+    @override
     def generate_prompt(
         self,
         kind: str,
@@ -40,9 +41,15 @@ class __Computation__(dp.AbstractQuery[object]):
     ):
         return dump_yaml(Any, self.__dict__)
 
+    @override
+    def query_modes(self):
+        return [None]
+
+    @override
     def answer_type(self):
         return object
 
+    @override
     def parse_answer(self, answer: dp.Answer) -> object | dp.ParseError:
         try:
             assert isinstance(answer.content, str)
