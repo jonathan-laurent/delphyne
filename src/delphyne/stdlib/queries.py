@@ -11,7 +11,7 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from functools import partial
 from types import EllipsisType
-from typing import Any, Literal, Protocol, cast, overload, override
+from typing import Any, ClassVar, Literal, Protocol, cast, overload, override
 
 import numpy as np
 import yaml
@@ -127,6 +127,10 @@ class Query[T](dp.AbstractQuery[T]):
     hints and from the special __parser__ class attribute.
     """
 
+    __modes__: ClassVar[Sequence[dp.AnswerModeName] | None] = None
+    __parser__: ClassVar[ParserSpec | ParserSpecDict | None] = None
+    __config__: ClassVar[QueryConfig | QueryConfigDict | None] = None
+
     ### Inspection methods
 
     def query_config(self, mode: dp.AnswerModeName) -> QueryConfig | None:
@@ -139,27 +143,23 @@ class Query[T](dp.AbstractQuery[T]):
         cls = type(self)
         parse_overriden = dpi.is_method_overridden(Query, cls, "parse")
         if parse_overriden:
-            assert not hasattr(self, "__config__")
-            assert not hasattr(self, "__parser__")
+            assert cls.__config__ is None
+            assert cls.__parser__ is None
             return None
-        if hasattr(self, "__config__"):
-            assert not hasattr(self, "__parser__"), (
+        if cls.__config__ is not None:
+            assert self.__parser__ is None, (
                 "Cannot have both __config__ and __parser__ attributes."
             )
-            config_attr = getattr(self, "__config__")
+            config_attr = cls.__config__
             if isinstance(config_attr, QueryConfig):
                 return config_attr
             else:
-                assert isinstance(config_attr, dict)
-                config_attr = cast(Any, config_attr)
-                return config_attr[mode]
-        elif hasattr(self, "__parser__"):
-            parse_overriden = dpi.is_method_overridden(Query, cls, "parse")
-            assert not parse_overriden
-            parser_attr = getattr(cls, "__parser__")
-            if isinstance(parser_attr, dict):
-                parser_attr = cast(Any, parser_attr)
-                parser = parser_attr[mode]
+                assert isinstance(config_attr, Mapping)
+                return cast(Any, config_attr)[mode]
+        elif cls.__parser__ is not None:
+            parser_attr: Any = cls.__parser__
+            if isinstance(parser_attr, Mapping):
+                parser = cast(Any, parser_attr)[mode]
             else:
                 parser = parser_attr
             _check_valid_parser_spec(parser)

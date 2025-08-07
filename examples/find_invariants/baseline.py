@@ -6,7 +6,7 @@ succeeds.
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import ClassVar, Never
+from typing import Never
 
 import delphyne as dp
 from delphyne import Branch, Compute, Strategy, dfs, strategy
@@ -38,7 +38,7 @@ class AnnotateWithInvs(dp.Query[dp.Response[Sequence[why3.Formula], Never]]):
     prog: why3.File
     prefix: dp.AnswerPrefix
 
-    __parser__: ClassVar = dp.yaml_from_last_block
+    __parser__ = dp.yaml_from_last_block
 
 
 @strategy

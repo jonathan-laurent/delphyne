@@ -4,7 +4,6 @@ A simple Delphyne strategy to discover loop invariants with Why3.
 
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import ClassVar
 
 import delphyne as dp
 from delphyne import Branch, Compute, Fail, Strategy, Value, strategy
@@ -113,7 +112,7 @@ class ProposeInvariants(dp.Query[Proposal]):
     unproved: why3.Obligation
     blacklist: Sequence[Proposal]
 
-    __parser__: ClassVar = dp.yaml_from_last_block
+    __parser__ = dp.yaml_from_last_block
 
 
 @dataclass
@@ -121,14 +120,14 @@ class IsProposalNovel(dp.Query[bool]):
     proposal: Proposal
     blacklist: Sequence[Proposal]
 
-    __parser__: ClassVar = dp.yaml_from_last_block
+    __parser__ = dp.yaml_from_last_block
 
 
 @dataclass
 class EvaluateProofState(dp.Query[ProofStateMetrics]):
     unproved: why3.Obligation
 
-    __parser__: ClassVar = dp.yaml_from_last_block
+    __parser__ = dp.yaml_from_last_block
 
 
 #####

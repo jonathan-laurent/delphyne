@@ -28,7 +28,7 @@ from delphyne import Branch, Fail, IPDict, Strategy, strategy
 class MakeSum(dp.Query["list[int]"]):
     allowed: list[int]
     goal: int
-    __parser__: ClassVar = dp.raw_yaml
+    __parser__ = dp.raw_yaml
 
 
 @dataclass
@@ -214,20 +214,20 @@ def find_counterexample(
 class ConjectureExpr(dp.Query[Expr]):
     vars: Vars
     prop: IntPred
-    __parser__: ClassVar = dp.raw_yaml
+    __parser__ = dp.raw_yaml
 
 
 @dataclass
 class RemoveDuplicates(dp.Query[Sequence[Expr]]):
     exprs: Sequence[Expr]
-    __parser__: ClassVar = dp.raw_yaml
+    __parser__ = dp.raw_yaml
 
 
 @dataclass
 class ProposeCex(dp.Query[State]):
     prop: IntPred
     fun: IntFun
-    __parser__: ClassVar = dp.raw_yaml
+    __parser__ = dp.raw_yaml
 
 
 def expr_safe(expr: Expr) -> bool:
@@ -269,7 +269,7 @@ def test_check_prop():
 class PickBoyName(dp.Query[str]):
     names: Sequence[str]
     picked_already: Sequence[str]
-    __parser__: ClassVar = dp.raw_yaml
+    __parser__ = dp.raw_yaml
 
 
 @strategy
@@ -332,7 +332,7 @@ class PickNiceBoyNameIP:
 @dataclass
 class PickPositiveInteger(dp.Query[int]):
     prev: int | None
-    __parser__: ClassVar = dp.raw_yaml
+    __parser__ = dp.raw_yaml
 
 
 @strategy
@@ -476,7 +476,7 @@ class ProposeArticle(
     user_name: str
     prefix: dp.AnswerPrefix = ()
 
-    __parser__: ClassVar[dp.ParserSpec] = "final_tool_call"
+    __parser__ = "final_tool_call"
 
     __system_prompt__: ClassVar[str] = """
         Find the user's tastes and propose an article for them.
@@ -506,7 +506,7 @@ class ProposeArticleStructured(
     user_name: str
     prefix: dp.AnswerPrefix = ()
 
-    __parser__: ClassVar[dp.ParserSpec] = "structured"
+    __parser__ = "structured"
 
     __system_prompt__: ClassVar[str] = """
         Find the user's tastes and propose an article for them.
@@ -550,7 +550,7 @@ class PrimingTest(dp.Query[list[str]]):
 
     style: str
 
-    __parser__: ClassVar[dp.ParserSpec] = dp.yaml_from_last_block
+    __parser__ = dp.yaml_from_last_block
 
     __instance_prompt__: ClassVar[str] = """
     Style: {{query.style}}
@@ -591,7 +591,7 @@ class EvalNameRarity(dp.Query[Literal["common", "rare"]]):
     """
 
     user_name: str
-    __parser__: ClassVar[dp.ParserSpec] = dp.first_word
+    __parser__ = dp.first_word
 
 
 #####
@@ -765,7 +765,7 @@ class GenerateNumber(dp.Query[int]):
 
     min_val: int
     max_val: int
-    __parser__: ClassVar = dp.raw_yaml
+    __parser__ = dp.raw_yaml
 
 
 @dataclass
@@ -825,7 +825,7 @@ def dual_number_generation_parallel_policy(model: dp.LLM):
 
 
 class DummyChoice(dp.Query[bool]):
-    __parser__: ClassVar = dp.raw_yaml
+    __parser__ = dp.raw_yaml
 
 
 @strategy
@@ -875,8 +875,5 @@ class GetFavoriteDish(dp.Query[Dish]):
 
     user: str
 
-    __modes__: ClassVar = ["cot", "direct"]
-    __parser__: ClassVar[dp.ParserSpecDict] = {
-        "cot": dp.yaml_from_last_block,
-        "direct": "structured",
-    }
+    __modes__ = ["cot", "direct"]
+    __parser__ = {"cot": dp.yaml_from_last_block, "direct": "structured"}
