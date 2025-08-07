@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
+from typing import Any
 
 import pydantic
-import sympy as sp
+import sympy as sp  # type: ignore
 import yaml
 
 #####
@@ -29,7 +30,7 @@ class Sym:
 @dataclass
 class Rule:
     rule: str
-    vars: dict[str, Term] = field(default_factory=dict)
+    vars: dict[str, Term] = field(default_factory=dict[str, Term])
 
 
 @dataclass
@@ -55,7 +56,10 @@ def parse_proof(proof_str: str) -> Proof | ParseError:
 #####
 
 
-SYMPY_LOCALS = {"sin": sp.Function("sin"), "cos": sp.Function("cos")}
+SYMPY_LOCALS: dict[str, Any] = {
+    "sin": sp.Function("sin"),
+    "cos": sp.Function("cos"),
+}
 """
 We treat `sin` and `cos` as uninterpreted function symbols so that sympy
 is not allowed to simplify them.
@@ -77,7 +81,7 @@ def rewrite(term: Term, rule: Eq, vars: dict[str, Term]) -> Term:
     lhs = lhs.subs(vars_parsed)  # type: ignore
     rhs = rhs.subs(vars_parsed)  # type: ignore
     res = term_parsed.subs(lhs, rhs)  # type: ignore
-    return str(res)
+    return str(res)  # type: ignore
 
 
 def equal_terms(lhs: Term, rhs: Term) -> bool:

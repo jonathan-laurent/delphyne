@@ -23,6 +23,8 @@ pyright:
 	pyright
 	@echo "\n\nChecking find_invariants"
 	pyright examples/find_invariants
+	@echo "\n\nChecking mini_eqns"
+	pyright examples/mini_eqns
 
 
 install-dev-deps:
