@@ -4,7 +4,7 @@ version = "0.2.0"
 description = "A basic example of using Delphyne to prove equations."
 authors = [{name="Jonathan Laurent", email="jonathan.laurent@cs.cmu.edu"}]
 dependencies = [
-    "delphyne>=0.2.0",
+    "delphyne>=0.6.0",
     "sympy>=1.13.3",
 ]
 
