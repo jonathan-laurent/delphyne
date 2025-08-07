@@ -32,6 +32,15 @@ REPAIR_PROMPT = "repair"
 REQUEST_OTHER_PROMPT = "more"
 ASSISTANT_PRIMING_STR = "!<assistant>"
 
+DEFAULT_FEEDBACK_PROMPT = '''
+Error. Please try again.
+
+{% if params.feedback.description %}
+"""
+{{params.feedback.description}}
+"""
+{% endif %}
+'''.lstrip()
 
 #####
 ##### Response Type
@@ -78,9 +87,8 @@ class QueryConfig:
 type _StandardParserName = Literal["structured", "final_tool_call"]
 
 
-type ParserSpec = (
-    _StandardParserName | GenericTextParser | Callable[[str], Any]
-)
+type ParserSpec = _StandardParserName | GenericTextParser | TextParser[Any]
+
 
 type ParserSpecDict = Mapping[dp.AnswerModeName, ParserSpec]
 
@@ -235,7 +243,7 @@ class Query[T](dp.AbstractQuery[T]):
             nargs = len(sig.parameters)
             assert nargs == 1 or nargs == 2
             if nargs == 1:
-                parser = attr
+                parser = _from_text_parser(attr)
             else:
                 parser = _from_generic_text_parser(attr, ans_type.to_parse)
 
@@ -347,6 +355,8 @@ class Query[T](dp.AbstractQuery[T]):
                 return "{{query | yaml | trim}}"
         if kind == "system" and (doc := inspect.getdoc(cls)) is not None:
             return doc
+        if kind == "feedback":
+            return DEFAULT_FEEDBACK_PROMPT
         return None
 
     def globals(self) -> dict[str, object] | None:
@@ -468,11 +478,15 @@ def _match_string_literal_type(t: Any) -> Sequence[str] | None:
 
 
 class _ParsingFunction[T](Protocol):
-    def __call__(self, answer: dp.Answer) -> T: ...
+    def __call__(self, answer: dp.Answer, /) -> T: ...
 
 
 class GenericTextParser(Protocol):
-    def __call__[T](self, type: TypeAnnot[T], res: str) -> T: ...
+    def __call__[T](self, type: TypeAnnot[T], answer: str, /) -> T: ...
+
+
+class TextParser[T](Protocol):
+    def __call__(self, answer: str, /) -> T: ...
 
 
 def _get_text_answer(ans: Answer) -> str:
@@ -515,6 +529,10 @@ def _from_generic_text_parser[T](
     parser: GenericTextParser, type: TypeAnnot[T]
 ) -> _ParsingFunction[T]:
     return lambda answer: parser(type, _get_text_answer(answer))
+
+
+def _from_text_parser[T](parser: TextParser[T]) -> _ParsingFunction[T]:
+    return lambda answer: parser(_get_text_answer(answer))
 
 
 def _from_structured[T](type: TypeAnnot[T]) -> _ParsingFunction[T]:

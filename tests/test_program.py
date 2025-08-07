@@ -420,7 +420,7 @@ def test_dual_number_parallel_generation():
 
 
 #####
-##### Modes
+##### Modes and Wrapped Errors
 #####
 
 
@@ -430,5 +430,15 @@ def test_mode_dict(mode: str):
         ex.GetFavoriteDish(user="Jonathan Laurent"),
         f"mode_dict_{mode}",
         mode=mode,
+    )
+    assert res
+
+
+def test_wrapped_parse_error():
+    res, _ = _eval_strategy(
+        ex.get_magic_number(),
+        ex.get_magic_number_policy,
+        "wrapped_parse_error",
+        max_requests=2,
     )
     assert res

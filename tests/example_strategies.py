@@ -877,3 +877,43 @@ class GetFavoriteDish(dp.Query[Dish]):
 
     __modes__ = ["cot", "direct"]
     __parser__ = {"cot": dp.yaml_from_last_block, "direct": "structured"}
+
+
+#####
+##### Error Wrapping
+#####
+
+
+def parse_83(ans: str) -> int:
+    if ans == "83":
+        return 83
+    raise dp.ParseError(
+        description="Expected '83'. Please answer with 83 instead."
+    )
+
+
+@dataclass
+class AskNumber(dp.Query[dp.Response[int | dp.WrappedParseError, Never]]):
+    """
+    Answer with a number and nothing else.
+    """
+
+    prefix: dp.AnswerPrefix = ()
+
+    __parser__ = parse_83
+
+
+@strategy
+def get_magic_number() -> Strategy[Branch, dp.PromptingPolicy, int]:
+    ret = yield from dp.interact(
+        step=lambda pre, _: AskNumber(pre).using(dp.ambient_pp),
+        process=lambda x, _: dp.const_space(x),
+    )
+    return ret
+
+
+@dp.ensure_compatible(get_magic_number)
+def get_magic_number_policy(model: dp.LLM):
+    sp = dp.dfs()
+    pp = dp.few_shot(model)
+    return sp & pp
