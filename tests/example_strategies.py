@@ -913,7 +913,7 @@ def get_magic_number() -> Strategy[Branch, dp.PromptingPolicy, int]:
 
 
 @dp.ensure_compatible(get_magic_number)
-def get_magic_number_policy(model: dp.LLM):
+def get_magic_number_policy(model: dp.LLM, no_wrap: bool):
     sp = dp.dfs()
-    pp = dp.few_shot(model)
+    pp = dp.few_shot(model, no_wrap_parse_errors=no_wrap)
     return sp & pp

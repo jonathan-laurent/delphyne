@@ -434,11 +434,15 @@ def test_mode_dict(mode: str):
     assert res
 
 
-def test_wrapped_parse_error():
+@pytest.mark.parametrize("no_wrap", [True, False])
+def test_wrapped_parse_error(no_wrap: bool):
     res, _ = _eval_strategy(
         ex.get_magic_number(),
-        ex.get_magic_number_policy,
-        "wrapped_parse_error",
+        partial(ex.get_magic_number_policy, no_wrap=no_wrap),
+        f"wrapped_parse_error_{no_wrap}",
         max_requests=2,
     )
-    assert res
+    if no_wrap:
+        assert not res
+    else:
+        assert res

@@ -939,6 +939,20 @@ def _apply_bias(
     return probs_dict
 
 
+def _unwrap_parse_error[T](
+    element: dp.Tracked[T] | dp.ParseError,
+) -> dp.Tracked[T] | dp.ParseError:
+    if isinstance(element, dp.Tracked):
+        if isinstance(element.value, WrappedParseError):
+            return element.value.error
+        if isinstance(resp := element.value, Response):
+            resp = cast(Response[Any, Any], resp)
+            if isinstance(resp.parsed, FinalAnswer):
+                if isinstance(resp.parsed.final, WrappedParseError):
+                    return resp.parsed.final.error
+    return element
+
+
 @prompting_policy
 def few_shot[T](
     query: dp.AttachedQuery[T],
@@ -1012,8 +1026,8 @@ def few_shot[T](
             answer = dp.Answer(mode, output.content, tuple(output.tool_calls))
             answers.append(answer)
             element = query.parse_answer(answer)
-            if no_wrap_parse_errors and isinstance(element, WrappedParseError):
-                element = element.error
+            if no_wrap_parse_errors:
+                element = _unwrap_parse_error(element)
             env.tracer.trace_answer(query.ref, answer)
             if isinstance(element, dp.ParseError):
                 log(env, "parse_error", {"error": element}, loc=query)
