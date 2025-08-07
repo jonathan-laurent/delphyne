@@ -7,6 +7,7 @@ import delphyne.stdlib.queries as dq
 from delphyne.stdlib import models as md
 from delphyne.stdlib.nodes import Branch, branch
 from delphyne.stdlib.opaque import Opaque
+from delphyne.stdlib.queries import WrappedParseError
 
 
 @dataclass
@@ -18,7 +19,7 @@ class InteractStats:
 def interact[P, A, B, T: md.AbstractTool[Any]](
     step: Callable[
         [dp.AnswerPrefix, InteractStats],
-        Opaque[P, dq.Response[A, T]],
+        Opaque[P, dq.Response[A | WrappedParseError, T]],
     ],
     process: Callable[[A, InteractStats], Opaque[P, B | dp.Error]],
     tools: Mapping[type[T], Callable[[Any], Opaque[P, Any]]] | None = None,
@@ -35,15 +36,28 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
         prefix += [dp.OracleMessage("oracle", resp.answer)]
         match resp.parsed:
             case dq.FinalAnswer(a):
-                res = yield from branch(process(a, stats))
-                if isinstance(res, dp.Error):
+                if isinstance(a, WrappedParseError):
                     msg = dp.FeedbackMessage(
-                        "feedback", res.label, res.description, res.meta
+                        kind="feedback",
+                        category=a.error.label,
+                        description=a.error.description,
+                        arg=a.error.meta,
                     )
                     stats.num_rejected += 1
                     prefix += [msg]
                 else:
-                    return res
+                    res = yield from branch(process(a, stats))
+                    if isinstance(res, dp.Error):
+                        msg = dp.FeedbackMessage(
+                            kind="feedback",
+                            category=res.label,
+                            description=res.description,
+                            arg=res.meta,
+                        )
+                        stats.num_rejected += 1
+                        prefix += [msg]
+                    else:
+                        return res
             case dq.ToolRequests(tc):
                 for i, t in enumerate(tc):
                     assert tools is not None

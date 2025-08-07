@@ -113,6 +113,7 @@ from delphyne.stdlib.queries import (
     QueryConfigDict,
     Response,
     ToolRequests,
+    WrappedParseError,
     answer_with,
     classify,
     extract_final_block,

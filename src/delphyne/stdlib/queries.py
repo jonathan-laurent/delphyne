@@ -38,17 +38,17 @@ ASSISTANT_PRIMING_STR = "!<assistant>"
 #####
 
 
-@dataclass
+@dataclass(frozen=True)
 class FinalAnswer[F]:
     final: F
 
 
-@dataclass
+@dataclass(frozen=True)
 class ToolRequests[T: md.AbstractTool[Any]]:
     tool_calls: Sequence[T]
 
 
-@dataclass
+@dataclass(frozen=True)
 class Response[F, T: md.AbstractTool[Any]]:
     """
     Answer type for queries that allow follow-ups, giving access to both
@@ -58,6 +58,11 @@ class Response[F, T: md.AbstractTool[Any]]:
 
     answer: dp.Answer
     parsed: FinalAnswer[F] | ToolRequests[T]
+
+
+@dataclass
+class WrappedParseError:
+    error: dp.ParseError
 
 
 #####
@@ -94,10 +99,14 @@ class _DecomposedAnswerType:
     Represents an answer type (type parameter of `Query`) of the form
     `F` or `Response[F, T1|...|Tn]`: `final` contains `F` and `resp`
     contains the list of all Ti.
+
+    If `F` itself is of the form `F2 | ParseError`, thenm `F2` is
+    assigned to `final_no_error`.
     """
 
     final: TypeAnnot[Any]
     resp: _DecomposedResponseType | None
+    final_no_error: TypeAnnot[Any] | None
 
     def __init__(self, annot: TypeAnnot[Any]):
         if typing.get_origin(annot) is Response:
@@ -113,6 +122,24 @@ class _DecomposedAnswerType:
         else:
             self.resp = None
             self.final = annot
+        final_comps = dpi.union_components(self.final)
+        if len(final_comps) >= 2 and WrappedParseError in final_comps:
+            self.final_no_error = dpi.make_union(
+                [c for c in final_comps if c != WrappedParseError]
+            )
+        else:
+            self.final_no_error = None
+
+    def wrap_parse_errors(self) -> bool:
+        return self.final_no_error is not None
+
+    @property
+    def to_parse(self) -> TypeAnnot[Any]:
+        return (
+            self.final_no_error
+            if self.final_no_error is not None
+            else self.final
+        )
 
 
 #####
@@ -197,10 +224,10 @@ class Query[T](dp.AbstractQuery[T]):
         # Compute base parsing function `parser`
         parser: _ParsingFunction[Any]
         if attr == "structured":
-            parser = _from_structured(ans_type.final)
+            parser = _from_structured(ans_type.to_parse)
         elif attr == "final_tool_call":
-            assert isinstance(ans_type.final, type)
-            parser = _from_final_tool_call(cast(type[Any], ans_type.final))
+            assert isinstance(ans_type.to_parse, type)
+            parser = _from_final_tool_call(cast(type[Any], ans_type.to_parse))
         else:
             assert callable(attr)
             attr = cast(Callable[..., Any], attr)
@@ -210,10 +237,12 @@ class Query[T](dp.AbstractQuery[T]):
             if nargs == 1:
                 parser = attr
             else:
-                parser = _from_generic_text_parser(attr, ans_type.final)
+                parser = _from_generic_text_parser(attr, ans_type.to_parse)
+
+        if ans_type.wrap_parse_errors():
+            parser = _wrap_parse_errors(parser)
 
         # If the answer type has form `Response[..., ...]`
-
         if ans_type.resp:
             if _has_final_tool_call(ans_type, answer):
                 tcs = []
@@ -496,6 +525,16 @@ def _from_final_tool_call[T](type: type[T]) -> _ParsingFunction[T]:
     return lambda answer: _parse_or_raise(
         type, _get_single_tool_call(answer).args
     )
+
+
+def _wrap_parse_errors(parser: _ParsingFunction[Any]) -> _ParsingFunction[Any]:
+    def parse(answer: dp.Answer) -> Any:
+        try:
+            return parser(answer)
+        except dp.ParseError as e:
+            return WrappedParseError(e)
+
+    return parse
 
 
 #####
@@ -895,6 +934,7 @@ def few_shot[T](
     num_concurrent: int = 1,
     iterative_mode: bool = False,
     max_requests: int | None = None,
+    no_wrap_parse_errors: bool = False,
 ) -> dp.Stream[T]:
     """
     The standard few-shot prompting sequential prompting policy.
@@ -954,6 +994,8 @@ def few_shot[T](
             answer = dp.Answer(mode, output.content, tuple(output.tool_calls))
             answers.append(answer)
             element = query.parse_answer(answer)
+            if no_wrap_parse_errors and isinstance(element, WrappedParseError):
+                element = element.error
             env.tracer.trace_answer(query.ref, answer)
             if isinstance(element, dp.ParseError):
                 log(env, "parse_error", {"error": element}, loc=query)
