@@ -39,6 +39,7 @@ def _eval_query(
     budget: int = 1,
     concurrent: int = 1,
     model_name: dp.StandardModelName = "gpt-4.1-mini",
+    mode: dp.AnswerModeName = None,
 ):
     env = dp.PolicyEnv(
         demonstration_files=(), prompt_dirs=(PROMPT_DIR,), data_dirs=()
@@ -47,7 +48,9 @@ def _eval_query(
     cache = dp.LLMCache(cache_spec)
     model = dp.CachedModel(dp.standard_model(model_name), cache)
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: budget})
-    pp = dp.with_budget(bl) @ dp.few_shot(model, num_concurrent=concurrent)
+    pp = dp.with_budget(bl) @ dp.few_shot(
+        model, num_concurrent=concurrent, mode=mode
+    )
     stream = query.run_toplevel(env, pp)
     res, _ = stream.collect()
     log = list(env.tracer.export_log())
@@ -414,3 +417,18 @@ def test_dual_number_parallel_generation():
     )
     assert res
     assert len(res) == 4
+
+
+#####
+##### Modes
+#####
+
+
+@pytest.mark.parametrize("mode", ["cot", "direct"])
+def test_mode_dict(mode: str):
+    res, _ = _eval_query(
+        ex.GetFavoriteDish(user="Jonathan Laurent"),
+        f"mode_dict_{mode}",
+        mode=mode,
+    )
+    assert res

@@ -847,3 +847,36 @@ def imperative_strategy() -> Strategy[Branch | Fail, IPDict, None]:
     _choice = yield from dp.branch(DummyChoice().using(...))
     yield from dp.ensure(sum(res) == goal, label="wrong_sum")
     return
+
+
+#####
+##### Mode Handling
+#####
+
+
+@dataclass
+class Dish:
+    name: str
+    ingredients: list[str]
+
+
+@dataclass
+class GetFavoriteDish(dp.Query[Dish]):
+    """
+    Describe the favorite dish of the provided user.
+
+    {% if mode == "cot" %}
+    Finish your answer with a triple-quoted YAML block containing a
+    single object with fields `name` (str) and `ingredients` (list[str]).
+    {% else %}
+    Just answer with a JSON object.
+    {% endif %}
+    """
+
+    user: str
+
+    __modes__: ClassVar = ["cot", "direct"]
+    __parser__: ClassVar[dp.ParserSpecDict] = {
+        "cot": dp.yaml_from_last_block,
+        "direct": "structured",
+    }

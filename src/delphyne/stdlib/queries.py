@@ -7,7 +7,7 @@ import random
 import re
 import textwrap
 import typing
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from functools import partial
 from types import EllipsisType
@@ -76,6 +76,11 @@ type _StandardParserName = Literal["structured", "final_tool_call"]
 type ParserSpec = (
     _StandardParserName | GenericTextParser | Callable[[str], Any]
 )
+
+type ParserSpecDict = Mapping[dp.AnswerModeName, ParserSpec]
+
+
+type QueryConfigDict = Mapping[dp.AnswerModeName, QueryConfig]
 
 
 @dataclass
