@@ -43,6 +43,8 @@ from delphyne.core.queries import (
     AbstractQuery,
     ParseError,
     QuerySettings,
+    StructuredOutputSettings,
+    ToolSettings,
 )
 from delphyne.core.refs import (
     Answer,

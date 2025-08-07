@@ -168,22 +168,6 @@ class Query[T](dp.AbstractQuery[T]):
 
     ### Derived from autoconfig
 
-    def query_tools(self, mode: dp.AnswerModeName) -> Sequence[type[Any]]:
-        ans_type = self._decomposed_answer_type()
-        tools: list[type[Any]] = []
-        if ans_type.resp is not None:
-            tools = [*ans_type.resp.tools]
-        config = self.query_config(mode)
-        if config is not None and config.parser == "final_tool_call":
-            assert isinstance(ans_type.final, type)
-            tools.append(ans_type.final)
-        return tools
-
-    @override
-    def structured_output_type(self) -> TypeAnnot[Any] | ty.NoTypeInfo:
-        decomposed = self._decomposed_answer_type()
-        return decomposed.final
-
     def parse(self, answer: Answer) -> T:
         """
         A more convenient method to override instead of `parse_answer`.
@@ -232,20 +216,44 @@ class Query[T](dp.AbstractQuery[T]):
 
         return parser(answer)
 
+    @override
     def query_settings(self, mode: dp.AnswerModeName) -> dp.QuerySettings:
         config = self.query_config(mode)
         assert config is not None
-        attr = config.parser
+        structured_output = None
+        if config.parser == "structured":
+            type = self._decomposed_answer_type().final
+            structured_output = dp.StructuredOutputSettings(type)
+        tools = None
+        if tool_types := self._query_tools(config.parser):
+            tools = dp.ToolSettings(
+                tool_types, force_tool_call=config.parser == "final_tool_call"
+            )
         return dp.QuerySettings(
-            force_structured_output=(attr == "structured"),
-            force_tool_call=(attr == "final_tool_call"),
+            structured_output=structured_output,
+            tools=tools,
         )
+
+    def _structured_output_type(self) -> TypeAnnot[Any] | ty.NoTypeInfo:
+        decomposed = self._decomposed_answer_type()
+        return decomposed.final
+
+    def _query_tools(self, parser: ParserSpec) -> Sequence[type[Any]]:
+        ans_type = self._decomposed_answer_type()
+        tools: list[type[Any]] = []
+        if ans_type.resp is not None:
+            tools = [*ans_type.resp.tools]
+        if parser == "final_tool_call":
+            assert isinstance(ans_type.final, type)
+            tools.append(ans_type.final)
+        return tools
 
     @classmethod
     def _has_special_prefix_attr(cls):
         annots = typing.get_type_hints(cls)
         return "prefix" in annots and annots["prefix"] is ct.AnswerPrefix
 
+    @override
     def finite_answer_set(self) -> Sequence[dp.Answer] | None:
         # We handle the special case where the return type is a literal
         # type that is a subtype of str.
@@ -254,6 +262,7 @@ class Query[T](dp.AbstractQuery[T]):
             return [dp.Answer(None, v) for v in res]
         return None
 
+    @override
     def query_prefix(self) -> ct.AnswerPrefix | None:
         """
         Return the value of the `prefix` attribute if it has type
@@ -263,6 +272,7 @@ class Query[T](dp.AbstractQuery[T]):
             return getattr(self, "prefix")
         return None
 
+    @override
     def parse_answer(self, answer: dp.Answer) -> T | dp.ParseError:
         try:
             return self.parse(answer)
@@ -290,6 +300,7 @@ class Query[T](dp.AbstractQuery[T]):
             return doc
         return None
 
+    @override
     def generate_prompt(
         self,
         kind: Literal["system", "instance"] | str,
@@ -309,6 +320,7 @@ class Query[T](dp.AbstractQuery[T]):
             kind, self.query_name(), args, self._default_prompt(kind)
         )
 
+    @override
     def serialize_args(self) -> dict[str, object]:
         return cast(dict[str, object], ty.pydantic_dump(type(self), self))
 
@@ -316,6 +328,7 @@ class Query[T](dp.AbstractQuery[T]):
     def _answer_type(cls) -> TypeAnnot[T]:
         return dpi.first_parameter_of_base_class(cls)
 
+    @override
     def answer_type(self) -> TypeAnnot[T]:
         return self._answer_type()
 
@@ -888,12 +901,14 @@ def few_shot[T](
     if temperature is not None:
         options["temperature"] = temperature
     structured_output = None
-    if settings.force_structured_output:
-        out_type = query.query.structured_output_type()
+    if settings.structured_output is not None:
+        out_type = settings.structured_output.type
         structured_output = md.Schema.make(out_type)
-    if settings.force_tool_call:
-        options["tool_choice"] = "required"
-    tools = [md.Schema.make(t) for t in query.query.query_tools(mode)]
+    tools = []
+    if settings.tools is not None:
+        if settings.tools.force_tool_call:
+            options["tool_choice"] = "required"
+        tools = [md.Schema.make(t) for t in settings.tools.tool_types]
     num_reqs = 0
     while max_requests is None or num_reqs < max_requests:
         num_reqs += 1

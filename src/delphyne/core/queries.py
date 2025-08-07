@@ -33,9 +33,20 @@ class ParseError(Error, Exception):
 
 
 @dataclass(frozen=True)
+class StructuredOutputSettings:
+    type: ty.TypeAnnot[Any] | ty.NoTypeInfo
+
+
+@dataclass(frozen=True)
+class ToolSettings:
+    tool_types: Sequence[type[Any]]
+    force_tool_call: bool
+
+
+@dataclass(frozen=True)
 class QuerySettings:
-    force_structured_output: bool = False
-    force_tool_call: bool = False
+    structured_output: StructuredOutputSettings | None = None
+    tools: ToolSettings | None = None
 
 
 type AnyQuery = AbstractQuery[Any]
@@ -68,18 +79,6 @@ class AbstractQuery[T](ABC):
 
     def query_settings(self, mode: AnswerModeName) -> QuerySettings:
         return QuerySettings()
-
-    def query_tools(self, mode: AnswerModeName) -> Sequence[type[Any]]:
-        return ()
-
-    def structured_output_type(self) -> ty.TypeAnnot[Any] | ty.NoTypeInfo:
-        """
-        The type of data that the LLM is expected to produce before
-        parsing when called in structured output mode. This may differ
-        from `answer_type`, for example when tool calls are also allowed
-        and `answer_type` is decorated with `Response`.
-        """
-        return ty.NoTypeInfo()
 
     def query_name(self) -> str:
         """
