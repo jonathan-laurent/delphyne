@@ -12,7 +12,7 @@
       
       
       <link rel="icon" href="../../None">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
     
     
       
@@ -20,7 +20,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -195,8 +195,10 @@
       <a href="../.." class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Home
+    
   </span>
   
 
@@ -215,8 +217,10 @@
       <a href="../../tutorial/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Tutorial
+    
   </span>
   
 
@@ -231,6 +235,7 @@
   
   
   
+    
     
     
     
@@ -250,8 +255,10 @@
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
+  
   <span class="md-ellipsis">
     Manual
+    
   </span>
   
 
@@ -275,8 +282,10 @@
       <a href="../../manual/strategies/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Strategies and Trees
+    
   </span>
   
 
@@ -296,8 +305,10 @@
       <a href="../../manual/policies/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Policies
+    
   </span>
   
 
@@ -317,8 +328,10 @@
       <a href="../../manual/demos/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Demonstrations
+    
   </span>
   
 
@@ -338,8 +351,10 @@
       <a href="../../manual/extension/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     VSCode Extension
+    
   </span>
   
 
@@ -366,8 +381,10 @@
       <a href="../../how-to-guides/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     How-To Guides
+    
   </span>
   
 
@@ -657,6 +674,7 @@
                   
 
 
+
 <h1 id="testing-mkdocs">Testing MkDocs</h1>
 <h2 id="resources-on-writing-good-docstrings">Resources on Writing Good Docstrings</h2>
 <ul>
@@ -669,7 +687,7 @@
 <li>Start documenting each field in uppercase.</li>
 </ul>
 <h2 id="api-documentation-for-query">API Documentation for Query</h2>
-<p>The <a class="autorefs autorefs-internal" href="#delphyne.stdlib.queries.Query"><code>Query</code></a> class is the base class for all queries in Delphyne, providing convenient features and automatic type inference.</p>
+<p>The <a class="autorefs autorefs-internal" href="#delphyne.Query"><code>Query</code></a> class is the base class for all queries in Delphyne, providing convenient features and automatic type inference.</p>
 <h3 id="documenting-the-whole-thing">Documenting the whole thing</h3>
 
 
@@ -680,12 +698,13 @@
 <a id="delphyne.Query"></a>
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><span title="delphyne.core.AbstractQuery">AbstractQuery</span>[T]</code></p>
+              Bases: <code><span title="delphyne.core.AbstractQuery">AbstractQuery</span>[<span title="delphyne.stdlib.queries.Query[T]">Query[T]</span>]</code></p>
 
 
         <p>Base class for queries, which adds convenience features on top of
 <code>AbstractQuery</code>, including inferring a lot of information from type
 hints and from the special <strong>parser</strong> class attribute.</p>
+
 
 
 
@@ -1268,13 +1287,14 @@ hints and from the special <strong>parser</strong> class attribute.</p>
 
 
 </h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">parse</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="n"><span title="delphyne.core.refs.Answer">Answer</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">parse</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="n"><span title="delphyne.core.refs.Answer">Answer</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
         <p>A more convenient method to override instead of <code>parse_answer</code>.</p>
 <p>Raises dp.ParseError</p>
+
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
@@ -1399,6 +1419,7 @@ hints and from the special <strong>parser</strong> class attribute.</p>
 or a dictionary mapping modes to configurations. Instead, if
 only the parser is specified, we can use <strong>parser</strong>.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">171</span>
@@ -1488,6 +1509,7 @@ only the parser is specified, we can use <strong>parser</strong>.</p>
         <p>Return the value of the <code>prefix</code> attribute if it has type
 annotation <code>AnswerPrefix</code> or return <code>None</code>.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">310</span>
@@ -1522,20 +1544,10 @@ annotation <code>AnswerPrefix</code> or return <code>None</code>.</p>
 
 </h2>
           <div class="doc-overloads">
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.IPDict">IPDict</span></span><span class="p">,</span> <span class="n">T</span><span class="p">]</span>
-</code></pre></div><div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span>
-    <span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n">P2</span><span class="p">],</span> <span class="n"><span title="delphyne.stdlib.policies.PromptingPolicy">PromptingPolicy</span></span><span class="p">]</span>
-    <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n">type</span><span class="p">[</span><span class="n">P2</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n">P2</span><span class="p">,</span> <span class="n">T</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.IPDict">IPDict</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span><span class="p">]</span>
+</code></pre></div><div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="P2">P2</span></span><span class="p">],</span> <span class="n"><span title="delphyne.stdlib.policies.PromptingPolicy">PromptingPolicy</span></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="P2">P2</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n"><span title="P2">P2</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span><span class="p">]</span>
 </code></pre></div>          </div>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span>
-    <span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n"><span title="delphyne.stdlib.policies.PromptingPolicy">PromptingPolicy</span></span><span class="p">]</span>
-    <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n">type</span><span class="p">[</span><span class="n">P</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">using[P]</span></span><span class="p">],</span> <span class="n"><span title="delphyne.stdlib.policies.PromptingPolicy">PromptingPolicy</span></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">using[P]</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">using[P]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -1545,6 +1557,7 @@ mapping from the ambient inner policy to a prompting policy.</p>
 <p>The optional <code>inner_policy_type</code> argument is ignored at runtime
 and can be used to help type checkers infer the type of the
 ambient inner policy.</p>
+
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
@@ -1608,6 +1621,7 @@ ambient inner policy.</p>
 
 
         <p>Wrapper for a query attached to a specific space.</p>
+
 
 
 
@@ -1683,7 +1697,7 @@ ambient inner policy.</p>
                 <code>query</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="delphyne.core.AttachedQuery" href="#delphyne.core.AttachedQuery">AttachedQuery</a>[T]</code>
+                  <code><a class="autorefs autorefs-internal" title="delphyne.core.AttachedQuery" href="#delphyne.core.AttachedQuery">AttachedQuery</a>[<span title="delphyne.stdlib.queries.few_shot[T]">few_shot[T]</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1717,6 +1731,7 @@ and different answers are sampled. If <code>iterative_mode</code> is <code>True<
 everything happens within a single big chat. Every parse error leads
 to some feedback while every correctly parsed answer leads to a
 message inviting the system to generate another different solution.</p>
+
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
@@ -1968,6 +1983,7 @@ message inviting the system to generate another different solution.</p>
 
 
 
+
   <div class="doc doc-children">
 
 
@@ -1998,6 +2014,7 @@ message inviting the system to generate another different solution.</p>
 
 
         <p>Distribution probability, guaranteed to be nonempty and to sum to 1.</p>
+
 
 
 
@@ -2055,12 +2072,13 @@ message inviting the system to generate another different solution.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><span title="delphyne.core.AbstractQuery">AbstractQuery</span>[T]</code></p>
+              Bases: <code><span title="delphyne.core.AbstractQuery">AbstractQuery</span>[<span title="delphyne.stdlib.queries.Query[T]">Query[T]</span>]</code></p>
 
 
         <p>Base class for queries, which adds convenience features on top of
 <code>AbstractQuery</code>, including inferring a lot of information from type
 hints and from the special <strong>parser</strong> class attribute.</p>
+
 
 
 
@@ -2643,13 +2661,14 @@ hints and from the special <strong>parser</strong> class attribute.</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">parse</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="n"><span title="delphyne.core.refs.Answer">Answer</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">parse</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="n"><span title="delphyne.core.refs.Answer">Answer</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
         <p>A more convenient method to override instead of <code>parse_answer</code>.</p>
 <p>Raises dp.ParseError</p>
+
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
@@ -2774,6 +2793,7 @@ hints and from the special <strong>parser</strong> class attribute.</p>
 or a dictionary mapping modes to configurations. Instead, if
 only the parser is specified, we can use <strong>parser</strong>.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">171</span>
@@ -2863,6 +2883,7 @@ only the parser is specified, we can use <strong>parser</strong>.</p>
         <p>Return the value of the <code>prefix</code> attribute if it has type
 annotation <code>AnswerPrefix</code> or return <code>None</code>.</p>
 
+
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">310</span>
@@ -2897,20 +2918,10 @@ annotation <code>AnswerPrefix</code> or return <code>None</code>.</p>
 
 </h3>
           <div class="doc-overloads">
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.IPDict">IPDict</span></span><span class="p">,</span> <span class="n">T</span><span class="p">]</span>
-</code></pre></div><div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span>
-    <span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n">P2</span><span class="p">],</span> <span class="n"><span title="delphyne.stdlib.policies.PromptingPolicy">PromptingPolicy</span></span><span class="p">]</span>
-    <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n">type</span><span class="p">[</span><span class="n">P2</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n">P2</span><span class="p">,</span> <span class="n">T</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.IPDict">IPDict</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span><span class="p">]</span>
+</code></pre></div><div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="P2">P2</span></span><span class="p">],</span> <span class="n"><span title="delphyne.stdlib.policies.PromptingPolicy">PromptingPolicy</span></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="P2">P2</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n"><span title="P2">P2</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span><span class="p">]</span>
 </code></pre></div>          </div>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span>
-    <span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n"><span title="delphyne.stdlib.policies.PromptingPolicy">PromptingPolicy</span></span><span class="p">]</span>
-    <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n">type</span><span class="p">[</span><span class="n">P</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">using[P]</span></span><span class="p">],</span> <span class="n"><span title="delphyne.stdlib.policies.PromptingPolicy">PromptingPolicy</span></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">using[P]</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">using[P]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2920,6 +2931,7 @@ mapping from the ambient inner policy to a prompting policy.</p>
 <p>The optional <code>inner_policy_type</code> argument is ignored at runtime
 and can be used to help type checkers infer the type of the
 ambient inner policy.</p>
+
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
@@ -3001,6 +3013,7 @@ tool eventual tool calls.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">60</span>
@@ -3054,18 +3067,7 @@ tool eventual tool calls.</p>
 
 
 </h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">classify</span><span class="p">(</span>
-    <span class="n">query</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="delphyne.core.AttachedQuery" href="#delphyne.core.AttachedQuery">AttachedQuery</a></span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
-    <span class="n">env</span><span class="p">:</span> <span class="n"><span title="delphyne.core.PolicyEnv">PolicyEnv</span></span><span class="p">,</span>
-    <span class="n">model</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.models.LLM">LLM</span></span><span class="p">,</span>
-    <span class="n">params</span><span class="p">:</span> <span class="n">dict</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">select_examples</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.ExampleSelector">ExampleSelector</span></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
-    <span class="n">mode</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerModeName">AnswerModeName</span></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">enable_logging</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">top_logprobs</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
-    <span class="n">temperature</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-    <span class="n">bias</span><span class="p">:</span> <span class="n">tuple</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.Stream">Stream</span></span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">classify</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="delphyne.core.AttachedQuery" href="#delphyne.core.AttachedQuery">AttachedQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.classify[T]">classify[T]</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><span title="delphyne.core.PolicyEnv">PolicyEnv</span></span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.models.LLM">LLM</span></span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">select_examples</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.ExampleSelector">ExampleSelector</span></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">mode</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerModeName">AnswerModeName</span></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">enable_logging</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">top_logprobs</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="float">float</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.Stream">Stream</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.classify[T]">classify[T]</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3074,6 +3076,7 @@ tool eventual tool calls.</p>
 to the attached answer.</p>
 <p>When <code>bias=(e, p)</code> is provided, then the final distribution <code>D</code> is
 transformed into <code>(1-p)*D + p*dirac(e)</code></p>
+
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
@@ -3232,20 +3235,7 @@ transformed into <code>(1-p)*D + p*dirac(e)</code></p>
 
 
 </h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">few_shot</span><span class="p">(</span>
-    <span class="n">query</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="delphyne.core.AttachedQuery" href="#delphyne.core.AttachedQuery">AttachedQuery</a></span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
-    <span class="n">env</span><span class="p">:</span> <span class="n"><span title="delphyne.core.PolicyEnv">PolicyEnv</span></span><span class="p">,</span>
-    <span class="n">model</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.models.LLM">LLM</span></span><span class="p">,</span>
-    <span class="n">params</span><span class="p">:</span> <span class="n">dict</span><span class="p">[</span><span class="n">str</span><span class="p">,</span> <span class="n">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">select_examples</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.ExampleSelector">ExampleSelector</span></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
-    <span class="n">mode</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerModeName">AnswerModeName</span></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">enable_logging</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">temperature</span><span class="p">:</span> <span class="n">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">num_concurrent</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="n">iterative_mode</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">max_requests</span><span class="p">:</span> <span class="n">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">no_wrap_parse_errors</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.Stream">Stream</span></span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">few_shot</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="delphyne.core.AttachedQuery" href="#delphyne.core.AttachedQuery">AttachedQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.few_shot[T]">few_shot[T]</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><span title="delphyne.core.PolicyEnv">PolicyEnv</span></span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.models.LLM">LLM</span></span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">select_examples</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.ExampleSelector">ExampleSelector</span></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">mode</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerModeName">AnswerModeName</span></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">enable_logging</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_concurrent</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">iterative_mode</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">max_requests</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">no_wrap_parse_errors</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.Stream">Stream</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.few_shot[T]">few_shot[T]</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3269,7 +3259,7 @@ transformed into <code>(1-p)*D + p*dirac(e)</code></p>
                 <code>query</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="delphyne.core.AttachedQuery" href="#delphyne.core.AttachedQuery">AttachedQuery</a>[T]</code>
+                  <code><a class="autorefs autorefs-internal" title="delphyne.core.AttachedQuery" href="#delphyne.core.AttachedQuery">AttachedQuery</a>[<span title="delphyne.stdlib.queries.few_shot[T]">few_shot[T]</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3303,6 +3293,7 @@ and different answers are sampled. If <code>iterative_mode</code> is <code>True<
 everything happens within a single big chat. Every parse error leads
 to some feedback while every correctly parsed answer leads to a
 message inviting the system to generate another different solution.</p>
+
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
@@ -3545,13 +3536,14 @@ message inviting the system to generate another different solution.</p>
 
 
 </h2>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">first_word</span><span class="p">(</span><span class="nb">type</span><span class="p">:</span> <span class="n"><span title="delphyne.utils.typing.TypeAnnot">TypeAnnot</span></span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">res</span><span class="p">:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">first_word</span><span class="p">(</span><span class="nb">type</span><span class="p">:</span> <span class="n"><span title="delphyne.utils.typing.TypeAnnot">TypeAnnot</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.first_word[T]">first_word[T]</span></span><span class="p">],</span> <span class="n">res</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.queries.first_word[T]">first_word[T]</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
         <p>Parse the first word of the answer and turn it into an object of
 type T=Literal[s1,...,sn]</p>
+
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
@@ -3647,10 +3639,12 @@ type T=Literal[s1,...,sn]</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tabs.link", "navigation.sections"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tabs.link", "navigation.sections"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.50899def.min.js"></script>
       
         <script src="../../javascript/katex.js"></script>
       
