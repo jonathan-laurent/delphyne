@@ -1,4 +1,4 @@
-.PHONY: install-dev-deps pyright clean clean-ignored test full-test full-clean all examples schemas stubs install doc-logo cloc deploy-doc
+.PHONY: install-dev-deps pyright clean clean-ignored test full-test full-clean all examples schemas stubs install doc-logo cloc deploy-doc-release deploy-doc-dev
 
 TO_CLEAN := \
 	-name '__pycache__' -o \
@@ -95,8 +95,14 @@ $(LOGOS_DIR)/white/%.png: $(LOGOS_DIR)/black/%.png
 doc-logo: $(WHITE_LOGOS)
 
 
-deploy-doc:
-	mkdocs gh-deploy --force
+deploy-doc-release:
+	git fetch origin gh-pages
+	mike deploy 0.6 latest --push
+
+
+deploy-doc-dev:
+	git fetch origin gh-pages
+	mike deploy dev --push
 
 
 # Count the number of lines of code
