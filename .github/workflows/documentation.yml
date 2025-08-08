@@ -25,5 +25,6 @@ jobs:
           restore-keys: |
             mkdocs-material-
       - run: pip install mkdocs mkdocstrings[python] mkdocs-autolinks-plugin mkdocs-material mkdocs-glightbox mike
-      - run: mike deploy dev
-      - run: git push origin gh-pages
+      - run: |
+          git fetch origin gh-pages --depth=1 || true
+          mike deploy --push dev
