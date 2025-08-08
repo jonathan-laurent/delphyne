@@ -1,5 +1,31 @@
 <!-- We do not show the page title -->
-<style> .md-content .md-typeset h1 { display: none; } </style>
+<!-- Temporary hack: see https://github.com/squidfunk/mkdocs-material/issues/2163#issuecomment-3156700587 -->
+<!-- The following simpler alternative does not work: -->
+<!-- <style> .md-content .md-typeset h1 { display: none; } </style> -->
+<style>
+  /* Hide the h1 title */
+  .md-content .md-typeset h1 { display: none; }
+
+  /*
+    * By hiding the h1 title, mkdocs will see it as active (scrolled at it)
+    * which affects the header. This isn't what we want, as it makes the mike
+    * version selector disappear, and it also just isn't what we'd want anyways.
+    * Force the main header to be visible and hide the active one.
+    */
+  .md-header__title--active .md-header__topic {
+      opacity: unset;
+      pointer-events: unset;
+      transform: unset;
+      z-index: unset;
+  }
+  .md-header__title--active .md-header__topic + .md-header__topic {
+      opacity: 0;
+      pointer-events: unset;
+      transform: unset;
+      z-index: unset;
+  }
+</style>
+
 <p align="center" style="margin-bottom: 45px">
   <img src="assets/logos/black/banner.png#only-light" alt="Delphyne Logo" width="50%"/>
   <img src="assets/logos/white/banner.png#only-dark" alt="Delphyne Logo" width="50%"/>
@@ -10,9 +36,6 @@ Delphyne is a programming framework for building _reliable_ and _modular_ LLM ap
 - A _strategy language_ embedded in Python that allows writing nondeterministic programs that can be reified into (modular) search trees.
 - A _policy language_ for specifying ways to navigate such trees (with LLM guidance) by composing reusable search primitives.
 - A _demonstration language_ for describing successful _and_ unsuccessful search scenarios to be used as training or prompting examples. A dedicated language server allows writing demonstrations interactively and keeping them synchronized with evolving strategies.
-
-!!! warning
-    Delphyne is still under development and is evolving quickly. You should expect some rough edges.
 
 ## Installation {#installation}
 

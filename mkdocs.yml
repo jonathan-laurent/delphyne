@@ -21,6 +21,7 @@ theme:
     - content.tabs.link
     # - navigation.indexes  # Allows adding welcome pages to sections
     # - navigation.tabs
+    - navigation.sections
 
 plugins:
   # - glightbox  # To allow clicking on images to view them in a lightbox
