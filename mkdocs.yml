@@ -25,6 +25,7 @@ theme:
 
 plugins:
   # - glightbox  # To allow clicking on images to view them in a lightbox
+  - search  # Add search bar
   - mkdocstrings:
       default_handler: python
       handlers:
