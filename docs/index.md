@@ -1,3 +1,5 @@
+# Getting Started
+
 <!-- We do not show the page title -->
 <!-- Temporary hack: see https://github.com/squidfunk/mkdocs-material/issues/2163#issuecomment-3156700587 -->
 <!-- The following simpler alternative does not work: -->

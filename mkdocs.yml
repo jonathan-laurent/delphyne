@@ -19,9 +19,9 @@ theme:
     - content.code.annotate
     - content.code.copy
     - content.tabs.link
-    # - navigation.indexes  # Allows adding welcome pages to sections
+    - navigation.indexes  # Allows adding welcome pages to sections
     # - navigation.tabs
-    - navigation.sections
+    # - navigation.sections  # Make left navigation bar not foldable
 
 plugins:
   # - glightbox  # To allow clicking on images to view them in a lightbox
@@ -68,10 +68,15 @@ extra:
 
 nav:
   - index.md
-  - tutorial.md
   - Manual:
     - manual/strategies.md
     - manual/policies.md
     - manual/demos.md
     - manual/extension.md
   - how-to-guides.md
+  - Reference:
+    # - reference/index.md
+    - Strategy Language:
+      - reference/strategy/strategy-trees.md
+
+# TODO: add `examples` section
