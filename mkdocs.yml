@@ -42,11 +42,11 @@ plugins:
             signature_crossrefs: true
 
 markdown_extensions:
-  - admonition
+  - admonition  # Boxes such as 'info', 'question', 'warning'...
   - pymdownx.details
   - pymdownx.superfences
   - attr_list
-  - md_in_html
+  - md_in_html  # allows using markdown inside of HTML elements
   - pymdownx.keys
   - pymdownx.tabbed:
       alternate_style: true
