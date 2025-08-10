@@ -14,7 +14,7 @@
 
 ## API Documentation for Query
 
-The [`Query`][delphyne.stdlib.Query] class is the base class for all queries in Delphyne, providing convenient features and automatic type inference.
+The [`Query`][delphyne.stdlib.Query] class is the base class for all queries in Delphyne, providing convenient features and automatic type inference. Does it work to have partial paths ([`Query`][delphyne.Query])?
 
 ## Documenting a Class
 
@@ -23,11 +23,29 @@ The [`Query`][delphyne.stdlib.Query] class is the base class for all queries in 
       show_root_heading: true
       heading_level: 3
 
-## Documenting another Class
+## Documenting a Class without Members
+
+::: delphyne.Query
+    options:
+      show_root_heading: true
+      heading_level: 3
+      members: false
+
+## Documenting a Class With Selected Members
+
+::: delphyne.Query
+    options:
+      show_root_heading: true
+      heading_level: 3
+      members: [parse_answer, query_config]
+      summary: true
+
+## Documenting a Dataclass
 
 ::: delphyne.core.AttachedQuery
     options:
       heading_level: 3
+      show_signature: true
 
 ## Documenting a Function
 

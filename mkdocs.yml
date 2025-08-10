@@ -25,21 +25,20 @@ theme:
 
 plugins:
   # - glightbox  # To allow clicking on images to view them in a lightbox
-  - search  # Add search bar
+  - search  # add search bar
   - mkdocstrings:
       default_handler: python
       handlers:
         python:
           paths: [src]
           options:
+            docstring_style: google
             cross_references: true
-            show_signature_annotations: true
-            separate_signature: true
-            filters: ["!^_"]
-            # docstring_options:
-              # ignore_init_summary: true
-            # merge_init_into_class: true
-            signature_crossrefs: true
+            show_signature_annotations: true  # show types in signatures
+            separate_signature: true  # show signatures in separate blocks
+            filters: ["!^_"]  # do not show private members
+            signature_crossrefs: true  # render links in signatures
+            line_length: 88  # line length for signatures
 
 markdown_extensions:
   - admonition  # Boxes such as 'info', 'question', 'warning'...
@@ -78,23 +77,23 @@ nav:
   - Reference:
     # - reference/index.md
     - Strategies:
-      - Trees: reference/strategy-lang/trees.md
-      - Queries: reference/strategy-lang/queries.md
-      - Traces: reference/strategy-lang/traces.md
-      - Misc: reference/strategy-lang/misc.md
+      - Trees: reference/strategies/trees.md
+      - Queries: reference/strategies/queries.md
+      - Traces: reference/strategies/traces.md
+      - Misc: reference/strategies/misc.md
     - Policies:
-      - Definitions: reference/policy-lang/policies.md
-      - Search Streams: reference/policy-lang/streams.md
-      - Environments: reference/policy-lang/envs.md
+      - Definitions: reference/policies/definitions.md
+      - Search Streams: reference/policies/streams.md
+      - Environments: reference/policies/envs.md
     - Demonstrations:
-      - Definitions: reference/demo-lang/demos.md
-      - Interpreter: reference/demo-lang/interpreter.md
+      - Definitions: reference/demos/definitions.md
+      - Interpreter: reference/demos/interpreter.md
     - Standard Library:
       - Basic: reference/stdlib/basic.md
       - Queries: reference/stdlib/queries.md
       - Streams: reference/stdlib/streams.md
-      - Effects: reference/stdlib/nodes.md
-      - Algorithms: reference/stdlib/search.md
+      - Effects: reference/stdlib/effects.md
+      - Algorithms: reference/stdlib/algorithms.md
       - Commands: reference/stdlib/commands.md
       - Experiments: reference/stdlib/experiments.md
 
