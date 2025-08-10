@@ -519,7 +519,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/strategy-lang/trees/" class="md-nav__link">
+      <a href="../../reference/strategies/trees/" class="md-nav__link">
         
   
   
@@ -542,7 +542,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/strategy-lang/queries/" class="md-nav__link">
+      <a href="../../reference/strategies/queries/" class="md-nav__link">
         
   
   
@@ -565,7 +565,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/strategy-lang/traces/" class="md-nav__link">
+      <a href="../../reference/strategies/traces/" class="md-nav__link">
         
   
   
@@ -588,7 +588,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/strategy-lang/misc/" class="md-nav__link">
+      <a href="../../reference/strategies/misc/" class="md-nav__link">
         
   
   
@@ -665,7 +665,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/policy-lang/policies/" class="md-nav__link">
+      <a href="../../reference/policies/definitions/" class="md-nav__link">
         
   
   
@@ -688,7 +688,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/policy-lang/streams/" class="md-nav__link">
+      <a href="../../reference/policies/streams/" class="md-nav__link">
         
   
   
@@ -711,7 +711,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/policy-lang/envs/" class="md-nav__link">
+      <a href="../../reference/policies/envs/" class="md-nav__link">
         
   
   
@@ -786,7 +786,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/demo-lang/demos/" class="md-nav__link">
+      <a href="../../reference/demos/definitions/" class="md-nav__link">
         
   
   
@@ -809,7 +809,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/demo-lang/interpreter/" class="md-nav__link">
+      <a href="../../reference/demos/interpreter/" class="md-nav__link">
         
   
   
@@ -963,7 +963,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/stdlib/nodes/" class="md-nav__link">
+      <a href="../../reference/stdlib/effects/" class="md-nav__link">
         
   
   
@@ -986,7 +986,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/stdlib/search/" class="md-nav__link">
+      <a href="../../reference/stdlib/algorithms/" class="md-nav__link">
         
   
   
@@ -1183,13 +1183,85 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#documenting-another-class" class="md-nav__link">
+  <a href="#documenting-a-class-without-members" class="md-nav__link">
     <span class="md-ellipsis">
-      Documenting another Class
+      Documenting a Class without Members
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Documenting another Class">
+    <nav class="md-nav" aria-label="Documenting a Class without Members">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.Query" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documenting-a-class-with-selected-members" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documenting a Class With Selected Members
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Documenting a Class With Selected Members">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.Query" class="md-nav__link">
+    <span class="md-ellipsis">
+      Query
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Query">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.Query.parse_answer" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse_answer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.Query.query_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      query_config
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documenting-a-dataclass" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documenting a Dataclass
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Documenting a Dataclass">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1386,7 +1458,7 @@
 <li>Start documenting each field in uppercase.</li>
 </ul>
 <h2 id="api-documentation-for-query">API Documentation for Query</h2>
-<p>The <a class="autorefs autorefs-internal" title="delphyne.Query" href="#delphyne.Query"><code>Query</code></a> class is the base class for all queries in Delphyne, providing convenient features and automatic type inference.</p>
+<p>The <a class="autorefs autorefs-internal" title="delphyne.Query" href="#delphyne.Query"><code>Query</code></a> class is the base class for all queries in Delphyne, providing convenient features and automatic type inference. Does it work to have partial paths (<a class="autorefs autorefs-internal" title="delphyne.Query" href="#delphyne.Query"><code>Query</code></a>)?</p>
 <h2 id="documenting-a-class">Documenting a Class</h2>
 
 
@@ -2315,7 +2387,1373 @@ ambient inner policy.</p>
 
     </div>
 
-</div><h2 id="documenting-another-class">Documenting another Class</h2>
+</div><h2 id="documenting-a-class-without-members">Documenting a Class without Members</h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="delphyne.Query" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">delphyne.Query</span>
+
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="delphyne.core.AbstractQuery">AbstractQuery</span>[<span title="delphyne.stdlib.queries.Query[T]">Query[T]</span>]</code></p>
+
+
+        <p>Base class for queries, which adds convenience features on top of
+<code>AbstractQuery</code>, including inferring a lot of information from type
+hints and from the special <strong>parser</strong> class attribute.</p>
+
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Query</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for queries, which adds convenience features on top of</span>
+<span class="sd">    `AbstractQuery`, including inferring a lot of information from type</span>
+<span class="sd">    hints and from the special __parser__ class attribute.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__modes__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">AnswerModeName</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">__parser__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">ParserSpec</span> <span class="o">|</span> <span class="n">ParserSpecDict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">__config__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">QueryConfig</span> <span class="o">|</span> <span class="n">QueryConfigDict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1">### Inspection methods</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">query_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerModeName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QueryConfig</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        By default, we obtain the configuration by looking for a</span>
+<span class="sd">        __config__ field, which might be either a single configuration</span>
+<span class="sd">        or a dictionary mapping modes to configurations. Instead, if</span>
+<span class="sd">        only the parser is specified, we can use __parser__.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">parse_overriden</span> <span class="o">=</span> <span class="n">dpi</span><span class="o">.</span><span class="n">is_method_overridden</span><span class="p">(</span><span class="n">Query</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;parse&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parse_overriden</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__config__</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">assert</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__parser__</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__config__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parser__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
+                <span class="s2">&quot;Cannot have both __config__ and __parser__ attributes.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">config_attr</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__config__</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config_attr</span><span class="p">,</span> <span class="n">QueryConfig</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">config_attr</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config_attr</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">config_attr</span><span class="p">)[</span><span class="n">mode</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__parser__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">parser_attr</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__parser__</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parser_attr</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+                <span class="n">parser</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">parser_attr</span><span class="p">)[</span><span class="n">mode</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">parser</span> <span class="o">=</span> <span class="n">parser_attr</span>
+            <span class="n">_check_valid_parser_spec</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">QueryConfig</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">QueryConfig</span><span class="p">(</span><span class="s2">&quot;structured&quot;</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_decomposed_answer_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_DecomposedAnswerType</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_DecomposedAnswerType</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_answer_type</span><span class="p">())</span>
+
+    <span class="c1">### Parsing Answers</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_answer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">answer</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Answer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span> <span class="o">|</span> <span class="n">dp</span><span class="o">.</span><span class="n">ParseError</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">answer</span><span class="o">.</span><span class="n">mode</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_modes</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">dp</span><span class="o">.</span><span class="n">ParseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">e</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">answer</span><span class="p">:</span> <span class="n">Answer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A more convenient method to override instead of `parse_answer`.</span>
+
+<span class="sd">        Raises dp.ParseError</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Decompose the specified answer type</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_config</span><span class="p">(</span><span class="n">answer</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">parser</span>
+        <span class="n">ans_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decomposed_answer_type</span><span class="p">()</span>
+
+        <span class="c1"># Compute base parsing function `parser`</span>
+        <span class="n">parser</span><span class="p">:</span> <span class="n">_ParsingFunction</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;structured&quot;</span><span class="p">:</span>
+            <span class="n">parser</span> <span class="o">=</span> <span class="n">_from_structured</span><span class="p">(</span><span class="n">ans_type</span><span class="o">.</span><span class="n">to_parse</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;final_tool_call&quot;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ans_type</span><span class="o">.</span><span class="n">to_parse</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
+            <span class="n">parser</span> <span class="o">=</span> <span class="n">_from_final_tool_call</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">ans_type</span><span class="o">.</span><span class="n">to_parse</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">callable</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">attr</span><span class="p">)</span>
+            <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+            <span class="n">nargs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">nargs</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">nargs</span> <span class="o">==</span> <span class="mi">2</span>
+            <span class="k">if</span> <span class="n">nargs</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">parser</span> <span class="o">=</span> <span class="n">_from_text_parser</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">parser</span> <span class="o">=</span> <span class="n">_from_generic_text_parser</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">ans_type</span><span class="o">.</span><span class="n">to_parse</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ans_type</span><span class="o">.</span><span class="n">wrap_parse_errors</span><span class="p">():</span>
+            <span class="n">parser</span> <span class="o">=</span> <span class="n">_wrap_parse_errors</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+
+        <span class="c1"># If the answer type has form `Response[..., ...]`</span>
+        <span class="k">if</span> <span class="n">ans_type</span><span class="o">.</span><span class="n">resp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">_has_final_tool_call</span><span class="p">(</span><span class="n">ans_type</span><span class="p">,</span> <span class="n">answer</span><span class="p">):</span>
+                <span class="n">tcs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tcs</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">_parse_tool_call</span><span class="p">(</span><span class="n">ans_type</span><span class="o">.</span><span class="n">resp</span><span class="o">.</span><span class="n">tools</span><span class="p">,</span> <span class="n">tc</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">tc</span> <span class="ow">in</span> <span class="n">answer</span><span class="o">.</span><span class="n">tool_calls</span>
+                <span class="p">]</span>
+            <span class="k">if</span> <span class="n">tcs</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Response</span><span class="p">(</span><span class="n">answer</span><span class="p">,</span> <span class="n">ToolRequests</span><span class="p">(</span><span class="n">tcs</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Response</span><span class="p">(</span><span class="n">answer</span><span class="p">,</span> <span class="n">FinalAnswer</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">answer</span><span class="p">))))</span>
+
+        <span class="k">return</span> <span class="n">parser</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+
+    <span class="c1">### Query Settings</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerModeName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">QuerySettings</span><span class="p">:</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_config</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">structured_output</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">parser</span> <span class="o">==</span> <span class="s2">&quot;structured&quot;</span><span class="p">:</span>
+            <span class="nb">type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decomposed_answer_type</span><span class="p">()</span><span class="o">.</span><span class="n">final</span>
+            <span class="n">structured_output</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">StructuredOutputSettings</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="n">tools</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">tool_types</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query_tools</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">parser</span><span class="p">):</span>
+            <span class="n">tools</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">ToolSettings</span><span class="p">(</span>
+                <span class="n">tool_types</span><span class="p">,</span> <span class="n">force_tool_call</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">parser</span> <span class="o">==</span> <span class="s2">&quot;final_tool_call&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">dp</span><span class="o">.</span><span class="n">QuerySettings</span><span class="p">(</span>
+            <span class="n">structured_output</span><span class="o">=</span><span class="n">structured_output</span><span class="p">,</span>
+            <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_structured_output_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">ty</span><span class="o">.</span><span class="n">NoTypeInfo</span><span class="p">:</span>
+        <span class="n">decomposed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decomposed_answer_type</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">decomposed</span><span class="o">.</span><span class="n">final</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_query_tools</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">ParserSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+        <span class="n">ans_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decomposed_answer_type</span><span class="p">()</span>
+        <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">ans_type</span><span class="o">.</span><span class="n">resp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tools</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">ans_type</span><span class="o">.</span><span class="n">resp</span><span class="o">.</span><span class="n">tools</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">parser</span> <span class="o">==</span> <span class="s2">&quot;final_tool_call&quot;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ans_type</span><span class="o">.</span><span class="n">final</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
+            <span class="n">tools</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ans_type</span><span class="o">.</span><span class="n">final</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tools</span>
+
+    <span class="c1">### Query Prefixes</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_has_special_prefix_attr</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="n">annots</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">get_type_hints</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;prefix&quot;</span> <span class="ow">in</span> <span class="n">annots</span> <span class="ow">and</span> <span class="n">annots</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="n">ct</span><span class="o">.</span><span class="n">AnswerPrefix</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ct</span><span class="o">.</span><span class="n">AnswerPrefix</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the value of the `prefix` attribute if it has type</span>
+<span class="sd">        annotation `AnswerPrefix` or return `None`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_special_prefix_attr</span><span class="p">():</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;prefix&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1">### Producing Prompts</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_prompt</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">kind</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;instance&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerModeName</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span>
+        <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">TemplatesManager</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">env</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_no_prompt_manager_error</span><span class="p">()</span>
+        <span class="n">args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
+            <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="n">mode</span><span class="p">,</span>
+            <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">glob</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">globals</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span><span class="p">[</span><span class="s2">&quot;globals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">glob</span>
+        <span class="k">return</span> <span class="n">env</span><span class="o">.</span><span class="n">prompt</span><span class="p">(</span>
+            <span class="n">kind</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_name</span><span class="p">(),</span> <span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_prompt</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_default_prompt</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;instance&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">attr_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;__</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">_prompt__&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">):</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="n">res</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;instance&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_has_special_prefix_attr</span><span class="p">():</span>
+                <span class="k">return</span> <span class="s2">&quot;{{query | yaml(exclude_fields=[&#39;prefix&#39;]) | trim}}&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;{{query | yaml | trim}}&quot;</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;system&quot;</span> <span class="ow">and</span> <span class="p">(</span><span class="n">doc</span> <span class="o">:=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getdoc</span><span class="p">(</span><span class="bp">cls</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">doc</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;feedback&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">DEFAULT_FEEDBACK_PROMPT</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">globals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1">### Other Simple Overrides</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span> <span class="n">ty</span><span class="o">.</span><span class="n">pydantic_dump</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="p">))</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_answer_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">dpi</span><span class="o">.</span><span class="n">first_parameter_of_base_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">answer_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_answer_type</span><span class="p">()</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">finite_answer_set</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">Answer</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># We handle the special case where the return type is a literal</span>
+        <span class="c1"># type that is a subtype of str.</span>
+        <span class="n">ans</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">answer_type</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">res</span> <span class="o">:=</span> <span class="n">_match_string_literal_type</span><span class="p">(</span><span class="n">ans</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">Answer</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">res</span><span class="p">]</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query_modes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">AnswerModeName</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__modes__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__modes__</span>
+        <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+
+    <span class="c1">### Generating Opaque Spaces</span>
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_policy</span><span class="p">:</span> <span class="n">EllipsisType</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">IPDict</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">P2</span><span class="p">](</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">get_policy</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P2</span><span class="p">],</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">]</span> <span class="o">|</span> <span class="n">EllipsisType</span><span class="p">,</span>
+        <span class="o">/</span><span class="p">,</span>
+        <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P2</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P2</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">P</span><span class="p">](</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">get_policy</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">]</span> <span class="o">|</span> <span class="n">EllipsisType</span><span class="p">,</span>
+        <span class="o">/</span><span class="p">,</span>
+        <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Turn a strategy instance into an opaque space by providing a</span>
+<span class="sd">        mapping from the ambient inner policy to a prompting policy.</span>
+
+<span class="sd">        The optional `inner_policy_type` argument is ignored at runtime</span>
+<span class="sd">        and can be used to help type checkers infer the type of the</span>
+<span class="sd">        ambient inner policy.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">get_policy</span><span class="p">,</span> <span class="n">EllipsisType</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">OpaqueSpace</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]</span><span class="o">.</span><span class="n">from_query</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">pol</span><span class="o">.</span><span class="n">dict_subpolicy</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">OpaqueSpace</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]</span><span class="o">.</span><span class="n">from_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">get_policy</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_toplevel</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PolicyEnv</span><span class="p">,</span>
+        <span class="n">policy</span><span class="p">:</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SearchStream</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="n">attached</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">spawn_standalone_query</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">policy</span><span class="p">(</span><span class="n">attached</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="documenting-a-class-with-selected-members">Documenting a Class With Selected Members</h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="delphyne.Query" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">delphyne.Query</span>
+
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="delphyne.core.AbstractQuery">AbstractQuery</span>[<span title="delphyne.stdlib.queries.Query[T]">Query[T]</span>]</code></p>
+
+
+        <p>Base class for queries, which adds convenience features on top of
+<code>AbstractQuery</code>, including inferring a lot of information from type
+hints and from the special <strong>parser</strong> class attribute.</p>
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="parse_answer (delphyne.Query.parse_answer)" href="#delphyne.Query.parse_answer">parse_answer</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="query_config (delphyne.Query.query_config)" href="#delphyne.Query.query_config">query_config</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>By default, we obtain the configuration by looking for a</p>
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Query</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for queries, which adds convenience features on top of</span>
+<span class="sd">    `AbstractQuery`, including inferring a lot of information from type</span>
+<span class="sd">    hints and from the special __parser__ class attribute.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__modes__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">AnswerModeName</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">__parser__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">ParserSpec</span> <span class="o">|</span> <span class="n">ParserSpecDict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">__config__</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">QueryConfig</span> <span class="o">|</span> <span class="n">QueryConfigDict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1">### Inspection methods</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">query_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerModeName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QueryConfig</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        By default, we obtain the configuration by looking for a</span>
+<span class="sd">        __config__ field, which might be either a single configuration</span>
+<span class="sd">        or a dictionary mapping modes to configurations. Instead, if</span>
+<span class="sd">        only the parser is specified, we can use __parser__.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">parse_overriden</span> <span class="o">=</span> <span class="n">dpi</span><span class="o">.</span><span class="n">is_method_overridden</span><span class="p">(</span><span class="n">Query</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;parse&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parse_overriden</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__config__</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">assert</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__parser__</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__config__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parser__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
+                <span class="s2">&quot;Cannot have both __config__ and __parser__ attributes.&quot;</span>
+            <span class="p">)</span>
+            <span class="n">config_attr</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__config__</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config_attr</span><span class="p">,</span> <span class="n">QueryConfig</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">config_attr</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config_attr</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">config_attr</span><span class="p">)[</span><span class="n">mode</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__parser__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">parser_attr</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__parser__</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parser_attr</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+                <span class="n">parser</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">parser_attr</span><span class="p">)[</span><span class="n">mode</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">parser</span> <span class="o">=</span> <span class="n">parser_attr</span>
+            <span class="n">_check_valid_parser_spec</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">QueryConfig</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">QueryConfig</span><span class="p">(</span><span class="s2">&quot;structured&quot;</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_decomposed_answer_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_DecomposedAnswerType</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_DecomposedAnswerType</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_answer_type</span><span class="p">())</span>
+
+    <span class="c1">### Parsing Answers</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse_answer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">answer</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Answer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span> <span class="o">|</span> <span class="n">dp</span><span class="o">.</span><span class="n">ParseError</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">answer</span><span class="o">.</span><span class="n">mode</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_modes</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">dp</span><span class="o">.</span><span class="n">ParseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">e</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">answer</span><span class="p">:</span> <span class="n">Answer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A more convenient method to override instead of `parse_answer`.</span>
+
+<span class="sd">        Raises dp.ParseError</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Decompose the specified answer type</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_config</span><span class="p">(</span><span class="n">answer</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">attr</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">parser</span>
+        <span class="n">ans_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decomposed_answer_type</span><span class="p">()</span>
+
+        <span class="c1"># Compute base parsing function `parser`</span>
+        <span class="n">parser</span><span class="p">:</span> <span class="n">_ParsingFunction</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;structured&quot;</span><span class="p">:</span>
+            <span class="n">parser</span> <span class="o">=</span> <span class="n">_from_structured</span><span class="p">(</span><span class="n">ans_type</span><span class="o">.</span><span class="n">to_parse</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;final_tool_call&quot;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ans_type</span><span class="o">.</span><span class="n">to_parse</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
+            <span class="n">parser</span> <span class="o">=</span> <span class="n">_from_final_tool_call</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">ans_type</span><span class="o">.</span><span class="n">to_parse</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">callable</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">attr</span><span class="p">)</span>
+            <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+            <span class="n">nargs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">nargs</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">nargs</span> <span class="o">==</span> <span class="mi">2</span>
+            <span class="k">if</span> <span class="n">nargs</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">parser</span> <span class="o">=</span> <span class="n">_from_text_parser</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">parser</span> <span class="o">=</span> <span class="n">_from_generic_text_parser</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">ans_type</span><span class="o">.</span><span class="n">to_parse</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ans_type</span><span class="o">.</span><span class="n">wrap_parse_errors</span><span class="p">():</span>
+            <span class="n">parser</span> <span class="o">=</span> <span class="n">_wrap_parse_errors</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+
+        <span class="c1"># If the answer type has form `Response[..., ...]`</span>
+        <span class="k">if</span> <span class="n">ans_type</span><span class="o">.</span><span class="n">resp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">_has_final_tool_call</span><span class="p">(</span><span class="n">ans_type</span><span class="p">,</span> <span class="n">answer</span><span class="p">):</span>
+                <span class="n">tcs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tcs</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">_parse_tool_call</span><span class="p">(</span><span class="n">ans_type</span><span class="o">.</span><span class="n">resp</span><span class="o">.</span><span class="n">tools</span><span class="p">,</span> <span class="n">tc</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">tc</span> <span class="ow">in</span> <span class="n">answer</span><span class="o">.</span><span class="n">tool_calls</span>
+                <span class="p">]</span>
+            <span class="k">if</span> <span class="n">tcs</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Response</span><span class="p">(</span><span class="n">answer</span><span class="p">,</span> <span class="n">ToolRequests</span><span class="p">(</span><span class="n">tcs</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">Response</span><span class="p">(</span><span class="n">answer</span><span class="p">,</span> <span class="n">FinalAnswer</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">answer</span><span class="p">))))</span>
+
+        <span class="k">return</span> <span class="n">parser</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+
+    <span class="c1">### Query Settings</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerModeName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">QuerySettings</span><span class="p">:</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_config</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">structured_output</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">parser</span> <span class="o">==</span> <span class="s2">&quot;structured&quot;</span><span class="p">:</span>
+            <span class="nb">type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decomposed_answer_type</span><span class="p">()</span><span class="o">.</span><span class="n">final</span>
+            <span class="n">structured_output</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">StructuredOutputSettings</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="n">tools</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">tool_types</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query_tools</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">parser</span><span class="p">):</span>
+            <span class="n">tools</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">ToolSettings</span><span class="p">(</span>
+                <span class="n">tool_types</span><span class="p">,</span> <span class="n">force_tool_call</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">parser</span> <span class="o">==</span> <span class="s2">&quot;final_tool_call&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">dp</span><span class="o">.</span><span class="n">QuerySettings</span><span class="p">(</span>
+            <span class="n">structured_output</span><span class="o">=</span><span class="n">structured_output</span><span class="p">,</span>
+            <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_structured_output_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">ty</span><span class="o">.</span><span class="n">NoTypeInfo</span><span class="p">:</span>
+        <span class="n">decomposed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decomposed_answer_type</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">decomposed</span><span class="o">.</span><span class="n">final</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_query_tools</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">ParserSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+        <span class="n">ans_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decomposed_answer_type</span><span class="p">()</span>
+        <span class="n">tools</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">ans_type</span><span class="o">.</span><span class="n">resp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tools</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">ans_type</span><span class="o">.</span><span class="n">resp</span><span class="o">.</span><span class="n">tools</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">parser</span> <span class="o">==</span> <span class="s2">&quot;final_tool_call&quot;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ans_type</span><span class="o">.</span><span class="n">final</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
+            <span class="n">tools</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ans_type</span><span class="o">.</span><span class="n">final</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tools</span>
+
+    <span class="c1">### Query Prefixes</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_has_special_prefix_attr</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="n">annots</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">get_type_hints</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;prefix&quot;</span> <span class="ow">in</span> <span class="n">annots</span> <span class="ow">and</span> <span class="n">annots</span><span class="p">[</span><span class="s2">&quot;prefix&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="n">ct</span><span class="o">.</span><span class="n">AnswerPrefix</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ct</span><span class="o">.</span><span class="n">AnswerPrefix</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the value of the `prefix` attribute if it has type</span>
+<span class="sd">        annotation `AnswerPrefix` or return `None`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_special_prefix_attr</span><span class="p">():</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;prefix&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1">### Producing Prompts</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_prompt</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">kind</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;instance&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerModeName</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span>
+        <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">TemplatesManager</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">env</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_no_prompt_manager_error</span><span class="p">()</span>
+        <span class="n">args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="p">,</span>
+            <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="n">mode</span><span class="p">,</span>
+            <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">glob</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">globals</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span><span class="p">[</span><span class="s2">&quot;globals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">glob</span>
+        <span class="k">return</span> <span class="n">env</span><span class="o">.</span><span class="n">prompt</span><span class="p">(</span>
+            <span class="n">kind</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_name</span><span class="p">(),</span> <span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_prompt</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_default_prompt</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;instance&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">attr_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;__</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">_prompt__&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">):</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="n">res</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;instance&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_has_special_prefix_attr</span><span class="p">():</span>
+                <span class="k">return</span> <span class="s2">&quot;{{query | yaml(exclude_fields=[&#39;prefix&#39;]) | trim}}&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;{{query | yaml | trim}}&quot;</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;system&quot;</span> <span class="ow">and</span> <span class="p">(</span><span class="n">doc</span> <span class="o">:=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getdoc</span><span class="p">(</span><span class="bp">cls</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">doc</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;feedback&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">DEFAULT_FEEDBACK_PROMPT</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">globals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1">### Other Simple Overrides</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize_args</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span> <span class="n">ty</span><span class="o">.</span><span class="n">pydantic_dump</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="p">))</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_answer_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">dpi</span><span class="o">.</span><span class="n">first_parameter_of_base_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">answer_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_answer_type</span><span class="p">()</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">finite_answer_set</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">Answer</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># We handle the special case where the return type is a literal</span>
+        <span class="c1"># type that is a subtype of str.</span>
+        <span class="n">ans</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">answer_type</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">res</span> <span class="o">:=</span> <span class="n">_match_string_literal_type</span><span class="p">(</span><span class="n">ans</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">Answer</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">res</span><span class="p">]</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query_modes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">AnswerModeName</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__modes__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__modes__</span>
+        <span class="k">return</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span>
+
+    <span class="c1">### Generating Opaque Spaces</span>
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_policy</span><span class="p">:</span> <span class="n">EllipsisType</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">IPDict</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">P2</span><span class="p">](</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">get_policy</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P2</span><span class="p">],</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">]</span> <span class="o">|</span> <span class="n">EllipsisType</span><span class="p">,</span>
+        <span class="o">/</span><span class="p">,</span>
+        <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P2</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P2</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">P</span><span class="p">](</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">get_policy</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">]</span> <span class="o">|</span> <span class="n">EllipsisType</span><span class="p">,</span>
+        <span class="o">/</span><span class="p">,</span>
+        <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Turn a strategy instance into an opaque space by providing a</span>
+<span class="sd">        mapping from the ambient inner policy to a prompting policy.</span>
+
+<span class="sd">        The optional `inner_policy_type` argument is ignored at runtime</span>
+<span class="sd">        and can be used to help type checkers infer the type of the</span>
+<span class="sd">        ambient inner policy.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">get_policy</span><span class="p">,</span> <span class="n">EllipsisType</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">OpaqueSpace</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]</span><span class="o">.</span><span class="n">from_query</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">pol</span><span class="o">.</span><span class="n">dict_subpolicy</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">OpaqueSpace</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]</span><span class="o">.</span><span class="n">from_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">get_policy</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_toplevel</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PolicyEnv</span><span class="p">,</span>
+        <span class="n">policy</span><span class="p">:</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SearchStream</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="n">attached</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">spawn_standalone_query</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">policy</span><span class="p">(</span><span class="n">attached</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.Query.parse_answer" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">parse_answer</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">parse_answer</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="n"><span title="delphyne.core.Answer">Answer</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span> <span class="o">|</span> <span class="n"><span title="delphyne.core.ParseError">ParseError</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@override</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_answer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">answer</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Answer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span> <span class="o">|</span> <span class="n">dp</span><span class="o">.</span><span class="n">ParseError</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">answer</span><span class="o">.</span><span class="n">mode</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_modes</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">dp</span><span class="o">.</span><span class="n">ParseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">e</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.Query.query_config" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">query_config</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">query_config</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerModeName">AnswerModeName</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.queries.QueryConfig">QueryConfig</span></span> <span class="o">|</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>By default, we obtain the configuration by looking for a
+<strong>config</strong> field, which might be either a single configuration
+or a dictionary mapping modes to configurations. Instead, if
+only the parser is specified, we can use <strong>parser</strong>.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">query_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerModeName</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QueryConfig</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    By default, we obtain the configuration by looking for a</span>
+<span class="sd">    __config__ field, which might be either a single configuration</span>
+<span class="sd">    or a dictionary mapping modes to configurations. Instead, if</span>
+<span class="sd">    only the parser is specified, we can use __parser__.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="n">parse_overriden</span> <span class="o">=</span> <span class="n">dpi</span><span class="o">.</span><span class="n">is_method_overridden</span><span class="p">(</span><span class="n">Query</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;parse&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">parse_overriden</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__config__</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">assert</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__parser__</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__config__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parser__</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span>
+            <span class="s2">&quot;Cannot have both __config__ and __parser__ attributes.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">config_attr</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__config__</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config_attr</span><span class="p">,</span> <span class="n">QueryConfig</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">config_attr</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config_attr</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">config_attr</span><span class="p">)[</span><span class="n">mode</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__parser__</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">parser_attr</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__parser__</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parser_attr</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="n">parser</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">parser_attr</span><span class="p">)[</span><span class="n">mode</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parser</span> <span class="o">=</span> <span class="n">parser_attr</span>
+        <span class="n">_check_valid_parser_spec</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">QueryConfig</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">QueryConfig</span><span class="p">(</span><span class="s2">&quot;structured&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="documenting-a-dataclass">Documenting a Dataclass</h2>
 
 
 <div class="doc doc-object doc-class">

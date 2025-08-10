@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../queries/">
+        <link rel="prev" href="../definitions/">
       
       
-        <link rel="next" href="../misc/">
+        <link rel="next" href="../../stdlib/basic/">
       
       
       <link rel="icon" href="../../../None">
@@ -20,7 +20,7 @@
     
     
       
-        <title>Traces - Delphyne</title>
+        <title>Interpreter - Delphyne</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#traces-and-references" class="md-skip">
+        <a href="#evaluating-demonstrations" class="md-skip">
           Skip to content
         </a>
       
@@ -115,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Traces
+              Interpreter
             
           </span>
         </div>
@@ -474,10 +474,8 @@
                 
   
   
-    
   
   
-  
     
     
       
@@ -493,11 +491,11 @@
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" >
         
           
           <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
@@ -513,7 +511,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_1">
             <span class="md-nav__icon md-icon"></span>
             Strategies
@@ -527,7 +525,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../trees/" class="md-nav__link">
+      <a href="../../strategies/trees/" class="md-nav__link">
         
   
   
@@ -550,7 +548,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../queries/" class="md-nav__link">
+      <a href="../../strategies/queries/" class="md-nav__link">
         
   
   
@@ -570,19 +568,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../strategies/traces/" class="md-nav__link">
         
   
   
@@ -593,7 +582,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -606,7 +594,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../misc/" class="md-nav__link">
+      <a href="../../strategies/misc/" class="md-nav__link">
         
   
   
@@ -683,7 +671,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../policy-lang/policies/" class="md-nav__link">
+      <a href="../../policies/definitions/" class="md-nav__link">
         
   
   
@@ -706,7 +694,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../policy-lang/streams/" class="md-nav__link">
+      <a href="../../policies/streams/" class="md-nav__link">
         
   
   
@@ -729,7 +717,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../policy-lang/envs/" class="md-nav__link">
+      <a href="../../policies/envs/" class="md-nav__link">
         
   
   
@@ -757,8 +745,10 @@
                 
   
   
+    
   
   
+  
     
     
       
@@ -770,11 +760,11 @@
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" checked>
         
           
           <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
@@ -790,7 +780,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4_3">
             <span class="md-nav__icon md-icon"></span>
             Demonstrations
@@ -804,7 +794,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../demo-lang/demos/" class="md-nav__link">
+      <a href="../definitions/" class="md-nav__link">
         
   
   
@@ -824,10 +814,19 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../demo-lang/interpreter/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -838,6 +837,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -981,7 +981,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../stdlib/nodes/" class="md-nav__link">
+      <a href="../../stdlib/effects/" class="md-nav__link">
         
   
   
@@ -1004,7 +1004,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../stdlib/search/" class="md-nav__link">
+      <a href="../../stdlib/algorithms/" class="md-nav__link">
         
   
   
@@ -1115,7 +1115,7 @@
 
 
 
-<h1 id="traces-and-references">Traces and References</h1>
+<h1 id="evaluating-demonstrations">Evaluating Demonstrations</h1>
 
 
 
