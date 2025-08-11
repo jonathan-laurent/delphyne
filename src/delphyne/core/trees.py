@@ -22,13 +22,24 @@ from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
 type Tag = str
 """
-Tags for better navigation in traces and in the demo language.
+String tags for nodes and spaces.
+
+Nodes and spaces can be tagged with string identifiers, which can be
+referred to in demonstration tests and when defining inner policies
+(e.g. [`IPDict`][delphyne.IPDict]). Tags should only feature
+alphanumeric characters, underscores, dots and dashes.
 """
 
 
 class Space[T](ABC):
     """
     Abstract type for a space.
+
+    Tree nodes feature local spaces (possibly parametric), that are
+    backed by either queries or nested trees. Examples of spaces include
+    [*embedded trees*][delphyne.EmbeddedTree], [*opaque
+    spaces*][delphyne.OpaqueSpace], and [*transparent
+    queries*][delphyne.TransparentQuery].
     """
 
     @abstractmethod
