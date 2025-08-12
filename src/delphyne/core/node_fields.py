@@ -1,5 +1,15 @@
 """
-Internal utilities to detect node fields.
+Classifying and inferring different kinds of node fields.
+
+When spawning a node via `Tree.spawn`, different field arguments must be
+processed differently. For example, an opaque space builder (`Opaque`)
+must be turned into an opaque space (`OpaqueSpace`) by providing an
+appropriate space reference. Other fields such as data fields must not
+be processed.
+
+This module defines a type for classifying node fields (`FieldType`)
+along with a utility function to automatically classify the fields of a
+custom node via inspection (`detect_node_structure`).
 """
 
 import inspect
@@ -17,7 +27,7 @@ from typing import Any
 @dataclass
 class SpaceF:
     """
-    A space field that does not correspond to am embedded nested tree.
+    A space field that does not correspond to an embedded nested tree.
     """
 
 
@@ -25,6 +35,10 @@ class SpaceF:
 class EmbeddedF:
     """
     A field corresponding to a nested embedded space.
+
+    Recognizing this particular case is useful so that triggering
+    functions can directly accept strategy computations as arguments
+    (`StrategyComp`) instead of space builders (`SpaceBuilder`).
     """
 
 
@@ -39,6 +53,9 @@ class DataF:
 class ParametricF:
     """
     A field corresponding to a parametric space.
+
+    Attributes:
+        res: kind of the result space.
     """
 
     res: SpaceF | EmbeddedF
@@ -50,7 +67,7 @@ class SequenceF:
     A field corresponding to a sequence of spaces.
     """
 
-    element: "FieldType"
+    element: "FieldKind"
 
 
 @dataclass
@@ -59,16 +76,26 @@ class OptionalF:
     A field corresponding to a sequence of spaces.
     """
 
-    element: "FieldType"
+    element: "FieldKind"
 
 
-type LeafFieldType = SpaceF | EmbeddedF | DataF | ParametricF
+type LeafFieldKind = SpaceF | EmbeddedF | DataF | ParametricF
 
 
-type FieldType = LeafFieldType | SequenceF | OptionalF
+type FieldKind = LeafFieldKind | SequenceF | OptionalF
+"""
+Kind of a node field.
+
+A node field can be an embedded tree, another local space, a parametric
+embedded tree or space, a sequence of such elements or an optional
+element.
+"""
 
 
-type NodeFields = dict[str, FieldType]
+type NodeFields = dict[str, FieldKind]
+"""
+A dictionary mapping each field name to its kind.
+"""
 
 
 ####
@@ -174,7 +201,7 @@ def _field_leaf_structure(
     raise _DataFieldDetected()
 
 
-def _field_structure(annot: Any, classes: _SpecialClasses) -> FieldType:
+def _field_structure(annot: Any, classes: _SpecialClasses) -> FieldKind:
     """
     TODO: detect `Tracked more robustly`.
     """
@@ -191,7 +218,12 @@ def detect_node_structure(
     cls: Any, *, space_class: type[Any], embedded_class: type[Any]
 ) -> NodeFields | None:
     """
-    Automatically detect the structure of a node.
+    Attempts to automatically detect the kind of all fields of a `Node`
+    subclass.
+
+    When passed a dataclass, this function works by inspecting the type
+    annotation of each field. It recognizes special patterns
+    `Sequence[...]` and `... | None` and tests subclassing of `Space`.
     """
     if not is_dataclass(cls):
         return None

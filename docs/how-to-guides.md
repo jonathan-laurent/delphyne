@@ -2,6 +2,10 @@
 
 ## Creating a New Delphyne Project
 
-## Using the Python Debugger
+## Running an Oracular Program
 
-## Running an Oracular Program Outside the Editor
+## Debugging an Oracular Program
+
+## Defining a New Effect
+
+## Defining a New Policy

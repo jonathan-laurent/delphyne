@@ -6,7 +6,7 @@ import typing
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Generator, Sequence
 from dataclasses import dataclass, replace
-from typing import Any, Generic, Protocol, TypeVar, cast
+from typing import Any, Generic, Protocol, TypeVar, cast, override
 
 from delphyne.core import inspect, refs
 from delphyne.core import node_fields as nf
@@ -24,10 +24,10 @@ type Tag = str
 """
 String tags for nodes and spaces.
 
-Nodes and spaces can be tagged with string identifiers, which can be
-referred to in demonstration tests and when defining inner policies
-(e.g. `IPDict`). Tags should only feature alphanumeric characters,
-underscores, dots and dashes.
+Nodes and spaces can be assigned string identifiers, which may be
+referenced in demonstration tests or when defining inner policies
+(e.g., `IPDict`). Tags should contain only alphanumeric characters,
+underscores, dots, and dashes.
 """
 
 
@@ -36,18 +36,28 @@ class Space[T](ABC):
     Abstract type for a space.
 
     Tree nodes feature local spaces (possibly parametric), that are
-    backed by either queries or nested trees. Examples of spaces include
-    [*embedded trees*][delphyne.EmbeddedTree], [*opaque
-    spaces*][delphyne.OpaqueSpace], and [*transparent
-    queries*][delphyne.TransparentQuery].
+    backed by either queries or nested trees. Examples of spaces
+    include `EmbeddedTree`, `OpaqueSpace` and `TransparentQuery`.
     """
 
     @abstractmethod
     def tags(self) -> Sequence[Tag]:
+        """
+        Returns the tags associated with the space.
+        """
         pass
 
     @abstractmethod
     def source(self) -> "NestedTree[Any, Any, T] | AttachedQuery[T]":
+        """
+        Returns the source of the space, which is either a nested tree
+        or an attached query.
+
+        This method is mostly useful to the demonstration interpreter.
+        It is not typically used in policies since it breaks
+        abstraction (e.g., whether or not an opaque space is defined via
+        a query or a strategy is irrelevant).
+        """
         pass
 
 
@@ -55,6 +65,13 @@ class Space[T](ABC):
 class AttachedQuery[T]:
     """
     Wrapper for a query attached to a specific space.
+
+    Attributes:
+        query: The wrapped query.
+        ref: A global reference to the space to which the query is
+            attached.
+        parse_answer: A wrapper around `self.query.parse_answer`,
+            which attaches proper tracking information to answers.
     """
 
     query: AbstractQuery[T]
@@ -64,12 +81,22 @@ class AttachedQuery[T]:
 
 @dataclass(frozen=True)
 class TransparentQuery[T](Space[T]):
+    """
+    A space that is defined by a single, *transparent* query.
+
+    As opposed to `OpaqueSpace`, the query is meant to be directly
+    exposed to policies. This is used to define `Compute` and `Flag`
+    nodes for example.
+    """
+
     attached: AttachedQuery[T]
     _tags: "Sequence[Tag]"
 
+    @override
     def source(self) -> AttachedQuery[T]:
         return self.attached
 
+    @override
     def tags(self) -> Sequence[Tag]:
         return self._tags
 
@@ -98,7 +125,10 @@ class NavigationError(Exception):
     For internal errors that should not occur within normal use,
     assertions shoule be used instead. This exception is meant to
     represent errors that can occur during normal use, and reported in
-    the user interface.
+    the user interface. For an example, see `Abduction`.
+
+    Attributes:
+        message: A human-readable error message.
     """
 
     message: str
@@ -106,7 +136,23 @@ class NavigationError(Exception):
 
 class Node(ABC):
     """
-    Abstract type for a node.
+    Abstract type for a tree node.
+
+    New effects can be added to the strategy language by subclassing
+    `Node` and then defining a triggering function that calls the
+    `spawn` class method (manually defining such a wrapper allows
+    providing users with precise type annotations: i.e., `branch` for
+    `Branch`).
+
+    **Methods to override:**
+
+    - The `navigate` method must be overriden for all node types.
+    - The `leaf_node` method must be overriden for all leaf nodes.
+    - The following methods are also frequently overriden:
+        `summary_message`, `valid_action` and `primary_space`.
+
+    Other methods are implemented via inspection and are not typically
+    overriden.
     """
 
     # Methods that **must** be overriden
@@ -114,39 +160,69 @@ class Node(ABC):
     @abstractmethod
     def navigate(self) -> "Navigation":
         """
-        See `Navigation` for more details.
+        The navigation method, to be defined for each node type.
+
+        It should only be called when `self.leaf_node()` returns False.
+
+        See `Navigation` for details.
         """
         pass
 
     # Methods that are _sometimes_ overriden
 
     def summary_message(self) -> str | None:
+        """
+        Returns an optional summary message for the node, to be
+        displayed in the Delphyne extension's Tree View.
+        """
         return None
 
     def leaf_node(self) -> bool:
+        """
+        Returns True if the node is a leaf node (e.g., `Fail`) and False
+        otherwise.
+
+        Leaf nodes do not have to define `navigate` and are treated
+        specially by the demonstration interpreter.
+        """
         return False
 
     def valid_action(self, action: object) -> bool:
         """
-        This method can be implemented optionally to validate actions.
+        Returns whether an action is valid.
+
+        By default, this method always returns `True`. When overriden,
+        it is used to dynamically check actions passed to `Tree.child`,
+        **after** the `Tracked` wrapper is removed.
         """
         return True
 
     def primary_space(self) -> "Space[object] | None":
         """
-        Space that is inferred by default in a space element reference
-        (see `SpaceElementRef`). For example, `compare([cands{''},
-        cands{'foo bar'}])` can be abbreviated into `compare(['', 'foo
-        bar'])` if `cands` is the primary space for the current node.
+        Optionally returns the node's primary space.
+
+        Primary spaces are useful to shorten space references,
+        especially when writing demonstration tests. For example, if
+        `cands` is the primary space of the current node, then
+        `compare([cands{''}, cands{'foo bar'}])` can be abbreviated into
+        `compare(['', 'foo bar'])`.
         """
         return None
 
-    # Method indicating the nature of the node's fields, which is
-    # typically inferred but can be manually specified when heuristics
-    # fail.
+    # Method indicating the nature of the node's fields (for inspection)
 
     @classmethod
     def fields(cls) -> NodeFields:
+        """
+        Returns a dictionary mapping each field of the node to some
+        metadata (e.g., whether the field denotes a local space).
+
+        Such metadata is useful in particular to implement `spawn`.
+
+        The default implementation uses inspection, via
+        `detect_node_structure`. See the
+        [`node_fields`][delphyne.core.node_fields] module for details.
+        """
         f = detect_node_structure(
             cls, embedded_class=EmbeddedTree, space_class=Space
         )
@@ -200,7 +276,7 @@ class Node(ABC):
     @classmethod
     def spawn(cls, spawner: "AbstractBuilderExecutor", **args: Any):
         def convert(
-            name: refs.SpaceName, field: nf.FieldType, obj: Any
+            name: refs.SpaceName, field: nf.FieldKind, obj: Any
         ) -> Any:
             match field:
                 case nf.SpaceF():
@@ -252,7 +328,7 @@ class Node(ABC):
         def convert_parametric_embedded(obj: Any) -> Callable[[Any], Any]:
             return lambda arg: convert_embedded(obj(arg))
 
-        def convert(field: nf.FieldType, obj: Any) -> Any:
+        def convert(field: nf.FieldKind, obj: Any) -> Any:
             match field:
                 case nf.SpaceF() | nf.ParametricF(nf.SpaceF()) | nf.DataF():
                     return obj
@@ -276,8 +352,12 @@ class Node(ABC):
 
 type Navigation = Generator[Space[Any], Tracked[Any], Value]
 """
-Nodes have a `navigate` method that yields spaces and expects
-corresponding elements in return until an action is generated.
+A navigation generator.
+
+A navigation generator is returned by the
+[`navigate`][delphyne.Node.navigate] method of non-leaf nodes. It yields
+local spaces and receives corresponding elements until an action is
+generated and returned.
 """
 
 
