@@ -52,4 +52,4 @@ You can then look at the `examples/find_invariants` folder for an example of an 
 
 **Other Resources**
 
-- [Delphyne VSCode extension manual](https://jonathan-laurent.github.io/delphyne/manual/extension)
+- [Delphyne VSCode extension manual](https://jonathan-laurent.github.io/delphyne/latest/manual/extension)
