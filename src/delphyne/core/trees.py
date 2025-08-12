@@ -748,6 +748,8 @@ class Tree(Generic[N, P, T]):
     (see `reify`). Its type parameters are: a type signature `N`, an
     associated inner policy type `P`, and a return type `T`.
 
+    Trees are **immutable**.
+
     Attributes:
         node: The current node of the tree, which is either a success
             leaf or a node of type compatible with signature `N`.

@@ -23,6 +23,9 @@ from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 type TreeCache = dict[refs.GlobalNodePath, Tree[Any, Any, Any]]
 """
 A cache for never recomputing the same node twice.
+
+Each encountered subtree and (recursively) nested tree is stored,
+indexed by its global reference.
 """
 
 
@@ -35,8 +38,19 @@ A function to be called every time a new tree node is created.
 @dataclass(frozen=True)
 class TreeMonitor:
     """
-    When `reify` is called with a monitor, it makes sure that proper
-    hooks are called and proper caching is performed.
+    A record that gathers a tree cache along with a series of hooks to
+    be called on node creation.
+
+    When no monitor is passed to `reify`, the resulting tree is a pure,
+    immutable datastructure. Passing a monitor allows adding limited
+    side effects in the form of caching and hooks.
+
+    Attributes:
+        cache: a cache for never recomputing the same node twice. hooks:
+        functions to be called every time a new node is created.
+            For example, hooks can be used to automatically produce a
+            trace that keeps track of all visited nodes (see
+            `tracer_hook`).
     """
 
     cache: TreeCache | TreeCache | None = None
@@ -49,7 +63,49 @@ def reify[N: Node, P, T](
     allow_noncopyable_actions: bool = False,
 ) -> Tree[N, P, T]:
     """
-    Reify a strategy into a tree.
+    Reify a strategy computation into a tree.
+
+    The resulting tree raises `StrategyException` whenever the
+    underlying strategy raises an uncaught exception.
+
+    Internally, trees are implemented by having each node keep track of
+    a sequence of actions leading to it. Calling `child` appends a new
+    action to this path and replays the strategy computation from the
+    start with the new, augmented path.
+
+    Arguments:
+        strategy: the strategy to reify. monitor: an optional cache
+        along with node creation hooks. allow_noncopyable_actions: allow
+        actions to be nonserializable
+            objects (such as functions) that cannot be deepcopied.
+            Allowing such actions opens the door to unsafe side effects
+            corrupting the resulting tree, so it must be done with care.
+            See discussion below on side effects.
+
+    !!! note "On Side Effects in Strategies"
+        Strategy functions are allowed to have side effects (see
+        `tests/example_strategies/imperative_strategy` for example). For
+        this to be sound, actions are always deepcopied before being
+        sent back to strategy coroutines. This requirement can be
+        weakened by setting `allow_noncopyable_actions` to `True`. In
+        this case, noncopyable actions must be immutable. For example, a
+        pure function can be used as an action but a closure that
+        captures a mutable piece of state cannot (in which case
+        computing the child of a node could affect its siblings by
+        mutating some actions in their paths).
+
+        In addition, non-copyable strategy arguments must never be
+        mutated. Copyable arguments such as lists of copyable values can
+        be mutated, since `reify` automaticallt performs deepcopies.
+        Noncopyable arguments such as functions are allowed (e.g., to
+        enable implementing higher-order strategies) but they must be
+        pure and not mutate any state.
+
+        When `allow_noncopyable_actions` is set to `False`, a dynamic
+        check is performed to ensure that actions are copyable: an
+        action is considered copyable if it can be serialized into JSON
+        by pydantic (this is necessary since calling `deepcopy` on a
+        closure returns the same closure unchanged).
     """
     return _reify(
         strategy=strategy,
@@ -72,7 +128,7 @@ type _NonEmptyGlobalPath = tuple[GlobalNodePath, refs.SpaceRef, refs.NodePath]
 """
 Encodes a non-empty global node path.
 
-More precisely, `(gr, sr, nr)` encodes `(*gr, (sr, nr))`
+More precisely, `(gr, sr, nr)` stands for `(*gr, (sr, nr))`.
 """
 
 
@@ -323,7 +379,7 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
 
 def spawn_standalone_query[T](query: AbstractQuery[T]) -> tr.AttachedQuery[T]:
     """
-    Spawn a standalone query attached to the $main space of the global
+    Spawn a standalone query attached to the `MAIN_SPACE` of the global
     origin. Do NOT use this for queries attached to strategies.
     """
 
