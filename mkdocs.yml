@@ -33,12 +33,22 @@ plugins:
           paths: [src]
           options:
             docstring_style: google
-            cross_references: true
+            show_object_full_path: false
+            show_root_full_path: false
+            show_root_heading: true
+            heading_level: 3
             show_signature_annotations: true  # show types in signatures
             separate_signature: true  # show signatures in separate blocks
             filters: ["!^_"]  # do not show private members
             signature_crossrefs: true  # render links in signatures
             line_length: 88  # line length for signatures
+            extra: 
+              cross_references: true
+            extensions:
+              - delphyne.doc_hooks:TypeAliasesAsAttributes:
+                  include: ["*"]
+                  exclude: []
+              - delphyne.doc_hooks:DelphyneAutoCrossrefs
 
 markdown_extensions:
   - admonition  # Boxes such as 'info', 'question', 'warning'...

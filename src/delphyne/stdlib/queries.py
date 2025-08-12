@@ -171,9 +171,9 @@ class Query[T](dp.AbstractQuery[T]):
     def query_config(self, mode: dp.AnswerModeName) -> QueryConfig | None:
         """
         By default, we obtain the configuration by looking for a
-        __config__ field, which might be either a single configuration
+        `__config__` field, which might be either a single configuration
         or a dictionary mapping modes to configurations. Instead, if
-        only the parser is specified, we can use __parser__.
+        only the parser is specified, we can use `__parser__`.
         """
         cls = type(self)
         parse_overriden = dpi.is_method_overridden(Query, cls, "parse")

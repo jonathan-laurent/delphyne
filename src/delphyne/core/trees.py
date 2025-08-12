@@ -26,8 +26,8 @@ String tags for nodes and spaces.
 
 Nodes and spaces can be tagged with string identifiers, which can be
 referred to in demonstration tests and when defining inner policies
-(e.g. [`IPDict`][delphyne.IPDict]). Tags should only feature
-alphanumeric characters, underscores, dots and dashes.
+(e.g. `IPDict`). Tags should only feature alphanumeric characters,
+underscores, dots and dashes.
 """
 
 
