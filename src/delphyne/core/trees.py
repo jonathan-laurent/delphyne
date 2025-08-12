@@ -6,7 +6,7 @@ import typing
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Generator, Sequence
 from dataclasses import dataclass, replace
-from typing import Any, Generic, Protocol, TypeVar, cast, override
+from typing import Any, Generic, Protocol, TypeVar, cast, final, override
 
 from delphyne.core import inspect, refs
 from delphyne.core import node_fields as nf
@@ -149,7 +149,8 @@ class Node(ABC):
     - The `navigate` method must be overriden for all node types.
     - The `leaf_node` method must be overriden for all leaf nodes.
     - The following methods are also frequently overriden:
-        `summary_message`, `valid_action` and `primary_space`.
+        `summary_message`, `valid_action`, `primary_space`, and
+        `get_extra_tags`.
 
     Other methods are implemented via inspection and are not typically
     overriden.
@@ -206,10 +207,21 @@ class Node(ABC):
         `cands` is the primary space of the current node, then
         `compare([cands{''}, cands{'foo bar'}])` can be abbreviated into
         `compare(['', 'foo bar'])`.
+
+        By default, all tags of a node's primary space are also
+        inherited by this node (see `get_tags` method).
         """
         return None
 
-    # Method indicating the nature of the node's fields (for inspection)
+    def get_extra_tags(self) -> Sequence[Tag]:
+        """
+        Returns the extra tags associated with the node, in addition to
+        the default ones inherited from the primary space (see
+        `get_tags` method).
+        """
+        return []
+
+    # Inspecting the kinds of node fields
 
     @classmethod
     def fields(cls) -> NodeFields:
@@ -234,29 +246,53 @@ class Node(ABC):
     # Methods with a sensible default behavior that are _rarely_ overriden
 
     def effect_name(self) -> str:
+        """
+        Name of the associated effect.
+
+        Used for generating message errors and in the VSCode extension.
+        """
         return self.__class__.__name__
 
-    def get_extra_tags(self) -> Sequence[Tag]:
-        if hasattr(self, "extra_tags"):
-            return getattr(self, "extra_tags")
-        return []
-
     def get_tags(self) -> Sequence[Tag]:
+        """
+        Returns all tags attached to the node.
+
+        Tags are leveraged by the demonstration language to identify
+        nodes (e.g., `at` test command).
+
+        By default, this method returns all tags from the primary space
+        (if any), along with any additional tag returned by
+        `get_extra_tags`.
+        """
         if (primary := self.primary_space()) is not None:
             return [*primary.tags(), *self.get_extra_tags()]
         return self.get_extra_tags()
 
     # Methods that should not be overriden
 
+    @final
     def primary_space_ref(self) -> refs.SpaceRef | None:
+        """
+        Convenience method for returning a reference to the node's
+        primary space, if it is defined.
+        """
         space = self.primary_space()
         if space is None:
             return None
         return space.source().ref[1]
 
+    @final
     def nested_space(
         self, name: refs.SpaceName, args: tuple[Value, ...]
     ) -> Space[Any] | None:
+        """
+        Dynamically retrieves a local space given its name and
+        parameters.
+
+        For nonparametric spaces, `args` should be the empty tuple.
+
+        This method is used by the demonstration interpreter.
+        """
         try:
             f: Any = getattr(self, name.name)
             for i in name.indices:
@@ -273,8 +309,20 @@ class Node(ABC):
         except (TypeError, AttributeError):
             return None
 
+    @final
     @classmethod
     def spawn(cls, spawner: "AbstractBuilderExecutor", **args: Any):
+        """
+        Spawn an instance of the node type, using a dictionary of
+        arguments to populate its fields.
+
+        Arguments are processed according to their kind (see
+        [delphyne.core.node_fields][]). For example opaque space
+        builders (`Opaque`) are turned into opaque spaces
+        (`OpaqueSpace`) and strategy computations (`StrategyComp`) are
+        turned into embedded trees (`EmbeddedTree`).
+        """
+
         def convert(
             name: refs.SpaceName, field: nf.FieldKind, obj: Any
         ) -> Any:
@@ -304,12 +352,17 @@ class Node(ABC):
         }
         return cls(**args_new)
 
+    @final
     def map_embedded[N: Node](
         self: N, trans: "AbstractTreeTransformer[Any, Any]"
     ) -> N:
         """
-        Apply a tree transformer to all embedded trees and return
-        the updated node (the argument is still valid afterwards).
+        Applies a function to all embedded trees.
+
+        This is a pure method that returns an updated node. It is useful
+        for implementing `Tree.transform`, which in turn is useful for
+        implementing standard tree transformers such as `elim_join` and
+        `elim_compute`.
         """
 
         def convert_embedded(
@@ -368,7 +421,21 @@ generated and returned.
 
 type Strategy[N: Node, P, T] = Generator[NodeBuilder[N, P], object, T]
 """
-The return type for strategies.
+Type of a strategy computation.
+
+A strategy computation is a generator (i.e., a coroutine) that yields
+node builders and receives corresponding actions, until it returns a
+success value.
+
+Type parameter `N` corresponds to the strategy's type signature
+(typically a union of node types), `P` is its associated inner policy
+type and `T` its return type.
+
+!!! info
+    Node builders are yielded instead of nodes. Indeed, strategy
+    computations cannot create nodes since they are unaware of
+    references. The task of concretely building nodes and maintaining
+    references is delegated to the `refine` function.
 """
 
 
@@ -382,6 +449,9 @@ T = TypeVar("T", covariant=True, contravariant=False)
 @dataclass(frozen=True)
 class NodeBuilder(Generic[N, P]):
     """
+    Wrapper for a function that builds a node, given the ability of
+    spawning trees and attached queries (`AbstractBuilderExecutor`).
+
     Strategies do not directly yield nodes since building a node
     requires knowing its reference along with the associated hooks.
 
@@ -397,10 +467,10 @@ class StrategyComp(Generic[N, P, T]):
     A *strategy computation* that can be reified into a search tree,
     obtained by instantiating a strategy function.
 
-    Such objects atr usually not created directly but using the
+    Such objects are usually not created directly but using the
     [`@strategy` decorator][delphyne.stdlib.strategy] from the standard
-    library. Metadata information can be provided as: a name for the
-    strategy, a return type and a list of tags.
+    library. Metadata information can be provided, such as: a name for
+    the strategy, a return type and a list of tags.
 
     ??? note
         The name of the `_comp` function is inspected by methods such as
@@ -409,9 +479,6 @@ class StrategyComp(Generic[N, P, T]):
         annotations are inspected by methods such as `return_type` and
         `inner_policy_type`. Thus, passing an anonymous function as
         `_comp` is not recommended.
-
-    ??? note
-
     """
 
     _comp: Callable[..., Strategy[N, P, T]]
@@ -453,7 +520,9 @@ class StrategyComp(Generic[N, P, T]):
     def default_tags(self) -> Sequence[Tag]:
         """
         Return all default tags associated with the strategy
-        computation.
+        computation. Derived space builders are initialized with these
+        tags, which can later be changed (`tag` field of
+        `SpaceBuilder`).
         """
         return self._tags
 
@@ -471,7 +540,7 @@ class StrategyComp(Generic[N, P, T]):
     def strategy_arguments(self) -> dict[str, Any]:
         """
         Return the dictionary of arguments that was used to instantiate
-        the undelrying strategy function (using inspection for naming
+        the underlying strategy function (using inspection for naming
         positional arguments).
         """
         return inspect.function_args_dict(self._comp, self._args, self._kwargs)
@@ -532,12 +601,14 @@ class StrategyComp(Generic[N, P, T]):
 @dataclass(frozen=True)
 class NestedTree[N: Node, P, T]:
     """
-    A nested tree is one can back up an arbitrary space (including
-    opaque spaces).
+    Wrapper for a tree attached to a particular node.
 
-    Note: one cannot count on `strategy` having the same node type as
-    `spawn_tree` since nested trees can be applied tree transformers
-    (see `Node.map_embedded`).
+    The `AttachedQuery` type plays an equivalent role for queries.
+
+    !!! note
+        One cannot count on the `strategy` field having the same node
+        type as `spawn_tree` since nested trees can be applied tree
+        transformers (see `Node.map_embedded`).
     """
 
     strategy: StrategyComp[Node, P, T]
@@ -548,8 +619,10 @@ class NestedTree[N: Node, P, T]:
 @dataclass(frozen=True)
 class EmbeddedTree[N: Node, P, T](Space[T]):
     """
-    An embedded tree wraps a nested tree, declaring it as such and
-    turning it into a space.
+    Space defined by a nested tree with the same signature and inner
+    policy as its surrounding tree.
+
+    This is useful to define effects such as `Join`.
     """
 
     nested: NestedTree[N, P, T]
@@ -586,38 +659,67 @@ class EmbeddedTree[N: Node, P, T](Space[T]):
 
 
 class NestedTreeSpawner(Protocol):
+    """
+    A function providing the ability to spawn nested trees attached to a
+    given node.
+    """
+
     def __call__[N: Node, P, T](
         self, strategy: "StrategyComp[N, P, T]"
     ) -> "NestedTree[N, P, T]": ...
 
 
 class QuerySpawner(Protocol):
+    """
+    A function providing the ability to attach queries to a given node.
+    """
+
     def __call__[T](self, query: AbstractQuery[T]) -> "AttachedQuery[T]": ...
 
 
 @dataclass(frozen=True)
 class SpaceBuilder[S]:
     """
-    On the strategy side, not enough information is typically available to
-    build spaces so builders are provided instead.
+    Wrapper for a function that builds a space, given the ability to
+    spawn nested trees and attached queries.
+
+    Effect triggering functions such as `branch` do not directly take
+    spaces as their arguments but space builders instead.
+
+    Space builders are also equipped with modifiable tags, to be
+    ultimately passed to the resulting space.
+
+    Attributes:
+        build: Wrapped builder function
+        tags: Tags to be assocaited to the space.
     """
 
     build: Callable[[NestedTreeSpawner, QuerySpawner, Sequence[Tag]], S]
     tags: Sequence[Tag]
 
     def tagged(self, *tags: Tag) -> "SpaceBuilder[S]":
+        """
+        Adds new tags to the space builder.
+        """
         return replace(self, tags=(*self.tags, *tags))
 
     def __call__(
         self, spawner: NestedTreeSpawner, query_spawner: QuerySpawner
     ) -> S:
+        """
+        Builds a space, given the provided abilities along with the
+        current set of tags.
+        """
         return self.build(spawner, query_spawner, self.tags)
 
 
 class AbstractBuilderExecutor(ABC):
     """
-    Allows spawning arbitrary nested spaces at a given node, given
-    builders for them.
+    Abstract class for builder executors.
+
+    An executor implements the ability of converting space builders into
+    actual spaces. The `reify` function relies on such an executor
+    internally.
     """
 
     @abstractmethod
@@ -639,6 +741,21 @@ class AbstractBuilderExecutor(ABC):
 
 @dataclass(frozen=True)
 class Tree(Generic[N, P, T]):
+    """
+    Strategy Trees.
+
+    A strategy tree can be obtained by reifying a strategy computation
+    (see `reify`). Its type parameters are: a type signature `N`, an
+    associated inner policy type `P`, and a return type `T`.
+
+    Attributes:
+        node: The current node of the tree, which is either a success
+            leaf or a node of type compatible with signature `N`.
+        child: A function that maps an action (i.e., a local value) to a
+            child tree.
+        ref: A global reference to the current tree.
+    """
+
     node: "N | Success[T]"
     child: "Callable[[Value], Tree[N, P, T]]"
     ref: GlobalNodePath
@@ -648,6 +765,15 @@ class Tree(Generic[N, P, T]):
         node: "M | Success[T]",
         transformer: "AbstractTreeTransformer[N, M]",
     ) -> "Tree[M, P, T]":
+        """
+        Recursively apply a function to all embedded trees and subtrees
+        of a tree.
+
+        This is a pure method that does not modify its arguments. It is
+        useful to implement tree transformers such as `elim_join` and
+        `elim_compute`.
+        """
+
         def child(action: Value) -> Tree[M, P, T]:
             return transformer(self.child(action))
 
@@ -660,11 +786,13 @@ class Success[T]:
     """
     A success leaf, carrying a tracked value.
 
-    Note that although it largely implements the same interface via duck
-    typing, `Success` does not inherit `Node`. The reason is that
-    `Tree[N, P, T].node` has type `Success[T] | N`. If `Success`
-    inherited `Node`, it would be possible for `N` to include a value of
-    type `Success[T2]` for some `T2 != T`, which we want to avoid.
+    ??? note "Implementation Note"
+        Although it largely implements the same interface via duck
+        typing, `Success` does not inherit `Node`. The reason is that
+        `Tree[N, P, T].node` has type `Success[T] | N`. If `Success`
+        inherited `Node`, it would be possible for `N` to include a
+        value of type `Success[T2]` for some `T2 != T`, which we want to
+        rule out.
     """
 
     success: Tracked[T]
@@ -709,15 +837,26 @@ class StrategyException(Exception):
     """
     Raised when a strategy encounters an internal error (e.g. a failed
     assertion or an index-out-of-bounds error).
+
+    Attributes:
+        exn: The original exception that was raised.
     """
 
     exn: Exception
 
 
 type AnyTree = Tree[Node, Any, Any]
+"""
+Convenience type alias for an arbitrary tree.
+"""
 
 
 class AbstractTreeTransformer[N: Node, M: Node](Protocol):
+    """
+    A function that transforms any tree with signature N into a tree
+    with signature M, preserving its inner policy type and return type.
+    """
+
     def __call__[T, P](self, tree: "Tree[N, P, T]") -> "Tree[M, P, T]": ...
 
 
@@ -727,6 +866,17 @@ class AbstractTreeTransformer[N: Node, M: Node](Protocol):
 
 
 class ComputationNode(Node):
+    """
+    Abstract type for computation nodes.
+
+    A computation node has an additional method that can be called to
+    compute an _answer_. The demonstration interpreter uses this
+    information to navigate computation nodes while accumulating
+    implicit answers.
+
+    The standard `Compute` node inherits this class.
+    """
+
     @abstractmethod
     def run_computation(self) -> str:
         pass
