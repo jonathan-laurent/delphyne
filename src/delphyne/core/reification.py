@@ -116,6 +116,10 @@ def reify[N: Node, P, T](
 
 
 def tracer_hook(tracer: en.Tracer) -> Callable[[Tree[Any, Any, Any]], None]:
+    """
+    Standard hook to be passed to `TreeMonitor` to automatically log
+    visited nodes into a trace.
+    """
     return lambda tree: tracer.trace_node(tree.ref)
 
 

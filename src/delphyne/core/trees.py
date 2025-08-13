@@ -756,6 +756,18 @@ class Tree(Generic[N, P, T]):
         child: A function that maps an action (i.e., a local value) to a
             child tree.
         ref: A global reference to the current tree.
+
+    !!! info "Locality Invariant"
+        Only *local values* can be used as actions (passed to `child`)
+        or as arguments of parametric local spaces. A *local value*
+        consists in an assembly of elements of local spaces (see
+        `Value`). This invariant is enforced at runtime and it
+        guarantees that a policy can always make progress at any given
+        node without being provided additional context. It is also a key
+        assumption for establishing the completeness of the
+        demonstration language (i.e., a demonstration with a single `run
+        | success` test can always be extracted from a successfulrun of
+        an oracular program).
     """
 
     node: "N | Success[T]"

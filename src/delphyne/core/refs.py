@@ -1,5 +1,31 @@
 """
 References to nodes, values, spaces and space elements.
+
+References are serializable, immutable values that can be used to
+identify nodes, spaces and values in a tree (possibly deeply nested).
+References are useful for tooling and for representing serializable
+traces (`Trace`). Also, references are attached to success nodes and
+query answers (`Tracked`) so as to allow caching and enforce the
+*locality invariant* (see `Tree`).
+
+*Local* references identify a node, space or space element *relative* to
+a given tree node. *Global* references are expressed relative to a
+single, global origin.
+
+In addition, three kinds of references can be distinguished:
+
+- **Full references**: the default kind of references produced by
+      `reify`. Query answers are stored as strings and elements of
+      spaces induced by strategies are denoted by sequences of value
+      references.
+- **Id-based references**: shorter references, where query answers and
+      success values are identified by unique identifiers. This concise
+      format is used for exporting traces (see `Trace`).
+- **Hint-based references**: query answers and success values are
+      identified by sequences of *hints*. This format is used in the
+      demonstration language (e.g. argument of test instruction `go
+      compare(['', 'foo bar'])`) and when visualizing traces resulting
+      from demonstrations.
 """
 
 from collections.abc import Mapping, Sequence
@@ -15,8 +41,8 @@ class SpaceName:
     """
     A name identifying a parametric space.
 
-    This name can feature indices. For example, `subs[0]` denotes the
-    first subgoal of a `Join` node.
+    This name can feature integer indices. For example, `subs[0]`
+    denotes the first subgoal of a `Join` node.
     """
 
     name: str
