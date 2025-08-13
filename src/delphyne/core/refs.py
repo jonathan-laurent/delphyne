@@ -35,6 +35,79 @@ from typing import Any, Generic, Literal, TypeVar, overload
 import delphyne.core.inspect as insp
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
+#####
+##### Query Answers
+#####
+
+
+@dataclass(frozen=True)
+class ToolCall:
+    """
+    A tool call, usually produced by an LLM oracle.
+
+    Tool calls can be attached to LLM answers (see `Answer`).
+    """
+
+    name: str
+    args: Mapping[str, Any]
+
+    def __hash__(self) -> int:
+        # Tool calls need to be hashable since they are part of answers
+        # and references. However, they can feature arbitrary JSON
+        # objects. This, we compute a hash for the serialized value.
+        import json
+
+        return hash(json.dumps(self.__dict__))
+
+
+@dataclass(frozen=True)
+class Structured:
+    """
+    Wrapper for structured LLM answers.
+
+    Many LLM APIs allow producing JSON answers (sometimes following a
+    given schema) instead of plain text.
+    """
+
+    structured: Any  # JSON object
+
+    def __hash__(self) -> int:
+        # See `ToolCall.__hash__` for explanations.
+        import json
+
+        return hash(json.dumps(self.__dict__))
+
+
+type AnswerModeName = str | None
+"""
+A name for an answer mode, which can be a string or `None` (the latter
+is typically used for naming default modes).
+
+Queries are allowed to define multiple answer modes, each mode being
+possibly associated with different settings and with a different parser.
+An `Answer` value features the mode that must be used to parse it.
+"""
+
+
+@dataclass(frozen=True)
+class Answer:
+    """
+    An answer to a query.
+
+    It can serve as a _space element reference_ if the space in question
+    is a query and the proposed answer correctly parses.
+    """
+
+    mode: AnswerModeName
+    content: str | Structured
+    tool_calls: tuple[ToolCall, ...] = ()
+    justification: str | None = None
+
+
+#####
+##### References
+#####
+
 
 @dataclass(frozen=True)
 class SpaceName:
@@ -52,16 +125,10 @@ class SpaceName:
         return SpaceName(self.name, (*self.indices, index))
 
 
-type AnswerModeName = str | None
-"""
-A name for an answer mode, or `None` for the default mode.
-"""
-
-
 type AtomicValueRef = IndexedRef | SpaceElementRef
 """
-An atomic value ref is a space element reference that is indexed zero or
-a finite number of times: space_elt_ref[i1][i2]...[in].
+An atomic value reference is a space element reference that is indexed
+zero or a finite number of times: space_elt_ref[i1][i2]...[in].
 """
 
 
@@ -117,8 +184,9 @@ type NodeRef = NodePath | NodeId
 A node reference is either a path or a node identifier.
 
 Only one of these forms may be allowed depending on the context (e.g. in
-an exportable trace, only identifiers are used while basic strategy
-trees do not use identifiers and use paths instead).
+the id-based references used for exporting traces, only node identifiers
+are used, while in the full references attached to trees by `reify`,
+only paths are used).
 """
 
 
@@ -138,50 +206,14 @@ class SpaceRef:
 
 MAIN_SPACE = SpaceRef(SpaceName("$main", ()), ())
 """
-The global origin's special space that contains the main, top-level
-strategy tree.
+A special space attached to the *global origin* node, and which contains
+the main, top-level strategy tree.
 """
 
 MAIN_ROOT: "GlobalNodePath" = ((MAIN_SPACE, ()),)
-
-
-@dataclass(frozen=True)
-class ToolCall:
-    name: str
-    args: Mapping[str, Any]
-
-    def __hash__(self) -> int:
-        # Tool calls need to be hashable since they are part of answers
-        # and references. However, they can feature arbitrary JSON
-        # objects...
-        import json
-
-        return hash(json.dumps(self.__dict__))
-
-
-@dataclass(frozen=True)
-class Structured:
-    structured: Any  # JSON object
-
-    def __hash__(self) -> int:
-        # See `ToolCall.__hash__`
-        import json
-
-        return hash(json.dumps(self.__dict__))
-
-
-@dataclass(frozen=True)
-class Answer:
-    """
-    An answer to a query. This can serve as a _space element reference_
-    if the space in question is a query and the proposed answer
-    correctly parses.
-    """
-
-    mode: AnswerModeName
-    content: str | Structured
-    tool_calls: tuple[ToolCall, ...] = ()
-    justification: str | None = None
+"""
+Global reference to the root of the main, top-level strategy tree.
+"""
 
 
 @dataclass(frozen=True)
@@ -252,21 +284,37 @@ A path to a global node
 
 
 #####
-##### Node Origins
+##### Node Origins (used in traces)
 #####
 
 
 type NodeOrigin = ChildOf | NestedTreeOf
+"""
+Origin of a tree.
+
+A tree is either the child of another tree or the root of a nested tree.
+Traces can be exported as mappings from node identifiers to node origin
+information featuring id-based references (see `Trace`).
+"""
 
 
 @dataclass(frozen=True)
 class ChildOf:
+    """
+    The tree of interest is the child of another one.
+    """
+
     node: NodeId
     action: ValueRef
 
 
 @dataclass(frozen=True)
 class NestedTreeOf:
+    """
+    The tree of interest is the root of a tree that induces a given
+    space.
+    """
+
     node: NodeId
     space: SpaceRef
 
@@ -282,14 +330,23 @@ T = TypeVar("T", covariant=True)
 @dataclass(frozen=True)
 class Tracked(Generic[T]):
     """
-    A tracked value, which associates a value with a reference.
+    A tracked value, which pairs a value with a reference.
 
-    The `node` field does not appear in Orakell and is a global path
-    (from the global origin) to the node the value is attached too.
-    Having this field is useful to check at runtime that a tracked value
-    passed as an argument to `child` is attached to the current node.
+    Attributes:
+        value: the value being tracked. ref: a local reference to the
+        value, relative to the node
+            reference by the `node` field.
+        node: a global reference to the node to which the space that the
+            value originates from is attached. In particular, this field
+            is useful to check the locality invariant at runtime (e.g.,
+            when passing a tracked value to `Tree.child`).
+        type_annot: an optional type annotation for the `value` field.
+            This is mostly used for improving the rendering of values
+            when exporting trace information for external tools.
 
-    Since __getitem__ is defined, `Tracked` is implicitly an iterable.
+    Tracked sequences (or pairs) can be indexed using `__getitem__`,
+    resulting in tracked values with `IndexedRef` references. Since
+    `__getitem__` is defined, tracked values are also iterable.
     """
 
     value: T
@@ -325,18 +382,30 @@ class Tracked(Generic[T]):
 
 type Value = ExtAssembly[Tracked[Any]]
 """
-A dynamic assembly of tracked values.
+An assembly of *local*, tracked values.
+
+Values can serve as actions or space parameters.
 """
 
 
 @dataclass(frozen=True)
 class LocalityError(Exception):
+    """
+    Exception raised when the locality invariant is violated.
+
+    See `Tree` and `check_local_value`.
+    """
+
     expected_node_ref: GlobalNodePath
     node_ref: GlobalNodePath
     local_ref: AtomicValueRef
 
 
 def check_local_value(val: Value, node: GlobalNodePath):
+    """
+    Raise a `LocalityError` exception if a given value is not a local
+    value relative to a given node.
+    """
     match val:
         case None:
             pass
@@ -361,6 +430,9 @@ def _invalid_value(v: object) -> str:
 
 
 def value_ref(v: Value) -> ValueRef:
+    """
+    Obtain a reference from a value.
+    """
     match v:
         case Tracked(_, ref):
             return ref
@@ -372,6 +444,9 @@ def value_ref(v: Value) -> ValueRef:
 
 
 def drop_refs(v: Value) -> object:
+    """
+    Drop the `Tracked` wrappers within a value.
+    """
     match v:
         case Tracked(value):
             return value
@@ -383,6 +458,10 @@ def drop_refs(v: Value) -> object:
 
 
 def value_type(v: Value) -> TypeAnnot[Any] | NoTypeInfo:
+    """
+    Obtain a type annotation for a value, assuming all tracked atoms
+    also have type annotations.
+    """
     match v:
         case Tracked():
             return v.type_annot
