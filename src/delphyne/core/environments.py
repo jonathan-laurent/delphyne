@@ -1,5 +1,8 @@
 """
 Policy environments.
+
+Policies have access to a global environment for fetching prompts, data,
+examples, caching LLM requests, and logging information.
 """
 
 import json
@@ -20,14 +23,27 @@ from delphyne.utils.caching import CacheSpec
 from delphyne.utils.typing import pydantic_load
 from delphyne.utils.yaml import dump_yaml_object
 
+####
+#### Example Database
+####
+
+
 DEMO_FILE_EXT = ".demo.yaml"
+
 
 type _QueryName = str
 
-type QueryArgs = dict[str, Any]
+
+type QuerySerializedArgs = dict[str, Any]
+"""
+Serialized query arguments, as a dictionary mapping attributed to JSON
+values (assemblies of integers, strings, dictionnaries, list, tuples...).
+"""
 
 
-def _equal_query_args(args1: QueryArgs, args2: QueryArgs) -> bool:
+def _equal_query_args(
+    args1: QuerySerializedArgs, args2: QuerySerializedArgs
+) -> bool:
     # Comparing the dictionaries directly would not work because the
     # same object where a tuple is used instead of a list would be
     # considered different.
@@ -36,25 +52,33 @@ def _equal_query_args(args1: QueryArgs, args2: QueryArgs) -> bool:
 
 @dataclass
 class Example:
-    args: QueryArgs
+    """
+    An example, usable for few-shot prompting.
+
+    Attributes:
+        args: The serialized query arguments.
+        answer: The answer to the query.
+        tags: A sequence of tags associated with the example, which
+            policies can use to select appropriate examples.
+    """
+
+    args: QuerySerializedArgs
     answer: Answer
     tags: Sequence[str]
-
-
-####
-#### Example Database
-####
 
 
 @dataclass
 class ExampleDatabase:
     """
-    A simple example database. Examples are stored as JSON strings.
+    A simple example database.
 
-    The `do_not_match_identical_queries` parameter can be set to `True`
-    in a context where demonstrations are being developed. Indeed, it is
-    not interesting to see what the LLM would answer if the solution is
-    in the context.
+    Attributes:
+        do_not_match_identical_queries: If set to `True`, the `examples`
+            method won't return examples that match identical queries
+            (i.e., with the exact same arguments). This is useful in the
+            context of writing demonstrations, where one may want to see
+            how an LLM would answer a query, even when a ground-truth
+            answer is provided already.
 
     TODO: add provenance info for better error messages.
     """
@@ -67,6 +91,10 @@ class ExampleDatabase:
     )
 
     def add_query_demonstration(self, demo: QueryDemo):
+        """
+        Add all examples from a standalone query demonstration to the
+        database.
+        """
         if not demo.answers:
             return
         if (ex := demo.answers[0].example) is not None and not ex:
@@ -80,6 +108,9 @@ class ExampleDatabase:
         self._examples[demo.query].append(example)
 
     def add_demonstration(self, demo: Demo):
+        """
+        Add all exmples from a demonstration to the database.
+        """
         if isinstance(demo, QueryDemo):
             self.add_query_demonstration(demo)
         else:
@@ -88,8 +119,12 @@ class ExampleDatabase:
                 self.add_query_demonstration(q)
 
     def examples(
-        self, query_name: str, query_args: QueryArgs
+        self, query_name: str, query_args: QuerySerializedArgs
     ) -> Iterable[Example]:
+        """
+        Obtain all potential examples that can be used for few-shot
+        prompting with a given query.
+        """
         for ex in self._examples[query_name]:
             if self.do_not_match_identical_queries:
                 if _equal_query_args(ex.args, query_args):
