@@ -144,7 +144,9 @@ def _value_repr[T](
     short = str(obj)
     # short = pprint.pformat(obj, compact=True, sort_dicts=False)
     long = pprint.pformat(obj, compact=False, sort_dicts=False)
-    value = fb.ValueRepr(short, long, False, None)
+    value = fb.ValueRepr(
+        short=short, long=long, json_provided=False, json=None
+    )
     if not isinstance(typ, tp.NoTypeInfo):
         try:
             json = tp.pydantic_dump(typ, obj)
@@ -425,7 +427,9 @@ class _TraceTranslator:
                     hint_str = ()
                 else:
                     hint_str = (hint.hint,)
-            answers.append(fb.Answer(aid.id, hint_str, parsed_repr))
+            answers.append(
+                fb.Answer(id=aid.id, hint=hint_str, value=parsed_repr)
+            )
         return fb.Query(
             kind="query",
             name=name,
@@ -449,7 +453,9 @@ class _TraceTranslator:
                 prop = self.translate_query(
                     id, ref, source.query, space.tags()
                 )
-        ref_str = fb.Reference(dp.pprint.space_ref(ref), None)
+        ref_str = fb.Reference(
+            with_ids=dp.pprint.space_ref(ref), with_hints=None
+        )
         if self.simplifier is not None:
             full_nref = self.trace.expand_node_id(id)
             full_sref = self.trace.expand_space_ref(id, ref)
@@ -462,7 +468,9 @@ class _TraceTranslator:
     ) -> fb.Action:
         # The `dst` argument is the id of the node that the action leads to
         # Compute two representations of the reference
-        ref_str = fb.Reference(dp.pprint.value_ref(action), None)
+        ref_str = fb.Reference(
+            with_ids=dp.pprint.value_ref(action), with_hints=None
+        )
         hints_str: list[str] | None = None
         if self.simplifier is not None:
             # There are two ways actions could be shown in the UI using

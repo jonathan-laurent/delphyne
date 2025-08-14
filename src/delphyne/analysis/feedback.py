@@ -11,14 +11,20 @@ from typing import Literal
 
 
 type DiagnosticType = Literal["error", "warning", "info"]
+"""Diagnostic type."""
 
 
 type Diagnostic = tuple[DiagnosticType, str]
+"""A diagnostic gathers a type (i.e. severity) and a message."""
 
 
 #####
 ##### Browsable Trace
 #####
+
+
+# Defining a rich trace format that is easy to visualize and display.
+# Can be skipped on first reading.
 
 
 type TraceNodeId = int
@@ -39,12 +45,25 @@ that can be listed in the UI, which is either an attached query, a
 nested tree or some data."""
 
 
-@dataclass
+@dataclass(kw_only=True)
 class ValueRepr:
     """
+    Multiple representations for a Python object.
+
     We allow providing several representations for Python objects:
     short, one-liner string descriptions, detailed descriptions, JSON
-    representation...
+    representation... All of these can be leveraged by different tools
+    and UI components.
+
+    Attributes:
+        short: A short representation, typically obtained using the
+            `str` function.
+        long: A longer, often multi-line representation, typically
+            obtained using the `pprint` module.
+        json: A JSON representation of the object.
+        json_provided: Whether a JSON representation is provided (the
+            JSON field is `None` otherwise). This is not always the case
+            since not all Python objects can be serialized to JSON.
     """
 
     short: str
@@ -53,10 +72,19 @@ class ValueRepr:
     json: object
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Reference:
     """
     A reference to a space or to a value.
+
+    Several human-readable representations are provided:
+
+    Attributes:
+        with_ids: A pretty-printed, id-based reference.
+        with_hints: A pretty-printed, hint-based reference. These are
+            typically available in the output of the demonstration
+            interpreter, but not when converting arbitrary traces that
+            result from running policies.
     """
 
     with_ids: str
@@ -65,16 +93,31 @@ class Reference:
 
 @dataclass
 class Data:
-    """Generic property that displays some data."""
+    """
+    Generic property that displays some data.
+
+    Attributes:
+        kind: Always "data".
+        content: string representation of the data content.
+    """
 
     kind: Literal["data"]
     content: str
 
 
-@dataclass
+@dataclass(kw_only=True)
 class NestedTree:
     """
-    A sub-tree (either opaque or embedded).
+    A nested tree.
+
+    Attributes:
+        kind: Always "nested".
+        strategy: Name of the strategy function that induces the tree.
+        args: Arguments passed to the strategy function.
+        tags: Tags attached to the space induced by the tree.
+        node_id: Identifier of the root node of the nested tree, or
+            `None` if it is not in the trace (i.e., the nested tree hasn't
+            been explored).
     """
 
     kind: Literal["nested"]
@@ -84,15 +127,19 @@ class NestedTree:
     node_id: TraceNodeId | None  # None if the subtree hasn't been explored
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Answer:
     """
     An answer to a query.
 
-    If the trace results from executing a demonstration (vs running a
-    policy with tracing enabled), then `hint` is either `()` if the
-    answer corresponds to the default answer and `(l,)` if the answer is
-    labeled with `l`.
+    Attributes:
+        id: Unique answer identifier.
+        value: Parsed answer value.
+        hint: If the trace results from executing a demonstration (vs
+            running a policy with tracing enabled), then `hint` is
+            either `()` if the answer corresponds to the default answer
+            and `(l,)` if the answer is labeled with `l`. Otherwise, it
+            is `None`.
     """
 
     id: TraceAnswerId
@@ -100,39 +147,53 @@ class Answer:
     value: ValueRepr
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Query:
     """
     Information about a query.
+
+    Attributes:
+        kind: Always "query".
+        name: Name of the query.
+        args: Query arguments, serialized in JSON.
+        tags: Tags attached to the space induced by the query.
+        answers: All answers to the query present in the trace.
     """
 
     kind: Literal["query"]
     name: str
-    tags: list[str]
     args: dict[str, object]
+    tags: list[str]
     answers: list[Answer]
 
 
 type NodeProperty = Data | NestedTree | Query
-"""See `TraceNodePropertyId`"""
+"""Description of a node property (see `NodePropertyId`)."""
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Action:
     """
-    Notes:
-      - A list of hints is typically used as a label.
-      - Storing related success nodes is important for the path view.
-      - Storing related answers is useful to detect useless answers and
-        to implement a "Jump to node" action on answers.
+    An action associated with a node.
 
-    A related success node is a node whose attached value was used in
-    building the action. Indeed, in the path view, we get a sequence of
-    actions and for each of them the list of success paths that were
-    involved in building that action.
-
-    Note that `hints` is not the same as `ref.with_hints`. Both could
-    plausibly be shown in the UI but the former is more concise.
+    Attributes:
+        ref: Pretty-printed local reference for the action. hints: If
+        the trace results from executing a demonstration,
+            this provides the list of hints that can be used to recover
+            the action through navigation. Otherwise, it is `None`. Note
+            that this is not identical to `ref.with_hints`. Both could
+            plausibly be shown in the UI but the former is more concise.
+        related_success_nodes: List of related success nodes. A related
+            success node is a node whose attached value was used in
+            building the action. Indeed, in the VSCode extension's Path
+            View, we get a sequence of actions and for each of them the
+            list of success paths that were involved in building that
+            action.
+        related_answers: List of related answers. A related answer is an
+            answer to a local query that is used in building the action.
+            Storing this information is useful to detect useless answers
+            that are not used in any action.
+        destination: Id of the child node that the action leads to.
     """
 
     ref: Reference
@@ -148,17 +209,41 @@ type NodeOrigin = (
     | tuple[Literal["child"], TraceNodeId, TraceActionId]
     | tuple[Literal["nested"], TraceNodeId, TraceNodePropertyId]
 )
+"""
+Origin of a node.
+
+A node can be the global root, the child of another node, or the root of
+a nested tree.
+"""
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Node:
     """
-    Notes:
-    - Node labels can be used as selectors in test commands.
-    - Node properties are labelled by the associated `ValueRef`.
+    Information about a node.
 
-    TODO: The node label should be a working selector.
+    Attributes:
+        kind: Name of the node type, or `Success`.
+        success_value: The success value if the node is a success leaf,
+            or `None` otherwise.
+        summary_message: A short summary message (see the
+            `Node.sumary_message` method).
+        leaf_node: Whether the node is a leaf node
+        label: A label describing the node, which can be useful for
+            writing node selectors (although there is currently no
+            guarantee that the label constitutes a valid selector
+            leading to the node). Currently, the label shows all node
+            tags, separated by "&".
+        tags: The list of all tags attached to the node.
+        properties: List of node properties (attached queries, nested
+            trees, data fields...). Each property is accompanied by a
+            pretty-printed, local space reference.
+        actions: A list of explored actions.
+        origin: The origin of the node in the global trace.
     """
+
+    # TODO: Make node labels into valid selectors that can be used with
+    # the `at` instruction in demonstration tests.
 
     kind: str
     success_value: ValueRepr | None
@@ -176,8 +261,17 @@ class Trace:
     """
     A browsable trace.
 
-    Note: alongside with a trace, the server may want to send a separate
-    mapping from answer IDs to demo references or oracle answers.
+    Attributes:
+        nodes: A mapping from node ids to their description.
+
+    !!! info
+        A browsable trace features answer identifiers, for which a
+        meaning must be provided externally. For example, the
+        demonstration interpreter also produces a mapping from answer
+        ids to their position in the demonstration file. In addition,
+        commands like `run_strategy` return a raw trace
+        (`core.traces.Trace`) in addition to the browsable version,
+        which maps answer ids to their actual content.
     """
 
     nodes: dict[TraceNodeId, Node]
@@ -199,9 +293,16 @@ type DemoAnswerId = tuple[int, int]
 @dataclass
 class TestFeedback:
     """
-    The test is considered successful if no diagnostic is a warning or
-    error. Most of the time and even when unsuccessful, a test stops at
-    a given node, which is indicated in `node_id`.
+    Feedback returned by the demo interpreter for a single test.
+
+    The test is considered successful if no diagnostic is a warning or an
+    error. Most of the time, and even when unsuccessful, a test stops at
+    a given node, which can be inspected in the UI and which is
+    indicated in field `node_id`.
+
+    Attributes:
+        diagnostics: List of diagnostics for the test.
+        node_id: Identifier of the node where the test stopped.
     """
 
     diagnostics: list[Diagnostic]
@@ -210,15 +311,53 @@ class TestFeedback:
 
 @dataclass
 class ImplicitAnswer:
+    """
+    An implicit answer that is not part of the demonstration but was
+    generated on the fly.
+
+    The VSCode extension then offers to add such answers explicitly in
+    the demonstration. This is particularly useful for handling
+    `Compute` nodes in demonstrations.
+
+    Attributes:
+        query_name: Query name.
+        query_args: Arguments passed to the query.
+        answer: The implicit answer value, as a raw string (mode `None`
+            is implicitly used for parsing).
+    """
+
+    # TODO: generalize implicit answers to accept full answers instead
+    # of just a string? In particular, other modes could be used.
+
     query_name: str
     query_args: dict[str, object]
     answer: str
 
 
-@dataclass
+@dataclass(kw_only=True)
 class StrategyDemoFeedback:
     """
     Feedback sent by the server for each strategy demonstration.
+
+    Attributes:
+
+        kind: Always "strategy".
+        trace: The resulting browsable trace, which includes all visited
+            nodes.
+        answer_refs: A mapping from answer ids featured in the
+            trace to the position of the corresponding answer in the
+            demonstration. This mapping may be **partial**. For example,
+            using value hints (e.g., `#flag_value`) forces the
+            demonstration interpreter to create answers on the fly that
+            are not part of the demonstration.
+        saved_nodes: Nodes saved using the `save` test instruction.
+        test_feedback: Feedback for each test in the demonstration.
+        global_diagnostics: Diagnostics that apply to the whole
+            demonstration (individual tests have their own diagnostics).
+        query_diagnostics: Diagnostics attached to specific queries.
+        answer_diagnostics: Diagnostics attached to specific answers.
+        implicit_answers: Implicit answers that were generated on the fly
+            and that can be explicitly added to the demonstration.
     """
 
     kind: Literal["strategy"]
@@ -232,10 +371,15 @@ class StrategyDemoFeedback:
     implicit_answers: list[ImplicitAnswer]
 
 
-@dataclass
+@dataclass(kw_only=True)
 class QueryDemoFeedback:
     """
-    Feedback sent by the server for each query demonstration.
+    Feedback sent by the server for a standalone query demonstration.
+
+    Attributes:
+        kind: Always "query".
+        diagnostics: Global diagnostics.
+        answer_diagnostics: Diagnostics attached to specific answers.
     """
 
     kind: Literal["query"]
@@ -244,3 +388,6 @@ class QueryDemoFeedback:
 
 
 type DemoFeedback = StrategyDemoFeedback | QueryDemoFeedback
+"""
+Feedback sent by the server for each demonstration in a file.
+"""

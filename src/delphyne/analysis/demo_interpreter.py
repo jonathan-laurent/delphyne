@@ -22,23 +22,50 @@ from delphyne.core import refs
 from delphyne.utils import typing as tp
 
 #####
-##### Environment Execution Context
+##### Execution Context and Object Loader
 #####
 
 
 @dataclass
 class ModuleNotFound(Exception):
+    """
+    Raised by `ObjectLoader` when a module is not found.
+    """
+
     module_name: str
 
 
 @dataclass
 class ObjectNotFound(Exception):
+    """
+    Raised by `ObjectLoader` when an object cannot be found.
+    """
+
     object_name: str
 
 
 @dataclass
 class StrategyLoadingError(Exception):
+    """
+    Raised by `ObjectLoader` when a strategy instance cannot be loaded.
+    """
+
     message: str
+
+
+@dataclass(frozen=True)
+class AmbiguousObjectIdentifier(Exception):
+    """
+    Raised when attempting to load an object with an ambiguous name.
+
+    Attributes:
+        identifier: the ambiguous identifier.
+        modules: a list of modules where different objects with the same
+            identifier were found
+    """
+
+    identifier: str
+    modules: Sequence[str]
 
 
 @dataclass(frozen=True)
@@ -62,21 +89,6 @@ class DemoExecutionContext:
             strategy_dirs=[root / p for p in self.strategy_dirs],
             modules=self.modules,
         )
-
-
-@dataclass(frozen=True)
-class AmbiguousObjectIdentifier(Exception):
-    """
-    Raised when attempting to load an object with an ambiguous name.
-
-    Attributes:
-        identifier: the ambiguous identifier.
-        modules: a list of modules where different objects with the same
-            identifier were found
-    """
-
-    identifier: str
-    modules: Sequence[str]
 
 
 class ObjectLoader:
@@ -133,6 +145,11 @@ class ObjectLoader:
         If the name is unqualified (it features no `.`), one attempts to
         find the object in every registered module in order. If the name
         is qualified, one looks at the specified registered module.
+
+        Raises:
+            ObjectNotFound: the object could not be found.
+            AmbiguousObjectIdentifier: the object name is ambiguous,
+                i.e. it is found in several modules.
         """
         if name in self.extra_objects:
             return self.extra_objects[name]
@@ -161,6 +178,9 @@ class ObjectLoader:
         raise ObjectNotFound(name)
 
     def load_and_call_function(self, name: str, args: dict[str, Any]) -> Any:
+        """
+        Load and call a function by wrapping a call to `find_object`.
+        """
         f = self.find_object(name)
         args = tp.parse_function_args(f, args)
         return f(**args)
@@ -168,6 +188,15 @@ class ObjectLoader:
     def load_strategy_instance(
         self, name: str, args: dict[str, Any]
     ) -> dp.StrategyComp[Any, Any, Any]:
+        """
+        Load and instantiate a strategy function with given arguments.
+
+        Raises:
+            ObjectNotFound: if the strategy function cannot be found.
+            AmbiguousObjectIdentifier: if an ambiguous name is given.
+            StrategyLoadingError: if the object is not a strategy function
+                or if the arguments are invalid.
+        """
         f = self.find_object(name)
         try:
             args = tp.parse_function_args(f, args)
@@ -183,6 +212,14 @@ class ObjectLoader:
     def load_query(
         self, name: str, args: dict[str, Any]
     ) -> dp.AbstractQuery[Any]:
+        """
+        Load a query by name and instantiate it with given arguments.
+
+        Raises:
+            ObjectNotFound: if the query cannot be found.
+            AmbiguousObjectIdentifier: if an ambiguous name is given.
+            AssertionError: if the object is not a query.
+        """
         obj = self.find_object(name)
         assert issubclass(obj, dp.AbstractQuery), (
             f"Object {name} is not a query type."
@@ -540,7 +577,15 @@ def evaluate_strategy_demo_and_return_trace(
     extra_objects: dict[str, object],
 ) -> tuple[fb.StrategyDemoFeedback, dp.Trace | None]:
     feedback = fb.StrategyDemoFeedback(
-        "strategy", fb.Trace({}), {}, {}, [], [], [], [], []
+        kind="strategy",
+        trace=fb.Trace({}),
+        answer_refs={},
+        saved_nodes={},
+        test_feedback=[],
+        global_diagnostics=[],
+        query_diagnostics=[],
+        answer_diagnostics=[],
+        implicit_answers=[],
     )
     try:
         loader = ObjectLoader(context, extra_objects)
@@ -602,7 +647,9 @@ def evaluate_standalone_query_demo(
     context: DemoExecutionContext,
     extra_objects: dict[str, object],
 ) -> fb.QueryDemoFeedback:
-    feedback = fb.QueryDemoFeedback("query", [], [])
+    feedback = fb.QueryDemoFeedback(
+        kind="query", diagnostics=[], answer_diagnostics=[]
+    )
     try:
         loader = ObjectLoader(context, extra_objects)
         query = loader.load_query(demo.query, demo.args)
@@ -633,6 +680,25 @@ def evaluate_demo(
     context: DemoExecutionContext,
     extra_objects: dict[str, object],
 ) -> fb.DemoFeedback:
+    """
+    Evaluate a query or strategy demonstration.
+
+    This is the main entrypoint of the demonstration interpreter.
+
+    Attributes:
+        demo: the demonstration to evaluate.
+        context: the execution context in which to resolve Python
+            identifiers.
+        extra_objects: additional objects that can be resolved by name
+            (with higher precedence).
+
+    Returns:
+        A feedback object containing the results of the evaluation.
+
+    !!! warning
+        This function creates an `ObjectLoader` internally and is
+        therefore not thread-safe.
+    """
     if isinstance(demo, dm.StrategyDemo):
         feedback, _ = evaluate_strategy_demo_and_return_trace(
             demo, context, extra_objects
