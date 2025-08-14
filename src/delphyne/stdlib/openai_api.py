@@ -11,6 +11,7 @@ import openai
 import openai.types.chat as ochat
 import openai.types.chat.chat_completion as ochatc
 import openai.types.chat.completion_create_params as ochatp
+from openai import NOT_GIVEN
 from openai.types import CompletionUsage
 
 from delphyne.core.refs import Structured, ToolCall
@@ -205,14 +206,23 @@ def _compute_spent_budget(
     return budget
 
 
-@dataclass
+@dataclass(kw_only=True)
 class OpenAICompatibleModel(md.LLM):
     """
     A Model accessible via an OpenAI-compatible API.
 
-    - `no_json_schema`: if `True`, JSON mode is used for structured
-      output instead of JSON Schema. This is useful for providers like
-      DeepSeek that do not support structured output with schemas.
+    Attributes:
+
+        options: the default options to use for requests.
+        api_key: the API key to use for authentication.
+        base_url: the base URL of the OpenAI-compatible API.
+        model_info: information about the model, such as its name
+            and pricing.
+        pricing: pricing information for the model.
+        no_json_schema: if `True`, JSON mode is used for structured
+            output instead of JSON Schema. This is useful for providers
+            like DeepSeek that do not support structured output with
+            schemas.
     """
 
     options: md.RequestOptions
@@ -241,17 +251,18 @@ class OpenAICompatibleModel(md.LLM):
                 model=options["model"],
                 messages=translate_chat(req.chat),
                 n=req.num_completions,
-                temperature=options.get("temperature", openai.NOT_GIVEN),
+                temperature=options.get("temperature", NOT_GIVEN),
+                reasoning_effort=options.get("reasoning_effort", NOT_GIVEN),
                 max_completion_tokens=options.get(
-                    "max_completion_tokens", openai.NOT_GIVEN
+                    "max_completion_tokens", NOT_GIVEN
                 ),
-                logprobs=options.get("logprobs", openai.NOT_GIVEN),
-                top_logprobs=options.get("top_logprobs", openai.NOT_GIVEN),
-                tools=tools if tools else openai.NOT_GIVEN,
+                logprobs=options.get("logprobs", NOT_GIVEN),
+                top_logprobs=options.get("top_logprobs", NOT_GIVEN),
+                tools=tools if tools else NOT_GIVEN,
                 response_format=_chat_response_format(
                     req.structured_output, self.no_json_schema
                 ),
-                tool_choice=options.get("tool_choice", openai.NOT_GIVEN),
+                tool_choice=options.get("tool_choice", NOT_GIVEN),
             )
         except (openai.RateLimitError, openai.APITimeoutError) as e:
             raise md.LLMBusyException(e)
@@ -293,6 +304,9 @@ class OpenAICompatibleModel(md.LLM):
             if choice.message.tool_calls is not None:
                 ok = True
                 for c in choice.message.tool_calls:
+                    # We only support function tool calls and not custom
+                    # tool calls.
+                    assert c.type == "function"
                     try:
                         args = json.loads(c.function.arguments)
                         tool_calls.append(ToolCall(c.function.name, args))

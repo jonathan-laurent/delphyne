@@ -12,6 +12,9 @@ from delphyne.stdlib import models as md
 from delphyne.stdlib.openai_api import OpenAICompatibleModel
 
 type OpenAIModelName = Literal[
+    "gpt-5",
+    "gpt-5-mini",
+    "gpt-5-nano",
     "gpt-4.1",
     "gpt-4o",
     "gpt-4o-mini",
@@ -35,11 +38,14 @@ class StandardModelInfo:
 
 
 PRICING: dict[str, tuple[float, float, float]] = {
-    "gpt-4o": (2.50, 1.25, 10.00),
-    "gpt-4o-mini": (0.15, 0.075, 0.60),  # cached input = input ×50% ⇒ 0.075
+    "gpt-5": (1.25, 0.125, 10.00),  # cached input 10x less expensive!
+    "gpt-5-mini": (0.250, 0.025, 2.00),
+    "gpt-5-nano": (0.050, 0.005, 0.40),
     "gpt-4.1": (1.10, 0.275, 4.40),
     "gpt-4.1-mini": (0.80, 0.20, 3.20),
     "gpt-4.1-nano": (0.20, 0.05, 0.80),
+    "gpt-4o": (2.50, 1.25, 10.00),
+    "gpt-4o-mini": (0.15, 0.075, 0.60),  # cached input = input ×50% ⇒ 0.075
     "o4-mini": (4.00, 1.00, 16.00),
     "o3": (10.00, 2.50, 40.00),
     "mistral-small-2503": (0.10, 0.10, 0.30),
@@ -126,7 +132,7 @@ def _default_info_and_pricing(
 def openai_model(model: OpenAIModelName | str):
     info, pricing = _default_info_and_pricing(model)
     return OpenAICompatibleModel(
-        {"model": model}, model_info=info, pricing=pricing
+        options={"model": model}, model_info=info, pricing=pricing
     )
 
 
@@ -135,7 +141,11 @@ def mistral_model(model: MistralModelName | str):
     url = "https://api.mistral.ai/v1"
     info, pricing = _default_info_and_pricing(model)
     return OpenAICompatibleModel(
-        {"model": model}, api_key, url, model_info=info, pricing=pricing
+        options={"model": model},
+        api_key=api_key,
+        base_url=url,
+        model_info=info,
+        pricing=pricing,
     )
 
 
@@ -144,9 +154,9 @@ def deepseek_model(model: DeepSeekModelName | str):
     url = "https://api.deepseek.com"
     info, pricing = _default_info_and_pricing(model)
     return OpenAICompatibleModel(
-        {"model": model},
-        api_key,
-        url,
+        options={"model": model},
+        api_key=api_key,
+        base_url=url,
         no_json_schema=True,
         model_info=info,
         pricing=pricing,
@@ -160,6 +170,15 @@ def _values(alias: Any) -> Sequence[str]:
 def standard_model(
     model: StandardModelName,
 ) -> OpenAICompatibleModel:
+    """
+    Obtain a standard model from OpenAI, Mistral or DeepSeek.
+
+    Make sure that the following environment variables are set:
+
+    - `OPENAI_API_KEY` for OpenAI models
+    - `MISTRAL_API_KEY` for Mistral models
+    - `DEEPSEEK_API_KEY` for DeepSeek models
+    """
     openai_models = _values(OpenAIModelName)
     mistral_models = _values(MistralModelName)
     deepseek_models = _values(DeepSeekModelName)

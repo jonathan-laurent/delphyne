@@ -149,6 +149,7 @@ class RequestOptions(typing.TypedDict, total=False):
     """
 
     model: str
+    reasoning_effort: Literal["minimal", "low", "medium", "high"]
     tool_choice: Literal["auto", "none", "required"]
     temperature: float
     max_completion_tokens: int

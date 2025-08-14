@@ -39,6 +39,7 @@ def _eval_query(
     budget: int = 1,
     concurrent: int = 1,
     model_name: dp.StandardModelName = "gpt-4.1-mini",
+    model_options: dp.RequestOptions | None = None,
     mode: dp.AnswerMode = None,
 ):
     env = dp.PolicyEnv(
@@ -46,7 +47,10 @@ def _eval_query(
     )
     cache_spec = ca.CacheSpec(ca.CacheYaml(CACHE_DIR / cache_name))
     cache = dp.LLMCache(cache_spec)
-    model = dp.CachedModel(dp.standard_model(model_name), cache)
+    base_model = dp.standard_model(model_name)
+    if model_options is not None:
+        base_model.options |= model_options
+    model = dp.CachedModel(base_model, cache)
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: budget})
     pp = dp.with_budget(bl) @ dp.few_shot(
         model, num_concurrent=concurrent, mode=mode
@@ -255,17 +259,27 @@ def test_apply_bias():
 
 
 @pytest.mark.parametrize(
-    "model",
+    "model,options,options_label",
     [
-        "mistral-small-2503",
-        "deepseek-chat",
-        # "deepseek-reasoner",  # long latency
+        ("mistral-small-2503", None, None),
+        ("deepseek-chat", None, None),
+        ("gpt-5-mini", {"reasoning_effort": "minimal"}, "minimal_reasoning"),
+        ("gpt-5-mini", {"reasoning_effort": "high"}, "high_reasoning"),
+        # ("deepseek-reasoner", None, None),  # long latency
     ],
 )
-def test_provider(model: dp.StandardModelName):
+def test_provider(
+    model: dp.StandardModelName,
+    options: dp.RequestOptions | None,
+    options_label: str | None,
+):
     cache_name = f"provider_{model}"
+    if options_label is not None:
+        cache_name += f"_{options_label}"
     query = ex.MakeSum(allowed=[1, 2, 3, 4], goal=5)
-    res, _ = _eval_query(query, cache_name, model_name=model)
+    res, _ = _eval_query(
+        query, cache_name, model_name=model, model_options=options
+    )
     assert res
     print(res[0].tracked.value)
 
