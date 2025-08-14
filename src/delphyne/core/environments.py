@@ -141,9 +141,13 @@ JINJA_EXTENSION = ".jinja"
 
 
 def _load_data(data_dirs: Sequence[Path]) -> dict[str, Any]:
-    # Find all files with extension `*.data.yaml` in the data_dirs,
-    # parse them and save everything in a big dict. If two files have
-    # the same name, raise an error.
+    """
+    Load all data entries, which are then made accessible in prompts.
+
+    Find all files with extension `*.data.yaml` in the data_dirs,
+    parse them and save everything in a big dict. If two files have
+    the same name, raise an error.
+    """
     result: dict[str, Any] = {}
     seen_filenames: set[str] = set()
 
@@ -175,7 +179,18 @@ def _load_data(data_dirs: Sequence[Path]) -> dict[str, Any]:
 
 
 class TemplatesManager:
+    """
+    A class for managing Jinja prompt templates.
+    """
+
     def __init__(self, prompt_dirs: Sequence[Path], data_dirs: Sequence[Path]):
+        """
+        Args:
+            prompt_dirs: A sequence of directories where Jinja prompt
+                templates can be found.
+            data_dirs: A sequence of directories where data files can be
+                found.
+        """
         self.prompt_folders = prompt_dirs
         self.data = _load_data(data_dirs)
         self.env = jinja2.Environment(
@@ -187,12 +202,35 @@ class TemplatesManager:
 
     def prompt(
         self,
-        kind: Literal["system", "instance"] | str,
+        *,
         query_name: str,
+        prompt_kind: Literal["system", "instance"] | str,
         template_args: dict[str, Any],
         default_template: str | None = None,
     ) -> str:
-        suffix = "." + kind
+        """
+        Render a prompt message using a template.
+
+        Args:
+            query_name: The name of the query for which the prompt is
+                built. Used to determine the template file name, namely
+                "{query_name}.{prompt_kind}.jinja".
+            kind: The kind of prompt (e.g. "system" or "instance") that
+                is being rendered, used to determine the name of the
+                template file to use.
+            template_args: A dictionary of arguments to pass to the
+                template. It must not contain key "data", which is
+                reserved for the data loaded from the data directories.
+            default_template: If provided, this template will be used if
+                no template file is found for the given query name and
+                kind instead of raising an error.
+
+        Raises:
+            TemplateFileMissing: template file not found.
+            TemplateError: error raised while rendering the template.
+        """
+
+        suffix = "." + prompt_kind
         template_name = f"{query_name}{suffix}{JINJA_EXTENSION}"
         prompt_file_exists = any(
             (d / template_name).exists() for d in self.prompt_folders
@@ -218,6 +256,10 @@ class TemplatesManager:
 
 @dataclass
 class TemplateError(Exception):
+    """
+    Wrapper for template-related exceptions.
+    """
+
     name: str
     exn: Exception
 
@@ -225,6 +267,8 @@ class TemplateError(Exception):
 @dataclass
 class TemplateFileMissing(Exception):
     """
+    Exception raised when a template file is missing.
+
     We want to make a distinction with the `TemplateNotFound` Jinja
     exception, which can also be raised when `include` statements fail
     within templates. In comparison, this exception means that the main

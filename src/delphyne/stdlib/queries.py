@@ -336,7 +336,10 @@ class Query[T](dp.AbstractQuery[T]):
         if (glob := self.globals()) is not None:
             args["globals"] = glob
         return env.prompt(
-            kind, self.query_name(), args, self._default_prompt(kind)
+            query_name=self.query_name(),
+            prompt_kind=kind,
+            template_args=args,
+            default_template=self._default_prompt(kind),
         )
 
     @classmethod
