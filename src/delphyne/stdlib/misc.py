@@ -1,20 +1,18 @@
+"""
+Miscellaneous utilities for Delphyne's standard library.
+"""
+
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Iterable, Literal, Never, cast, overload
 
 import delphyne.core as dp
+import delphyne.stdlib.policies as pol
 from delphyne.stdlib.computations import Compute, elim_compute
 from delphyne.stdlib.flags import Flag, FlagQuery, elim_flag, get_flag
 from delphyne.stdlib.nodes import Branch, Fail, Message, branch
 from delphyne.stdlib.opaque import Opaque
-from delphyne.stdlib.policies import (
-    Policy,
-    PromptingPolicy,
-    PureTreeTransformerFn,
-    SearchPolicy,
-    contextual_tree_transformer,
-    search_policy,
-)
+from delphyne.stdlib.policies import Policy, PromptingPolicy, SearchPolicy
 from delphyne.stdlib.search.dfs import dfs
 from delphyne.stdlib.strategies import strategy
 from delphyne.stdlib.streams import Stream, stream_or_else
@@ -22,11 +20,18 @@ from delphyne.stdlib.streams import Stream, stream_or_else
 
 @strategy(name="const")
 def const_strategy[T](value: T) -> dp.Strategy[Never, object, T]:
+    """
+    A constant strategy computation that always returns the same value
+    and performs no effect.
+    """
     return value
     yield
 
 
 def const_space[T](value: T) -> Opaque[object, T]:
+    """
+    Build an opaque space containing a single constant value.
+    """
     return const_strategy(value).using(just_dfs)
 
 
@@ -34,6 +39,10 @@ def const_space[T](value: T) -> Opaque[object, T]:
 def map_space_strategy[P, A, B](
     space: Opaque[P, A], f: Callable[[A], B]
 ) -> dp.Strategy[Branch, P, B]:
+    """
+    A strategy that selects an element from an opaque space before
+    applying a function to it and returning the result.
+    """
     res = yield from branch(space)
     return f(res)
 
@@ -41,26 +50,46 @@ def map_space_strategy[P, A, B](
 def map_space[P, A, B](
     space: Opaque[P, A], f: Callable[[A], B]
 ) -> Opaque[P, B]:
+    """
+    Obtain an opaque space from another one by applying a pure function
+    to all its elements.
+    """
     return map_space_strategy(space, f).using(lambda p: dfs() & p)
 
 
 def just_dfs[P](policy: P) -> Policy[Branch | Fail, P]:
+    """
+    Convenience shortcut to avoid passing lambdas to the `get_policy`
+    argument of `using`, when using DFS in combination with the ambient
+    inner policy.
+    """
     return dfs() & policy
 
 
 def just_compute[P](policy: P) -> Policy[Compute, P]:
+    """
+    Convenience shortcut to avoid passing lambdas to the `get_policy`
+    argument of `using`, in the case of sub-strategies that only feature
+    the `Compute` effect.
+    """
     return dfs() @ elim_compute() & policy
 
 
 def ambient_pp(policy: PromptingPolicy) -> PromptingPolicy:
-    return policy
-
-
-def ambient_policy[N: dp.Node, P](policy: Policy[N, P]) -> Policy[N, P]:
+    """
+    Convenience shortcut to avoid passing lambdas to the `get_policy`
+    argument of `Query.using`, when using the ambient inner policy as a
+    prompting policy.
+    """
     return policy
 
 
 def ambient[F](policy: F) -> F:
+    """
+    Convenience shortcut to avoid passing lambdas to the `get_policy`
+    argument of `Query.using`, when using the ambient inner policy as a
+    sub-policy (or as a sub- prompting policy).
+    """
     return policy
 
 
@@ -102,7 +131,7 @@ def sequence_search_policies[N: dp.Node](
 def sequence_policies[N: dp.Node, P](
     policies: Iterable[Policy[N, P]], *, stop_on_reject: bool = True
 ) -> Policy[N, P]:
-    @search_policy
+    @pol.search_policy
     def search[T](
         tree: dp.Tree[N, Any, T], env: dp.PolicyEnv, policy: Any
     ) -> dp.StreamGen[T]:
@@ -147,6 +176,20 @@ def sequence(
     *,
     stop_on_reject: bool = True,
 ) -> _AnyPolicy:
+    """
+    Try a list of policies, search policies, or prompting policies in
+    sequence.
+
+    Attributes:
+
+    - policies: An iterable of policies, search policies, or prompting
+          policies to try in sequence.
+    - stop_on_reject: If True, stop the sequence as soon as one policy
+          sees all its resource requests denied. Note that this is
+          necessary for termination when `policies` is an infinite
+          iterator.
+    """
+
     it = iter(policies)
     first = next(it)
     if isinstance(first, PromptingPolicy):
@@ -205,7 +248,7 @@ def policy_or_else[N: dp.Node, P](
 ) -> Policy[N, P]:
     # TODO: this is not the cleanest implementation since we lie about
     # the return type by returning a dummy internal policy.
-    @search_policy
+    @pol.search_policy
     def sp[T](
         tree: dp.Tree[N, Any, T], env: dp.PolicyEnv, policy: Any
     ) -> dp.StreamGen[T]:
@@ -238,6 +281,11 @@ def or_else[N: dp.Node, P](
 
 
 def or_else(main: _AnyPolicy, other: _AnyPolicy) -> _AnyPolicy:
+    """
+    Take two policies, search policies, or prompting policies as
+    arguments. Try the first one, and then the second one only if it
+    fails (i.e., it does not produce any solution).
+    """
     if isinstance(main, PromptingPolicy):
         assert isinstance(other, PromptingPolicy)
         return prompting_policy_or_else(main, other)
@@ -253,12 +301,20 @@ def or_else(main: _AnyPolicy, other: _AnyPolicy) -> _AnyPolicy:
 #####
 
 
-@contextual_tree_transformer
+@pol.contextual_tree_transformer
 def elim_messages(
     env: dp.PolicyEnv,
     policy: Any,
     show_in_log: bool = True,
-) -> PureTreeTransformerFn[Message, Never]:
+) -> pol.PureTreeTransformerFn[Message, Never]:
+    """
+    Eliminate the `Message` effect.
+
+    Arguments:
+        show_in_log: Whether to log the associated content whenever a
+            message node is encountered.
+    """
+
     def transform[N: dp.Node, P, T](
         tree: dp.Tree[Message | N, P, T],
     ) -> dp.Tree[N, P, T]:
@@ -278,10 +334,13 @@ def elim_messages(
 
 
 type NoFailFlagValue = Literal["no_fail_try", "no_fail_default"]
+"""Possible values for the `NoFailFlag` flag."""
 
 
 @dataclass
 class NoFailFlag(FlagQuery[NoFailFlagValue]):
+    """Flag used by the `nofail` space transformer."""
+
     pass
 
 
@@ -289,6 +348,9 @@ class NoFailFlag(FlagQuery[NoFailFlagValue]):
 def nofail_strategy[P, T](
     space: Opaque[P, T], *, default: T
 ) -> dp.Strategy[Flag[NoFailFlag] | Branch, P, T]:
+    """
+    Strategy underlying the `nofail` space transformer.
+    """
     flag = yield from get_flag(NoFailFlag)
     match flag:
         case "no_fail_try":
@@ -297,13 +359,27 @@ def nofail_strategy[P, T](
             return default
 
 
-def nofail[P, T](space: Opaque[P, T], *, default: T) -> Opaque[P, T]:
+def nofail[P, A, B](space: Opaque[P, A], *, default: B) -> Opaque[P, A | B]:
+    """
+    Modify an opaque space to that branching over it can never fail.
+
+    If the stream associated with the opaque space gets exhausted and no
+    solution is produced, the provided default value is used.
+
+    In demonstrations, the default value can be selected by using the
+    `#no_fail_default` hint.
+    """
     try_policy = dfs() @ elim_flag(NoFailFlag, "no_fail_try")
     def_policy = dfs() @ elim_flag(NoFailFlag, "no_fail_default")
     search_policy = or_else(try_policy, def_policy)
     return nofail_strategy(space, default=default).using(
         lambda p: search_policy & p
     )
+
+
+#####
+##### Prompting Policies
+#####
 
 
 def _failing_pp[T](
@@ -314,3 +390,6 @@ def _failing_pp[T](
 
 
 failing_pp = PromptingPolicy(_failing_pp)
+"""
+A prompting policy that always fails.
+"""

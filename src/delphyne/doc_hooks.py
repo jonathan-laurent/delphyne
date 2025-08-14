@@ -1,5 +1,8 @@
-# pyright: basic
+"""
+Mkdocs Extensions for Generating the Delphyne Documentation.
+"""
 
+# pyright: basic
 
 import ast
 import fnmatch
@@ -97,9 +100,10 @@ class TypeAliasesAsAttributes(griffe.Extension):
     purposes. This is useful since mkdocs-material does not support type
     aliases yet.
 
-    Options (all optional): - include: fnmatch-style patterns of
-    fully-qualified names to include - exclude: fnmatch-style patterns
-    of fully-qualified names to exclude
+    Options (all optional):
+
+    - include: fnmatch-style patterns of fully-qualified names to include
+    - exclude: fnmatch-style patterns of fully-qualified names to exclude
     """
 
     def __init__(
