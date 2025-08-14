@@ -1,5 +1,7 @@
 """
 Parser for references and test commands
+
+See tests/test_parser for examples.
 """
 
 # pyright: basic
@@ -14,9 +16,9 @@ from delphyne.core import demos, refs
 from delphyne.core.pprint import NONE_REF_REPR, CmdNames
 from delphyne.utils.typing import pydantic_load
 
-"""
-Utilities
-"""
+#####
+##### Utilities
+#####
 
 
 def _node_selector_from_path(
@@ -39,9 +41,9 @@ def _atomic_value_ref_from_index_list(
         )
 
 
-"""
-Grammar definition with Parsy
-"""
+#####
+##### Grammar Definition with Parsy
+#####
 
 
 # Allowed identifiers
@@ -128,9 +130,9 @@ _tstep = _run | _until | _gosub | _answer | _success | _failure | _save | _load
 _test = _spopt >> _tstep.sep_by(_spopt >> _s("|") << _spopt) << _spopt
 
 
-"""
-External interface
-"""
+#####
+##### External Interface
+#####
 
 
 ParseError = ps.ParseError

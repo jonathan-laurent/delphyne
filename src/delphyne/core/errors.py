@@ -1,3 +1,7 @@
+"""
+Base class for rich error messages.
+"""
+
 import pprint
 from dataclasses import dataclass
 from typing import Any
@@ -6,9 +10,15 @@ from typing import Any
 @dataclass
 class Error:
     """
-    Base class for rich error messages that can be raised within
+    Base class for rich error messages that can be created within
     strategies, while providing a chance to generate meaningful
-    feedback. Parser errors are a particular case.
+    feedback. Parser errors are a particular case (`ParseError`).
+
+    Attributes:
+        label: A concise label for the error.
+        description: A more detailed description of the error.
+        meta: Additional metadata that can be used to provide more
+            context about the error.
     """
 
     label: str | None = None

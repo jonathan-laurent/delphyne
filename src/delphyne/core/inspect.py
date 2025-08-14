@@ -1,5 +1,7 @@
 """
-Inspection utilities.
+Reflection utilities.
+
+Delphyne mostly uses reflection to leverage type annotations.
 """
 
 import inspect
@@ -33,6 +35,8 @@ def function_return_type[T](f: Callable[..., T]) -> TypeAnnot[T] | NoTypeInfo:
 
 def return_type_of_strategy_type[T](st: Any) -> TypeAnnot[T] | NoTypeInfo:
     """
+    Take a `Strategy[...]` type annotation and return its return type.
+
     It is assumed that the argument is the instantiation of a generic
     type alias whose last argument is named T and is interpreted as the
     strategy return type.
@@ -49,6 +53,9 @@ def inner_policy_type_of_strategy_type[T](
     st: Any,
 ) -> TypeAnnot[T] | NoTypeInfo:
     """
+    Take a `Strategy[...]` type annotation and return its inner policy
+    type.
+
     If `st` is a type alias with two parameters exactly and whose middle
     one is named `P`, then return the value of `P`.
     """
@@ -60,7 +67,18 @@ def inner_policy_type_of_strategy_type[T](
     return typing.get_args(st)[1]
 
 
-def first_parameter_of_base_class(cls: Any) -> Any:
+def first_parameter_of_base_class(cls: type[Any]) -> Any:
+    """
+    Return the first type parameter of the base class of a given class.
+
+    For example, for a class defined as:
+
+        class MyQuery(Query[int | str]):
+            ...
+
+    This function returns `int | str`.
+    """
+
     base = cls.__orig_bases__[0]  # type: ignore
     annot = typing.get_args(base)[0]
     # In case the annotation is a string or forward reference, we do not
@@ -80,6 +98,8 @@ def function_args_dict(
     f: Callable[..., Any], args: Sequence[Any], kwargs: dict[str, Any]
 ) -> dict[str, Any]:
     """
+    Return a single dictionary gathering all function arguments.
+
     Force fitting all arguments into a single dictionary, using a
     signature to name positional arguments. No typing annotations are
     required.
@@ -95,8 +115,8 @@ def element_type_of_sequence_type(
     seq_type: Any, i: int = 0
 ) -> Any | NoTypeInfo:
     """
-    Return the type of the element obtained by indexing an element of
-    another type.
+    Return the type of elements obtained by indexing elements of a given
+    type.
 
     If `seq_type` is `list[T]`, `Sequence[T]` or `tuple[T, ...]`, return
     `T`. If `seq_type` is `tuple[T_1, ..., T_n]`, then return `T_i`.
@@ -136,7 +156,7 @@ def is_sequence_type(typ: Any) -> bool:
 def union_components(typ: Any) -> Sequence[Any]:
     """
     Take a type of the form `Union[T_1, ..., T_n]` or `T_1 | ... | T_n`
-    and return the `T_i` sequence. If the type is not a union, returns a
+    and return the `T_i` sequence. If the type is not a union, return a
     singleton with the type itself.
     """
     if typ == typing.Never:
@@ -161,6 +181,12 @@ def resolve_aliases_in_type(typ: Any) -> Any:
     """
     If `typ` is the name of a simple (nongeneric) type alias,
     recursively resolve it. Otherwise, return `typ` unchanged.
+
+    For example:
+
+        type Id = int
+        type ProductId = Id
+        assert resolve_aliases_in_type(ProductId) == int
     """
     if isinstance(typ, typing.TypeAliasType):
         return resolve_aliases_in_type(typ.__value__)
@@ -183,6 +209,10 @@ def literal_type_args(typ: Any) -> Sequence[Any] | None:
 def is_method_overridden(
     base_class: type[Any], derived_class: type[Any], method_name: str
 ) -> bool:
+    """
+    Determine whether method `method_name` from `base_class` is
+    overriden in `derived_class`.
+    """
     base_method = getattr(base_class, method_name, None)
     derived_method = getattr(derived_class, method_name, None)
 
