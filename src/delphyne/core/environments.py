@@ -411,11 +411,34 @@ class Tracer:
 
 @dataclass
 class InvalidDemoFile(Exception):
+    """
+    Exception raised when a demonstration file could not be parsed.
+    """
+
     file: Path
     exn: Exception
 
 
 class PolicyEnv:
+    """
+    The global environment accessible to policies.
+
+    It can be used for:
+
+    - Fetching prompts, data, and examples.
+    - Caching LLM requests.
+    - Tracing nodes, query, answers, and logging information.
+
+    Attributes:
+        requests_cache: The requests cache, or `None` if caching is
+            disabled. The exact type of the request cache is not
+            statically determined and depends on the value of
+            constructor argument `make_cache`.
+        templates: The prompt templates manager.
+        tracer: The tracer, which can also be used for logging.
+        examples: The example database.
+    """
+
     def __init__(
         self,
         *,
@@ -427,13 +450,24 @@ class PolicyEnv:
         do_not_match_identical_queries: bool = False,
     ):
         """
-        An environment accessible to a policy, containing prompt and
-        example databases in particular.
+        Args:
+            prompt_dirs: A sequence of directories where Jinja prompt
+                templates can be found.
+            demonstration_files: A sequence of paths to demonstration
+                files (with or without extension `.demo.yaml`), to
+                create an example database from.
+            data_dirs: A sequence of directories where data files can be
+                found.
+            cache: A cache specification, or `None` to disable caching.
+                When caching is enabled, the `requests_cache` attribute
+                can be accessed by policies to properly wrap LLM models.
+            make_cache: A function to create an actual cache object from
+                its specification.
         """
         self.templates = TemplatesManager(prompt_dirs, data_dirs)
         self.examples = ExampleDatabase(do_not_match_identical_queries)
         self.tracer = Tracer()
-        self.requests_cache = None
+        self.requests_cache: object | None = None
         if cache is not None:
             assert make_cache is not None
             self.requests_cache = make_cache(cache)
