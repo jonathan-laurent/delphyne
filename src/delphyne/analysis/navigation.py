@@ -325,10 +325,12 @@ class Navigator:
             hint = hints[0].hint
             if hint.startswith(VAL_HINT_PREFIX):
                 # The hint is a value hint
-                aset = query.query.finite_answer_set()
-                cand = refs.Answer(None, hint.removeprefix(VAL_HINT_PREFIX))
-                if aset is not None and cand in aset:
-                    answer = cand
+                if (
+                    sel_ans := _find_answer_in_finite_set(
+                        query, hint.removeprefix(VAL_HINT_PREFIX)
+                    )
+                ) is not None:
+                    answer = sel_ans
             else:
                 # We don't send the implicit answer the first time since
                 # we don't want to consume the hint.
@@ -353,3 +355,15 @@ class Navigator:
         if self.info is not None:
             self.info.hints_rev.answers[(query.ref, answer)] = used_hint
         return parsed, hints
+
+
+def _find_answer_in_finite_set(
+    query: dp.AttachedQuery[Any], content: str
+) -> refs.Answer | None:
+    aset = query.query.finite_answer_set()
+    if not aset:
+        return None
+    for a in aset:
+        if isinstance(a.content, str) and a.content == content:
+            return a
+    return None
