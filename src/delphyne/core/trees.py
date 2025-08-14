@@ -1,5 +1,5 @@
 """
-The core tree datastructure.
+The core datastructure for modular, extensible strategy trees.
 """
 
 import typing

@@ -1,7 +1,40 @@
 """
 The Search Stream Protocol.
 
+In order to allow the composition of heterogeneous search policies and
+prompting policies, a standard protocol is defined for defining
+resource-aware search iterators.
 
+A search stream consists in an iterator that yields three kinds of
+messages:
+
+- `Solution` messages indicating that a solution has been found.
+- `Barrier` messages asking authorization to spend a given amount of
+  resources (for which an over-estimate is provided).
+- `Spent` messages reporting actual resource spending.
+
+The following invariants and guarantees must be offered and preserved by
+stream combinators:
+
+**Invariants**
+
+- `Barrier` and `Spent` messages come in pairs and are associated
+  using shared identifiers. Because search streams can spawn mulitple
+  threads internally, multiple `Barrier` messages can be simultaneously
+  pending (i.e., in waiting of a matching `Spent` message).
+- A stream must eventually terminate if all spending requests are denied
+  (this is why `loop` has a `stop_on_reject` argument).
+- A stream can be interrupted before exhaustion (and be later garbage
+  collected), provided that no `Barrier` messages are pending (i.e., an
+  identical number of `Barrier` and `Spent` messages has been seen so
+  far). If this condition does not hold, some actual resource spending
+  might be unreported.
+
+!!! warning
+    Manually implementing the search stream protocol by yielding
+    `Barrier` and `Spent` messages is error-prone. Standard stream
+    combinators should usually be used instead (see `Stream` class from
+    the standard library).
 """
 
 import math
@@ -124,6 +157,25 @@ class Solution[T]:
 
 @dataclass(frozen=False)
 class Barrier:
+    """
+    Ask authorization for spending a given budget amount.
+
+    Attributes:
+        budget: an over-estimate of how much budget will be spent if the
+            request is granted. An inaccurate estimate can be provided
+            by a policy, although more budget could be actually be spent
+            than is intended in this case.
+        allow: a boolean flag that can be set to `False` by consumers of
+            the stream to deny the request.
+        id: a unique identifier, which is shared by a unique associated
+            `Spent` message, to be yielded later.
+
+    !!! warning
+    Manually yielding `Spent` and `Barrier` messages is error-prone
+    and usually not recommended. Use stream combinators instead (see
+    the `Stream` class from the standard library).
+    """
+
     budget: Budget
     allow: bool
     id: BarrierId
@@ -139,18 +191,49 @@ class Barrier:
 
 @dataclass(frozen=True)
 class Spent:
+    """
+    Indicate that an actual amount of resources has been spent.
+
+    Each `Spent` message is associated with a unique prior `Barrier`
+    message that shares the same identifier.
+
+    Attributes:
+        budget: Amount of budget that was actually spent.
+        barrier_id: Identifier of the prior associated `Barrier`
+        message.
+
+    !!! warning
+        Manually yielding `Spent` and `Barrier` messages is error-prone
+        and usually not recommended. Use stream combinators instead (see
+        the `Stream` class from the standard library).
+    """
+
     budget: Budget
     barrier_id: BarrierId
 
 
 type StreamGen[T] = Generator[Solution[T] | Barrier | Spent, None, None]
+"""
+A search stream generator.
+
+See [delphyne.core.streams][] for more explanations about the search
+stream protocol.
+"""
 
 
 type StreamContext[T] = Generator[Barrier | Spent, None, T]
 """
-Type signature for a generator that can spend budget, does not yield
-results but ultimately returns a result. Useful to define the signature
-of `take_one` for example.
+Return type for monadic stream functions.
+
+Consider an operator on streams such as `Stream.first`, which extracts
+the first solution from a stream. When such an operator is called within
+a stream generator, it is important for all underlying `Spent` and
+`Barrier` messages to be forwarded. This is allowed by having this
+method return a generator of type `StreamContext`.
+
+More precisely, a value of type `StreamContext[T]` is a generator that
+yields `Barrier` and `Spent` messages, and ultimately terminates with a
+result of type `T`.
 """
 
 
@@ -158,7 +241,9 @@ class AbstractStream[T](ABC):
     """
     Base class for search streams.
 
-    A search stream must be capable of producing a stream generator.
+    A search stream must be capable of producing a search stream
+    generator. The standard library contains a subclass with more
+    features (`Stream`).
     """
 
     @abstractmethod
