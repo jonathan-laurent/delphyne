@@ -1,5 +1,5 @@
 """
-Simple utility for caching values.
+Utilities for memoizing function calls on disk.
 """
 
 import functools
@@ -13,18 +13,6 @@ import yaml
 from pydantic import TypeAdapter
 
 from delphyne.utils.pretty_yaml import pretty_yaml
-
-DATABASE_FILE_NAME = "cache"  # dbm will add the *.db extension
-
-
-@dataclass
-class _BucketItem[P, T]:
-    input: P
-    output: T
-
-
-type _Bucket[P, T] = list[_BucketItem[P, T]]
-
 
 type CacheMode = Literal["read_write", "off", "create", "replay"]
 """
@@ -42,6 +30,14 @@ Caching mode:
 def cache_database_file(dir: Path) -> Path:
     dir.mkdir(parents=True, exist_ok=True)
     return dir / DATABASE_FILE_NAME
+
+
+#####
+##### DBM Caching
+#####
+
+
+DATABASE_FILE_NAME = "cache"  # dbm will add the *.db extension
 
 
 def cache_db[P, T](
@@ -80,6 +76,20 @@ def _inspect_arg_and_ret_types(func: Callable[[Any], Any]) -> tuple[Any, Any]:
     arg_type = arg_types[0][1]
     ret_type = arg_types[1][1]
     return arg_type, ret_type
+
+
+#####
+##### YAML Caching
+#####
+
+
+@dataclass
+class _BucketItem[P, T]:
+    input: P
+    output: T
+
+
+type _Bucket[P, T] = list[_BucketItem[P, T]]
 
 
 def cache_yaml[P, T](
@@ -172,6 +182,14 @@ class CacheDb:
 
 @dataclass(frozen=True)
 class CacheYaml:
+    """
+    Use a human-readable, YAML-based database on disk.
+
+    Attributes:
+        cache_dir: Path to the directory where the YAML database files
+            are stored.
+    """
+
     cache_dir: Path
 
 
@@ -180,6 +198,15 @@ type CacheInfo = CacheDb | CacheYaml
 
 @dataclass(frozen=True)
 class CacheSpec:
+    """
+    Specification for a function cache.
+
+    Attributes:
+        info: Whether to use a YAML or DBM database, and where this
+            database is located.
+        mode: Desired caching behavior.
+    """
+
     info: CacheInfo
     mode: CacheMode = "read_write"
 

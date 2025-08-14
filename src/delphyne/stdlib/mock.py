@@ -19,6 +19,22 @@ def demo_mock_oracle(
     rev_search: bool = False,
     fail_on_missing: bool = True,
 ) -> PromptingPolicy:
+    """
+    Produce a prompting policy from a demonstration by having an oracle
+    cycle through the proposed answers on each query.
+
+    Arguments:
+        demo: the demonstration to use as an oracle.
+        rev_search: if True, answers are cycled through in reverse order,
+            starting with the last one.
+        fail_on_missing: if True, raises an exception is a query is
+            encountered that is not answered in the demonstration.
+
+    Raises:
+        ValueError: if no answers are found for a query and
+            `fail_on_missing` is True.
+    """
+
     def find_answers(query: dp.AbstractQuery[Any]) -> Iterable[refs.Answer]:
         for q in demo.queries:
             if q.query != query.query_name():
@@ -58,6 +74,15 @@ def fixed_oracle[T](
     env: dp.PolicyEnv,
     oracle: Callable[[dp.AbstractQuery[Any]], Iterable[dp.Answer]],
 ) -> dp.StreamGen[T]:
+    """
+    A minimal prompting policy that relies on a simple oracle function,
+    for debugging and testing purposes.
+
+    Arguments:
+        oracle: a function that maps a query to an iterable collection
+            of answers. The resulting prompting policy yields these
+            answers in order.
+    """
     for answer in oracle(query.query):
         budget = dp.Budget({NUM_REQUESTS: 1})
         res = yield from spend_on(lambda: (None, budget), budget)

@@ -1,22 +1,15 @@
 """
-Standard interfaces for LLMs
+Standard interface for LLMs
 """
 
 import inspect
 import time
+import typing
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import AsyncIterable, Iterable, Sequence
 from dataclasses import dataclass
-from typing import (
-    Any,
-    Literal,
-    TypeAliasType,
-    TypedDict,
-    cast,
-    final,
-    override,
-)
+from typing import Any, Literal, cast, final, override
 
 import pydantic
 
@@ -42,6 +35,21 @@ def tool_name_of_class_name(s: str) -> str:
 
 
 class AbstractTool[T]:
+    """
+    Base class for an LLM tool interface.
+
+    A new tool interface can be added by defining a dataclass `S` that
+    inherits `AbstractTool[T]`, with `T` the tool output type. Instances
+    of `S` correspond to tool calls, and an actual tool implementation
+    maps values of type `S` to values of type `T`.
+
+    A JSON tool specification can be extracted through the
+    `tool_name`, `tool_description` and `tool_answer_type` class
+    methods. The `render_result` method describes how to render the
+    output of a tool implementation, in a way that can be added back as
+    a message in a chat history.
+    """
+
     @classmethod
     def tool_name(cls) -> str:
         return tool_name_of_class_name(cls.__name__)
@@ -116,7 +124,30 @@ type ChatMessage = SystemMessage | UserMessage | AssistantMessage | ToolMessage
 type Chat = Sequence[ChatMessage]
 
 
-class RequestOptions(TypedDict, total=False):
+class RequestOptions(typing.TypedDict, total=False):
+    """
+    LLM request options, inspired from the OpenAI chat API.
+
+    All values are optional.
+
+    Attributes:
+
+        model: The name of the model to use for the request.
+        tool_choice: How the model should select which tool (or tools)
+            to use when generating a response. `none` means the model
+            will not call any tool and instead generates a message.
+            `auto` means the model can pick between generating a message
+            or calling one or more tools. `required` means the model must
+            call one or more tools.
+        temperature: The temperature to use for sampling, as a value
+            between 0 and 2.
+        max_completion_tokens: The maximum number of tokens to generate.
+        logprobs: Whether to return log probabilities for the generated
+            tokens.
+        top_logprobs: The number of top log probabilities to return for
+            each generated token, as an integer between 0 and 20.
+    """
+
     model: str
     tool_choice: Literal["auto", "none", "required"]
     temperature: float
@@ -130,8 +161,12 @@ class Schema:
     """
     The description of a schema for structured output or tool use.
 
-    The `schema` argument is typically generated using
-    `json_schema()` from `pydantic`.
+    Attributes:
+
+        name: Name of the tool or structured output type.
+        description: Optional description.
+        schema: The JSON schema of the tool or structured output type,
+            typically generated using pydantic's `json_schema` method.
     """
 
     name: str
@@ -140,9 +175,12 @@ class Schema:
 
     @staticmethod
     def make(tool: TypeAnnot[object]) -> "Schema":
+        """
+        Build a schema from a Python class or tool interface.
+        """
         if not isinstance(tool, type):
             # Assert that it is a type alias
-            assert isinstance(tool, TypeAliasType)
+            assert isinstance(tool, typing.TypeAliasType)
             name = str(tool)
             description = None
         elif issubclass(tool, AbstractTool):
@@ -165,16 +203,30 @@ class Schema:
 
 
 type FinishReason = Literal["stop", "length", "content_filter", "tool_calls"]
+"""Reason why the LLM stopped generating content."""
 
 
 @dataclass
 class Token:
+    """
+    A token produced by an LLM.
+
+    Attributes:
+        token: String representation of the token.
+        bytes: Optional sequence of integers representing the token's
+            byte encoding.
+    """
+
     token: str
     bytes: Sequence[int] | None
 
 
 @dataclass
 class TokenInfo:
+    """
+    Logprob information for a single token.
+    """
+
     token: Token
     logprob: float
     top_logprobs: Sequence[tuple[Token, float]] | None
@@ -182,11 +234,27 @@ class TokenInfo:
 
 @dataclass
 class LLMOutput:
+    """
+    A single LLM chat completion.
+
+    Attributes:
+        content: The completion content, as a string or as a structured
+            object (if structured output was requested).
+        tool_calls: A sequence of tool calls made by the model, if any.
+        finish_reason: The reason why the model stopped generating
+            content.
+        logprobs: Optional sequence of token log probabilities, if
+            requested.
+        reasoning_content: Reasoning chain of thoughts, if provided (the
+            DeepSeek API returns reasoning tokens, while the OpenAI API
+            generally does not).
+    """
+
     content: str | Structured
     tool_calls: Sequence[ToolCall]
     finish_reason: FinishReason
     logprobs: Sequence[TokenInfo] | None = None
-    reasoning_content: str | None = None  # returned by DeepSeek for example
+    reasoning_content: str | None = None
 
 
 #####
@@ -200,6 +268,15 @@ type ModelSize = Literal["small", "medium", "large"]
 
 @dataclass
 class ModelInfo:
+    """
+    Classifying models into coarse classes, so that each class can be
+    associated dedicated budget keys, along with a default pricing
+    model.
+    """
+
+    # TODO: is this a good idea? Shouldn't we just provide additional
+    # keys to models?
+
     kind: ModelKind
     size: ModelSize
 
@@ -218,6 +295,9 @@ type BudgetCategory = Literal[
     "output_tokens",
     "price",
 ]
+"""
+Standard metrics to measure LLM inference usage.
+"""
 
 NUM_REQUESTS = "num_requests"
 NUM_COMPLETIONS = "num_completions"
@@ -270,6 +350,8 @@ class LLMBusyException(Exception):
     should not be caught) or when the LLM gave a bad answer (in which
     case budget was consumed and should be counted, while errors are
     added into `LLMResponse`).
+
+    See `WithRetry` for adding retrial logic to LLMs.
     """
 
     exn: Exception
@@ -293,8 +375,18 @@ class LLMResponseLogItem:
 @dataclass(frozen=True)
 class LLMRequest:
     """
-    If `structured_output` is not None, it must be a type expression
-    that can be plugged into a pydantic adapter.
+    An LLM chat completion request.
+
+    Attributes:
+
+        chat: The chat history.
+        num_completions: The number of completions to generate. Note
+            that most LLM providers only bill input tokens once,
+            regardless of the number of requested completions.
+        options: Request options.
+        tools: Available tools.
+        structured_output: Provide a schema to enable structured output,
+            or `None` for disabling it.
     """
 
     chat: Chat
@@ -310,6 +402,22 @@ class LLMRequest:
 
 @dataclass
 class LLMResponse:
+    """
+    Response to an LLM request.
+
+    Attributes:
+
+        outputs: Generated completions.
+        budget: Budget consumed by the request.
+        log_items: Log items generated while evaluating the request.
+        model_name: The name of the model used for the request, which is
+            sometimes more detailed than the model name passed in
+            `RequestOptions` (e.g., `gpt-4.1-mini-2025-04-14` vs
+            `gpt-4.1-mini`).
+        usage_info: Additional usage info metadata, in a
+            provider-specific format.
+    """
+
     outputs: Sequence[LLMOutput]
     budget: Budget
     log_items: list[LLMResponseLogItem]
@@ -318,12 +426,21 @@ class LLMResponse:
 
 
 class LLM(ABC):
+    """
+    Base class for an LLM.
+    """
+
     def estimate_budget(self, req: LLMRequest) -> Budget:
+        """
+        Estimate the budget that is required to process a request.
+        """
         return Budget({NUM_REQUESTS: 1, NUM_COMPLETIONS: req.num_completions})
 
     @abstractmethod
     def add_model_defaults(self, req: LLMRequest) -> LLMRequest:
         """
+        Rewrite a request to take model-specific defaults into account.
+
         A model can carry default values for some of the request fields
         (e.g. the model name). Thus, requests must be processed through
         this function right before they are executed or cached.
@@ -333,12 +450,15 @@ class LLM(ABC):
     @abstractmethod
     def _send_final_request(self, req: LLMRequest) -> LLMResponse:
         """
-        To be overriden by subclasses to implement the core
-        functionality of `send_request`, which automatically handles
-        defaults and caching.
+        Core method for processing a request.
 
-        This function is allowed to raise exceptions, including
-        `LLMBusyException`.
+        To be overriden by subclasses to implement the core
+        functionality of `send_request`. The latter additionally handles
+        model=specific defaults and caching.
+
+        This function is allowed to raise exceptions (some
+        provider-specific), including `LLMBusyException` for cases where
+        retrials may be warranted.
         """
         pass
 
@@ -346,7 +466,10 @@ class LLM(ABC):
         self, chat: Chat, options: RequestOptions
     ) -> AsyncIterable[str]:
         """
-        Streaming is mostly useful for the UI.
+        Stream the text answer to a request.
+
+        This is currently not used but could be leveraged by the VSCode
+        extension in the future.
         """
         raise StreamingNotImplemented()
 
@@ -357,8 +480,13 @@ class LLM(ABC):
         """
         Send a request to a model and return the response.
 
-        This function is allowed to raise exceptions, including
-        `LLMBusyException`.
+        This function is allowed to raise exceptions (some
+        provider-specific), including `LLMBusyException` for cases where
+        retrials may be warranted.
+
+        Attributes:
+            req: The request to send.
+            cache: An optional cache to use for the request.
         """
         if cache is not None:
             self = CachedModel(self, cache)
@@ -368,6 +496,12 @@ class LLM(ABC):
 
 @dataclass
 class DummyModel(LLM):
+    """
+    A model that always fails to generate completions.
+
+    Used by the `answer_query` command in particular.
+    """
+
     @override
     def add_model_defaults(self, req: LLMRequest) -> LLMRequest:
         return req
@@ -375,7 +509,9 @@ class DummyModel(LLM):
     @override
     def _send_final_request(self, req: LLMRequest) -> LLMResponse:
         budget = Budget({NUM_REQUESTS: req.num_completions})
-        return LLMResponse([], budget, [], "<dummy>")
+        return LLMResponse(
+            outputs=[], budget=budget, log_items=[], model_name="<dummy>"
+        )
 
 
 #####
@@ -441,6 +577,17 @@ class WithRetry(LLM):
 
 @dataclass
 class LLMCache:
+    """
+    A cache for LLM requests.
+
+    More precisely, what are cached are `(r, i)` pairs where `r` is a
+    request and `i` is the number of times the request has been answered
+    since the model was instantiated. This way, caching works even when
+    a policy samples multiple answers for the same request.
+
+    Multiple models can share the same cache.
+    """
+
     spec: CacheSpec
     num_seen: dict[LLMRequest, int]
 
@@ -464,14 +611,14 @@ class _CachedRequest:
 @dataclass
 class CachedModel(LLM):
     """
-    Wrap a model while caching its requests.
+    Wrap a model to use a given cache.
 
-    More precisely, what are cached are `(r, i)` pairs where `r` is a
-    request and `i` is the number of times the request has been answered
-    since the model was instantiated. This way, caching works even when
-    a policy samples multiple answers for the same request.
-
-    Multiple models can share the same cache.
+    !!! note
+        The `LLM.send_request` method has a `cache` argument that can be
+        used as a replacement for the `CachedModel` wrapper. In
+        addition, all standard prompting policies use a global request
+        cache (see `PolicyEnv`) when available. Thus, external users
+        should rarely need to manually wrap models with `CachedModel`.
     """
 
     model: LLM
