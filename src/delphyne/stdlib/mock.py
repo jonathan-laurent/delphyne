@@ -31,7 +31,7 @@ def demo_mock_oracle(
     def policy[T](
         query: dp.AttachedQuery[T],
         env: dp.PolicyEnv,
-    ) -> dp.Stream[T]:
+    ) -> dp.StreamGen[T]:
         answers = list(find_answers(query.query))
         i, n = 0, len(answers)
         if n == 0:
@@ -57,7 +57,7 @@ def fixed_oracle[T](
     query: dp.AttachedQuery[T],
     env: dp.PolicyEnv,
     oracle: Callable[[dp.AbstractQuery[Any]], Iterable[dp.Answer]],
-) -> dp.Stream[T]:
+) -> dp.StreamGen[T]:
     for answer in oracle(query.query):
         budget = dp.Budget({NUM_REQUESTS: 1})
         res = yield from spend_on(lambda: (None, budget), budget)

@@ -8,7 +8,7 @@ A more featureful subclass is provided in the standard library
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Literal, Self, cast
+from typing import Any, Literal, Self, cast, final
 
 import delphyne.utils.typing as ty
 from delphyne.core.chats import AnswerPrefix
@@ -96,6 +96,8 @@ class AbstractQuery[T](ABC):
     """
     Abstract Class for Delphyne Queries.
 
+    The type parameter `T` indicates the type of parsed query answers.
+
     A more featureful subclass is provided in the standard library
     (`Query`), which uses reflection for convenience.
 
@@ -159,30 +161,65 @@ class AbstractQuery[T](ABC):
         pass
 
     def query_prefix(self) -> AnswerPrefix | None:
+        """
+        Return the chat history featured in the query, if any.
+
+        This is useful to emulate conversational agents by issuing a
+        query repeatedly, passing it the whole, updated conversation
+        history every time (see `interact`).
+        """
         return None
 
     def query_settings(self, mode: AnswerMode) -> QuerySettings:
+        """
+        Return the settings associated with the query.
+        """
         return QuerySettings()
 
+    @final
     def query_name(self) -> str:
         """
-        Return a unique name identifying the query type.
-
-        Currently, we do not use qualified names and so the user must
-        ensure the absence of clashes.
+        Return the name of the query (i.e., the name of the associated
+        class).
         """
         return self.__class__.__name__
 
     def default_tags(self) -> Sequence[str]:
+        """
+        Return a default set of tags to associate with spaces induced by
+        the query.
+
+        These tags can be overriden (see `SpaceBuilder`).
+        """
         return [self.query_name()]
 
     @abstractmethod
     def parse_answer(self, answer: Answer) -> T | ParseError:
+        """
+        Parse a query answer.
+        """
         pass
 
     def finite_answer_set(self) -> Sequence[Answer] | None:
-        """ """
+        """
+        For queries with a finite set of possible answers, return this
+        set. Otherwise, return `None`.
+
+        Demonstration tests can use a special `#<val>` hint to select
+        the first answer with content `<val>` from this set.
+
+        Example uses include classification queries (see `classify`)
+        where a distribution of answers is extracted from LLM logits,
+        flag queries...
+        """
         return None
 
     def default_answer(self) -> Answer | None:
+        """
+        Return a default answer for the query, if any.
+
+        Default answers are used to answer queries in demonstration
+        tests when no answer is provided in the `queries` section and no
+        applicable hint is available.
+        """
         return None

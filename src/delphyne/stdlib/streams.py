@@ -16,10 +16,10 @@ from delphyne.core.streams import Barrier, BarrierId, Spent
 
 
 @dataclass(frozen=True)
-class SearchStream[T](dp.AbstractSearchStream[T]):
-    _generate: Callable[[], dp.Stream[T]]
+class Stream[T](dp.AbstractStream[T]):
+    _generate: Callable[[], dp.StreamGen[T]]
 
-    def gen(self) -> dp.Stream[T]:
+    def gen(self) -> dp.StreamGen[T]:
         return self._generate()
 
     ## Collecting all elements
@@ -38,62 +38,58 @@ class SearchStream[T](dp.AbstractSearchStream[T]):
     ## Transforming the stream
 
     def with_budget(self, budget: dp.BudgetLimit):
-        return SearchStream(lambda: stream_with_budget(self.gen(), budget))
+        return Stream(lambda: stream_with_budget(self.gen(), budget))
 
     def take(self, num_generated: int, strict: bool = True):
-        return SearchStream(
-            lambda: stream_take(self.gen(), num_generated, strict)
-        )
+        return Stream(lambda: stream_take(self.gen(), num_generated, strict))
 
     def loop(
         self, n: int | None = None, *, stop_on_reject: bool = True
-    ) -> "SearchStream[T]":
+    ) -> "Stream[T]":
         it = itertools.count() if n is None else range(n)
-        return SearchStream(
+        return Stream(
             lambda: stream_sequence(
                 (self.gen for _ in it), stop_on_reject=stop_on_reject
             )
         )
 
     def bind[T2](
-        self, f: Callable[[dp.Solution[T]], dp.Stream[T2]]
-    ) -> "SearchStream[T2]":
-        return SearchStream(lambda: stream_bind(self.gen(), f))
+        self, f: Callable[[dp.Solution[T]], dp.StreamGen[T2]]
+    ) -> "Stream[T2]":
+        return Stream(lambda: stream_bind(self.gen(), f))
 
     ## Monadic Methods
 
-    def first(self) -> dp.StreamGen[dp.Solution[T] | None]:
+    def first(self) -> dp.StreamContext[dp.Solution[T] | None]:
         return stream_take_one(self.gen())
 
-    def all(self) -> dp.StreamGen[Sequence[dp.Solution[T]]]:
+    def all(self) -> dp.StreamContext[Sequence[dp.Solution[T]]]:
         return stream_take_all(self.gen())
 
     def next(
         self,
-    ) -> dp.StreamGen[
-        "tuple[Sequence[dp.Solution[T]], dp.Budget, SearchStream[T] | None]"
+    ) -> dp.StreamContext[
+        "tuple[Sequence[dp.Solution[T]], dp.Budget, Stream[T] | None]"
     ]:
         gen, budg, rest = yield from stream_next(self.gen())
-        new_rest = None if rest is None else SearchStream(lambda: rest)
+        new_rest = None if rest is None else Stream(lambda: rest)
         return gen, budg, new_rest
 
     ## Static Methods
 
     @staticmethod
     def sequence[U](
-        streams: Iterable["SearchStream[U]"], *, stop_on_reject: bool = True
-    ) -> "SearchStream[U]":
-        return SearchStream(
+        streams: Iterable["Stream[U]"], *, stop_on_reject: bool = True
+    ) -> "Stream[U]":
+        return Stream(
             lambda: stream_sequence(
                 (s.gen for s in streams), stop_on_reject=stop_on_reject
             )
         )
 
     @staticmethod
-    def parallel[U](streams: Sequence["SearchStream[U]"]) -> "SearchStream[U]":
-        return SearchStream(
-            lambda: stream_parallel([s.gen() for s in streams])
-        )
+    def parallel[U](streams: Sequence["Stream[U]"]) -> "Stream[U]":
+        return Stream(lambda: stream_parallel([s.gen() for s in streams]))
 
 
 #####
@@ -104,19 +100,19 @@ class SearchStream[T](dp.AbstractSearchStream[T]):
 class _StreamTransformerFn(Protocol):
     def __call__[T](
         self,
-        stream: SearchStream[T],
+        stream: Stream[T],
         env: dp.PolicyEnv,
-    ) -> dp.Stream[T]: ...
+    ) -> dp.StreamGen[T]: ...
 
 
 class _ParametricStreamTransformerFn[**A](Protocol):
     def __call__[T](
         self,
-        stream: SearchStream[T],
+        stream: Stream[T],
         env: dp.PolicyEnv,
         *args: A.args,
         **kwargs: A.kwargs,
-    ) -> dp.Stream[T]: ...
+    ) -> dp.StreamGen[T]: ...
 
 
 @dataclass
@@ -125,19 +121,19 @@ class StreamTransformer:
 
     def __call__[T](
         self,
-        stream: SearchStream[T],
+        stream: Stream[T],
         env: dp.PolicyEnv,
-    ) -> SearchStream[T]:
-        return SearchStream(lambda: self.trans(stream, env))
+    ) -> Stream[T]:
+        return Stream(lambda: self.trans(stream, env))
 
     def __matmul__(self, other: "StreamTransformer") -> "StreamTransformer":
         if not isinstance(other, StreamTransformer):  # pyright: ignore[reportUnnecessaryIsInstance]
             return NotImplemented
 
         def transformer[T](
-            stream: SearchStream[T],
+            stream: Stream[T],
             env: dp.PolicyEnv,
-        ) -> dp.Stream[T]:
+        ) -> dp.StreamGen[T]:
             return self(other(stream, env), env).gen()
 
         return StreamTransformer(transformer)
@@ -148,9 +144,9 @@ def stream_transformer[**A](
 ) -> Callable[A, StreamTransformer]:
     def parametric(*args: A.args, **kwargs: A.kwargs) -> StreamTransformer:
         def transformer[T](
-            stream: SearchStream[T],
+            stream: Stream[T],
             env: dp.PolicyEnv,
-        ) -> dp.Stream[T]:
+        ) -> dp.StreamGen[T]:
             return f(stream, env, *args, **kwargs)
 
         return StreamTransformer(transformer)
@@ -166,10 +162,10 @@ def stream_transformer[**A](
 class _StreamCombinatorFn(Protocol):
     def __call__[T](
         self,
-        streams: Sequence[SearchStream[T]],
+        streams: Sequence[Stream[T]],
         probs: Sequence[float],
         env: dp.PolicyEnv,
-    ) -> dp.Stream[T]: ...
+    ) -> dp.StreamGen[T]: ...
 
 
 @dataclass
@@ -178,21 +174,21 @@ class StreamCombinator:
 
     def __call__[T](
         self,
-        streams: Sequence[SearchStream[T]],
+        streams: Sequence[Stream[T]],
         probs: Sequence[float],
         env: dp.PolicyEnv,
-    ) -> SearchStream[T]:
-        return SearchStream(lambda: self.combine(streams, probs, env))
+    ) -> Stream[T]:
+        return Stream(lambda: self.combine(streams, probs, env))
 
     def __rmatmul__(self, other: StreamTransformer) -> "StreamCombinator":
         if not isinstance(other, StreamTransformer):  # pyright: ignore[reportUnnecessaryIsInstance]
             return NotImplemented
 
         def combinator[T](
-            streams: Sequence[SearchStream[T]],
+            streams: Sequence[Stream[T]],
             probs: Sequence[float],
             env: dp.PolicyEnv,
-        ) -> dp.Stream[T]:
+        ) -> dp.StreamGen[T]:
             return other(self(streams, probs, env), env).gen()
 
         return StreamCombinator(combinator)
@@ -205,7 +201,7 @@ class StreamCombinator:
 
 @stream_transformer
 def with_budget[T](
-    stream: SearchStream[T],
+    stream: Stream[T],
     env: dp.PolicyEnv,
     budget: dp.BudgetLimit,
 ):
@@ -214,7 +210,7 @@ def with_budget[T](
 
 @stream_transformer
 def take[T](
-    stream: SearchStream[T],
+    stream: Stream[T],
     env: dp.PolicyEnv,
     num_generated: int,
     strict: bool = True,
@@ -224,12 +220,12 @@ def take[T](
 
 @stream_transformer
 def loop[T](
-    stream: SearchStream[T],
+    stream: Stream[T],
     env: dp.PolicyEnv,
     n: int | None = None,
     *,
     stop_on_reject: bool = True,
-) -> dp.Stream[T]:
+) -> dp.StreamGen[T]:
     """
     Stream transformer that repeatedly respawns the underlying stream,
     up to an (optional) limit.
@@ -250,7 +246,7 @@ class SpendingDeclined:
 
 def spend_on[T](
     f: Callable[[], tuple[T, dp.Budget]], /, estimate: dp.Budget
-) -> dp.StreamGen[T | SpendingDeclined]:
+) -> dp.StreamContext[T | SpendingDeclined]:
     barrier = Barrier(estimate)
     yield barrier
     if barrier.allow:
@@ -263,8 +259,8 @@ def spend_on[T](
 
 
 def stream_bind[A, B](
-    stream: dp.Stream[A], f: Callable[[dp.Solution[A]], dp.Stream[B]]
-) -> dp.Stream[B]:
+    stream: dp.StreamGen[A], f: Callable[[dp.Solution[A]], dp.StreamGen[B]]
+) -> dp.StreamGen[B]:
     generated: list[dp.Solution[A]] = []
     num_pending = 0
     for msg in stream:
@@ -289,8 +285,8 @@ def stream_bind[A, B](
 
 
 def stream_take_one[T](
-    stream: dp.Stream[T],
-) -> dp.StreamGen[dp.Solution[T] | None]:
+    stream: dp.StreamGen[T],
+) -> dp.StreamContext[dp.Solution[T] | None]:
     num_pending = 0
     generated: list[dp.Solution[T]] = []
     for msg in stream:
@@ -312,8 +308,8 @@ def stream_take_one[T](
 
 
 def stream_take_all[T](
-    stream: dp.Stream[T],
-) -> dp.StreamGen[Sequence[dp.Solution[T]]]:
+    stream: dp.StreamGen[T],
+) -> dp.StreamContext[Sequence[dp.Solution[T]]]:
     res: list[dp.Solution[T]] = []
     for msg in stream:
         if isinstance(msg, dp.Solution):
@@ -324,8 +320,8 @@ def stream_take_all[T](
 
 
 def stream_with_budget[T](
-    stream: dp.Stream[T], budget: dp.BudgetLimit
-) -> dp.Stream[T]:
+    stream: dp.StreamGen[T], budget: dp.BudgetLimit
+) -> dp.StreamGen[T]:
     """
     See `with_budget` for a version wrapped as a stream transformer.
     """
@@ -355,8 +351,8 @@ def stream_with_budget[T](
 
 
 def stream_take[T](
-    stream: dp.Stream[T], num_generated: int, strict: bool = True
-) -> dp.Stream[T]:
+    stream: dp.StreamGen[T], num_generated: int, strict: bool = True
+) -> dp.StreamGen[T]:
     """
     See `take` for a version wrapped as a stream transformer.
     """
@@ -384,7 +380,7 @@ def stream_take[T](
 
 
 def stream_collect[T](
-    stream: dp.Stream[T],
+    stream: dp.StreamGen[T],
 ) -> tuple[Sequence[dp.Solution[T]], dp.Budget]:
     total = dp.Budget.zero()
     elts: list[dp.Solution[T]] = []
@@ -396,12 +392,12 @@ def stream_collect[T](
     return elts, total
 
 
-type _StreamBuilder[T] = Callable[[], dp.Stream[T]]
+type _StreamBuilder[T] = Callable[[], dp.StreamGen[T]]
 
 
 def stream_or_else[T](
     main: _StreamBuilder[T], fallback: _StreamBuilder[T]
-) -> dp.Stream[T]:
+) -> dp.StreamGen[T]:
     some_successes = False
     for msg in main():
         if isinstance(msg, dp.Solution):
@@ -413,8 +409,8 @@ def stream_or_else[T](
 
 
 def monitor_acceptance[T](
-    stream: dp.Stream[T], on_accept: Callable[[], None]
-) -> dp.Stream[T]:
+    stream: dp.StreamGen[T], on_accept: Callable[[], None]
+) -> dp.StreamGen[T]:
     for msg in stream:
         # It is important to check `allow` AFTER yielding the message
         # because we are interested in whether the FINAL client accepts
@@ -427,7 +423,7 @@ def monitor_acceptance[T](
 
 def stream_sequence[T](
     streams: Iterable[_StreamBuilder[T]], *, stop_on_reject: bool = True
-) -> dp.Stream[T]:
+) -> dp.StreamGen[T]:
     for mk in streams:
         accepted = False
 
@@ -441,16 +437,16 @@ def stream_sequence[T](
 
 
 def _stream_cons[T](
-    elt: dp.Solution[T] | Spent | Barrier, stream: dp.Stream[T]
-) -> dp.Stream[T]:
+    elt: dp.Solution[T] | Spent | Barrier, stream: dp.StreamGen[T]
+) -> dp.StreamGen[T]:
     yield elt
     yield from stream
 
 
 def stream_next[T](
-    stream: dp.Stream[T],
-) -> dp.StreamGen[
-    tuple[Sequence[dp.Solution[T]], dp.Budget, dp.Stream[T] | None]
+    stream: dp.StreamGen[T],
+) -> dp.StreamContext[
+    tuple[Sequence[dp.Solution[T]], dp.Budget, dp.StreamGen[T] | None]
 ]:
     total_spent = dp.Budget.zero()
     num_pending = 0
@@ -492,7 +488,7 @@ def stream_next[T](
 type _StreamElt[T] = dp.Solution[T] | Barrier | Spent
 
 
-def stream_parallel[T](streams: Sequence[dp.Stream[T]]) -> dp.Stream[T]:
+def stream_parallel[T](streams: Sequence[dp.StreamGen[T]]) -> dp.StreamGen[T]:
     import threading
     from queue import Queue
     from threading import Event
@@ -546,7 +542,7 @@ def stream_parallel[T](streams: Sequence[dp.Stream[T]]) -> dp.Stream[T]:
         # the client and `msg.allow` is set.
         ev.wait()
 
-    def worker(stream: dp.Stream[T]):
+    def worker(stream: dp.StreamGen[T]):
         try:
             for msg in stream:
                 send(msg)

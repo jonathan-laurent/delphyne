@@ -43,7 +43,7 @@ def search_iteration[P, T](
     tree: dp.Tree[Iteration | Fail, P, T],
     env: dp.PolicyEnv,
     policy: P,
-) -> dp.Stream[T]:
+) -> dp.StreamGen[T]:
     assert isinstance(tree.node, Iteration)
     state: dp.Tracked[Any] | None = None
     while True:

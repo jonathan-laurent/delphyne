@@ -9,7 +9,7 @@ import delphyne as dp
 
 def _spend(
     *, estimate: float, cost: float, duration: float | None = None
-) -> dp.StreamGen[bool]:
+) -> dp.StreamContext[bool]:
     metric = dp.DOLLAR_PRICE
     budget_estimate = dp.Budget({metric: estimate})
     budget_cost = dp.Budget({metric: cost})
@@ -27,7 +27,7 @@ def _dummy_tracked[T](obj: T) -> dp.Tracked[T]:
     return dp.Tracked(obj, None, None, None)  # type: ignore
 
 
-def _solution[T](obj: T) -> dp.Stream[T]:
+def _solution[T](obj: T) -> dp.StreamGen[T]:
     yield dp.Solution(_dummy_tracked(obj))
 
 
@@ -39,8 +39,8 @@ def _budget_limit(float: float) -> dp.BudgetLimit:
     "limit,spent,num_gen", [(0, 0, 0), (1, 0, 0), (2, 3, 2)]
 )
 def test_with_budget(limit: float, spent: float, num_gen: int):
-    @dp.SearchStream
-    def gen() -> dp.Stream[str]:
+    @dp.Stream
+    def gen() -> dp.StreamGen[str]:
         if not (yield from _spend(estimate=2, cost=1)):
             return
         yield from _solution("A")
@@ -95,7 +95,7 @@ DURATION_PRECISION = 0.5 * DURATION_MULTIPLIER
 
 
 def run_parallel_test(test: _ParTest):
-    def worker(i: int, steps: Sequence[_Step]) -> dp.Stream[str]:
+    def worker(i: int, steps: Sequence[_Step]) -> dp.StreamGen[str]:
         for j, step in enumerate(steps):
             if step.exn:
                 assert False
@@ -114,10 +114,10 @@ def run_parallel_test(test: _ParTest):
 
     start = time.time()
     workers = [
-        dp.SearchStream(lambda i=i, s=s: worker(i, s))
+        dp.Stream(lambda i=i, s=s: worker(i, s))
         for i, s in enumerate(test.plan)
     ]
-    stream = dp.SearchStream.parallel(workers)
+    stream = dp.Stream.parallel(workers)
     if test.budget is not None:
         stream = stream.with_budget(_budget_limit(test.budget))
     try:

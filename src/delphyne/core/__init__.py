@@ -63,12 +63,12 @@ from delphyne.core.reification import (
     tracer_hook,
 )
 from delphyne.core.streams import (
-    AbstractSearchStream,
+    AbstractStream,
     Budget,
     BudgetLimit,
     SearchMeta,
     Solution,
-    Stream,
+    StreamContext,
     StreamGen,
 )
 from delphyne.core.traces import (

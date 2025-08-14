@@ -16,7 +16,7 @@ def sample_and_proceed[N: dp.Node, P, T](
     env: dp.PolicyEnv,
     policy: P,
     proceed_with: dp.AbstractSearchPolicy[Branch | N],
-) -> dp.Stream[T]:
+) -> dp.StreamGen[T]:
     match tree.node:
         case dp.Success(x):
             yield dp.Solution(x)

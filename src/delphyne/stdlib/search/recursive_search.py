@@ -11,12 +11,12 @@ from dataclasses import dataclass
 from typing import Any
 
 import delphyne.core as dp
-from delphyne.core.streams import Stream
+from delphyne.core.streams import StreamGen
 from delphyne.stdlib.nodes import Branch, Fail, Join, NodeMeta
 from delphyne.stdlib.policies import log, search_policy, unsupported_node
 from delphyne.stdlib.queries import ProbInfo
 from delphyne.stdlib.streams import (
-    SearchStream,
+    Stream,
     StreamCombinator,
 )
 
@@ -75,7 +75,7 @@ def recursive_search[P, T](
     tree: dp.Tree[Branch | Join | Fail, P, T],
     env: dp.PolicyEnv,
     policy: P,
-) -> Stream[T]:
+) -> StreamGen[T]:
     match tree.node:
         case dp.Success(x):
             yield dp.Solution(x)
@@ -138,10 +138,10 @@ def combine_via_repeated_sampling(
     max_attempts: int | None = None,
 ) -> StreamCombinator:
     def combine[T](
-        streams: Sequence[SearchStream[T]],
+        streams: Sequence[Stream[T]],
         probs: Sequence[float],
         env: dp.PolicyEnv,
-    ) -> dp.Stream[T]:
+    ) -> dp.StreamGen[T]:
         i = 0
         while max_attempts is None or i < max_attempts:
             i += 1

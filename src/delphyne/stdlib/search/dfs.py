@@ -3,11 +3,11 @@ Depth-First Search Algorithm
 """
 
 from delphyne.core.environments import PolicyEnv
-from delphyne.core.streams import Solution, Stream
+from delphyne.core.streams import Solution, StreamGen
 from delphyne.core.trees import Success, Tree
 from delphyne.stdlib.nodes import Branch, Fail
 from delphyne.stdlib.policies import search_policy, unsupported_node
-from delphyne.stdlib.streams import SearchStream
+from delphyne.stdlib.streams import Stream
 
 
 @search_policy
@@ -17,7 +17,7 @@ def dfs[P, T](
     policy: P,
     max_depth: int | None = None,
     max_branching: int | None = None,
-) -> Stream[T]:
+) -> StreamGen[T]:
     """
     Depth-first search
 
@@ -51,7 +51,7 @@ def par_dfs[P, T](
     tree: Tree[Branch | Fail, P, T],
     env: PolicyEnv,
     policy: P,
-) -> Stream[T]:
+) -> StreamGen[T]:
     match tree.node:
         case Success(x):
             yield Solution(x)
@@ -59,7 +59,7 @@ def par_dfs[P, T](
             pass
         case Branch(cands):
             cands = yield from cands.stream(env, policy).all()
-            yield from SearchStream.parallel(
+            yield from Stream.parallel(
                 [par_dfs()(tree.child(a.tracked), env, policy) for a in cands]
             ).gen()
         case _:

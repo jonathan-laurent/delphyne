@@ -13,7 +13,7 @@ import delphyne.core as dp
 from delphyne.core import refs
 from delphyne.stdlib.nodes import Branch, Factor, Fail, Value
 from delphyne.stdlib.policies import search_policy, unsupported_node
-from delphyne.stdlib.streams import SearchStream
+from delphyne.stdlib.streams import Stream
 
 
 @dataclass(frozen=True)
@@ -28,7 +28,7 @@ class NodeState:
     depth: int
     children: list[refs.GlobalNodePath]  # can be mutated
     confidence: float
-    stream: list[SearchStream[Any] | None]  # using one element (mutated)
+    stream: list[Stream[Any] | None]  # using one element (mutated)
     node: Branch  # equal to tree.node, with a more precise type
     tree: dp.Tree[Branch | Factor | Value | Fail, Any, Any]
     next_actions: list[dp.Tracked[Any]]  # can be mutated
@@ -52,7 +52,7 @@ def best_first_search[P, T](
     policy: P,
     child_confidence_prior: Callable[[int, int], float],
     max_depth: int | None = None,
-) -> dp.Stream[T]:
+) -> dp.StreamGen[T]:
     """
     Best First Search Algorithm.
 
@@ -88,7 +88,7 @@ def best_first_search[P, T](
         tree: dp.Tree[Branch | Factor | Value | Fail, Any, Any],
         confidence: float,
         depth: int,
-    ) -> dp.Stream[T]:
+    ) -> dp.StreamGen[T]:
         match tree.node:
             case dp.Success():
                 yield dp.Solution(tree.node.success)

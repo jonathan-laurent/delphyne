@@ -110,7 +110,7 @@ def make_conjecture[P, T](
 @dp.search_policy
 def just_guess[P, T](
     tree: dp.Tree[Conjecture, P, T], env: dp.PolicyEnv, policy: P
-) -> dp.Stream[T]:
+) -> dp.StreamGen[T]:
     """
     Do a DFS, treating conjecture nodes as simple branching nodes.
     """

@@ -9,7 +9,7 @@ from typing import Generic, Protocol, TypeVar
 
 from delphyne.core import trees as tr
 from delphyne.core.environments import PolicyEnv
-from delphyne.core.streams import AbstractSearchStream
+from delphyne.core.streams import AbstractStream
 from delphyne.core.trees import AttachedQuery, Node, Tree
 
 N_po = TypeVar("N_po", bound=Node, contravariant=True)
@@ -40,7 +40,7 @@ class AbstractSearchPolicy[N: tr.Node](Protocol):
 
     def __call__[P, T](
         self, tree: "Tree[N, P, T]", env: PolicyEnv, policy: P
-    ) -> AbstractSearchStream[T]: ...
+    ) -> AbstractStream[T]: ...
 
 
 class AbstractPromptingPolicy(Protocol):
@@ -52,4 +52,4 @@ class AbstractPromptingPolicy(Protocol):
 
     def __call__[T](
         self, query: AttachedQuery[T], env: PolicyEnv
-    ) -> AbstractSearchStream[T]: ...
+    ) -> AbstractStream[T]: ...

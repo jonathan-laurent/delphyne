@@ -8,7 +8,7 @@ from typing import Any, Generic, NoReturn, Protocol, TypeVar
 
 import delphyne.core as dp
 from delphyne.core import Node, PolicyEnv
-from delphyne.stdlib.streams import SearchStream, StreamTransformer
+from delphyne.stdlib.streams import Stream, StreamTransformer
 
 #####
 ##### Policies
@@ -47,8 +47,8 @@ class SearchPolicy[N: Node](dp.AbstractSearchPolicy[N]):
         tree: "dp.Tree[N, P, T]",
         env: PolicyEnv,
         policy: P,
-    ) -> SearchStream[T]:
-        return SearchStream(lambda: self.fn(tree, env, policy))
+    ) -> Stream[T]:
+        return Stream(lambda: self.fn(tree, env, policy))
 
     def __and__[P](self, other: P) -> "Policy[N, P]":
         return Policy(self, other)
@@ -64,7 +64,7 @@ class SearchPolicy[N: Node](dp.AbstractSearchPolicy[N]):
     ) -> "SearchPolicy[N]":
         def policy[P, T](
             tree: dp.Tree[N, P, T], env: dp.PolicyEnv, policy: P
-        ) -> dp.Stream[T]:
+        ) -> dp.StreamGen[T]:
             return trans(self(tree, env, policy), env).gen()
 
         return SearchPolicy(policy)
@@ -76,7 +76,7 @@ class _SearchPolicyFn[N: Node](Protocol):
         tree: dp.Tree[N, P, T],
         env: PolicyEnv,
         policy: P,
-    ) -> dp.Stream[T]: ...
+    ) -> dp.StreamGen[T]: ...
 
 
 class _ParametricSearchPolicyFn[N: Node, **A](Protocol):
@@ -87,7 +87,7 @@ class _ParametricSearchPolicyFn[N: Node, **A](Protocol):
         policy: P,
         *args: A.args,
         **kwargs: A.kwargs,
-    ) -> dp.Stream[T]: ...
+    ) -> dp.StreamGen[T]: ...
 
 
 class _ParametricSearchPolicy[N: Node, **A](Protocol):
@@ -108,7 +108,7 @@ def search_policy[N: Node, **A](
     def parametric(*args: A.args, **kwargs: A.kwargs) -> SearchPolicy[N]:
         def policy[T](
             tree: dp.Tree[N, Any, T], env: PolicyEnv, policy: Any
-        ) -> dp.Stream[T]:
+        ) -> dp.StreamGen[T]:
             return fn(tree, env, policy, *args, **kwargs)
 
         return SearchPolicy(policy)
@@ -127,8 +127,8 @@ class PromptingPolicy(dp.AbstractPromptingPolicy):
 
     def __call__[T](
         self, query: dp.AttachedQuery[T], env: PolicyEnv
-    ) -> SearchStream[T]:
-        return SearchStream(lambda: self.fn(query, env))
+    ) -> Stream[T]:
+        return Stream(lambda: self.fn(query, env))
 
     def __rmatmul__(self, other: StreamTransformer) -> "PromptingPolicy":
         if not isinstance(other, StreamTransformer):  # pyright: ignore[reportUnnecessaryIsInstance]
@@ -141,7 +141,7 @@ class PromptingPolicy(dp.AbstractPromptingPolicy):
     ) -> "PromptingPolicy":
         def policy[T](
             query: dp.AttachedQuery[T], env: PolicyEnv
-        ) -> dp.Stream[T]:
+        ) -> dp.StreamGen[T]:
             return trans(self(query, env), env).gen()
 
         return PromptingPolicy(policy)
@@ -152,7 +152,7 @@ class _PromptingPolicyFn(Protocol):
         self,
         query: dp.AttachedQuery[T],
         env: PolicyEnv,
-    ) -> dp.Stream[T]: ...
+    ) -> dp.StreamGen[T]: ...
 
 
 class _ParametricPromptingPolicyFn[**A](Protocol):
@@ -162,7 +162,7 @@ class _ParametricPromptingPolicyFn[**A](Protocol):
         env: PolicyEnv,
         *args: A.args,
         **kwargs: A.kwargs,
-    ) -> dp.Stream[T]: ...
+    ) -> dp.StreamGen[T]: ...
 
 
 class _ParametricPromptingPolicy[**A](Protocol):
@@ -177,7 +177,7 @@ def prompting_policy[**A](
     def parametric(*args: A.args, **kwargs: A.kwargs) -> PromptingPolicy:
         def policy[T](
             query: dp.AttachedQuery[T], env: PolicyEnv
-        ) -> dp.Stream[T]:
+        ) -> dp.StreamGen[T]:
             return fn(query, env, *args, **kwargs)
 
         return PromptingPolicy(policy)
@@ -231,7 +231,7 @@ class ContextualTreeTransformer[A: Node, B: Node]:
             tree: dp.Tree[A | N, P, T],
             env: PolicyEnv,
             policy: P,
-        ) -> dp.Stream[T]:
+        ) -> dp.StreamGen[T]:
             new_tree = self.fn(env, policy)(tree)
             return search_policy(new_tree, env, policy).gen()
 
@@ -335,7 +335,9 @@ def dict_subpolicy(ip: IPDict, tags: Sequence[dp.Tag]) -> Any:
 def query_dependent(
     f: Callable[[dp.AbstractQuery[object]], PromptingPolicy],
 ) -> PromptingPolicy:
-    def policy[T](query: dp.AttachedQuery[T], env: PolicyEnv) -> dp.Stream[T]:
+    def policy[T](
+        query: dp.AttachedQuery[T], env: PolicyEnv
+    ) -> dp.StreamGen[T]:
         query_policy = f(query.query)
         return query_policy(query, env).gen()
 

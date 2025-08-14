@@ -1,5 +1,7 @@
 """
-Defining Policies for Delphyne
+The Search Stream Protocol.
+
+
 """
 
 import math
@@ -18,7 +20,12 @@ from delphyne.core.refs import Tracked
 class Budget:
     """
     An immutable datastructure for tracking spent budget as an infinite
-    vector with finite support.
+    vector with finite support. Each dimension corresponds to a
+    different metric (e.g., number of requests, price in dollars...)
+
+    Attributes:
+        values: a mapping from metrics to spent budget. Metrics outside
+            of this field are associated a spending of 0.
     """
 
     values: Mapping[str, float]
@@ -63,6 +70,10 @@ class BudgetLimit:
     """
     An immutable datastructure for representing a budget limit as an
     infinite vector with finite support.
+
+    Elements outside of the finite support are associated an
+    **infinite** limit. Hence the separation of `Budget` and
+    `BudgetLimit`.
     """
 
     values: Mapping[str, float]
@@ -78,17 +89,35 @@ class BudgetLimit:
 
 class SearchMeta:
     """
-    All valid search metadata can inherit this class.
+    Base class for valid search metadata.
+
+    Search metadata can be attached to all solutions yielded by a search
+    stream. See `ProbInfo` for an example.
     """
 
     pass
 
 
 type BarrierId = int
+"""
+A unique identifier associated with a `Barrier` message, used to identify
+a matching `Spent` message. Overlapping barrier messages must not share
+the same identifier (barrier messages are considered to overlap if the
+second one occurs before the `Spent` message associated with the first).
+"""
 
 
 @dataclass(frozen=True)
 class Solution[T]:
+    """
+    A solution yielded by a search stream, which combines a tracked
+    value with optional metadata.
+
+    Attributes:
+        tracked: A tracked value.
+        meta: Optional metadata.
+    """
+
     tracked: Tracked[T]
     meta: SearchMeta | None = None
 
@@ -114,10 +143,10 @@ class Spent:
     barrier_id: BarrierId
 
 
-type Stream[T] = Generator[Solution[T] | Barrier | Spent, None, None]
+type StreamGen[T] = Generator[Solution[T] | Barrier | Spent, None, None]
 
 
-type StreamGen[T] = Generator[Barrier | Spent, None, T]
+type StreamContext[T] = Generator[Barrier | Spent, None, T]
 """
 Type signature for a generator that can spend budget, does not yield
 results but ultimately returns a result. Useful to define the signature
@@ -125,7 +154,13 @@ of `take_one` for example.
 """
 
 
-class AbstractSearchStream[T](ABC):
+class AbstractStream[T](ABC):
+    """
+    Base class for search streams.
+
+    A search stream must be capable of producing a stream generator.
+    """
+
     @abstractmethod
-    def gen(self) -> Stream[T]:
+    def gen(self) -> StreamGen[T]:
         pass

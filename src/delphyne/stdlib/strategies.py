@@ -14,7 +14,7 @@ from delphyne.stdlib.opaque import Opaque, OpaqueSpace
 from delphyne.stdlib.policies import (
     IPDict,
     Policy,
-    SearchStream,
+    Stream,
     dict_subpolicy,
 )
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
@@ -72,7 +72,7 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
         env: dp.PolicyEnv,
         policy: Policy[N, P],
         monitor: dp.TreeMonitor = dp.TreeMonitor(),
-    ) -> SearchStream[T]:
+    ) -> Stream[T]:
         """
         Utility method to reify a strategy into a tree and run it using
         a given policy.

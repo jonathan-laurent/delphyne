@@ -203,7 +203,7 @@ def abduct_and_saturate[P, Proof](
     max_rollout_depth: int = 3,
     scoring_function: ScoringFunction = _default_scoring_function,
     verbose: bool = False,
-) -> dp.Stream[Proof]:
+) -> dp.StreamGen[Proof]:
     """
     A standard, sequential policy to process abduction nodes.
 
@@ -246,7 +246,7 @@ def abduct_and_saturate[P, Proof](
     def all_canonical() -> Sequence[_EFact]:
         return [*candidates, *proved, *disproved, *redundant]
 
-    def is_redundant(f: _EFact) -> dp.StreamGen[bool]:
+    def is_redundant(f: _EFact) -> dp.StreamContext[bool]:
         if f is None:
             return False
         respace = node.redundant([tracked[o] for o in proved], tracked[f])
@@ -255,7 +255,7 @@ def abduct_and_saturate[P, Proof](
             raise _Abort()
         return res.tracked.value
 
-    def add_candidate(c: _EFact) -> dp.StreamGen[None]:
+    def add_candidate(c: _EFact) -> dp.StreamContext[None]:
         # Take a new fact and put it into either `proved`, `disproved`,
         # `candidates` or `redundant`. If a canonical fact is passed,
         # nothing is done.
@@ -286,7 +286,7 @@ def abduct_and_saturate[P, Proof](
         else:
             candidates[c] = _CandInfo(payload, 0, 0)
 
-    def propagate() -> dp.StreamGen[Literal["updated", "not_updated"]]:
+    def propagate() -> dp.StreamContext[Literal["updated", "not_updated"]]:
         # Go through each candidate and see if it is now provable
         # assuming all established facts.
         old_candidates = candidates.copy()
@@ -303,12 +303,12 @@ def abduct_and_saturate[P, Proof](
             else "not_updated"
         )
 
-    def saturate() -> dp.StreamGen[None]:
+    def saturate() -> dp.StreamContext[None]:
         # Propagate facts until saturation
         while (yield from propagate()) == "updated":
             pass
 
-    def get_canonical(f: _EFact) -> dp.StreamGen[_EFact]:
+    def get_canonical(f: _EFact) -> dp.StreamContext[_EFact]:
         # The result is guaranteed to be in `tracked`
         if f in proved or f in disproved or f in candidates:
             # Case where f is a canonical fact
@@ -338,7 +338,7 @@ def abduct_and_saturate[P, Proof](
             log(env, "invalid_equivalent_call")
             return f
 
-    def get_raw_suggestions(c: _EFact) -> dp.StreamGen[Sequence[_EFact]]:
+    def get_raw_suggestions(c: _EFact) -> dp.StreamContext[Sequence[_EFact]]:
         assert c in candidates
         sstream = node.suggest(candidates[c].feedback).stream(env, policy)
         res = yield from sstream.all()
@@ -357,7 +357,7 @@ def abduct_and_saturate[P, Proof](
                 tracked[s] = ts
         return suggs
 
-    def get_suggestions(c: _EFact) -> dp.StreamGen[dict[_EFact, int]]:
+    def get_suggestions(c: _EFact) -> dp.StreamContext[dict[_EFact, int]]:
         # Return a dict representing a multiset of suggestions
         assert c in candidates
         raw_suggs = yield from get_raw_suggestions(c)

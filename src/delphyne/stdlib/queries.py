@@ -24,7 +24,7 @@ import delphyne.stdlib.policies as pol
 from delphyne.core.refs import Answer
 from delphyne.stdlib.opaque import Opaque, OpaqueSpace
 from delphyne.stdlib.policies import IPDict, log, prompting_policy
-from delphyne.stdlib.streams import SearchStream, SpendingDeclined, spend_on
+from delphyne.stdlib.streams import SpendingDeclined, Stream, spend_on
 from delphyne.utils import typing as ty
 from delphyne.utils.typing import TypeAnnot, ValidationError
 
@@ -434,7 +434,7 @@ class Query[T](dp.AbstractQuery[T]):
         self,
         env: dp.PolicyEnv,
         policy: pol.PromptingPolicy,
-    ) -> SearchStream[T]:
+    ) -> Stream[T]:
         attached = dp.spawn_standalone_query(self)
         return policy(attached, env)
 
@@ -837,7 +837,7 @@ def get_request_cache(env: dp.PolicyEnv) -> md.LLMCache | None:
 
 def _send_request(
     model: md.LLM, req: md.LLMRequest, env: dp.PolicyEnv
-) -> dp.StreamGen[md.LLMResponse | SpendingDeclined]:
+) -> dp.StreamContext[md.LLMResponse | SpendingDeclined]:
     res = yield from spend_on(
         lambda: (
             resp := model.send_request(req, get_request_cache(env)),
@@ -860,7 +860,7 @@ def classify[T](
     top_logprobs: int = 20,
     temperature: float = 1.0,
     bias: tuple[str, float] | None = None,
-) -> dp.Stream[T]:
+) -> dp.StreamGen[T]:
     """
     Execute a classification query, attaching a probability distribution
     to the attached answer.
@@ -979,7 +979,7 @@ def few_shot[T](
     iterative_mode: bool = False,
     max_requests: int | None = None,
     no_wrap_parse_errors: bool = False,
-) -> dp.Stream[T]:
+) -> dp.StreamGen[T]:
     """
     The standard few-shot prompting sequential prompting policy.
 
@@ -1092,7 +1092,7 @@ def answer_with[T](
     answers: Sequence[str],
     probs: Sequence[float] | None = None,
     mode: dp.AnswerMode = None,
-) -> dp.Stream[T]:
+) -> dp.StreamGen[T]:
     assert answers
     parse = partial(_parse_or_log_and_raise, query=query, env=env)
     try:
