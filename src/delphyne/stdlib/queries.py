@@ -90,10 +90,10 @@ type _StandardParserName = Literal["structured", "final_tool_call"]
 type ParserSpec = _StandardParserName | GenericTextParser | TextParser[Any]
 
 
-type ParserSpecDict = Mapping[dp.AnswerModeName, ParserSpec]
+type ParserSpecDict = Mapping[dp.AnswerMode, ParserSpec]
 
 
-type QueryConfigDict = Mapping[dp.AnswerModeName, QueryConfig]
+type QueryConfigDict = Mapping[dp.AnswerMode, QueryConfig]
 
 
 @dataclass
@@ -164,13 +164,13 @@ class Query[T](dp.AbstractQuery[T]):
     with maximal concision.
     """
 
-    __modes__: ClassVar[Sequence[dp.AnswerModeName] | None] = None
+    __modes__: ClassVar[Sequence[dp.AnswerMode] | None] = None
     __parser__: ClassVar[ParserSpec | ParserSpecDict | None] = None
     __config__: ClassVar[QueryConfig | QueryConfigDict | None] = None
 
     ### Inspection methods
 
-    def query_config(self, mode: dp.AnswerModeName) -> QueryConfig | None:
+    def query_config(self, mode: dp.AnswerMode) -> QueryConfig | None:
         """
         By default, we obtain the configuration by looking for a
         `__config__` field, which might be either a single configuration
@@ -271,7 +271,7 @@ class Query[T](dp.AbstractQuery[T]):
     ### Query Settings
 
     @override
-    def query_settings(self, mode: dp.AnswerModeName) -> dp.QuerySettings:
+    def query_settings(self, mode: dp.AnswerMode) -> dp.QuerySettings:
         config = self.query_config(mode)
         assert config is not None
         structured_output = None
@@ -326,7 +326,7 @@ class Query[T](dp.AbstractQuery[T]):
         self,
         *,
         kind: Literal["system", "instance"] | str,
-        mode: dp.AnswerModeName,
+        mode: dp.AnswerMode,
         params: dict[str, object],
         env: dp.TemplatesManager | None = None,
     ) -> str:
@@ -392,7 +392,7 @@ class Query[T](dp.AbstractQuery[T]):
         return None
 
     @override
-    def query_modes(self) -> Sequence[dp.AnswerModeName]:
+    def query_modes(self) -> Sequence[dp.AnswerMode]:
         if self.__modes__ is not None:
             return self.__modes__
         return [None]
@@ -713,7 +713,7 @@ def _instance_prompt(
     query: dp.AbstractQuery[Any],
     env: dp.TemplatesManager | None,
     params: dict[str, object],
-    mode: dp.AnswerModeName,
+    mode: dp.AnswerMode,
 ):
     msgs: list[md.ChatMessage] = []
     prompt = query.generate_prompt(
@@ -746,7 +746,7 @@ def create_prompt(
     query: dp.AbstractQuery[Any],
     examples: Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]],
     params: dict[str, object],
-    mode: dp.AnswerModeName,
+    mode: dp.AnswerMode,
     env: dp.TemplatesManager | None,
 ) -> md.Chat:
     msgs: list[md.ChatMessage] = []
@@ -855,7 +855,7 @@ def classify[T](
     model: md.LLM,
     params: dict[str, object] | None = None,
     select_examples: Sequence[ExampleSelector] = (),
-    mode: dp.AnswerModeName = None,
+    mode: dp.AnswerMode = None,
     enable_logging: bool = True,
     top_logprobs: int = 20,
     temperature: float = 1.0,
@@ -972,7 +972,7 @@ def few_shot[T](
     model: md.LLM,
     params: dict[str, object] | None = None,
     select_examples: Sequence[ExampleSelector] = (),
-    mode: dp.AnswerModeName = None,
+    mode: dp.AnswerMode = None,
     enable_logging: bool = True,
     temperature: float | None = None,
     num_concurrent: int = 1,
@@ -1091,7 +1091,7 @@ def answer_with[T](
     env: dp.PolicyEnv,
     answers: Sequence[str],
     probs: Sequence[float] | None = None,
-    mode: dp.AnswerModeName = None,
+    mode: dp.AnswerMode = None,
 ) -> dp.Stream[T]:
     assert answers
     parse = partial(_parse_or_log_and_raise, query=query, env=env)

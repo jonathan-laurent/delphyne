@@ -48,7 +48,7 @@ from delphyne.core.queries import (
 )
 from delphyne.core.refs import (
     Answer,
-    AnswerModeName,
+    AnswerMode,
     Structured,
     ToolCall,
     Tracked,

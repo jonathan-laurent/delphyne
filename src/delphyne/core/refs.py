@@ -78,7 +78,7 @@ class Structured:
         return hash(json.dumps(self.__dict__))
 
 
-type AnswerModeName = str | None
+type AnswerMode = str | None
 """
 A name for an answer mode, which can be a string or `None` (the latter
 is typically used for naming default modes).
@@ -98,7 +98,7 @@ class Answer:
     is a query and the proposed answer correctly parses.
 
     Attributes:
-        mode: the answer mode (see `AnswerModeName`).
+        mode: the answer mode (see `AnswerMode`).
         content: the answer content, which can be a raw string or a
             structured answer (see `Structured`).
         tool_calls: an optional sequence of tool calls.
@@ -111,7 +111,7 @@ class Answer:
             prompting.
     """
 
-    mode: AnswerModeName
+    mode: AnswerMode
     content: str | Structured
     tool_calls: tuple[ToolCall, ...] = ()
     justification: str | None = None

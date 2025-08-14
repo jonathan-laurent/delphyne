@@ -36,7 +36,7 @@ class __Computation__(dp.AbstractQuery[object]):
         self,
         *,
         kind: str,
-        mode: dp.AnswerModeName,
+        mode: dp.AnswerMode,
         params: dict[str, object],
         env: dp.TemplatesManager | None = None,
     ):

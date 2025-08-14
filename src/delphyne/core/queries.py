@@ -14,7 +14,7 @@ import delphyne.utils.typing as ty
 from delphyne.core.chats import AnswerPrefix
 from delphyne.core.environments import TemplatesManager
 from delphyne.core.errors import Error
-from delphyne.core.refs import Answer, AnswerModeName
+from delphyne.core.refs import Answer, AnswerMode
 
 
 @dataclass
@@ -101,7 +101,7 @@ class AbstractQuery[T](ABC):
 
     ??? "Answer Modes"
         Queries are allowed to define multiple answer modes
-        (`AnswerModeName`), each mode being possibly associated with
+        (`AnswerMode`), each mode being possibly associated with
         different settings and with a different parser.
     """
 
@@ -110,7 +110,7 @@ class AbstractQuery[T](ABC):
         self,
         *,
         kind: Literal["system", "instance", "feedback"] | str,
-        mode: AnswerModeName,
+        mode: AnswerMode,
         params: dict[str, object],
         env: TemplatesManager | None,
     ) -> str:
@@ -152,7 +152,7 @@ class AbstractQuery[T](ABC):
         pass
 
     @abstractmethod
-    def query_modes(self) -> Sequence[AnswerModeName]:
+    def query_modes(self) -> Sequence[AnswerMode]:
         """
         Return the sequence of available answer modes.
         """
@@ -161,7 +161,7 @@ class AbstractQuery[T](ABC):
     def query_prefix(self) -> AnswerPrefix | None:
         return None
 
-    def query_settings(self, mode: AnswerModeName) -> QuerySettings:
+    def query_settings(self, mode: AnswerMode) -> QuerySettings:
         return QuerySettings()
 
     def query_name(self) -> str:

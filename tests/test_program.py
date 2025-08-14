@@ -39,7 +39,7 @@ def _eval_query(
     budget: int = 1,
     concurrent: int = 1,
     model_name: dp.StandardModelName = "gpt-4.1-mini",
-    mode: dp.AnswerModeName = None,
+    mode: dp.AnswerMode = None,
 ):
     env = dp.PolicyEnv(
         demonstration_files=(), prompt_dirs=(PROMPT_DIR,), data_dirs=()
