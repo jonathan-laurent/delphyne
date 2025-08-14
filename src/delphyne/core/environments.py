@@ -285,6 +285,17 @@ class TemplateFileMissing(Exception):
 
 @dataclass(frozen=True)
 class LogMessage:
+    """
+    A log message.
+
+    Attributes:
+        message: The message to log.
+        metadata: Optional metadata associated with the message, as a
+            dictionary mapping string keys to JSON values.
+        location: An optional location in the strategy tree where the
+            message was logged, if applicable.
+    """
+
     message: str
     metadata: dict[str, Any] | None = None
     location: traces.ShortLocation | None = None
@@ -292,6 +303,11 @@ class LogMessage:
 
 @dataclass(frozen=True)
 class ExportableLogMessage:
+    """
+    An exportable log message, as a dataclass whose fields are JSON
+    values (as opposed to `LogMessage`) and is thus easier to export.
+    """
+
     message: str
     node: int | None
     space: str | None
@@ -299,6 +315,22 @@ class ExportableLogMessage:
 
 
 class Tracer:
+    """
+    A mutable trace along with a mutable list of log messages.
+
+    Both components are protected by a lock to ensure thread-safety
+    (some policies spawn multiple concurrent threads).
+
+    Attributes:
+        trace: A mutable trace.
+        messages: A mutable list of log messages.
+        lock: A reentrant lock protecting access to the trace and log.
+            The lock is publicly exposed so that threads can log several
+            successive messages without other threads interleaving new
+            messages in between (TODO: there are cleaner ways to achieve
+            this).
+    """
+
     def __init__(self):
         self.trace = traces.Trace()
         self.messages: list[LogMessage] = []
@@ -307,30 +339,31 @@ class Tracer:
         # the trace in parallel.
         self.lock = threading.RLock()
 
-    def trace_query(self, ref: refs.GlobalSpacePath) -> None:
-        """
-        Ensure that a query at a given reference is present in the trace.
-        """
-        with self.lock:
-            self.trace.convert_query_origin(ref)
-
-    def trace_space(self, ref: refs.GlobalSpacePath) -> None:
-        """
-        TODO: currently unused.
-        """
-        with self.lock:
-            self.trace.convert_location(traces.Location(ref[0], ref[1]))
-
     def trace_node(self, node: refs.GlobalNodePath) -> None:
         """
         Ensure that a node at a given reference is present in the trace.
+
+        See `tracer_hook` for registering a hook that automatically
+        calls this method on all encountered nodes.
         """
         with self.lock:
             self.trace.convert_location(traces.Location(node, None))
 
+    def trace_query(self, ref: refs.GlobalSpacePath) -> None:
+        """
+        Ensure that a query at a given reference is present in the
+        trace, even if no answer is provided for it.
+        """
+        with self.lock:
+            self.trace.convert_query_origin(ref)
+
     def trace_answer(
         self, space: refs.GlobalSpacePath, answer: refs.Answer
     ) -> None:
+        """
+        Ensure that a given query answer is present in the trace, even
+        it is is not used to reach a node.
+        """
         with self.lock:
             self.trace.convert_answer_ref((space, answer))
 
@@ -340,6 +373,9 @@ class Tracer:
         metadata: dict[str, Any] | None = None,
         location: traces.Location | None = None,
     ):
+        """
+        Log a message, with optional metadata and location information.
+        """
         with self.lock:
             short_location = None
             if location is not None:
@@ -347,6 +383,9 @@ class Tracer:
             self.messages.append(LogMessage(message, metadata, short_location))
 
     def export_log(self) -> Iterable[ExportableLogMessage]:
+        """
+        Export the log into an easily serializable format.
+        """
         with self.lock:
             for m in self.messages:
                 node = None
@@ -358,6 +397,9 @@ class Tracer:
                 yield ExportableLogMessage(m.message, node, space, m.metadata)
 
     def export_trace(self) -> traces.ExportableTrace:
+        """
+        Export the trace into an easily serializable format.
+        """
         with self.lock:
             return self.trace.export()
 
