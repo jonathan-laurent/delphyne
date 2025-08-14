@@ -96,6 +96,19 @@ class Answer:
 
     It can serve as a _space element reference_ if the space in question
     is a query and the proposed answer correctly parses.
+
+    Attributes:
+        mode: the answer mode (see `AnswerModeName`).
+        content: the answer content, which can be a raw string or a
+            structured answer (see `Structured`).
+        tool_calls: an optional sequence of tool calls.
+        justification: additional explanations for the answers, which
+            are not passed to the parser but can be appended at the end
+            of the answer in examples. In particular, this is useful
+            when defining queries for which the oracle is not asked to
+            produce a justification for its answer, but justifications
+            can still be provided in examples for the sake of few-shot
+            prompting.
     """
 
     mode: AnswerModeName
