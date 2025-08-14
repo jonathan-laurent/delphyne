@@ -167,6 +167,11 @@ function gotoAnswer(
     return;
   }
   const [demonstration, feedback, editor] = demoInfo;
+  if (!(answer in feedback.answer_refs)) {
+      // Some answers are generated on the fly by the demo interpreter and do
+      // not have counterparts in the demo file.
+    return;
+  }
   const [queryIdx, answerIdx] = feedback.answer_refs[answer];
   const range = demonstration.queries[queryIdx].__loc_items__answers[answerIdx];
   editor.selection = new vscode.Selection(range.start, range.end);
