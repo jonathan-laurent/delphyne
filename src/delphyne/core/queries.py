@@ -98,6 +98,11 @@ class AbstractQuery[T](ABC):
 
     A more featureful subclass is provided in the standard library
     (`Query`), which uses reflection for convenience.
+
+    ??? "Answer Modes"
+        Queries are allowed to define multiple answer modes
+        (`AnswerModeName`), each mode being possibly associated with
+        different settings and with a different parser.
     """
 
     @abstractmethod
@@ -110,23 +115,47 @@ class AbstractQuery[T](ABC):
         env: TemplatesManager | None,
     ) -> str:
         """
-        Generate a prompt message
+        Generate a prompt message for the query.
+
+        Args:
+            kind: Kind of prompt to generate. Standard prompt kinds are
+                "system", "instance", or "feedback" but others can be
+                supported (within or outside the standard library).
+            mode: Answer mode selected for the query.
+            params: Query hyperparameters.
+            env: Template manager used to load Jinja templates.
+                Exceptions may be raised when it is needed but not
+                provided.
         """
         pass
 
     def serialize_args(self) -> dict[str, object]:
+        """
+        Serialize the query arguments as a dictionary of JSON values.
+        """
         return cast(dict[str, object], ty.pydantic_dump(type(self), self))
 
     @classmethod
     def parse_instance(cls, args: dict[str, object]) -> Self:
+        """
+        Parse a query instance from a dictionary of serialized
+        arguments.
+        """
         return ty.pydantic_load(cls, args)
 
     @abstractmethod
     def answer_type(self) -> ty.TypeAnnot[T] | ty.NoTypeInfo:
+        """
+        Return the answer type for the query, or `NoTypeInfo()` if this
+        information is not available.
+        """
         pass
 
     @abstractmethod
     def query_modes(self) -> Sequence[AnswerModeName]:
+        """
+        Return the sequence of available answer modes.
+        """
         pass
 
     def query_prefix(self) -> AnswerPrefix | None:
