@@ -6,6 +6,7 @@ import importlib
 import json
 import sys
 import traceback
+from collections import defaultdict
 from collections.abc import Callable, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -42,6 +43,17 @@ class StrategyLoadingError(Exception):
 
 @dataclass(frozen=True)
 class DemoExecutionContext:
+    """
+    Demonstration Execution Context.
+
+    Attributes:
+        strategy_dirs: a list of directories in which strategy modules
+            can be found, to be added to `sys.path`.
+        modules: a list of modules in which python object identifiers
+            should be resolved. Modules can be part of packages and so
+            their name may feature `.`.
+    """
+
     strategy_dirs: Sequence[Path]
     modules: Sequence[str]
 
@@ -52,7 +64,34 @@ class DemoExecutionContext:
         )
 
 
+@dataclass(frozen=True)
+class AmbiguousObjectIdentifier(Exception):
+    """
+    Raised when attempting to load an object with an ambiguous name.
+
+    Attributes:
+        identifier: the ambiguous identifier.
+        modules: a list of modules where different objects with the same
+            identifier were found
+    """
+
+    identifier: str
+    modules: Sequence[str]
+
+
 class ObjectLoader:
+    """
+    Utility class for loading Python objects.
+
+    Demonstration and command files may refer to Python identifiers that
+    need to be resolved. This is done relative to an execution context
+    (`DemoExecutionContext`) that specifies a list of directories to be
+    added to `sys.path`, along with a list of modules.
+
+    An exception is raised if an object with the requested identifier
+    can be found in several modules.
+    """
+
     def __init__(
         self,
         ctx: DemoExecutionContext,
@@ -60,8 +99,19 @@ class ObjectLoader:
         reload: bool = True,
     ):
         """
-        Raises `ModuleNotFound`.
-        Modules can be part of packages and so their name may feature `.`.
+        Attributes:
+            ctx: The execution context in which to resolve Python
+                identifiers.
+            extra_objects: additional objects that can be resolved by
+                name (with higher precedence).
+            reload: whether to reload all modules specified in the
+                execution context upon initialization. Setting this
+                value to `True` makes `ObjectLoader` not thread-safe
+                (also, multiple instances must not be used in an
+                overlappaping way within a single thread).
+
+        Raises:
+            ModuleNotFound: a module could not be found.
         """
         self.ctx = ctx
         self.extra_objects = extra_objects if extra_objects is not None else {}
@@ -78,10 +128,11 @@ class ObjectLoader:
 
     def find_object(self, name: str) -> Any:
         """
-        Find an object with a given name. If the name is unqualified (it
-        features no `.`), one attempts to find the object in every
-        registered module in order. If the name is qualified, one looks
-        at the specified registered module.
+        Find an object with a given name.
+
+        If the name is unqualified (it features no `.`), one attempts to
+        find the object in every registered module in order. If the name
+        is qualified, one looks at the specified registered module.
         """
         if name in self.extra_objects:
             return self.extra_objects[name]
@@ -89,9 +140,18 @@ class ObjectLoader:
         assert comps
         if len(comps) == 1:
             # unqualified name
+            cands: list[object] = []
+            modules_with_id: dict[int, list[str]] = defaultdict(list)
             for module in self.modules:
                 if hasattr(module, name):
-                    return getattr(module, name)
+                    obj = getattr(module, name)
+                    modules_with_id[id(obj)].append(module)
+                    cands.append(obj)
+            if len(modules_with_id) > 1:
+                ambiguous = [ms[0] for ms in modules_with_id.values()]
+                raise AmbiguousObjectIdentifier(name, ambiguous)
+            if cands:
+                return cands[0]
         else:
             # qualified name
             module = ".".join(comps[:-1])
