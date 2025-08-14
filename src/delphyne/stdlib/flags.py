@@ -1,25 +1,24 @@
 """
-Handling Feature Flags
+The `Flag` Effect
 """
 
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any, Never, cast
 
 import delphyne.core as dp
 import delphyne.core.inspect as insp
 import delphyne.stdlib.policies as pol
-from delphyne.stdlib.nodes import Branch, branch, spawn_node
-from delphyne.stdlib.opaque import Opaque
+from delphyne.stdlib.nodes import spawn_node
 from delphyne.stdlib.queries import Query
-from delphyne.stdlib.strategies import strategy
 
 
 class FlagQuery[T: str](Query[T]):
     """
-    Base class for flag queries. T must be of the form `Literal[s1, ...,
-    sn]` where `si` are string literals. The first value is considered
-    the default.
+    Base class for flag queries.
+
+    Type parameter `T` must be of the form `Literal[s1, ..., sn]` where
+    `si` are string literals. The first value is considered the default.
     """
 
     @classmethod
@@ -49,6 +48,27 @@ class FlagQuery[T: str](Query[T]):
 
 @dataclass(frozen=True)
 class Flag[F: FlagQuery[Any]](dp.Node):
+    """
+    Flags allow providing several implementations for a strategy
+    component, and have policies select which variant to use (or perform
+    search at runtime for selecting variants).
+
+    For each flag, a subclass of `FlagQuery` must be defined, which
+    admits a finite set of answers (one per allowed flag value), along
+    with a default answer. Type parameter `F` denotes the type of the
+    flag query that can be issued. To express a signature wih several
+    flag queries, use `Flag[A] | Flag[B]` instead of `Flag[A | B]`, so
+    that both kinds of flags can be eliminated separately.
+
+    ??? info "Behavior in demonstrations"
+        Because flag queries override `AbstractQuery.default_answer`,
+        default flag values are automatically selected by the
+        demonstration interpreter. This behaviour can be overriden by
+        adding answers for flag queries in the `queries` section, or by
+        using value-based hints (i.e., `#flag_value`, which is possible
+        since flag queries implement `AbstractQuery.finite_answer_set`).
+    """
+
     flag: dp.TransparentQuery[Any]
 
     def summary_message(self) -> str:
@@ -72,20 +92,18 @@ class Flag[F: FlagQuery[Any]](dp.Node):
 def get_flag[T: str](
     flag: type[FlagQuery[T]],
 ) -> dp.Strategy[Flag[Any], object, T]:
+    """
+    Triggering function for the `Flag` effect.
+
+    Takes a flag query type as an argument and return a flag value.
+
+    !!! info
+        A more precise type cannot be given for this function since
+        Python does not support higher-kinded types.
+    """
     query = dp.TransparentQuery.build(flag())
     ret = yield spawn_node(Flag, flag=query)
     return cast(T, ret)
-
-
-@strategy
-def variants[A: str, P, T](
-    flag: type[FlagQuery[A]], alts: Callable[[A], Opaque[P, T]]
-) -> dp.Strategy[Flag[Any] | Branch, P, T]:
-    val = yield from get_flag(flag)
-    return (yield from branch(alts(val)))
-
-
-# Change: make all flags strings. The first flag is the default value.
 
 
 @pol.contextual_tree_transformer

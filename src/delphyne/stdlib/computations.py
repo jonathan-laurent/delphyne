@@ -1,5 +1,5 @@
 """
-Computation Nodes
+The `Compute` Effect
 """
 
 from collections.abc import Callable
@@ -23,9 +23,13 @@ from delphyne.utils.yaml import dump_yaml
 @dataclass
 class __Computation__(dp.AbstractQuery[object]):
     """
-    A special query that represents a cached computation.
+    A special query that represents a computation.
 
     Returns a parsed JSON result.
+
+    Attributes:
+        fun: Name of the function to call.
+        args: Arguments to pass to the function, as a dictionary.
     """
 
     fun: str
@@ -61,6 +65,28 @@ class __Computation__(dp.AbstractQuery[object]):
 
 @dataclass
 class Compute(dp.ComputationNode):
+    """
+    For efficiency and replicability reasons, strategies must not directly
+    perform expensive and possibly non-replicable computations. For example,
+    a strategy should not directly call an SMT solver since:
+
+    - The call may be expensive, and stratgy computations are replayed from
+    scratch every time a child is computed in the corresponding tree (see
+    documentation for `reify`).
+    - SMT solvers using wall-time timeouts may return different results when
+    called repeatedly on the same input.
+
+    The `Compute` effect allows performing an expensive and possibly
+    non-deterministic computation by issuing a special `__Computation__`
+    query that specifies the computation to be performed. Such a query is
+    not answered by an LLM, but by _actually_ performing the described
+    computation. Special support is available in the demonstration
+    interpreter in the form of *implicit answers*, allowing
+    `__Computation__` queries to be automatically answered when running
+    tests. Generated answers can be hardcoded in demonstrations **after**
+    the fact via proper editor support.
+    """
+
     query: dp.TransparentQuery[Any]
     _comp: Callable[[], Any]
     _ret_type: ty.TypeAnnot[Any]
@@ -97,6 +123,16 @@ class Compute(dp.ComputationNode):
 def compute[**P, T](
     f: Callable[P, T], *args: P.args, **kwargs: P.kwargs
 ) -> dp.Strategy[Compute, object, T]:
+    """
+    Triggering function for the `Compute` effect.
+
+    Arguments:
+        f: Function performing an expensive computation. It must feature
+            type annotations and its arguments must be
+            JSON-serializable. It does not need to be deterministic.
+        *args: Positional arguments to pass to `f`.
+        **kwargs: Keyword arguments to pass to `f`.
+    """
     comp = partial(f, *args, **kwargs)
     ret_type = insp.function_return_type(f)
     assert not isinstance(ret_type, ty.NoTypeInfo)
@@ -113,6 +149,13 @@ def compute[**P, T](
 
 @dataclass
 class ComputationOracle(md.LLM):
+    """
+    A fake LLM that performs computations.
+
+    Using such an oracle allows reusing the LLM request caching
+    infrasrtructure.
+    """
+
     computation: Callable[[], str]
 
     @override
@@ -139,6 +182,17 @@ def elim_compute(
     policy: Any,
     force_bypass_cache: bool = False,
 ) -> pol.PureTreeTransformerFn[Compute, Never]:
+    """
+    Eliminate the `Compute` effect by performing the computation when
+    computing tree children (making the `child` function possibly
+    nondeterministic).
+
+    Arguments:
+        force_bypass_cache: if set to `True`, do not cache computation
+            results, even if a cache is available in the global policy
+            environment.
+    """
+
     def transform[N: dp.Node, P, T](
         tree: dp.Tree[Compute | N, P, T],
     ) -> dp.Tree[N, P, T]:

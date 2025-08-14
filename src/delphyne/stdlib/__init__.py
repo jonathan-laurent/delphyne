@@ -15,7 +15,6 @@ from delphyne.stdlib.flags import (
     FlagQuery,
     elim_flag,
     get_flag,
-    variants,
 )
 from delphyne.stdlib.globals import (
     stdlib_globals,
