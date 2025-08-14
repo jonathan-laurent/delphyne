@@ -1,5 +1,7 @@
 """
-Abstract Policies
+Abstract Types for Policies.
+
+Wrappers with more features are defined in the standard library.
 """
 
 from abc import ABC
@@ -16,8 +18,11 @@ P_po = TypeVar("P_po", covariant=True)
 
 class AbstractPolicy(Generic[N_po, P_po], ABC):
     """
-    A policy for trees with effects `N` gathers a search policy handling
-    `N` along with an inner policy object of type `P`.
+    A pair of a search policy and of an inner policy.
+
+    More preciely, a policy for trees with effects `N` (contravariant)
+    gathers a search policy handling `N` along with an inner policy
+    object of type `P` (covariant).
     """
 
     @property
@@ -27,12 +32,24 @@ class AbstractPolicy(Generic[N_po, P_po], ABC):
 
 
 class AbstractSearchPolicy[N: tr.Node](Protocol):
+    """
+    A search policy takes as arguments a tree with a given signature
+    (covariant type parameter `N`), a global policy environment, and an
+    inner policy with appropriate type, and returns a search stream.
+    """
+
     def __call__[P, T](
         self, tree: "Tree[N, P, T]", env: PolicyEnv, policy: P
     ) -> AbstractSearchStream[T]: ...
 
 
 class AbstractPromptingPolicy(Protocol):
+    """
+    A prompting policy takes as arguments a query (attached to a
+    specific node) and a global policy environment, and returns a search
+    stream.
+    """
+
     def __call__[T](
         self, query: AttachedQuery[T], env: PolicyEnv
     ) -> AbstractSearchStream[T]: ...
