@@ -133,6 +133,8 @@ class RequestOptions(typing.TypedDict, total=False):
     Attributes:
 
         model: The name of the model to use for the request.
+        reasoning_effort: The reasoning effort to use for the request,
+            when applicable (e.g., for GPT-5 or o3).
         tool_choice: How the model should select which tool (or tools)
             to use when generating a response. `none` means the model
             will not call any tool and instead generates a message.

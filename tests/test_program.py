@@ -47,9 +47,7 @@ def _eval_query(
     )
     cache_spec = ca.CacheSpec(ca.CacheYaml(CACHE_DIR / cache_name))
     cache = dp.LLMCache(cache_spec)
-    base_model = dp.standard_model(model_name)
-    if model_options is not None:
-        base_model.options |= model_options
+    base_model = dp.standard_model(model_name, options=model_options)
     model = dp.CachedModel(base_model, cache)
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: budget})
     pp = dp.with_budget(bl) @ dp.few_shot(

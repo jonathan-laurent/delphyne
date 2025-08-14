@@ -168,7 +168,8 @@ def _values(alias: Any) -> Sequence[str]:
 
 
 def standard_model(
-    model: StandardModelName,
+    model_name: StandardModelName,
+    options: md.RequestOptions | None = None,
 ) -> OpenAICompatibleModel:
     """
     Obtain a standard model from OpenAI, Mistral or DeepSeek.
@@ -178,14 +179,25 @@ def standard_model(
     - `OPENAI_API_KEY` for OpenAI models
     - `MISTRAL_API_KEY` for Mistral models
     - `DEEPSEEK_API_KEY` for DeepSeek models
+
+    Attributes:
+        model_name: The name of the model to use.
+        options: Additional options for the model, such as reasoning
+            effort or default temperature. The `model` option must not
+            be overriden.
     """
     openai_models = _values(OpenAIModelName)
     mistral_models = _values(MistralModelName)
     deepseek_models = _values(DeepSeekModelName)
-    if model in openai_models:
-        return openai_model(model)
-    elif model in mistral_models:
-        return mistral_model(model)
-    elif model in deepseek_models:
-        return deepseek_model(model)
-    assert False, f"Unknown model: {model}"
+    if model_name in openai_models:
+        model = openai_model(model_name)
+    elif model_name in mistral_models:
+        model = mistral_model(model_name)
+    elif model_name in deepseek_models:
+        model = deepseek_model(model_name)
+    else:
+        assert False, f"Unknown model: {model_name}"
+    if options is not None:
+        assert "model" not in options, "A model name is specified already."
+        model.options |= options
+    return model
