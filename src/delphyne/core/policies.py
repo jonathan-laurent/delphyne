@@ -1,7 +1,7 @@
 """
 Abstract Types for Policies.
 
-Wrappers with more features are defined in the standard library.
+Instances with more features are defined in the standard library.
 """
 
 from abc import ABC

@@ -1,5 +1,8 @@
 """
-Delphyne Queries.
+Abstract Class for Delphyne Queries.
+
+A more featureful subclass is provided in the standard library
+(`Query`), which uses reflection for convenience.
 """
 
 from abc import ABC, abstractmethod
@@ -17,6 +20,8 @@ from delphyne.core.refs import Answer, AnswerModeName
 @dataclass
 class ParseError(Error, Exception):
     """
+    Parse Error.
+
     Can be used as an exception or a returned value.
     """
 
@@ -34,33 +39,79 @@ class ParseError(Error, Exception):
 
 @dataclass(frozen=True)
 class StructuredOutputSettings:
+    """
+    Settings for LLM structured output.
+
+    Attributes:
+        type: Expected type for the output, from which a schema can be
+        derived if provided.
+    """
+
     type: ty.TypeAnnot[Any] | ty.NoTypeInfo
 
 
 @dataclass(frozen=True)
 class ToolSettings:
+    """
+    Tool call settings.
+
+    Attributes:
+        tool_types: Nonempty sequence of available tools. All tools must
+            be classes, although more constraints can be put by specific
+            queries and prompting policies.
+        force_tool_call: If True, oracles are informed that a tool call
+            **must** be made.
+    """
+
     tool_types: Sequence[type[Any]]
     force_tool_call: bool
 
 
 @dataclass(frozen=True)
 class QuerySettings:
+    """
+    Settings associated with a query.
+
+    These settings can accessed by prompting policies so as to make
+    appropriate requests to LLMs.
+
+    Attributes:
+        structured_output: Settings for structured output, or `None` if
+            structured output is not enabled.
+        tools: Settings for tool calls, or `None` if no tools are
+            available.
+    """
+
     structured_output: StructuredOutputSettings | None = None
     tools: ToolSettings | None = None
 
 
 type AnyQuery = AbstractQuery[Any]
+"""
+Convenience alias for a query of any type.
+"""
 
 
 class AbstractQuery[T](ABC):
+    """
+    Abstract Class for Delphyne Queries.
+
+    A more featureful subclass is provided in the standard library
+    (`Query`), which uses reflection for convenience.
+    """
+
     @abstractmethod
     def generate_prompt(
         self,
+        *,
         kind: Literal["system", "instance", "feedback"] | str,
         mode: AnswerModeName,
         params: dict[str, object],
         env: TemplatesManager | None,
     ) -> str:
+        """
+        Generate a prompt message
+        """
         pass
 
     def serialize_args(self) -> dict[str, object]:

@@ -2,7 +2,8 @@
 Pretty-printing references.
 
 Paths and inline answers are not supported and so exceptions are raised
-when these occur.
+when these occur. In particular, full references cannot be
+pretty-printed but id-based and hint-based references can.
 """
 
 from collections.abc import Callable, Sequence

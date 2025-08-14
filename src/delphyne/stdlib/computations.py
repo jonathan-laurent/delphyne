@@ -34,6 +34,7 @@ class __Computation__(dp.AbstractQuery[object]):
     @override
     def generate_prompt(
         self,
+        *,
         kind: str,
         mode: dp.AnswerModeName,
         params: dict[str, object],

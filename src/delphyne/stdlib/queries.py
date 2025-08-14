@@ -157,9 +157,11 @@ class _DecomposedAnswerType:
 
 class Query[T](dp.AbstractQuery[T]):
     """
-    Base class for queries, which adds convenience features on top of
-    `AbstractQuery`, including inferring a lot of information from type
-    hints and from the special __parser__ class attribute.
+    Base class for queries.
+
+    This class adds standard convenience features on top of
+    `AbstractQuery`, using reflection to allow queries to be defined
+    with maximal concision.
     """
 
     __modes__: ClassVar[Sequence[dp.AnswerModeName] | None] = None
@@ -322,6 +324,7 @@ class Query[T](dp.AbstractQuery[T]):
     @override
     def generate_prompt(
         self,
+        *,
         kind: Literal["system", "instance"] | str,
         mode: dp.AnswerModeName,
         params: dict[str, object],
@@ -713,7 +716,9 @@ def _instance_prompt(
     mode: dp.AnswerModeName,
 ):
     msgs: list[md.ChatMessage] = []
-    prompt = query.generate_prompt("instance", mode, params, env)
+    prompt = query.generate_prompt(
+        kind="instance", mode=mode, params=params, env=env
+    )
     # Handle assistant priming
     prompt, priming = _priming_split(prompt)
     msgs.append(md.UserMessage(prompt))
@@ -727,7 +732,9 @@ def _instance_prompt(
                 msgs.append(md.AssistantMessage(elt.answer))
             elif isinstance(elt, dp.FeedbackMessage):
                 ps = params | {"feedback": elt}
-                fmsg = query.generate_prompt("feedback", mode, ps, env)
+                fmsg = query.generate_prompt(
+                    kind="feedback", mode=mode, params=ps, env=env
+                )
                 msgs.append(md.UserMessage(fmsg))
             else:
                 assert isinstance(elt, dp.ToolResult)
@@ -743,7 +750,9 @@ def create_prompt(
     env: dp.TemplatesManager | None,
 ) -> md.Chat:
     msgs: list[md.ChatMessage] = []
-    sys = query.generate_prompt("system", mode, params, env)
+    sys = query.generate_prompt(
+        kind="system", mode=mode, params=params, env=env
+    )
     msgs.append(md.SystemMessage(sys))
     for q, ans in examples:
         msgs.extend(_instance_prompt(q, env, params, ans.mode))
