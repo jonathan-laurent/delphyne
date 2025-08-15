@@ -161,29 +161,27 @@ def _make_chat_tool(
     return ret
 
 
-def _base_budget(
-    n: int, model_info: md.ModelInfo | None = None
-) -> dict[str, float]:
+def _base_budget(n: int, model_class: str | None = None) -> dict[str, float]:
     budget: dict[str, float] = {md.NUM_REQUESTS: 1, md.NUM_COMPLETIONS: n}
-    if model_info is not None:
-        budget[md.budget_entry("num_requests", model_info)] = 1
-        budget[md.budget_entry("num_completions", model_info)] = 1
+    if model_class is not None:
+        budget[md.budget_entry("num_requests", model_class)] = 1
+        budget[md.budget_entry("num_completions", model_class)] = 1
 
     return budget
 
 
 def _compute_spent_budget(
     n: int,
-    model_info: md.ModelInfo | None = None,
+    model_class: str | None = None,
     pricing: md.ModelPricing | None = None,
     usage: CompletionUsage | None = None,
 ) -> dict[str, float]:
-    budget = _base_budget(n, model_info)
+    budget = _base_budget(n, model_class)
 
     def add(cat: md.BudgetCategory, value: float):
         budget[md.budget_entry(cat)] = value
-        if model_info is not None:
-            budget[md.budget_entry(cat, model_info)] = value
+        if model_class is not None:
+            budget[md.budget_entry(cat, model_class)] = value
 
     if usage is not None:
         add("input_tokens", usage.prompt_tokens)
@@ -216,8 +214,12 @@ class OpenAICompatibleModel(md.LLM):
         options: the default options to use for requests.
         api_key: the API key to use for authentication.
         base_url: the base URL of the OpenAI-compatible API.
-        model_info: information about the model, such as its name
-            and pricing.
+        model_class: an optional identifier for the model class (e.g.,
+            "reasoning_large"). When provided, class-specific budget
+            metrics are reported, so that resource consumption can be
+            tracked separately for different classes of models (e.g.,
+            tracking "num_requests__reasoning_large" separately from
+            "num_requests__chat_small").
         pricing: pricing information for the model.
         no_json_schema: if `True`, JSON mode is used for structured
             output instead of JSON Schema. This is useful for providers
@@ -229,7 +231,7 @@ class OpenAICompatibleModel(md.LLM):
     api_key: str | None = None
     base_url: str | None = None
     no_json_schema: bool = False
-    model_info: md.ModelInfo | None = None
+    model_class: str | None = None
     pricing: md.ModelPricing | None = None
 
     @override
@@ -238,7 +240,7 @@ class OpenAICompatibleModel(md.LLM):
 
     @override
     def estimate_budget(self, req: md.LLMRequest) -> Budget:
-        return Budget(_base_budget(req.num_completions, self.model_info))
+        return Budget(_base_budget(req.num_completions, self.model_class))
 
     @override
     def _send_final_request(self, req: md.LLMRequest) -> md.LLMResponse:
@@ -344,7 +346,7 @@ class OpenAICompatibleModel(md.LLM):
         budget = Budget(
             _compute_spent_budget(
                 req.num_completions,
-                self.model_info,
+                self.model_class,
                 self.pricing,
                 response.usage,
             )

@@ -40,6 +40,7 @@ def _eval_query(
     concurrent: int = 1,
     model_name: dp.StandardModelName = "gpt-4.1-mini",
     model_options: dp.RequestOptions | None = None,
+    model_class: str | None = None,
     mode: dp.AnswerMode = None,
 ):
     env = dp.PolicyEnv(
@@ -47,7 +48,9 @@ def _eval_query(
     )
     cache_spec = ca.CacheSpec(ca.CacheYaml(CACHE_DIR / cache_name))
     cache = dp.LLMCache(cache_spec)
-    base_model = dp.standard_model(model_name, options=model_options)
+    base_model = dp.standard_model(
+        model_name, options=model_options, model_class=model_class
+    )
     model = dp.CachedModel(base_model, cache)
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: budget})
     pp = dp.with_budget(bl) @ dp.few_shot(
@@ -276,7 +279,11 @@ def test_provider(
         cache_name += f"_{options_label}"
     query = ex.MakeSum(allowed=[1, 2, 3, 4], goal=5)
     res, _ = _eval_query(
-        query, cache_name, model_name=model, model_options=options
+        query,
+        cache_name,
+        model_name=model,
+        model_options=options,
+        model_class=options_label,  # for testing model classes
     )
     assert res
     print(res[0].tracked.value)

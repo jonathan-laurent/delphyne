@@ -265,31 +265,6 @@ class LLMOutput:
 #####
 
 
-type ModelKind = Literal["chat", "reasoning"]
-type ModelSize = Literal["small", "medium", "large"]
-
-
-@dataclass
-class ModelInfo:
-    """
-    Classifying models into coarse classes, so that each class can be
-    associated dedicated budget keys, along with a default pricing
-    model.
-    """
-
-    # TODO: is this a good idea? Shouldn't we just provide additional
-    # keys to models?
-
-    kind: ModelKind
-    size: ModelSize
-
-    def __str__(self) -> str:
-        res = self.size
-        if self.kind != "chat":
-            res = f"{self.kind}_{res}"
-        return res
-
-
 type BudgetCategory = Literal[
     "num_requests",
     "num_completions",
@@ -314,18 +289,14 @@ BUDGET_ENTRY_SEPARATOR = "__"
 
 
 def budget_entry(
-    category: BudgetCategory, model: ModelInfo | str | None = None
+    category: BudgetCategory, model_class: str | None = None
 ) -> str:
     """
     Return a string that can be used as a key in a budget dictionary.
     """
     res = category
-    if model is not None:
-        if isinstance(model, str):
-            modstr = model
-        else:
-            modstr = str(model)
-        res = f"{res}{BUDGET_ENTRY_SEPARATOR}{modstr}"
+    if model_class is not None:
+        res = f"{res}{BUDGET_ENTRY_SEPARATOR}{model_class}"
     return res
 
 
