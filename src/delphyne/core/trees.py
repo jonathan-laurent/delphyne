@@ -210,11 +210,12 @@ class Node(ABC):
         """
         Returns whether an action is valid.
 
-        By default, this method always returns `True`. When overriden,
-        it is used to dynamically check actions passed to `Tree.child`,
-        **after** the `Tracked` wrapper is removed.
+        This method is used to dynamically check actions passed to
+        `Tree.child`, **after** the `Tracked` wrapper is removed. By
+        default, it always returns `True` (unless the node is a leaf
+        node, in which case it returns `False`).
         """
-        return True
+        return False if self.leaf_node() else True
 
     def primary_space(self) -> "Space[object] | None":
         """

@@ -49,6 +49,8 @@ class FlagQuery[T: str](Query[T]):
 @dataclass(frozen=True)
 class Flag[F: FlagQuery[Any]](dp.Node):
     """
+    The standard `Flag` effect.
+
     Flags allow providing several implementations for a strategy
     component, and have policies select which variant to use (or perform
     search at runtime for selecting variants).

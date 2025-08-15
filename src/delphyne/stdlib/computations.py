@@ -66,6 +66,8 @@ class __Computation__(dp.AbstractQuery[object]):
 @dataclass
 class Compute(dp.ComputationNode):
     """
+    The standard `Compute` effect.
+
     For efficiency and replicability reasons, strategies must not directly
     perform expensive and possibly non-replicable computations. For example,
     a strategy should not directly call an SMT solver since:

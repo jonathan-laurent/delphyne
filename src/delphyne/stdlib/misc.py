@@ -10,7 +10,7 @@ import delphyne.core as dp
 import delphyne.stdlib.policies as pol
 from delphyne.stdlib.computations import Compute, elim_compute
 from delphyne.stdlib.flags import Flag, FlagQuery, elim_flag, get_flag
-from delphyne.stdlib.nodes import Branch, Fail, Message, branch
+from delphyne.stdlib.nodes import Branch, Fail, branch
 from delphyne.stdlib.opaque import Opaque
 from delphyne.stdlib.policies import Policy, PromptingPolicy, SearchPolicy
 from delphyne.stdlib.search.dfs import dfs
@@ -294,38 +294,6 @@ def or_else(main: _AnyPolicy, other: _AnyPolicy) -> _AnyPolicy:
         return search_policy_or_else(main, other)
     else:
         return policy_or_else(main, other)  # type: ignore
-
-
-#####
-##### Eliminate message nodes
-#####
-
-
-@pol.contextual_tree_transformer
-def elim_messages(
-    env: dp.PolicyEnv,
-    policy: Any,
-    show_in_log: bool = True,
-) -> pol.PureTreeTransformerFn[Message, Never]:
-    """
-    Eliminate the `Message` effect.
-
-    Arguments:
-        show_in_log: Whether to log the associated content whenever a
-            message node is encountered.
-    """
-
-    def transform[N: dp.Node, P, T](
-        tree: dp.Tree[Message | N, P, T],
-    ) -> dp.Tree[N, P, T]:
-        if isinstance(tree.node, Message):
-            if show_in_log:
-                metadata = {"attached": tree.node.data}
-                env.tracer.log(tree.node.msg, metadata=metadata)
-            return transform(tree.child(None))
-        return tree.transform(tree.node, transform)
-
-    return transform
 
 
 #####
