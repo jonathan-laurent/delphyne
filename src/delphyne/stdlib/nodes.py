@@ -60,7 +60,6 @@ class NodeMeta:
 @dataclass(frozen=True)
 class Branch(dp.Node):
     cands: OpaqueSpace[Any, Any]
-    extra_tags: Sequence[dp.Tag]
     meta: FromPolicy[NodeMeta] | None
 
     def navigate(self) -> dp.Navigation:
@@ -72,13 +71,10 @@ class Branch(dp.Node):
 
 def branch[P, T](
     cands: Opaque[P, T],
-    extra_tags: Sequence[dp.Tag] = (),
     meta: Callable[[P], NodeMeta] | None = None,
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Branch, P, T]:
-    ret = yield spawn_node(
-        Branch, cands=cands, extra_tags=extra_tags, meta=meta
-    )
+    ret = yield spawn_node(Branch, cands=cands, meta=meta)
     return cast(T, ret)
 
 
