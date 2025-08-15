@@ -375,6 +375,7 @@ class Tracer:
     ):
         """
         Log a message, with optional metadata and location information.
+        The metadata must be a dictionary of JSON values.
         """
         with self.lock:
             short_location = None

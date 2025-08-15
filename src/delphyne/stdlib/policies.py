@@ -1,5 +1,5 @@
 """
-Utilities for writing policies.
+Standard policy types and wrappers
 """
 
 from collections.abc import Callable, Mapping, Sequence
@@ -15,21 +15,32 @@ from delphyne.stdlib.streams import Stream, StreamTransformer
 #####
 
 
-N_po = TypeVar("N_po", bound=Node, contravariant=True)
-P_po = TypeVar("P_po", covariant=True)
+N = TypeVar("N", bound=Node, contravariant=True)
+P = TypeVar("P", covariant=True)
 
 
 @dataclass(frozen=True)
-class Policy(Generic[N_po, P_po], dp.AbstractPolicy[N_po, P_po]):
-    _search: "SearchPolicy[N_po]"
-    _inner: P_po
+class Policy(Generic[N, P], dp.AbstractPolicy[N, P]):
+    """
+    A pair of a search policy and of an inner policy.
+
+    More preciely, a policy for trees with effects `N` (contravariant)
+    gathers a search policy handling `N` along with an inner policy
+    object of type `P` (covariant).
+
+    Values of this type can be built concisely using the `&` operator
+    defined on type `SearchPolicy`.
+    """
+
+    _search: "SearchPolicy[N]"
+    _inner: P
 
     @property
-    def search(self) -> "SearchPolicy[N_po]":
+    def search(self) -> "SearchPolicy[N]":
         return self._search
 
     @property
-    def inner(self) -> P_po:
+    def inner(self) -> P:
         return self._inner
 
 
@@ -40,7 +51,19 @@ class Policy(Generic[N_po, P_po], dp.AbstractPolicy[N_po, P_po]):
 
 @dataclass(frozen=True)
 class SearchPolicy[N: Node](dp.AbstractSearchPolicy[N]):
-    fn: "_SearchPolicyFn[N]"
+    """
+    A search policy takes as arguments a tree with a given signature
+    (covariant type parameter `N`), a global policy environment, and an
+    inner policy with appropriate type, and returns a search stream.
+
+    `SearchPolicy` is a subclass of `AbstractSearchPolicy`, which
+    provides convenience features such as support for the `@`
+    composition operator (for composing search policies with stream
+    transformers and tree transformers) and the `&` operator for pairing
+    a search policy with an inner policy.
+    """
+
+    _fn: "_SearchPolicyFn[N]"
 
     def __call__[P, T](
         self,
@@ -48,17 +71,23 @@ class SearchPolicy[N: Node](dp.AbstractSearchPolicy[N]):
         env: PolicyEnv,
         policy: P,
     ) -> Stream[T]:
-        return Stream(lambda: self.fn(tree, env, policy))
+        return Stream(lambda: self._fn(tree, env, policy))
 
     def __and__[P](self, other: P) -> "Policy[N, P]":
+        """
+        Pair a search policy with an inner policy to form a policy.
+        """
         return Policy(self, other)
 
     def __rmatmul__(self, other: StreamTransformer) -> "SearchPolicy[N]":
+        """
+        Compose a search policy with a stream transformer.
+        """
         if not isinstance(other, StreamTransformer):  # pyright: ignore[reportUnnecessaryIsInstance]
             return NotImplemented
-        return self.compose_with_stream_transformer(other)
+        return self._compose_with_stream_transformer(other)
 
-    def compose_with_stream_transformer(
+    def _compose_with_stream_transformer(
         self,
         trans: StreamTransformer,
     ) -> "SearchPolicy[N]":
@@ -100,9 +129,19 @@ def search_policy[N: Node, **A](
     fn: _ParametricSearchPolicyFn[N, A],
 ) -> _ParametricSearchPolicy[N, A]:
     """
-    Wraps a search policy into a callable objects with additional helper
-    features (such as the `@` operator for composing with tree
-    transformers).
+    Convenience decorator for creating parametric search policies (i.e.,
+    functions that return search policies).
+
+    See `dfs` for an example.
+
+    Attributes:
+        fn: A function that takes a tree, a policy environment, an inner
+            policy, and additional parameters as arguments and returns a
+            search stream generator (`SearchStreamGen`).
+
+    Returns:
+        A function that takes the additional parameters of `fn` as
+        arguments and returns a search policy (`SearchPolicy`).
     """
 
     def parametric(*args: A.args, **kwargs: A.kwargs) -> SearchPolicy[N]:
@@ -123,19 +162,33 @@ def search_policy[N: Node, **A](
 
 @dataclass(frozen=True)
 class PromptingPolicy(dp.AbstractPromptingPolicy):
-    fn: "_PromptingPolicyFn"
+    """
+    A prompting policy takes as arguments a query (attached to a
+    specific node) and a global policy environment, and returns a search
+    stream (`SearchStream`).
+
+    `PromptingPolicy` is a subclass of `AbstractPromptingPolicy`, which
+    provides convenience features such as support for the `@`
+    composition operator (for composing prompting policies with stream
+    transformers).
+    """
+
+    _fn: "_PromptingPolicyFn"
 
     def __call__[T](
         self, query: dp.AttachedQuery[T], env: PolicyEnv
     ) -> Stream[T]:
-        return Stream(lambda: self.fn(query, env))
+        return Stream(lambda: self._fn(query, env))
 
     def __rmatmul__(self, other: StreamTransformer) -> "PromptingPolicy":
+        """
+        Compose a prompting policy with a stream transformer.
+        """
         if not isinstance(other, StreamTransformer):  # pyright: ignore[reportUnnecessaryIsInstance]
             return NotImplemented
-        return self.compose_with_stream_transformer(other)
+        return self._compose_with_stream_transformer(other)
 
-    def compose_with_stream_transformer(
+    def _compose_with_stream_transformer(
         self,
         trans: StreamTransformer,
     ) -> "PromptingPolicy":
@@ -174,6 +227,22 @@ class _ParametricPromptingPolicy[**A](Protocol):
 def prompting_policy[**A](
     fn: _ParametricPromptingPolicyFn[A],
 ) -> _ParametricPromptingPolicy[A]:
+    """
+    Convenience decorator for creating parametric prompting policies
+    (i.e., functions that return prompting policies).
+
+    See the definition of `few_shot` for an example.
+
+    Attributes:
+        fn: A function that takes an attached query, a policy
+            environment, and additional parameters as arguments and
+            returns a search stream generator (`SearchStreamGen`).
+
+    Returns:
+        A function that takes the additional parameters of `fn` as
+        arguments and returns a prompting policy (`PromptingPolicy`).
+    """
+
     def parametric(*args: A.args, **kwargs: A.kwargs) -> PromptingPolicy:
         def policy[T](
             query: dp.AttachedQuery[T], env: PolicyEnv
@@ -191,6 +260,11 @@ def prompting_policy[**A](
 
 
 class PureTreeTransformerFn[A: Node, B: Node](Protocol):
+    """
+    A function that maps any tree with signature `A | N` to a tree with
+    signature `B | N`, for all `N`.
+    """
+
     def __call__[N: Node, P, T](
         self, tree: dp.Tree[A | N, P, T]
     ) -> dp.Tree[B | N, P, T]: ...
@@ -210,12 +284,34 @@ class _ParametricContextualTreeTransformerFn[A: Node, B: Node, **C](Protocol):
 
 @dataclass
 class ContextualTreeTransformer[A: Node, B: Node]:
+    """
+    Contextual tree transformer, which can be composed with search
+    policies to modify their accepted signature.
+
+    Parameters:
+        A: The type of nodes that the transformer removes from search
+            policy signature.
+        B: The type of nodes that the transformer adds to search policy
+            signature (or the bottom type `Never` if no types are
+            added).
+
+    Attributes:
+        fn: A function that takes a policy environment and an inner
+            policy as arguments (hence the *contextual* aspect) and
+            returns a pure tree transformer (`PureTreeTransformerFn`)
+    """
+
     fn: _ContextualTreeTransformerFn[A, B]
 
     @staticmethod
     def pure(
         fn: PureTreeTransformerFn[A, B],
     ) -> "ContextualTreeTransformer[A, B]":
+        """
+        Create a contextual tree transformer from a pure tree
+        transformer.
+        """
+
         def contextual(env: PolicyEnv, policy: Any):
             return fn
 
@@ -224,6 +320,9 @@ class ContextualTreeTransformer[A: Node, B: Node]:
     def __rmatmul__[N: Node](
         self, search_policy: "SearchPolicy[B | N]"
     ) -> "SearchPolicy[A | N]":
+        """
+        Compose a contextual tree transformer with a search policy.
+        """
         if not isinstance(search_policy, SearchPolicy):  # pyright: ignore[reportUnnecessaryIsInstance]
             return NotImplemented
 
@@ -241,6 +340,22 @@ class ContextualTreeTransformer[A: Node, B: Node]:
 def contextual_tree_transformer[A: Node, B: Node, **C](
     f: _ParametricContextualTreeTransformerFn[A, B, C], /
 ) -> Callable[C, ContextualTreeTransformer[A, B]]:
+    """
+    A convenience decorator for defining contextual tree transformers.
+
+    See the implementation of `elim_messages` for an example.
+
+    Arguments:
+        f: A function that takes a policy environment, an inner policy,
+            and additional parameters as arguments and returns a pure
+            tree transformer (`PureTreeTransformerFn`).
+
+    Returns:
+        A function that takes the additional parameters of `f` as
+        arguments and returns a contextual tree transformer
+        (`ContextualTreeTransformer`).
+    """
+
     def parametric(*args: C.args, **kwargs: C.kwargs):
         def contextual(env: PolicyEnv, policy: Any):
             return f(env, policy, *args, **kwargs)
@@ -261,6 +376,17 @@ def log(
     metadata: dict[str, Any] | None = None,
     loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
 ) -> None:
+    """
+    Log a message.
+
+    Arguments:
+        env: The global policy environment.
+        message: The message to log.
+        metadata: Additional metadata to log, as a dictionary of JSON
+            values.
+        loc: Tree or attached query that the message is about, if
+            relevant.
+    """
     match loc:
         case None:
             location = None
@@ -286,9 +412,9 @@ def ensure_compatible[**A, N: Node, P](
     A decorator that does nothing but allows type-checkers to ensure
     that the decorated function returns a policy compatible with its
     strategy argument.
-
-    TODO: this decorator does not seem to work with pyright.
     """
+
+    # TODO: this decorator does not seem to work with pyright.
     return lambda f: f
 
 
@@ -335,6 +461,12 @@ def dict_subpolicy(ip: IPDict, tags: Sequence[dp.Tag]) -> Any:
 def query_dependent(
     f: Callable[[dp.AbstractQuery[object]], PromptingPolicy],
 ) -> PromptingPolicy:
+    """
+    Create a prompting policy that is dependent on the exact query being
+    processed (most prompting policies do not inspect the name or
+    arguments of their query argument).
+    """
+
     def policy[T](
         query: dp.AttachedQuery[T], env: PolicyEnv
     ) -> dp.StreamGen[T]:
@@ -345,4 +477,9 @@ def query_dependent(
 
 
 def unsupported_node(node: dp.Node) -> NoReturn:
+    """
+    Raise an exception indicating that a node has an unsupported type.
+
+    See `dfs` for an example usage.
+    """
     assert False, f"Unsupported node type: {type(node)}."
