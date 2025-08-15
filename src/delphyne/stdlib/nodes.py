@@ -1,5 +1,5 @@
 """
-Standard Nodes
+Standard Nodes and Effects
 """
 
 from collections.abc import Callable, Sequence
@@ -17,22 +17,36 @@ from delphyne.stdlib.opaque import Opaque, OpaqueSpace
 def spawn_node[N: dp.Node](
     node_type: type[N], **args: Any
 ) -> dp.NodeBuilder[Any, Any]:
+    """
+    A convenience helper to write effect triggering functions.
+
+    Attributes:
+        node_type: The type of the node to spawn (e.g., `Branch`).
+        args: Arguments to populate the node fields, passed to
+            [`Node.spawn`][delphyne.core.trees.Node.spawn].
+    """
     return dp.NodeBuilder(lambda spawner: node_type.spawn(spawner, **args))
 
 
 type FromPolicy[T] = Callable[[Any], T]
 """
-For readability, represents a value parametric in the surrounding
-policy.
+Type for an inner-policy-dependent data field.
+
+We use `Any` instead of introducing an inner policy type parameter `P`,
+since `Node` is not parametric either. Thus, this alias is mostly meant
+for readability and expressing intent.
 """
 
 
 class NodeMeta:
     """
-    Abstract class for any type of arbitrary metadata that can be
-    attached to nodes. Not using `object` in particular is important to
-    prevent errors when instantiating function fields of parametric
-    policies.
+    Abstract base class for node metadata.
+
+    Nodes can feature fields with arbitrary metadata accessible to
+    policies (e.g., `meta` field of `Branch`). Typing those fields with
+    `NodeMeta` instead of `object` or `Any` allows for better type
+    safety. In particular, it prevents errors that arise from
+    accidentally passing uninstantiated parametric inner policy fields.
     """
 
     pass

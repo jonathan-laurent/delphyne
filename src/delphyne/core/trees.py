@@ -154,6 +154,24 @@ class Node(ABC):
 
     Other methods are implemented via inspection and are not typically
     overriden.
+
+    ??? note "On the absence of type parameters"
+        In order to precisely type the fields of node subclasses (e.g.
+        `Branch`), `Node` would need to have type parameters standing
+        for the surrounding inner policy type, the action type, etc.
+        However, Python's type system is not expressive enough to
+        properly constrain such type parameters in the definition of
+        trees since it lacks GADTs and higher-kinded types. In
+        particular, the way we express signatures as unions of subtypes
+        of `Node` would not work if `Node` were parametric.
+
+        As a result, types such as inner policy types and action types
+        must be represented using `Any` in the definition of nodes (e.g.
+        `Branch`) and the type safety of search policy implementations
+        (e.g. `dfs`) cannot be fully enforced statically. However,
+        effect *triggering functions* such as `branch` can typically be
+        typed precisely, providing static type safety for strategy
+        writers.
     """
 
     # Methods that **must** be overriden
