@@ -613,12 +613,12 @@ class Query[T](dp.AbstractQuery[T]):
     def using(self, get_policy: EllipsisType, /) -> Opaque[IPDict, T]: ...
 
     @overload
-    def using[P2](
+    def using[P](
         self,
-        get_policy: Callable[[P2], pol.PromptingPolicy] | EllipsisType,
+        get_policy: Callable[[P], pol.PromptingPolicy] | EllipsisType,
         /,
-        inner_policy_type: type[P2] | None = None,
-    ) -> Opaque[P2, T]: ...
+        inner_policy_type: type[P] | None = None,
+    ) -> Opaque[P, T]: ...
 
     def using[P](
         self,
@@ -629,6 +629,17 @@ class Query[T](dp.AbstractQuery[T]):
         """
         Turn a strategy instance into an opaque space by providing a
         mapping from the ambient inner policy to a prompting policy.
+
+        Attributes:
+            get_policy: A function that maps the ambient inner policy to
+                a prompting policy to use for answering the query.
+                Alternatively, if the ellipsis value `...` is passed, the
+                inner policy type is assumed to be `IPDict`, and
+                prompting policies are automatically selected using tags
+                (see `IPDict` documentation).
+            inner_policy_type: Ambient inner policy type. This information
+                is not used at runtime but it can be provided to help type
+                inference when necessary.
 
         The optional `inner_policy_type` argument is ignored at runtime
         and can be used to help type checkers infer the type of the
@@ -645,6 +656,10 @@ class Query[T](dp.AbstractQuery[T]):
         env: dp.PolicyEnv,
         policy: pol.PromptingPolicy,
     ) -> Stream[T]:
+        """
+        Obtain a search stream of query answers, given a prompting
+        policy.
+        """
         attached = dp.spawn_standalone_query(self)
         return policy(attached, env)
 
@@ -769,6 +784,10 @@ def _wrap_parse_errors(parser: _ParsingFunction[Any]) -> _ParsingFunction[Any]:
 
 
 def raw_yaml[T](type: TypeAnnot[T], res: str) -> T:
+    """
+    Parse a text answer that consists in a single YAML object and
+    nothing else.
+    """
     try:
         parsed = yaml.safe_load(res)
         return ty.pydantic_load(type, parsed)
@@ -779,6 +798,11 @@ def raw_yaml[T](type: TypeAnnot[T], res: str) -> T:
 
 
 def yaml_from_last_block[T](type: TypeAnnot[T], res: str) -> T:
+    """
+    Parse the YAML object defined in the last code block of a text
+    answer (between triple back quotes). In particular, this parser
+    allows chain of thoughts.
+    """
     final = extract_final_block(res)
     if final is None:
         raise dp.ParseError(description="No final code block found.")
@@ -786,6 +810,9 @@ def yaml_from_last_block[T](type: TypeAnnot[T], res: str) -> T:
 
 
 def raw_string[T](type_annot: TypeAnnot[T], res: str) -> T:
+    """
+    Do not perform any parsing and return the answer as a raw string.
+    """
     try:
         type_annot_resolved = dpi.resolve_aliases_in_type(type_annot)
         if isinstance(type_annot_resolved, type):  # if `type` is a class
@@ -798,13 +825,17 @@ def raw_string[T](type_annot: TypeAnnot[T], res: str) -> T:
 
 
 def trimmed_raw_string[T](type: TypeAnnot[T], res: str) -> T:
+    """
+    Do not perform any parsing and return the answer as a raw string,
+    after trimming leading and trailing whitespace.
+    """
     return raw_string(type, res.strip())
 
 
 def first_word[T](type: TypeAnnot[T], res: str) -> T:
     """
     Parse the first word of the answer and turn it into an object of
-    type T=Literal[s1,...,sn]
+    type T=Literal[s1,...,sn].
     """
     vals = _match_string_literal_type(type)
     if vals is None:
@@ -820,6 +851,10 @@ def first_word[T](type: TypeAnnot[T], res: str) -> T:
 
 
 def string_from_last_block[T](type: TypeAnnot[T], res: str) -> T:
+    """
+    Extract the string content of the last code block from the answer
+    (surrounded by triple back quotes).
+    """
     final = extract_final_block(res)
     if final is None:
         raise dp.ParseError(description="No final code block found.")
@@ -827,6 +862,11 @@ def string_from_last_block[T](type: TypeAnnot[T], res: str) -> T:
 
 
 def trimmed_string_from_last_block[T](type: TypeAnnot[T], res: str) -> T:
+    """
+    Extract the string content of the last code block from the answer
+    (surrounded by triple back quotes) and trim leading and trailing
+    whitespace.
+    """
     final = extract_final_block(res)
     if final is None:
         raise dp.ParseError(description="No final code block found.")
