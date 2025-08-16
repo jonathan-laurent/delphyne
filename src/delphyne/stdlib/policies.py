@@ -424,6 +424,48 @@ def ensure_compatible[**A, N: Node, P](
 
 
 type IPDict = Mapping[str, Policy[Any, Any] | PromptingPolicy]
+"""
+Type of an Inner-Policy Dictionary.
+
+Inner-Policy dictionaries allow to define strategies in a more concise
+way in exchange for less static type safety.
+
+Normally, an *inner policy type* must be defined for every strategy, and
+opaque spaces are created from queries or strategy by passing the
+`using` method a mapping from the ambient inner policy to a proper
+sub-policy, often in the form of an anonymous function:
+
+    @dataclass class MyInnerPolicy:
+        foo: PromptingPolicy # etc
+
+    def my_strategy() -> Strategy[Branch, MyInnerPolicy, str]:
+        x = yield from branch(Foo().using(lambda p: p.foo)) # etc
+
+As an alternative, one can have a strategy use an inner policy
+dictionary, by passing ellipses (`...`) to the `using` method:
+
+    def my_strategy() -> Strategy[Branch, IPDict, str]:
+        x = yield from branch(Foo().using(...)) # etc
+
+When doing so, a simple Python dictionary can be used as an inner
+policy, whose keys are space tags (the same tags can be referenced in
+demonstration tests). In the example above, and since a spaces induced
+by a query inherits its name as a tag by default, one can define an
+inner policy for `my_strategy` as:
+
+    {"Foo": foo_prompting_policy, ...}
+
+A conjunction of tags can also be specified, separated by `&` (without
+spaces). For example, `{"tag1&tag2": pp, ...}` associates prompting
+policies `pp` to spaces with both tags `tag1` and `tag2`. New tags can
+be added to a space builder using the `SpaceBuilder.tagged` method.
+
+!!! info
+    If several entries of the inner policy dictionary apply for a given
+    instance of `.using(...)`, a runtime error is raised.
+
+See `tests/example_strategies:generate_number` for another example.
+"""
 
 
 def _dict_ip_key_match(key: str, tags: Sequence[dp.Tag]) -> bool:
@@ -433,7 +475,7 @@ def _dict_ip_key_match(key: str, tags: Sequence[dp.Tag]) -> bool:
 
 def dict_subpolicy(ip: IPDict, tags: Sequence[dp.Tag]) -> Any:
     """
-    Retrieve a sub-policy from a dictionary internal policy, using the
+    Retrieve a sub-policy from an internal policy dictionary, using the
     tags of a particular space.
     """
     # TODO: add a type check to make sure we get a prompting policy or a
