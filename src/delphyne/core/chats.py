@@ -26,9 +26,9 @@ class FeedbackMessage:
     """
 
     kind: Literal["feedback"]
-    category: str | None = None
+    label: str | None = None
     description: str | None = None
-    arg: Any | None = None  # must be serializable
+    meta: Any | None = None  # must be serializable
 
 
 @dataclass(frozen=True)

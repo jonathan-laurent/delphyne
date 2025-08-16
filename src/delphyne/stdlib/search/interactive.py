@@ -39,9 +39,9 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
                 if isinstance(a, WrappedParseError):
                     msg = dp.FeedbackMessage(
                         kind="feedback",
-                        category=a.error.label,
+                        label=a.error.label,
                         description=a.error.description,
-                        arg=a.error.meta,
+                        meta=a.error.meta,
                     )
                     stats.num_rejected += 1
                     prefix += [msg]
@@ -50,9 +50,9 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
                     if isinstance(res, dp.Error):
                         msg = dp.FeedbackMessage(
                             kind="feedback",
-                            category=res.label,
+                            label=res.label,
                             description=res.description,
-                            arg=res.meta,
+                            meta=res.meta,
                         )
                         stats.num_rejected += 1
                         prefix += [msg]

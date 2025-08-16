@@ -1,13 +1,13 @@
-{% if feedback.arg.error %}
+{% if feedback.meta.error %}
 Error:
 
 """
-{{ feedback.arg.error }}
+{{ feedback.meta.error }}
 """
 {% else %}
 Some obligations failed to be proved. Here is a list of them:
 
-{% for obl in feedback.arg.obligations %}
+{% for obl in feedback.meta.obligations %}
 ## {{ obl.name }}
 
 ```mlw
