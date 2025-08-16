@@ -34,13 +34,11 @@ Template name suffix for repair prompts.
 See `interactive` argument of `few_shot`.
 """
 
-
 REQUEST_OTHER_PROMPT = "more"
 """
 Template name suffix for a requesting different solution
 See `interactive` argument of `few_shot`.
 """
-
 
 ASSISTANT_PRIMING_STR = "!<assistant>"
 """
@@ -48,6 +46,21 @@ Single-line separator between the user and assistant messages in a
 prompt that uses assistant priming.
 """
 
+DEFAULT_INSTANCE_PROMPT = "{{query | yaml | trim}}"
+"""
+Default instance prompt template.
+
+See `DEFAULT_INSTANCE_PROMPT_WITH_PREFIX` for the special case where
+queries have a special `prefix` attribute.
+"""
+
+DEFAULT_INSTANCE_PROMPT_WITH_PREFIX = (
+    "{{query | yaml(exclude_fields=['prefix']) | trim}}"
+)
+"""
+Default instance prompt template in the presence of a special `prefix`
+attribute.
+"""
 
 DEFAULT_FEEDBACK_PROMPT = '''
 Error. Please try again.
@@ -72,20 +85,34 @@ Default template for feedback prompts.
 
 @dataclass(frozen=True)
 class FinalAnswer[F]:
+    """
+    See `Response`.
+    """
+
     final: F
 
 
 @dataclass(frozen=True)
 class ToolRequests[T: md.AbstractTool[Any]]:
+    """
+    See `Response`.
+    """
+
     tool_calls: Sequence[T]
 
 
 @dataclass(frozen=True)
 class Response[F, T: md.AbstractTool[Any]]:
     """
-    Answer type for queries that allow follow-ups, giving access to both
-    the raw LLM response (to be passed pass in `AnswerPrefix`) and to
-    tool eventual tool calls.
+    Answer type for queries that allow follow-ups.
+
+    `Response` values give access to both the raw LLM response (to be
+    passed pass in `AnswerPrefix`) and to eventual tool calls.
+
+    Attributes:
+        answer: The raw, unparsed LLM answer.
+        parsed: Either the parsed answer wrapped in `FinalAnswer` or
+            some tool call requests wrapped in `ToolRequests`.
     """
 
     answer: dp.Answer
@@ -94,6 +121,23 @@ class Response[F, T: md.AbstractTool[Any]]:
 
 @dataclass
 class WrappedParseError:
+    """
+    A wrapped parse error that is returned to a strategy instead of
+    causing a failure.
+
+    For queries that declare a return type of the form `Response[... |
+    WrappedParseError, ...]`, parse errors do not result in failures but
+    are instead wrapped and returned, to be handled explicitly by the
+    surrounding strategy. For example, when building conversational
+    agents with `interact`, having the query include `WrappedParseError`
+    in its return type allows explicitly asking the agent to fix parse
+    errors instead of failing (or having the policy retry an identical
+    prompt).
+
+    Attributes:
+        error: The wrapped parse error.
+    """
+
     error: dp.ParseError
 
 
@@ -104,6 +148,15 @@ class WrappedParseError:
 
 @dataclass(frozen=True)
 class QueryConfig:
+    """
+    Mode-specific query settings.
+
+    More settings could be added in the future.
+
+    Attributes:
+        parser: A parser specification.
+    """
+
     parser: "ParserSpec"
 
 
@@ -111,16 +164,63 @@ type _StandardParserName = Literal["structured", "final_tool_call"]
 
 
 type ParserSpec = _StandardParserName | GenericTextParser | TextParser[Any]
+"""
+A parser specification, which can be either:
+
+- **"structured"**: Oracles must answer with structured output, and the
+      resulting JSON object is parsed using Pydantic.
+- **"final_tool_call"**: The query answer type is presented to oracles
+      as a tool, which must be called to produce the final answer. This
+      provides an alternative to "structured", which additionally allows
+      a chain of thoughts to precede the final answer.
+- **A generic text parser**: See `GenericTextParser`. Oracles are then
+      expected to produce a string answer, which is parsed using the
+      provided function.
+- **A text parser**: See `TextParser`. Oracles are then
+      expected to produce a string answer, which is parsed using the
+      provided function.
+"""
+
+
+class GenericTextParser(Protocol):
+    """
+    A function that takes a type annotation along with a string as
+    arguments and either returns a parsed object of the specified
+    type or raises `ParseError`.
+
+    Example: `yaml_from_last_block`.
+    """
+
+    def __call__[T](self, type: TypeAnnot[T], answer: str, /) -> T: ...
+
+
+class TextParser[T](Protocol):
+    """
+    A function that takes a string as an argument and either returns
+    a parsed object or raises `ParseError`.
+    """
+
+    def __call__(self, answer: str, /) -> T: ...
 
 
 type ParserSpecDict = Mapping[dp.AnswerMode, ParserSpec]
+"""
+A dictionary mapping answer modes to parser specifications.
+"""
 
 
 type QueryConfigDict = Mapping[dp.AnswerMode, QueryConfig]
+"""
+A dictionary mapping answer modes to query configurations.
+"""
 
 
 @dataclass
 class _DecomposedResponseType:
+    """
+    See _DecomposedAnswerType.
+    """
+
     tools: Sequence[type[md.AbstractTool[Any]]]
 
 
@@ -129,9 +229,10 @@ class _DecomposedAnswerType:
     """
     Represents an answer type (type parameter of `Query`) of the form
     `F` or `Response[F, T1|...|Tn]`: `final` contains `F` and `resp`
-    contains the list of all Ti.
+    contains the list of all Ti in the case of a `Response` type and
+    `None` otherwise.
 
-    If `F` itself is of the form `F2 | ParseError`, thenm `F2` is
+    If `F` itself is of the form `F2 | ParseError`, then `F2` is
     assigned to `final_no_error`.
     """
 
@@ -184,7 +285,73 @@ class Query[T](dp.AbstractQuery[T]):
 
     This class adds standard convenience features on top of
     `AbstractQuery`, using reflection to allow queries to be defined
-    with maximal concision.
+    concisely. Here is a simple example of a query type definition:
+
+        @dataclass class MakeSum(Query[list[int]]):
+            ''' Given a list of allowed numbers and a target number, you
+            must find a sub-list whose elements sum up to the target.
+            Just answer with a list of numbers as a JSON object and
+            nothing else. '''
+
+            allowed: list[int] target: int
+
+    In general, a query type is a dataclass that inherits `Query[T]`,
+    where `T` is the query's answer type. In the example above, no
+    parser is specified and so oracles are requested to provide
+    structured answers as JSON objects, which are automatically parsed
+    into the answer type (`list[int]`) using pydantic. Assuming that no
+    Jinja prompt file is provided, the docstring is used as a system
+    prompt and instance prompts are generated by simply serializing
+    `MakeSum` instances into YAML.
+
+    ### Customizing Prompts
+
+    System and instance prompts can be specified via Jinja templates.
+    The templates manager (`TemplatesManager`) looks for templates named
+    "<QueryName>.<instance|system>.jinja". Templates can also be
+    provided by defining the `__system_prompt__` and/or `__instance_prompt__`
+    class attributes. If none of these are provided, the query's
+    docstring is used as a system prompt and `DEFAULT_INSTANCE_PROMPT`
+    is used as an instance prompt template.
+
+    The following arguments are usually made available to templates
+    (although specific prompting policies can add more):
+
+    - `query`: the query instance.
+    - `mode`: the requested answer mode.
+    - `params`: the query hyperparameters (e.g., as passed to `few_shot`)
+
+    ### Answer Modes and Configurations
+
+    A query can define several answer modes (`AnswerMode`), each of
+    which can be associated with a different parser and set of settings.
+    By default, the only answer mode is `None`. More answer modes can be
+    defined by setting class variable `__modes__`.
+
+    The `query_config` method maps modes to configurations (i.e., a set
+    of settings, including a parser specification). Its default behavior
+    works by inspecting the `__parser__` and `__config__` class
+    attributes and does not typically require overriding.
+
+    ### Allowing Multi-Message Exchanges and Tool Calls
+
+    A common pattern for interacting with LLMs is to have multi-message
+    exchanges where the full conversation history is resent repeatedly.
+    LLMs are also often allowed to request tool call. This interaction
+    pattern is implemented in the `interact` standard strategy. It is
+    enabled by several features on the `Query` side.
+
+    #### Answer Prefixes
+
+    If a query type has a prefix attribute with type `AnswerPrefix`,
+    this attribute can be used to provide a chat history, to be added to
+    the query's prompt.
+
+    #### The `Response` Type
+
+    If the query answer type is `Response`, the query does not only
+    return a parsed answer, but also the LLM raw answer (which can be
+    appended to a chat history), and possibly a sequence of tool calls.
     """
 
     __modes__: ClassVar[Sequence[dp.AnswerMode] | None] = None
@@ -195,10 +362,21 @@ class Query[T](dp.AbstractQuery[T]):
 
     def query_config(self, mode: dp.AnswerMode) -> QueryConfig | None:
         """
-        By default, we obtain the configuration by looking for a
-        `__config__` field, which might be either a single configuration
-        or a dictionary mapping modes to configurations. Instead, if
-        only the parser is specified, we can use `__parser__`.
+        Map modes to configurations.
+
+        This method inspects the `__config__` and `__parser__` class
+        attributes (none or either can be set but not both).
+
+        - If no attribute is set, the default configuration is used for
+              all modes, which uses the `"structured"` parser.
+        - If `__config__` is set to a `QueryConfig`, this configuration
+              is used for all modes.
+        - Alternatively, `__config__` can be set to a dictionary mapping
+              modes to configurations.
+        - If `__parser__` is set to a parser specification, the default
+              configuration is used for all modes, *except* that the
+              provided parser is used instead of the default one.
+        - Alternatively, `__parser__` can also be set to a dictionary.
         """
         cls = type(self)
         parse_overriden = dpi.is_method_overridden(Query, cls, "parse")
@@ -235,7 +413,9 @@ class Query[T](dp.AbstractQuery[T]):
 
     @override
     def parse_answer(self, answer: dp.Answer) -> T | dp.ParseError:
-        assert answer.mode in self.query_modes()
+        assert answer.mode in self.query_modes(), (
+            f"Unknown mode: {answer.mode}"
+        )
         try:
             return self.parse(answer)
         except dp.ParseError as e:
@@ -382,9 +562,9 @@ class Query[T](dp.AbstractQuery[T]):
             return textwrap.dedent(res).strip()
         if kind == "instance":
             if cls._has_special_prefix_attr():
-                return "{{query | yaml(exclude_fields=['prefix']) | trim}}"
+                return DEFAULT_INSTANCE_PROMPT_WITH_PREFIX
             else:
-                return "{{query | yaml | trim}}"
+                return DEFAULT_INSTANCE_PROMPT
         if kind == "system" and (doc := inspect.getdoc(cls)) is not None:
             return doc
         if kind == "feedback":
@@ -392,6 +572,10 @@ class Query[T](dp.AbstractQuery[T]):
         return None
 
     def globals(self) -> dict[str, object] | None:
+        """
+        Return global objects accessible in prompts via the `globals`
+        attribute.
+        """
         return None
 
     ### Other Simple Overrides
@@ -511,14 +695,6 @@ def _match_string_literal_type(t: Any) -> Sequence[str] | None:
 
 class _ParsingFunction[T](Protocol):
     def __call__(self, answer: dp.Answer, /) -> T: ...
-
-
-class GenericTextParser(Protocol):
-    def __call__[T](self, type: TypeAnnot[T], answer: str, /) -> T: ...
-
-
-class TextParser[T](Protocol):
-    def __call__(self, answer: str, /) -> T: ...
 
 
 def _get_text_answer(ans: Answer) -> str:
