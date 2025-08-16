@@ -178,9 +178,18 @@ def _load_data(data_dirs: Sequence[Path]) -> dict[str, Any]:
     return result
 
 
+def _fail_from_template(msg: str):
+    raise jinja2.TemplateError(msg)
+
+
 class TemplatesManager:
     """
     A class for managing Jinja prompt templates.
+
+    All templates automatically have access to the following global
+    objects:
+
+    - A `yaml` filter for converting an object into a YAML string.
     """
 
     def __init__(self, prompt_dirs: Sequence[Path], data_dirs: Sequence[Path]):
@@ -199,6 +208,7 @@ class TemplatesManager:
             lstrip_blocks=True,
         )
         self.env.filters["yaml"] = dump_yaml_object  # type: ignore
+        self.env.globals["fail"] = _fail_from_template  # type: ignore
 
     def prompt(
         self,

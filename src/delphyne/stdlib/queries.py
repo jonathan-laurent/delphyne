@@ -29,8 +29,25 @@ from delphyne.utils import typing as ty
 from delphyne.utils.typing import TypeAnnot, ValidationError
 
 REPAIR_PROMPT = "repair"
+"""
+Template name suffix for repair prompts.
+See `interactive` argument of `few_shot`.
+"""
+
+
 REQUEST_OTHER_PROMPT = "more"
+"""
+Template name suffix for a requesting different solution
+See `interactive` argument of `few_shot`.
+"""
+
+
 ASSISTANT_PRIMING_STR = "!<assistant>"
+"""
+Single-line separator between the user and assistant messages in a
+prompt that uses assistant priming.
+"""
+
 
 DEFAULT_FEEDBACK_PROMPT = '''
 Error. Please try again.
@@ -39,8 +56,14 @@ Error. Please try again.
 """
 {{feedback.description}}
 """
+{% else %}
+{{ fail('feedback.description is empty') }}
 {% endif %}
 '''.lstrip()
+"""
+Default template for feedback prompts.
+"""
+
 
 #####
 ##### Response Type
