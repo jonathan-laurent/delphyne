@@ -1569,6 +1569,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#delphyne.stdlib.queries.ExampleSelector" class="md-nav__link">
+    <span class="md-ellipsis">
+      ExampleSelector
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#delphyne.stdlib.queries.ParserSpec" class="md-nav__link">
     <span class="md-ellipsis">
       ParserSpec
@@ -1800,6 +1809,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#delphyne.stdlib.queries.answer_with" class="md-nav__link">
+    <span class="md-ellipsis">
+      answer_with
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#delphyne.stdlib.queries.classify" class="md-nav__link">
     <span class="md-ellipsis">
       classify
@@ -1839,6 +1857,33 @@
   <a href="#delphyne.stdlib.queries.raw_yaml" class="md-nav__link">
     <span class="md-ellipsis">
       raw_yaml
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.queries.select_all_examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      select_all_examples
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.queries.select_random_examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      select_random_examples
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.queries.select_with_either_tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      select_with_either_tags
     </span>
   </a>
   
@@ -5724,104 +5769,55 @@ which attaches proper tracking information to answers.</p>
 <a id="delphyne.few_shot"></a>
     <div class="doc doc-contents first">
 
-        <p>The standard few-shot prompting sequential prompting policy.</p>
+        <p>The standard few-shot prompting policy.</p>
+<p>A prompt is formed by concatenating a system prompt, a series of
+examples (each of which consists in an instance prompt followed by
+an answer), and a final answer prompt. Then, answers are repeatedly
+sampled and parsed, until a spending request is declined.</p>
+<p>Arguments:</p>
+<pre><code>query: The query to answer. env: The policy environment. model:
+The LLM to use for answering the query. params: Prompt
+hyperparameters, which are passed to prompt
+    templates as a `params` dictionary.
+select_examples: A series of filters for selecting examples, to
+    be applied in sequence. By default, no filter is used and so
+    all available examples are fetched.
+mode: The answer mode to use for parsing the query answer.
+enable_logging: Whether to log raw oracle responses.
+temperature: The temperature parameter to use with the LLM, as a
+    number from 0 to 2.
+num_concurrent: The number of completions to request for each
+    LLM call. Note that most LLM providers only bill input
+    tokens once, regardless of the number of completions.
+max_requests: The maximum number of LLM requests to perform
+    before the resulting seach stream terminates, if any.
+no_wrap_parse_errors: If set to `True`, then parser results of
+    type [`WrappedParseError`][delphyne.WrappedParseError] are unwrapped and treated as normal
+    parse errors.
+iterative_mode: If set to `False` (default), answers are
+    repeatedly and independently sampled. If set to `True`, a
+    single chat conversation occurs instead: Whenever a parse
+    error occurs, a message is issued by rendering the
+    `&lt;QueryName&gt;.repair.jinja` template, asking for a new
+    attempt to be made (the [`ParseError`][delphyne.ParseError] object is available as
+    an `error` template variable). After an answer is
+    successfully generated and parsed, a message is issued by
+    rendering the `&lt;QueryName&gt;.more.jinja` template, asking for
+    another different answer to be generated.
 
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>query</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-internal" title="AttachedQuery
-
-
-  
-      dataclass
-   (delphyne.core.AttachedQuery)" href="#delphyne.core.AttachedQuery">AttachedQuery</a>[<span title="delphyne.stdlib.queries.few_shot[T]">few_shot[T]</span>]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The query to answer.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>env</code>
-            </td>
-            <td>
-                  <code><span title="delphyne.core.PolicyEnv">PolicyEnv</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The policy environment.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-        <p>If <code>iterative_mode</code> is <code>False</code>, then the prompt is always the same
-and different answers are sampled. If <code>iterative_mode</code> is <code>True</code>,
-everything happens within a single big chat. Every parse error leads
-to some feedback while every correctly parsed answer leads to a
-message inviting the system to generate another different solution.</p>
+    This special mode allows creating simple conversational
+    agents with very little effort, by only defining a single
+    query. However, it does not support tool calls, and the
+    demonstration language cannot be used to illustrate how
+    `repair` and `more` messages should be handled. For
+    implementing more advanced conversational agents, see
+    the standard [`interact`][delphyne.interact] strategy.
+</code></pre>
 
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1213</span>
-<span class="normal">1214</span>
-<span class="normal">1215</span>
-<span class="normal">1216</span>
-<span class="normal">1217</span>
-<span class="normal">1218</span>
-<span class="normal">1219</span>
-<span class="normal">1220</span>
-<span class="normal">1221</span>
-<span class="normal">1222</span>
-<span class="normal">1223</span>
-<span class="normal">1224</span>
-<span class="normal">1225</span>
-<span class="normal">1226</span>
-<span class="normal">1227</span>
-<span class="normal">1228</span>
-<span class="normal">1229</span>
-<span class="normal">1230</span>
-<span class="normal">1231</span>
-<span class="normal">1232</span>
-<span class="normal">1233</span>
-<span class="normal">1234</span>
-<span class="normal">1235</span>
-<span class="normal">1236</span>
-<span class="normal">1237</span>
-<span class="normal">1238</span>
-<span class="normal">1239</span>
-<span class="normal">1240</span>
-<span class="normal">1241</span>
-<span class="normal">1242</span>
-<span class="normal">1243</span>
-<span class="normal">1244</span>
-<span class="normal">1245</span>
-<span class="normal">1246</span>
-<span class="normal">1247</span>
-<span class="normal">1248</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1248</span>
 <span class="normal">1249</span>
 <span class="normal">1250</span>
 <span class="normal">1251</span>
@@ -5898,34 +5894,139 @@ message inviting the system to generate another different solution.</p>
 <span class="normal">1322</span>
 <span class="normal">1323</span>
 <span class="normal">1324</span>
-<span class="normal">1325</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
+<span class="normal">1325</span>
+<span class="normal">1326</span>
+<span class="normal">1327</span>
+<span class="normal">1328</span>
+<span class="normal">1329</span>
+<span class="normal">1330</span>
+<span class="normal">1331</span>
+<span class="normal">1332</span>
+<span class="normal">1333</span>
+<span class="normal">1334</span>
+<span class="normal">1335</span>
+<span class="normal">1336</span>
+<span class="normal">1337</span>
+<span class="normal">1338</span>
+<span class="normal">1339</span>
+<span class="normal">1340</span>
+<span class="normal">1341</span>
+<span class="normal">1342</span>
+<span class="normal">1343</span>
+<span class="normal">1344</span>
+<span class="normal">1345</span>
+<span class="normal">1346</span>
+<span class="normal">1347</span>
+<span class="normal">1348</span>
+<span class="normal">1349</span>
+<span class="normal">1350</span>
+<span class="normal">1351</span>
+<span class="normal">1352</span>
+<span class="normal">1353</span>
+<span class="normal">1354</span>
+<span class="normal">1355</span>
+<span class="normal">1356</span>
+<span class="normal">1357</span>
+<span class="normal">1358</span>
+<span class="normal">1359</span>
+<span class="normal">1360</span>
+<span class="normal">1361</span>
+<span class="normal">1362</span>
+<span class="normal">1363</span>
+<span class="normal">1364</span>
+<span class="normal">1365</span>
+<span class="normal">1366</span>
+<span class="normal">1367</span>
+<span class="normal">1368</span>
+<span class="normal">1369</span>
+<span class="normal">1370</span>
+<span class="normal">1371</span>
+<span class="normal">1372</span>
+<span class="normal">1373</span>
+<span class="normal">1374</span>
+<span class="normal">1375</span>
+<span class="normal">1376</span>
+<span class="normal">1377</span>
+<span class="normal">1378</span>
+<span class="normal">1379</span>
+<span class="normal">1380</span>
+<span class="normal">1381</span>
+<span class="normal">1382</span>
+<span class="normal">1383</span>
+<span class="normal">1384</span>
+<span class="normal">1385</span>
+<span class="normal">1386</span>
+<span class="normal">1387</span>
+<span class="normal">1388</span>
+<span class="normal">1389</span>
+<span class="normal">1390</span>
+<span class="normal">1391</span>
+<span class="normal">1392</span>
+<span class="normal">1393</span>
+<span class="normal">1394</span>
+<span class="normal">1395</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">few_shot</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
     <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">md</span><span class="o">.</span><span class="n">LLM</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
     <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">select_examples</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">ExampleSelector</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
     <span class="n">mode</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerMode</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">enable_logging</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">num_concurrent</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="n">iterative_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">max_requests</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">no_wrap_parse_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">iterative_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The standard few-shot prompting sequential prompting policy.</span>
+<span class="sd">    The standard few-shot prompting policy.</span>
+
+<span class="sd">    A prompt is formed by concatenating a system prompt, a series of</span>
+<span class="sd">    examples (each of which consists in an instance prompt followed by</span>
+<span class="sd">    an answer), and a final answer prompt. Then, answers are repeatedly</span>
+<span class="sd">    sampled and parsed, until a spending request is declined.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        query: The query to answer.</span>
-<span class="sd">        env: The policy environment.</span>
 
-<span class="sd">    If `iterative_mode` is `False`, then the prompt is always the same</span>
-<span class="sd">    and different answers are sampled. If `iterative_mode` is `True`,</span>
-<span class="sd">    everything happens within a single big chat. Every parse error leads</span>
-<span class="sd">    to some feedback while every correctly parsed answer leads to a</span>
-<span class="sd">    message inviting the system to generate another different solution.</span>
+<span class="sd">        query: The query to answer. env: The policy environment. model:</span>
+<span class="sd">        The LLM to use for answering the query. params: Prompt</span>
+<span class="sd">        hyperparameters, which are passed to prompt</span>
+<span class="sd">            templates as a `params` dictionary.</span>
+<span class="sd">        select_examples: A series of filters for selecting examples, to</span>
+<span class="sd">            be applied in sequence. By default, no filter is used and so</span>
+<span class="sd">            all available examples are fetched.</span>
+<span class="sd">        mode: The answer mode to use for parsing the query answer.</span>
+<span class="sd">        enable_logging: Whether to log raw oracle responses.</span>
+<span class="sd">        temperature: The temperature parameter to use with the LLM, as a</span>
+<span class="sd">            number from 0 to 2.</span>
+<span class="sd">        num_concurrent: The number of completions to request for each</span>
+<span class="sd">            LLM call. Note that most LLM providers only bill input</span>
+<span class="sd">            tokens once, regardless of the number of completions.</span>
+<span class="sd">        max_requests: The maximum number of LLM requests to perform</span>
+<span class="sd">            before the resulting seach stream terminates, if any.</span>
+<span class="sd">        no_wrap_parse_errors: If set to `True`, then parser results of</span>
+<span class="sd">            type `WrappedParseError` are unwrapped and treated as normal</span>
+<span class="sd">            parse errors.</span>
+<span class="sd">        iterative_mode: If set to `False` (default), answers are</span>
+<span class="sd">            repeatedly and independently sampled. If set to `True`, a</span>
+<span class="sd">            single chat conversation occurs instead: Whenever a parse</span>
+<span class="sd">            error occurs, a message is issued by rendering the</span>
+<span class="sd">            `&lt;QueryName&gt;.repair.jinja` template, asking for a new</span>
+<span class="sd">            attempt to be made (the `ParseError` object is available as</span>
+<span class="sd">            an `error` template variable). After an answer is</span>
+<span class="sd">            successfully generated and parsed, a message is issued by</span>
+<span class="sd">            rendering the `&lt;QueryName&gt;.more.jinja` template, asking for</span>
+<span class="sd">            another different answer to be generated.</span>
 
+<span class="sd">            This special mode allows creating simple conversational</span>
+<span class="sd">            agents with very little effort, by only defining a single</span>
+<span class="sd">            query. However, it does not support tool calls, and the</span>
+<span class="sd">            demonstration language cannot be used to illustrate how</span>
+<span class="sd">            `repair` and `more` messages should be handled. For</span>
+<span class="sd">            implementing more advanced conversational agents, see</span>
+<span class="sd">            the standard `interact` strategy.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="ow">not</span> <span class="n">iterative_mode</span> <span class="ow">or</span> <span class="n">num_concurrent</span> <span class="o">==</span> <span class="mi">1</span>
     <span class="k">assert</span> <span class="n">max_requests</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">max_requests</span> <span class="o">&gt;</span> <span class="mi">0</span>
@@ -6143,6 +6244,26 @@ queries have a special <code>prefix</code> attribute.</p>
 
         <p>Default instance prompt template in the presence of a special <code>prefix</code>
 attribute.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="delphyne.stdlib.queries.ExampleSelector" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">ExampleSelector</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">ExampleSelector</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.core.Example">Example</span></span><span class="p">]],</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.core.Example">Example</span></span><span class="p">]]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>A function for selecting a subset of examples from a given sequence.</p>
 
     </div>
 
@@ -7108,6 +7229,39 @@ prompt).</p>
 <div class="doc doc-object doc-function">
 
 
+<h4 id="delphyne.stdlib.queries.answer_with" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">answer_with</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">answer_with</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AttachedQuery
+
+
+  
+      dataclass
+   (delphyne.core.AttachedQuery)" href="#delphyne.core.AttachedQuery">AttachedQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.answer_with[T]">answer_with[T]</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><span title="delphyne.core.PolicyEnv">PolicyEnv</span></span><span class="p">,</span> <span class="n">answers</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">],</span> <span class="n">probs</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="float">float</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerMode">AnswerMode</span></span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.StreamGen">StreamGen</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.answer_with[T]">answer_with[T]</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>A prompting policy that returns a hardcoded set of answers without
+looking at the query. If <code>probs</code> is not provided, then all elements
+are yielded in sequence. If it is, the top element is yielded once,
+with a <a class="autorefs autorefs-internal" title="ProbInfo
+
+
+  
+      dataclass
+  " href="#delphyne.stdlib.queries.ProbInfo"><code>ProbInfo</code></a> annotation featuring the provided distribution.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h4 id="delphyne.stdlib.queries.classify" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">classify</span>
 
@@ -7118,15 +7272,31 @@ prompt).</p>
 
   
       dataclass
-   (delphyne.core.AttachedQuery)" href="#delphyne.core.AttachedQuery">AttachedQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.classify[T]">classify[T]</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><span title="delphyne.core.PolicyEnv">PolicyEnv</span></span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.models.LLM">LLM</span></span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">select_examples</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.ExampleSelector">ExampleSelector</span></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">mode</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerMode">AnswerMode</span></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">enable_logging</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">top_logprobs</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="float">float</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.StreamGen">StreamGen</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.classify[T]">classify[T]</span></span><span class="p">]</span>
+   (delphyne.core.AttachedQuery)" href="#delphyne.core.AttachedQuery">AttachedQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.classify[T]">classify[T]</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><span title="delphyne.core.PolicyEnv">PolicyEnv</span></span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.models.LLM">LLM</span></span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">select_examples</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="ExampleSelector (delphyne.stdlib.queries.ExampleSelector)" href="#delphyne.stdlib.queries.ExampleSelector">ExampleSelector</a></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">mode</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerMode">AnswerMode</span></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">enable_logging</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">top_logprobs</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="float">float</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.StreamGen">StreamGen</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.classify[T]">classify[T]</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
         <p>Execute a classification query, attaching a probability distribution
 to the attached answer.</p>
-<p>When <code>bias=(e, p)</code> is provided, then the final distribution <code>D</code> is
-transformed into <code>(1-p)*D + p*dirac(e)</code></p>
+<p>Attributes:</p>
+<pre><code>query: The query to answer.
+env: The global policy environment.
+model: The LLM to use for answering the query.
+params: Prompt hyperparameters.
+select_examples: Example selector.
+mode: The answer mode to use for parsing the query answer.
+enable_logging: Whether to log raw oracle responses.
+top_logprobs: The number of top logprobs to request from the
+    LLM, putting an upper bound on the support size of the
+    classifier's output distributions.
+temperature: A temperature to apply to the classifier's output
+    distribution (a temperature of 0 means that only top
+    elements are assigned a nonzero probability).
+bias: When `bias=(e, p)` is provided, the final classifier
+    distribution `D` is transformed into `(1-p)*D + p*dirac(e)`
+</code></pre>
+<p>See <a class="autorefs autorefs-internal" href="#delphyne.few_shot"><code>few_shot</code></a> for details on some of the arguments above.</p>
 
 
     </div>
@@ -7146,69 +7316,55 @@ transformed into <code>(1-p)*D + p*dirac(e)</code></p>
 
   
       dataclass
-   (delphyne.core.AttachedQuery)" href="#delphyne.core.AttachedQuery">AttachedQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.few_shot[T]">few_shot[T]</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><span title="delphyne.core.PolicyEnv">PolicyEnv</span></span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.models.LLM">LLM</span></span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">select_examples</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.ExampleSelector">ExampleSelector</span></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">mode</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerMode">AnswerMode</span></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">enable_logging</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_concurrent</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">iterative_mode</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">max_requests</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">no_wrap_parse_errors</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.StreamGen">StreamGen</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.few_shot[T]">few_shot[T]</span></span><span class="p">]</span>
+   (delphyne.core.AttachedQuery)" href="#delphyne.core.AttachedQuery">AttachedQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.few_shot[T]">few_shot[T]</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><span title="delphyne.core.PolicyEnv">PolicyEnv</span></span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.models.LLM">LLM</span></span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">select_examples</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="ExampleSelector (delphyne.stdlib.queries.ExampleSelector)" href="#delphyne.stdlib.queries.ExampleSelector">ExampleSelector</a></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">mode</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerMode">AnswerMode</span></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">enable_logging</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_concurrent</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_requests</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">no_wrap_parse_errors</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">iterative_mode</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.StreamGen">StreamGen</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.few_shot[T]">few_shot[T]</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>The standard few-shot prompting sequential prompting policy.</p>
+        <p>The standard few-shot prompting policy.</p>
+<p>A prompt is formed by concatenating a system prompt, a series of
+examples (each of which consists in an instance prompt followed by
+an answer), and a final answer prompt. Then, answers are repeatedly
+sampled and parsed, until a spending request is declined.</p>
+<p>Arguments:</p>
+<pre><code>query: The query to answer. env: The policy environment. model:
+The LLM to use for answering the query. params: Prompt
+hyperparameters, which are passed to prompt
+    templates as a `params` dictionary.
+select_examples: A series of filters for selecting examples, to
+    be applied in sequence. By default, no filter is used and so
+    all available examples are fetched.
+mode: The answer mode to use for parsing the query answer.
+enable_logging: Whether to log raw oracle responses.
+temperature: The temperature parameter to use with the LLM, as a
+    number from 0 to 2.
+num_concurrent: The number of completions to request for each
+    LLM call. Note that most LLM providers only bill input
+    tokens once, regardless of the number of completions.
+max_requests: The maximum number of LLM requests to perform
+    before the resulting seach stream terminates, if any.
+no_wrap_parse_errors: If set to `True`, then parser results of
+    type [`WrappedParseError`][delphyne.WrappedParseError] are unwrapped and treated as normal
+    parse errors.
+iterative_mode: If set to `False` (default), answers are
+    repeatedly and independently sampled. If set to `True`, a
+    single chat conversation occurs instead: Whenever a parse
+    error occurs, a message is issued by rendering the
+    `&lt;QueryName&gt;.repair.jinja` template, asking for a new
+    attempt to be made (the [`ParseError`][delphyne.ParseError] object is available as
+    an `error` template variable). After an answer is
+    successfully generated and parsed, a message is issued by
+    rendering the `&lt;QueryName&gt;.more.jinja` template, asking for
+    another different answer to be generated.
 
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>query</code>
-            </td>
-            <td>
-                  <code><a class="autorefs autorefs-internal" title="AttachedQuery
-
-
-  
-      dataclass
-   (delphyne.core.AttachedQuery)" href="#delphyne.core.AttachedQuery">AttachedQuery</a>[<span title="delphyne.stdlib.queries.few_shot[T]">few_shot[T]</span>]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The query to answer.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>env</code>
-            </td>
-            <td>
-                  <code><span title="delphyne.core.PolicyEnv">PolicyEnv</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The policy environment.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-        <p>If <code>iterative_mode</code> is <code>False</code>, then the prompt is always the same
-and different answers are sampled. If <code>iterative_mode</code> is <code>True</code>,
-everything happens within a single big chat. Every parse error leads
-to some feedback while every correctly parsed answer leads to a
-message inviting the system to generate another different solution.</p>
+    This special mode allows creating simple conversational
+    agents with very little effort, by only defining a single
+    query. However, it does not support tool calls, and the
+    demonstration language cannot be used to illustrate how
+    `repair` and `more` messages should be handled. For
+    implementing more advanced conversational agents, see
+    the standard [`interact`][delphyne.interact] strategy.
+</code></pre>
 
 
     </div>
@@ -7271,6 +7427,69 @@ type T=Literal[s1,...,sn].</p>
 
         <p>Parse a text answer that consists in a single YAML object and
 nothing else.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.stdlib.queries.select_all_examples" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">select_all_examples</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">select_all_examples</span><span class="p">(</span><span class="n">examples</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.core.Example">Example</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.core.Example">Example</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Example selector that returns all available examples.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.stdlib.queries.select_random_examples" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">select_random_examples</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">select_random_examples</span><span class="p">(</span><span class="n">num_examples</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="ExampleSelector (delphyne.stdlib.queries.ExampleSelector)" href="#delphyne.stdlib.queries.ExampleSelector">ExampleSelector</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Example selector that randomly selects a given number of examples.</p>
+<p>All examples are selected if less examples are available than
+requested.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.stdlib.queries.select_with_either_tags" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">select_with_either_tags</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">select_with_either_tags</span><span class="p">(</span><span class="n">tags</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">])</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Select examples that are annotated with at least one of a provided
+set of tags.</p>
 
 
     </div>
