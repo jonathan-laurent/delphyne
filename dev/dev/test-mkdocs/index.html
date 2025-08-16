@@ -1772,6 +1772,42 @@ underscores, dots, and dashes.</p>
 
     <div class="doc doc-contents first">
 
+        <p>Type of an Inner-Policy Dictionary.</p>
+<p>Inner-Policy dictionaries allow to define strategies in a more concise
+way in exchange for less static type safety.</p>
+<p>Normally, an <em>inner policy type</em> must be defined for every strategy, and
+opaque spaces are created from queries or strategy by passing the
+<code>using</code> method a mapping from the ambient inner policy to a proper
+sub-policy, often in the form of an anonymous function:</p>
+<pre><code>@dataclass class MyInnerPolicy:
+    foo: PromptingPolicy # etc
+
+def my_strategy() -&gt; Strategy[Branch, MyInnerPolicy, str]:
+    x = yield from branch(Foo().using(lambda p: p.foo)) # etc
+</code></pre>
+<p>As an alternative, one can have a strategy use an inner policy
+dictionary, by passing ellipses (<code>...</code>) to the <code>using</code> method:</p>
+<pre><code>def my_strategy() -&gt; Strategy[Branch, IPDict, str]:
+    x = yield from branch(Foo().using(...)) # etc
+</code></pre>
+<p>When doing so, a simple Python dictionary can be used as an inner
+policy, whose keys are space tags (the same tags can be referenced in
+demonstration tests). In the example above, and since a spaces induced
+by a query inherits its name as a tag by default, one can define an
+inner policy for <code>my_strategy</code> as:</p>
+<pre><code>{"Foo": foo_prompting_policy, ...}
+</code></pre>
+<p>A conjunction of tags can also be specified, separated by <code>&amp;</code> (without
+spaces). For example, <code>{"tag1&amp;tag2": pp, ...}</code> associates prompting
+policies <code>pp</code> to spaces with both tags <code>tag1</code> and <code>tag2</code>. New tags can
+be added to a space builder using the <code>SpaceBuilder.tagged</code> method.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>If several entries of the inner policy dictionary apply for a given
+instance of <code>.using(...)</code>, a runtime error is raised.</p>
+</div>
+<p>See <code>tests/example_strategies:generate_number</code> for another example.</p>
+
     </div>
 
 </div><h2 id="documenting-a-class">Documenting a Class</h2>
