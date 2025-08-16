@@ -480,7 +480,9 @@ class PolicyEnv:
         self.tracer = Tracer()
         self.requests_cache: object | None = None
         if cache is not None:
-            assert make_cache is not None
+            assert make_cache is not None, (
+                "Please specify the `make_cache` argument"
+            )
             self.requests_cache = make_cache(cache)
         for path in demonstration_files:
             if not path.suffix.endswith(DEMO_FILE_EXT):

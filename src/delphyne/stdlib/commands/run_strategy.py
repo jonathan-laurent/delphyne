@@ -4,8 +4,10 @@ Standard commands for running strategies.
 
 import dbm
 import time
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
+from functools import partial
+from pathlib import Path
 from typing import Any, Literal, cast
 
 import delphyne.analysis as analysis
@@ -155,24 +157,36 @@ def run_loaded_strategy[N: dp.Node, P, T](
     exe: ta.CommandExecutionContext,
     args: RunLoadedStrategyArgs[N, P, T],
 ):
+    with_cache_spec(
+        partial(run_loaded_strategy_with_cache, task, exe, args),
+        cache_root=exe.cache_root,
+        cache_dir=args.cache_dir,
+        cache_mode=args.cache_mode,
+        cache_format=args.cache_format,
+    )
+
+
+def with_cache_spec[T](
+    f: Callable[[ca.CacheSpec | None], T],
+    *,
+    cache_root: Path | None,
+    cache_dir: str | None,
+    cache_mode: ca.CacheMode,
+    cache_format: CacheFormat,
+) -> T:
     cache_spec = None
     db: Any | None = None
-    if args.cache_dir is not None:
-        assert exe.cache_root is not None, "Nonspecified cache root."
-        cache_dir = exe.cache_root / args.cache_dir
-        if args.cache_format == "yaml":
-            cache_info = ca.CacheYaml(cache_dir)
+    if cache_dir is not None:
+        assert cache_root is not None, "Nonspecified cache root."
+        cache_dir_path = cache_root / cache_dir
+        if cache_format == "yaml":
+            cache_info = ca.CacheYaml(cache_dir_path)
         else:
-            db = dbm.open(ca.cache_database_file(cache_dir), "c")
+            db = dbm.open(ca.cache_database_file(cache_dir_path), "c")
             cache_info = ca.CacheDb(db)
-        cache_spec = ca.CacheSpec(cache_info, mode=args.cache_mode)
+        cache_spec = ca.CacheSpec(cache_info, mode=cache_mode)
     try:
-        run_loaded_strategy_with_cache(
-            task=task,
-            exe=exe,
-            args=args,
-            cache_spec=cache_spec,
-        )
+        return f(cache_spec)
     finally:
         if db is not None:
             db.close()

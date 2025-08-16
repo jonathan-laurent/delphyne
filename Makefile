@@ -39,6 +39,7 @@ test:
 
 full-test: test
 	make -C examples/find_invariants full-test
+	make -C examples/mini_eqns full-test
 
 
 clean-ignored:

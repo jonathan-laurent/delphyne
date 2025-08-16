@@ -352,6 +352,15 @@ class Query[T](dp.AbstractQuery[T]):
     If the query answer type is `Response`, the query does not only
     return a parsed answer, but also the LLM raw answer (which can be
     appended to a chat history), and possibly a sequence of tool calls.
+
+    ### Manually Overriding the `parse` Method
+
+    For advanced use cases, it is possible to directly override the
+    `parse` method that turns an answer into an object of type `T`. When
+    this is done, the `__config__` and `__parser__` class attributes
+    must not be set. Also, the `query_settings` method always returns
+    the default settings instead of relying on `query_config` and must
+    be overriden if another behavior is desired.
     """
 
     __modes__: ClassVar[Sequence[dp.AnswerMode] | None] = None
@@ -377,6 +386,10 @@ class Query[T](dp.AbstractQuery[T]):
               configuration is used for all modes, *except* that the
               provided parser is used instead of the default one.
         - Alternatively, `__parser__` can also be set to a dictionary.
+
+        In the special case where the `parse` method is overriden and
+        only in this case, return `None` after ensuring that
+        `__config__` and `__parser__` are not set.
         """
         cls = type(self)
         parse_overriden = dpi.is_method_overridden(Query, cls, "parse")
@@ -425,7 +438,7 @@ class Query[T](dp.AbstractQuery[T]):
         """
         A more convenient method to override instead of `parse_answer`.
 
-        Raises dp.ParseError
+        Raises `ParseError`.
         """
 
         # Decompose the specified answer type
@@ -475,8 +488,17 @@ class Query[T](dp.AbstractQuery[T]):
 
     @override
     def query_settings(self, mode: dp.AnswerMode) -> dp.QuerySettings:
+        """
+        Return the settings associated with the query.
+
+        By default, this method uses the result of `query_config` to
+        determine settings if `parse` is not overriden, and the default
+        set of settings otherwise.
+        """
         config = self.query_config(mode)
-        assert config is not None
+        if config is None:
+            # `parse` is overriden
+            return dp.QuerySettings(structured_output=None, tools=None)
         structured_output = None
         if config.parser == "structured":
             type = self._decomposed_answer_type().final

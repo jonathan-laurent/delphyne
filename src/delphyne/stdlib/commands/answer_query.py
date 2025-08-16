@@ -4,15 +4,19 @@ Standard commands for answering queries.
 
 from collections.abc import Sequence
 from dataclasses import dataclass
+from functools import partial
 
 import delphyne.analysis as analysis
 import delphyne.core as dp
+import delphyne.stdlib.models as md
 import delphyne.stdlib.models as mo
 import delphyne.stdlib.queries as qu
 import delphyne.stdlib.standard_models as stdm
 import delphyne.stdlib.streams as st
 import delphyne.stdlib.tasks as ta
+import delphyne.utils.caching as ca
 from delphyne.core.streams import Barrier, Solution, Spent
+from delphyne.stdlib.commands.run_strategy import CacheFormat, with_cache_spec
 
 DEFAULT_OPENAI_MODEL = "gpt-4o"
 
@@ -26,6 +30,9 @@ class AnswerQueryArgs:
     num_answers: int = 1
     iterative_mode: bool = False
     budget: dict[str, float] | None = None
+    cache_dir: str | None = None
+    cache_mode: ca.CacheMode = "read_write"
+    cache_format: CacheFormat = "yaml"
 
 
 @dataclass
@@ -34,10 +41,11 @@ class AnswerQueryResponse:
     log: Sequence[dp.ExportableLogMessage]
 
 
-def answer_query(
+def answer_query_with_cache(
     task: ta.TaskContext[ta.CommandResult[AnswerQueryResponse]],
     exe: ta.CommandExecutionContext,
     cmd: AnswerQueryArgs,
+    cache_spec: ca.CacheSpec | None,
 ):
     # TODO: no examples for now. Also, we have to externalize this anyway.
     loader = analysis.ObjectLoader(exe.base)
@@ -47,6 +55,8 @@ def answer_query(
         data_dirs=exe.data_dirs,
         demonstration_files=exe.demo_files,
         do_not_match_identical_queries=True,
+        cache=cache_spec,
+        make_cache=md.LLMCache,
     )
     attached = dp.spawn_standalone_query(query)
     model = stdm.openai_model(cmd.model or DEFAULT_OPENAI_MODEL)
@@ -87,3 +97,17 @@ def answer_query(
         task.set_result(compute_result())
         task.set_status(compute_status())
     task.set_result(compute_result())
+
+
+def answer_query(
+    task: ta.TaskContext[ta.CommandResult[AnswerQueryResponse]],
+    exe: ta.CommandExecutionContext,
+    cmd: AnswerQueryArgs,
+):
+    with_cache_spec(
+        partial(answer_query_with_cache, task, exe, cmd),
+        cache_root=exe.cache_root,
+        cache_dir=cmd.cache_dir,
+        cache_mode=cmd.cache_mode,
+        cache_format=cmd.cache_format,
+    )

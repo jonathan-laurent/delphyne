@@ -118,8 +118,12 @@ class DelphyneApp:
             spec = ty.pydantic_load(CommandSpec, yaml.safe_load(f))
         cmd, args = spec.load(config.base)
         if cache:
-            assert hasattr(args, "cache_dir")
-            assert hasattr(args, "cache_format")
+            assert hasattr(args, "cache_dir"), (
+                "Command does not have a `cache_dir` argument."
+            )
+            assert hasattr(args, "cache_format"), (
+                "Command does not have a `cache_format` argument."
+            )
             if not args.cache_dir:
                 args.cache_dir = file_path.stem
             args.cache_format = "db"
