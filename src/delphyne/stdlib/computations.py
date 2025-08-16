@@ -42,6 +42,7 @@ class __Computation__(dp.AbstractQuery[object]):
         kind: str,
         mode: dp.AnswerMode,
         params: dict[str, object],
+        extra_args: dict[str, object] | None = None,
         env: dp.TemplatesManager | None = None,
     ):
         return dump_yaml(Any, self.__dict__)

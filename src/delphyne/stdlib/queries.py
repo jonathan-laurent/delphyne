@@ -35,9 +35,9 @@ ASSISTANT_PRIMING_STR = "!<assistant>"
 DEFAULT_FEEDBACK_PROMPT = '''
 Error. Please try again.
 
-{% if params.feedback.description %}
+{% if feedback.description %}
 """
-{{params.feedback.description}}
+{{feedback.description}}
 """
 {% endif %}
 '''.lstrip()
@@ -328,6 +328,7 @@ class Query[T](dp.AbstractQuery[T]):
         kind: Literal["system", "instance"] | str,
         mode: dp.AnswerMode,
         params: dict[str, object],
+        extra_args: dict[str, object] | None = None,
         env: dp.TemplatesManager | None = None,
     ) -> str:
         assert env is not None, _no_prompt_manager_error()
@@ -336,6 +337,8 @@ class Query[T](dp.AbstractQuery[T]):
             "mode": mode,
             "params": params,
         }
+        if extra_args:
+            args.update(extra_args)
         if (glob := self.globals()) is not None:
             args["globals"] = glob
         return env.prompt(
@@ -731,9 +734,12 @@ def _instance_prompt(
             if isinstance(elt, dp.OracleMessage):
                 msgs.append(md.AssistantMessage(elt.answer))
             elif isinstance(elt, dp.FeedbackMessage):
-                ps = params | {"feedback": elt}
                 fmsg = query.generate_prompt(
-                    kind="feedback", mode=mode, params=ps, env=env
+                    kind="feedback",
+                    mode=mode,
+                    params=params,
+                    extra_args={"feedback": elt},
+                    env=env,
                 )
                 msgs.append(md.UserMessage(fmsg))
             else:

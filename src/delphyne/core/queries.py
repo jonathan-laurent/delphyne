@@ -114,6 +114,7 @@ class AbstractQuery[T](ABC):
         kind: Literal["system", "instance", "feedback"] | str,
         mode: AnswerMode,
         params: dict[str, object],
+        extra_args: dict[str, object] | None = None,
         env: TemplatesManager | None,
     ) -> str:
         """
@@ -125,6 +126,7 @@ class AbstractQuery[T](ABC):
                 supported (within or outside the standard library).
             mode: Answer mode selected for the query.
             params: Query hyperparameters.
+            extra_args: Additional arguments to pass to the template.
             env: Template manager used to load Jinja templates.
                 Exceptions may be raised when it is needed but not
                 provided.
