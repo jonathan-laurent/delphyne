@@ -1269,6 +1269,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#delphyne.Query.run_toplevel" class="md-nav__link">
+    <span class="md-ellipsis">
+      run_toplevel
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#delphyne.Query.using" class="md-nav__link">
     <span class="md-ellipsis">
       using
@@ -1723,6 +1732,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#delphyne.stdlib.queries.Query.run_toplevel" class="md-nav__link">
+    <span class="md-ellipsis">
+      run_toplevel
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#delphyne.stdlib.queries.Query.using" class="md-nav__link">
     <span class="md-ellipsis">
       using
@@ -1803,6 +1821,60 @@
   <a href="#delphyne.stdlib.queries.first_word" class="md-nav__link">
     <span class="md-ellipsis">
       first_word
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.queries.raw_string" class="md-nav__link">
+    <span class="md-ellipsis">
+      raw_string
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.queries.raw_yaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      raw_yaml
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.queries.string_from_last_block" class="md-nav__link">
+    <span class="md-ellipsis">
+      string_from_last_block
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.queries.trimmed_raw_string" class="md-nav__link">
+    <span class="md-ellipsis">
+      trimmed_raw_string
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.queries.trimmed_string_from_last_block" class="md-nav__link">
+    <span class="md-ellipsis">
+      trimmed_string_from_last_block
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.queries.yaml_from_last_block" class="md-nav__link">
+    <span class="md-ellipsis">
+      yaml_from_last_block
     </span>
   </a>
   
@@ -2612,7 +2684,22 @@ appended to a chat history), and possibly a sequence of tool calls.</p>
 <span class="normal">646</span>
 <span class="normal">647</span>
 <span class="normal">648</span>
-<span class="normal">649</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Query</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="normal">649</span>
+<span class="normal">650</span>
+<span class="normal">651</span>
+<span class="normal">652</span>
+<span class="normal">653</span>
+<span class="normal">654</span>
+<span class="normal">655</span>
+<span class="normal">656</span>
+<span class="normal">657</span>
+<span class="normal">658</span>
+<span class="normal">659</span>
+<span class="normal">660</span>
+<span class="normal">661</span>
+<span class="normal">662</span>
+<span class="normal">663</span>
+<span class="normal">664</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Query</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for queries.</span>
 
@@ -2946,12 +3033,12 @@ appended to a chat history), and possibly a sequence of tool calls.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_policy</span><span class="p">:</span> <span class="n">EllipsisType</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">IPDict</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
 
     <span class="nd">@overload</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">P2</span><span class="p">](</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">P</span><span class="p">](</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">get_policy</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P2</span><span class="p">],</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">]</span> <span class="o">|</span> <span class="n">EllipsisType</span><span class="p">,</span>
+        <span class="n">get_policy</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">]</span> <span class="o">|</span> <span class="n">EllipsisType</span><span class="p">,</span>
         <span class="o">/</span><span class="p">,</span>
-        <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P2</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P2</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
+        <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">P</span><span class="p">](</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2962,6 +3049,17 @@ appended to a chat history), and possibly a sequence of tool calls.</p>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Turn a strategy instance into an opaque space by providing a</span>
 <span class="sd">        mapping from the ambient inner policy to a prompting policy.</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            get_policy: A function that maps the ambient inner policy to</span>
+<span class="sd">                a prompting policy to use for answering the query.</span>
+<span class="sd">                Alternatively, if the ellipsis value `...` is passed, the</span>
+<span class="sd">                inner policy type is assumed to be `IPDict`, and</span>
+<span class="sd">                prompting policies are automatically selected using tags</span>
+<span class="sd">                (see `IPDict` documentation).</span>
+<span class="sd">            inner_policy_type: Ambient inner policy type. This information</span>
+<span class="sd">                is not used at runtime but it can be provided to help type</span>
+<span class="sd">                inference when necessary.</span>
 
 <span class="sd">        The optional `inner_policy_type` argument is ignored at runtime</span>
 <span class="sd">        and can be used to help type checkers infer the type of the</span>
@@ -2978,6 +3076,10 @@ appended to a chat history), and possibly a sequence of tool calls.</p>
         <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PolicyEnv</span><span class="p">,</span>
         <span class="n">policy</span><span class="p">:</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Stream</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtain a search stream of query answers, given a prompting</span>
+<span class="sd">        policy.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">attached</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">spawn_standalone_query</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">policy</span><span class="p">(</span><span class="n">attached</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3328,6 +3430,57 @@ annotation <a class="autorefs autorefs-internal" title="AnswerPrefix" href="#del
 <div class="doc doc-object doc-function">
 
 
+<h4 id="delphyne.Query.run_toplevel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">run_toplevel</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">run_toplevel</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="n"><span title="delphyne.core.PolicyEnv">PolicyEnv</span></span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.policies.PromptingPolicy">PromptingPolicy</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
+
+
+  
+      dataclass
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Obtain a search stream of query answers, given a prompting
+policy.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">654</span>
+<span class="normal">655</span>
+<span class="normal">656</span>
+<span class="normal">657</span>
+<span class="normal">658</span>
+<span class="normal">659</span>
+<span class="normal">660</span>
+<span class="normal">661</span>
+<span class="normal">662</span>
+<span class="normal">663</span>
+<span class="normal">664</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_toplevel</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PolicyEnv</span><span class="p">,</span>
+    <span class="n">policy</span><span class="p">:</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Stream</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Obtain a search stream of query answers, given a prompting</span>
+<span class="sd">    policy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">attached</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">spawn_standalone_query</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">policy</span><span class="p">(</span><span class="n">attached</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h4 id="delphyne.Query.using" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">using</span>
 
@@ -3335,7 +3488,7 @@ annotation <a class="autorefs autorefs-internal" title="AnswerPrefix" href="#del
 </h4>
           <div class="doc-overloads">
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="IPDict (delphyne.stdlib.policies.IPDict)" href="#delphyne.IPDict">IPDict</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span><span class="p">]</span>
-</code></pre></div><div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="P2">P2</span></span><span class="p">],</span> <span class="n"><span title="delphyne.stdlib.policies.PromptingPolicy">PromptingPolicy</span></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="P2">P2</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n"><span title="P2">P2</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span><span class="p">]</span>
+</code></pre></div><div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">using[P]</span></span><span class="p">],</span> <span class="n"><span title="delphyne.stdlib.policies.PromptingPolicy">PromptingPolicy</span></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">using[P]</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">using[P]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span><span class="p">]</span>
 </code></pre></div>          </div>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">using[P]</span></span><span class="p">],</span> <span class="n"><span title="delphyne.stdlib.policies.PromptingPolicy">PromptingPolicy</span></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">using[P]</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">using[P]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span><span class="p">]</span>
 </code></pre></div>
@@ -3344,7 +3497,48 @@ annotation <a class="autorefs autorefs-internal" title="AnswerPrefix" href="#del
 
         <p>Turn a strategy instance into an opaque space by providing a
 mapping from the ambient inner policy to a prompting policy.</p>
-<p>The optional <code>inner_policy_type</code> argument is ignored at runtime
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.Query.using.get_policy">get_policy</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A function that maps the ambient inner policy to
+a prompting policy to use for answering the query.
+Alternatively, if the ellipsis value <code>...</code> is passed, the
+inner policy type is assumed to be <a class="autorefs autorefs-internal" title="IPDict" href="#delphyne.IPDict"><code>IPDict</code></a>, and
+prompting policies are automatically selected using tags
+(see <a class="autorefs autorefs-internal" title="IPDict" href="#delphyne.IPDict"><code>IPDict</code></a> documentation).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.Query.using.inner_policy_type">inner_policy_type</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Ambient inner policy type. This information
+is not used at runtime but it can be provided to help type
+inference when necessary.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>The optional <code>inner_policy_type</code> argument is ignored at runtime
 and can be used to help type checkers infer the type of the
 ambient inner policy.</p>
 
@@ -3369,7 +3563,18 @@ ambient inner policy.</p>
 <span class="normal">638</span>
 <span class="normal">639</span>
 <span class="normal">640</span>
-<span class="normal">641</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">P</span><span class="p">](</span>
+<span class="normal">641</span>
+<span class="normal">642</span>
+<span class="normal">643</span>
+<span class="normal">644</span>
+<span class="normal">645</span>
+<span class="normal">646</span>
+<span class="normal">647</span>
+<span class="normal">648</span>
+<span class="normal">649</span>
+<span class="normal">650</span>
+<span class="normal">651</span>
+<span class="normal">652</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">P</span><span class="p">](</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">get_policy</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">]</span> <span class="o">|</span> <span class="n">EllipsisType</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -3378,6 +3583,17 @@ ambient inner policy.</p>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Turn a strategy instance into an opaque space by providing a</span>
 <span class="sd">    mapping from the ambient inner policy to a prompting policy.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        get_policy: A function that maps the ambient inner policy to</span>
+<span class="sd">            a prompting policy to use for answering the query.</span>
+<span class="sd">            Alternatively, if the ellipsis value `...` is passed, the</span>
+<span class="sd">            inner policy type is assumed to be `IPDict`, and</span>
+<span class="sd">            prompting policies are automatically selected using tags</span>
+<span class="sd">            (see `IPDict` documentation).</span>
+<span class="sd">        inner_policy_type: Ambient inner policy type. This information</span>
+<span class="sd">            is not used at runtime but it can be provided to help type</span>
+<span class="sd">            inference when necessary.</span>
 
 <span class="sd">    The optional `inner_policy_type` argument is ignored at runtime</span>
 <span class="sd">    and can be used to help type checkers infer the type of the</span>
@@ -3863,7 +4079,22 @@ appended to a chat history), and possibly a sequence of tool calls.</p>
 <span class="normal">646</span>
 <span class="normal">647</span>
 <span class="normal">648</span>
-<span class="normal">649</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Query</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="normal">649</span>
+<span class="normal">650</span>
+<span class="normal">651</span>
+<span class="normal">652</span>
+<span class="normal">653</span>
+<span class="normal">654</span>
+<span class="normal">655</span>
+<span class="normal">656</span>
+<span class="normal">657</span>
+<span class="normal">658</span>
+<span class="normal">659</span>
+<span class="normal">660</span>
+<span class="normal">661</span>
+<span class="normal">662</span>
+<span class="normal">663</span>
+<span class="normal">664</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Query</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for queries.</span>
 
@@ -4197,12 +4428,12 @@ appended to a chat history), and possibly a sequence of tool calls.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_policy</span><span class="p">:</span> <span class="n">EllipsisType</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">IPDict</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
 
     <span class="nd">@overload</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">P2</span><span class="p">](</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">P</span><span class="p">](</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">get_policy</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P2</span><span class="p">],</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">]</span> <span class="o">|</span> <span class="n">EllipsisType</span><span class="p">,</span>
+        <span class="n">get_policy</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">]</span> <span class="o">|</span> <span class="n">EllipsisType</span><span class="p">,</span>
         <span class="o">/</span><span class="p">,</span>
-        <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P2</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P2</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
+        <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">P</span><span class="p">](</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -4213,6 +4444,17 @@ appended to a chat history), and possibly a sequence of tool calls.</p>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Turn a strategy instance into an opaque space by providing a</span>
 <span class="sd">        mapping from the ambient inner policy to a prompting policy.</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            get_policy: A function that maps the ambient inner policy to</span>
+<span class="sd">                a prompting policy to use for answering the query.</span>
+<span class="sd">                Alternatively, if the ellipsis value `...` is passed, the</span>
+<span class="sd">                inner policy type is assumed to be `IPDict`, and</span>
+<span class="sd">                prompting policies are automatically selected using tags</span>
+<span class="sd">                (see `IPDict` documentation).</span>
+<span class="sd">            inner_policy_type: Ambient inner policy type. This information</span>
+<span class="sd">                is not used at runtime but it can be provided to help type</span>
+<span class="sd">                inference when necessary.</span>
 
 <span class="sd">        The optional `inner_policy_type` argument is ignored at runtime</span>
 <span class="sd">        and can be used to help type checkers infer the type of the</span>
@@ -4229,6 +4471,10 @@ appended to a chat history), and possibly a sequence of tool calls.</p>
         <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PolicyEnv</span><span class="p">,</span>
         <span class="n">policy</span><span class="p">:</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Stream</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtain a search stream of query answers, given a prompting</span>
+<span class="sd">        policy.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">attached</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">spawn_standalone_query</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">policy</span><span class="p">(</span><span class="n">attached</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -4748,7 +4994,22 @@ appended to a chat history), and possibly a sequence of tool calls.</p>
 <span class="normal">646</span>
 <span class="normal">647</span>
 <span class="normal">648</span>
-<span class="normal">649</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Query</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="normal">649</span>
+<span class="normal">650</span>
+<span class="normal">651</span>
+<span class="normal">652</span>
+<span class="normal">653</span>
+<span class="normal">654</span>
+<span class="normal">655</span>
+<span class="normal">656</span>
+<span class="normal">657</span>
+<span class="normal">658</span>
+<span class="normal">659</span>
+<span class="normal">660</span>
+<span class="normal">661</span>
+<span class="normal">662</span>
+<span class="normal">663</span>
+<span class="normal">664</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Query</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for queries.</span>
 
@@ -5082,12 +5343,12 @@ appended to a chat history), and possibly a sequence of tool calls.</p>
     <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">get_policy</span><span class="p">:</span> <span class="n">EllipsisType</span><span class="p">,</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">IPDict</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
 
     <span class="nd">@overload</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">P2</span><span class="p">](</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">P</span><span class="p">](</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">get_policy</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P2</span><span class="p">],</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">]</span> <span class="o">|</span> <span class="n">EllipsisType</span><span class="p">,</span>
+        <span class="n">get_policy</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">]</span> <span class="o">|</span> <span class="n">EllipsisType</span><span class="p">,</span>
         <span class="o">/</span><span class="p">,</span>
-        <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P2</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P2</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
+        <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">P</span><span class="p">](</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -5098,6 +5359,17 @@ appended to a chat history), and possibly a sequence of tool calls.</p>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Turn a strategy instance into an opaque space by providing a</span>
 <span class="sd">        mapping from the ambient inner policy to a prompting policy.</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            get_policy: A function that maps the ambient inner policy to</span>
+<span class="sd">                a prompting policy to use for answering the query.</span>
+<span class="sd">                Alternatively, if the ellipsis value `...` is passed, the</span>
+<span class="sd">                inner policy type is assumed to be `IPDict`, and</span>
+<span class="sd">                prompting policies are automatically selected using tags</span>
+<span class="sd">                (see `IPDict` documentation).</span>
+<span class="sd">            inner_policy_type: Ambient inner policy type. This information</span>
+<span class="sd">                is not used at runtime but it can be provided to help type</span>
+<span class="sd">                inference when necessary.</span>
 
 <span class="sd">        The optional `inner_policy_type` argument is ignored at runtime</span>
 <span class="sd">        and can be used to help type checkers infer the type of the</span>
@@ -5114,6 +5386,10 @@ appended to a chat history), and possibly a sequence of tool calls.</p>
         <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PolicyEnv</span><span class="p">,</span>
         <span class="n">policy</span><span class="p">:</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Stream</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtain a search stream of query answers, given a prompting</span>
+<span class="sd">        policy.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">attached</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">spawn_standalone_query</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">policy</span><span class="p">(</span><span class="n">attached</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -5510,47 +5786,7 @@ message inviting the system to generate another different solution.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1173</span>
-<span class="normal">1174</span>
-<span class="normal">1175</span>
-<span class="normal">1176</span>
-<span class="normal">1177</span>
-<span class="normal">1178</span>
-<span class="normal">1179</span>
-<span class="normal">1180</span>
-<span class="normal">1181</span>
-<span class="normal">1182</span>
-<span class="normal">1183</span>
-<span class="normal">1184</span>
-<span class="normal">1185</span>
-<span class="normal">1186</span>
-<span class="normal">1187</span>
-<span class="normal">1188</span>
-<span class="normal">1189</span>
-<span class="normal">1190</span>
-<span class="normal">1191</span>
-<span class="normal">1192</span>
-<span class="normal">1193</span>
-<span class="normal">1194</span>
-<span class="normal">1195</span>
-<span class="normal">1196</span>
-<span class="normal">1197</span>
-<span class="normal">1198</span>
-<span class="normal">1199</span>
-<span class="normal">1200</span>
-<span class="normal">1201</span>
-<span class="normal">1202</span>
-<span class="normal">1203</span>
-<span class="normal">1204</span>
-<span class="normal">1205</span>
-<span class="normal">1206</span>
-<span class="normal">1207</span>
-<span class="normal">1208</span>
-<span class="normal">1209</span>
-<span class="normal">1210</span>
-<span class="normal">1211</span>
-<span class="normal">1212</span>
-<span class="normal">1213</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1213</span>
 <span class="normal">1214</span>
 <span class="normal">1215</span>
 <span class="normal">1216</span>
@@ -5622,7 +5858,47 @@ message inviting the system to generate another different solution.</p>
 <span class="normal">1282</span>
 <span class="normal">1283</span>
 <span class="normal">1284</span>
-<span class="normal">1285</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
+<span class="normal">1285</span>
+<span class="normal">1286</span>
+<span class="normal">1287</span>
+<span class="normal">1288</span>
+<span class="normal">1289</span>
+<span class="normal">1290</span>
+<span class="normal">1291</span>
+<span class="normal">1292</span>
+<span class="normal">1293</span>
+<span class="normal">1294</span>
+<span class="normal">1295</span>
+<span class="normal">1296</span>
+<span class="normal">1297</span>
+<span class="normal">1298</span>
+<span class="normal">1299</span>
+<span class="normal">1300</span>
+<span class="normal">1301</span>
+<span class="normal">1302</span>
+<span class="normal">1303</span>
+<span class="normal">1304</span>
+<span class="normal">1305</span>
+<span class="normal">1306</span>
+<span class="normal">1307</span>
+<span class="normal">1308</span>
+<span class="normal">1309</span>
+<span class="normal">1310</span>
+<span class="normal">1311</span>
+<span class="normal">1312</span>
+<span class="normal">1313</span>
+<span class="normal">1314</span>
+<span class="normal">1315</span>
+<span class="normal">1316</span>
+<span class="normal">1317</span>
+<span class="normal">1318</span>
+<span class="normal">1319</span>
+<span class="normal">1320</span>
+<span class="normal">1321</span>
+<span class="normal">1322</span>
+<span class="normal">1323</span>
+<span class="normal">1324</span>
+<span class="normal">1325</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">few_shot</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
     <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PolicyEnv</span><span class="p">,</span>
@@ -6073,7 +6349,7 @@ See <code>interactive</code> argument of <a class="autorefs autorefs-internal" h
         <p>A function that takes a type annotation along with a string as
 arguments and either returns a parsed object of the specified
 type or raises [<code>ParseError</code>][delphyne.ParseError].</p>
-<p>Example: [<code>yaml_from_last_block</code>][delphyne.yaml_from_last_block].</p>
+<p>Example: <a class="autorefs autorefs-internal" title="yaml_from_last_block" href="#delphyne.stdlib.queries.yaml_from_last_block"><code>yaml_from_last_block</code></a>.</p>
 
 
 
@@ -6360,6 +6636,32 @@ annotation <a class="autorefs autorefs-internal" title="AnswerPrefix" href="#del
 <div class="doc doc-object doc-function">
 
 
+<h5 id="delphyne.stdlib.queries.Query.run_toplevel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">run_toplevel</span>
+
+
+</h5>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">run_toplevel</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="n"><span title="delphyne.core.PolicyEnv">PolicyEnv</span></span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.policies.PromptingPolicy">PromptingPolicy</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
+
+
+  
+      dataclass
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Obtain a search stream of query answers, given a prompting
+policy.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h5 id="delphyne.stdlib.queries.Query.using" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">using</span>
 
@@ -6367,7 +6669,7 @@ annotation <a class="autorefs autorefs-internal" title="AnswerPrefix" href="#del
 </h5>
           <div class="doc-overloads">
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="IPDict (delphyne.stdlib.policies.IPDict)" href="#delphyne.IPDict">IPDict</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span><span class="p">]</span>
-</code></pre></div><div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="P2">P2</span></span><span class="p">],</span> <span class="n"><span title="delphyne.stdlib.policies.PromptingPolicy">PromptingPolicy</span></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="P2">P2</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n"><span title="P2">P2</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span><span class="p">]</span>
+</code></pre></div><div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">using[P]</span></span><span class="p">],</span> <span class="n"><span title="delphyne.stdlib.policies.PromptingPolicy">PromptingPolicy</span></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">using[P]</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">using[P]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span><span class="p">]</span>
 </code></pre></div>          </div>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">using[P]</span></span><span class="p">],</span> <span class="n"><span title="delphyne.stdlib.policies.PromptingPolicy">PromptingPolicy</span></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">using[P]</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque">Opaque</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">using[P]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span><span class="p">]</span>
 </code></pre></div>
@@ -6376,7 +6678,48 @@ annotation <a class="autorefs autorefs-internal" title="AnswerPrefix" href="#del
 
         <p>Turn a strategy instance into an opaque space by providing a
 mapping from the ambient inner policy to a prompting policy.</p>
-<p>The optional <code>inner_policy_type</code> argument is ignored at runtime
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.stdlib.queries.Query.using.get_policy">get_policy</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A function that maps the ambient inner policy to
+a prompting policy to use for answering the query.
+Alternatively, if the ellipsis value <code>...</code> is passed, the
+inner policy type is assumed to be <a class="autorefs autorefs-internal" title="IPDict" href="#delphyne.IPDict"><code>IPDict</code></a>, and
+prompting policies are automatically selected using tags
+(see <a class="autorefs autorefs-internal" title="IPDict" href="#delphyne.IPDict"><code>IPDict</code></a> documentation).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.stdlib.queries.Query.using.inner_policy_type">inner_policy_type</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Ambient inner policy type. This information
+is not used at runtime but it can be provided to help type
+inference when necessary.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>The optional <code>inner_policy_type</code> argument is ignored at runtime
 and can be used to help type checkers infer the type of the
 ambient inner policy.</p>
 
@@ -6886,7 +7229,134 @@ message inviting the system to generate another different solution.</p>
     <div class="doc doc-contents ">
 
         <p>Parse the first word of the answer and turn it into an object of
-type T=Literal[s1,...,sn]</p>
+type T=Literal[s1,...,sn].</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.stdlib.queries.raw_string" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">raw_string</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">raw_string</span><span class="p">(</span><span class="n">type_annot</span><span class="p">:</span> <span class="n"><span title="delphyne.utils.typing.TypeAnnot">TypeAnnot</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.raw_string[T]">raw_string[T]</span></span><span class="p">],</span> <span class="n">res</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.queries.raw_string[T]">raw_string[T]</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Do not perform any parsing and return the answer as a raw string.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.stdlib.queries.raw_yaml" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">raw_yaml</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">raw_yaml</span><span class="p">(</span><span class="nb">type</span><span class="p">:</span> <span class="n"><span title="delphyne.utils.typing.TypeAnnot">TypeAnnot</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.raw_yaml[T]">raw_yaml[T]</span></span><span class="p">],</span> <span class="n">res</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.queries.raw_yaml[T]">raw_yaml[T]</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Parse a text answer that consists in a single YAML object and
+nothing else.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.stdlib.queries.string_from_last_block" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">string_from_last_block</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">string_from_last_block</span><span class="p">(</span><span class="nb">type</span><span class="p">:</span> <span class="n"><span title="delphyne.utils.typing.TypeAnnot">TypeAnnot</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.string_from_last_block[T]">string_from_last_block[T]</span></span><span class="p">],</span> <span class="n">res</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.queries.string_from_last_block[T]">string_from_last_block[T]</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Extract the string content of the last code block from the answer
+(surrounded by triple back quotes).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.stdlib.queries.trimmed_raw_string" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">trimmed_raw_string</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">trimmed_raw_string</span><span class="p">(</span><span class="nb">type</span><span class="p">:</span> <span class="n"><span title="delphyne.utils.typing.TypeAnnot">TypeAnnot</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.trimmed_raw_string[T]">trimmed_raw_string[T]</span></span><span class="p">],</span> <span class="n">res</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.queries.trimmed_raw_string[T]">trimmed_raw_string[T]</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Do not perform any parsing and return the answer as a raw string,
+after trimming leading and trailing whitespace.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.stdlib.queries.trimmed_string_from_last_block" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">trimmed_string_from_last_block</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">trimmed_string_from_last_block</span><span class="p">(</span><span class="nb">type</span><span class="p">:</span> <span class="n"><span title="delphyne.utils.typing.TypeAnnot">TypeAnnot</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.trimmed_string_from_last_block[T]">trimmed_string_from_last_block[T]</span></span><span class="p">],</span> <span class="n">res</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.queries.trimmed_string_from_last_block[T]">trimmed_string_from_last_block[T]</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Extract the string content of the last code block from the answer
+(surrounded by triple back quotes) and trim leading and trailing
+whitespace.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.stdlib.queries.yaml_from_last_block" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">yaml_from_last_block</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">yaml_from_last_block</span><span class="p">(</span><span class="nb">type</span><span class="p">:</span> <span class="n"><span title="delphyne.utils.typing.TypeAnnot">TypeAnnot</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.yaml_from_last_block[T]">yaml_from_last_block[T]</span></span><span class="p">],</span> <span class="n">res</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.queries.yaml_from_last_block[T]">yaml_from_last_block[T]</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Parse the YAML object defined in the last code block of a text
+answer (between triple back quotes). In particular, this parser
+allows chain of thoughts.</p>
 
 
     </div>
