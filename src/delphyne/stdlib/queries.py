@@ -887,15 +887,28 @@ def extract_final_block(s: str) -> str | None:
 
 
 type ExampleSelector = Callable[[Sequence[dp.Example]], Sequence[dp.Example]]
+"""
+A function for selecting a subset of examples from a given sequence.
+"""
 
 
 def select_all_examples(
     examples: Sequence[dp.Example],
 ) -> Sequence[dp.Example]:
+    """
+    Example selector that returns all available examples.
+    """
     return examples
 
 
 def select_random_examples(num_examples: int) -> ExampleSelector:
+    """
+    Example selector that randomly selects a given number of examples.
+
+    All examples are selected if less examples are available than
+    requested.
+    """
+
     def select(
         examples: Sequence[dp.Example],
     ) -> Sequence[dp.Example]:
@@ -908,6 +921,11 @@ def select_random_examples(num_examples: int) -> ExampleSelector:
 
 
 def select_with_either_tags(tags: Sequence[str]):
+    """
+    Select examples that are annotated with at least one of a provided
+    set of tags.
+    """
+
     def select(
         examples: Sequence[dp.Example],
     ) -> Sequence[dp.Example]:
@@ -1110,8 +1128,25 @@ def classify[T](
     Execute a classification query, attaching a probability distribution
     to the attached answer.
 
-    When `bias=(e, p)` is provided, then the final distribution `D` is
-    transformed into `(1-p)*D + p*dirac(e)`
+    Attributes:
+
+        query: The query to answer.
+        env: The global policy environment.
+        model: The LLM to use for answering the query.
+        params: Prompt hyperparameters.
+        select_examples: Example selector.
+        mode: The answer mode to use for parsing the query answer.
+        enable_logging: Whether to log raw oracle responses.
+        top_logprobs: The number of top logprobs to request from the
+            LLM, putting an upper bound on the support size of the
+            classifier's output distributions.
+        temperature: A temperature to apply to the classifier's output
+            distribution (a temperature of 0 means that only top
+            elements are assigned a nonzero probability).
+        bias: When `bias=(e, p)` is provided, the final classifier
+            distribution `D` is transformed into `(1-p)*D + p*dirac(e)`
+
+    See `few_shot` for details on some of the arguments above.
     """
     env.tracer.trace_query(query.ref)
     examples = fetch_examples(env.examples, query.query, select_examples)
@@ -1215,29 +1250,64 @@ def few_shot[T](
     query: dp.AttachedQuery[T],
     env: dp.PolicyEnv,
     model: md.LLM,
+    *,
     params: dict[str, object] | None = None,
     select_examples: Sequence[ExampleSelector] = (),
     mode: dp.AnswerMode = None,
     enable_logging: bool = True,
     temperature: float | None = None,
     num_concurrent: int = 1,
-    iterative_mode: bool = False,
     max_requests: int | None = None,
     no_wrap_parse_errors: bool = False,
+    iterative_mode: bool = False,
 ) -> dp.StreamGen[T]:
     """
-    The standard few-shot prompting sequential prompting policy.
+    The standard few-shot prompting policy.
+
+    A prompt is formed by concatenating a system prompt, a series of
+    examples (each of which consists in an instance prompt followed by
+    an answer), and a final answer prompt. Then, answers are repeatedly
+    sampled and parsed, until a spending request is declined.
 
     Arguments:
-        query: The query to answer.
-        env: The policy environment.
 
-    If `iterative_mode` is `False`, then the prompt is always the same
-    and different answers are sampled. If `iterative_mode` is `True`,
-    everything happens within a single big chat. Every parse error leads
-    to some feedback while every correctly parsed answer leads to a
-    message inviting the system to generate another different solution.
+        query: The query to answer. env: The policy environment. model:
+        The LLM to use for answering the query. params: Prompt
+        hyperparameters, which are passed to prompt
+            templates as a `params` dictionary.
+        select_examples: A series of filters for selecting examples, to
+            be applied in sequence. By default, no filter is used and so
+            all available examples are fetched.
+        mode: The answer mode to use for parsing the query answer.
+        enable_logging: Whether to log raw oracle responses.
+        temperature: The temperature parameter to use with the LLM, as a
+            number from 0 to 2.
+        num_concurrent: The number of completions to request for each
+            LLM call. Note that most LLM providers only bill input
+            tokens once, regardless of the number of completions.
+        max_requests: The maximum number of LLM requests to perform
+            before the resulting seach stream terminates, if any.
+        no_wrap_parse_errors: If set to `True`, then parser results of
+            type `WrappedParseError` are unwrapped and treated as normal
+            parse errors.
+        iterative_mode: If set to `False` (default), answers are
+            repeatedly and independently sampled. If set to `True`, a
+            single chat conversation occurs instead: Whenever a parse
+            error occurs, a message is issued by rendering the
+            `<QueryName>.repair.jinja` template, asking for a new
+            attempt to be made (the `ParseError` object is available as
+            an `error` template variable). After an answer is
+            successfully generated and parsed, a message is issued by
+            rendering the `<QueryName>.more.jinja` template, asking for
+            another different answer to be generated.
 
+            This special mode allows creating simple conversational
+            agents with very little effort, by only defining a single
+            query. However, it does not support tool calls, and the
+            demonstration language cannot be used to illustrate how
+            `repair` and `more` messages should be handled. For
+            implementing more advanced conversational agents, see
+            the standard `interact` strategy.
     """
     assert not iterative_mode or num_concurrent == 1
     assert max_requests is None or max_requests > 0
@@ -1338,6 +1408,12 @@ def answer_with[T](
     probs: Sequence[float] | None = None,
     mode: dp.AnswerMode = None,
 ) -> dp.StreamGen[T]:
+    """
+    A prompting policy that returns a hardcoded set of answers without
+    looking at the query. If `probs` is not provided, then all elements
+    are yielded in sequence. If it is, the top element is yielded once,
+    with a `ProbInfo` annotation featuring the provided distribution.
+    """
     assert answers
     parse = partial(_parse_or_log_and_raise, query=query, env=env)
     try:
