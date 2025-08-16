@@ -2123,7 +2123,10 @@ with maximal concision.</p>
 <span class="normal">436</span>
 <span class="normal">437</span>
 <span class="normal">438</span>
-<span class="normal">439</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Query</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="normal">439</span>
+<span class="normal">440</span>
+<span class="normal">441</span>
+<span class="normal">442</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Query</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for queries.</span>
 
@@ -2296,6 +2299,7 @@ with maximal concision.</p>
         <span class="n">kind</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;instance&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">mode</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerMode</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span>
+        <span class="n">extra_args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">TemplatesManager</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">env</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_no_prompt_manager_error</span><span class="p">()</span>
@@ -2304,6 +2308,8 @@ with maximal concision.</p>
             <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="n">mode</span><span class="p">,</span>
             <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">,</span>
         <span class="p">}</span>
+        <span class="k">if</span> <span class="n">extra_args</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extra_args</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">glob</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">globals</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">args</span><span class="p">[</span><span class="s2">&quot;globals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">glob</span>
         <span class="k">return</span> <span class="n">env</span><span class="o">.</span><span class="n">prompt</span><span class="p">(</span>
@@ -2702,10 +2708,7 @@ ambient inner policy.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">413</span>
-<span class="normal">414</span>
-<span class="normal">415</span>
-<span class="normal">416</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">416</span>
 <span class="normal">417</span>
 <span class="normal">418</span>
 <span class="normal">419</span>
@@ -2720,7 +2723,10 @@ ambient inner policy.</p>
 <span class="normal">428</span>
 <span class="normal">429</span>
 <span class="normal">430</span>
-<span class="normal">431</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">P</span><span class="p">](</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">P</span><span class="p">](</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">get_policy</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">]</span> <span class="o">|</span> <span class="n">EllipsisType</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -3064,7 +3070,10 @@ with maximal concision.</p>
 <span class="normal">436</span>
 <span class="normal">437</span>
 <span class="normal">438</span>
-<span class="normal">439</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Query</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="normal">439</span>
+<span class="normal">440</span>
+<span class="normal">441</span>
+<span class="normal">442</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Query</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for queries.</span>
 
@@ -3237,6 +3246,7 @@ with maximal concision.</p>
         <span class="n">kind</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;instance&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">mode</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerMode</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span>
+        <span class="n">extra_args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">TemplatesManager</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">env</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_no_prompt_manager_error</span><span class="p">()</span>
@@ -3245,6 +3255,8 @@ with maximal concision.</p>
             <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="n">mode</span><span class="p">,</span>
             <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">,</span>
         <span class="p">}</span>
+        <span class="k">if</span> <span class="n">extra_args</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extra_args</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">glob</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">globals</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">args</span><span class="p">[</span><span class="s2">&quot;globals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">glob</span>
         <span class="k">return</span> <span class="n">env</span><span class="o">.</span><span class="n">prompt</span><span class="p">(</span>
@@ -3713,7 +3725,10 @@ with maximal concision.</p>
 <span class="normal">436</span>
 <span class="normal">437</span>
 <span class="normal">438</span>
-<span class="normal">439</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Query</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="normal">439</span>
+<span class="normal">440</span>
+<span class="normal">441</span>
+<span class="normal">442</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Query</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for queries.</span>
 
@@ -3886,6 +3901,7 @@ with maximal concision.</p>
         <span class="n">kind</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;instance&quot;</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">mode</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerMode</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span>
+        <span class="n">extra_args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">TemplatesManager</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">env</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="n">_no_prompt_manager_error</span><span class="p">()</span>
@@ -3894,6 +3910,8 @@ with maximal concision.</p>
             <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="n">mode</span><span class="p">,</span>
             <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">,</span>
         <span class="p">}</span>
+        <span class="k">if</span> <span class="n">extra_args</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extra_args</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">glob</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">globals</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">args</span><span class="p">[</span><span class="s2">&quot;globals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">glob</span>
         <span class="k">return</span> <span class="n">env</span><span class="o">.</span><span class="n">prompt</span><span class="p">(</span>
@@ -4347,13 +4365,7 @@ message inviting the system to generate another different solution.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 968</span>
-<span class="normal"> 969</span>
-<span class="normal"> 970</span>
-<span class="normal"> 971</span>
-<span class="normal"> 972</span>
-<span class="normal"> 973</span>
-<span class="normal"> 974</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 974</span>
 <span class="normal"> 975</span>
 <span class="normal"> 976</span>
 <span class="normal"> 977</span>
@@ -4459,7 +4471,13 @@ message inviting the system to generate another different solution.</p>
 <span class="normal">1077</span>
 <span class="normal">1078</span>
 <span class="normal">1079</span>
-<span class="normal">1080</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
+<span class="normal">1080</span>
+<span class="normal">1081</span>
+<span class="normal">1082</span>
+<span class="normal">1083</span>
+<span class="normal">1084</span>
+<span class="normal">1085</span>
+<span class="normal">1086</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">few_shot</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
     <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PolicyEnv</span><span class="p">,</span>
