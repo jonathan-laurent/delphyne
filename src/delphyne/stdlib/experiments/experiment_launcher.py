@@ -140,6 +140,12 @@ class Experiment[Config]:
             all configuration runs, which can be visualized in the VSCode
             extension (see `delphyne.analysis.feedback.Trace`). However,
             such traces can be large.
+
+    ### Tips
+
+    - New hyperparameters can be added to the `Config` type without
+      invalidating an existing experiment's persistent state, by
+      providing default values for them.
     """
 
     experiment: ExperimentFun[Config]
