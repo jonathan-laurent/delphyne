@@ -79,7 +79,9 @@ def answer_query_with_cache(
     )
     attached = dp.spawn_standalone_query(query)
     model_name = cmd.model or DEFAULT_MODEL_NAME
-    assert stdm.is_standard_model_name(model_name), "Unrecognized model name."
+    assert stdm.is_standard_model_name(model_name), (
+        f"Unrecognized model name: {model_name}."
+    )
     model = stdm.standard_model(model_name)
     if cmd.prompt_only:
         model = mo.DummyModel()

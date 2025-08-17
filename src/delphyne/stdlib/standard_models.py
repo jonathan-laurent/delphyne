@@ -7,6 +7,7 @@ import typing
 from collections.abc import Sequence
 from typing import Any, Literal, TypeGuard
 
+from delphyne.core.inspect import literal_type_args
 from delphyne.stdlib import models as md
 from delphyne.stdlib.openai_api import OpenAICompatibleModel
 
@@ -36,10 +37,14 @@ def is_standard_model_name(
     """
     Check if a string is a standard model name.
     """
+    openai_models = literal_type_args(OpenAIModelName)
+    mistral_models = literal_type_args(MistralModelName)
+    deepseek_models = literal_type_args(DeepSeekModelName)
+
     return (
-        model_name in typing.get_args(OpenAIModelName)
-        or model_name in typing.get_args(MistralModelName)
-        or model_name in typing.get_args(DeepSeekModelName)
+        (openai_models is not None and model_name in openai_models)
+        or (mistral_models is not None and model_name in mistral_models)
+        or (deepseek_models is not None and model_name in deepseek_models)
     )
 
 
