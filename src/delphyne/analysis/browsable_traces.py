@@ -273,6 +273,8 @@ def compute_browsable_trace(
     simplifier: RefSimplifier | None = None,
 ) -> fb.Trace:
     """
+    Compute a browsable trace from a raw trace.
+
     A simplifier is typically only available for demonstrations.
     """
     id_resolver = IdentifierResolverFromCache(trace, cache)

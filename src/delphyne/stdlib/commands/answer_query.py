@@ -18,11 +18,30 @@ import delphyne.utils.caching as ca
 from delphyne.core.streams import Barrier, Solution, Spent
 from delphyne.stdlib.commands.run_strategy import CacheFormat, with_cache_spec
 
-DEFAULT_OPENAI_MODEL = "gpt-4o"
+DEFAULT_MODEL_NAME = "gpt-4o"
 
 
-@dataclass
+@dataclass(kw_only=True)
 class AnswerQueryArgs:
+    """
+    Arguments for the `answer_query` command.
+
+    Attributes:
+        query: The name of the query to answer.
+        args: Arguments for the query, as a dictionary of JSON values.
+        prompt_only: If `True`, a dummy model is used that always
+            errors, so that only the prompt can be seen in the logs.
+        model: The name of the model to use for answering the query.
+        num_answers: The number of answers to generate.
+        iterative_mode: Whether to answer the query in iterative mode
+            (see `few_shot` for details).
+        budget: Budget limit (infinite for unspecified metrics).
+        cache_dir: Subdirectory of the global cache directory to use for
+            caching, or `None` to disable caching.
+        cache_mode: Cache mode to use.
+        cache_format: Cache format to use.
+    """
+
     query: str
     args: dict[str, object]
     prompt_only: bool
@@ -59,7 +78,9 @@ def answer_query_with_cache(
         make_cache=md.LLMCache,
     )
     attached = dp.spawn_standalone_query(query)
-    model = stdm.openai_model(cmd.model or DEFAULT_OPENAI_MODEL)
+    model_name = cmd.model or DEFAULT_MODEL_NAME
+    assert stdm.is_standard_model_name(model_name), "Unrecognized model name."
+    model = stdm.standard_model(model_name)
     if cmd.prompt_only:
         model = mo.DummyModel()
     policy = qu.few_shot(
@@ -104,6 +125,9 @@ def answer_query(
     exe: ta.CommandExecutionContext,
     cmd: AnswerQueryArgs,
 ):
+    """
+    A command for answering a query. See `AnswerQueryArgs`.
+    """
     with_cache_spec(
         partial(answer_query_with_cache, task, exe, cmd),
         cache_root=exe.cache_root,

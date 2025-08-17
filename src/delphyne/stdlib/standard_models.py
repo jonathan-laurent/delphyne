@@ -5,7 +5,7 @@ Models from standard LLM providers
 import os
 import typing
 from collections.abc import Sequence
-from typing import Any, Literal
+from typing import Any, Literal, TypeGuard
 
 from delphyne.stdlib import models as md
 from delphyne.stdlib.openai_api import OpenAICompatibleModel
@@ -28,6 +28,19 @@ type MistralModelName = Literal["mistral-small-2503", "magistral-small-2506"]
 type DeepSeekModelName = Literal["deepseek-chat", "deepseek-reasoner"]
 
 type StandardModelName = OpenAIModelName | MistralModelName | DeepSeekModelName
+
+
+def is_standard_model_name(
+    model_name: str,
+) -> TypeGuard[StandardModelName]:
+    """
+    Check if a string is a standard model name.
+    """
+    return (
+        model_name in typing.get_args(OpenAIModelName)
+        or model_name in typing.get_args(MistralModelName)
+        or model_name in typing.get_args(DeepSeekModelName)
+    )
 
 
 PRICING: dict[str, tuple[float, float, float]] = {

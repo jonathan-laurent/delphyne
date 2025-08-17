@@ -29,8 +29,20 @@ Format used to store the cache on disk:
 """
 
 
-@dataclass
+@dataclass(kw_only=True)
 class RunStrategyResponse:
+    """
+    Response type for the `run_strategy` command.
+
+    Attributes:
+        success: Whether at least one success value was generated.
+        values: Generated success values.
+        spent_budegt: Spent budget.
+        raw_trace: Raw trace of the strategy execution, if requested.
+        log: Log messages generated during the strategy execution.
+        browsable_trace: A browsable trace, if requested.
+    """
+
     success: bool
     values: Sequence[Any | None]
     spent_budget: Mapping[str, float]
@@ -39,8 +51,14 @@ class RunStrategyResponse:
     browsable_trace: fb.Trace | None
 
 
-@dataclass
+@dataclass(kw_only=True)
 class RunLoadedStrategyArgs[N: dp.Node, P, T]:
+    """
+    Arguments for the `run_loaded_strategy` command.
+
+    See `RunStrategyArgs` for details.
+    """
+
     strategy: dp.StrategyComp[N, P, T]
     policy: dp.AbstractPolicy[N, P]
     num_generated: int = 1
@@ -94,12 +112,12 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
         log = list(env.tracer.export_log()) if args.export_log else None
         values = [serialize_result(r) for r in results]
         response = RunStrategyResponse(
-            success,
-            values,
-            total_budget.values,
-            raw_trace,
-            log,
-            browsable_trace,
+            success=success,
+            values=values,
+            spent_budget=total_budget.values,
+            raw_trace=raw_trace,
+            log=log,
+            browsable_trace=browsable_trace,
         )
         return ta.CommandResult([], response)
 
@@ -157,6 +175,9 @@ def run_loaded_strategy[N: dp.Node, P, T](
     exe: ta.CommandExecutionContext,
     args: RunLoadedStrategyArgs[N, P, T],
 ):
+    """
+    Command for running an oracular program.
+    """
     with_cache_spec(
         partial(run_loaded_strategy_with_cache, task, exe, args),
         cache_root=exe.cache_root,
@@ -192,8 +213,30 @@ def with_cache_spec[T](
             db.close()
 
 
-@dataclass
+@dataclass(kw_only=True)
 class RunStrategyArgs:
+    """
+    Arguments for the `run_strategy` command that runs an oracular
+    program.
+
+    Attributes:
+        strategy: Name of the strategy to run.
+        args: Arguments to pass to the strategy constructor.
+        policy: Name of the policy to use.
+        policy_args: Arguments to pass to the policy constructor.
+        num_generated: Number of success values to generate.
+        budget: Budget limit (infinite for unspecified metrics).
+        cache_dir: Subdirectory of the global cache directory to use for
+            caching, or `None` to disable caching.
+        cache_mode: Cache mode to use.
+        cache_format: Cache format to use.
+        export_raw_trace: Whether to export the raw execution trace.
+        export_log: Whether to export the log messages.
+        export_browsable_trace: Whether to export a browsable trace,
+            which can be visualized in the VSCode extension (see
+            [delphyne.analysis.feedback.Trace][]).
+    """
+
     strategy: str
     args: dict[str, object]
     policy: str
@@ -213,6 +256,10 @@ def run_strategy(
     exe: ta.CommandExecutionContext,
     args: RunStrategyArgs,
 ):
+    """
+    Command for running an oracular program from a serialized
+    specification.
+    """
     loader = analysis.ObjectLoader(exe.base)
     strategy = loader.load_strategy_instance(args.strategy, args.args)
     policy = loader.load_and_call_function(args.policy, args.policy_args)
