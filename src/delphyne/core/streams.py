@@ -248,4 +248,8 @@ class AbstractStream[T](ABC):
 
     @abstractmethod
     def gen(self) -> StreamGen[T]:
+        """
+        Produce a search stream generator, i.e. an iterator that yields
+        `Barrier` and `Spent` messages along with solutions.
+        """
         pass
