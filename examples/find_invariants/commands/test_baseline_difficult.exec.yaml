@@ -1,5 +1,3 @@
-# delphyne-command
-
 command: run_strategy
 args:
   strategy: prove_program_interactive

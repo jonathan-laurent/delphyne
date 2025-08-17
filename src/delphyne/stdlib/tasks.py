@@ -2,7 +2,8 @@
 Delphyne Tasks.
 
 In order to better integrate with the UI, we propose a standard
-interface for Delphyne tasks, which allows streaming updates.
+interface for defining tasks that can output a stream of status messages
+along with intermediate results.
 """
 
 import inspect
@@ -32,6 +33,11 @@ DEFAULT_DATA_DIRS = (Path("data"),)
 
 
 class TaskContext[T](typing.Protocol):
+    """
+    Context object accessible to all tasks for reporting progress and
+    intermediate results.
+    """
+
     # To be called externally
     def interrupt(self) -> None: ...
 
@@ -92,14 +98,56 @@ def counting_generator(task: TaskContext[Never], n: int):
 @dataclass(frozen=True, kw_only=True)
 class CommandExecutionContext:
     """
-    The result refresh period indicates how often the current result is
-    computed and communicated, in seconds (`None` means never). The same
-    holds for the status refresh period.
+    Context information available to all commands.
+
+    This information is usually specified in `delphyne.yaml` project
+    files, and also locally in `@config` blocks. All values have
+    defaults. All paths are usually expressed relative to a single
+    workspace root directory, and can be made absolute using the
+    `with_root` method.
+
+    Attributes:
+        strategy_dirs: A sequence of directories in which strategy
+            modules can be found.
+        modules: A sequence of module in which Python object identifiers
+            can be resolved (module names can feature `.`).
+        demo_files: A sequence of demonstration files (either including or
+            excluding the `*.demo.yaml` extension).
+        prompt_dirs: A sequence of directories in which to look for
+            prompt templates.
+        data_dirs: A sequence of directories in which to look for data
+            files.
+        cache_root: The directory in which to store all request cache
+            subdirectories.
+        result_refresh_period: The period in seconds at which the
+            current result is computed and communicated to the UI (e.g.,
+            the period at which the current trace is exported when
+            running oracular programs). If `None`, the result is never
+            refreshed (until the command terminates).
+        status_refresh_period: The period in seconds at which the
+            current status message is communicated to the UI. If `None`,
+            the status is never refreshed (until the command
+            terminates).
+
+    !!! info "Local conguration blocks"
+        Demonstration and command files can override some configuration
+        information from the `delphyne.yaml` file by featuring a comment
+        block such as:
+
+        ```yaml
+        # @config
+        # modules: ["my_strategy_module"]
+        # demo_files: ["demo.yaml"]
+        # @end
+        ```
+
+        The comment block must be placed at the start of the file,
+        possibly after other comments.
     """
 
+    strategy_dirs: Sequence[Path] = DEFAULT_STRATEGY_DIRS
     modules: Sequence[str] = ()
     demo_files: Sequence[Path] = ()
-    strategy_dirs: Sequence[Path] = DEFAULT_STRATEGY_DIRS
     prompt_dirs: Sequence[Path] = DEFAULT_PROMPTS_DIRS
     data_dirs: Sequence[Path] = DEFAULT_DATA_DIRS
     cache_root: Path | None = None
@@ -108,6 +156,9 @@ class CommandExecutionContext:
 
     @property
     def base(self) -> analysis.DemoExecutionContext:
+        """
+        Obtain a demonstration execution context.
+        """
         return analysis.DemoExecutionContext(self.strategy_dirs, self.modules)
 
     def with_root(self, root: Path) -> "CommandExecutionContext":
@@ -126,15 +177,17 @@ class CommandExecutionContext:
         )
 
 
+# Somehow, pyright sometimes infers the wrong variance for `T` in
+# `CommandResult` so we specify it manually.
 T = typing.TypeVar("T", covariant=True)
-"""
-Somehow, pyright sometimes infers the wrong variance for `T` in
-`CommandResult` so we specify it manually.
-"""
 
 
 @dataclass(frozen=True)
 class CommandResult(typing.Generic[T]):
+    """
+    Outcome of executing a command.
+    """
+
     diagnostics: Sequence[fb.Diagnostic]
     result: T
 
@@ -145,7 +198,16 @@ class Command[A, T](Protocol):
         task: ta.TaskContext[CommandResult[T]],
         exe: CommandExecutionContext,
         args: A,
-    ) -> None: ...
+    ) -> None:
+        """
+        A command is a special task which, in addition to emitting
+        status messages and intermediate results, has access to a global
+        configuration context and produces a set of diagnostics.
+
+        Special support is provided for running commands in the Delphyne
+        CLI and in the VSCode extension.
+        """
+        ...
 
 
 def command_args_type(cmd: Command[Any, Any]) -> Any:
@@ -198,9 +260,27 @@ def run_command[A, T](
     handle_sigint: bool = False,
 ) -> CommandResult[T | None]:
     """
-    A simple way to run a command, blocking and dumping logs on disk.
+    A simple command runner.
 
-    Intermediate directories are created if necessary.
+    Arguments:
+        command: The command to run.
+        args: The arguments to pass to the command.
+        ctx: The command execution context.
+        dump_statuses: A file in which to dump status messages at
+            regular intervals.
+        dump_result: A file in which to dump intermediate and final
+            results, whose content is refreshed at regular intervals.
+        dump_log: A file in which to dump log messages.
+        on_status: A function to call every time a status message is
+            issued.
+        add_header: If `True`, the dumped result is prefixed with a
+            header containing the command name and arguments.
+        handle_sigint: If `True`, pressing `Ctrl+C` sends the command
+            task an interruption request by calling
+            `TaskContext.interrupt`, allowing it to gracefully terminate
+            instead of abruptly interrupting it.
+
+    Non-existing directories are created automatically.
     """
 
     class Handler:
