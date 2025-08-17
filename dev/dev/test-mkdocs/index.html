@@ -1133,6 +1133,111 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Stream">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.Stream.all" class="md-nav__link">
+    <span class="md-ellipsis">
+      all
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.Stream.bind" class="md-nav__link">
+    <span class="md-ellipsis">
+      bind
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.Stream.collect" class="md-nav__link">
+    <span class="md-ellipsis">
+      collect
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.Stream.first" class="md-nav__link">
+    <span class="md-ellipsis">
+      first
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.Stream.loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      loop
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.Stream.next" class="md-nav__link">
+    <span class="md-ellipsis">
+      next
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.Stream.or_else" class="md-nav__link">
+    <span class="md-ellipsis">
+      or_else
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.Stream.parallel" class="md-nav__link">
+    <span class="md-ellipsis">
+      parallel
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.Stream.sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      sequence
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.Stream.take" class="md-nav__link">
+    <span class="md-ellipsis">
+      take
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.Stream.with_budget" class="md-nav__link">
+    <span class="md-ellipsis">
+      with_budget
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -2043,6 +2148,36 @@
               Bases: <code><span title="delphyne.core.AbstractStream">AbstractStream</span>[<span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span>]</code></p>
 
 
+        <p>A search stream produced by a search policy or prompting policy.</p>
+<p>This class inherits [<code>AbstractStream</code>][delphyne.AbstractStream] and supports various methods
+and combinators for assembling streams, while guaranteeing adherence
+to the <a href="delphyne.core.streams">search stream protocol</a>.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.Stream._generate">_generate</span></code></td>
+            <td>
+                  <code><span title="collections.abc.Callable">Callable</span>[[], <span title="delphyne.core.StreamGen">StreamGen</span>[<span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A zeroary function that produces a stream generator.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
 
 
 
@@ -2051,28 +2186,550 @@
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Stream</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractStream</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A search stream produced by a search policy or prompting policy.</span>
+
+<span class="sd">    This class inherits `AbstractStream` and supports various methods</span>
+<span class="sd">    and combinators for assembling streams, while guaranteeing adherence</span>
+<span class="sd">    to the [search stream protocol](delphyne.core.streams).</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        _generate: A zeroary function that produces a stream generator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_generate</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]]</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gen</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate</span><span class="p">()</span>
+
+    <span class="c1">## Collecting all elements</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">collect</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">budget</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">BudgetLimit</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">num_generated</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">Solution</span><span class="p">[</span><span class="n">T</span><span class="p">]],</span> <span class="n">dp</span><span class="o">.</span><span class="n">Budget</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Exhaust a stream and collect all generated solutions.</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            budget (optional): Budget limit (see `with_budget` method).</span>
+<span class="sd">            num_generated (optional): Number of solutions to generate</span>
+<span class="sd">                (see `take` method).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A sequence of solutions along with the total spent budget.</span>
+
+<span class="sd">        !!! warning</span>
+<span class="sd">            This function must only be used at top-level and *not*</span>
+<span class="sd">            within the definition of a search stream generator (in which</span>
+<span class="sd">            case the consumed resources won&#39;t be accounted for in the</span>
+<span class="sd">            parent stream). See `Stream.all`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">budget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_budget</span><span class="p">(</span><span class="n">budget</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">num_generated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">num_generated</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">stream_collect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
+
+    <span class="c1">## Transforming the stream</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">with_budget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">budget</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">BudgetLimit</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return an identical stream that denies all spending requests</span>
+<span class="sd">        once a given amount of budget is spent.</span>
+
+<span class="sd">        **Guarantees**: if all budget spending over-estimates passed to</span>
+<span class="sd">        `spend_on` are accurate, the given budget limit is rigorously</span>
+<span class="sd">        respected. If not, the spent amount may exceed the budget by an</span>
+<span class="sd">        amount of `Delta * N`, where `Delta` is the maximum estimation</span>
+<span class="sd">        error and `N` is the concurrency level of the stream (1 if</span>
+<span class="sd">        `Stream.parallel` is never used).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_with_budget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">(),</span> <span class="n">budget</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">take</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_generated</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return an identical stream that terminates once a given number</span>
+<span class="sd">        of solution is generated. If `strict` is set to `False`, more</span>
+<span class="sd">        solutions can be returned, provided that no additional budget</span>
+<span class="sd">        must be spent for generating them.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_take</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">(),</span> <span class="n">num_generated</span><span class="p">,</span> <span class="n">strict</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">loop</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">stop_on_reject</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Stream[T]&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Repeatedly execute a stream.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            n (optional): Number of times to repeat the stream. By</span>
+<span class="sd">                default, the stream is repeated indefinitely.</span>
+<span class="sd">            stop_on_reject: If set to `True` (default), the resulting</span>
+<span class="sd">                stream stops after the first iteration during which no</span>
+<span class="sd">                spending request was granted. This guarantees</span>
+<span class="sd">                termination, even if `n` is `None`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">it</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="n">stream_sequence</span><span class="p">(</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">it</span><span class="p">),</span> <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">bind</span><span class="p">[</span><span class="n">U</span><span class="p">](</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">dp</span><span class="o">.</span><span class="n">Solution</span><span class="p">[</span><span class="n">T</span><span class="p">]],</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">U</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Stream[U]&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply a function to all generated solutions of a stream and</span>
+<span class="sd">        concatenate the resulting streams.</span>
+
+<span class="sd">        This is analogous to the `concat_map` funtion on lists:</span>
+
+<span class="sd">            def concat_map(f, xs):</span>
+<span class="sd">                return [y for x in xs for y in f(x)]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_bind</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">(),</span> <span class="n">f</span><span class="p">))</span>
+
+    <span class="c1">## Monadic Methods</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamContext</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">Solution</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtain the first solution from a stream, or return `None` if the</span>
+<span class="sd">        stream terminates without yielding any solution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">stream_first</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamContext</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">Solution</span><span class="p">[</span><span class="n">T</span><span class="p">]]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtain all solutions from a stream.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">stream_all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">next</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamContext</span><span class="p">[</span>
+        <span class="s2">&quot;tuple[Sequence[dp.Solution[T]], dp.Budget, Stream[T] | None]&quot;</span>
+    <span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make an atomic attempt to obtain a solution from the stream,</span>
+<span class="sd">        stopping right before a second spending request is made.</span>
+
+<span class="sd">        Return a sequence of generated solutions, the total spent</span>
+<span class="sd">        budget, and the remaining stream, if any.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">gen</span><span class="p">,</span> <span class="n">budg</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">stream_next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
+        <span class="n">new_rest</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">rest</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">rest</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">gen</span><span class="p">,</span> <span class="n">budg</span><span class="p">,</span> <span class="n">new_rest</span>
+
+    <span class="c1">## Static Methods</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sequence</span><span class="p">[</span><span class="n">U</span><span class="p">](</span>
+        <span class="n">streams</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="s2">&quot;Stream[U]&quot;</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">stop_on_reject</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Stream[U]&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Concatenate all streams from a possibly infinite collection.</span>
+
+<span class="sd">        If `stop_on_reject` is set to `True` (default), then the</span>
+<span class="sd">        resulting stream is stopped as soon as one stream in the</span>
+<span class="sd">        collection terminates without a single spending request being</span>
+<span class="sd">        granted. This allows guaranteeing termination, even if an</span>
+<span class="sd">        infinite collection of streams is passed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="n">stream_sequence</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">gen</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">),</span> <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parallel</span><span class="p">[</span><span class="n">U</span><span class="p">](</span><span class="n">streams</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="s2">&quot;Stream[U]&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Stream[U]&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run all streams of a sequence in separate threads, possibly</span>
+<span class="sd">        interleaving the resulting solutions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_parallel</span><span class="p">([</span><span class="n">s</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">]))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">or_else</span><span class="p">[</span><span class="n">U</span><span class="p">](</span><span class="n">main</span><span class="p">:</span> <span class="s2">&quot;Stream[U]&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="p">:</span> <span class="s2">&quot;Stream[U]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Stream[U]&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run the `main` stream and, if it does not yield any solution,</span>
+<span class="sd">        run the `fallback` stream.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_or_else</span><span class="p">(</span><span class="n">main</span><span class="o">.</span><span class="n">gen</span><span class="p">,</span> <span class="n">fallback</span><span class="o">.</span><span class="n">gen</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.Stream.all" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">all</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">all</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.StreamContext">StreamContext</span></span><span class="p">[</span><span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.core.Solution">Solution</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span></span><span class="p">]]]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Obtain all solutions from a stream.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamContext</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">Solution</span><span class="p">[</span><span class="n">T</span><span class="p">]]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Obtain all solutions from a stream.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">stream_all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.Stream.bind" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">bind</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">bind</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.core.Solution">Solution</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span></span><span class="p">]],</span> <span class="n"><span title="delphyne.core.StreamGen">StreamGen</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.bind[U]">bind[U]</span></span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
+
+
+  
+      dataclass
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.bind[U]">bind[U]</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Apply a function to all generated solutions of a stream and
+concatenate the resulting streams.</p>
+<p>This is analogous to the <code>concat_map</code> funtion on lists:</p>
+<pre><code>def concat_map(f, xs):
+    return [y for x in xs for y in f(x)]
+</code></pre>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">bind</span><span class="p">[</span><span class="n">U</span><span class="p">](</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">dp</span><span class="o">.</span><span class="n">Solution</span><span class="p">[</span><span class="n">T</span><span class="p">]],</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">U</span><span class="p">]]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Stream[U]&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply a function to all generated solutions of a stream and</span>
+<span class="sd">    concatenate the resulting streams.</span>
+
+<span class="sd">    This is analogous to the `concat_map` funtion on lists:</span>
+
+<span class="sd">        def concat_map(f, xs):</span>
+<span class="sd">            return [y for x in xs for y in f(x)]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_bind</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">(),</span> <span class="n">f</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.Stream.collect" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">collect</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">collect</span><span class="p">(</span><span class="n">budget</span><span class="p">:</span> <span class="n"><span title="delphyne.core.BudgetLimit">BudgetLimit</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_generated</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.core.Solution">Solution</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span></span><span class="p">]],</span> <span class="n"><span title="delphyne.core.Budget">Budget</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Exhaust a stream and collect all generated solutions.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.Stream.collect.budget">budget</span></code></td>
+            <td>
+                  <code><span title="optional">optional</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Budget limit (see [<code>with_budget</code>][delphyne.with_budget] method).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.Stream.collect.num_generated">num_generated</span></code></td>
+            <td>
+                  <code><span title="optional">optional</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of solutions to generate
+(see [<code>take</code>][delphyne.take] method).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="collections.abc.Sequence">Sequence</span>[<span title="delphyne.core.Solution">Solution</span>[<span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span>]], <span title="delphyne.core.Budget">Budget</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A sequence of solutions along with the total spent budget.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This function must only be used at top-level and <em>not</em>
+within the definition of a search stream generator (in which
+case the consumed resources won't be accounted for in the
+parent stream). See <code>Stream.all</code>.</p>
+</div>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">39</span>
 <span class="normal">40</span>
 <span class="normal">41</span>
 <span class="normal">42</span>
@@ -2098,11 +2755,510 @@
 <span class="normal">62</span>
 <span class="normal">63</span>
 <span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
+<span class="normal">65</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">collect</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">budget</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">BudgetLimit</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">num_generated</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">Solution</span><span class="p">[</span><span class="n">T</span><span class="p">]],</span> <span class="n">dp</span><span class="o">.</span><span class="n">Budget</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Exhaust a stream and collect all generated solutions.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        budget (optional): Budget limit (see `with_budget` method).</span>
+<span class="sd">        num_generated (optional): Number of solutions to generate</span>
+<span class="sd">            (see `take` method).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A sequence of solutions along with the total spent budget.</span>
+
+<span class="sd">    !!! warning</span>
+<span class="sd">        This function must only be used at top-level and *not*</span>
+<span class="sd">        within the definition of a search stream generator (in which</span>
+<span class="sd">        case the consumed resources won&#39;t be accounted for in the</span>
+<span class="sd">        parent stream). See `Stream.all`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">budget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_budget</span><span class="p">(</span><span class="n">budget</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">num_generated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">num_generated</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">stream_collect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.Stream.first" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">first</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">first</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.StreamContext">StreamContext</span></span><span class="p">[</span><span class="n"><span title="delphyne.core.Solution">Solution</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Obtain the first solution from a stream, or return <code>None</code> if the
+stream terminates without yielding any solution.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamContext</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">Solution</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Obtain the first solution from a stream, or return `None` if the</span>
+<span class="sd">    stream terminates without yielding any solution.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">stream_first</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.Stream.loop" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">loop</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">loop</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">stop_on_reject</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
+
+
+  
+      dataclass
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Repeatedly execute a stream.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>n</code>
+            </td>
+            <td>
+                  <code><span title="optional">optional</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of times to repeat the stream. By
+default, the stream is repeated indefinitely.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>stop_on_reject</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If set to <code>True</code> (default), the resulting
+stream stops after the first iteration during which no
+spending request was granted. This guarantees
+termination, even if <code>n</code> is <code>None</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">loop</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">stop_on_reject</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Stream[T]&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Repeatedly execute a stream.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        n (optional): Number of times to repeat the stream. By</span>
+<span class="sd">            default, the stream is repeated indefinitely.</span>
+<span class="sd">        stop_on_reject: If set to `True` (default), the resulting</span>
+<span class="sd">            stream stops after the first iteration during which no</span>
+<span class="sd">            spending request was granted. This guarantees</span>
+<span class="sd">            termination, even if `n` is `None`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">it</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span>
+        <span class="k">lambda</span><span class="p">:</span> <span class="n">stream_sequence</span><span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">it</span><span class="p">),</span> <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.Stream.next" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">next</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">next</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.StreamContext">StreamContext</span></span><span class="p">[</span><span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.core.Solution">Solution</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span></span><span class="p">]],</span> <span class="n"><span title="delphyne.core.Budget">Budget</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
+
+
+  
+      dataclass
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Make an atomic attempt to obtain a solution from the stream,
+stopping right before a second spending request is made.</p>
+<p>Return a sequence of generated solutions, the total spent
+budget, and the remaining stream, if any.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">next</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamContext</span><span class="p">[</span>
+    <span class="s2">&quot;tuple[Sequence[dp.Solution[T]], dp.Budget, Stream[T] | None]&quot;</span>
+<span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make an atomic attempt to obtain a solution from the stream,</span>
+<span class="sd">    stopping right before a second spending request is made.</span>
+
+<span class="sd">    Return a sequence of generated solutions, the total spent</span>
+<span class="sd">    budget, and the remaining stream, if any.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gen</span><span class="p">,</span> <span class="n">budg</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">stream_next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
+    <span class="n">new_rest</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">rest</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">rest</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gen</span><span class="p">,</span> <span class="n">budg</span><span class="p">,</span> <span class="n">new_rest</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.Stream.or_else" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">or_else</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">or_else</span><span class="p">(</span><span class="n">main</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
+
+
+  
+      dataclass
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.or_else[U]">or_else[U]</span></span><span class="p">],</span> <span class="n">fallback</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
+
+
+  
+      dataclass
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.or_else[U]">or_else[U]</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
+
+
+  
+      dataclass
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.or_else[U]">or_else[U]</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Run the <code>main</code> stream and, if it does not yield any solution,
+run the <code>fallback</code> stream.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">or_else</span><span class="p">[</span><span class="n">U</span><span class="p">](</span><span class="n">main</span><span class="p">:</span> <span class="s2">&quot;Stream[U]&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="p">:</span> <span class="s2">&quot;Stream[U]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Stream[U]&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run the `main` stream and, if it does not yield any solution,</span>
+<span class="sd">    run the `fallback` stream.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_or_else</span><span class="p">(</span><span class="n">main</span><span class="o">.</span><span class="n">gen</span><span class="p">,</span> <span class="n">fallback</span><span class="o">.</span><span class="n">gen</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.Stream.parallel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">parallel</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">parallel</span><span class="p">(</span><span class="n">streams</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Stream
+
+
+  
+      dataclass
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.parallel[U]">parallel[U]</span></span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
+
+
+  
+      dataclass
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.parallel[U]">parallel[U]</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Run all streams of a sequence in separate threads, possibly
+interleaving the resulting solutions.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">parallel</span><span class="p">[</span><span class="n">U</span><span class="p">](</span><span class="n">streams</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="s2">&quot;Stream[U]&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Stream[U]&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run all streams of a sequence in separate threads, possibly</span>
+<span class="sd">    interleaving the resulting solutions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_parallel</span><span class="p">([</span><span class="n">s</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">]))</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.Stream.sequence" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">sequence</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">sequence</span><span class="p">(</span><span class="n">streams</span><span class="p">:</span> <span class="n"><span title="collections.abc.Iterable">Iterable</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Stream
+
+
+  
+      dataclass
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.sequence[U]">sequence[U]</span></span><span class="p">]],</span> <span class="o">*</span><span class="p">,</span> <span class="n">stop_on_reject</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
+
+
+  
+      dataclass
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.sequence[U]">sequence[U]</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Concatenate all streams from a possibly infinite collection.</p>
+<p>If <code>stop_on_reject</code> is set to <code>True</code> (default), then the
+resulting stream is stopped as soon as one stream in the
+collection terminates without a single spending request being
+granted. This allows guaranteeing termination, even if an
+infinite collection of streams is passed.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sequence</span><span class="p">[</span><span class="n">U</span><span class="p">](</span>
+    <span class="n">streams</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="s2">&quot;Stream[U]&quot;</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">stop_on_reject</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Stream[U]&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Concatenate all streams from a possibly infinite collection.</span>
+
+<span class="sd">    If `stop_on_reject` is set to `True` (default), then the</span>
+<span class="sd">    resulting stream is stopped as soon as one stream in the</span>
+<span class="sd">    collection terminates without a single spending request being</span>
+<span class="sd">    granted. This allows guaranteeing termination, even if an</span>
+<span class="sd">    infinite collection of streams is passed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span>
+        <span class="k">lambda</span><span class="p">:</span> <span class="n">stream_sequence</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">gen</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">),</span> <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.Stream.take" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">take</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">take</span><span class="p">(</span><span class="n">num_generated</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Return an identical stream that terminates once a given number
+of solution is generated. If <code>strict</code> is set to <code>False</code>, more
+solutions can be returned, provided that no additional budget
+must be spent for generating them.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">take</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_generated</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return an identical stream that terminates once a given number</span>
+<span class="sd">    of solution is generated. If `strict` is set to `False`, more</span>
+<span class="sd">    solutions can be returned, provided that no additional budget</span>
+<span class="sd">    must be spent for generating them.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_take</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">(),</span> <span class="n">num_generated</span><span class="p">,</span> <span class="n">strict</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.Stream.with_budget" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">with_budget</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">with_budget</span><span class="p">(</span><span class="n">budget</span><span class="p">:</span> <span class="n"><span title="delphyne.core.BudgetLimit">BudgetLimit</span></span><span class="p">)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Return an identical stream that denies all spending requests
+once a given amount of budget is spent.</p>
+<p><strong>Guarantees</strong>: if all budget spending over-estimates passed to
+[<code>spend_on</code>][delphyne.spend_on] are accurate, the given budget limit is rigorously
+respected. If not, the spent amount may exceed the budget by an
+amount of <code>Delta * N</code>, where <code>Delta</code> is the maximum estimation
+error and <code>N</code> is the concurrency level of the stream (1 if
+<code>Stream.parallel</code> is never used).</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">69</span>
 <span class="normal">70</span>
 <span class="normal">71</span>
 <span class="normal">72</span>
@@ -2114,106 +3270,24 @@
 <span class="normal">78</span>
 <span class="normal">79</span>
 <span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">Stream</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractStream</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
-    <span class="n">_generate</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]]</span>
+<span class="normal">81</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">with_budget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">budget</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">BudgetLimit</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return an identical stream that denies all spending requests</span>
+<span class="sd">    once a given amount of budget is spent.</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">gen</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate</span><span class="p">()</span>
-
-    <span class="c1">## Collecting all elements</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">collect</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">budget</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">BudgetLimit</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">num_generated</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">Solution</span><span class="p">[</span><span class="n">T</span><span class="p">]],</span> <span class="n">dp</span><span class="o">.</span><span class="n">Budget</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">budget</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_budget</span><span class="p">(</span><span class="n">budget</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">num_generated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">num_generated</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">stream_collect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
-
-    <span class="c1">## Transforming the stream</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">with_budget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">budget</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">BudgetLimit</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_with_budget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">(),</span> <span class="n">budget</span><span class="p">))</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">take</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_generated</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_take</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">(),</span> <span class="n">num_generated</span><span class="p">,</span> <span class="n">strict</span><span class="p">))</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">loop</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">stop_on_reject</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Stream[T]&quot;</span><span class="p">:</span>
-        <span class="n">it</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span>
-            <span class="k">lambda</span><span class="p">:</span> <span class="n">stream_sequence</span><span class="p">(</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">it</span><span class="p">),</span> <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">bind</span><span class="p">[</span><span class="n">T2</span><span class="p">](</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">dp</span><span class="o">.</span><span class="n">Solution</span><span class="p">[</span><span class="n">T</span><span class="p">]],</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T2</span><span class="p">]]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Stream[T2]&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_bind</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">(),</span> <span class="n">f</span><span class="p">))</span>
-
-    <span class="c1">## Monadic Methods</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamContext</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">Solution</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="n">stream_take_one</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamContext</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">Solution</span><span class="p">[</span><span class="n">T</span><span class="p">]]]:</span>
-        <span class="k">return</span> <span class="n">stream_take_all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">next</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamContext</span><span class="p">[</span>
-        <span class="s2">&quot;tuple[Sequence[dp.Solution[T]], dp.Budget, Stream[T] | None]&quot;</span>
-    <span class="p">]:</span>
-        <span class="n">gen</span><span class="p">,</span> <span class="n">budg</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">stream_next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
-        <span class="n">new_rest</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">rest</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">rest</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">gen</span><span class="p">,</span> <span class="n">budg</span><span class="p">,</span> <span class="n">new_rest</span>
-
-    <span class="c1">## Static Methods</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">sequence</span><span class="p">[</span><span class="n">U</span><span class="p">](</span>
-        <span class="n">streams</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="s2">&quot;Stream[U]&quot;</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">stop_on_reject</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Stream[U]&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span>
-            <span class="k">lambda</span><span class="p">:</span> <span class="n">stream_sequence</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">gen</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">),</span> <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">parallel</span><span class="p">[</span><span class="n">U</span><span class="p">](</span><span class="n">streams</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="s2">&quot;Stream[U]&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Stream[U]&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_parallel</span><span class="p">([</span><span class="n">s</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">]))</span>
+<span class="sd">    **Guarantees**: if all budget spending over-estimates passed to</span>
+<span class="sd">    `spend_on` are accurate, the given budget limit is rigorously</span>
+<span class="sd">    respected. If not, the spent amount may exceed the budget by an</span>
+<span class="sd">    amount of `Delta * N`, where `Delta` is the maximum estimation</span>
+<span class="sd">    error and `N` is the concurrency level of the stream (1 if</span>
+<span class="sd">    `Stream.parallel` is never used).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_with_budget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">(),</span> <span class="n">budget</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
-              </details>
+            </details>
+    </div>
 
-
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
+</div>
 
 
 
