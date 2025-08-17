@@ -25,15 +25,28 @@ STATUS_REFRESH_PERIOD_IN_SECONDS = 1.0
 
 class DelphyneApp:
     """
-    Delphyne Command Line Application
+    The Delphyne Command Line Interface.
     """
 
     def __init__(
         self,
+        *,
         workspace_dir: Path | None = None,
         ensure_no_error: bool = False,
         ensure_no_warning: bool = False,
     ):
+        """
+        Arguments:
+            workspace_dir: the workspace directory. If not provided, it
+                is deduced for each demonstration or command file by
+                considering the closest transitive parent directory that
+                contains a `delphyne.yaml` file. If no such directory
+                exists, the current working directory is used.
+            ensure_no_error: Exit with a nonzero code if an error is
+                produced.
+            ensure_no_warning: Exit with a nonzero code if a warning is
+                produced.
+        """
         self.workspace_dir = workspace_dir
         self.ensure_no_error = ensure_no_error
         self.ensure_no_warning = ensure_no_warning
@@ -74,7 +87,7 @@ class DelphyneApp:
 
     def check(self, file: str):
         """
-        Check a demo file.
+        Check a demonstration file.
         """
         file_path = Path(file)
         workspace_dir = self._workspace_dir_for(file_path)
@@ -86,10 +99,11 @@ class DelphyneApp:
 
     def run(
         self,
+        *,
         file: str,
-        no_output: bool = False,
         cache: bool = False,
         update: bool = False,
+        no_output: bool = False,
         no_header: bool = False,
         no_status: bool = False,
         filter: list[str] | None = None,
@@ -97,6 +111,21 @@ class DelphyneApp:
     ):
         """
         Execute a command file.
+
+        Print an updated command file with an `outcome` section added on
+        stdout. Print other information on stderr.
+
+        Arguments:
+            file: Path to the command file to execute.
+            cache: Enable caching (assuming the command supports it).
+            update: Update the command file in place with the outcome.
+            no_output: Do not print on stdout.
+            no_header: Only print the `outcome` section on stdout.
+            no_status: Do not show the progress bar.
+            filter: Only show the provided subset of fields for the
+                `outcome.result` section.
+            clear: When this option is passed, all other options are
+                ignored and the `clear` method is called.
         """
         file_path = Path(file)
         workspace_dir = self._workspace_dir_for(file_path)
@@ -159,7 +188,7 @@ class DelphyneApp:
 
     def clear(self, file: str):
         """
-        Clear the outcome of a command file in place.
+        Clear the outcome of a command file by updating it in place.
         """
         path = Path(file)
         with open(path, "r") as f:
@@ -169,6 +198,9 @@ class DelphyneApp:
             f.write(new_content)
 
     def serve(self):
+        """
+        Launch an instance of the Delphyne language server.
+        """
         from delphyne.server.__main__ import main
 
         main()
