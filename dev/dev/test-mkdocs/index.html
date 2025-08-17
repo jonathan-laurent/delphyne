@@ -3306,7 +3306,7 @@ error and <code>N</code> is the concurrency level of the stream (1 if
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">AnswerPrefix</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.core.chats.AnswerPrefixElement">AnswerPrefixElement</span></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">AnswerPrefix</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="AnswerPrefixElement (delphyne.core.chats.AnswerPrefixElement)" href="../../reference/strategies/queries/#delphyne.AnswerPrefixElement">AnswerPrefixElement</a></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -3410,12 +3410,12 @@ instance of <code>.using(...)</code>, a runtime error is raised.</p>
 
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><span title="delphyne.core.AbstractQuery">AbstractQuery</span>[<span title="delphyne.stdlib.queries.Query[T]">Query[T]</span>]</code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="AbstractQuery (delphyne.core.AbstractQuery)" href="../../reference/strategies/queries/#delphyne.AbstractQuery">AbstractQuery</a>[<span title="delphyne.stdlib.queries.Query[T]">Query[T]</span>]</code></p>
 
 
         <p>Base class for queries.</p>
 <p>This class adds standard convenience features on top of
-[<code>AbstractQuery</code>][delphyne.AbstractQuery], using reflection to allow queries to be defined
+<a class="autorefs autorefs-internal" title="AbstractQuery" href="../../reference/strategies/queries/#delphyne.AbstractQuery"><code>AbstractQuery</code></a>, using reflection to allow queries to be defined
 concisely. Here is a simple example of a query type definition:</p>
 <pre><code>@dataclass class MakeSum(Query[list[int]]):
     ''' Given a list of allowed numbers and a target number, you
@@ -3449,7 +3449,7 @@ is used as an instance prompt template.</p>
 <li><code>params</code>: the query hyperparameters (e.g., as passed to <a class="autorefs autorefs-internal" href="#delphyne.few_shot"><code>few_shot</code></a>)</li>
 </ul>
 <h6 id="delphyne.Query--answer-modes-and-configurations">Answer Modes and Configurations</h6>
-<p>A query can define several answer modes ([<code>AnswerMode</code>][delphyne.AnswerMode]), each of
+<p>A query can define several answer modes (<a class="autorefs autorefs-internal" title="AnswerMode" href="../../reference/strategies/traces/#delphyne.AnswerMode"><code>AnswerMode</code></a>), each of
 which can be associated with a different parser and set of settings.
 By default, the only answer mode is <code>None</code>. More answer modes can be
 defined by setting class variable <code>__modes__</code>.</p>
@@ -4365,13 +4365,23 @@ attribute.</p>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">parse</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="n"><span title="delphyne.core.refs.Answer">Answer</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">parse</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Answer
+
+
+  
+      dataclass
+   (delphyne.core.refs.Answer)" href="../../reference/strategies/traces/#delphyne.Answer">Answer</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
         <p>A more convenient method to override instead of <code>parse_answer</code>.</p>
-<p>Raises [<code>ParseError</code>][delphyne.ParseError].</p>
+<p>Raises <a class="autorefs autorefs-internal" title="ParseError
+
+
+  
+      dataclass
+  " href="../../reference/strategies/queries/#delphyne.ParseError"><code>ParseError</code></a>.</p>
 
 
             <details class="quote">
@@ -4487,7 +4497,7 @@ attribute.</p>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">query_config</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerMode">AnswerMode</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="QueryConfig
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">query_config</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AnswerMode (delphyne.core.AnswerMode)" href="../../reference/strategies/traces/#delphyne.AnswerMode">AnswerMode</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="QueryConfig
 
 
   
@@ -4670,7 +4680,12 @@ annotation <a class="autorefs autorefs-internal" title="AnswerPrefix" href="#del
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">query_settings</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerMode">AnswerMode</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.QuerySettings">QuerySettings</span></span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">query_settings</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AnswerMode (delphyne.core.AnswerMode)" href="../../reference/strategies/traces/#delphyne.AnswerMode">AnswerMode</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="QuerySettings
+
+
+  
+      dataclass
+   (delphyne.core.QuerySettings)" href="../../reference/strategies/queries/#delphyne.QuerySettings">QuerySettings</a></span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4945,12 +4960,12 @@ ambient inner policy.</p>
 
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><span title="delphyne.core.AbstractQuery">AbstractQuery</span>[<span title="delphyne.stdlib.queries.Query[T]">Query[T]</span>]</code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="AbstractQuery (delphyne.core.AbstractQuery)" href="../../reference/strategies/queries/#delphyne.AbstractQuery">AbstractQuery</a>[<span title="delphyne.stdlib.queries.Query[T]">Query[T]</span>]</code></p>
 
 
         <p>Base class for queries.</p>
 <p>This class adds standard convenience features on top of
-[<code>AbstractQuery</code>][delphyne.AbstractQuery], using reflection to allow queries to be defined
+<a class="autorefs autorefs-internal" title="AbstractQuery" href="../../reference/strategies/queries/#delphyne.AbstractQuery"><code>AbstractQuery</code></a>, using reflection to allow queries to be defined
 concisely. Here is a simple example of a query type definition:</p>
 <pre><code>@dataclass class MakeSum(Query[list[int]]):
     ''' Given a list of allowed numbers and a target number, you
@@ -4984,7 +4999,7 @@ is used as an instance prompt template.</p>
 <li><code>params</code>: the query hyperparameters (e.g., as passed to <a class="autorefs autorefs-internal" href="#delphyne.few_shot"><code>few_shot</code></a>)</li>
 </ul>
 <h6 id="delphyne.Query--answer-modes-and-configurations">Answer Modes and Configurations</h6>
-<p>A query can define several answer modes ([<code>AnswerMode</code>][delphyne.AnswerMode]), each of
+<p>A query can define several answer modes (<a class="autorefs autorefs-internal" title="AnswerMode" href="../../reference/strategies/traces/#delphyne.AnswerMode"><code>AnswerMode</code></a>), each of
 which can be associated with a different parser and set of settings.
 By default, the only answer mode is <code>None</code>. More answer modes can be
 defined by setting class variable <code>__modes__</code>.</p>
@@ -5878,12 +5893,12 @@ be overriden if another behavior is desired.</p>
 
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><span title="delphyne.core.AbstractQuery">AbstractQuery</span>[<span title="delphyne.stdlib.queries.Query[T]">Query[T]</span>]</code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="AbstractQuery (delphyne.core.AbstractQuery)" href="../../reference/strategies/queries/#delphyne.AbstractQuery">AbstractQuery</a>[<span title="delphyne.stdlib.queries.Query[T]">Query[T]</span>]</code></p>
 
 
         <p>Base class for queries.</p>
 <p>This class adds standard convenience features on top of
-[<code>AbstractQuery</code>][delphyne.AbstractQuery], using reflection to allow queries to be defined
+<a class="autorefs autorefs-internal" title="AbstractQuery" href="../../reference/strategies/queries/#delphyne.AbstractQuery"><code>AbstractQuery</code></a>, using reflection to allow queries to be defined
 concisely. Here is a simple example of a query type definition:</p>
 <pre><code>@dataclass class MakeSum(Query[list[int]]):
     ''' Given a list of allowed numbers and a target number, you
@@ -5917,7 +5932,7 @@ is used as an instance prompt template.</p>
 <li><code>params</code>: the query hyperparameters (e.g., as passed to <a class="autorefs autorefs-internal" href="#delphyne.few_shot"><code>few_shot</code></a>)</li>
 </ul>
 <h6 id="delphyne.Query--answer-modes-and-configurations">Answer Modes and Configurations</h6>
-<p>A query can define several answer modes ([<code>AnswerMode</code>][delphyne.AnswerMode]), each of
+<p>A query can define several answer modes (<a class="autorefs autorefs-internal" title="AnswerMode" href="../../reference/strategies/traces/#delphyne.AnswerMode"><code>AnswerMode</code></a>), each of
 which can be associated with a different parser and set of settings.
 By default, the only answer mode is <code>None</code>. More answer modes can be
 defined by setting class variable <code>__modes__</code>.</p>
@@ -6830,7 +6845,17 @@ be overriden if another behavior is desired.</p>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">parse_answer</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="n"><span title="delphyne.core.Answer">Answer</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span> <span class="o">|</span> <span class="n"><span title="delphyne.core.ParseError">ParseError</span></span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">parse_answer</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Answer
+
+
+  
+      dataclass
+   (delphyne.core.Answer)" href="../../reference/strategies/traces/#delphyne.Answer">Answer</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="ParseError
+
+
+  
+      dataclass
+   (delphyne.core.ParseError)" href="../../reference/strategies/queries/#delphyne.ParseError">ParseError</a></span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6869,7 +6894,7 @@ be overriden if another behavior is desired.</p>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">query_config</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerMode">AnswerMode</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="QueryConfig
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">query_config</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AnswerMode (delphyne.core.AnswerMode)" href="../../reference/strategies/traces/#delphyne.AnswerMode">AnswerMode</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="QueryConfig
 
 
   
@@ -7045,7 +7070,7 @@ only in this case, return <code>None</code> after ensuring that
           <tr class="doc-section-item">
             <td><code><span title="delphyne.core.AttachedQuery.query">query</span></code></td>
             <td>
-                  <code><span title="delphyne.core.queries.AbstractQuery">AbstractQuery</span>[<span title="delphyne.core.trees.AttachedQuery[T]">AttachedQuery[T]</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="AbstractQuery (delphyne.core.queries.AbstractQuery)" href="../../reference/strategies/queries/#delphyne.AbstractQuery">AbstractQuery</a>[<span title="delphyne.core.trees.AttachedQuery[T]">AttachedQuery[T]</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -7056,7 +7081,7 @@ only in this case, return <code>None</code> after ensuring that
           <tr class="doc-section-item">
             <td><code><span title="delphyne.core.AttachedQuery.ref">ref</span></code></td>
             <td>
-                  <code><span title="delphyne.core.refs.GlobalSpacePath">GlobalSpacePath</span></code>
+                  <code><a class="autorefs autorefs-internal" title="GlobalSpacePath (delphyne.core.refs.GlobalSpacePath)" href="../../reference/strategies/traces/#delphyne.core.refs.GlobalSpacePath">GlobalSpacePath</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -7068,7 +7093,22 @@ attached.</p>
           <tr class="doc-section-item">
             <td><code><span title="delphyne.core.AttachedQuery.parse_answer">parse_answer</span></code></td>
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.core.refs.Answer">Answer</span>], <span title="delphyne.core.refs.Tracked">Tracked</span>[<span title="delphyne.core.trees.AttachedQuery[T]">AttachedQuery[T]</span>] | <span title="delphyne.core.queries.ParseError">ParseError</span>]</code>
+                  <code><span title="collections.abc.Callable">Callable</span>[[<a class="autorefs autorefs-internal" title="Answer
+
+
+  
+      dataclass
+   (delphyne.core.refs.Answer)" href="../../reference/strategies/traces/#delphyne.Answer">Answer</a>], <a class="autorefs autorefs-internal" title="Tracked
+
+
+  
+      dataclass
+   (delphyne.core.refs.Tracked)" href="../../reference/strategies/traces/#delphyne.core.refs.Tracked">Tracked</a>[<span title="delphyne.core.trees.AttachedQuery[T]">AttachedQuery[T]</span>] | <a class="autorefs autorefs-internal" title="ParseError
+
+
+  
+      dataclass
+   (delphyne.core.queries.ParseError)" href="../../reference/strategies/queries/#delphyne.ParseError">ParseError</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -7693,7 +7733,7 @@ attribute.</p>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">ParserSpecDict</span><span class="p">:</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n"><span title="delphyne.core.AnswerMode">AnswerMode</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="ParserSpec (delphyne.stdlib.queries.ParserSpec)" href="#delphyne.stdlib.queries.ParserSpec">ParserSpec</a></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">ParserSpecDict</span><span class="p">:</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="AnswerMode (delphyne.core.AnswerMode)" href="../../reference/strategies/traces/#delphyne.AnswerMode">AnswerMode</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="ParserSpec (delphyne.stdlib.queries.ParserSpec)" href="#delphyne.stdlib.queries.ParserSpec">ParserSpec</a></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7713,7 +7753,7 @@ attribute.</p>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">QueryConfigDict</span><span class="p">:</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n"><span title="delphyne.core.AnswerMode">AnswerMode</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="QueryConfig
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">QueryConfigDict</span><span class="p">:</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="AnswerMode (delphyne.core.AnswerMode)" href="../../reference/strategies/traces/#delphyne.AnswerMode">AnswerMode</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="QueryConfig
 
 
   
@@ -7850,7 +7890,12 @@ See <code>interactive</code> argument of <a class="autorefs autorefs-internal" h
 
         <p>A function that takes a type annotation along with a string as
 arguments and either returns a parsed object of the specified
-type or raises [<code>ParseError</code>][delphyne.ParseError].</p>
+type or raises <a class="autorefs autorefs-internal" title="ParseError
+
+
+  
+      dataclass
+  " href="../../reference/strategies/queries/#delphyne.ParseError"><code>ParseError</code></a>.</p>
 <p>Example: <a class="autorefs autorefs-internal" title="yaml_from_last_block" href="#delphyne.stdlib.queries.yaml_from_last_block"><code>yaml_from_last_block</code></a>.</p>
 
 
@@ -7942,12 +7987,12 @@ type or raises [<code>ParseError</code>][delphyne.ParseError].</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><span title="delphyne.core.AbstractQuery">AbstractQuery</span>[<span title="delphyne.stdlib.queries.Query[T]">Query[T]</span>]</code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="AbstractQuery (delphyne.core.AbstractQuery)" href="../../reference/strategies/queries/#delphyne.AbstractQuery">AbstractQuery</a>[<span title="delphyne.stdlib.queries.Query[T]">Query[T]</span>]</code></p>
 
 
         <p>Base class for queries.</p>
 <p>This class adds standard convenience features on top of
-[<code>AbstractQuery</code>][delphyne.AbstractQuery], using reflection to allow queries to be defined
+<a class="autorefs autorefs-internal" title="AbstractQuery" href="../../reference/strategies/queries/#delphyne.AbstractQuery"><code>AbstractQuery</code></a>, using reflection to allow queries to be defined
 concisely. Here is a simple example of a query type definition:</p>
 <pre><code>@dataclass class MakeSum(Query[list[int]]):
     ''' Given a list of allowed numbers and a target number, you
@@ -7981,7 +8026,7 @@ is used as an instance prompt template.</p>
 <li><code>params</code>: the query hyperparameters (e.g., as passed to <a class="autorefs autorefs-internal" href="#delphyne.few_shot"><code>few_shot</code></a>)</li>
 </ul>
 <h6 id="delphyne.stdlib.queries.Query--answer-modes-and-configurations">Answer Modes and Configurations</h6>
-<p>A query can define several answer modes ([<code>AnswerMode</code>][delphyne.AnswerMode]), each of
+<p>A query can define several answer modes (<a class="autorefs autorefs-internal" title="AnswerMode" href="../../reference/strategies/traces/#delphyne.AnswerMode"><code>AnswerMode</code></a>), each of
 which can be associated with a different parser and set of settings.
 By default, the only answer mode is <code>None</code>. More answer modes can be
 defined by setting class variable <code>__modes__</code>.</p>
@@ -8069,13 +8114,23 @@ attribute.</p>
 
 
 </h5>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">parse</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="n"><span title="delphyne.core.refs.Answer">Answer</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">parse</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Answer
+
+
+  
+      dataclass
+   (delphyne.core.refs.Answer)" href="../../reference/strategies/traces/#delphyne.Answer">Answer</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">Query[T]</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
         <p>A more convenient method to override instead of <code>parse_answer</code>.</p>
-<p>Raises [<code>ParseError</code>][delphyne.ParseError].</p>
+<p>Raises <a class="autorefs autorefs-internal" title="ParseError
+
+
+  
+      dataclass
+  " href="../../reference/strategies/queries/#delphyne.ParseError"><code>ParseError</code></a>.</p>
 
 
     </div>
@@ -8090,7 +8145,7 @@ attribute.</p>
 
 
 </h5>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">query_config</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerMode">AnswerMode</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="QueryConfig
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">query_config</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AnswerMode (delphyne.core.AnswerMode)" href="../../reference/strategies/traces/#delphyne.AnswerMode">AnswerMode</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="QueryConfig
 
 
   
@@ -8153,7 +8208,12 @@ annotation <a class="autorefs autorefs-internal" title="AnswerPrefix" href="#del
 
 
 </h5>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">query_settings</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerMode">AnswerMode</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.QuerySettings">QuerySettings</span></span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">query_settings</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AnswerMode (delphyne.core.AnswerMode)" href="../../reference/strategies/traces/#delphyne.AnswerMode">AnswerMode</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="QuerySettings
+
+
+  
+      dataclass
+   (delphyne.core.QuerySettings)" href="../../reference/strategies/queries/#delphyne.QuerySettings">QuerySettings</a></span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8385,7 +8445,12 @@ passed pass in <a class="autorefs autorefs-internal" title="AnswerPrefix" href="
           <tr class="doc-section-item">
             <td><code><span title="delphyne.stdlib.queries.Response.answer">answer</span></code></td>
             <td>
-                  <code><span title="delphyne.core.Answer">Answer</span></code>
+                  <code><a class="autorefs autorefs-internal" title="Answer
+
+
+  
+      dataclass
+   (delphyne.core.Answer)" href="../../reference/strategies/traces/#delphyne.Answer">Answer</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -8472,7 +8537,12 @@ some tool call requests wrapped in <a class="autorefs autorefs-internal" title="
 
 
         <p>A function that takes a string as an argument and either returns
-a parsed object or raises [<code>ParseError</code>][delphyne.ParseError].</p>
+a parsed object or raises <a class="autorefs autorefs-internal" title="ParseError
+
+
+  
+      dataclass
+  " href="../../reference/strategies/queries/#delphyne.ParseError"><code>ParseError</code></a>.</p>
 
 
 
@@ -8601,7 +8671,12 @@ prompt).</p>
           <tr class="doc-section-item">
             <td><code><span title="delphyne.stdlib.queries.WrappedParseError.error">error</span></code></td>
             <td>
-                  <code><span title="delphyne.core.ParseError">ParseError</span></code>
+                  <code><a class="autorefs autorefs-internal" title="ParseError
+
+
+  
+      dataclass
+   (delphyne.core.ParseError)" href="../../reference/strategies/queries/#delphyne.ParseError">ParseError</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -8653,7 +8728,7 @@ prompt).</p>
 
   
       dataclass
-   (delphyne.core.AttachedQuery)" href="#delphyne.core.AttachedQuery">AttachedQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.answer_with[T]">answer_with[T]</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><span title="delphyne.core.PolicyEnv">PolicyEnv</span></span><span class="p">,</span> <span class="n">answers</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">],</span> <span class="n">probs</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="float">float</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerMode">AnswerMode</span></span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.StreamGen">StreamGen</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.answer_with[T]">answer_with[T]</span></span><span class="p">]</span>
+   (delphyne.core.AttachedQuery)" href="#delphyne.core.AttachedQuery">AttachedQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.answer_with[T]">answer_with[T]</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><span title="delphyne.core.PolicyEnv">PolicyEnv</span></span><span class="p">,</span> <span class="n">answers</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">],</span> <span class="n">probs</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="float">float</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AnswerMode (delphyne.core.AnswerMode)" href="../../reference/strategies/traces/#delphyne.AnswerMode">AnswerMode</a></span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.StreamGen">StreamGen</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.answer_with[T]">answer_with[T]</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8686,7 +8761,7 @@ with a <a class="autorefs autorefs-internal" title="ProbInfo
 
   
       dataclass
-   (delphyne.core.AttachedQuery)" href="#delphyne.core.AttachedQuery">AttachedQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.classify[T]">classify[T]</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><span title="delphyne.core.PolicyEnv">PolicyEnv</span></span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.models.LLM">LLM</span></span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">select_examples</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="ExampleSelector (delphyne.stdlib.queries.ExampleSelector)" href="#delphyne.stdlib.queries.ExampleSelector">ExampleSelector</a></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">mode</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerMode">AnswerMode</span></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">enable_logging</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">top_logprobs</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="float">float</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.StreamGen">StreamGen</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.classify[T]">classify[T]</span></span><span class="p">]</span>
+   (delphyne.core.AttachedQuery)" href="#delphyne.core.AttachedQuery">AttachedQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.classify[T]">classify[T]</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><span title="delphyne.core.PolicyEnv">PolicyEnv</span></span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.models.LLM">LLM</span></span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">select_examples</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="ExampleSelector (delphyne.stdlib.queries.ExampleSelector)" href="#delphyne.stdlib.queries.ExampleSelector">ExampleSelector</a></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">mode</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AnswerMode (delphyne.core.AnswerMode)" href="../../reference/strategies/traces/#delphyne.AnswerMode">AnswerMode</a></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">enable_logging</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">top_logprobs</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="float">float</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.StreamGen">StreamGen</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.classify[T]">classify[T]</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8730,7 +8805,7 @@ bias: When `bias=(e, p)` is provided, the final classifier
 
   
       dataclass
-   (delphyne.core.AttachedQuery)" href="#delphyne.core.AttachedQuery">AttachedQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.few_shot[T]">few_shot[T]</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><span title="delphyne.core.PolicyEnv">PolicyEnv</span></span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.models.LLM">LLM</span></span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">select_examples</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="ExampleSelector (delphyne.stdlib.queries.ExampleSelector)" href="#delphyne.stdlib.queries.ExampleSelector">ExampleSelector</a></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">mode</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerMode">AnswerMode</span></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">enable_logging</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_concurrent</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_requests</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">no_wrap_parse_errors</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">iterative_mode</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.StreamGen">StreamGen</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.few_shot[T]">few_shot[T]</span></span><span class="p">]</span>
+   (delphyne.core.AttachedQuery)" href="#delphyne.core.AttachedQuery">AttachedQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.few_shot[T]">few_shot[T]</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><span title="delphyne.core.PolicyEnv">PolicyEnv</span></span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.models.LLM">LLM</span></span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">select_examples</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="ExampleSelector (delphyne.stdlib.queries.ExampleSelector)" href="#delphyne.stdlib.queries.ExampleSelector">ExampleSelector</a></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">mode</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AnswerMode (delphyne.core.AnswerMode)" href="../../reference/strategies/traces/#delphyne.AnswerMode">AnswerMode</a></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">enable_logging</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_concurrent</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_requests</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">no_wrap_parse_errors</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">iterative_mode</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.StreamGen">StreamGen</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.few_shot[T]">few_shot[T]</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
