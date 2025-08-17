@@ -86,7 +86,11 @@ class DelphyneAutoCrossrefs(griffe.Extension):
         return importlib.import_module(self.root)
 
     def _exists_in_root(self, root_mod: Any, name: str) -> bool:
-        return hasattr(root_mod, name)
+        import inspect
+
+        return hasattr(root_mod, name) and not inspect.ismodule(
+            getattr(root_mod, name)
+        )
 
 
 #####
