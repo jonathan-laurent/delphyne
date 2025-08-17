@@ -649,8 +649,8 @@ class Query[T](dp.AbstractQuery[T]):
         inner_policy_type: type[P] | None = None,
     ) -> Opaque[P, T]:
         """
-        Turn a strategy instance into an opaque space by providing a
-        mapping from the ambient inner policy to a prompting policy.
+        Turn a query into an opaque space by providing a mapping from
+        the ambient inner policy to a prompting policy.
 
         Attributes:
             get_policy: A function that maps the ambient inner policy to
