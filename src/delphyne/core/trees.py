@@ -43,14 +43,14 @@ class Space[T](ABC):
     @abstractmethod
     def tags(self) -> Sequence[Tag]:
         """
-        Returns the tags associated with the space.
+        Return the tags associated with the space.
         """
         pass
 
     @abstractmethod
     def source(self) -> "NestedTree[Any, Any, T] | AttachedQuery[T]":
         """
-        Returns the source of the space, which is either a nested tree
+        Return the source of the space, which is either a nested tree
         or an attached query.
 
         This method is mostly useful to the demonstration interpreter.
@@ -191,14 +191,14 @@ class Node(ABC):
 
     def summary_message(self) -> str | None:
         """
-        Returns an optional summary message for the node, to be
+        Return an optional summary message for the node, to be
         displayed in the Delphyne extension's Tree View.
         """
         return None
 
     def leaf_node(self) -> bool:
         """
-        Returns True if the node is a leaf node (e.g., `Fail`) and False
+        Return True if the node is a leaf node (e.g., `Fail`) and False
         otherwise.
 
         Leaf nodes do not have to define `navigate` and are treated
@@ -208,7 +208,7 @@ class Node(ABC):
 
     def valid_action(self, action: object) -> bool:
         """
-        Returns whether an action is valid.
+        Return whether an action is valid.
 
         This method is used to dynamically check actions passed to
         `Tree.child`, **after** the `Tracked` wrapper is removed. By
@@ -219,7 +219,7 @@ class Node(ABC):
 
     def primary_space(self) -> "Space[object] | None":
         """
-        Optionally returns the node's primary space.
+        Optionally return the node's primary space.
 
         Primary spaces are useful to shorten space references,
         especially when writing demonstration tests. For example, if
@@ -234,7 +234,7 @@ class Node(ABC):
 
     def get_extra_tags(self) -> Sequence[Tag]:
         """
-        Returns the extra tags associated with the node, in addition to
+        Return the extra tags associated with the node, in addition to
         the default ones inherited from the primary space (see
         `get_tags` method).
         """
@@ -245,7 +245,7 @@ class Node(ABC):
     @classmethod
     def fields(cls) -> NodeFields:
         """
-        Returns a dictionary mapping each field of the node to some
+        Return a dictionary mapping each field of the node to some
         metadata (e.g., whether the field denotes a local space).
 
         Such metadata is useful in particular to implement `spawn`.
@@ -274,7 +274,7 @@ class Node(ABC):
 
     def get_tags(self) -> Sequence[Tag]:
         """
-        Returns all tags attached to the node.
+        Return all tags attached to the node.
 
         Tags are leveraged by the demonstration language to identify
         nodes (e.g., `at` test command).
@@ -305,7 +305,7 @@ class Node(ABC):
         self, name: refs.SpaceName, args: tuple[Value, ...]
     ) -> Space[Any] | None:
         """
-        Dynamically retrieves a local space given its name and
+        Dynamically retrieve a local space given its name and
         parameters.
 
         For nonparametric spaces, `args` should be the empty tuple.
@@ -376,7 +376,7 @@ class Node(ABC):
         self: N, trans: "AbstractTreeTransformer[Any, Any]"
     ) -> N:
         """
-        Applies a function to all embedded trees.
+        Apply a function to all embedded trees.
 
         This is a pure method that returns an updated node. It is useful
         for implementing `Tree.transform`, which in turn is useful for
@@ -516,7 +516,7 @@ class StrategyComp(Generic[N, P, T]):
 
         Example:
 
-        ```
+        ```python
         # Invoking a sub-strategy by branching over an opaque space.
         y = yield from branch(sub_strategy(foo, bar).using(...))
         # Invoking a sub-strategy via inlining (the signature and inner
@@ -718,7 +718,7 @@ class SpaceBuilder[S]:
 
     def tagged(self, *tags: Tag) -> "SpaceBuilder[S]":
         """
-        Adds new tags to the space builder.
+        Add new tags to the space builder.
         """
         return replace(self, tags=(*self.tags, *tags))
 
@@ -726,7 +726,7 @@ class SpaceBuilder[S]:
         self, spawner: NestedTreeSpawner, query_spawner: QuerySpawner
     ) -> S:
         """
-        Builds a space, given the provided abilities along with the
+        Build a space, given the provided capabilities along with the
         current set of tags.
         """
         return self.build(spawner, query_spawner, self.tags)

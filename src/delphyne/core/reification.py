@@ -74,13 +74,14 @@ def reify[N: Node, P, T](
     start with the new, augmented path.
 
     Arguments:
-        strategy: the strategy to reify. monitor: an optional cache
-        along with node creation hooks. allow_noncopyable_actions: allow
-        actions to be nonserializable
-            objects (such as functions) that cannot be deepcopied.
-            Allowing such actions opens the door to unsafe side effects
-            corrupting the resulting tree, so it must be done with care.
-            See discussion below on side effects.
+        strategy: The strategy to reify.
+        monitor: An optional cache, along with node creation hooks.
+        allow_noncopyable_actions: Allow
+            actions to be nonserializable objects (such as functions)
+            that cannot be deepcopied. Allowing such actions opens the
+            door to unsafe side effects corrupting the resulting tree,
+            so it must be done with care. See discussion below on side
+            effects.
 
     !!! note "On Side Effects in Strategies"
         Strategy functions are allowed to have side effects (see
