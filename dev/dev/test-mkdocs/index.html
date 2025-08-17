@@ -3481,9 +3481,9 @@ the query's prompt.</p>
   " href="#delphyne.stdlib.queries.Response"><code>Response</code></a>, the query does not only
 return a parsed answer, but also the LLM raw answer (which can be
 appended to a chat history), and possibly a sequence of tool calls.</p>
-<h6 id="delphyne.Query--manually-overriding-the-parse-method">Manually Overriding the [<code>parse</code>][delphyne.parse] Method</h6>
+<h6 id="delphyne.Query--manually-overriding-the-parse-method">Manually Overriding the <code>parse</code> Method</h6>
 <p>For advanced use cases, it is possible to directly override the
-[<code>parse</code>][delphyne.parse] method that turns an answer into an object of type <code>T</code>. When
+<code>parse</code> method that turns an answer into an object of type <code>T</code>. When
 this is done, the <code>__config__</code> and <code>__parser__</code> class attributes
 must not be set. Also, the <code>query_settings</code> method always returns
 the default settings instead of relying on <code>query_config</code> and must
@@ -4334,7 +4334,7 @@ be overriden if another behavior is desired.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return global objects accessible in prompts via the [<code>globals</code>][delphyne.globals]
+        <p>Return global objects accessible in prompts via the <code>globals</code>
 attribute.</p>
 
 
@@ -4522,7 +4522,7 @@ attributes (none or either can be set but not both).</p>
       provided parser is used instead of the default one.</li>
 <li>Alternatively, <code>__parser__</code> can also be set to a dictionary.</li>
 </ul>
-<p>In the special case where the [<code>parse</code>][delphyne.parse] method is overriden and
+<p>In the special case where the <code>parse</code> method is overriden and
 only in this case, return <code>None</code> after ensuring that
 <code>__config__</code> and <code>__parser__</code> are not set.</p>
 
@@ -4692,7 +4692,7 @@ annotation <a class="autorefs autorefs-internal" title="AnswerPrefix" href="#del
 
         <p>Return the settings associated with the query.</p>
 <p>By default, this method uses the result of <code>query_config</code> to
-determine settings if [<code>parse</code>][delphyne.parse] is not overriden, and the default
+determine settings if <code>parse</code> is not overriden, and the default
 set of settings otherwise.</p>
 
 
@@ -5031,9 +5031,9 @@ the query's prompt.</p>
   " href="#delphyne.stdlib.queries.Response"><code>Response</code></a>, the query does not only
 return a parsed answer, but also the LLM raw answer (which can be
 appended to a chat history), and possibly a sequence of tool calls.</p>
-<h6 id="delphyne.Query--manually-overriding-the-parse-method">Manually Overriding the [<code>parse</code>][delphyne.parse] Method</h6>
+<h6 id="delphyne.Query--manually-overriding-the-parse-method">Manually Overriding the <code>parse</code> Method</h6>
 <p>For advanced use cases, it is possible to directly override the
-[<code>parse</code>][delphyne.parse] method that turns an answer into an object of type <code>T</code>. When
+<code>parse</code> method that turns an answer into an object of type <code>T</code>. When
 this is done, the <code>__config__</code> and <code>__parser__</code> class attributes
 must not be set. Also, the <code>query_settings</code> method always returns
 the default settings instead of relying on <code>query_config</code> and must
@@ -5964,9 +5964,9 @@ the query's prompt.</p>
   " href="#delphyne.stdlib.queries.Response"><code>Response</code></a>, the query does not only
 return a parsed answer, but also the LLM raw answer (which can be
 appended to a chat history), and possibly a sequence of tool calls.</p>
-<h6 id="delphyne.Query--manually-overriding-the-parse-method">Manually Overriding the [<code>parse</code>][delphyne.parse] Method</h6>
+<h6 id="delphyne.Query--manually-overriding-the-parse-method">Manually Overriding the <code>parse</code> Method</h6>
 <p>For advanced use cases, it is possible to directly override the
-[<code>parse</code>][delphyne.parse] method that turns an answer into an object of type <code>T</code>. When
+<code>parse</code> method that turns an answer into an object of type <code>T</code>. When
 this is done, the <code>__config__</code> and <code>__parser__</code> class attributes
 must not be set. Also, the <code>query_settings</code> method always returns
 the default settings instead of relying on <code>query_config</code> and must
@@ -6919,7 +6919,7 @@ attributes (none or either can be set but not both).</p>
       provided parser is used instead of the default one.</li>
 <li>Alternatively, <code>__parser__</code> can also be set to a dictionary.</li>
 </ul>
-<p>In the special case where the [<code>parse</code>][delphyne.parse] method is overriden and
+<p>In the special case where the <code>parse</code> method is overriden and
 only in this case, return <code>None</code> after ensuring that
 <code>__config__</code> and <code>__parser__</code> are not set.</p>
 
@@ -8058,9 +8058,9 @@ the query's prompt.</p>
   " href="#delphyne.stdlib.queries.Response"><code>Response</code></a>, the query does not only
 return a parsed answer, but also the LLM raw answer (which can be
 appended to a chat history), and possibly a sequence of tool calls.</p>
-<h6 id="delphyne.stdlib.queries.Query--manually-overriding-the-parse-method">Manually Overriding the [<code>parse</code>][delphyne.parse] Method</h6>
+<h6 id="delphyne.stdlib.queries.Query--manually-overriding-the-parse-method">Manually Overriding the <code>parse</code> Method</h6>
 <p>For advanced use cases, it is possible to directly override the
-[<code>parse</code>][delphyne.parse] method that turns an answer into an object of type <code>T</code>. When
+<code>parse</code> method that turns an answer into an object of type <code>T</code>. When
 this is done, the <code>__config__</code> and <code>__parser__</code> class attributes
 must not be set. Also, the <code>query_settings</code> method always returns
 the default settings instead of relying on <code>query_config</code> and must
@@ -8098,7 +8098,7 @@ be overriden if another behavior is desired.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return global objects accessible in prompts via the [<code>globals</code>][delphyne.globals]
+        <p>Return global objects accessible in prompts via the <code>globals</code>
 attribute.</p>
 
 
@@ -8170,7 +8170,7 @@ attributes (none or either can be set but not both).</p>
       provided parser is used instead of the default one.</li>
 <li>Alternatively, <code>__parser__</code> can also be set to a dictionary.</li>
 </ul>
-<p>In the special case where the [<code>parse</code>][delphyne.parse] method is overriden and
+<p>In the special case where the <code>parse</code> method is overriden and
 only in this case, return <code>None</code> after ensuring that
 <code>__config__</code> and <code>__parser__</code> are not set.</p>
 
@@ -8220,7 +8220,7 @@ annotation <a class="autorefs autorefs-internal" title="AnswerPrefix" href="#del
 
         <p>Return the settings associated with the query.</p>
 <p>By default, this method uses the result of <code>query_config</code> to
-determine settings if [<code>parse</code>][delphyne.parse] is not overriden, and the default
+determine settings if <code>parse</code> is not overriden, and the default
 set of settings otherwise.</p>
 
 
