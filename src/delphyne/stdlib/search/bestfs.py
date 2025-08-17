@@ -1,7 +1,5 @@
 """
 An implementation of best-first search.
-
-TODO: use stream combinators instead of manually going through messages.
 """
 
 import heapq
@@ -17,7 +15,7 @@ from delphyne.stdlib.streams import Stream
 
 
 @dataclass(frozen=True)
-class NodeState:
+class _NodeState:
     # Instead of `children`, all that is really needed here is a count
     # of the number of children. We provide children ids for easier
     # debugging. Also, the children list must sometimes be mutated and
@@ -35,14 +33,14 @@ class NodeState:
 
 
 @dataclass(frozen=True, order=True)
-class PriorityItem:
+class _PriorityItem:
     # Python's heapq module puts the element with the smallest value on
     # top and uses lexicographic ordering. We want the element with
     # _highest confidence_ on top, or in case of a tie, the one that has
     # been in the queue for the longest time.
     neg_confidence: float
     insertion_id: int
-    node_state: NodeState  # comparison must never reach this point
+    node_state: _NodeState  # comparison must never reach this point
 
 
 @search_policy
@@ -82,7 +80,7 @@ def best_first_search[P, T](
     # `counter` is used to assign ids that are used to solve ties in the
     # priority queue (the older element gets priority).
     counter = 0
-    pqueue: list[PriorityItem] = []  # a heap
+    pqueue: list[_PriorityItem] = []  # a heap
 
     def push_fresh_node(
         tree: dp.Tree[Branch | Factor | Value | Fail, Any, Any],
@@ -114,7 +112,7 @@ def best_first_search[P, T](
             case Branch():
                 if max_depth is not None and depth > max_depth:
                     return
-                state = NodeState(
+                state = _NodeState(
                     depth=depth,
                     children=[],
                     confidence=confidence,
@@ -127,17 +125,17 @@ def best_first_search[P, T](
                 counter += 1
                 prior = child_confidence_prior(depth, 0)
                 item_confidence = confidence * prior
-                item = PriorityItem(-item_confidence, counter, state)
+                item = _PriorityItem(-item_confidence, counter, state)
                 heapq.heappush(pqueue, item)
             case _:
                 unsupported_node(tree.node)
 
-    def reinsert_node(state: NodeState) -> None:
+    def reinsert_node(state: _NodeState) -> None:
         nonlocal counter
         counter += 1
         prior = child_confidence_prior(state.depth, len(state.children))
         item_confidence = state.confidence * prior
-        item = PriorityItem(-item_confidence, counter, state)
+        item = _PriorityItem(-item_confidence, counter, state)
         heapq.heappush(pqueue, item)
 
     # Put the root into the queue.

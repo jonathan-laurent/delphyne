@@ -1,3 +1,7 @@
+"""
+A standard strategy for creating conversational agents.
+"""
+
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from typing import Any
@@ -12,6 +16,17 @@ from delphyne.stdlib.queries import WrappedParseError
 
 @dataclass
 class InteractStats:
+    """
+    Statistics maintained by `interact`.
+
+    Attributes:
+        num_rejected: Number of answers that have been rejected so far,
+            due to either parsing or processing errors.
+        num_tool_call_rounds: Number of tool call rounds that have been
+            reuqetsed by the LLM so far (a round consists in a single
+            message that can contain several tool call requests).
+    """
+
     num_rejected: int
     num_tool_call_rounds: int
 
@@ -26,7 +41,33 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Branch, P, B]:
     """
-    Note: the `meta` field of `dp.Error` must be serializable.
+    A standard strategy for creating conversational agents.
+
+    A common pattern for interacting with LLMs is to have multi-message
+    exchanges where the full conversation history is resent repeatedly.
+    LLMs are also often allowed to request tool call. This strategy
+    implements this pattern. It is meant to be inlined into a wrapping
+    strategy (since it is not decorated with `strategy`).
+
+    Attributes:
+        step: a parametric opaque space, induced by a strategy or query
+            that takes as an argument the current chat history (possibly
+            empty) along with some statistics, and returns an answer to
+            be processed. Oftentimes, this parametric opaque space is
+            induced by a query with a special `prefix` field for
+            receiving the chat history (see `Query`).
+        process: an opaque space induced by a query or strategy that is
+            called on all model responses that are not tool calls, and
+            which returns either a final response to be returned, or an
+            error to be transmitted to the model as feedback (as an
+            `Error` value with an absent or serializable `meta` field).
+        tools: a mapping from supported tool interfaces to
+            implementations. Tools themselves can be implemented using
+            arbitrary strategies or queries, allowing the integration of
+            horizontal and vertical LLM pipelines.
+        inner_policy_type: Ambient inner policy type. This information
+            is not used at runtime but it can be provided to help type
+            inference when necessary.
     """
 
     prefix: dp.AnswerPrefix = []

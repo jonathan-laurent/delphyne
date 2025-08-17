@@ -13,7 +13,7 @@ from delphyne.stdlib.nodes import spawn_node
 from delphyne.stdlib.opaque import Opaque, OpaqueSpace
 from delphyne.stdlib.policies import log, search_policy
 
-# For readability of the `Abduction` definition
+# For readability of the `Abduction` node definition
 type _Fact = Any
 type _Proof = Any
 type _Feedback = Any

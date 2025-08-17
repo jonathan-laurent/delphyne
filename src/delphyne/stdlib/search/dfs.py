@@ -19,10 +19,16 @@ def dfs[P, T](
     max_branching: int | None = None,
 ) -> StreamGen[T]:
     """
-    Depth-first search
+    The Standard Depth-First Search Algorithm.
 
-    If set, `max_depth` defines the maximum number of branching nodes
-    that can be traversed in a path to success.
+    Whenever a branching node is encountered, branching candidates are
+    lazily enumerated and the corresponding child recursively searched.
+
+    Attributes:
+        max_depth (optional): maximum number of branching nodes
+            that can be traversed in a path to success.
+        max_branching (optional): maximum number of children explored at
+            each branching node.
     """
     assert max_branching is None or max_branching > 0
     match tree.node:
@@ -52,6 +58,13 @@ def par_dfs[P, T](
     env: PolicyEnv,
     policy: P,
 ) -> StreamGen[T]:
+    """
+    Parallel Depth-First Search.
+
+    Whenever a branching node is encountered, all branching candidates
+    are computed at once and the associated children are explored in
+    parallel.
+    """
     match tree.node:
         case Success(x):
             yield Solution(x)

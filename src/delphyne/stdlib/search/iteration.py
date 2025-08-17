@@ -1,3 +1,7 @@
+"""
+Iteratively calling a strategy or query.
+"""
+
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Any, cast
@@ -12,6 +16,10 @@ from delphyne.stdlib.streams import StreamTransformer
 
 @dataclass
 class Iteration(dp.Node):
+    """
+    Node type for the singleton trees induced by `iterate`.
+    """
+
     next: Callable[
         [dp.Tracked[Any] | None],
         OpaqueSpace[Any, tuple[Any | None, Any]],
@@ -39,7 +47,7 @@ def _iterate[P, S, T](
 
 
 @search_policy
-def search_iteration[P, T](
+def _search_iteration[P, T](
     tree: dp.Tree[Iteration | Fail, P, T],
     env: dp.PolicyEnv,
     policy: P,
@@ -70,8 +78,29 @@ def iterate[P, S, T](
     next: Callable[[S | None], Opaque[P, tuple[T | None, S]]],
     transform_stream: Callable[[P], StreamTransformer | None] | None = None,
 ) -> Opaque[P, T]:
+    """
+    Iteratively call a strategy or query, repeatedly feeding back the
+    last call's output state into a new call and yielding values along
+    the way.
+
+    A standard use case is to repeatedly call a query or strategy with a
+    blacklist of previously generated values, so as to produce diverse
+    success values.
+
+    Arguments:
+        next: A parametric opaque space, induced by a query or stratey
+            that takes a state as an input (or `None` initially) and
+            outputs a new state, along with a generated value.
+        transform_stream: An optional mapping from the inner policy to a
+            stream transformer to be applied to the resulting stream of
+            generated values.
+
+    Returns:
+        An opaque space enumerating all generated values.
+    """
+
     def iterate_policy(inner_policy: P):
-        policy = search_iteration()
+        policy = _search_iteration()
         if transform_stream is not None:
             trans = transform_stream(inner_policy)
             if trans is not None:

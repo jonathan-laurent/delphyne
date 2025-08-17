@@ -17,6 +17,14 @@ def sample_and_proceed[N: dp.Node, P, T](
     policy: P,
     proceed_with: dp.AbstractSearchPolicy[Branch | N],
 ) -> dp.StreamGen[T]:
+    """
+    For a tree whose root is a branching node over a classification
+    result, probabilistically sample a category and proceed to search
+    the corresponding child with a given search policy.
+
+    TODO: using this policy in a loop is wasteful and leads to
+    evaluating the classifier multiple times.
+    """
     match tree.node:
         case dp.Success(x):
             yield dp.Solution(x)
