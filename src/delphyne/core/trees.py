@@ -774,7 +774,7 @@ class Tree(Generic[N, P, T]):
             leaf or a node of type compatible with signature `N`.
         child: A function that maps an action (i.e., a local value) to a
             child tree.
-        ref: A global reference to the current tree.
+        ref: A global reference to the node.
 
     !!! info "Locality Invariant"
         Only *local values* can be used as actions (passed to `child`)
@@ -785,7 +785,7 @@ class Tree(Generic[N, P, T]):
         node without being provided additional context. It is also a key
         assumption for establishing the completeness of the
         demonstration language (i.e., a demonstration with a single `run
-        | success` test can always be extracted from a successfulrun of
+        | success` test can always be extracted from a successful run of
         an oracular program).
     """
 
@@ -803,8 +803,7 @@ class Tree(Generic[N, P, T]):
         of a tree.
 
         This is a pure method that does not modify its arguments. It is
-        useful to implement tree transformers such as `elim_join` and
-        `elim_compute`.
+        useful to implement tree transformers such as `elim_compute`.
         """
 
         def child(action: Value) -> Tree[M, P, T]:

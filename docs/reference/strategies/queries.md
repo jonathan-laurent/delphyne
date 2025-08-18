@@ -1,4 +1,4 @@
-# Queries
+# Queries and Chats
 
 <!-- Covers core.queries, core.chat -->
 

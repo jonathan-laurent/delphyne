@@ -23,9 +23,16 @@ from delphyne.utils.yaml import pretty_yaml
 STATUS_REFRESH_PERIOD_IN_SECONDS = 1.0
 
 
-class DelphyneApp:
+class DelphyneCLI:
     """
     The Delphyne Command Line Interface.
+
+    The `delphyne` package features a `delphyne` command line
+    application that is automatically generated from the `DelphyneCLI`
+    class using [fire](https://github.com/google/python-fire). In
+    particular, this application can be used to check demonstration
+    files, execute command files, and launch the Delphyne language
+    server.
     """
 
     def __init__(
@@ -207,7 +214,7 @@ class DelphyneApp:
 
 
 def main():
-    fire.Fire(DelphyneApp)  # type: ignore
+    fire.Fire(DelphyneCLI)  # type: ignore
 
 
 if __name__ == "__main__":

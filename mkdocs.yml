@@ -37,6 +37,7 @@ plugins:
             show_root_full_path: false
             show_root_heading: true
             heading_level: 3
+            members_order: source
             show_signature_annotations: true  # show types in signatures
             separate_signature: true  # show signatures in separate blocks
             filters: ["!^_"]  # do not show private members
@@ -86,16 +87,17 @@ nav:
   - how-to-guides.md
   - Reference:
     # - reference/index.md
-    - Strategies:
-      - Trees: reference/strategies/trees.md
-      - Queries: reference/strategies/queries.md
-      - Traces: reference/strategies/traces.md
-      - Misc: reference/strategies/misc.md
-    - Policies:
+    - Strategy Language:
+      - Trees and Spaces: reference/strategies/trees.md
+      - Strategies and Reification: reference/strategies/strategies.md
+      - Queries and Chats: reference/strategies/queries.md
+      - References and Traces: reference/strategies/traces.md
+      - Miscellaneous: reference/strategies/misc.md
+    - Policy Language:
       - Definitions: reference/policies/definitions.md
       - Search Streams: reference/policies/streams.md
-      - Environments: reference/policies/envs.md
-    - Demonstrations:
+      - Policy Environments: reference/policies/envs.md
+    - Demonstration Language:
       - Definitions: reference/demos/definitions.md
       - Interpreter: reference/demos/interpreter.md
     - Standard Library:
@@ -106,5 +108,6 @@ nav:
       - Algorithms: reference/stdlib/algorithms.md
       - Commands: reference/stdlib/commands.md
       - Experiments: reference/stdlib/experiments.md
+    - Delphyne CLI: reference/cli.md
 
 # TODO: add `examples` section

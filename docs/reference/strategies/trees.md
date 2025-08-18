@@ -1,4 +1,4 @@
-# Strategies and Trees
+# Trees and Spaces
 
 <!-- Covers core.trees, core.node_fields, core.reify -->
 
@@ -15,6 +15,11 @@
 ::: delphyne.NavigationError
 
 ## Node Fields
+
+::: delphyne.core.node_fields
+    options:
+      show_root_full_path: true
+      members: false
 
 ::: delphyne.core.node_fields.NodeFields
 
@@ -52,30 +57,8 @@
 
 ::: delphyne.SpaceBuilder
 
-## Strategies
-
-::: delphyne.Strategy
-
-::: delphyne.NodeBuilder
-
-::: delphyne.StrategyComp
-
-## Reification
-
-::: delphyne.reify
-
-::: delphyne.StrategyException
-
 ## Miscellaneous
 
 ::: delphyne.ComputationNode
 
 ::: delphyne.AbstractTreeTransformer
-
-## Internals
-
-::: delphyne.core.trees.NestedTreeSpawner
-
-::: delphyne.core.trees.QuerySpawner
-
-::: delphyne.core.trees.AbstractBuilderExecutor

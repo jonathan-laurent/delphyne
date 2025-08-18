@@ -101,7 +101,7 @@ class AbstractQuery[T](ABC):
     A more featureful subclass is provided in the standard library
     (`Query`), which uses reflection for convenience.
 
-    ??? "Answer Modes"
+    !!! info "Answer Modes"
         Queries are allowed to define multiple answer modes
         (`AnswerMode`), each mode being possibly associated with
         different settings and with a different parser.

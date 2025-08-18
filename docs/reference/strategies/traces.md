@@ -1,8 +1,8 @@
-# Traces and References
+# References and Traces
 
 <!-- Covers core.refs, core.traces -->
 
-## References Module
+## References Summary
 
 ::: delphyne.core.refs
     options:
