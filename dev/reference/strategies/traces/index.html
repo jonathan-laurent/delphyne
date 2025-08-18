@@ -20,7 +20,7 @@
     
     
       
-        <title>Traces - Delphyne</title>
+        <title>References and Traces - Delphyne</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#traces-and-references" class="md-skip">
+        <a href="#references-and-traces" class="md-skip">
           Skip to content
         </a>
       
@@ -115,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Traces
+              References and Traces
             
           </span>
         </div>
@@ -439,6 +439,8 @@
       
         
       
+        
+      
     
     
     
@@ -489,6 +491,8 @@
       
         
       
+        
+      
     
     
     
@@ -505,7 +509,7 @@
   
   
   <span class="md-ellipsis">
-    Strategies
+    Strategy Language
     
   </span>
   
@@ -516,7 +520,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4_1">
             <span class="md-nav__icon md-icon"></span>
-            Strategies
+            Strategy Language
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -532,7 +536,30 @@
   
   
   <span class="md-ellipsis">
-    Trees
+    Trees and Spaces
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../strategies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Strategies and Reification
     
   </span>
   
@@ -555,7 +582,7 @@
   
   
   <span class="md-ellipsis">
-    Queries
+    Queries and Chats
     
   </span>
   
@@ -587,7 +614,7 @@
   
   
   <span class="md-ellipsis">
-    Traces
+    References and Traces
     
   </span>
   
@@ -600,7 +627,7 @@
   
   
   <span class="md-ellipsis">
-    Traces
+    References and Traces
     
   </span>
   
@@ -623,13 +650,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#references-module" class="md-nav__link">
+  <a href="#references-summary" class="md-nav__link">
     <span class="md-ellipsis">
-      References Module
+      References Summary
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="References Module">
+    <nav class="md-nav" aria-label="References Summary">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -973,9 +1000,63 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#delphyne.core.traces.Trace.fresh_or_cached_node_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      fresh_or_cached_node_id
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.core.traces.Trace.fresh_or_cached_answer_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      fresh_or_cached_answer_id
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.core.traces.Trace.register_query" class="md-nav__link">
+    <span class="md-ellipsis">
+      register_query
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.core.traces.Trace.export" class="md-nav__link">
+    <span class="md-ellipsis">
+      export
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#delphyne.core.traces.Trace.check_consistency" class="md-nav__link">
     <span class="md-ellipsis">
       check_consistency
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.core.traces.Trace.convert_location" class="md-nav__link">
+    <span class="md-ellipsis">
+      convert_location
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.core.traces.Trace.convert_query_origin" class="md-nav__link">
+    <span class="md-ellipsis">
+      convert_query_origin
     </span>
   </a>
   
@@ -1009,33 +1090,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#delphyne.core.traces.Trace.convert_location" class="md-nav__link">
-    <span class="md-ellipsis">
-      convert_location
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#delphyne.core.traces.Trace.convert_query_origin" class="md-nav__link">
-    <span class="md-ellipsis">
-      convert_query_origin
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#delphyne.core.traces.Trace.expand_node_id" class="md-nav__link">
-    <span class="md-ellipsis">
-      expand_node_id
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#delphyne.core.traces.Trace.expand_space_ref" class="md-nav__link">
     <span class="md-ellipsis">
       expand_space_ref
@@ -1054,36 +1108,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#delphyne.core.traces.Trace.export" class="md-nav__link">
+  <a href="#delphyne.core.traces.Trace.expand_node_id" class="md-nav__link">
     <span class="md-ellipsis">
-      export
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#delphyne.core.traces.Trace.fresh_or_cached_answer_id" class="md-nav__link">
-    <span class="md-ellipsis">
-      fresh_or_cached_answer_id
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#delphyne.core.traces.Trace.fresh_or_cached_node_id" class="md-nav__link">
-    <span class="md-ellipsis">
-      fresh_or_cached_node_id
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#delphyne.core.traces.Trace.register_query" class="md-nav__link">
-    <span class="md-ellipsis">
-      register_query
+      expand_node_id
     </span>
   </a>
   
@@ -1174,7 +1201,7 @@
   
   
   <span class="md-ellipsis">
-    Misc
+    Miscellaneous
     
   </span>
   
@@ -1224,7 +1251,7 @@
   
   
   <span class="md-ellipsis">
-    Policies
+    Policy Language
     
   </span>
   
@@ -1235,7 +1262,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_2">
             <span class="md-nav__icon md-icon"></span>
-            Policies
+            Policy Language
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1297,7 +1324,7 @@
   
   
   <span class="md-ellipsis">
-    Environments
+    Policy Environments
     
   </span>
   
@@ -1345,7 +1372,7 @@
   
   
   <span class="md-ellipsis">
-    Demonstrations
+    Demonstration Language
     
   </span>
   
@@ -1356,7 +1383,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_3">
             <span class="md-nav__icon md-icon"></span>
-            Demonstrations
+            Demonstration Language
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1637,6 +1664,29 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Delphyne CLI
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1671,13 +1721,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#references-module" class="md-nav__link">
+  <a href="#references-summary" class="md-nav__link">
     <span class="md-ellipsis">
-      References Module
+      References Summary
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="References Module">
+    <nav class="md-nav" aria-label="References Summary">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -2021,9 +2071,63 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#delphyne.core.traces.Trace.fresh_or_cached_node_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      fresh_or_cached_node_id
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.core.traces.Trace.fresh_or_cached_answer_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      fresh_or_cached_answer_id
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.core.traces.Trace.register_query" class="md-nav__link">
+    <span class="md-ellipsis">
+      register_query
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.core.traces.Trace.export" class="md-nav__link">
+    <span class="md-ellipsis">
+      export
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#delphyne.core.traces.Trace.check_consistency" class="md-nav__link">
     <span class="md-ellipsis">
       check_consistency
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.core.traces.Trace.convert_location" class="md-nav__link">
+    <span class="md-ellipsis">
+      convert_location
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.core.traces.Trace.convert_query_origin" class="md-nav__link">
+    <span class="md-ellipsis">
+      convert_query_origin
     </span>
   </a>
   
@@ -2057,33 +2161,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#delphyne.core.traces.Trace.convert_location" class="md-nav__link">
-    <span class="md-ellipsis">
-      convert_location
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#delphyne.core.traces.Trace.convert_query_origin" class="md-nav__link">
-    <span class="md-ellipsis">
-      convert_query_origin
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#delphyne.core.traces.Trace.expand_node_id" class="md-nav__link">
-    <span class="md-ellipsis">
-      expand_node_id
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#delphyne.core.traces.Trace.expand_space_ref" class="md-nav__link">
     <span class="md-ellipsis">
       expand_space_ref
@@ -2102,36 +2179,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#delphyne.core.traces.Trace.export" class="md-nav__link">
+  <a href="#delphyne.core.traces.Trace.expand_node_id" class="md-nav__link">
     <span class="md-ellipsis">
-      export
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#delphyne.core.traces.Trace.fresh_or_cached_answer_id" class="md-nav__link">
-    <span class="md-ellipsis">
-      fresh_or_cached_answer_id
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#delphyne.core.traces.Trace.fresh_or_cached_node_id" class="md-nav__link">
-    <span class="md-ellipsis">
-      fresh_or_cached_node_id
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#delphyne.core.traces.Trace.register_query" class="md-nav__link">
-    <span class="md-ellipsis">
-      register_query
+      expand_node_id
     </span>
   </a>
   
@@ -2217,10 +2267,10 @@
 
 
 
-<h1 id="traces-and-references">Traces and References</h1>
+<h1 id="references-and-traces">References and Traces</h1>
 <!-- Covers core.refs, core.traces -->
 
-<h2 id="references-module">References Module</h2>
+<h2 id="references-summary">References Summary</h2>
 
 
 <div class="doc doc-object doc-module">
@@ -2258,7 +2308,7 @@ single, global origin.</p>
 <p>In addition, three kinds of references can be distinguished:</p>
 <ul>
 <li><strong>Full references</strong>: the default kind of references produced by
-      <a class="autorefs autorefs-internal" title="reify" href="../trees/#delphyne.reify"><code>reify</code></a>. Query answers are stored as strings and elements of
+      <a class="autorefs autorefs-internal" title="reify" href="../strategies/#delphyne.reify"><code>reify</code></a>. Query answers are stored as strings and elements of
       spaces induced by strategies are denoted by sequences of value
       references.</li>
 <li><strong>Id-based references</strong>: shorter references, where query answers and
@@ -2710,7 +2760,7 @@ given schema) instead of plain text.</p>
         <p>A node reference is either a path or a node identifier.</p>
 <p>Only one of these forms may be allowed depending on the context (e.g. in
 the id-based references used for exporting traces, only node identifiers
-are used, while in the full references attached to trees by <a class="autorefs autorefs-internal" title="reify" href="../trees/#delphyne.reify"><code>reify</code></a>,
+are used, while in the full references attached to trees by <a class="autorefs autorefs-internal" title="reify" href="../strategies/#delphyne.reify"><code>reify</code></a>,
 only paths are used).</p>
 
     </div>
@@ -4865,6 +4915,250 @@ along with origin information on the associated query.</p>
 <div class="doc doc-object doc-function">
 
 
+<h4 id="delphyne.core.traces.Trace.fresh_or_cached_node_id" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">fresh_or_cached_node_id</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">fresh_or_cached_node_id</span><span class="p">(</span><span class="n">origin</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeOrigin (delphyne.core.refs.NodeOrigin)" href="#delphyne.core.refs.NodeOrigin">NodeOrigin</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeId
+
+
+  
+      dataclass
+   (delphyne.core.refs.NodeId)" href="#delphyne.core.refs.NodeId">NodeId</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Obtain the identifier of a node described by its origin.
+Create a new identifier on the fly if it does not exist yet.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fresh_or_cached_node_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origin</span><span class="p">:</span> <span class="n">refs</span><span class="o">.</span><span class="n">NodeOrigin</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">refs</span><span class="o">.</span><span class="n">NodeId</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Obtain the identifier of a node described by its origin.</span>
+<span class="sd">    Create a new identifier on the fly if it does not exist yet.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_ids</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_ids</span><span class="p">[</span><span class="n">origin</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_node_id</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="nb">id</span> <span class="o">=</span> <span class="n">refs</span><span class="o">.</span><span class="n">NodeId</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_node_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">origin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_ids</span><span class="p">[</span><span class="n">origin</span><span class="p">]</span> <span class="o">=</span> <span class="nb">id</span>
+        <span class="k">return</span> <span class="nb">id</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.core.traces.Trace.fresh_or_cached_answer_id" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">fresh_or_cached_answer_id</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">fresh_or_cached_answer_id</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Answer
+
+
+  
+      dataclass
+   (delphyne.core.refs.Answer)" href="#delphyne.Answer">Answer</a></span><span class="p">,</span> <span class="n">origin</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="QueryOrigin
+
+
+  
+      dataclass
+   (delphyne.core.traces.QueryOrigin)" href="#delphyne.core.traces.QueryOrigin">QueryOrigin</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="AnswerId
+
+
+  
+      dataclass
+   (delphyne.core.refs.AnswerId)" href="#delphyne.core.refs.AnswerId">AnswerId</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Obtain the identifier of an answer, given its content and the
+origin of the query that it corresponds to. Create a new, fresh
+identifier on the fly if it does not exist yet.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fresh_or_cached_answer_id</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">answer</span><span class="p">:</span> <span class="n">refs</span><span class="o">.</span><span class="n">Answer</span><span class="p">,</span> <span class="n">origin</span><span class="p">:</span> <span class="n">QueryOrigin</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">refs</span><span class="o">.</span><span class="n">AnswerId</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Obtain the identifier of an answer, given its content and the</span>
+<span class="sd">    origin of the query that it corresponds to. Create a new, fresh</span>
+<span class="sd">    identifier on the fly if it does not exist yet.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">origin</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">answer_ids</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">answer_ids</span><span class="p">[</span><span class="n">origin</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">answer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">answer_ids</span><span class="p">[</span><span class="n">origin</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">answer_ids</span><span class="p">[</span><span class="n">origin</span><span class="p">][</span><span class="n">answer</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_answer_id</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="nb">id</span> <span class="o">=</span> <span class="n">refs</span><span class="o">.</span><span class="n">AnswerId</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_answer_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">answers</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">answer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">answer_ids</span><span class="p">[</span><span class="n">origin</span><span class="p">][</span><span class="n">answer</span><span class="p">]</span> <span class="o">=</span> <span class="nb">id</span>
+        <span class="k">return</span> <span class="nb">id</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.core.traces.Trace.register_query" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">register_query</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">register_query</span><span class="p">(</span><span class="n">origin</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="QueryOrigin
+
+
+  
+      dataclass
+   (delphyne.core.traces.QueryOrigin)" href="#delphyne.core.traces.QueryOrigin">QueryOrigin</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Ensure that a query appears in the trace, even if not answers
+are associated with it yet.</p>
+<p>This is particularly useful for the demonstration interpreter.
+Indeed, when a test gets stuck on an unanswered query, it is
+desirable for this query to be part of the returned trace so
+that the user can visualize it.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">register_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origin</span><span class="p">:</span> <span class="n">QueryOrigin</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Ensure that a query appears in the trace, even if not answers</span>
+<span class="sd">    are associated with it yet.</span>
+
+<span class="sd">    This is particularly useful for the demonstration interpreter.</span>
+<span class="sd">    Indeed, when a test gets stuck on an unanswered query, it is</span>
+<span class="sd">    desirable for this query to be part of the returned trace so</span>
+<span class="sd">    that the user can visualize it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">origin</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">answer_ids</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">answer_ids</span><span class="p">[</span><span class="n">origin</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.core.traces.Trace.export" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">export</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">export</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="ExportableTrace
+
+
+  
+      dataclass
+   (delphyne.core.traces.ExportableTrace)" href="#delphyne.core.traces.ExportableTrace">ExportableTrace</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Export a trace into a lightweight, serializable format.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExportableTrace</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Export a trace into a lightweight, serializable format.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nb">id</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">pprint</span><span class="o">.</span><span class="n">node_origin</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span>
+        <span class="k">for</span> <span class="nb">id</span><span class="p">,</span> <span class="n">origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="n">queries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ExportableQueryInfo</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">q</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">answer_ids</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">ref</span> <span class="o">=</span> <span class="n">pprint</span><span class="o">.</span><span class="n">space_ref</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">ref</span><span class="p">)</span>
+        <span class="n">answers</span> <span class="o">=</span> <span class="p">{</span><span class="nb">id</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">queries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ExportableQueryInfo</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">answers</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">ExportableTrace</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">queries</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h4 id="delphyne.core.traces.Trace.check_consistency" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">check_consistency</span>
 
@@ -4904,6 +5198,106 @@ original one.</p>
     <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
         <span class="n">expanded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand_node_id</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_global_node_path</span><span class="p">(</span><span class="n">expanded</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.core.traces.Trace.convert_location" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">convert_location</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">convert_location</span><span class="p">(</span><span class="n">location</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Location
+
+
+  
+      dataclass
+   (delphyne.core.traces.Location)" href="#delphyne.core.traces.Location">Location</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="ShortLocation
+
+
+  
+      dataclass
+   (delphyne.core.traces.ShortLocation)" href="#delphyne.core.traces.ShortLocation">ShortLocation</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Convert a full location into an id-based one.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">convert_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="n">Location</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ShortLocation</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a full location into an id-based one.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_global_node_path</span><span class="p">(</span><span class="n">location</span><span class="o">.</span><span class="n">node</span><span class="p">)</span>
+    <span class="n">space</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">location</span><span class="o">.</span><span class="n">space</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">space</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_space_ref</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">location</span><span class="o">.</span><span class="n">space</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ShortLocation</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">space</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.core.traces.Trace.convert_query_origin" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">convert_query_origin</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">convert_query_origin</span><span class="p">(</span><span class="n">ref</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="GlobalSpacePath (delphyne.core.refs.GlobalSpacePath)" href="#delphyne.core.refs.GlobalSpacePath">GlobalSpacePath</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="QueryOrigin
+
+
+  
+      dataclass
+   (delphyne.core.traces.QueryOrigin)" href="#delphyne.core.traces.QueryOrigin">QueryOrigin</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Convert a full, global space reference denoting a quey origin
+into an id-based reference.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">convert_query_origin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="p">:</span> <span class="n">refs</span><span class="o">.</span><span class="n">GlobalSpacePath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QueryOrigin</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a full, global space reference denoting a quey origin</span>
+<span class="sd">    into an id-based reference.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_global_node_path</span><span class="p">(</span><span class="n">ref</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">space</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_space_ref</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">ref</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">origin</span> <span class="o">=</span> <span class="n">QueryOrigin</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">space</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">register_query</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">origin</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -5066,152 +5460,6 @@ original one.</p>
 <div class="doc doc-object doc-function">
 
 
-<h4 id="delphyne.core.traces.Trace.convert_location" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">convert_location</span>
-
-
-</h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">convert_location</span><span class="p">(</span><span class="n">location</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Location
-
-
-  
-      dataclass
-   (delphyne.core.traces.Location)" href="#delphyne.core.traces.Location">Location</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="ShortLocation
-
-
-  
-      dataclass
-   (delphyne.core.traces.ShortLocation)" href="#delphyne.core.traces.ShortLocation">ShortLocation</a></span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>Convert a full location into an id-based one.</p>
-
-
-            <details class="quote">
-              <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">convert_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="n">Location</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ShortLocation</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convert a full location into an id-based one.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_global_node_path</span><span class="p">(</span><span class="n">location</span><span class="o">.</span><span class="n">node</span><span class="p">)</span>
-    <span class="n">space</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">location</span><span class="o">.</span><span class="n">space</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">space</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_space_ref</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">location</span><span class="o">.</span><span class="n">space</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">ShortLocation</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">space</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h4 id="delphyne.core.traces.Trace.convert_query_origin" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">convert_query_origin</span>
-
-
-</h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">convert_query_origin</span><span class="p">(</span><span class="n">ref</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="GlobalSpacePath (delphyne.core.refs.GlobalSpacePath)" href="#delphyne.core.refs.GlobalSpacePath">GlobalSpacePath</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="QueryOrigin
-
-
-  
-      dataclass
-   (delphyne.core.traces.QueryOrigin)" href="#delphyne.core.traces.QueryOrigin">QueryOrigin</a></span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>Convert a full, global space reference denoting a quey origin
-into an id-based reference.</p>
-
-
-            <details class="quote">
-              <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">convert_query_origin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="p">:</span> <span class="n">refs</span><span class="o">.</span><span class="n">GlobalSpacePath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QueryOrigin</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convert a full, global space reference denoting a quey origin</span>
-<span class="sd">    into an id-based reference.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_global_node_path</span><span class="p">(</span><span class="n">ref</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">space</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_space_ref</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">ref</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">origin</span> <span class="o">=</span> <span class="n">QueryOrigin</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">space</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">register_query</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">origin</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h4 id="delphyne.core.traces.Trace.expand_node_id" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">expand_node_id</span>
-
-
-</h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">expand_node_id</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeId
-
-
-  
-      dataclass
-   (delphyne.core.refs.NodeId)" href="#delphyne.core.refs.NodeId">NodeId</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="GlobalNodePath (delphyne.core.refs.GlobalNodePath)" href="#delphyne.core.refs.GlobalNodePath">GlobalNodePath</a></span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>Convert a node identifier into a full, global node reference.</p>
-
-
-            <details class="quote">
-              <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">370</span>
-<span class="normal">371</span>
-<span class="normal">372</span>
-<span class="normal">373</span>
-<span class="normal">374</span>
-<span class="normal">375</span>
-<span class="normal">376</span>
-<span class="normal">377</span>
-<span class="normal">378</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">expand_node_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">refs</span><span class="o">.</span><span class="n">NodeId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">refs</span><span class="o">.</span><span class="n">GlobalNodePath</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Convert a node identifier into a full, global node reference.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">rev_path</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">refs</span><span class="o">.</span><span class="n">SpaceRef</span><span class="p">,</span> <span class="n">refs</span><span class="o">.</span><span class="n">NodePath</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">while</span> <span class="nb">id</span> <span class="o">!=</span> <span class="n">Trace</span><span class="o">.</span><span class="n">GLOBAL_ORIGIN_ID</span><span class="p">:</span>
-        <span class="nb">id</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recover_path</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
-        <span class="n">rev_path</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">space</span><span class="p">,</span> <span class="n">path</span><span class="p">))</span>
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">rev_path</span><span class="p">))</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
 <h4 id="delphyne.core.traces.Trace.expand_space_ref" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">expand_space_ref</span>
 
@@ -5324,241 +5572,43 @@ relative to a given node.</p>
 <div class="doc doc-object doc-function">
 
 
-<h4 id="delphyne.core.traces.Trace.export" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">export</span>
+<h4 id="delphyne.core.traces.Trace.expand_node_id" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">expand_node_id</span>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">export</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="ExportableTrace
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">expand_node_id</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeId
 
 
   
       dataclass
-   (delphyne.core.traces.ExportableTrace)" href="#delphyne.core.traces.ExportableTrace">ExportableTrace</a></span>
+   (delphyne.core.refs.NodeId)" href="#delphyne.core.refs.NodeId">NodeId</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="GlobalNodePath (delphyne.core.refs.GlobalNodePath)" href="#delphyne.core.refs.GlobalNodePath">GlobalNodePath</a></span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>Export a trace into a lightweight, serializable format.</p>
+        <p>Convert a node identifier into a full, global node reference.</p>
 
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExportableTrace</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">expand_node_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">refs</span><span class="o">.</span><span class="n">NodeId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">refs</span><span class="o">.</span><span class="n">GlobalNodePath</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Export a trace into a lightweight, serializable format.</span>
+<span class="sd">    Convert a node identifier into a full, global node reference.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">nodes</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="nb">id</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">pprint</span><span class="o">.</span><span class="n">node_origin</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span>
-        <span class="k">for</span> <span class="nb">id</span><span class="p">,</span> <span class="n">origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-    <span class="p">}</span>
-    <span class="n">queries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ExportableQueryInfo</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">q</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">answer_ids</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">ref</span> <span class="o">=</span> <span class="n">pprint</span><span class="o">.</span><span class="n">space_ref</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">ref</span><span class="p">)</span>
-        <span class="n">answers</span> <span class="o">=</span> <span class="p">{</span><span class="nb">id</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-        <span class="n">queries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ExportableQueryInfo</span><span class="p">(</span><span class="n">q</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">answers</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">ExportableTrace</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">queries</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h4 id="delphyne.core.traces.Trace.fresh_or_cached_answer_id" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">fresh_or_cached_answer_id</span>
-
-
-</h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">fresh_or_cached_answer_id</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Answer
-
-
-  
-      dataclass
-   (delphyne.core.refs.Answer)" href="#delphyne.Answer">Answer</a></span><span class="p">,</span> <span class="n">origin</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="QueryOrigin
-
-
-  
-      dataclass
-   (delphyne.core.traces.QueryOrigin)" href="#delphyne.core.traces.QueryOrigin">QueryOrigin</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="AnswerId
-
-
-  
-      dataclass
-   (delphyne.core.refs.AnswerId)" href="#delphyne.core.refs.AnswerId">AnswerId</a></span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>Obtain the identifier of an answer, given its content and the
-origin of the query that it corresponds to. Create a new, fresh
-identifier on the fly if it does not exist yet.</p>
-
-
-            <details class="quote">
-              <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fresh_or_cached_answer_id</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">answer</span><span class="p">:</span> <span class="n">refs</span><span class="o">.</span><span class="n">Answer</span><span class="p">,</span> <span class="n">origin</span><span class="p">:</span> <span class="n">QueryOrigin</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">refs</span><span class="o">.</span><span class="n">AnswerId</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Obtain the identifier of an answer, given its content and the</span>
-<span class="sd">    origin of the query that it corresponds to. Create a new, fresh</span>
-<span class="sd">    identifier on the fly if it does not exist yet.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">origin</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">answer_ids</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">answer_ids</span><span class="p">[</span><span class="n">origin</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">if</span> <span class="n">answer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">answer_ids</span><span class="p">[</span><span class="n">origin</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">answer_ids</span><span class="p">[</span><span class="n">origin</span><span class="p">][</span><span class="n">answer</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_last_answer_id</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="nb">id</span> <span class="o">=</span> <span class="n">refs</span><span class="o">.</span><span class="n">AnswerId</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_answer_id</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">answers</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">answer</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">answer_ids</span><span class="p">[</span><span class="n">origin</span><span class="p">][</span><span class="n">answer</span><span class="p">]</span> <span class="o">=</span> <span class="nb">id</span>
-        <span class="k">return</span> <span class="nb">id</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h4 id="delphyne.core.traces.Trace.fresh_or_cached_node_id" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">fresh_or_cached_node_id</span>
-
-
-</h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">fresh_or_cached_node_id</span><span class="p">(</span><span class="n">origin</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeOrigin (delphyne.core.refs.NodeOrigin)" href="#delphyne.core.refs.NodeOrigin">NodeOrigin</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeId
-
-
-  
-      dataclass
-   (delphyne.core.refs.NodeId)" href="#delphyne.core.refs.NodeId">NodeId</a></span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>Obtain the identifier of a node described by its origin.
-Create a new identifier on the fly if it does not exist yet.</p>
-
-
-            <details class="quote">
-              <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fresh_or_cached_node_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origin</span><span class="p">:</span> <span class="n">refs</span><span class="o">.</span><span class="n">NodeOrigin</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">refs</span><span class="o">.</span><span class="n">NodeId</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Obtain the identifier of a node described by its origin.</span>
-<span class="sd">    Create a new identifier on the fly if it does not exist yet.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">origin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_ids</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_ids</span><span class="p">[</span><span class="n">origin</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_last_node_id</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="nb">id</span> <span class="o">=</span> <span class="n">refs</span><span class="o">.</span><span class="n">NodeId</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_node_id</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">origin</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">node_ids</span><span class="p">[</span><span class="n">origin</span><span class="p">]</span> <span class="o">=</span> <span class="nb">id</span>
-        <span class="k">return</span> <span class="nb">id</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h4 id="delphyne.core.traces.Trace.register_query" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">register_query</span>
-
-
-</h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">register_query</span><span class="p">(</span><span class="n">origin</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="QueryOrigin
-
-
-  
-      dataclass
-   (delphyne.core.traces.QueryOrigin)" href="#delphyne.core.traces.QueryOrigin">QueryOrigin</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>Ensure that a query appears in the trace, even if not answers
-are associated with it yet.</p>
-<p>This is particularly useful for the demonstration interpreter.
-Indeed, when a test gets stuck on an unanswered query, it is
-desirable for this query to be part of the returned trace so
-that the user can visualize it.</p>
-
-
-            <details class="quote">
-              <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">register_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origin</span><span class="p">:</span> <span class="n">QueryOrigin</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Ensure that a query appears in the trace, even if not answers</span>
-<span class="sd">    are associated with it yet.</span>
-
-<span class="sd">    This is particularly useful for the demonstration interpreter.</span>
-<span class="sd">    Indeed, when a test gets stuck on an unanswered query, it is</span>
-<span class="sd">    desirable for this query to be part of the returned trace so</span>
-<span class="sd">    that the user can visualize it.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">origin</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">answer_ids</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">answer_ids</span><span class="p">[</span><span class="n">origin</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">rev_path</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">refs</span><span class="o">.</span><span class="n">SpaceRef</span><span class="p">,</span> <span class="n">refs</span><span class="o">.</span><span class="n">NodePath</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="nb">id</span> <span class="o">!=</span> <span class="n">Trace</span><span class="o">.</span><span class="n">GLOBAL_ORIGIN_ID</span><span class="p">:</span>
+        <span class="nb">id</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recover_path</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+        <span class="n">rev_path</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">space</span><span class="p">,</span> <span class="n">path</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">rev_path</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
