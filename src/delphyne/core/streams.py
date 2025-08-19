@@ -200,7 +200,7 @@ class Spent:
     Attributes:
         budget: Amount of budget that was actually spent.
         barrier_id: Identifier of the prior associated `Barrier`
-        message.
+            message.
 
     !!! warning
         Manually yielding `Spent` and `Barrier` messages is error-prone

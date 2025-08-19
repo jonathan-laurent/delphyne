@@ -106,6 +106,7 @@ from delphyne.stdlib.queries import (
     ParserSpecDict,
     ProbInfo,
     Query,
+    QueryConfig,
     QueryConfigDict,
     Response,
     ToolRequests,

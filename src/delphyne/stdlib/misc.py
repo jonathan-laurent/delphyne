@@ -181,7 +181,6 @@ def sequence(
     sequence.
 
     Attributes:
-
     - policies: An iterable of policies, search policies, or prompting
           policies to try in sequence.
     - stop_on_reject: If True, stop the sequence as soon as one policy

@@ -177,8 +177,8 @@ class Action:
     An action associated with a node.
 
     Attributes:
-        ref: Pretty-printed local reference for the action. hints: If
-        the trace results from executing a demonstration,
+        ref: Pretty-printed local reference for the action.
+        hints: If the trace results from executing a demonstration,
             this provides the list of hints that can be used to recover
             the action through navigation. Otherwise, it is `None`. Note
             that this is not identical to `ref.with_hints`. Both could
@@ -261,7 +261,7 @@ class Trace:
     """
     A browsable trace.
 
-    [Raw traces][delpyne.core.traces.Trace] contain all the information
+    [Raw traces][delphyne.core.traces.Trace] contain all the information
     necessary to recompute a trace but are not easily manipulated by
     tools. In comparison, [these][delphyne.analysis.feedback.Trace]
     offer a more redundant but also more explicit view. This module

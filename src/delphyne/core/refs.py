@@ -98,11 +98,11 @@ class Answer:
     is a query and the proposed answer correctly parses.
 
     Attributes:
-        mode: the answer mode (see `AnswerMode`).
-        content: the answer content, which can be a raw string or a
+        mode: The answer mode (see `AnswerMode`).
+        content: The answer content, which can be a raw string or a
             structured answer (see `Structured`).
-        tool_calls: an optional sequence of tool calls.
-        justification: additional explanations for the answers, which
+        tool_calls: An optional sequence of tool calls.
+        justification: Additional explanations for the answers, which
             are not passed to the parser but can be appended at the end
             of the answer in examples. In particular, this is useful
             when defining queries for which the oracle is not asked to
@@ -141,7 +141,7 @@ class SpaceName:
 type AtomicValueRef = IndexedRef | SpaceElementRef
 """
 An atomic value reference is a space element reference that is indexed
-zero or a finite number of times: space_elt_ref[i1][i2]...[in].
+zero or a finite number of times: `space_elt_ref[i1][i2]...[in]`.
 """
 
 
@@ -346,14 +346,14 @@ class Tracked(Generic[T]):
     A tracked value, which pairs a value with a reference.
 
     Attributes:
-        value: the value being tracked. ref: a local reference to the
-        value, relative to the node
+        value: The value being tracked.
+        ref: A local reference to the value, relative to the node
             reference by the `node` field.
-        node: a global reference to the node to which the space that the
+        node: A global reference to the node to which the space that the
             value originates from is attached. In particular, this field
             is useful to check the locality invariant at runtime (e.g.,
             when passing a tracked value to `Tree.child`).
-        type_annot: an optional type annotation for the `value` field.
+        type_annot: An optional type annotation for the `value` field.
             This is mostly used for improving the rendering of values
             when exporting trace information for external tools.
 

@@ -225,8 +225,8 @@ class TemplatesManager:
             query_name: The name of the query for which the prompt is
                 built. Used to determine the template file name, namely
                 "{query_name}.{prompt_kind}.jinja".
-            kind: The kind of prompt (e.g. "system" or "instance") that
-                is being rendered, used to determine the name of the
+            prompt_kind: The kind of prompt (e.g. "system" or "instance")
+                that is being rendered, used to determine the name of the
                 template file to use.
             template_args: A dictionary of arguments to pass to the
                 template. It must not contain key "data", which is

@@ -46,8 +46,8 @@ class TreeMonitor:
     side effects in the form of caching and hooks.
 
     Attributes:
-        cache: a cache for never recomputing the same node twice. hooks:
-        functions to be called every time a new node is created.
+        cache: a cache for never recomputing the same node twice.
+        hooks: functions to be called every time a new node is created.
             For example, hooks can be used to automatically produce a
             trace that keeps track of all visited nodes (see
             `tracer_hook`).

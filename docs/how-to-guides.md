@@ -12,4 +12,4 @@
 
 ## Writing a Conversational Agent
 
-## Performing Expensive Or Non-Replicable Computations in Strategies
+## Performing Expensive Computations in Strategies

@@ -44,7 +44,7 @@ class DelphyneCLI:
     ):
         """
         Arguments:
-            workspace_dir: the workspace directory. If not provided, it
+            workspace_dir: The workspace directory. If not provided, it
                 is deduced for each demonstration or command file by
                 considering the closest transitive parent directory that
                 contains a `delphyne.yaml` file. If no such directory

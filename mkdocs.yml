@@ -41,7 +41,6 @@ plugins:
             show_signature_annotations: true  # show types in signatures
             separate_signature: true  # show signatures in separate blocks
             filters: ["!^_[^_]"] # do not show private members
-            # filters: public
             signature_crossrefs: true  # render links in signatures
             line_length: 88  # line length for signatures
             extra: 

@@ -44,7 +44,7 @@ class StructuredOutputSettings:
 
     Attributes:
         type: Expected type for the output, from which a schema can be
-        derived if provided.
+            derived if provided.
     """
 
     type: ty.TypeAnnot[Any] | ty.NoTypeInfo

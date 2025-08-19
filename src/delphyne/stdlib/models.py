@@ -131,7 +131,6 @@ class RequestOptions(typing.TypedDict, total=False):
     All values are optional.
 
     Attributes:
-
         model: The name of the model to use for the request.
         reasoning_effort: The reasoning effort to use for the request,
             when applicable (e.g., for GPT-5 or o3).
@@ -165,7 +164,6 @@ class Schema:
     The description of a schema for structured output or tool use.
 
     Attributes:
-
         name: Name of the tool or structured output type.
         description: Optional description.
         schema: The JSON schema of the tool or structured output type,
@@ -352,7 +350,6 @@ class LLMRequest:
     An LLM chat completion request.
 
     Attributes:
-
         chat: The chat history.
         num_completions: The number of completions to generate. Note
             that most LLM providers only bill input tokens once,
@@ -380,7 +377,6 @@ class LLMResponse:
     Response to an LLM request.
 
     Attributes:
-
         outputs: Generated completions.
         budget: Budget consumed by the request.
         log_items: Log items generated while evaluating the request.

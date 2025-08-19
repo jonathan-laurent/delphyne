@@ -103,45 +103,45 @@ class Experiment[Config]:
             dataclass that holds all experiment hyperparameters.
 
     Attributes:
-        experiment: the experiment function, which defines a run of an
+        experiment: The experiment function, which defines a run of an
             oracular program for each configuration.
-        output_dir: the directory where all experiment data is stored
+        output_dir: The directory where all experiment data is stored
             (persistent state, results, logs, caches...). The directory
             is created if it does not alredy exist.
-        context: command execution context, which contains the kind of
+        context: Command execution context, which contains the kind of
             information usually provided in the `delphyne.yaml` file
             (experiments do not recognize such files). Note that the
             `cache_root` argument should not be set, since it is
             disregarded and overriden by the `Experiment` class.
-        configs: a sequence of configurations to run. If `None` is
+        configs: A sequence of configurations to run. If `None` is
             provided and the experiment already has a persistent state
             stored on disk, the list of configurations is loaded from
             there upon loading.
-        config_type: the `Config` type, which is either passed
+        config_type: The `Config` type, which is either passed
             explicitly or deduced from the `configs` argument.
-        name: experiment name, which is stored in the persistent state
+        name: Experiment name, which is stored in the persistent state
             file when provided and is otherwise not used.
-        description: experiment description, which is stored in the
+        description: Experiment description, which is stored in the
             persistent state file when provided and is otherwise not used.
-        config_naming: a function for attributing string identifiers to
+        config_naming: A function for attributing string identifiers to
             configurations, which maps a configuration along with a
             fresh UUID to a name. By default, the UUID alone is used.
-        cache_requests: whether or not to enable caching of LLM requests
+        cache_requests: Whether or not to enable caching of LLM requests
             and expensive computations (see `Compute`). When this is
             done, the experiment can be reliably replicated, without
             issuing LLM calls.
-        cache_format: whether to cache requests using a DBM database or
+        cache_format: Whether to cache requests using a DBM database or
             a directory of YAML files.
-        export_raw_trace: whether to export the raw trace for all
+        export_raw_trace: Whether to export the raw trace for all
             configuration runs.
-        export_log: whether to export the log messages for all
+        export_log: Whether to export the log messages for all
             configuration runs.
-        export_browsable_trace: whether to export a browsable trace for
+        export_browsable_trace: Whether to export a browsable trace for
             all configuration runs, which can be visualized in the VSCode
             extension (see `delphyne.analysis.feedback.Trace`). However,
             such traces can be large.
 
-    ### Tips
+    ## Tips
 
     - New hyperparameters can be added to the `Config` type without
       invalidating an existing experiment's persistent state, by
@@ -639,7 +639,7 @@ class ExperimentCLI:
         Replay one or all configurations.
 
         Arguments:
-            config: the name of the configuration to replay. If not
+            config: The name of the configuration to replay. If not
                 provided, all configurations are replayed.
         """
         self.experiment.load()

@@ -125,7 +125,6 @@ def abduction[Fact, Feedback, Proof, P](
     Higher-order strategy for proving a fact via recursive abduction.
 
     Arguments:
-
       prove: take a sequence of already established facts as an
         argument along with a new fact, and attempt to prove this new
         fact. Three outcomes are possible: the fact is proved,

@@ -22,7 +22,7 @@ class Stream[T](dp.AbstractStream[T]):
 
     This class inherits `AbstractStream` and supports various methods
     and combinators for assembling streams, while guaranteeing adherence
-    to the [search stream protocol](delphyne.core.streams).
+    to the [search stream protocol][delphyne.core.streams].
 
     Attributes:
         _generate: A zeroary function that produces a stream generator.

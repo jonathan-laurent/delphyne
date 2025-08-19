@@ -4,6 +4,8 @@
 
 ::: delphyne.OpaqueSpace
 
+::: delphyne.Opaque
+
 ::: delphyne.IPDict
 
 ::: delphyne.Policy
@@ -39,8 +41,6 @@
 ::: delphyne.stdlib.policies._ContextualTreeTransformerFn
 
 ::: delphyne.stdlib.policies._ParametricContextualTreeTransformerFn
-
-
 
 ## Strategies
 

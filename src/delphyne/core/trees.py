@@ -568,8 +568,7 @@ class StrategyComp(Generic[N, P, T]):
         self,
     ) -> dict[str, TypeAnnot[Any] | NoTypeInfo]:
         """
-        Return a dictionary with the same keys as
-        [`strategy_arguments`](delphyne.core.StrategyComp.strategy_arguments)
+        Return a dictionary with the same keys as `strategy_arguments`
         that maps every strategy argument to its type annotation (or
         `NoTypeInfo` if none is provided).
         """
@@ -585,9 +584,9 @@ class StrategyComp(Generic[N, P, T]):
         annotation of the form `Strategy[..., ..., T]` is provided).
 
         This information is useful for serializing success values after
-        running the strategy computation (see [`run_strategy`
-        command][delphyne.stdlib.commands.run_strategy]) or for
-        providing superior printing of values in the Delphyne tree view.
+        running the strategy computation (see `run_strategy` command) or
+        for providing superior printing of values in the Delphyne tree
+        view.
         """
         if not isinstance(self._return_type, NoTypeInfo):
             return self._return_type

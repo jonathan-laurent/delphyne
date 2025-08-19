@@ -40,9 +40,9 @@ class Answer:
 
     Attributes:
         answer: The answer content, which can be a string or a
-           structured JSON object. When a string is provided, the
-           `structured` field is used to desambiguate whether or not the
-           content should be interpreted as structured data.
+            structured JSON object. When a string is provided, the
+            `structured` field is used to desambiguate whether or not the
+            content should be interpreted as structured data.
         call: A sequence of tool calls. mode: the answer mode (`None` by
             default), which determines in particular how the answer must
             be parsed.
@@ -184,7 +184,7 @@ class WithinSpace:
         space: A conjunction of tags describing a space in the
             surrounding tree.
         selector: A node selector, relative to the tree that induces the
-           aforementioned space.
+            aforementioned space.
     """
 
     space: TagSelectors
