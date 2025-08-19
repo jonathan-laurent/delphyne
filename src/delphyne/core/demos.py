@@ -1,8 +1,9 @@
 """
 Delphyne Demonstrations.
 
-A demo file can be directly parsed as a value of type `DemoFile`. Thus,
-field names are optimized to make for a pleasant YAML syntax.
+A demonstration file can be directly parsed as a value of type
+`DemoFile`. Thus, field names are optimized to make for a pleasant YAML
+syntax.
 """
 
 from collections.abc import Sequence
@@ -38,22 +39,22 @@ class Answer:
     A query answer.
 
     Attributes:
-        answer: the answer content, which can be a string or a
+        answer: The answer content, which can be a string or a
            structured JSON object. When a string is provided, the
            `structured` field is used to desambiguate whether or not the
            content should be interpreted as structured data.
-        call: a sequence of tool calls. mode: the answer mode (`None` by
+        call: A sequence of tool calls. mode: the answer mode (`None` by
             default), which determines in particular how the answer must
             be parsed.
-        label: an optional label for the answer, which can be referenced
+        label: An optional label for the answer, which can be referenced
             in demonstration tests.
-        example: a boolean value indicating whether the answer should be
+        example: A boolean value indicating whether the answer should be
             usable as a few-shot exmple (some answers are only used s
             negative examples or to describe alternative paths in the
             strategy tree and thus should not be used as examples).
-        tags: a sequence of example tags that can be used by policies to
+        tags: A sequence of example tags that can be used by policies to
             select appropriate examples.
-        justification: an optional justification for the answer (see
+        justification: An optional justification for the answer (see
             [`delphyne.core.refs.Answer`][]).
     """
 
@@ -77,10 +78,10 @@ class QueryDemo:
     strategy demonstration.
 
     Attributes:
-        query: the query name.
-        args: the query arguments.
-        answers: a sequence of quer answers.
-        demonstration: for standalone query demonstrations, an optional
+        query: The query name.
+        args: The query arguments.
+        answers: A sequence of quer answers.
+        demonstration: For standalone query demonstrations, an optional
             demonstration label (usully specified first in YAML syntax).
     """
 
@@ -101,13 +102,13 @@ class StrategyDemo:
     the strategy tree.
 
     Attributes:
-        strategy: the name of the strategy function.
-        args: arguments to pass to the strategy function.
-        tests: a sequence of unit tests that describe navigation
+        strategy: The name of the strategy function.
+        args: Arguments to pass to the strategy function.
+        tests: A sequence of unit tests that describe navigation
             scenarios in the strategy tree.
-        queries: a sequence of query demonstrations. Featured answers
+        queries: A sequence of query demonstrations. Featured answers
             are used when executing the tests.
-        demonstration: an optional label for the demonstration (usually
+        demonstration: An optional label for the demonstration (usually
             specified first in YAML syntax)
     """
 
@@ -163,8 +164,8 @@ class TagSelector:
     number.
 
     Attributes:
-        tag: the tag to match.
-        num: an optional occurence number. When equal to integer `n`,
+        tag: The tag to match.
+        num: An optional occurence number. When equal to integer `n`,
             the selector does not match the first occurence of the tag
             (along the walked path) but the `n`-th occurence instead.
     """
@@ -180,9 +181,9 @@ class WithinSpace:
     surrounding tree.
 
     Attributes:
-        space: a conjunction of tags describing a space in the
+        space: A conjunction of tags describing a space in the
             surrounding tree.
-        selector: a node selector, relative to the tree that induces the
+        selector: A node selector, relative to the tree that induces the
            aforementioned space.
     """
 
@@ -277,7 +278,7 @@ class Load:
     name: str
 
 
-type TestStep = Run | SelectSpace | IsSuccess | IsFailure | Save | Load
+type TestStep = Run | IsSuccess | IsFailure | SelectSpace | Save | Load
 """
 A test instruction.
 

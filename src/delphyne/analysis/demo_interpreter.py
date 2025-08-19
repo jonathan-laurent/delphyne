@@ -74,9 +74,9 @@ class DemoExecutionContext:
     Demonstration Execution Context.
 
     Attributes:
-        strategy_dirs: a list of directories in which strategy modules
+        strategy_dirs: A list of directories in which strategy modules
             can be found, to be added to `sys.path`.
-        modules: a list of modules in which python object identifiers
+        modules: A list of modules in which python object identifiers
             should be resolved. Modules can be part of packages and so
             their name may feature `.`.
     """
@@ -114,9 +114,9 @@ class ObjectLoader:
         Attributes:
             ctx: The execution context in which to resolve Python
                 identifiers.
-            extra_objects: additional objects that can be resolved by
+            extra_objects: Additional objects that can be resolved by
                 name (with higher precedence).
-            reload: whether to reload all modules specified in the
+            reload: Whether to reload all modules specified in the
                 execution context upon initialization. Setting this
                 value to `True` makes `ObjectLoader` not thread-safe
                 (also, multiple instances must not be used in an
@@ -147,8 +147,8 @@ class ObjectLoader:
         is qualified, one looks at the specified registered module.
 
         Raises:
-            ObjectNotFound: the object could not be found.
-            AmbiguousObjectIdentifier: the object name is ambiguous,
+            ObjectNotFound: The object could not be found.
+            AmbiguousObjectIdentifier: The object name is ambiguous,
                 i.e. it is found in several modules.
         """
         if name in self.extra_objects:
@@ -192,9 +192,9 @@ class ObjectLoader:
         Load and instantiate a strategy function with given arguments.
 
         Raises:
-            ObjectNotFound: if the strategy function cannot be found.
-            AmbiguousObjectIdentifier: if an ambiguous name is given.
-            StrategyLoadingError: if the object is not a strategy function
+            ObjectNotFound: If the strategy function cannot be found.
+            AmbiguousObjectIdentifier: If an ambiguous name is given.
+            StrategyLoadingError: If the object is not a strategy function
                 or if the arguments are invalid.
         """
         f = self.find_object(name)
@@ -686,10 +686,10 @@ def evaluate_demo(
     This is the main entrypoint of the demonstration interpreter.
 
     Attributes:
-        demo: the demonstration to evaluate.
-        context: the execution context in which to resolve Python
+        demo: The demonstration to evaluate.
+        context: The execution context in which to resolve Python
             identifiers.
-        extra_objects: additional objects that can be resolved by name
+        extra_objects: Additional objects that can be resolved by name
             (with higher precedence).
 
     Returns:

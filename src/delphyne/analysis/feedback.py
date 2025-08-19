@@ -261,6 +261,13 @@ class Trace:
     """
     A browsable trace.
 
+    [Raw traces][delpyne.core.traces.Trace] contain all the information
+    necessary to recompute a trace but are not easily manipulated by
+    tools. In comparison, [these][delphyne.analysis.feedback.Trace]
+    offer a more redundant but also more explicit view. This module
+    provides a way to convert a trace from the former format to the
+    latter.
+
     Attributes:
         nodes: A mapping from node ids to their description.
 
@@ -340,7 +347,6 @@ class StrategyDemoFeedback:
     Feedback sent by the server for each strategy demonstration.
 
     Attributes:
-
         kind: Always "strategy".
         trace: The resulting browsable trace, which includes all visited
             nodes.
