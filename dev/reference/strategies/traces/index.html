@@ -1000,6 +1000,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#delphyne.core.traces.Trace.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#delphyne.core.traces.Trace.fresh_or_cached_node_id" class="md-nav__link">
     <span class="md-ellipsis">
       fresh_or_cached_node_id
@@ -2071,6 +2080,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#delphyne.core.traces.Trace.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __init__
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#delphyne.core.traces.Trace.fresh_or_cached_node_id" class="md-nav__link">
     <span class="md-ellipsis">
       fresh_or_cached_node_id
@@ -2388,7 +2406,7 @@ is a query and the proposed answer correctly parses.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>the answer mode (see <a class="autorefs autorefs-internal" title="AnswerMode" href="#delphyne.AnswerMode"><code>AnswerMode</code></a>).</p>
+                <p>The answer mode (see <a class="autorefs autorefs-internal" title="AnswerMode" href="#delphyne.AnswerMode"><code>AnswerMode</code></a>).</p>
               </div>
             </td>
           </tr>
@@ -2404,7 +2422,7 @@ is a query and the proposed answer correctly parses.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>the answer content, which can be a raw string or a
+                <p>The answer content, which can be a raw string or a
 structured answer (see <a class="autorefs autorefs-internal" title="Structured
 
 
@@ -2426,7 +2444,7 @@ structured answer (see <a class="autorefs autorefs-internal" title="Structured
             </td>
             <td>
               <div class="doc-md-description">
-                <p>an optional sequence of tool calls.</p>
+                <p>An optional sequence of tool calls.</p>
               </div>
             </td>
           </tr>
@@ -2437,7 +2455,7 @@ structured answer (see <a class="autorefs autorefs-internal" title="Structured
             </td>
             <td>
               <div class="doc-md-description">
-                <p>additional explanations for the answers, which
+                <p>Additional explanations for the answers, which
 are not passed to the parser but can be appended at the end
 of the answer in examples. In particular, this is useful
 when defining queries for which the oracle is not asked to
@@ -2492,11 +2510,11 @@ prompting.</p>
 <span class="sd">    is a query and the proposed answer correctly parses.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        mode: the answer mode (see `AnswerMode`).</span>
-<span class="sd">        content: the answer content, which can be a raw string or a</span>
+<span class="sd">        mode: The answer mode (see `AnswerMode`).</span>
+<span class="sd">        content: The answer content, which can be a raw string or a</span>
 <span class="sd">            structured answer (see `Structured`).</span>
-<span class="sd">        tool_calls: an optional sequence of tool calls.</span>
-<span class="sd">        justification: additional explanations for the answers, which</span>
+<span class="sd">        tool_calls: An optional sequence of tool calls.</span>
+<span class="sd">        justification: Additional explanations for the answers, which</span>
 <span class="sd">            are not passed to the parser but can be appended at the end</span>
 <span class="sd">            of the answer in examples. In particular, this is useful</span>
 <span class="sd">            when defining queries for which the oracle is not asked to</span>
@@ -2918,7 +2936,7 @@ given root.</p>
     <div class="doc doc-contents first">
 
         <p>An atomic value reference is a space element reference that is indexed
-zero or a finite number of times: space_elt_ref[i1][i2]...[in].</p>
+zero or a finite number of times: <code>space_elt_ref[i1][i2]...[in]</code>.</p>
 
     </div>
 
@@ -3161,7 +3179,12 @@ Orakell where all parametric spaces have one argument.</p>
 
         <p>A name identifying a parametric space.</p>
 <p>This name can feature integer indices. For example, <code>subs[0]</code>
-denotes the first subgoal of a [<code>Join</code>][delphyne.Join] node.</p>
+denotes the first subgoal of a <a class="autorefs autorefs-internal" title="Join
+
+
+  
+      dataclass
+  " href="../../stdlib/effects/#delphyne.stdlib.nodes.Join"><code>Join</code></a> node.</p>
 
 
 
@@ -3740,7 +3763,19 @@ space.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>the value being tracked. ref: a local reference to the</p>
+                <p>The value being tracked.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.core.refs.Tracked.ref">ref</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="AtomicValueRef (delphyne.core.refs.AtomicValueRef)" href="#delphyne.core.refs.AtomicValueRef">AtomicValueRef</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A local reference to the value, relative to the node
+reference by the <code>node</code> field.</p>
               </div>
             </td>
           </tr>
@@ -3751,7 +3786,7 @@ space.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>a global reference to the node to which the space that the
+                <p>A global reference to the node to which the space that the
 value originates from is attached. In particular, this field
 is useful to check the locality invariant at runtime (e.g.,
 when passing a tracked value to <code>Tree.child</code>).</p>
@@ -3765,7 +3800,7 @@ when passing a tracked value to <code>Tree.child</code>).</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>an optional type annotation for the [<code>value</code>][delphyne.value] field.
+                <p>An optional type annotation for the <a class="autorefs autorefs-internal" title="value" href="../../stdlib/effects/#delphyne.stdlib.nodes.value"><code>value</code></a> field.
 This is mostly used for improving the rendering of values
 when exporting trace information for external tools.</p>
               </div>
@@ -3841,14 +3876,14 @@ resulting in tracked values with <code>IndexedRef</code> references. Since
 <span class="sd">    A tracked value, which pairs a value with a reference.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        value: the value being tracked. ref: a local reference to the</span>
-<span class="sd">        value, relative to the node</span>
+<span class="sd">        value: The value being tracked.</span>
+<span class="sd">        ref: A local reference to the value, relative to the node</span>
 <span class="sd">            reference by the `node` field.</span>
-<span class="sd">        node: a global reference to the node to which the space that the</span>
+<span class="sd">        node: A global reference to the node to which the space that the</span>
 <span class="sd">            value originates from is attached. In particular, this field</span>
 <span class="sd">            is useful to check the locality invariant at runtime (e.g.,</span>
 <span class="sd">            when passing a tracked value to `Tree.child`).</span>
-<span class="sd">        type_annot: an optional type annotation for the `value` field.</span>
+<span class="sd">        type_annot: An optional type annotation for the `value` field.</span>
 <span class="sd">            This is mostly used for improving the rendering of values</span>
 <span class="sd">            when exporting trace information for external tools.</span>
 
@@ -4911,6 +4946,53 @@ along with origin information on the associated query.</p>
 
 
 
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.core.traces.Trace.__init__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__init__</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">__init__</span><span class="p">()</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Create an empty trace.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create an empty trace.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">refs</span><span class="o">.</span><span class="n">NodeId</span><span class="p">,</span> <span class="n">refs</span><span class="o">.</span><span class="n">NodeOrigin</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">node_ids</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">refs</span><span class="o">.</span><span class="n">NodeOrigin</span><span class="p">,</span> <span class="n">refs</span><span class="o">.</span><span class="n">NodeId</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">answers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">refs</span><span class="o">.</span><span class="n">AnswerId</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">QueryOrigin</span><span class="p">,</span> <span class="n">refs</span><span class="o">.</span><span class="n">Answer</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">answer_ids</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span>
+        <span class="n">QueryOrigin</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="n">refs</span><span class="o">.</span><span class="n">Answer</span><span class="p">,</span> <span class="n">refs</span><span class="o">.</span><span class="n">AnswerId</span><span class="p">]</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_last_node_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_last_answer_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
 
 <div class="doc doc-object doc-function">
 

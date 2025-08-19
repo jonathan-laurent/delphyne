@@ -1816,7 +1816,7 @@ requires knowing its reference along with the associated hooks.</p>
         <p>A <em>strategy computation</em> that can be reified into a search tree,
 obtained by instantiating a strategy function.</p>
 <p>Such objects are usually not created directly but using the
-[<code>@strategy</code> decorator][delphyne.stdlib.strategy] from the standard
+<a class="autorefs autorefs-internal" title="strategy" href="../../stdlib/basic/#delphyne.strategy"><code>@strategy</code> decorator</a> from the standard
 library. Metadata information can be provided, such as: a name for
 the strategy, a return type and a list of tags.</p>
 <details class="note">
@@ -1965,8 +1965,7 @@ annotations are inspected by methods such as <code>return_type</code> and
 <span class="normal">608</span>
 <span class="normal">609</span>
 <span class="normal">610</span>
-<span class="normal">611</span>
-<span class="normal">612</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">611</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">StrategyComp</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A *strategy computation* that can be reified into a search tree,</span>
@@ -2054,8 +2053,7 @@ annotations are inspected by methods such as <code>return_type</code> and
         <span class="bp">self</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">NoTypeInfo</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return a dictionary with the same keys as</span>
-<span class="sd">        [`strategy_arguments`](delphyne.core.StrategyComp.strategy_arguments)</span>
+<span class="sd">        Return a dictionary with the same keys as `strategy_arguments`</span>
 <span class="sd">        that maps every strategy argument to its type annotation (or</span>
 <span class="sd">        `NoTypeInfo` if none is provided).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2071,9 +2069,9 @@ annotations are inspected by methods such as <code>return_type</code> and
 <span class="sd">        annotation of the form `Strategy[..., ..., T]` is provided).</span>
 
 <span class="sd">        This information is useful for serializing success values after</span>
-<span class="sd">        running the strategy computation (see [`run_strategy`</span>
-<span class="sd">        command][delphyne.stdlib.commands.run_strategy]) or for</span>
-<span class="sd">        providing superior printing of values in the Delphyne tree view.</span>
+<span class="sd">        running the strategy computation (see `run_strategy` command) or</span>
+<span class="sd">        for providing superior printing of values in the Delphyne tree</span>
+<span class="sd">        view.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_return_type</span><span class="p">,</span> <span class="n">NoTypeInfo</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_type</span>
@@ -2352,8 +2350,7 @@ positional arguments).</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return a dictionary with the same keys as
-<a href="delphyne.core.StrategyComp.strategy_arguments"><code>strategy_arguments</code></a>
+        <p>Return a dictionary with the same keys as <code>strategy_arguments</code>
 that maps every strategy argument to its type annotation (or
 <code>NoTypeInfo</code> if none is provided).</p>
 
@@ -2371,13 +2368,11 @@ that maps every strategy argument to its type annotation (or
 <span class="normal">575</span>
 <span class="normal">576</span>
 <span class="normal">577</span>
-<span class="normal">578</span>
-<span class="normal">579</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">strategy_argument_types</span><span class="p">(</span>
+<span class="normal">578</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">strategy_argument_types</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">NoTypeInfo</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return a dictionary with the same keys as</span>
-<span class="sd">    [`strategy_arguments`](delphyne.core.StrategyComp.strategy_arguments)</span>
+<span class="sd">    Return a dictionary with the same keys as `strategy_arguments`</span>
 <span class="sd">    that maps every strategy argument to its type annotation (or</span>
 <span class="sd">    `NoTypeInfo` if none is provided).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2408,14 +2403,15 @@ that maps every strategy argument to its type annotation (or
 provided metadata or using inspection otherwise (in case a type
 annotation of the form <code>Strategy[..., ..., T]</code> is provided).</p>
 <p>This information is useful for serializing success values after
-running the strategy computation (see [<code>run_strategy</code>
-command][delphyne.stdlib.commands.run_strategy]) or for
-providing superior printing of values in the Delphyne tree view.</p>
+running the strategy computation (see <code>run_strategy</code> command) or
+for providing superior printing of values in the Delphyne tree
+view.</p>
 
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">581</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">580</span>
+<span class="normal">581</span>
 <span class="normal">582</span>
 <span class="normal">583</span>
 <span class="normal">584</span>
@@ -2430,17 +2426,16 @@ providing superior printing of values in the Delphyne tree view.</p>
 <span class="normal">593</span>
 <span class="normal">594</span>
 <span class="normal">595</span>
-<span class="normal">596</span>
-<span class="normal">597</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">return_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">NoTypeInfo</span><span class="p">:</span>
+<span class="normal">596</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">return_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">NoTypeInfo</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the return type of the strategy computation, using the</span>
 <span class="sd">    provided metadata or using inspection otherwise (in case a type</span>
 <span class="sd">    annotation of the form `Strategy[..., ..., T]` is provided).</span>
 
 <span class="sd">    This information is useful for serializing success values after</span>
-<span class="sd">    running the strategy computation (see [`run_strategy`</span>
-<span class="sd">    command][delphyne.stdlib.commands.run_strategy]) or for</span>
-<span class="sd">    providing superior printing of values in the Delphyne tree view.</span>
+<span class="sd">    running the strategy computation (see `run_strategy` command) or</span>
+<span class="sd">    for providing superior printing of values in the Delphyne tree</span>
+<span class="sd">    view.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_return_type</span><span class="p">,</span> <span class="n">NoTypeInfo</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_type</span>
@@ -2477,7 +2472,8 @@ associated policy.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">599</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">598</span>
+<span class="normal">599</span>
 <span class="normal">600</span>
 <span class="normal">601</span>
 <span class="normal">602</span>
@@ -2489,8 +2485,7 @@ associated policy.</p>
 <span class="normal">608</span>
 <span class="normal">609</span>
 <span class="normal">610</span>
-<span class="normal">611</span>
-<span class="normal">612</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">inner_policy_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">NoTypeInfo</span><span class="p">:</span>
+<span class="normal">611</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">inner_policy_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">NoTypeInfo</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the inner policy type of the strategy computation, using</span>
 <span class="sd">    inspection (when a type annotation of the form `Strategy[..., P,</span>
@@ -2850,7 +2845,8 @@ assertion or an index-out-of-bounds error).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">867</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">866</span>
+<span class="normal">867</span>
 <span class="normal">868</span>
 <span class="normal">869</span>
 <span class="normal">870</span>
@@ -2859,8 +2855,7 @@ assertion or an index-out-of-bounds error).</p>
 <span class="normal">873</span>
 <span class="normal">874</span>
 <span class="normal">875</span>
-<span class="normal">876</span>
-<span class="normal">877</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">876</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">StrategyException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Raised when a strategy encounters an internal error (e.g. a failed</span>
@@ -2936,7 +2931,21 @@ side effects in the form of caching and hooks.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>a cache for never recomputing the same node twice. hooks:</p>
+                <p>a cache for never recomputing the same node twice.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.TreeMonitor.hooks">hooks</span></code></td>
+            <td>
+                  <code><span title="collections.abc.Sequence">Sequence</span>[<a class="autorefs autorefs-internal" title="TreeHook (delphyne.core.reification.TreeHook)" href="#delphyne.TreeHook">TreeHook</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>functions to be called every time a new node is created.
+For example, hooks can be used to automatically produce a
+trace that keeps track of all visited nodes (see
+<a class="autorefs autorefs-internal" title="tracer_hook" href="#delphyne.tracer_hook"><code>tracer_hook</code></a>).</p>
               </div>
             </td>
           </tr>
@@ -2981,8 +2990,8 @@ side effects in the form of caching and hooks.</p>
 <span class="sd">    side effects in the form of caching and hooks.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        cache: a cache for never recomputing the same node twice. hooks:</span>
-<span class="sd">        functions to be called every time a new node is created.</span>
+<span class="sd">        cache: a cache for never recomputing the same node twice.</span>
+<span class="sd">        hooks: functions to be called every time a new node is created.</span>
 <span class="sd">            For example, hooks can be used to automatically produce a</span>
 <span class="sd">            trace that keeps track of all visited nodes (see</span>
 <span class="sd">            `tracer_hook`).</span>
@@ -3139,15 +3148,15 @@ given node.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">680</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">679</span>
+<span class="normal">680</span>
 <span class="normal">681</span>
 <span class="normal">682</span>
 <span class="normal">683</span>
 <span class="normal">684</span>
 <span class="normal">685</span>
 <span class="normal">686</span>
-<span class="normal">687</span>
-<span class="normal">688</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NestedTreeSpawner</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="normal">687</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NestedTreeSpawner</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A function providing the ability to spawn nested trees attached to a</span>
 <span class="sd">    given node.</span>
@@ -3205,12 +3214,12 @@ given node.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">691</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">690</span>
+<span class="normal">691</span>
 <span class="normal">692</span>
 <span class="normal">693</span>
 <span class="normal">694</span>
-<span class="normal">695</span>
-<span class="normal">696</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">QuerySpawner</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="normal">695</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">QuerySpawner</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A function providing the ability to attach queries to a given node.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3268,7 +3277,8 @@ internally.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">735</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">734</span>
+<span class="normal">735</span>
 <span class="normal">736</span>
 <span class="normal">737</span>
 <span class="normal">738</span>
@@ -3285,8 +3295,7 @@ internally.</p>
 <span class="normal">749</span>
 <span class="normal">750</span>
 <span class="normal">751</span>
-<span class="normal">752</span>
-<span class="normal">753</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractBuilderExecutor</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="normal">752</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractBuilderExecutor</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract class for builder executors.</span>
 

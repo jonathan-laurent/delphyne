@@ -1698,7 +1698,7 @@
         <p>Abstract Class for Delphyne Queries.</p>
 <p>The type parameter <code>T</code> indicates the type of parsed query answers.</p>
 <p>A more featureful subclass is provided in the standard library
-(<a class="autorefs autorefs-internal" title="Query" href="../../../dev/test-mkdocs/#delphyne.Query"><code>Query</code></a>), which uses reflection for convenience.</p>
+(<a class="autorefs autorefs-internal" title="Query" href="../../stdlib/queries/#delphyne.Query"><code>Query</code></a>), which uses reflection for convenience.</p>
 <div class="admonition info">
 <p class="admonition-title">Answer Modes</p>
 <p>Queries are allowed to define multiple answer modes
@@ -2342,7 +2342,7 @@ information is not available.</p>
         <p>Return the chat history featured in the query, if any.</p>
 <p>This is useful to emulate conversational agents by issuing a
 query repeatedly, passing it the whole, updated conversation
-history every time (see [<code>interact</code>][delphyne.interact]).</p>
+history every time (see <a class="autorefs autorefs-internal" title="interact" href="../../stdlib/algorithms/#delphyne.interact"><code>interact</code></a>).</p>
 
 
             <details class="quote">
@@ -2563,7 +2563,7 @@ the query.</p>
 set. Otherwise, return <code>None</code>.</p>
 <p>Demonstration tests can use a special <code>#&lt;val&gt;</code> hint to select
 the first answer with content <code>&lt;val&gt;</code> from this set.</p>
-<p>Example uses include classification queries (see <a class="autorefs autorefs-internal" title="classify" href="../../../dev/test-mkdocs/#delphyne.stdlib.queries.classify"><code>classify</code></a>)
+<p>Example uses include classification queries (see <a class="autorefs autorefs-internal" title="classify" href="../../stdlib/queries/#delphyne.classify"><code>classify</code></a>)
 where a distribution of answers is extracted from LLM logits,
 flag queries...</p>
 
@@ -2924,7 +2924,8 @@ available.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Expected type for the output, from which a schema can be</p>
+                <p>Expected type for the output, from which a schema can be
+derived if provided.</p>
               </div>
             </td>
           </tr>
@@ -2956,7 +2957,7 @@ available.</p>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        type: Expected type for the output, from which a schema can be</span>
-<span class="sd">        derived if provided.</span>
+<span class="sd">            derived if provided.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nb">type</span><span class="p">:</span> <span class="n">ty</span><span class="o">.</span><span class="n">TypeAnnot</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">ty</span><span class="o">.</span><span class="n">NoTypeInfo</span>

@@ -999,6 +999,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#delphyne.SpaceBuilder.__call__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __call__
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2070,6 +2079,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#delphyne.SpaceBuilder.__call__" class="md-nav__link">
+    <span class="md-ellipsis">
+      __call__
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2241,7 +2259,8 @@ an oracular program).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">761</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">760</span>
+<span class="normal">761</span>
 <span class="normal">762</span>
 <span class="normal">763</span>
 <span class="normal">764</span>
@@ -2292,8 +2311,7 @@ an oracular program).</p>
 <span class="normal">809</span>
 <span class="normal">810</span>
 <span class="normal">811</span>
-<span class="normal">812</span>
-<span class="normal">813</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">812</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Tree</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Strategy Trees.</span>
@@ -2387,12 +2405,13 @@ an oracular program).</p>
         <p>Recursively apply a function to all embedded trees and subtrees
 of a tree.</p>
 <p>This is a pure method that does not modify its arguments. It is
-useful to implement tree transformers such as [<code>elim_compute</code>][delphyne.elim_compute].</p>
+useful to implement tree transformers such as <a class="autorefs autorefs-internal" title="elim_compute" href="../../stdlib/effects/#delphyne.stdlib.computations.elim_compute"><code>elim_compute</code></a>.</p>
 
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">796</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">795</span>
+<span class="normal">796</span>
 <span class="normal">797</span>
 <span class="normal">798</span>
 <span class="normal">799</span>
@@ -2408,8 +2427,7 @@ useful to implement tree transformers such as [<code>elim_compute</code>][delphy
 <span class="normal">809</span>
 <span class="normal">810</span>
 <span class="normal">811</span>
-<span class="normal">812</span>
-<span class="normal">813</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">[</span><span class="n">M</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span>
+<span class="normal">812</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">[</span><span class="n">M</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">node</span><span class="p">:</span> <span class="s2">&quot;M | Success[T]&quot;</span><span class="p">,</span>
     <span class="n">transformer</span><span class="p">:</span> <span class="s2">&quot;AbstractTreeTransformer[N, M]&quot;</span><span class="p">,</span>
@@ -2488,7 +2506,8 @@ rule out.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">816</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">815</span>
+<span class="normal">816</span>
 <span class="normal">817</span>
 <span class="normal">818</span>
 <span class="normal">819</span>
@@ -2535,8 +2554,7 @@ rule out.</p>
 <span class="normal">860</span>
 <span class="normal">861</span>
 <span class="normal">862</span>
-<span class="normal">863</span>
-<span class="normal">864</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">863</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Success</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A success leaf, carrying a tracked value.</span>
@@ -2628,8 +2646,13 @@ rule out.</p>
 <p>New effects can be added to the strategy language by subclassing
 <a class="autorefs autorefs-internal" title="Node" href="#delphyne.Node"><code>Node</code></a> and then defining a triggering function that calls the
 <code>spawn</code> class method (manually defining such a wrapper allows
-providing users with precise type annotations: i.e., [<code>branch</code>][delphyne.branch] for
-[<code>Branch</code>][delphyne.Branch]).</p>
+providing users with precise type annotations: i.e., <a class="autorefs autorefs-internal" title="branch" href="../../stdlib/effects/#delphyne.stdlib.nodes.branch"><code>branch</code></a> for
+<a class="autorefs autorefs-internal" title="Branch
+
+
+  
+      dataclass
+  " href="../../stdlib/effects/#delphyne.stdlib.nodes.Branch"><code>Branch</code></a>).</p>
 <p><strong>Methods to override:</strong></p>
 <ul>
 <li>The <code>navigate</code> method must be overriden for all node types.</li>
@@ -2643,7 +2666,12 @@ overriden.</p>
 <details class="note">
 <summary>On the absence of type parameters</summary>
 <p>In order to precisely type the fields of node subclasses (e.g.
-[<code>Branch</code>][delphyne.Branch]), <a class="autorefs autorefs-internal" title="Node" href="#delphyne.Node"><code>Node</code></a> would need to have type parameters standing
+<a class="autorefs autorefs-internal" title="Branch
+
+
+  
+      dataclass
+  " href="../../stdlib/effects/#delphyne.stdlib.nodes.Branch"><code>Branch</code></a>), <a class="autorefs autorefs-internal" title="Node" href="#delphyne.Node"><code>Node</code></a> would need to have type parameters standing
 for the surrounding inner policy type, the action type, etc.
 However, Python's type system is not expressive enough to
 properly constrain such type parameters in the definition of
@@ -2652,9 +2680,14 @@ particular, the way we express signatures as unions of subtypes
 of <a class="autorefs autorefs-internal" title="Node" href="#delphyne.Node"><code>Node</code></a> would not work if <a class="autorefs autorefs-internal" title="Node" href="#delphyne.Node"><code>Node</code></a> were parametric.</p>
 <p>As a result, types such as inner policy types and action types
 must be represented using <code>Any</code> in the definition of nodes (e.g.
-[<code>Branch</code>][delphyne.Branch]) and the type safety of search policy implementations
-(e.g. [<code>dfs</code>][delphyne.dfs]) cannot be fully enforced statically. However,
-effect <em>triggering functions</em> such as [<code>branch</code>][delphyne.branch] can typically be
+<a class="autorefs autorefs-internal" title="Branch
+
+
+  
+      dataclass
+  " href="../../stdlib/effects/#delphyne.stdlib.nodes.Branch"><code>Branch</code></a>) and the type safety of search policy implementations
+(e.g. <a class="autorefs autorefs-internal" title="dfs" href="../../stdlib/algorithms/#delphyne.stdlib.search.dfs.dfs"><code>dfs</code></a>) cannot be fully enforced statically. However,
+effect <em>triggering functions</em> such as <a class="autorefs autorefs-internal" title="branch" href="../../stdlib/effects/#delphyne.stdlib.nodes.branch"><code>branch</code></a> can typically be
 typed precisely, providing static type safety for strategy
 writers.</p>
 </details>
@@ -3351,7 +3384,12 @@ displayed in the Delphyne extension's Tree View.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return True if the node is a leaf node (e.g., [<code>Fail</code>][delphyne.Fail]) and False
+        <p>Return True if the node is a leaf node (e.g., <a class="autorefs autorefs-internal" title="Fail
+
+
+  
+      dataclass
+  " href="../../stdlib/effects/#delphyne.stdlib.nodes.Fail"><code>Fail</code></a>) and False
 otherwise.</p>
 <p>Leaf nodes do not have to define <code>navigate</code> and are treated
 specially by the demonstration interpreter.</p>
@@ -3850,8 +3888,13 @@ parameters.</p>
 arguments to populate its fields.</p>
 <p>Arguments are processed according to their kind (see
 <a class="autorefs autorefs-internal" title="delphyne.core.node_fields" href="#delphyne.core.node_fields">delphyne.core.node_fields</a>). For example opaque space
-builders ([<code>Opaque</code>][delphyne.Opaque]) are turned into opaque spaces
-([<code>OpaqueSpace</code>][delphyne.OpaqueSpace]) and strategy computations (<a class="autorefs autorefs-internal" title="StrategyComp
+builders (<a class="autorefs autorefs-internal" title="Opaque" href="../../stdlib/basic/#delphyne.Opaque"><code>Opaque</code></a>) are turned into opaque spaces
+(<a class="autorefs autorefs-internal" title="OpaqueSpace
+
+
+  
+      dataclass
+  " href="../../stdlib/basic/#delphyne.OpaqueSpace"><code>OpaqueSpace</code></a>) and strategy computations (<a class="autorefs autorefs-internal" title="StrategyComp
 
 
   
@@ -3973,7 +4016,7 @@ turned into embedded trees (<a class="autorefs autorefs-internal" title="Embedde
 <p>This is a pure method that returns an updated node. It is useful
 for implementing <code>Tree.transform</code>, which in turn is useful for
 implementing standard tree transformers such as <code>elim_join</code> and
-[<code>elim_compute</code>][delphyne.elim_compute].</p>
+<a class="autorefs autorefs-internal" title="elim_compute" href="../../stdlib/effects/#delphyne.stdlib.computations.elim_compute"><code>elim_compute</code></a>.</p>
 
 
             <details class="quote">
@@ -4147,7 +4190,12 @@ generated and returned.</p>
 <p>For internal errors that should not occur within normal use,
 assertions shoule be used instead. This exception is meant to
 represent errors that can occur during normal use, and reported in
-the user interface. For an example, see [<code>Abduction</code>][delphyne.Abduction].</p>
+the user interface. For an example, see <a class="autorefs autorefs-internal" title="Abduction
+
+
+  
+      dataclass
+  " href="../../stdlib/algorithms/#delphyne.Abduction"><code>Abduction</code></a>.</p>
 
 
 <p><span class="doc-section-title">Attributes:</span></p>
@@ -4249,8 +4297,13 @@ the user interface. For an example, see [<code>Abduction</code>][delphyne.Abduct
 
         <p>Classifying and inferring different kinds of node fields.</p>
 <p>When spawning a node via <code>Tree.spawn</code>, different field arguments must be
-processed differently. For example, an opaque space builder ([<code>Opaque</code>][delphyne.Opaque])
-must be turned into an opaque space ([<code>OpaqueSpace</code>][delphyne.OpaqueSpace]) by providing an
+processed differently. For example, an opaque space builder (<a class="autorefs autorefs-internal" title="Opaque" href="../../stdlib/basic/#delphyne.Opaque"><code>Opaque</code></a>)
+must be turned into an opaque space (<a class="autorefs autorefs-internal" title="OpaqueSpace
+
+
+  
+      dataclass
+  " href="../../stdlib/basic/#delphyne.OpaqueSpace"><code>OpaqueSpace</code></a>) by providing an
 appropriate space reference. Other fields such as data fields must not
 be processed.</p>
 <p>This module defines a type for classifying node fields (<code>FieldType</code>)
@@ -4866,7 +4919,12 @@ include <a class="autorefs autorefs-internal" title="EmbeddedTree
 
   
       dataclass
-  " href="#delphyne.EmbeddedTree"><code>EmbeddedTree</code></a>, [<code>OpaqueSpace</code>][delphyne.OpaqueSpace] and <a class="autorefs autorefs-internal" title="TransparentQuery
+  " href="#delphyne.EmbeddedTree"><code>EmbeddedTree</code></a>, <a class="autorefs autorefs-internal" title="OpaqueSpace
+
+
+  
+      dataclass
+  " href="../../stdlib/basic/#delphyne.OpaqueSpace"><code>OpaqueSpace</code></a> and <a class="autorefs autorefs-internal" title="TransparentQuery
 
 
   
@@ -5081,7 +5139,7 @@ a query or a strategy is irrelevant).</p>
         <p>String tags for nodes and spaces.</p>
 <p>Nodes and spaces can be assigned string identifiers, which may be
 referenced in demonstration tests or when defining inner policies
-(e.g., <a class="autorefs autorefs-internal" title="IPDict" href="../../../dev/test-mkdocs/#delphyne.IPDict"><code>IPDict</code></a>). Tags should contain only alphanumeric characters,
+(e.g., <a class="autorefs autorefs-internal" title="IPDict" href="../../stdlib/basic/#delphyne.IPDict"><code>IPDict</code></a>). Tags should contain only alphanumeric characters,
 underscores, dots, and dashes.</p>
 
     </div>
@@ -5261,7 +5319,7 @@ which attaches proper tracking information to answers.</p>
   " href="#delphyne.AttachedQuery"><code>AttachedQuery</code></a> type plays an equivalent role for queries.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>One cannot count on the [<code>strategy</code>][delphyne.strategy] field having the same node
+<p>One cannot count on the <a class="autorefs autorefs-internal" title="strategy" href="../../stdlib/basic/#delphyne.strategy"><code>strategy</code></a> field having the same node
 type as <code>spawn_tree</code> since nested trees can be applied tree
 transformers (see <code>Node.map_embedded</code>).</p>
 </div>
@@ -5274,7 +5332,8 @@ transformers (see <code>Node.map_embedded</code>).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">620</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">619</span>
+<span class="normal">620</span>
 <span class="normal">621</span>
 <span class="normal">622</span>
 <span class="normal">623</span>
@@ -5288,8 +5347,7 @@ transformers (see <code>Node.map_embedded</code>).</p>
 <span class="normal">631</span>
 <span class="normal">632</span>
 <span class="normal">633</span>
-<span class="normal">634</span>
-<span class="normal">635</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">634</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">NestedTree</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper for a tree attached to a particular node.</span>
@@ -5349,8 +5407,23 @@ transformers (see <code>Node.map_embedded</code>).</p>
 
 
         <p>A space that is defined by a single, <em>transparent</em> query.</p>
-<p>As opposed to [<code>OpaqueSpace</code>][delphyne.OpaqueSpace], the query is meant to be directly
-exposed to policies. This is used to define [<code>Compute</code>][delphyne.Compute] and [<code>Flag</code>][delphyne.Flag]
+<p>As opposed to <a class="autorefs autorefs-internal" title="OpaqueSpace
+
+
+  
+      dataclass
+  " href="../../stdlib/basic/#delphyne.OpaqueSpace"><code>OpaqueSpace</code></a>, the query is meant to be directly
+exposed to policies. This is used to define <a class="autorefs autorefs-internal" title="Compute
+
+
+  
+      dataclass
+  " href="../../stdlib/effects/#delphyne.stdlib.computations.Compute"><code>Compute</code></a> and <a class="autorefs autorefs-internal" title="Flag
+
+
+  
+      dataclass
+  " href="../../stdlib/effects/#delphyne.Flag"><code>Flag</code></a>
 nodes for example.</p>
 
 
@@ -5467,7 +5540,12 @@ nodes for example.</p>
 
         <p>Space defined by a nested tree with the same signature and inner
 policy as its surrounding tree.</p>
-<p>This is useful to define effects such as [<code>Join</code>][delphyne.Join].</p>
+<p>This is useful to define effects such as <a class="autorefs autorefs-internal" title="Join
+
+
+  
+      dataclass
+  " href="../../stdlib/effects/#delphyne.stdlib.nodes.Join"><code>Join</code></a>.</p>
 
 
 
@@ -5477,7 +5555,8 @@ policy as its surrounding tree.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">638</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">637</span>
+<span class="normal">638</span>
 <span class="normal">639</span>
 <span class="normal">640</span>
 <span class="normal">641</span>
@@ -5510,8 +5589,7 @@ policy as its surrounding tree.</p>
 <span class="normal">668</span>
 <span class="normal">669</span>
 <span class="normal">670</span>
-<span class="normal">671</span>
-<span class="normal">672</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">671</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">EmbeddedTree</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span><span class="n">Space</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Space defined by a nested tree with the same signature and inner</span>
@@ -5589,7 +5667,7 @@ policy as its surrounding tree.</p>
 
         <p>Wrapper for a function that builds a space, given the ability to
 spawn nested trees and attached queries.</p>
-<p>Effect triggering functions such as [<code>branch</code>][delphyne.branch] do not directly take
+<p>Effect triggering functions such as <a class="autorefs autorefs-internal" title="branch" href="../../stdlib/effects/#delphyne.stdlib.nodes.branch"><code>branch</code></a> do not directly take
 spaces as their arguments but space builders instead.</p>
 <p>Space builders are also equipped with modifiable tags, to be
 ultimately passed to the resulting space.</p>
@@ -5638,7 +5716,8 @@ ultimately passed to the resulting space.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">699</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">698</span>
+<span class="normal">699</span>
 <span class="normal">700</span>
 <span class="normal">701</span>
 <span class="normal">702</span>
@@ -5670,8 +5749,7 @@ ultimately passed to the resulting space.</p>
 <span class="normal">728</span>
 <span class="normal">729</span>
 <span class="normal">730</span>
-<span class="normal">731</span>
-<span class="normal">732</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">731</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpaceBuilder</span><span class="p">[</span><span class="n">S</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper for a function that builds a space, given the ability to</span>
@@ -5743,15 +5821,55 @@ ultimately passed to the resulting space.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">719</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">718</span>
+<span class="normal">719</span>
 <span class="normal">720</span>
 <span class="normal">721</span>
-<span class="normal">722</span>
-<span class="normal">723</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">tagged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">tags</span><span class="p">:</span> <span class="n">Tag</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SpaceBuilder[S]&quot;</span><span class="p">:</span>
+<span class="normal">722</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">tagged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">tags</span><span class="p">:</span> <span class="n">Tag</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SpaceBuilder[S]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add new tags to the space builder.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">,</span> <span class="o">*</span><span class="n">tags</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.SpaceBuilder.__call__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__call__</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">__call__</span><span class="p">(</span><span class="n">spawner</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="NestedTreeSpawner (delphyne.core.trees.NestedTreeSpawner)" href="../strategies/#delphyne.core.trees.NestedTreeSpawner">NestedTreeSpawner</a></span><span class="p">,</span> <span class="n">query_spawner</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="QuerySpawner (delphyne.core.trees.QuerySpawner)" href="../strategies/#delphyne.core.trees.QuerySpawner">QuerySpawner</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.trees.SpaceBuilder[S]">SpaceBuilder[S]</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Build a space, given the provided capabilities along with the
+current set of tags.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">724</span>
+<span class="normal">725</span>
+<span class="normal">726</span>
+<span class="normal">727</span>
+<span class="normal">728</span>
+<span class="normal">729</span>
+<span class="normal">730</span>
+<span class="normal">731</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">spawner</span><span class="p">:</span> <span class="n">NestedTreeSpawner</span><span class="p">,</span> <span class="n">query_spawner</span><span class="p">:</span> <span class="n">QuerySpawner</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">S</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build a space, given the provided capabilities along with the</span>
+<span class="sd">    current set of tags.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">spawner</span><span class="p">,</span> <span class="n">query_spawner</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -5788,7 +5906,12 @@ ultimately passed to the resulting space.</p>
 compute an <em>answer</em>. The demonstration interpreter uses this
 information to navigate computation nodes while accumulating
 implicit answers.</p>
-<p>The standard [<code>Compute</code>][delphyne.Compute] node inherits this class.</p>
+<p>The standard <a class="autorefs autorefs-internal" title="Compute
+
+
+  
+      dataclass
+  " href="../../stdlib/effects/#delphyne.stdlib.computations.Compute"><code>Compute</code></a> node inherits this class.</p>
 
 
 
@@ -5798,7 +5921,8 @@ implicit answers.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">900</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">899</span>
+<span class="normal">900</span>
 <span class="normal">901</span>
 <span class="normal">902</span>
 <span class="normal">903</span>
@@ -5811,8 +5935,7 @@ implicit answers.</p>
 <span class="normal">910</span>
 <span class="normal">911</span>
 <span class="normal">912</span>
-<span class="normal">913</span>
-<span class="normal">914</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ComputationNode</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+<span class="normal">913</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ComputationNode</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract type for computation nodes.</span>
 
@@ -5877,13 +6000,13 @@ with signature M, preserving its inner policy type and return type.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">886</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">885</span>
+<span class="normal">886</span>
 <span class="normal">887</span>
 <span class="normal">888</span>
 <span class="normal">889</span>
 <span class="normal">890</span>
-<span class="normal">891</span>
-<span class="normal">892</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractTreeTransformer</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">M</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="normal">891</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractTreeTransformer</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">M</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A function that transforms any tree with signature N into a tree</span>
 <span class="sd">    with signature M, preserving its inner policy type and return type.</span>
