@@ -1,5 +1,8 @@
 # Proving Math Equalities with Delphyne
 
+> [!WARNING]
+> This example is still under development.
+
 This folder contains an example of using Delphyne to generate machine-checkable proofs of simple trigonometric equalities. It is inspired by the _Equations_ environment from the [HyperTree Proof Search paper](https://arxiv.org/pdf/2205.11491).
 
 
@@ -33,7 +36,7 @@ sin(3*x) = 3*sin(x) - 4*sin(x)**3
 sin(4*x) = cos(x)*(4*sin(x) - 8*sin(x)**3)
 ```
 
-Used as examples
+Used as examples:
 
 ```
 cos(pi/3) = sin(pi/6)

@@ -1,5 +1,9 @@
 """
-Baseline: see and repair the whole proof.
+Baseline: conversational agent that produces a proof in one go and is
+then provided opportunities to fix errors from the checker.
+
+This example illustrate how simple conversational agents can be built
+with a single query, using the `iterative_mode` option of `few_shot`.
 """
 
 from dataclasses import dataclass
