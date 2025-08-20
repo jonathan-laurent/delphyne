@@ -663,6 +663,10 @@ def stream_next[T](
 type _StreamElt[T] = dp.Solution[T] | Barrier | Spent
 
 
+class _WorkerDone(Exception):
+    pass
+
+
 def stream_parallel[T](streams: Sequence[dp.StreamGen[T]]) -> dp.StreamGen[T]:
     """
     See `Stream.parallel` for documentation.
@@ -680,11 +684,14 @@ def stream_parallel[T](streams: Sequence[dp.StreamGen[T]]) -> dp.StreamGen[T]:
     # Number of workers that are still active.
     rem = len(streams)
 
+    # Flag to set when all workers are done.
+    done = False
+
     # Lock for protecting access to `progressed` and `sleeping`.
     lock = threading.Lock()
     # Whether progress was made since the last time `sleeping` was reset
     # (in the form of a new `Sent` message being sent to the client).
-    # WHen set to true, one can retry all sleeping barriers. Otherwise,
+    # When set to true, one can retry all sleeping barriers. Otherwise,
     # one must decline at least one.
     progressed: bool = False
     # Each sleeping worker adds an element to this list, which is a
@@ -698,11 +705,11 @@ def stream_parallel[T](streams: Sequence[dp.StreamGen[T]]) -> dp.StreamGen[T]:
             progressed = True
 
     def sleep() -> bool:
-        resp = Queue[bool]()
+        force_cancel_resp = Queue[bool]()
         with lock:
-            sleeping.append(resp)
+            sleeping.append(force_cancel_resp)
         check_sleeping()
-        return resp.get()
+        return force_cancel_resp.get()
 
     def check_sleeping() -> None:
         nonlocal progressed
@@ -720,6 +727,8 @@ def stream_parallel[T](streams: Sequence[dp.StreamGen[T]]) -> dp.StreamGen[T]:
         # We wait this event to be sure that the message was received by
         # the client and `msg.allow` is set.
         ev.wait()
+        if done:
+            raise _WorkerDone()
 
     def worker(stream: dp.StreamGen[T]):
         try:
@@ -736,6 +745,8 @@ def stream_parallel[T](streams: Sequence[dp.StreamGen[T]]) -> dp.StreamGen[T]:
                         msg.allow = True
                         send(msg)
             queue.put(None)
+        except _WorkerDone:
+            queue.put(None)
         except Exception as e:
             queue.put(e)
 
@@ -746,14 +757,25 @@ def stream_parallel[T](streams: Sequence[dp.StreamGen[T]]) -> dp.StreamGen[T]:
 
     # Forward messages from workers until all of them are done.
     rem = len(streams)
+    exn = None  # Exception raised by a worker, if any.
     while rem > 0:
         elt = queue.get()
         if elt is None:
             rem -= 1
             check_sleeping()
         elif isinstance(elt, Exception):
-            raise elt
+            exn = elt
+            done = True
+            rem -= 1
+            check_sleeping()
         else:
             msg, ev = elt
-            yield msg
+            try:
+                if not done:
+                    yield msg
+            except GeneratorExit:
+                # The generator was garbage collected and must exit
+                done = True
             ev.set()
+    if exn is not None:
+        raise exn
