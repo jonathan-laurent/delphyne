@@ -2435,7 +2435,7 @@ inference when necessary.</p>
 
   
       dataclass
-   (delphyne.stdlib.nodes.Fail)" href="#delphyne.stdlib.nodes.Fail">Fail</a></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">,</span> <span class="n"><span title="typing.Never">Never</span></span><span class="p">]</span>
+   (delphyne.stdlib.nodes.Fail)" href="#delphyne.stdlib.nodes.Fail">Fail</a></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">,</span> <span class="n"><span title="typing.NoReturn">NoReturn</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -2492,7 +2492,7 @@ result in a no-op at runtime.</p>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">error</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Error</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Fail</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">Never</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Fail</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">NoReturn</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fail immediately with an error.</span>
 
