@@ -70,6 +70,7 @@ class _Step:
 class _ParTest:
     plan: Sequence[Sequence[_Step]]
     budget: float | None = None
+    num_take: int | None = None
     spent: float | None = None
     num_gen: int | None = None
     duration: float | None = None
@@ -120,6 +121,8 @@ def run_parallel_test(test: _ParTest):
     stream = dp.Stream.parallel(workers)
     if test.budget is not None:
         stream = stream.with_budget(_budget_limit(test.budget))
+    if test.num_take is not None:
+        stream = stream.take(test.num_take, strict=True)
     try:
         res, spent_actual = stream.collect()
     except Exception as e:
@@ -230,7 +233,10 @@ def test_parallel_random():
             cost = random.randint(1, 5)
             duration = random.randint(1, 5) / 50
             plan.append(_Step(estimate, cost, duration))
-        test = _ParTest([plan], budget=len(plan) * random.randint(1, 10))
+        num_take = 1 if random.random() < 0.5 else None
+        test = _ParTest(
+            [plan], budget=len(plan) * random.randint(1, 10), num_take=num_take
+        )
         if random.random() > 0.5:
             test.budget = test.total_estimated_cost()
         run_parallel_test(test)
