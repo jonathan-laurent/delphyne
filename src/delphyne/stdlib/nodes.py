@@ -4,7 +4,7 @@ Standard Nodes and Effects
 
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Any, Never, cast, override
+from typing import Any, Never, NoReturn, cast, override
 
 import delphyne.core as dp
 import delphyne.stdlib.policies as pol
@@ -146,7 +146,7 @@ def fail(
     *,
     message: str | None = None,
     error: dp.Error | None = None,
-) -> dp.Strategy[Fail, object, Never]:
+) -> dp.Strategy[Fail, object, NoReturn]:
     """
     Fail immediately with an error.
 

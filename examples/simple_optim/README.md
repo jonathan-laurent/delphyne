@@ -1,1 +1,0 @@
-# A Minimal Strategy Example
