@@ -115,6 +115,7 @@ from delphyne.stdlib.queries import (
     extract_final_block,
     few_shot,
     final_tool_call,
+    final_tool_call_as,
     first_word,
     get_text,
     last_code_block,

@@ -4,19 +4,13 @@
 
 ::: delphyne.Query
 
-::: delphyne.QueryConfig
+::: delphyne.Parser
 
-::: delphyne.ParserSpec
+::: delphyne.GenericParser
 
-::: delphyne.stdlib.queries._StandardParserName
+::: delphyne.stdlib.queries._GenericParserFn
 
-::: delphyne.stdlib.queries.GenericTextParser
-
-::: delphyne.stdlib.queries.TextParser
-
-::: delphyne.stdlib.queries.ParserSpecDict
-
-::: delphyne.stdlib.queries.QueryConfigDict
+::: delphyne.ParserDict
 
 ::: delphyne.stdlib.queries.Response
 
@@ -28,19 +22,18 @@
 
 ## Standard Parsers
 
-::: delphyne.raw_yaml
+::: delphyne.structured_as
 
-::: delphyne.yaml_from_last_block
+::: delphyne.final_tool_call_as
 
-::: delphyne.raw_string
+::: delphyne.structured
 
-::: delphyne.trimmed_raw_string
+::: delphyne.final_tool_call
 
-::: delphyne.first_word
+::: delphyne.last_code_block
 
-::: delphyne.string_from_last_block
+::: delphyne.get_text
 
-::: delphyne.trimmed_string_from_last_block
 
 ## Prompting Policies
 

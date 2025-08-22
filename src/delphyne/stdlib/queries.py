@@ -106,7 +106,10 @@ class Response[F, T: md.AbstractTool[Any]]:
     Answer type for queries that allow follow-ups.
 
     `Response` values give access to both the raw LLM response (to be
-    passed pass in `AnswerPrefix`) and to eventual tool calls.
+    passed pass in `AnswerPrefix`) and to eventual tool calls. See the
+    `Parser.response`, `Parser.response_with`, and
+    `GenericParser.response` methods for creating parsers that produce
+    `Response` values.
 
     Attributes:
         answer: The raw, unparsed LLM answer.
@@ -132,6 +135,9 @@ class WrappedParseError:
     in its return type allows explicitly asking the agent to fix parse
     errors instead of failing (or having the policy retry an identical
     prompt).
+
+    See the `Parser.wrap_errors` and `GenericParser.wrap_errors` methods
+    for creating parsers that produce `WrappedParseError` values.
 
     Attributes:
         error: The wrapped parse error.
@@ -626,10 +632,11 @@ class Query[T](dp.AbstractQuery[T]):
     By default, the only answer mode is `None`. More answer modes can be
     defined by setting class variable `__modes__`.
 
-    The `query_config` method maps modes to configurations (i.e., a set
-    of settings, including a parser specification). Its default behavior
-    works by inspecting the `__parser__` and `__config__` class
-    attributes and does not typically require overriding.
+    The `parser_for` method maps modes to parser specifications. Its
+    default implementation first checks whether the `parser` method is
+    overriden, in which case it is used. Otherwise, the `__parser__`
+    attribute is checked. If none of these conditions hold, `structured`
+    is used as a default parser.
 
     ## Allowing Multi-Message Exchanges and Tool Calls
 
@@ -650,15 +657,6 @@ class Query[T](dp.AbstractQuery[T]):
     If the query answer type is `Response`, the query does not only
     return a parsed answer, but also the LLM raw answer (which can be
     appended to a chat history), and possibly a sequence of tool calls.
-
-    ## Manually Overriding the `parse` Method
-
-    For advanced use cases, it is possible to directly override the
-    `parse` method that turns an answer into an object of type `T`. When
-    this is done, the `__config__` and `__parser__` class attributes
-    must not be set. Also, the `query_settings` method always returns
-    the default settings instead of relying on `query_config` and must
-    be overriden if another behavior is desired.
     """
 
     __modes__: ClassVar[Sequence[dp.AnswerMode] | None] = None
@@ -669,12 +667,29 @@ class Query[T](dp.AbstractQuery[T]):
     ### Parsing Answers
 
     def parser(self) -> Parser[T] | GenericParser:
+        """
+        Method to override to provide a parser specification common to
+        all modes. Alternatively, the `__parser__` class attribute can
+        be set. The first method allows more flexibility since parser
+        specifications can then depend on query attributes.
+        """
         assert False, (
             "Please provide `__parser__`, `parser` or "
             + f"`parser_for` for query type {type(self)}"
         )
 
     def parser_for(self, mode: dp.AnswerMode) -> Parser[T] | GenericParser:
+        """
+        Obtain a parser speficiation for a given answer mode.
+
+        This method can be overriden. By default, it does the following:
+
+        1. If the `parser` method is overriden, it uses it.
+        2. If `__parser__` is set as a parser, it is used.
+        2. If `__parser__` is set as a dictionary, the mode is used as a
+           key to obtain a parser.
+        3. Otherwise, `structured` is used as a default parser.
+        """
         if dpi.is_method_overridden(Query, type(self), "parser"):
             assert self.__parser__ is None, (
                 f"Both `__parser__` and `parser` are provided for {type(self)}."
@@ -717,13 +732,8 @@ class Query[T](dp.AbstractQuery[T]):
         except dp.ParseError as e:
             return e
 
-    ### Query Settings
-
     @override
     def query_settings(self, mode: dp.AnswerMode) -> dp.QuerySettings:
-        """
-        Return the settings associated with the query.
-        """
         parser = self._instantiated_parser_for(mode)
         return parser.settings
 
