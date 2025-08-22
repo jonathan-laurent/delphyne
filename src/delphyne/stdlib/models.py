@@ -189,6 +189,9 @@ class Schema:
             description = tool.tool_description()
         else:
             name = tool_name_of_class_name(tool.__name__)
+            # For a dataclass, if no docstring is provided,
+            # `inspect.getdoc` shows its signature (name, attribute
+            # names and types).
             description = inspect.getdoc(cast(Any, tool))
         adapter = pydantic.TypeAdapter(cast(Any, tool))
         return Schema(
