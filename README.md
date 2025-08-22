@@ -18,9 +18,10 @@ Delphyne is a programming framework for building _reliable_ and _modular_ LLM ap
 
 First, download the Delphyne repository and enter it:
 
-```
+```sh
 git clone git@github.com:jonathan-laurent/delphyne.git
 cd delphyne
+git checkout v0.6.1  # latest stable version
 ```
 
 Then, to install the Delphyne library in your current Python environment:
