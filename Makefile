@@ -109,15 +109,16 @@ deploy-doc-dev:
 
 
 # A release is made in two steps, first prepare it using this command, then
-# inspect the diff, and finally use make-release.
+# inspect the diff, commit the changes, and finally use make-release.
 prepare-release:
 	${RELEASE_SCRIPT} prepare `${RELEASE_SCRIPT} current-version`
+	@$(MAKE) full-test
 
 
 release:
 	@test -z "$$(git status --porcelain)" || (echo "Uncommitted changes found" && exit 1)
 	@$(MAKE) deploy-doc-release
-    git tag v`${RELEASE_SCRIPT} current-version`
+	git tag v`${RELEASE_SCRIPT} current-version`
 	git push --tags
 
 
