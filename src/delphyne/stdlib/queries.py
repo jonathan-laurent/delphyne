@@ -414,11 +414,16 @@ class _GenericParserFn(Protocol):
 def structured_as[T](type: TypeAnnot[T], /) -> Parser[T]:
     """
     Parse an LLM structured answer into a given target type.
+
+    !!! warning
+    Only dataclass types are supported, since most LLM providers
+    only support structured output and tool calls for JSON objects.
     """
     assert not (type is Response or typing.get_origin(type) is Response), (
         f"Unexpected target type for `structured_as`: {type}.\n"
         + "Did you forget to append `.response` to your parser definition?"
     )
+    _check_valid_structured_output_type(type)
     settings = dp.QuerySettings(dp.StructuredOutputSettings(type))
     return Parser(settings, lambda ans: _parse_structured_output(type, ans))
 
@@ -429,8 +434,13 @@ def final_tool_call_as[T](annot: TypeAnnot[T], /) -> Parser[T]:
     to oracles as a tool, which must be called to produce the final
     answer. This provides an alternative to "structured", which
     additionally allows a chain of thoughts to precede the final answer.
+
+    !!! warning
+        Only dataclass types are supported, since most LLM providers
+        only support structured output and tool calls for JSON objects.
     """
-    assert isinstance(annot, type)
+    _check_valid_structured_output_type(annot)
+    assert isinstance(annot, type)  # redundant with previous check
     tool = cast(type[Any], annot)
     tool_settings = dp.ToolSettings(tool_types=[tool], force_tool_call=True)
     settings = dp.QuerySettings(None, tool_settings)
@@ -487,6 +497,18 @@ A mapping from answer modes to parser specifications.
 
 Can be used as a value for the `__parser__` class attribute of queries.
 """
+
+
+def _check_valid_structured_output_type(annot: TypeAnnot[Any]) -> None:
+    if orig := typing.get_origin(annot):
+        annot = orig
+    forbidden = [str, int, float, bool, dict, tuple]
+    if not isinstance(annot, type) or annot in forbidden:
+        raise ValueError(
+            f"Structured output not supported for type: {annot}.\n"
+            "Most LLM providers only support structured output for JSON "
+            "objects. Consider wrapping your output type in a custom class."
+        )
 
 
 ##### Parser Utilities
