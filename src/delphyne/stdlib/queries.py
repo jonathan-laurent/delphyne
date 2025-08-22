@@ -275,6 +275,191 @@ class _DecomposedAnswerType:
 
 
 #####
+##### New Parser
+#####
+
+
+@dataclass(frozen=True)
+class Parser[A]:
+    """
+    A parser specification.
+
+    In addition to a mapping from answers to answer type `A`, a parser
+    also specifies query settings to be passed to oracles. Indeed, these
+    two components are typically tied and so specifying them together in
+    a single place is clearer.
+
+    Attributes:
+        settings: The query settings associated with the parser.
+        parse: The parsing function, which is allowed to raise
+            the `ParseError` exception.
+    """
+
+    settings: dp.QuerySettings
+    parse: Callable[[dp.Answer], A]
+
+    def map[B](self, f: Callable[[A], B], /) -> "Parser[B]":
+        """
+        Apply a function to the parser's output.
+
+        The function `f` is allowed to raise `ParseError`.
+        """
+        return Parser(
+            settings=self.settings,
+            parse=lambda ans: f(self.parse(ans)),
+        )
+
+    def validate(self, f: Callable[[A], dp.ParseError | None]) -> "Parser[A]":
+        """
+        Check that the parser's output satisfies a given property.
+
+        If the property is satisfied, function `f` must return `None`.
+        Otherwise, it may return or raise a `ParseError`.
+        """
+
+        def parse(ans: dp.Answer) -> A:
+            res = self.parse(ans)
+            if err := f(res):
+                raise err
+            return res
+
+        return Parser(settings=self.settings, parse=parse)
+
+    @property
+    def wrap_errors(self) -> "Parser[A | WrappedParseError]":
+        """
+        Wrap parse errors into `WrappedParseError`.
+        """
+        assert False
+
+    def response_with[T: md.AbstractTool[Any]](
+        self, tools: TypeAnnot[T]
+    ) -> "Parser[Response[A, T]]":
+        """
+        Wrap answers into full `Response` objects.
+        """
+        assert False
+
+    @property
+    def response(self) -> "GenericParser":
+        """
+        Wrap answers into full `Response` objects.
+
+        Return a `GenericParser` so that the list of supported tools can
+        be extracted from the query's answer type.
+        """
+        assert False
+
+    @property
+    def trim(self: "Parser[str]") -> "Parser[str]":
+        """
+        Trim the output of a string parser.
+        """
+        assert False
+
+    @property
+    def json(self: "Parser[str]") -> "GenericParser":
+        """
+        Parse a string as a JSON object.
+
+        Return a `GenericParser` so that the target type can be
+        extracted from the query's answer type.
+        """
+        assert False
+
+    @property
+    def yaml(self: "Parser[str]") -> "GenericParser":
+        """
+        Parse a string as a YAML object.
+
+        Return a `GenericParser` so that the target type can be
+        extracted from the query's answer type.
+        """
+        assert False
+
+    def json_as[U](self, type: TypeAnnot[U]) -> "Parser[U]":
+        """
+        Parse a string as a JSON object.
+        """
+        assert False
+
+    def yaml_as[U](self, type: TypeAnnot[U]) -> "Parser[U]":
+        """
+        Parse a string as a YAML object.
+        """
+        assert False
+
+
+@dataclass(frozen=True)
+class GenericParser:
+    """
+    A mapping from a query's answer type to a parser specification.
+
+    This is useful to avoid redundancy when specifying parsers. In
+    particular, it allows writing:
+
+    ```python
+    @dataclass
+    class MyQuery(Query[Response[Out, Tool1 | Tool2]]):
+        ...
+        __parser__ = last_block.yaml.response
+    ```
+
+    instead of:
+
+    ```python
+    __parser__ = last_block.yaml_as(Out).response_with(Tool1 | Tool2)
+    ```
+
+    Attributes:
+        for_type: A function that takes a type annotation and returns a
+            `Parser` for this type.
+    """
+
+    for_type: "_GenericParserFn"
+
+    @property
+    def wrap_errors(self) -> "GenericParser":
+        """
+        Wrap parse errors into `WrappedParseError`.
+
+        A runtime check is performed to ensure that the answer type
+        features `WrappedParseError`.
+        """
+        assert False
+
+    @property
+    def response(self) -> "GenericParser":
+        """
+        Wrap answers into full `Response` objects.
+
+        Possible tool calls are extracted from the query's answer type
+        and an exception is raised if this type does not have the form
+        `Response[..., ...]`.
+        """
+        assert False
+
+
+class _GenericParserFn(Protocol):
+    """
+    Type of functions wrapped by `GenericParser`.
+    """
+
+    def __call__[T](self, type: TypeAnnot[T], /) -> Parser[T]: ...
+
+
+def structured_as[T](type: TypeAnnot[T]) -> Parser[T]:
+    assert False
+
+
+# structured: GenericParser = ...
+
+# get_text: Parser[str] = ...
+
+# last_code_block: Parser[str] = ...
+
+
+#####
 ##### Standard Queries
 #####
 
