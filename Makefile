@@ -100,7 +100,7 @@ doc-logo: $(WHITE_LOGOS)
 
 deploy-doc-release:
 	git fetch origin gh-pages
-	mike deploy 0.7 latest --push
+	mike deploy 0.7 latest --update-aliases --push
 
 
 deploy-doc-dev:
