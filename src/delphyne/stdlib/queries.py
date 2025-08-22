@@ -8,13 +8,12 @@ import re
 import textwrap
 import typing
 from collections.abc import Callable, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import partial
 from types import EllipsisType
 from typing import Any, ClassVar, Literal, Protocol, cast, overload, override
 
 import numpy as np
-import yaml
 
 import delphyne.core as dp
 import delphyne.core.chats as ct
@@ -298,16 +297,21 @@ class Parser[A]:
     settings: dp.QuerySettings
     parse: Callable[[dp.Answer], A]
 
-    def map[B](self, f: Callable[[A], B], /) -> "Parser[B]":
+    def map[B](self, f: Callable[[A], B | dp.ParseError], /) -> "Parser[B]":
         """
         Apply a function to the parser's output.
 
-        The function `f` is allowed to raise `ParseError`.
+        The function `f` is allowed to raise or return `ParseError`.
         """
-        return Parser(
-            settings=self.settings,
-            parse=lambda ans: f(self.parse(ans)),
-        )
+
+        def parse(ans: dp.Answer) -> B:
+            res = self.parse(ans)
+            ret = f(res)
+            if isinstance(ret, dp.ParseError):
+                raise ret
+            return ret
+
+        return Parser(settings=self.settings, parse=parse)
 
     def validate(self, f: Callable[[A], dp.ParseError | None]) -> "Parser[A]":
         """
@@ -330,7 +334,14 @@ class Parser[A]:
         """
         Wrap parse errors into `WrappedParseError`.
         """
-        assert False
+
+        def parse(ans: dp.Answer) -> A | WrappedParseError:
+            try:
+                return self.parse(ans)
+            except dp.ParseError as e:
+                return WrappedParseError(e)
+
+        return Parser(settings=self.settings, parse=parse)
 
     def response_with[T: md.AbstractTool[Any]](
         self, tools: TypeAnnot[T]
@@ -338,7 +349,41 @@ class Parser[A]:
         """
         Wrap answers into full `Response` objects.
         """
-        assert False
+
+        tools_raw = dpi.union_components(tools)
+        tools_types: list[type[md.AbstractTool[Any]]] = [
+            a for a in tools_raw if issubclass(a, md.AbstractTool)
+        ]
+        assert len(tools_types) == len(tools_raw), (
+            f"Invalid tools union: {tools}"
+        )
+        if self.settings.tools is None:
+            tools_settings = dp.ToolSettings(
+                tool_types=tools_types, force_tool_call=False
+            )
+        else:
+            tools_settings = dp.ToolSettings(
+                tool_types=[*tools_types, *self.settings.tools.tool_types],
+                force_tool_call=self.settings.tools.force_tool_call,
+            )
+        settings = replace(self.settings, tools=tools_settings)
+
+        def parse(ans: dp.Answer) -> Response[A, T]:
+            # If the answer is one of the provided tool types, we
+            # return. Otherwise, we call the parser recursively.
+            tcs: list[T] = []
+            for tc in ans.tool_calls:
+                for t in tools_types:
+                    if tc.name == t.tool_name():
+                        tcs.append(_parse_or_raise(t, tc.args))
+                        break
+            if tcs:
+                return Response[A, T](ans, ToolRequests(tcs))
+            else:
+                parsed = self.parse(ans)
+                return Response[A, T](ans, FinalAnswer(parsed))
+
+        return Parser(settings=settings, parse=parse)
 
     @property
     def response(self) -> "GenericParser":
@@ -348,14 +393,23 @@ class Parser[A]:
         Return a `GenericParser` so that the list of supported tools can
         be extracted from the query's answer type.
         """
-        assert False
+
+        def parser(annot: TypeAnnot[Any], /) -> Parser[Any]:
+            assert typing.get_origin(annot) is Response, (
+                f"Response type expected: {annot}"
+            )
+            args = typing.get_args(annot)
+            assert len(args) == 2
+            return self.response_with(args[1])
+
+        return GenericParser(parser)
 
     @property
     def trim(self: "Parser[str]") -> "Parser[str]":
         """
         Trim the output of a string parser.
         """
-        assert False
+        return self.map(str.strip)
 
     @property
     def json(self: "Parser[str]") -> "GenericParser":
@@ -365,7 +419,8 @@ class Parser[A]:
         Return a `GenericParser` so that the target type can be
         extracted from the query's answer type.
         """
-        assert False
+
+        return GenericParser(self.json_as)
 
     @property
     def yaml(self: "Parser[str]") -> "GenericParser":
@@ -375,19 +430,21 @@ class Parser[A]:
         Return a `GenericParser` so that the target type can be
         extracted from the query's answer type.
         """
-        assert False
 
-    def json_as[U](self, type: TypeAnnot[U]) -> "Parser[U]":
+        return GenericParser(self.yaml_as)
+
+    def json_as[U](self: "Parser[str]", type: TypeAnnot[U]) -> "Parser[U]":
         """
         Parse a string as a JSON object.
         """
-        assert False
 
-    def yaml_as[U](self, type: TypeAnnot[U]) -> "Parser[U]":
+        return self.map(partial(_parse_json_as, type))
+
+    def yaml_as[U](self: "Parser[str]", type: TypeAnnot[U]) -> "Parser[U]":
         """
         Parse a string as a YAML object.
         """
-        assert False
+        return self.map(partial(_parse_yaml_as, type))
 
 
 @dataclass(frozen=True)
@@ -426,7 +483,19 @@ class GenericParser:
         A runtime check is performed to ensure that the answer type
         features `WrappedParseError`.
         """
-        assert False
+
+        def parser(annot: TypeAnnot[Any], /) -> Parser[Any]:
+            comps = dpi.union_components(annot)
+            assert len(comps) >= 2 and WrappedParseError in comps, (
+                "Answer type does not have shape `... | WrappedParseError`: "
+                + f"{annot}"
+            )
+            annot = dpi.make_union(
+                [c for c in comps if c != WrappedParseError]
+            )
+            return self.for_type(annot).wrap_errors
+
+        return GenericParser(parser)
 
     @property
     def response(self) -> "GenericParser":
@@ -437,7 +506,16 @@ class GenericParser:
         and an exception is raised if this type does not have the form
         `Response[..., ...]`.
         """
-        assert False
+
+        def parser(annot: TypeAnnot[Any], /) -> Parser[Any]:
+            assert typing.get_origin(annot) is Response, (
+                f"Response type expected: {annot}"
+            )
+            args = typing.get_args(annot)
+            assert len(args) == 2
+            return self.for_type(args[0]).response_with(args[1])
+
+        return GenericParser(parser)
 
 
 class _GenericParserFn(Protocol):
@@ -448,15 +526,119 @@ class _GenericParserFn(Protocol):
     def __call__[T](self, type: TypeAnnot[T], /) -> Parser[T]: ...
 
 
-def structured_as[T](type: TypeAnnot[T]) -> Parser[T]:
-    assert False
+def structured_as[T](type: TypeAnnot[T], /) -> Parser[T]:
+    """
+    Parse an LLM structured answer into a given target type.
+    """
+    assert not (type is Response or typing.get_origin(type) is Response), (
+        f"Unexpected target type for `structured_as`: {type}.\n"
+        + "Did you forget to append `.response` to your parser definition?"
+    )
+    settings = dp.QuerySettings(dp.StructuredOutputSettings(type))
+    return Parser(settings, lambda ans: _parse_structured_output(type, ans))
 
 
-# structured: GenericParser = ...
+def final_tool_call_as[T](annot: TypeAnnot[T], /) -> Parser[T]:
+    """
+    Variant of `structured_as`, where the query answer type is presented
+    to oracles as a tool, which must be called to produce the final
+    answer. This provides an alternative to "structured", which
+    additionally allows a chain of thoughts to precede the final answer.
+    """
+    assert isinstance(annot, type)
+    tool = cast(type[Any], annot)
+    tool_settings = dp.ToolSettings(tool_types=[tool], force_tool_call=True)
+    settings = dp.QuerySettings(None, tool_settings)
 
-# get_text: Parser[str] = ...
+    def parse(ans: dp.Answer) -> T:
+        assert len(ans.tool_calls) == 1, (
+            f"Expected one final tool call, got answer: {ans}"
+        )
+        return _parse_or_raise(tool, ans.tool_calls[0].args)
 
-# last_code_block: Parser[str] = ...
+    return Parser(settings, parse)
+
+
+structured = GenericParser(structured_as)
+"""
+Generic parser associated with `structured_as`.
+"""
+
+
+final_tool_call = GenericParser(final_tool_call_as)
+"""
+Generic parser associated with `final_tool_call_as`.
+"""
+
+
+def _get_text_answer(ans: Answer) -> str:
+    if ans.tool_calls:
+        raise dp.ParseError(
+            description="Trying to parse answer with tool calls."
+        )
+    if not isinstance(ans.content, str):
+        raise dp.ParseError(description="Unexpected structured answer.")
+    return ans.content
+
+
+get_text = Parser[str](dp.QuerySettings(), _get_text_answer)
+"""
+Parser that extracts the text content of an answer.
+
+A runtime error is raised if the answer contains structured content.
+"""
+
+
+last_code_block: Parser[str] = get_text.map(
+    lambda s: block
+    if (block := extract_final_block(s)) is not None
+    else dp.ParseError(description="No code block found.", meta={"source": s})
+)
+"""
+Parser that extracts the last code block from a text answer.
+"""
+
+
+##### Parser Utilities
+
+
+def _parse_yaml_as[T](type: TypeAnnot[T], ans: str, /) -> T:
+    import yaml
+
+    try:
+        parsed = yaml.safe_load(ans)
+        return ty.pydantic_load(type, parsed)
+    except ValidationError as e:
+        raise dp.ParseError(description=str(e))
+    except Exception as e:
+        raise dp.ParseError(description=str(e))
+
+
+def _parse_json_as[T](type: TypeAnnot[T], ans: str, /) -> T:
+    import json
+
+    try:
+        parsed = json.loads(ans)
+        return ty.pydantic_load(type, parsed)
+    except ValidationError as e:
+        raise dp.ParseError(description=str(e))
+    except Exception as e:
+        raise dp.ParseError(description=str(e))
+
+
+def _parse_structured_output[T](type: TypeAnnot[T], answer: dp.Answer) -> T:
+    if not isinstance(answer.content, dp.Structured):
+        raise dp.ParseError(
+            description="A structured output was expected.",
+        )
+    return _parse_or_raise(type, answer.content.structured)
+
+
+def _parse_or_raise[T](type: TypeAnnot[T], obj: Any) -> T:
+    try:
+        return ty.pydantic_load(type, obj)
+    except ValidationError as e:
+        raise dp.ParseError(description=str(e))
 
 
 #####
@@ -921,16 +1103,6 @@ class _ParsingFunction[T](Protocol):
     def __call__(self, answer: dp.Answer, /) -> T: ...
 
 
-def _get_text_answer(ans: Answer) -> str:
-    if ans.tool_calls:
-        raise dp.ParseError(
-            description="Trying to parse answer with tool calls."
-        )
-    if not isinstance(ans.content, str):
-        raise dp.ParseError(description="Unexpected structured answer.")
-    return ans.content
-
-
 def _get_single_tool_call(ans: Answer) -> dp.ToolCall:
     n = len(ans.tool_calls)
     if n == 0:
@@ -940,21 +1112,6 @@ def _get_single_tool_call(ans: Answer) -> dp.ToolCall:
         msg = "Too many tool calls."
         raise dp.ParseError(description=msg)
     return ans.tool_calls[0]
-
-
-def _parse_or_raise[T](type: TypeAnnot[T], obj: Any) -> T:
-    try:
-        return ty.pydantic_load(type, obj)
-    except ValidationError as e:
-        raise dp.ParseError(description=str(e))
-
-
-def _parse_structured_output[T](type: TypeAnnot[T], answer: dp.Answer) -> T:
-    if not isinstance(answer.content, dp.Structured):
-        raise dp.ParseError(
-            description="A structured output was expected.",
-        )
-    return _parse_or_raise(type, answer.content.structured)
 
 
 def _from_generic_text_parser[T](
@@ -997,6 +1154,8 @@ def raw_yaml[T](type: TypeAnnot[T], res: str) -> T:
     Parse a text answer that consists in a single YAML object and
     nothing else.
     """
+    import yaml
+
     try:
         parsed = yaml.safe_load(res)
         return ty.pydantic_load(type, parsed)
