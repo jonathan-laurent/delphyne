@@ -7,7 +7,7 @@ import random
 import re
 import textwrap
 import typing
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, replace
 from functools import partial
 from types import EllipsisType
@@ -141,140 +141,7 @@ class WrappedParseError:
 
 
 #####
-##### Query Configuration
-#####
-
-
-@dataclass(frozen=True)
-class QueryConfig:
-    """
-    Mode-specific query settings.
-
-    More settings could be added in the future.
-
-    Attributes:
-        parser: A parser specification.
-    """
-
-    parser: "ParserSpec"
-
-
-type _StandardParserName = Literal["structured", "final_tool_call"]
-
-
-type ParserSpec = _StandardParserName | GenericTextParser | TextParser[Any]
-"""
-A parser specification, which can be either:
-
-- **"structured"**: Oracles must answer with structured output, and the
-      resulting JSON object is parsed using Pydantic.
-- **"final_tool_call"**: The query answer type is presented to oracles
-      as a tool, which must be called to produce the final answer. This
-      provides an alternative to "structured", which additionally allows
-      a chain of thoughts to precede the final answer.
-- **A generic text parser**: See `GenericTextParser`. Oracles are then
-      expected to produce a string answer, which is parsed using the
-      provided function.
-- **A text parser**: See `TextParser`. Oracles are then
-      expected to produce a string answer, which is parsed using the
-      provided function.
-"""
-
-
-class GenericTextParser(Protocol):
-    """
-    A function that takes a type annotation along with a string as
-    arguments and either returns a parsed object of the specified
-    type or raises `ParseError`.
-
-    Example: `yaml_from_last_block`.
-    """
-
-    def __call__[T](self, type: TypeAnnot[T], answer: str, /) -> T: ...
-
-
-class TextParser[T](Protocol):
-    """
-    A function that takes a string as an argument and either returns
-    a parsed object or raises `ParseError`.
-    """
-
-    def __call__(self, answer: str, /) -> T: ...
-
-
-type ParserSpecDict = Mapping[dp.AnswerMode, ParserSpec]
-"""
-A dictionary mapping answer modes to parser specifications.
-"""
-
-
-type QueryConfigDict = Mapping[dp.AnswerMode, QueryConfig]
-"""
-A dictionary mapping answer modes to query configurations.
-"""
-
-
-@dataclass
-class _DecomposedResponseType:
-    """
-    See _DecomposedAnswerType.
-    """
-
-    tools: Sequence[type[md.AbstractTool[Any]]]
-
-
-@dataclass
-class _DecomposedAnswerType:
-    """
-    Represents an answer type (type parameter of `Query`) of the form
-    `F` or `Response[F, T1|...|Tn]`: `final` contains `F` and `resp`
-    contains the list of all Ti in the case of a `Response` type and
-    `None` otherwise.
-
-    If `F` itself is of the form `F2 | ParseError`, then `F2` is
-    assigned to `final_no_error`.
-    """
-
-    final: TypeAnnot[Any]
-    resp: _DecomposedResponseType | None
-    final_no_error: TypeAnnot[Any] | None
-
-    def __init__(self, annot: TypeAnnot[Any]):
-        if typing.get_origin(annot) is Response:
-            args = typing.get_args(annot)
-            assert len(args) == 2
-            tools_raw = dpi.union_components(args[1])
-            tools: list[type[md.AbstractTool[Any]]] = [
-                a for a in tools_raw if issubclass(a, md.AbstractTool)
-            ]
-            assert len(tools) == len(tools_raw)
-            self.resp = _DecomposedResponseType(tools)
-            self.final = args[0]
-        else:
-            self.resp = None
-            self.final = annot
-        final_comps = dpi.union_components(self.final)
-        if len(final_comps) >= 2 and WrappedParseError in final_comps:
-            self.final_no_error = dpi.make_union(
-                [c for c in final_comps if c != WrappedParseError]
-            )
-        else:
-            self.final_no_error = None
-
-    def wrap_parse_errors(self) -> bool:
-        return self.final_no_error is not None
-
-    @property
-    def to_parse(self) -> TypeAnnot[Any]:
-        return (
-            self.final_no_error
-            if self.final_no_error is not None
-            else self.final
-        )
-
-
-#####
-##### New Parser
+##### Parsers
 #####
 
 
@@ -436,6 +303,12 @@ class Parser[A]:
     def json_as[U](self: "Parser[str]", type: TypeAnnot[U]) -> "Parser[U]":
         """
         Parse a string as a JSON object.
+
+        !!! info
+            This method currently does not work very well with type
+            inference since its arguments do not allow inferring the
+            type of `U`. This should work better once `TypeAnnot` can be
+            replaced with `TypeExpr` (incoming in Python 3.14).
         """
 
         return self.map(partial(_parse_json_as, type))
@@ -443,6 +316,12 @@ class Parser[A]:
     def yaml_as[U](self: "Parser[str]", type: TypeAnnot[U]) -> "Parser[U]":
         """
         Parse a string as a YAML object.
+
+        !!! info
+            This method currently does not work very well with type
+            inference since its arguments do not allow inferring the
+            type of `U`. This should work better once `TypeAnnot` can be
+            replaced with `TypeExpr` (incoming in Python 3.14).
         """
         return self.map(partial(_parse_yaml_as, type))
 
@@ -572,10 +451,7 @@ Generic parser associated with `final_tool_call_as`.
 
 
 def _get_text_answer(ans: Answer) -> str:
-    if ans.tool_calls:
-        raise dp.ParseError(
-            description="Trying to parse answer with tool calls."
-        )
+    _assert_no_tool_calls(ans)
     if not isinstance(ans.content, str):
         raise dp.ParseError(description="Unexpected structured answer.")
     return ans.content
@@ -596,6 +472,14 @@ last_code_block: Parser[str] = get_text.map(
 )
 """
 Parser that extracts the last code block from a text answer.
+"""
+
+
+type ParserDict = dict[dp.AnswerMode, Parser[Any] | GenericParser]
+"""
+A mapping from answer modes to parser specifications.
+
+Can be used as a value for the `__parser__` class attribute of queries.
 """
 
 
@@ -627,6 +511,7 @@ def _parse_json_as[T](type: TypeAnnot[T], ans: str, /) -> T:
 
 
 def _parse_structured_output[T](type: TypeAnnot[T], answer: dp.Answer) -> T:
+    _assert_no_tool_calls(answer)
     if not isinstance(answer.content, dp.Structured):
         raise dp.ParseError(
             description="A structured output was expected.",
@@ -639,6 +524,50 @@ def _parse_or_raise[T](type: TypeAnnot[T], obj: Any) -> T:
         return ty.pydantic_load(type, obj)
     except ValidationError as e:
         raise dp.ParseError(description=str(e))
+
+
+def _assert_no_tool_calls(ans: dp.Answer) -> None:
+    if ans.tool_calls:
+        raise dp.ParseError(
+            description="Unexpected tool calls.",
+            meta={"tool_calls": ans.tool_calls},
+        )
+
+
+def extract_final_block(s: str) -> str | None:
+    # In case the output is ill-formed, the quotes may not be balanced.
+    # This is why we use a lookahead here.
+    # See tests in `test_stdlib.py`
+    code_blocks = re.findall(r"(?=(```[^\n]*\n(.*?)```))", s, re.DOTALL)
+    return code_blocks[-1][1] if code_blocks else None
+
+
+def _first_word[T](type: TypeAnnot[T]) -> Parser[T]:
+    """
+    See `first_word`.
+    """
+
+    def process(type: TypeAnnot[T], res: str) -> T:
+        vals = _match_string_literal_type(type)
+        if vals is None:
+            msg = f"Not recognized as a string literal type: {type}."
+            raise dp.ParseError(description=msg)
+        try:
+            assert res, "Cannot parse an empty string."
+            first = res.split()[0]
+            assert first in vals, "Unallowed value: " + first
+            return cast(T, first)
+        except Exception as e:
+            raise dp.ParseError(description=str(e))
+
+    return get_text.map(partial(process, type))
+
+
+first_word = GenericParser(_first_word)
+"""
+Parse the first word of the answer and turn it into an object of
+type `T = Literal[s1,...,sn]`.
+"""
 
 
 #####
@@ -733,65 +662,49 @@ class Query[T](dp.AbstractQuery[T]):
     """
 
     __modes__: ClassVar[Sequence[dp.AnswerMode] | None] = None
-    __parser__: ClassVar[ParserSpec | ParserSpecDict | None] = None
-    __config__: ClassVar[QueryConfig | QueryConfigDict | None] = None
-
-    ### Inspection methods
-
-    def query_config(self, mode: dp.AnswerMode) -> QueryConfig | None:
-        """
-        Map modes to configurations.
-
-        This method inspects the `__config__` and `__parser__` class
-        attributes (none or either can be set but not both).
-
-        - If no attribute is set, the default configuration is used for
-              all modes, which uses the `"structured"` parser.
-        - If `__config__` is set to a `QueryConfig`, this configuration
-              is used for all modes.
-        - Alternatively, `__config__` can be set to a dictionary mapping
-              modes to configurations.
-        - If `__parser__` is set to a parser specification, the default
-              configuration is used for all modes, *except* that the
-              provided parser is used instead of the default one.
-        - Alternatively, `__parser__` can also be set to a dictionary.
-
-        In the special case where the `parse` method is overriden and
-        only in this case, return `None` after ensuring that
-        `__config__` and `__parser__` are not set.
-        """
-        cls = type(self)
-        parse_overriden = dpi.is_method_overridden(Query, cls, "parse")
-        if parse_overriden:
-            assert cls.__config__ is None
-            assert cls.__parser__ is None
-            return None
-        if cls.__config__ is not None:
-            assert self.__parser__ is None, (
-                "Cannot have both __config__ and __parser__ attributes."
-            )
-            config_attr = cls.__config__
-            if isinstance(config_attr, QueryConfig):
-                return config_attr
-            else:
-                assert isinstance(config_attr, Mapping)
-                return cast(Any, config_attr)[mode]
-        elif cls.__parser__ is not None:
-            parser_attr: Any = cls.__parser__
-            if isinstance(parser_attr, Mapping):
-                parser = cast(Any, parser_attr)[mode]
-            else:
-                parser = parser_attr
-            _check_valid_parser_spec(parser)
-            return QueryConfig(parser)
-        else:
-            return QueryConfig("structured")
-
-    @classmethod
-    def _decomposed_answer_type(cls) -> _DecomposedAnswerType:
-        return _DecomposedAnswerType(cls._answer_type())
+    __parser__: ClassVar[Parser[Any] | GenericParser | ParserDict | None] = (
+        None
+    )
 
     ### Parsing Answers
+
+    def parser(self) -> Parser[T] | GenericParser:
+        assert False, (
+            "Please provide `__parser__`, `parser` or "
+            + f"`parser_for` for query type {type(self)}"
+        )
+
+    def parser_for(self, mode: dp.AnswerMode) -> Parser[T] | GenericParser:
+        if dpi.is_method_overridden(Query, type(self), "parser"):
+            assert self.__parser__ is None, (
+                f"Both `__parser__` and `parser` are provided for {type(self)}."
+            )
+            return self.parser()
+        elif self.__parser__ is None:
+            return structured  # default parser
+        else:
+            assert not dpi.is_method_overridden(
+                Query, type(self), "parser_for"
+            ), (
+                "Both `__parser__` and `parser_for` are "
+                + f"provided for {type(self)}."
+            )
+            parser_attr = self.__parser__
+            if isinstance(parser_attr, dict):
+                parser = parser_attr[mode]
+            else:
+                parser = parser_attr
+            assert isinstance(parser, (Parser, GenericParser)), (
+                "Expected parser type, got: " + f"{type(parser)}."
+            )
+            return cast(Any, parser)
+
+    def _instantiated_parser_for(self, mode: dp.AnswerMode) -> Parser[T]:
+        parser = self.parser_for(mode)
+        if isinstance(parser, GenericParser):
+            return parser.for_type(self._answer_type())
+        else:
+            return parser
 
     @override
     def parse_answer(self, answer: dp.Answer) -> T | dp.ParseError:
@@ -799,59 +712,10 @@ class Query[T](dp.AbstractQuery[T]):
             f"Unknown mode: {answer.mode}"
         )
         try:
-            return self.parse(answer)
+            parser = self._instantiated_parser_for(answer.mode)
+            return parser.parse(answer)
         except dp.ParseError as e:
             return e
-
-    def parse(self, answer: Answer) -> T:
-        """
-        A more convenient method to override instead of `parse_answer`.
-
-        Raises `ParseError`.
-        """
-
-        # Decompose the specified answer type
-        config = self.query_config(answer.mode)
-        assert config is not None
-        attr = config.parser
-        ans_type = self._decomposed_answer_type()
-
-        # Compute base parsing function `parser`
-        parser: _ParsingFunction[Any]
-        if attr == "structured":
-            parser = _from_structured(ans_type.to_parse)
-        elif attr == "final_tool_call":
-            assert isinstance(ans_type.to_parse, type)
-            parser = _from_final_tool_call(cast(type[Any], ans_type.to_parse))
-        else:
-            assert callable(attr)
-            attr = cast(Callable[..., Any], attr)
-            sig = inspect.signature(attr)
-            nargs = len(sig.parameters)
-            assert nargs == 1 or nargs == 2
-            if nargs == 1:
-                parser = _from_text_parser(attr)
-            else:
-                parser = _from_generic_text_parser(attr, ans_type.to_parse)
-
-        if ans_type.wrap_parse_errors():
-            parser = _wrap_parse_errors(parser)
-
-        # If the answer type has form `Response[..., ...]`
-        if ans_type.resp:
-            if _has_final_tool_call(ans_type, answer):
-                tcs = []
-            else:
-                tcs = [
-                    _parse_tool_call(ans_type.resp.tools, tc)
-                    for tc in answer.tool_calls
-                ]
-            if tcs:
-                return cast(T, Response(answer, ToolRequests(tcs)))
-            else:
-                return cast(T, Response(answer, FinalAnswer(parser(answer))))
-
-        return parser(answer)
 
     ### Query Settings
 
@@ -859,42 +723,9 @@ class Query[T](dp.AbstractQuery[T]):
     def query_settings(self, mode: dp.AnswerMode) -> dp.QuerySettings:
         """
         Return the settings associated with the query.
-
-        By default, this method uses the result of `query_config` to
-        determine settings if `parse` is not overriden, and the default
-        set of settings otherwise.
         """
-        config = self.query_config(mode)
-        if config is None:
-            # `parse` is overriden
-            return dp.QuerySettings(structured_output=None, tools=None)
-        structured_output = None
-        if config.parser == "structured":
-            type = self._decomposed_answer_type().final
-            structured_output = dp.StructuredOutputSettings(type)
-        tools = None
-        if tool_types := self._query_tools(config.parser):
-            tools = dp.ToolSettings(
-                tool_types, force_tool_call=config.parser == "final_tool_call"
-            )
-        return dp.QuerySettings(
-            structured_output=structured_output,
-            tools=tools,
-        )
-
-    def _structured_output_type(self) -> TypeAnnot[Any] | ty.NoTypeInfo:
-        decomposed = self._decomposed_answer_type()
-        return decomposed.final
-
-    def _query_tools(self, parser: ParserSpec) -> Sequence[type[Any]]:
-        ans_type = self._decomposed_answer_type()
-        tools: list[type[Any]] = []
-        if ans_type.resp is not None:
-            tools = [*ans_type.resp.tools]
-        if parser == "final_tool_call":
-            assert isinstance(ans_type.final, type)
-            tools.append(ans_type.final)
-        return tools
+        parser = self._instantiated_parser_for(mode)
+        return parser.settings
 
     ### Query Prefixes
 
@@ -1062,28 +893,6 @@ def _no_prompt_manager_error() -> str:
     )
 
 
-def _parse_tool_call(
-    tools: Sequence[type[md.AbstractTool[Any]]], tc: dp.ToolCall
-) -> md.AbstractTool[Any]:
-    for t in tools:
-        if tc.name == t.tool_name():
-            return _parse_or_raise(t, tc.args)
-    raise dp.ParseError(description=f"Unknown tool: {tc.name}.")
-
-
-def _has_final_tool_call(ans_type: _DecomposedAnswerType, answer: dp.Answer):
-    if not isinstance(ans_type.final, type):
-        return False
-    return any(
-        tc.name == md.tool_name_of_class_name(ans_type.final.__name__)
-        for tc in answer.tool_calls
-    )
-
-
-def _check_valid_parser_spec(obj: Any):
-    assert isinstance(obj, str) or callable(obj)
-
-
 def _match_string_literal_type(t: Any) -> Sequence[str] | None:
     if (
         (vals := dpi.literal_type_args(t)) is not None
@@ -1092,161 +901,6 @@ def _match_string_literal_type(t: Any) -> Sequence[str] | None:
     ):
         return vals
     return None
-
-
-#####
-##### Parsers
-#####
-
-
-class _ParsingFunction[T](Protocol):
-    def __call__(self, answer: dp.Answer, /) -> T: ...
-
-
-def _get_single_tool_call(ans: Answer) -> dp.ToolCall:
-    n = len(ans.tool_calls)
-    if n == 0:
-        msg = "No tool call was made."
-        raise dp.ParseError(description=msg)
-    if n > 1:
-        msg = "Too many tool calls."
-        raise dp.ParseError(description=msg)
-    return ans.tool_calls[0]
-
-
-def _from_generic_text_parser[T](
-    parser: GenericTextParser, type: TypeAnnot[T]
-) -> _ParsingFunction[T]:
-    return lambda answer: parser(type, _get_text_answer(answer))
-
-
-def _from_text_parser[T](parser: TextParser[T]) -> _ParsingFunction[T]:
-    return lambda answer: parser(_get_text_answer(answer))
-
-
-def _from_structured[T](type: TypeAnnot[T]) -> _ParsingFunction[T]:
-    return lambda answer: _parse_structured_output(type, answer)
-
-
-def _from_final_tool_call[T](type: type[T]) -> _ParsingFunction[T]:
-    return lambda answer: _parse_or_raise(
-        type, _get_single_tool_call(answer).args
-    )
-
-
-def _wrap_parse_errors(parser: _ParsingFunction[Any]) -> _ParsingFunction[Any]:
-    def parse(answer: dp.Answer) -> Any:
-        try:
-            return parser(answer)
-        except dp.ParseError as e:
-            return WrappedParseError(e)
-
-    return parse
-
-
-#####
-##### Standard Parsers
-#####
-
-
-def raw_yaml[T](type: TypeAnnot[T], res: str) -> T:
-    """
-    Parse a text answer that consists in a single YAML object and
-    nothing else.
-    """
-    import yaml
-
-    try:
-        parsed = yaml.safe_load(res)
-        return ty.pydantic_load(type, parsed)
-    except ValidationError as e:
-        raise dp.ParseError(description=str(e))
-    except Exception as e:
-        raise dp.ParseError(description=str(e))
-
-
-def yaml_from_last_block[T](type: TypeAnnot[T], res: str) -> T:
-    """
-    Parse the YAML object defined in the last code block of a text
-    answer (between triple back quotes). In particular, this parser
-    allows chain of thoughts.
-    """
-    final = extract_final_block(res)
-    if final is None:
-        raise dp.ParseError(description="No final code block found.")
-    return raw_yaml(type, final)
-
-
-def raw_string[T](type_annot: TypeAnnot[T], res: str) -> T:
-    """
-    Do not perform any parsing and return the answer as a raw string.
-    """
-    try:
-        type_annot_resolved = dpi.resolve_aliases_in_type(type_annot)
-        if isinstance(type_annot_resolved, type):  # if `type` is a class
-            return type_annot_resolved(res)  # type: ignore
-        if type_annot_resolved is str:
-            return cast(T, res)
-        assert False, f"Not a string-convertible type: {type_annot}."
-    except Exception as e:
-        raise dp.ParseError(description=f"raw_string parsed failed: {str(e)}")
-
-
-def trimmed_raw_string[T](type: TypeAnnot[T], res: str) -> T:
-    """
-    Do not perform any parsing and return the answer as a raw string,
-    after trimming leading and trailing whitespace.
-    """
-    return raw_string(type, res.strip())
-
-
-def first_word[T](type: TypeAnnot[T], res: str) -> T:
-    """
-    Parse the first word of the answer and turn it into an object of
-    type T=Literal[s1,...,sn].
-    """
-    vals = _match_string_literal_type(type)
-    if vals is None:
-        msg = f"Not recognized as a string literal type: {type}."
-        raise dp.ParseError(description=msg)
-    try:
-        assert res, "Cannot parse an empty string."
-        first = res.split()[0]
-        assert first in vals, "Unallowed value: " + first
-        return cast(T, first)
-    except Exception as e:
-        raise dp.ParseError(description=str(e))
-
-
-def string_from_last_block[T](type: TypeAnnot[T], res: str) -> T:
-    """
-    Extract the string content of the last code block from the answer
-    (surrounded by triple back quotes).
-    """
-    final = extract_final_block(res)
-    if final is None:
-        raise dp.ParseError(description="No final code block found.")
-    return raw_string(type, final)
-
-
-def trimmed_string_from_last_block[T](type: TypeAnnot[T], res: str) -> T:
-    """
-    Extract the string content of the last code block from the answer
-    (surrounded by triple back quotes) and trim leading and trailing
-    whitespace.
-    """
-    final = extract_final_block(res)
-    if final is None:
-        raise dp.ParseError(description="No final code block found.")
-    return trimmed_raw_string(type, final)
-
-
-def extract_final_block(s: str) -> str | None:
-    # In case the output is ill-formed, the quotes may not be balanced.
-    # This is why we use a lookahead here.
-    # See tests in `test_stdlib.py`
-    code_blocks = re.findall(r"(?=(```[^\n]*\n(.*?)```))", s, re.DOTALL)
-    return code_blocks[-1][1] if code_blocks else None
 
 
 #####

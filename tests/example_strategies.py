@@ -28,7 +28,7 @@ from delphyne import Branch, Fail, IPDict, Strategy, strategy
 class MakeSum(dp.Query["list[int]"]):
     allowed: list[int]
     goal: int
-    __parser__ = dp.raw_yaml
+    __parser__ = dp.get_text.yaml
 
 
 @dataclass
@@ -214,20 +214,20 @@ def find_counterexample(
 class ConjectureExpr(dp.Query[Expr]):
     vars: Vars
     prop: IntPred
-    __parser__ = dp.raw_yaml
+    __parser__ = dp.get_text.yaml
 
 
 @dataclass
 class RemoveDuplicates(dp.Query[Sequence[Expr]]):
     exprs: Sequence[Expr]
-    __parser__ = dp.raw_yaml
+    __parser__ = dp.get_text.yaml
 
 
 @dataclass
 class ProposeCex(dp.Query[State]):
     prop: IntPred
     fun: IntFun
-    __parser__ = dp.raw_yaml
+    __parser__ = dp.get_text.yaml
 
 
 def expr_safe(expr: Expr) -> bool:
@@ -269,7 +269,7 @@ def test_check_prop():
 class PickBoyName(dp.Query[str]):
     names: Sequence[str]
     picked_already: Sequence[str]
-    __parser__ = dp.raw_yaml
+    __parser__ = dp.get_text.yaml
 
 
 @strategy
@@ -332,7 +332,7 @@ class PickNiceBoyNameIP:
 @dataclass
 class PickPositiveInteger(dp.Query[int]):
     prev: int | None
-    __parser__ = dp.raw_yaml
+    __parser__ = dp.get_text.yaml
 
 
 @strategy
@@ -476,7 +476,7 @@ class ProposeArticle(
     user_name: str
     prefix: dp.AnswerPrefix = ()
 
-    __parser__ = "final_tool_call"
+    __parser__ = dp.final_tool_call.response
 
     __system_prompt__: ClassVar[str] = """
         Find the user's tastes and propose an article for them.
@@ -506,7 +506,7 @@ class ProposeArticleStructured(
     user_name: str
     prefix: dp.AnswerPrefix = ()
 
-    __parser__ = "structured"
+    __parser__ = dp.structured.response
 
     __system_prompt__: ClassVar[str] = """
         Find the user's tastes and propose an article for them.
@@ -550,7 +550,7 @@ class PrimingTest(dp.Query[list[str]]):
 
     style: str
 
-    __parser__ = dp.yaml_from_last_block
+    __parser__ = dp.last_code_block.yaml
 
     __instance_prompt__: ClassVar[str] = """
     Style: {{query.style}}
@@ -765,7 +765,7 @@ class GenerateNumber(dp.Query[int]):
 
     min_val: int
     max_val: int
-    __parser__ = dp.raw_yaml
+    __parser__ = dp.get_text.yaml
 
 
 @dataclass
@@ -825,7 +825,7 @@ def dual_number_generation_parallel_policy(model: dp.LLM):
 
 
 class DummyChoice(dp.Query[bool]):
-    __parser__ = dp.raw_yaml
+    __parser__ = dp.get_text.yaml
 
 
 @strategy
@@ -876,7 +876,7 @@ class GetFavoriteDish(dp.Query[Dish]):
     user: str
 
     __modes__ = ["cot", "direct"]
-    __parser__ = {"cot": dp.yaml_from_last_block, "direct": "structured"}
+    __parser__ = {"cot": dp.last_code_block.yaml, "direct": dp.structured}
 
 
 #####
@@ -900,7 +900,7 @@ class AskNumber(dp.Query[dp.Response[int | dp.WrappedParseError, Never]]):
 
     prefix: dp.AnswerPrefix = ()
 
-    __parser__ = parse_83
+    __parser__ = dp.get_text.map(parse_83).wrap_errors.response
 
 
 @strategy

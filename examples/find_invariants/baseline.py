@@ -38,7 +38,7 @@ class AnnotateWithInvs(dp.Query[dp.Response[Sequence[why3.Formula], Never]]):
     prog: why3.File
     prefix: dp.AnswerPrefix
 
-    __parser__ = dp.yaml_from_last_block
+    __parser__ = dp.last_code_block.yaml
 
 
 @strategy

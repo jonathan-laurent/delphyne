@@ -112,7 +112,7 @@ class ProposeInvariants(dp.Query[Proposal]):
     unproved: why3.Obligation
     blacklist: Sequence[Proposal]
 
-    __parser__ = dp.yaml_from_last_block
+    __parser__ = dp.last_code_block.yaml
 
 
 @dataclass
@@ -120,14 +120,14 @@ class IsProposalNovel(dp.Query[bool]):
     proposal: Proposal
     blacklist: Sequence[Proposal]
 
-    __parser__ = dp.yaml_from_last_block
+    __parser__ = dp.last_code_block.yaml
 
 
 @dataclass
 class EvaluateProofState(dp.Query[ProofStateMetrics]):
     unproved: why3.Obligation
 
-    __parser__ = dp.yaml_from_last_block
+    __parser__ = dp.last_code_block.yaml
 
 
 #####

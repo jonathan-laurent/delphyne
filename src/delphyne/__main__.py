@@ -106,8 +106,8 @@ class DelphyneCLI:
 
     def run(
         self,
-        *,
         file: str,
+        *,
         cache: bool = False,
         update: bool = False,
         no_output: bool = False,
