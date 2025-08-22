@@ -6,9 +6,12 @@ several places in the codebase:
 - `version` field in `vscode-ui/package.json`.
 - `git checkout vX.Y.Z` string in the installation instructions from
   `README.md` and `docs/index.md`.
+- `mike deploy X.Y latest --push` string in the `Makefile`.
 
 This script also checks whether a proper entry exists for the release in
 `CHANGELOG.md` and whether `mkdocs build` runs without error.
+
+Most of this script was generated using Claude Sonnet 4.
 """
 
 import json
@@ -24,6 +27,16 @@ import fire  # type: ignore
 def get_project_root() -> Path:
     """Get the root directory of the project."""
     return Path(__file__).parent.parent
+
+
+def get_current_version(project_root: Path) -> str:
+    """Get the current version from pyproject.toml"""
+    pyproject_path = project_root / "pyproject.toml"
+
+    with open(pyproject_path, "rb") as f:
+        data = tomllib.load(f)
+
+    return data["project"]["version"]
 
 
 def update_version_in_pyproject(version: str, project_root: Path) -> None:
@@ -99,6 +112,40 @@ def update_checkout_instructions(version: str, project_root: Path) -> None:
             )
 
 
+def update_makefile_mike_deploy(version: str, project_root: Path) -> None:
+    """Update mike deploy command in Makefile with major.minor version"""
+    makefile_path = project_root / "Makefile"
+
+    if not makefile_path.exists():
+        print("Warning: Makefile not found, skipping")
+        return
+
+    # Extract major.minor from version (e.g., "0.7.0" -> "0.7")
+    version_parts = version.split(".")
+    if len(version_parts) < 2:
+        print(f"Warning: Invalid version format {version}, expecting X.Y.Z")
+        return
+
+    major_minor = f"{version_parts[0]}.{version_parts[1]}"
+
+    with open(makefile_path, "r") as f:
+        content = f.read()
+
+    # Pattern to match mike deploy X.Y latest --push
+    pattern = r"mike deploy \d+\.\d+ latest --push"
+    replacement = f"mike deploy {major_minor} latest --push"
+
+    old_matches = re.findall(pattern, content)
+    new_content = re.sub(pattern, replacement, content)
+
+    if old_matches:
+        with open(makefile_path, "w") as f:
+            f.write(new_content)
+        print(f"Updated Makefile: {old_matches[0]} -> {replacement}")
+    else:
+        print("Warning: No mike deploy pattern found in Makefile")
+
+
 def check_changelog_entry(version: str, project_root: Path) -> bool:
     """Check if changelog has an entry for the given version"""
     changelog_path = project_root / "CHANGELOG.md"
@@ -164,6 +211,7 @@ class PrepareReleaseCLI:
                 update_version_in_pyproject(version, project_root)
                 update_version_in_package_json(version, project_root)
                 update_checkout_instructions(version, project_root)
+                update_makefile_mike_deploy(version, project_root)
                 print()
             except Exception as e:
                 print(f"Error updating files: {e}")
@@ -195,6 +243,14 @@ class PrepareReleaseCLI:
             version: The version number to check (e.g., "0.7.0")
         """
         self.prepare(version, check_only=True)
+
+    def current_version(self) -> None:
+        """
+        Print the current version number from pyproject.toml to stdout.
+        """
+        project_root = get_project_root()
+        version = get_current_version(project_root)
+        print(version)
 
 
 def main():

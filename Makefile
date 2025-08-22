@@ -1,4 +1,6 @@
-.PHONY: install-dev-deps pyright clean clean-ignored test full-test full-clean all examples schemas stubs install doc-logo cloc deploy-doc-release deploy-doc-dev
+.PHONY: install-dev-deps pyright clean clean-ignored test full-test full-clean all examples schemas stubs install doc-logo cloc deploy-doc-release deploy-doc-dev prepare-release release
+
+RELEASE_SCRIPT := python scripts/prepare_release.py
 
 TO_CLEAN := \
 	-name '__pycache__' -o \
@@ -98,12 +100,25 @@ doc-logo: $(WHITE_LOGOS)
 
 deploy-doc-release:
 	git fetch origin gh-pages
-	mike deploy 0.6 latest --push
+	mike deploy 0.7 latest --push
 
 
 deploy-doc-dev:
 	git fetch origin gh-pages
 	mike deploy dev --push
+
+
+# A release is made in two steps, first prepare it using this command, then
+# inspect the diff, and finally use make-release.
+prepare-release:
+	${RELEASE_SCRIPT} prepare `${RELEASE_SCRIPT} current-version`
+
+
+release:
+	@test -z "$$(git status --porcelain)" || (echo "Uncommitted changes found" && exit 1)
+	@$(MAKE) deploy-doc-release
+    git tag v`${RELEASE_SCRIPT} current-version`
+	git push --tags
 
 
 # Count the number of lines of code
