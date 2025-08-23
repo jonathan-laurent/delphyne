@@ -14,6 +14,12 @@
 
 ::: delphyne.ToolSettings
 
+::: delphyne.AbstractTemplatesManager
+
+::: delphyne.TemplateError
+
+::: delphyne.TemplateFileMissing
+
 ## Chat Histories
 
 ::: delphyne.AnswerPrefix

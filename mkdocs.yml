@@ -96,7 +96,6 @@ nav:
     - Policy Language:
       - Definitions: reference/policies/definitions.md
       - Search Streams: reference/policies/streams.md
-      - Policy Environments: reference/policies/envs.md
     - Demonstration Language:
       - Definitions: reference/demos/definitions.md
       - Interpreter: reference/demos/interpreter.md
@@ -104,6 +103,7 @@ nav:
       - Basic: reference/stdlib/basic.md
       - Queries: reference/stdlib/queries.md
       - Streams: reference/stdlib/streams.md
+      - Environments: reference/stdlib/environments.md
       - Effects: reference/stdlib/effects.md
       - Algorithms: reference/stdlib/algorithms.md
       - Commands: reference/stdlib/commands.md

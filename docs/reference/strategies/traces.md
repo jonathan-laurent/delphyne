@@ -92,3 +92,13 @@
 ::: delphyne.core.traces.Location
 
 ::: delphyne.core.traces.ShortLocation
+
+## Tracers
+
+::: delphyne.Tracer
+
+::: delphyne.LogMessage
+
+::: delphyne.ExportableLogMessage
+
+::: delphyne.tracer_hook

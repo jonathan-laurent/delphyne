@@ -22,8 +22,6 @@
 
 ::: delphyne.TreeHook
 
-::: delphyne.tracer_hook
-
 ## Internals
 
 ::: delphyne.core.trees.NestedTreeSpawner

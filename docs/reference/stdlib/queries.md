@@ -34,7 +34,6 @@
 
 ::: delphyne.get_text
 
-
 ## Prompting Policies
 
 ::: delphyne.few_shot
