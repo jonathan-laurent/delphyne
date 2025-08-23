@@ -2610,7 +2610,7 @@ lines at the end of template files are ignored.</p>
 in the standard library (<code>delphyne.stdlib.templates</code>). For example,
 to show standard formatting instructions, you can include the
 following in your instance prompts:</p>
-<div class="highlight"><pre><span></span><code><span class="cp">{%</span> <span class="k">include</span> <span class="s1">&#39;stdlib/format_instructions.jinja&#39;</span> <span class="cp">%}</span>
+<div class="highlight"><pre><span></span><code><span class="cp">{%</span> <span class="k">include</span> <span class="s1">&#39;stdlib/format.jinja&#39;</span> <span class="cp">%}</span>
 </code></pre></div>
 <p>All templates automatically have access to the following global
 objects:</p>
@@ -2729,7 +2729,7 @@ objects:</p>
 <span class="sd">    following in your instance prompts:</span>
 
 <span class="sd">    ```jinja</span>
-<span class="sd">    {% include &#39;stdlib/format_instructions.jinja&#39; %}</span>
+<span class="sd">    {% include &#39;stdlib/format.jinja&#39; %}</span>
 <span class="sd">    ```</span>
 
 <span class="sd">    All templates automatically have access to the following global</span>
