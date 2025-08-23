@@ -6,17 +6,18 @@ authors = [{name="Jonathan Laurent", email="jonathan.laurent@cs.cmu.edu"}]
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "fastapi>=0.111",
-    "Jinja2>=3.1",
-    "numpy>=2.0",
-    "openai>=1.99",
-    "parsy>=2.1",
-    "pyyaml>=6.0",
+    "fastapi>=0.111",  # to implement the delphyne language server
+    "Jinja2>=3.1",  # for rendering prompt templates
+    "numpy>=2.0",  # e.g., for performing operations on probability vectors
+    "openai>=1.99",  # for accessing openai-compatible LLM APIs
+    "parsy>=2.1",  # for parsing test commands
+    "pyyaml>=6.0",  # standard `yaml` module
     "pydantic>=2.8",
     "pytest>=8.2",
     "setuptools>=68.2",
-    "uvicorn>=0.30",
-    "fire>=0.7.0"
+    "uvicorn>=0.30",  # to implement the delphyne language server
+    "fire>=0.7.0",  # e.g., to implement the delphyne CLI
+    "varname>=0.15.0"  # for universal queries
 ]
 
 # Install the `delphyne` CLI

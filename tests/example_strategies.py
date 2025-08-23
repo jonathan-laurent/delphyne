@@ -18,6 +18,7 @@ from example_strategies_untyped import (
 
 import delphyne as dp
 from delphyne import Branch, Fail, IPDict, Strategy, strategy
+from delphyne.stdlib.universal_queries import guess
 
 #####
 ##### MakeSum
@@ -917,3 +918,27 @@ def get_magic_number_policy(model: dp.LLM, no_wrap: bool):
     sp = dp.dfs()
     pp = dp.few_shot(model, no_wrap_parse_errors=no_wrap)
     return sp & pp
+
+
+#####
+##### Universal Queries
+#####
+
+
+@dp.strategy
+def make_sum_using_guess(
+    allowed: list[int], goal: int
+) -> Strategy[Branch | Fail, IPDict, list[int]]:
+    """
+    Given a list of numbers and a target number, return a sub-list whose
+    elements sum up to the target.
+    """
+    sub = yield from guess(list[int], using=[allowed, goal])
+    yield from dp.ensure(all(x in allowed for x in sub), label="forbidden_num")
+    yield from dp.ensure(sum(sub) == goal, label="wrong_sum")
+    return sub
+
+
+@dp.ensure_compatible(make_sum_using_guess)
+def make_sum_using_guess_policy(model: dp.LLM):
+    return dp.dfs() & {"sub": dp.few_shot(model)}

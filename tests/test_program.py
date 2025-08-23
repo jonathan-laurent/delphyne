@@ -465,3 +465,26 @@ def test_wrapped_parse_error(no_wrap: bool):
         assert not res
     else:
         assert res
+
+
+#####
+##### Univeresal Queries
+#####
+
+
+@pytest.mark.skip(reason="varname is broken with generators")
+def test_make_sum_using_guess():
+    strategy = ex.make_sum_using_guess(allowed=[1, 2, 3, 4], goal=5)
+    res, _log = _eval_strategy(
+        strategy,
+        ex.make_sum_using_guess_policy,
+        cache_name="make_sum_using_guess",
+        max_requests=10,
+        max_res=10,
+        model_name="gpt-5-mini",
+    )
+    print(res)
+
+
+if __name__ == "__main__":
+    test_make_sum_using_guess()
