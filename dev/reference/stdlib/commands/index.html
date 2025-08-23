@@ -658,8 +658,6 @@
       
         
       
-        
-      
     
     
     
@@ -727,29 +725,6 @@
   
   <span class="md-ellipsis">
     Search Streams
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../policies/envs/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Policy Environments
     
   </span>
   
@@ -891,6 +866,8 @@
       
         
       
+        
+      
     
     
     
@@ -981,6 +958,29 @@
   
   <span class="md-ellipsis">
     Streams
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Environments
     
   </span>
   
@@ -2402,7 +2402,7 @@ specification.</p>
     <span class="n">strategy</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load_strategy_instance</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">strategy</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
     <span class="n">policy</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="n">load_and_call_function</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">policy</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">policy_args</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">policy</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">AbstractPolicy</span><span class="p">)</span>
-    <span class="n">policy</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractPolicy</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">policy</span><span class="p">)</span>
+    <span class="n">policy</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pol</span><span class="o">.</span><span class="n">Policy</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">policy</span><span class="p">)</span>
     <span class="n">run_loaded_strategy</span><span class="p">(</span>
         <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span>
         <span class="n">exe</span><span class="o">=</span><span class="n">exe</span><span class="p">,</span>
@@ -2730,7 +2730,8 @@ which can be visualized in the VSCode extension (see
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/commands/answer_query.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">125</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
+<span class="normal">125</span>
 <span class="normal">126</span>
 <span class="normal">127</span>
 <span class="normal">128</span>
@@ -2743,8 +2744,7 @@ which can be visualized in the VSCode extension (see
 <span class="normal">135</span>
 <span class="normal">136</span>
 <span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">answer_query</span><span class="p">(</span>
+<span class="normal">138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">answer_query</span><span class="p">(</span>
     <span class="n">task</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">TaskContext</span><span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">CommandResult</span><span class="p">[</span><span class="n">AnswerQueryResponse</span><span class="p">]],</span>
     <span class="n">exe</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">CommandExecutionContext</span><span class="p">,</span>
     <span class="n">cmd</span><span class="p">:</span> <span class="n">AnswerQueryArgs</span><span class="p">,</span>

@@ -9,7 +9,7 @@
       
       
       
-        <link rel="prev" href="../streams/">
+        <link rel="prev" href="../environments/">
       
       
         <link rel="next" href="../algorithms/">
@@ -658,8 +658,6 @@
       
         
       
-        
-      
     
     
     
@@ -727,29 +725,6 @@
   
   <span class="md-ellipsis">
     Search Streams
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../policies/envs/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Policy Environments
     
   </span>
   
@@ -891,6 +866,8 @@
       
         
       
+        
+      
     
     
     
@@ -981,6 +958,29 @@
   
   <span class="md-ellipsis">
     Streams
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Environments
     
   </span>
   
@@ -1967,8 +1967,7 @@
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
-<span class="normal">19</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">19</span>
 <span class="normal">20</span>
 <span class="normal">21</span>
 <span class="normal">22</span>
@@ -1978,7 +1977,8 @@
 <span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
-<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">spawn_node</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">](</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">spawn_node</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">](</span>
     <span class="n">node_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">N</span><span class="p">],</span> <span class="o">**</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">NodeBuilder</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2053,8 +2053,7 @@ accidentally passing uninstantiated parametric inner policy fields.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">42</span>
-<span class="normal">43</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
 <span class="normal">44</span>
 <span class="normal">45</span>
 <span class="normal">46</span>
@@ -2064,7 +2063,8 @@ accidentally passing uninstantiated parametric inner policy fields.</p>
 <span class="normal">50</span>
 <span class="normal">51</span>
 <span class="normal">52</span>
-<span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NodeMeta</span><span class="p">:</span>
+<span class="normal">53</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NodeMeta</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract base class for node metadata.</span>
 
@@ -2121,8 +2121,7 @@ over elements of an opaque space.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">61</span>
-<span class="normal">62</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">62</span>
 <span class="normal">63</span>
 <span class="normal">64</span>
 <span class="normal">65</span>
@@ -2139,7 +2138,8 @@ over elements of an opaque space.</p>
 <span class="normal">76</span>
 <span class="normal">77</span>
 <span class="normal">78</span>
-<span class="normal">79</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">79</span>
+<span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Branch</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The standard `Branch` effect.</span>
@@ -2271,8 +2271,7 @@ inference when necessary.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 82</span>
-<span class="normal"> 83</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 83</span>
 <span class="normal"> 84</span>
 <span class="normal"> 85</span>
 <span class="normal"> 86</span>
@@ -2289,7 +2288,8 @@ inference when necessary.</p>
 <span class="normal"> 97</span>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
-<span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">branch</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+<span class="normal">100</span>
+<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">branch</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="n">cands</span><span class="p">:</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
     <span class="n">meta</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">NodeMeta</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2351,8 +2351,7 @@ inference when necessary.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">108</span>
-<span class="normal">109</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
@@ -2372,7 +2371,8 @@ inference when necessary.</p>
 <span class="normal">126</span>
 <span class="normal">127</span>
 <span class="normal">128</span>
-<span class="normal">129</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">129</span>
+<span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Fail</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The standard `Fail` effect.</span>
@@ -2463,8 +2463,7 @@ result in a no-op at runtime.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">144</span>
-<span class="normal">145</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">145</span>
 <span class="normal">146</span>
 <span class="normal">147</span>
 <span class="normal">148</span>
@@ -2487,7 +2486,8 @@ result in a no-op at runtime.</p>
 <span class="normal">165</span>
 <span class="normal">166</span>
 <span class="normal">167</span>
-<span class="normal">168</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fail</span><span class="p">(</span>
+<span class="normal">168</span>
+<span class="normal">169</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fail</span><span class="p">(</span>
     <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2556,8 +2556,7 @@ result in a no-op at runtime.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">171</span>
-<span class="normal">172</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span>
 <span class="normal">175</span>
@@ -2578,7 +2577,8 @@ result in a no-op at runtime.</p>
 <span class="normal">190</span>
 <span class="normal">191</span>
 <span class="normal">192</span>
-<span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">ensure</span><span class="p">(</span>
+<span class="normal">193</span>
+<span class="normal">194</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">ensure</span><span class="p">(</span>
     <span class="n">prop</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
@@ -2650,8 +2650,7 @@ causing the same message to be repeatedly printed.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">201</span>
-<span class="normal">202</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">202</span>
 <span class="normal">203</span>
 <span class="normal">204</span>
 <span class="normal">205</span>
@@ -2675,7 +2674,8 @@ causing the same message to be repeatedly printed.</p>
 <span class="normal">223</span>
 <span class="normal">224</span>
 <span class="normal">225</span>
-<span class="normal">226</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">226</span>
+<span class="normal">227</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Message</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The standard `Message` effect.</span>
@@ -2803,8 +2803,7 @@ result in a no-op at runtime.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">229</span>
-<span class="normal">230</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">230</span>
 <span class="normal">231</span>
 <span class="normal">232</span>
 <span class="normal">233</span>
@@ -2822,7 +2821,8 @@ result in a no-op at runtime.</p>
 <span class="normal">245</span>
 <span class="normal">246</span>
 <span class="normal">247</span>
-<span class="normal">248</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">message</span><span class="p">(</span>
+<span class="normal">248</span>
+<span class="normal">249</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">message</span><span class="p">(</span>
     <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Message</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2856,7 +2856,7 @@ result in a no-op at runtime.</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">elim_messages</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.core.PolicyEnv)" href="../../policies/envs/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n">show_in_log</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="PureTreeTransformerFn (delphyne.stdlib.policies.PureTreeTransformerFn)" href="../basic/#delphyne.stdlib.policies.PureTreeTransformerFn">PureTreeTransformerFn</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Message
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">elim_messages</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n">show_in_log</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="PureTreeTransformerFn (delphyne.stdlib.policies.PureTreeTransformerFn)" href="../basic/#delphyne.stdlib.policies.PureTreeTransformerFn">PureTreeTransformerFn</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Message
 
 
   
@@ -2908,8 +2908,7 @@ message node is encountered.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">251</span>
-<span class="normal">252</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">252</span>
 <span class="normal">253</span>
 <span class="normal">254</span>
 <span class="normal">255</span>
@@ -2932,9 +2931,10 @@ message node is encountered.</p>
 <span class="normal">272</span>
 <span class="normal">273</span>
 <span class="normal">274</span>
-<span class="normal">275</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@pol</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
+<span class="normal">275</span>
+<span class="normal">276</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@pol</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">elim_messages</span><span class="p">(</span>
-    <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PolicyEnv</span><span class="p">,</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="n">show_in_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pol</span><span class="o">.</span><span class="n">PureTreeTransformerFn</span><span class="p">[</span><span class="n">Message</span><span class="p">,</span> <span class="n">Never</span><span class="p">]:</span>
@@ -3012,8 +3012,7 @@ whole node is ignored.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">283</span>
-<span class="normal">284</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">284</span>
 <span class="normal">285</span>
 <span class="normal">286</span>
 <span class="normal">287</span>
@@ -3037,7 +3036,8 @@ whole node is ignored.</p>
 <span class="normal">305</span>
 <span class="normal">306</span>
 <span class="normal">307</span>
-<span class="normal">308</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">308</span>
+<span class="normal">309</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Factor</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The standard `Factor` effect.</span>
@@ -3174,8 +3174,7 @@ result in a no-op at runtime.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">311</span>
-<span class="normal">312</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">312</span>
 <span class="normal">313</span>
 <span class="normal">314</span>
 <span class="normal">315</span>
@@ -3204,7 +3203,8 @@ result in a no-op at runtime.</p>
 <span class="normal">338</span>
 <span class="normal">339</span>
 <span class="normal">340</span>
-<span class="normal">341</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">factor</span><span class="p">[</span><span class="n">E</span><span class="p">,</span> <span class="n">P</span><span class="p">](</span>
+<span class="normal">341</span>
+<span class="normal">342</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">factor</span><span class="p">[</span><span class="n">E</span><span class="p">,</span> <span class="n">P</span><span class="p">](</span>
     <span class="nb">eval</span><span class="p">:</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">E</span><span class="p">],</span>
     <span class="n">factor</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">E</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span>
     <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3283,8 +3283,7 @@ the whole value of the branch instead of just multiplying it.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">349</span>
-<span class="normal">350</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">350</span>
 <span class="normal">351</span>
 <span class="normal">352</span>
 <span class="normal">353</span>
@@ -3302,7 +3301,8 @@ the whole value of the branch instead of just multiplying it.</p>
 <span class="normal">365</span>
 <span class="normal">366</span>
 <span class="normal">367</span>
-<span class="normal">368</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">368</span>
+<span class="normal">369</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Value</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The standard `Value` effect.</span>
@@ -3378,8 +3378,7 @@ result in a no-op at runtime.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">371</span>
-<span class="normal">372</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">372</span>
 <span class="normal">373</span>
 <span class="normal">374</span>
 <span class="normal">375</span>
@@ -3397,7 +3396,8 @@ result in a no-op at runtime.</p>
 <span class="normal">387</span>
 <span class="normal">388</span>
 <span class="normal">389</span>
-<span class="normal">390</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">value</span><span class="p">[</span><span class="n">E</span><span class="p">,</span> <span class="n">P</span><span class="p">](</span>
+<span class="normal">390</span>
+<span class="normal">391</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">value</span><span class="p">[</span><span class="n">E</span><span class="p">,</span> <span class="n">P</span><span class="p">](</span>
     <span class="nb">eval</span><span class="p">:</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">E</span><span class="p">],</span>
     <span class="n">value</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">E</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span>
     <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3466,8 +3466,7 @@ node features a sequence of embedded trees.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">398</span>
-<span class="normal">399</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">399</span>
 <span class="normal">400</span>
 <span class="normal">401</span>
 <span class="normal">402</span>
@@ -3483,7 +3482,8 @@ node features a sequence of embedded trees.</p>
 <span class="normal">412</span>
 <span class="normal">413</span>
 <span class="normal">414</span>
-<span class="normal">415</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">415</span>
+<span class="normal">416</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Join</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The standard `Join` effect.</span>
@@ -3624,8 +3624,7 @@ arbitrary metadata accessible to search policies.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">418</span>
-<span class="normal">419</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">419</span>
 <span class="normal">420</span>
 <span class="normal">421</span>
 <span class="normal">422</span>
@@ -3641,7 +3640,8 @@ arbitrary metadata accessible to search policies.</p>
 <span class="normal">432</span>
 <span class="normal">433</span>
 <span class="normal">434</span>
-<span class="normal">435</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">join</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+<span class="normal">435</span>
+<span class="normal">436</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">join</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="n">subs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">StrategyComp</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]],</span>
     <span class="n">meta</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">NodeMeta</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">T</span><span class="p">]]:</span>
@@ -3725,8 +3725,7 @@ the fact via proper editor support.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 67</span>
-<span class="normal"> 68</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 68</span>
 <span class="normal"> 69</span>
 <span class="normal"> 70</span>
 <span class="normal"> 71</span>
@@ -3781,7 +3780,8 @@ the fact via proper editor support.</p>
 <span class="normal">120</span>
 <span class="normal">121</span>
 <span class="normal">122</span>
-<span class="normal">123</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">123</span>
+<span class="normal">124</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Compute</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">ComputationNode</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The standard `Compute` effect.</span>
@@ -3954,8 +3954,7 @@ JSON-serializable. It does not need to be deterministic.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">126</span>
-<span class="normal">127</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">127</span>
 <span class="normal">128</span>
 <span class="normal">129</span>
 <span class="normal">130</span>
@@ -3978,7 +3977,8 @@ JSON-serializable. It does not need to be deterministic.</p>
 <span class="normal">147</span>
 <span class="normal">148</span>
 <span class="normal">149</span>
-<span class="normal">150</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">[</span><span class="o">**</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+<span class="normal">150</span>
+<span class="normal">151</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">[</span><span class="o">**</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Compute</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4017,7 +4017,7 @@ JSON-serializable. It does not need to be deterministic.</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">elim_compute</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.core.PolicyEnv)" href="../../policies/envs/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n">force_bypass_cache</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="PureTreeTransformerFn (delphyne.stdlib.policies.PureTreeTransformerFn)" href="../basic/#delphyne.stdlib.policies.PureTreeTransformerFn">PureTreeTransformerFn</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Compute
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">elim_compute</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n">force_bypass_cache</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="PureTreeTransformerFn (delphyne.stdlib.policies.PureTreeTransformerFn)" href="../basic/#delphyne.stdlib.policies.PureTreeTransformerFn">PureTreeTransformerFn</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Compute
 
 
   
@@ -4072,8 +4072,7 @@ environment.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">182</span>
-<span class="normal">183</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">183</span>
 <span class="normal">184</span>
 <span class="normal">185</span>
 <span class="normal">186</span>
@@ -4105,9 +4104,10 @@ environment.</p>
 <span class="normal">212</span>
 <span class="normal">213</span>
 <span class="normal">214</span>
-<span class="normal">215</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@pol</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
+<span class="normal">215</span>
+<span class="normal">216</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@pol</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">elim_compute</span><span class="p">(</span>
-    <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PolicyEnv</span><span class="p">,</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="n">force_bypass_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pol</span><span class="o">.</span><span class="n">PureTreeTransformerFn</span><span class="p">[</span><span class="n">Compute</span><span class="p">,</span> <span class="n">Never</span><span class="p">]:</span>
@@ -4128,7 +4128,7 @@ environment.</p>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="p">,</span> <span class="n">Compute</span><span class="p">):</span>
             <span class="n">cache</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">force_bypass_cache</span><span class="p">:</span>
-                <span class="n">cache</span> <span class="o">=</span> <span class="n">dq</span><span class="o">.</span><span class="n">get_request_cache</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+                <span class="n">cache</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">requests_cache</span>
             <span class="n">answer</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">run_computation_with_cache</span><span class="p">(</span><span class="n">cache</span><span class="p">)</span>
             <span class="n">tracked</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">attached</span><span class="o">.</span><span class="n">parse_answer</span><span class="p">(</span>
                 <span class="n">dp</span><span class="o">.</span><span class="n">Answer</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">answer</span><span class="p">)</span>
@@ -4212,8 +4212,7 @@ environment.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">23</span>
-<span class="normal">24</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">24</span>
 <span class="normal">25</span>
 <span class="normal">26</span>
 <span class="normal">27</span>
@@ -4253,7 +4252,8 @@ environment.</p>
 <span class="normal">61</span>
 <span class="normal">62</span>
 <span class="normal">63</span>
-<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">64</span>
+<span class="normal">65</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">__Computation__</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="nb">object</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A special query that represents a computation.</span>
@@ -4276,7 +4276,7 @@ environment.</p>
         <span class="n">mode</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerMode</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span>
         <span class="n">extra_args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">TemplatesManager</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AbstractTemplatesManager</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="k">return</span> <span class="n">dump_yaml</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
 
@@ -4372,8 +4372,7 @@ since flag queries implement <code>AbstractQuery.finite_answer_set</code>).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/flags.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">49</span>
-<span class="normal">50</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">50</span>
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
@@ -4406,7 +4405,8 @@ since flag queries implement <code>AbstractQuery.finite_answer_set</code>).</p>
 <span class="normal">80</span>
 <span class="normal">81</span>
 <span class="normal">82</span>
-<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">83</span>
+<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Flag</span><span class="p">[</span><span class="n">F</span><span class="p">:</span> <span class="n">FlagQuery</span><span class="p">[</span><span class="n">Any</span><span class="p">]](</span><span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The standard `Flag` effect.</span>
@@ -4498,8 +4498,7 @@ Python does not support higher-kinded types.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/flags.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 94</span>
-<span class="normal"> 95</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 95</span>
 <span class="normal"> 96</span>
 <span class="normal"> 97</span>
 <span class="normal"> 98</span>
@@ -4512,7 +4511,8 @@ Python does not support higher-kinded types.</p>
 <span class="normal">105</span>
 <span class="normal">106</span>
 <span class="normal">107</span>
-<span class="normal">108</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_flag</span><span class="p">[</span><span class="n">T</span><span class="p">:</span> <span class="nb">str</span><span class="p">](</span>
+<span class="normal">108</span>
+<span class="normal">109</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_flag</span><span class="p">[</span><span class="n">T</span><span class="p">:</span> <span class="nb">str</span><span class="p">](</span>
     <span class="n">flag</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">FlagQuery</span><span class="p">[</span><span class="n">T</span><span class="p">]],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Flag</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="nb">object</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4541,7 +4541,7 @@ Python does not support higher-kinded types.</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">elim_flag</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.core.PolicyEnv)" href="../../policies/envs/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n">flag</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.flags.elim_flag[F]">elim_flag[F]</span></span><span class="p">],</span> <span class="n">val</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="PureTreeTransformerFn (delphyne.stdlib.policies.PureTreeTransformerFn)" href="../basic/#delphyne.stdlib.policies.PureTreeTransformerFn">PureTreeTransformerFn</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Flag
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">elim_flag</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n">flag</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.flags.elim_flag[F]">elim_flag[F]</span></span><span class="p">],</span> <span class="n">val</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="PureTreeTransformerFn (delphyne.stdlib.policies.PureTreeTransformerFn)" href="../basic/#delphyne.stdlib.policies.PureTreeTransformerFn">PureTreeTransformerFn</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Flag
 
 
   
@@ -4554,8 +4554,7 @@ Python does not support higher-kinded types.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/flags.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">111</span>
-<span class="normal">112</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
@@ -4580,9 +4579,10 @@ Python does not support higher-kinded types.</p>
 <span class="normal">134</span>
 <span class="normal">135</span>
 <span class="normal">136</span>
-<span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@pol</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
+<span class="normal">137</span>
+<span class="normal">138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@pol</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">elim_flag</span><span class="p">[</span><span class="n">F</span><span class="p">:</span> <span class="n">FlagQuery</span><span class="p">[</span><span class="n">Any</span><span class="p">]](</span>
-    <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PolicyEnv</span><span class="p">,</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="n">flag</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">F</span><span class="p">],</span>
     <span class="n">val</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -4641,8 +4641,7 @@ Python does not support higher-kinded types.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/flags.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
-<span class="normal">17</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
@@ -4671,7 +4670,8 @@ Python does not support higher-kinded types.</p>
 <span class="normal">43</span>
 <span class="normal">44</span>
 <span class="normal">45</span>
-<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FlagQuery</span><span class="p">[</span><span class="n">T</span><span class="p">:</span> <span class="nb">str</span><span class="p">](</span><span class="n">Query</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="normal">46</span>
+<span class="normal">47</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">FlagQuery</span><span class="p">[</span><span class="n">T</span><span class="p">:</span> <span class="nb">str</span><span class="p">](</span><span class="n">Query</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for flag queries.</span>
 
