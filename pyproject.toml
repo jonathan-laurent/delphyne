@@ -19,20 +19,30 @@ dependencies = [
     "fire>=0.7.0"
 ]
 
+# Install the `delphyne` CLI
+[project.scripts]
+delphyne = "delphyne.__main__:main"
+
+# Use setuptools for packaging
+# setuptools-scm uses git information to
+# automatically include package data.
+[build-system]
+requires = ["setuptools>=80", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
 [tool.setuptools.packages.find]
 where = ["src"]
-[tool.setuptools.package-data]
-"delphyne" = ["py.typed"]
 
-
+# We do not use black since it does not handle PEP 695
+# type parameters very well yet.
 # [tool.isort]
 # profile = "black"
 # line_length = 79
 # lines_after_imports = 2
-
 # [tool.black]
 # line-length = 79
 
+# Formatting with ruff
 [tool.ruff]
 line-length = 79
 
@@ -40,10 +50,3 @@ line-length = 79
 [tool.pyright]
 typeCheckingMode = "strict"
 include = ["src/**", "tests/**"]
-
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
-
-[project.scripts]
-delphyne = "delphyne.__main__:main"
