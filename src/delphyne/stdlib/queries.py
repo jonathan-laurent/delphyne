@@ -1147,18 +1147,12 @@ def _parse_or_log_and_raise[T](
     return parsed
 
 
-def get_request_cache(env: PolicyEnv) -> md.LLMCache | None:
-    cache = env.requests_cache
-    assert cache is None or isinstance(cache, md.LLMCache)
-    return cache
-
-
 def _send_request(
     model: md.LLM, req: md.LLMRequest, env: PolicyEnv
 ) -> dp.StreamContext[md.LLMResponse | SpendingDeclined]:
     res = yield from spend_on(
         lambda: (
-            resp := model.send_request(req, get_request_cache(env)),
+            resp := model.send_request(req, env.requests_cache),
             resp.budget,
         ),
         estimate=model.estimate_budget(req),

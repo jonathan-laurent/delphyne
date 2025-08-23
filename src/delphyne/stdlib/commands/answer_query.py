@@ -9,7 +9,6 @@ from functools import partial
 import delphyne.analysis as analysis
 import delphyne.core as dp
 import delphyne.stdlib.environments as en
-import delphyne.stdlib.models as md
 import delphyne.stdlib.models as mo
 import delphyne.stdlib.queries as qu
 import delphyne.stdlib.standard_models as stdm
@@ -76,7 +75,6 @@ def answer_query_with_cache(
         demonstration_files=exe.demo_files,
         do_not_match_identical_queries=True,
         cache=cache_spec,
-        make_cache=md.LLMCache,
     )
     attached = dp.spawn_standalone_query(query)
     model_name = cmd.model or DEFAULT_MODEL_NAME

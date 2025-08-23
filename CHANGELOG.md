@@ -2,7 +2,7 @@
 
 ## DEV
 
-- Moved `PolicyEnv` from `core` to the standard library and make `AbstractPolicy` parametric in the policy environment type.
+- Moved `PolicyEnv` from `core` to the standard library and make `AbstractPolicy` parametric in the policy environment type. As a consequence, the `PolicyEnv.__init__.make_cache` argument can be removed.
 
 ## Version 0.7.0 (2025-08-22)
 

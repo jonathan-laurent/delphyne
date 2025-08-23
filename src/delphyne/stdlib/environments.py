@@ -7,7 +7,7 @@ examples, caching LLM requests, and logging information.
 
 import json
 from collections import defaultdict
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal, override
@@ -16,6 +16,7 @@ import jinja2
 import yaml
 
 import delphyne.core.queries as qu
+import delphyne.stdlib.models as md
 from delphyne.core.demos import Demo, QueryDemo, StrategyDemo, translate_answer
 from delphyne.core.refs import Answer
 from delphyne.core.traces import Tracer
@@ -285,7 +286,6 @@ class PolicyEnv:
         demonstration_files: Sequence[Path],
         data_dirs: Sequence[Path],
         cache: CacheSpec | None = None,
-        make_cache: Callable[[CacheSpec], object] | None = None,
         do_not_match_identical_queries: bool = False,
     ):
         """
@@ -300,18 +300,13 @@ class PolicyEnv:
             cache: A cache specification, or `None` to disable caching.
                 When caching is enabled, the `requests_cache` attribute
                 can be accessed by policies to properly wrap LLM models.
-            make_cache: A function to create an actual cache object from
-                its specification.
         """
         self.templates = TemplatesManager(prompt_dirs, data_dirs)
         self.examples = ExampleDatabase(do_not_match_identical_queries)
         self.tracer = Tracer()
-        self.requests_cache: object | None = None
+        self.requests_cache: md.LLMCache | None = None
         if cache is not None:
-            assert make_cache is not None, (
-                "Please specify the `make_cache` argument"
-            )
-            self.requests_cache = make_cache(cache)
+            self.requests_cache = md.LLMCache(cache)
         for path in demonstration_files:
             if not path.suffix.endswith(DEMO_FILE_EXT):
                 path = path.with_suffix(DEMO_FILE_EXT)

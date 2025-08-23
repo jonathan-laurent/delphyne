@@ -84,7 +84,6 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
         demonstration_files=exe.demo_files,
         cache=cache_spec,
         do_not_match_identical_queries=True,
-        make_cache=md.LLMCache,
     )
     cache: dp.TreeCache = {}
     monitor = dp.TreeMonitor(cache, hooks=[dp.tracer_hook(env.tracer)])
