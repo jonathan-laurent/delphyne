@@ -175,25 +175,29 @@ class Schema:
     schema: Any
 
     @staticmethod
-    def make(tool: TypeAnnot[object]) -> "Schema":
+    def make(annot: TypeAnnot[Any], /) -> "Schema":
         """
-        Build a schema from a Python class or tool interface.
+        Build a schema from a Python type annotation
         """
-        if not isinstance(tool, type):
-            # Assert that it is a type alias
-            assert isinstance(tool, typing.TypeAliasType)
-            name = str(tool)
+        if isinstance(annot, type):
+            if issubclass(annot, AbstractTool):
+                name = annot.tool_name()
+                description = annot.tool_description()
+            else:
+                name = tool_name_of_class_name(annot.__name__)
+                # For a dataclass, if no docstring is provided,
+                # `inspect.getdoc` shows its signature (name, attribute
+                # names and types).
+                description = inspect.getdoc(cast(Any, annot))
+        elif isinstance(annot, typing.TypeAliasType):
+            # TODO: we can do better here.
+            name = str(annot)
             description = None
-        elif issubclass(tool, AbstractTool):
-            name = tool.tool_name()
-            description = tool.tool_description()
         else:
-            name = tool_name_of_class_name(tool.__name__)
-            # For a dataclass, if no docstring is provided,
-            # `inspect.getdoc` shows its signature (name, attribute
-            # names and types).
-            description = inspect.getdoc(cast(Any, tool))
-        adapter = pydantic.TypeAdapter(cast(Any, tool))
+            # Any other type annotation, such as a union.
+            name = str(annot)
+            description = None
+        adapter = pydantic.TypeAdapter(cast(Any, annot))
         return Schema(
             name=name,
             description=description,

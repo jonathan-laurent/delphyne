@@ -159,9 +159,11 @@ class FormattingMetadata:
     instructions. Such metadata can be produced by parsers.
     """
 
-    where: Literal["last_code_block", "full_answer"] | str | None
-    what: Literal["yaml", "json", "text", "one_word"] | str | None
-    schema: md.Schema | None
+    where: (
+        Literal["last_code_block", "full_answer", "tool_call"] | str | None
+    ) = None
+    what: Literal["yaml", "json", "text", "one_word"] | str | None = None
+    schema: md.Schema | None = None
 
 
 #####
@@ -175,18 +177,26 @@ class Parser[A]:
     A parser specification.
 
     In addition to a mapping from answers to answer type `A`, a parser
-    also specifies query settings to be passed to oracles. Indeed, these
-    two components are typically tied and so specifying them together in
-    a single place is clearer.
+    also specifies query settings to be passed to oracles, along with
+    special formatting instructions to be rendered into the prompt.
+    Indeed, these components are typically tied and so specifying them
+    together in a single place is clearer.
 
     Attributes:
         settings: The query settings associated with the parser.
+        formatting: Formatting metadata.
         parse: The parsing function, which is allowed to raise
             the `ParseError` exception.
     """
 
     settings: dp.QuerySettings
+    formatting: FormattingMetadata
     parse: Callable[[dp.Answer], A]
+
+    def update_formatting(
+        self, f: Callable[[FormattingMetadata], FormattingMetadata], /
+    ) -> "Parser[A]":
+        return replace(self, formatting=f(self.formatting))
 
     def map[B](self, f: Callable[[A], B | dp.ParseError], /) -> "Parser[B]":
         """
@@ -202,7 +212,9 @@ class Parser[A]:
                 raise ret
             return ret
 
-        return Parser(settings=self.settings, parse=parse)
+        return Parser(
+            settings=self.settings, formatting=self.formatting, parse=parse
+        )
 
     def validate(self, f: Callable[[A], dp.ParseError | None]) -> "Parser[A]":
         """
@@ -218,7 +230,9 @@ class Parser[A]:
                 raise err
             return res
 
-        return Parser(settings=self.settings, parse=parse)
+        return Parser(
+            settings=self.settings, formatting=self.formatting, parse=parse
+        )
 
     @property
     def wrap_errors(self) -> "Parser[A | WrappedParseError]":
@@ -232,7 +246,9 @@ class Parser[A]:
             except dp.ParseError as e:
                 return WrappedParseError(e)
 
-        return Parser(settings=self.settings, parse=parse)
+        return Parser(
+            settings=self.settings, formatting=self.formatting, parse=parse
+        )
 
     def response_with[T: md.AbstractTool[Any]](
         self, tools: TypeAnnot[T]
@@ -274,7 +290,9 @@ class Parser[A]:
                 parsed = self.parse(ans)
                 return Response[A, T](ans, FinalAnswer(parsed))
 
-        return Parser(settings=settings, parse=parse)
+        return Parser(
+            settings=settings, formatting=self.formatting, parse=parse
+        )
 
     @property
     def response(self) -> "GenericParser":
@@ -335,7 +353,10 @@ class Parser[A]:
             replaced with `TypeExpr` (incoming in Python 3.14).
         """
 
-        return self.map(partial(_parse_json_as, type))
+        schema = md.Schema.make(type)
+        return self.map(partial(_parse_json_as, type)).update_formatting(
+            lambda f: replace(f, what="json", schema=schema)
+        )
 
     def yaml_as[U](self: "Parser[str]", type: TypeAnnot[U]) -> "Parser[U]":
         """
@@ -347,7 +368,10 @@ class Parser[A]:
             type of `U`. This should work better once `TypeAnnot` can be
             replaced with `TypeExpr` (incoming in Python 3.14).
         """
-        return self.map(partial(_parse_yaml_as, type))
+        schema = md.Schema.make(type)
+        return self.map(partial(_parse_yaml_as, type)).update_formatting(
+            lambda f: replace(f, what="yaml", schema=schema)
+        )
 
 
 @dataclass(frozen=True)
@@ -443,7 +467,12 @@ def structured_as[T](type: TypeAnnot[T], /) -> Parser[T]:
     )
     _check_valid_structured_output_type(type)
     settings = dp.QuerySettings(dp.StructuredOutputSettings(type))
-    return Parser(settings, lambda ans: _parse_structured_output(type, ans))
+    formatting = FormattingMetadata(
+        where="full_answer", what="json", schema=md.Schema.make(type)
+    )
+    return Parser(
+        settings, formatting, lambda ans: _parse_structured_output(type, ans)
+    )
 
 
 def final_tool_call_as[T](annot: TypeAnnot[T], /) -> Parser[T]:
@@ -462,6 +491,9 @@ def final_tool_call_as[T](annot: TypeAnnot[T], /) -> Parser[T]:
     tool = cast(type[Any], annot)
     tool_settings = dp.ToolSettings(tool_types=[tool], force_tool_call=True)
     settings = dp.QuerySettings(None, tool_settings)
+    formatting = FormattingMetadata(
+        where="tool_call", what="json", schema=md.Schema.make(annot)
+    )
 
     def parse(ans: dp.Answer) -> T:
         assert len(ans.tool_calls) == 1, (
@@ -469,7 +501,7 @@ def final_tool_call_as[T](annot: TypeAnnot[T], /) -> Parser[T]:
         )
         return _parse_or_raise(tool, ans.tool_calls[0].args)
 
-    return Parser(settings, parse)
+    return Parser(settings, formatting, parse)
 
 
 structured = GenericParser(structured_as)
@@ -491,7 +523,11 @@ def _get_text_answer(ans: Answer) -> str:
     return ans.content
 
 
-get_text = Parser[str](dp.QuerySettings(), _get_text_answer)
+get_text = Parser[str](
+    dp.QuerySettings(),
+    FormattingMetadata(where="full_answer", what="text"),
+    _get_text_answer,
+)
 """
 Parser that extracts the text content of an answer.
 
@@ -503,7 +539,7 @@ last_code_block: Parser[str] = get_text.map(
     lambda s: block
     if (block := extract_final_block(s)) is not None
     else dp.ParseError(description="No code block found.", meta={"source": s})
-)
+).update_formatting(lambda f: replace(f, where="last_code_block"))
 """
 Parser that extracts the last code block from a text answer.
 """
@@ -638,7 +674,7 @@ class QueryTemplateArgs(typing.TypedDict):
     mode: dp.AnswerMode
     available_modes: Sequence[dp.AnswerMode]
     params: dict[str, Any]
-    format: FormattingMetadata | None
+    format: FormattingMetadata
 
 
 #####
@@ -832,7 +868,7 @@ class Query[T](dp.AbstractQuery[T]):
             "mode": mode,
             "available_modes": self.query_modes(),
             "params": params,
-            "format": None,
+            "format": self._instantiated_parser_for(mode).formatting,
         }
         args: dict[str, object] = {**args_min}
         if extra_args:
