@@ -642,7 +642,9 @@ def _first_word[T](type: TypeAnnot[T]) -> Parser[T]:
         except Exception as e:
             raise dp.ParseError(description=str(e))
 
-    return get_text.map(partial(process, type))
+    return get_text.map(partial(process, type)).update_formatting(
+        lambda f: replace(f, what="one_word")
+    )
 
 
 first_word = GenericParser(_first_word)

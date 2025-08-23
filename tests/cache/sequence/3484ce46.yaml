@@ -2,8 +2,25 @@
     request:
       chat:
         - role: system
-          content: Given a list of numbers and a target number, you must find a sub-list whose elements
-            sum up to the target. Just answer with a list of numbers and nothing else.
+          content: |
+            Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+            Answer with the following and nothing else (no need for quotes or a code block):
+            A YAML object that matches the following JSON schema.
+
+            Schema:
+            ```
+            {
+              "name": "list[int]",
+              "description": null,
+              "schema": {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              }
+            }
+            ```
         - role: user
           content: |-
             List: [1, 2, 3, 4]
@@ -30,22 +47,16 @@
       values:
         num_requests: 1
         num_completions: 2
-        num_requests__medium: 1
-        num_completions__medium: 1
-        input_tokens: 64
-        input_tokens__medium: 64
+        input_tokens: 130
         output_tokens: 12
-        output_tokens__medium: 12
         cached_input_tokens: 0
-        cached_input_tokens__medium: 0
-        price: 5.3599999999999995e-05
-        price__medium: 5.3599999999999995e-05
+        price: 0.0001064
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
       completion_tokens: 12
-      prompt_tokens: 64
-      total_tokens: 76
+      prompt_tokens: 130
+      total_tokens: 142
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0

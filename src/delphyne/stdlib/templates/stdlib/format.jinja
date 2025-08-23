@@ -1,0 +1,32 @@
+{#- Render 'where' -#}
+{% if format.where == "full_answer" %}
+Answer with the following and nothing else (no need for quotes or a code block):
+{% elif format.where == "last_code_block" %}
+Terminate your answer with a code block (delimited using triple backquotes) that contains the following:
+{% elif format.where == "tool_call" %}
+Provide your final answer by calling the appropriate tool.
+{% else %}
+{{ fail("Unknown value for 'format.where': " ~ format.where) }}
+{% endif %}
+{#- Render 'what' -#}
+{% if format.where != "tool_call" %}
+    {% if format.what == "yaml" %}
+A YAML object that matches the following JSON schema.
+    {% elif format.what == "json" %}
+A JSON object that matches the following JSON schema.
+    {% elif format.what == "text" %}
+A string.
+    {% elif format.what == "one_word" %}
+A single word or identifier (without any space).
+    {% else %}
+{{ fail("Unknown value for 'format.what': " ~ format.what) }}
+    {% endif %}
+{% endif %}
+{#- Render 'where' -#}
+{% if format.schema %}
+
+Schema:
+```
+{{ format.schema | json(indent=2) }}
+```
+{% endif %}

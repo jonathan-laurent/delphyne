@@ -199,7 +199,7 @@ class TemplatesManager(qu.AbstractTemplatesManager):
     following in your instance prompts:
 
     ```jinja
-    {% include 'stdlib/format_instructions.jinja' %}
+    {% include 'stdlib/format.jinja' %}
     ```
 
     All templates automatically have access to the following global
