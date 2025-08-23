@@ -10,7 +10,7 @@ from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Literal, override
+from typing import Any, Literal, cast, override
 
 import jinja2
 import yaml
@@ -206,6 +206,7 @@ class TemplatesManager(qu.AbstractTemplatesManager):
     objects:
 
     - A `yaml` filter for converting an object into a YAML string.
+    - A `json` filter for converting an object into a JSON string.
     - A `fail` function that takes an error message as an argument and
       raises an exception on Python side.
     """
@@ -232,7 +233,8 @@ class TemplatesManager(qu.AbstractTemplatesManager):
             lstrip_blocks=True,
             keep_trailing_newline=False,
         )
-        self.env.filters["yaml"] = dump_yaml_object  # type: ignore
+        self.env.filters["yaml"] = dump_yaml_object
+        self.env.filters["json"] = _dump_json_object
         self.env.globals["fail"] = _fail_from_template  # type: ignore
 
     @override
@@ -266,6 +268,32 @@ class TemplatesManager(qu.AbstractTemplatesManager):
             raise qu.TemplateError(template_name, e)
         except jinja2.TemplateSyntaxError as e:
             raise qu.TemplateError(template_name, e)
+
+
+def _dump_json_object(
+    obj: object,
+    *,
+    exclude_defaults: bool = False,
+    exclude_none: bool = False,
+    exclude_fields: Iterable[str] = (),
+    indent: int | str | None = None,
+):
+    import json
+
+    import pydantic
+
+    Adapter = pydantic.TypeAdapter(type(obj))
+    py = Adapter.dump_python(
+        obj,
+        exclude_defaults=exclude_defaults,
+        exclude_none=exclude_none,
+        warnings="error",
+    )
+    if isinstance(py, dict):
+        py = cast(dict[Any, Any], py)
+        for f in exclude_fields:
+            del py[f]
+    return json.dumps(py, indent=indent)
 
 
 ####

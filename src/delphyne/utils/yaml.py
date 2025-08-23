@@ -44,6 +44,7 @@ def dump_yaml[T](
 
 def dump_yaml_object(
     obj: object,
+    *,
     exclude_defaults: bool = False,
     exclude_none: bool = False,
     exclude_fields: Iterable[str] = (),
