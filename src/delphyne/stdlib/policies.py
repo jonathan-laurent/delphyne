@@ -7,7 +7,8 @@ from dataclasses import dataclass
 from typing import Any, Generic, NoReturn, Protocol, TypeVar
 
 import delphyne.core as dp
-from delphyne.core import Node, PolicyEnv
+from delphyne.core import Node
+from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.streams import Stream, StreamTransformer
 
 #####
@@ -20,7 +21,7 @@ P = TypeVar("P", covariant=True)
 
 
 @dataclass(frozen=True)
-class Policy(Generic[N, P], dp.AbstractPolicy[N, P]):
+class Policy(Generic[N, P], dp.AbstractPolicy[PolicyEnv, N, P]):
     """
     A pair of a search policy and of an inner policy.
 
@@ -50,7 +51,7 @@ class Policy(Generic[N, P], dp.AbstractPolicy[N, P]):
 
 
 @dataclass(frozen=True)
-class SearchPolicy[N: Node](dp.AbstractSearchPolicy[N]):
+class SearchPolicy[N: Node](dp.AbstractSearchPolicy[PolicyEnv, N]):
     """
     A search policy takes as arguments a tree with a given signature
     (covariant type parameter `N`), a global policy environment, and an
@@ -92,7 +93,7 @@ class SearchPolicy[N: Node](dp.AbstractSearchPolicy[N]):
         trans: StreamTransformer,
     ) -> "SearchPolicy[N]":
         def policy[P, T](
-            tree: dp.Tree[N, P, T], env: dp.PolicyEnv, policy: P
+            tree: dp.Tree[N, P, T], env: PolicyEnv, policy: P
         ) -> dp.StreamGen[T]:
             return trans(self(tree, env, policy), env).gen()
 
@@ -161,7 +162,7 @@ def search_policy[N: Node, **A](
 
 
 @dataclass(frozen=True)
-class PromptingPolicy(dp.AbstractPromptingPolicy):
+class PromptingPolicy(dp.AbstractPromptingPolicy[PolicyEnv]):
     """
     A prompting policy takes as arguments a query (attached to a
     specific node) and a global policy environment, and returns a search

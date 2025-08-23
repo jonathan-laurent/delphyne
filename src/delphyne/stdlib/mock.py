@@ -9,6 +9,7 @@ from typing import Any
 import delphyne as dp
 import delphyne.core.demos as dm
 import delphyne.core.refs as refs
+from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.models import NUM_REQUESTS
 from delphyne.stdlib.policies import PromptingPolicy, prompting_policy
 from delphyne.stdlib.streams import SpendingDeclined, spend_on
@@ -46,7 +47,7 @@ def demo_mock_oracle(
 
     def policy[T](
         query: dp.AttachedQuery[T],
-        env: dp.PolicyEnv,
+        env: PolicyEnv,
     ) -> dp.StreamGen[T]:
         answers = list(find_answers(query.query))
         i, n = 0, len(answers)
@@ -71,7 +72,7 @@ def demo_mock_oracle(
 @prompting_policy
 def fixed_oracle[T](
     query: dp.AttachedQuery[T],
-    env: dp.PolicyEnv,
+    env: PolicyEnv,
     oracle: Callable[[dp.AbstractQuery[Any]], Iterable[dp.Answer]],
 ) -> dp.StreamGen[T]:
     """

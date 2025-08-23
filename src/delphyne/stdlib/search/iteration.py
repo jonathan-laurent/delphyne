@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Any, cast
 
 import delphyne.core as dp
+from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.nodes import Fail, fail, spawn_node
 from delphyne.stdlib.opaque import Opaque, OpaqueSpace
 from delphyne.stdlib.policies import search_policy
@@ -49,7 +50,7 @@ def _iterate[P, S, T](
 @search_policy
 def _search_iteration[P, T](
     tree: dp.Tree[Iteration | Fail, P, T],
-    env: dp.PolicyEnv,
+    env: PolicyEnv,
     policy: P,
 ) -> dp.StreamGen[T]:
     assert isinstance(tree.node, Iteration)

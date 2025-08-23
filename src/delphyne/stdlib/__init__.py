@@ -10,6 +10,13 @@ from delphyne.stdlib.computations import (
     compute,
     elim_compute,
 )
+from delphyne.stdlib.environments import (
+    Example,
+    ExampleDatabase,
+    InvalidDemoFile,
+    PolicyEnv,
+    TemplatesManager,
+)
 from delphyne.stdlib.flags import (
     Flag,
     FlagQuery,

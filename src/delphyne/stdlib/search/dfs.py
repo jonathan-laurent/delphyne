@@ -2,9 +2,9 @@
 Depth-First Search Algorithm
 """
 
-from delphyne.core.environments import PolicyEnv
 from delphyne.core.streams import Solution, StreamGen
 from delphyne.core.trees import Success, Tree
+from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.nodes import Branch, Fail
 from delphyne.stdlib.policies import search_policy, unsupported_node
 from delphyne.stdlib.streams import Stream

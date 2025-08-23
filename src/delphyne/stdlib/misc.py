@@ -9,6 +9,7 @@ from typing import Any, Iterable, Literal, Never, cast, overload
 import delphyne.core as dp
 import delphyne.stdlib.policies as pol
 from delphyne.stdlib.computations import Compute, elim_compute
+from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.flags import Flag, FlagQuery, elim_flag, get_flag
 from delphyne.stdlib.nodes import Branch, Fail, branch
 from delphyne.stdlib.opaque import Opaque
@@ -105,7 +106,7 @@ def sequence_prompting_policies(
     policies: Iterable[PromptingPolicy], *, stop_on_reject: bool = True
 ) -> PromptingPolicy:
     def policy[T](
-        query: dp.AttachedQuery[T], env: dp.PolicyEnv
+        query: dp.AttachedQuery[T], env: PolicyEnv
     ) -> dp.StreamGen[T]:
         yield from Stream.sequence(
             (pp(query, env) for pp in policies), stop_on_reject=stop_on_reject
@@ -118,7 +119,7 @@ def sequence_search_policies[N: dp.Node](
     policies: Iterable[SearchPolicy[N]], *, stop_on_reject: bool = True
 ) -> SearchPolicy[N]:
     def policy[T](
-        tree: dp.Tree[N, Any, T], env: dp.PolicyEnv, policy: Any
+        tree: dp.Tree[N, Any, T], env: PolicyEnv, policy: Any
     ) -> dp.StreamGen[T]:
         yield from Stream.sequence(
             (sp(tree, env, policy) for sp in policies),
@@ -133,7 +134,7 @@ def sequence_policies[N: dp.Node, P](
 ) -> Policy[N, P]:
     @pol.search_policy
     def search[T](
-        tree: dp.Tree[N, Any, T], env: dp.PolicyEnv, policy: Any
+        tree: dp.Tree[N, Any, T], env: PolicyEnv, policy: Any
     ) -> dp.StreamGen[T]:
         assert policy is None
         yield from Stream.sequence(
@@ -218,7 +219,7 @@ def prompting_policy_or_else(
     main: PromptingPolicy, other: PromptingPolicy
 ) -> PromptingPolicy:
     def policy[T](
-        query: dp.AttachedQuery[T], env: dp.PolicyEnv
+        query: dp.AttachedQuery[T], env: PolicyEnv
     ) -> dp.StreamGen[T]:
         yield from stream_or_else(
             lambda: main(query, env).gen(),
@@ -232,7 +233,7 @@ def search_policy_or_else[N: dp.Node](
     main: SearchPolicy[N], other: SearchPolicy[N]
 ) -> SearchPolicy[N]:
     def policy[T](
-        tree: dp.Tree[N, Any, T], env: dp.PolicyEnv, policy: Any
+        tree: dp.Tree[N, Any, T], env: PolicyEnv, policy: Any
     ) -> dp.StreamGen[T]:
         yield from stream_or_else(
             lambda: main(tree, env, policy).gen(),
@@ -249,7 +250,7 @@ def policy_or_else[N: dp.Node, P](
     # the return type by returning a dummy internal policy.
     @pol.search_policy
     def sp[T](
-        tree: dp.Tree[N, Any, T], env: dp.PolicyEnv, policy: Any
+        tree: dp.Tree[N, Any, T], env: PolicyEnv, policy: Any
     ) -> dp.StreamGen[T]:
         assert policy is None
         yield from stream_or_else(
@@ -350,7 +351,7 @@ def nofail[P, A, B](space: Opaque[P, A], *, default: B) -> Opaque[P, A | B]:
 
 
 def _failing_pp[T](
-    query: dp.AttachedQuery[T], env: dp.PolicyEnv
+    query: dp.AttachedQuery[T], env: PolicyEnv
 ) -> dp.StreamGen[T]:
     return
     yield

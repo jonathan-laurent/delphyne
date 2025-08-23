@@ -11,6 +11,7 @@ from typing import Any, Protocol, cast, overload
 import delphyne.core as dp
 import delphyne.stdlib.policies as pol
 from delphyne.core import inspect
+from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.opaque import Opaque, OpaqueSpace
 from delphyne.stdlib.policies import IPDict, Policy, Stream
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
@@ -81,7 +82,7 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
 
     def run_toplevel(
         self,
-        env: dp.PolicyEnv,
+        env: PolicyEnv,
         policy: Policy[N, P],
         monitor: dp.TreeMonitor = dp.TreeMonitor(),
     ) -> Stream[T]:

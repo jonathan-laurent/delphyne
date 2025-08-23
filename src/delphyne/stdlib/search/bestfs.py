@@ -9,6 +9,7 @@ from typing import Any
 
 import delphyne.core as dp
 from delphyne.core import refs
+from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.nodes import Branch, Factor, Fail, Value
 from delphyne.stdlib.policies import search_policy, unsupported_node
 from delphyne.stdlib.streams import Stream
@@ -46,7 +47,7 @@ class _PriorityItem:
 @search_policy
 def best_first_search[P, T](
     tree: dp.Tree[Branch | Factor | Value | Fail, P, T],
-    env: dp.PolicyEnv,
+    env: PolicyEnv,
     policy: P,
     child_confidence_prior: Callable[[int, int], float],
     max_depth: int | None = None,

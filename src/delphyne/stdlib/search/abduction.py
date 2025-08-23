@@ -9,6 +9,7 @@ from typing import Any, Literal, Protocol, cast
 
 import delphyne.core as dp
 from delphyne.core.refs import drop_refs
+from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.nodes import spawn_node
 from delphyne.stdlib.opaque import Opaque, OpaqueSpace
 from delphyne.stdlib.policies import log, search_policy
@@ -197,7 +198,7 @@ def _argmax(seq: Iterable[float]) -> int:
 @search_policy
 def abduct_and_saturate[P, Proof](
     tree: dp.Tree[Abduction, P, Proof],
-    env: dp.PolicyEnv,
+    env: PolicyEnv,
     policy: P,
     max_rollout_depth: int = 3,
     scoring_function: ScoringFunction = _default_scoring_function,

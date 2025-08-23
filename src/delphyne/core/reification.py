@@ -7,7 +7,6 @@ from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any, cast
 
-from delphyne.core import environments as en
 from delphyne.core import refs
 from delphyne.core import trees as tr
 from delphyne.core.queries import AbstractQuery
@@ -114,14 +113,6 @@ def reify[N: Node, P, T](
         monitor=monitor,
         allow_noncopyable_actions=allow_noncopyable_actions,
     )
-
-
-def tracer_hook(tracer: en.Tracer) -> Callable[[Tree[Any, Any, Any]], None]:
-    """
-    Standard hook to be passed to `TreeMonitor` to automatically log
-    visited nodes into a trace.
-    """
-    return lambda tree: tracer.trace_node(tree.ref)
 
 
 #####

@@ -5,17 +5,18 @@ Some policies leveraging classification.
 import numpy as np
 
 import delphyne as dp
+from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.nodes import Branch
-from delphyne.stdlib.policies import log, search_policy
+from delphyne.stdlib.policies import SearchPolicy, log, search_policy
 from delphyne.stdlib.queries import ProbInfo
 
 
 @search_policy
 def sample_and_proceed[N: dp.Node, P, T](
     tree: dp.Tree[Branch | N, P, T],
-    env: dp.PolicyEnv,
+    env: PolicyEnv,
     policy: P,
-    proceed_with: dp.AbstractSearchPolicy[Branch | N],
+    proceed_with: SearchPolicy[Branch | N],
 ) -> dp.StreamGen[T]:
     """
     For a tree whose root is a branching node over a classification

@@ -6,19 +6,19 @@ examples, caching LLM requests, and logging information.
 """
 
 import json
-import threading
 from collections import defaultdict
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, override
 
 import jinja2
 import yaml
 
-from delphyne.core import pprint, refs, traces
+import delphyne.core.queries as qu
 from delphyne.core.demos import Demo, QueryDemo, StrategyDemo, translate_answer
 from delphyne.core.refs import Answer
+from delphyne.core.traces import Tracer
 from delphyne.utils.caching import CacheSpec
 from delphyne.utils.typing import pydantic_load
 from delphyne.utils.yaml import dump_yaml_object
@@ -182,7 +182,7 @@ def _fail_from_template(msg: str):
     raise jinja2.TemplateError(msg)
 
 
-class TemplatesManager:
+class TemplatesManager(qu.AbstractTemplatesManager):
     """
     A class for managing Jinja prompt templates.
 
@@ -210,6 +210,7 @@ class TemplatesManager:
         self.env.filters["yaml"] = dump_yaml_object  # type: ignore
         self.env.globals["fail"] = _fail_from_template  # type: ignore
 
+    @override
     def prompt(
         self,
         *,
@@ -218,28 +219,6 @@ class TemplatesManager:
         template_args: dict[str, Any],
         default_template: str | None = None,
     ) -> str:
-        """
-        Render a prompt message using a template.
-
-        Args:
-            query_name: The name of the query for which the prompt is
-                built. Used to determine the template file name, namely
-                "{query_name}.{prompt_kind}.jinja".
-            prompt_kind: The kind of prompt (e.g. "system" or "instance")
-                that is being rendered, used to determine the name of the
-                template file to use.
-            template_args: A dictionary of arguments to pass to the
-                template. It must not contain key "data", which is
-                reserved for the data loaded from the data directories.
-            default_template: If provided, this template will be used if
-                no template file is found for the given query name and
-                kind instead of raising an error.
-
-        Raises:
-            TemplateFileMissing: template file not found.
-            TemplateError: error raised while rendering the template.
-        """
-
         suffix = "." + prompt_kind
         template_name = f"{query_name}{suffix}{JINJA_EXTENSION}"
         prompt_file_exists = any(
@@ -249,7 +228,7 @@ class TemplatesManager:
             if default_template is not None:
                 template = self.env.from_string(default_template)
             else:
-                raise TemplateFileMissing(template_name)
+                raise qu.TemplateFileMissing(template_name)
         else:
             template = self.env.get_template(template_name)
         try:
@@ -257,162 +236,11 @@ class TemplatesManager:
             template_args |= {"data": self.data}
             return template.render(template_args)
         except jinja2.TemplateNotFound as e:
-            raise TemplateError(template_name, e)
+            raise qu.TemplateError(template_name, e)
         except jinja2.UndefinedError as e:
-            raise TemplateError(template_name, e)
+            raise qu.TemplateError(template_name, e)
         except jinja2.TemplateSyntaxError as e:
-            raise TemplateError(template_name, e)
-
-
-@dataclass
-class TemplateError(Exception):
-    """
-    Wrapper for template-related exceptions.
-    """
-
-    name: str
-    exn: Exception
-
-
-@dataclass
-class TemplateFileMissing(Exception):
-    """
-    Exception raised when a template file is missing.
-
-    We want to make a distinction with the `TemplateNotFound` Jinja
-    exception, which can also be raised when `include` statements fail
-    within templates. In comparison, this exception means that the main
-    template file does not exist.
-    """
-
-    file: str
-
-
-####
-#### Tracer
-####
-
-
-@dataclass(frozen=True)
-class LogMessage:
-    """
-    A log message.
-
-    Attributes:
-        message: The message to log.
-        metadata: Optional metadata associated with the message, as a
-            dictionary mapping string keys to JSON values.
-        location: An optional location in the strategy tree where the
-            message was logged, if applicable.
-    """
-
-    message: str
-    metadata: dict[str, Any] | None = None
-    location: traces.ShortLocation | None = None
-
-
-@dataclass(frozen=True)
-class ExportableLogMessage:
-    """
-    An exportable log message, as a dataclass whose fields are JSON
-    values (as opposed to `LogMessage`) and is thus easier to export.
-    """
-
-    message: str
-    node: int | None
-    space: str | None
-    metadata: dict[str, Any] | None = None
-
-
-class Tracer:
-    """
-    A mutable trace along with a mutable list of log messages.
-
-    Both components are protected by a lock to ensure thread-safety
-    (some policies spawn multiple concurrent threads).
-
-    Attributes:
-        trace: A mutable trace.
-        messages: A mutable list of log messages.
-        lock: A reentrant lock protecting access to the trace and log.
-            The lock is publicly exposed so that threads can log several
-            successive messages without other threads interleaving new
-            messages in between (TODO: there are cleaner ways to achieve
-            this).
-    """
-
-    def __init__(self):
-        self.trace = traces.Trace()
-        self.messages: list[LogMessage] = []
-
-        # Different threads may be logging information or appending to
-        # the trace in parallel.
-        self.lock = threading.RLock()
-
-    def trace_node(self, node: refs.GlobalNodePath) -> None:
-        """
-        Ensure that a node at a given reference is present in the trace.
-
-        See `tracer_hook` for registering a hook that automatically
-        calls this method on all encountered nodes.
-        """
-        with self.lock:
-            self.trace.convert_location(traces.Location(node, None))
-
-    def trace_query(self, ref: refs.GlobalSpacePath) -> None:
-        """
-        Ensure that a query at a given reference is present in the
-        trace, even if no answer is provided for it.
-        """
-        with self.lock:
-            self.trace.convert_query_origin(ref)
-
-    def trace_answer(
-        self, space: refs.GlobalSpacePath, answer: refs.Answer
-    ) -> None:
-        """
-        Ensure that a given query answer is present in the trace, even
-        it is is not used to reach a node.
-        """
-        with self.lock:
-            self.trace.convert_answer_ref((space, answer))
-
-    def log(
-        self,
-        message: str,
-        metadata: dict[str, Any] | None = None,
-        location: traces.Location | None = None,
-    ):
-        """
-        Log a message, with optional metadata and location information.
-        The metadata must be a dictionary of JSON values.
-        """
-        with self.lock:
-            short_location = None
-            if location is not None:
-                short_location = self.trace.convert_location(location)
-            self.messages.append(LogMessage(message, metadata, short_location))
-
-    def export_log(self) -> Iterable[ExportableLogMessage]:
-        """
-        Export the log into an easily serializable format.
-        """
-        with self.lock:
-            for m in self.messages:
-                node = None
-                space = None
-                if (loc := m.location) is not None:
-                    node = loc.node.id
-                    if loc.space is not None:
-                        space = pprint.space_ref(loc.space)
-                yield ExportableLogMessage(m.message, node, space, m.metadata)
-
-    def export_trace(self) -> traces.ExportableTrace:
-        """
-        Export the trace into an easily serializable format.
-        """
-        with self.lock:
-            return self.trace.export()
+            raise qu.TemplateError(template_name, e)
 
 
 ####

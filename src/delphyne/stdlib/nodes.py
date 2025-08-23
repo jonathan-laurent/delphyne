@@ -8,6 +8,7 @@ from typing import Any, Never, NoReturn, cast, override
 
 import delphyne.core as dp
 import delphyne.stdlib.policies as pol
+from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.opaque import Opaque, OpaqueSpace
 
 #####
@@ -250,7 +251,7 @@ def message(
 
 @pol.contextual_tree_transformer
 def elim_messages(
-    env: dp.PolicyEnv,
+    env: PolicyEnv,
     policy: Any,
     show_in_log: bool = True,
 ) -> pol.PureTreeTransformerFn[Message, Never]:

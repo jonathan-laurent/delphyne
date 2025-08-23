@@ -8,6 +8,7 @@ from typing import Any, Generic, TypeVar, override
 
 import delphyne.core as dp
 from delphyne.core.trees import NestedTreeSpawner, QuerySpawner
+from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.policies import Policy, PromptingPolicy, Stream
 
 T = TypeVar("T", covariant=True)
@@ -33,7 +34,7 @@ class OpaqueSpace(Generic[P, T], dp.Space[T]):
         stream: Maps the ambient inner policy to a search stream.
     """
 
-    stream: Callable[[dp.PolicyEnv, P], Stream[T]]
+    stream: Callable[[PolicyEnv, P], Stream[T]]
     _source: dp.NestedTree[Any, Any, T] | dp.AttachedQuery[T]
     _tags: Sequence[dp.Tag]
 
@@ -87,7 +88,7 @@ class OpaqueSpace(Generic[P, T], dp.Space[T]):
         ) -> OpaqueSpace[P1, T1]:
             nested = spawner(strategy)
 
-            def stream(env: dp.PolicyEnv, policy: P1) -> Stream[T1]:
+            def stream(env: PolicyEnv, policy: P1) -> Stream[T1]:
                 tree = nested.spawn_tree()
                 sub = get_policy(policy, tags)
                 return sub.search(tree, env, sub.inner)

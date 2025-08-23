@@ -21,6 +21,7 @@ import delphyne.core.inspect as dpi
 import delphyne.stdlib.models as md
 import delphyne.stdlib.policies as pol
 from delphyne.core.refs import Answer
+from delphyne.stdlib.environments import Example, ExampleDatabase, PolicyEnv
 from delphyne.stdlib.opaque import Opaque, OpaqueSpace
 from delphyne.stdlib.policies import IPDict, log, prompting_policy
 from delphyne.stdlib.streams import SpendingDeclined, Stream, spend_on
@@ -786,7 +787,7 @@ class Query[T](dp.AbstractQuery[T]):
         mode: dp.AnswerMode,
         params: dict[str, object],
         extra_args: dict[str, object] | None = None,
-        env: dp.TemplatesManager | None = None,
+        env: dp.AbstractTemplatesManager | None = None,
     ) -> str:
         assert env is not None, _no_prompt_manager_error()
         args: dict[str, object] = {
@@ -907,7 +908,7 @@ class Query[T](dp.AbstractQuery[T]):
 
     def run_toplevel(
         self,
-        env: dp.PolicyEnv,
+        env: PolicyEnv,
         policy: pol.PromptingPolicy,
     ) -> Stream[T]:
         """
@@ -940,15 +941,15 @@ def _match_string_literal_type(t: Any) -> Sequence[str] | None:
 #####
 
 
-type ExampleSelector = Callable[[Sequence[dp.Example]], Sequence[dp.Example]]
+type ExampleSelector = Callable[[Sequence[Example]], Sequence[Example]]
 """
 A function for selecting a subset of examples from a given sequence.
 """
 
 
 def select_all_examples(
-    examples: Sequence[dp.Example],
-) -> Sequence[dp.Example]:
+    examples: Sequence[Example],
+) -> Sequence[Example]:
     """
     Example selector that returns all available examples.
     """
@@ -964,8 +965,8 @@ def select_random_examples(num_examples: int) -> ExampleSelector:
     """
 
     def select(
-        examples: Sequence[dp.Example],
-    ) -> Sequence[dp.Example]:
+        examples: Sequence[Example],
+    ) -> Sequence[Example]:
         if num_examples >= len(examples):
             return examples
         selected = random.sample(examples, num_examples)
@@ -981,8 +982,8 @@ def select_with_either_tags(tags: Sequence[str]):
     """
 
     def select(
-        examples: Sequence[dp.Example],
-    ) -> Sequence[dp.Example]:
+        examples: Sequence[Example],
+    ) -> Sequence[Example]:
         return [ex for ex in examples if any(t in ex.tags for t in tags)]
 
     return select
@@ -994,7 +995,7 @@ def select_with_either_tags(tags: Sequence[str]):
 
 
 def fetch_examples(
-    database: dp.ExampleDatabase,
+    database: ExampleDatabase,
     query: dp.AbstractQuery[Any],
     selectors: Sequence[ExampleSelector],
 ) -> Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]]:
@@ -1025,7 +1026,7 @@ def _priming_split(prompt: str) -> tuple[str, str | None]:
 
 def _instance_prompt(
     query: dp.AbstractQuery[Any],
-    env: dp.TemplatesManager | None,
+    env: dp.AbstractTemplatesManager | None,
     params: dict[str, object],
     mode: dp.AnswerMode,
 ):
@@ -1064,7 +1065,7 @@ def create_prompt(
     examples: Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]],
     params: dict[str, object],
     mode: dp.AnswerMode,
-    env: dp.TemplatesManager | None,
+    env: dp.AbstractTemplatesManager | None,
 ) -> md.Chat:
     msgs: list[md.ChatMessage] = []
     sys = query.generate_prompt(
@@ -1080,7 +1081,7 @@ def create_prompt(
 
 
 def log_oracle_response(
-    env: dp.PolicyEnv,
+    env: PolicyEnv,
     query: dp.AttachedQuery[Any],
     req: md.LLMRequest,
     resp: md.LLMResponse,
@@ -1137,7 +1138,7 @@ class ProbInfo(dp.SearchMeta):
 
 
 def _parse_or_log_and_raise[T](
-    answer: dp.Answer, query: dp.AttachedQuery[T], env: dp.PolicyEnv
+    answer: dp.Answer, query: dp.AttachedQuery[T], env: PolicyEnv
 ) -> dp.Tracked[T]:
     parsed = query.parse_answer(answer)
     if isinstance(parsed, dp.ParseError):
@@ -1146,14 +1147,14 @@ def _parse_or_log_and_raise[T](
     return parsed
 
 
-def get_request_cache(env: dp.PolicyEnv) -> md.LLMCache | None:
+def get_request_cache(env: PolicyEnv) -> md.LLMCache | None:
     cache = env.requests_cache
     assert cache is None or isinstance(cache, md.LLMCache)
     return cache
 
 
 def _send_request(
-    model: md.LLM, req: md.LLMRequest, env: dp.PolicyEnv
+    model: md.LLM, req: md.LLMRequest, env: PolicyEnv
 ) -> dp.StreamContext[md.LLMResponse | SpendingDeclined]:
     res = yield from spend_on(
         lambda: (
@@ -1168,7 +1169,7 @@ def _send_request(
 @prompting_policy
 def classify[T](
     query: dp.AttachedQuery[T],
-    env: dp.PolicyEnv,
+    env: PolicyEnv,
     model: md.LLM,
     params: dict[str, object] | None = None,
     select_examples: Sequence[ExampleSelector] = (),
@@ -1301,7 +1302,7 @@ def _unwrap_parse_error[T](
 @prompting_policy
 def few_shot[T](
     query: dp.AttachedQuery[T],
-    env: dp.PolicyEnv,
+    env: PolicyEnv,
     model: md.LLM,
     *,
     params: dict[str, object] | None = None,
@@ -1455,7 +1456,7 @@ def few_shot[T](
 @prompting_policy
 def answer_with[T](
     query: dp.AttachedQuery[T],
-    env: dp.PolicyEnv,
+    env: PolicyEnv,
     answers: Sequence[str],
     probs: Sequence[float] | None = None,
     mode: dp.AnswerMode = None,

@@ -9,6 +9,7 @@ from typing import Protocol, override
 
 import delphyne.core as dp
 from delphyne.core.streams import Barrier, BarrierId, Spent
+from delphyne.stdlib.environments import PolicyEnv
 
 #####
 ##### Search Streams
@@ -202,7 +203,7 @@ class _StreamTransformerFn(Protocol):
     def __call__[T](
         self,
         stream: Stream[T],
-        env: dp.PolicyEnv,
+        env: PolicyEnv,
     ) -> dp.StreamGen[T]: ...
 
 
@@ -210,7 +211,7 @@ class _ParametricStreamTransformerFn[**A](Protocol):
     def __call__[T](
         self,
         stream: Stream[T],
-        env: dp.PolicyEnv,
+        env: PolicyEnv,
         *args: A.args,
         **kwargs: A.kwargs,
     ) -> dp.StreamGen[T]: ...
@@ -233,7 +234,7 @@ class StreamTransformer:
     def __call__[T](
         self,
         stream: Stream[T],
-        env: dp.PolicyEnv,
+        env: PolicyEnv,
     ) -> Stream[T]:
         return Stream(lambda: self.trans(stream, env))
 
@@ -246,7 +247,7 @@ class StreamTransformer:
 
         def transformer[T](
             stream: Stream[T],
-            env: dp.PolicyEnv,
+            env: PolicyEnv,
         ) -> dp.StreamGen[T]:
             return self(other(stream, env), env).gen()
 
@@ -274,7 +275,7 @@ def stream_transformer[**A](
     def parametric(*args: A.args, **kwargs: A.kwargs) -> StreamTransformer:
         def transformer[T](
             stream: Stream[T],
-            env: dp.PolicyEnv,
+            env: PolicyEnv,
         ) -> dp.StreamGen[T]:
             return f(stream, env, *args, **kwargs)
 
@@ -293,7 +294,7 @@ class _StreamCombinatorFn(Protocol):
         self,
         streams: Sequence[Stream[T]],
         probs: Sequence[float],
-        env: dp.PolicyEnv,
+        env: PolicyEnv,
     ) -> dp.StreamGen[T]: ...
 
 
@@ -305,7 +306,7 @@ class StreamCombinator:
         self,
         streams: Sequence[Stream[T]],
         probs: Sequence[float],
-        env: dp.PolicyEnv,
+        env: PolicyEnv,
     ) -> Stream[T]:
         return Stream(lambda: self.combine(streams, probs, env))
 
@@ -316,7 +317,7 @@ class StreamCombinator:
         def combinator[T](
             streams: Sequence[Stream[T]],
             probs: Sequence[float],
-            env: dp.PolicyEnv,
+            env: PolicyEnv,
         ) -> dp.StreamGen[T]:
             return other(self(streams, probs, env), env).gen()
 
@@ -331,7 +332,7 @@ class StreamCombinator:
 @stream_transformer
 def with_budget[T](
     stream: Stream[T],
-    env: dp.PolicyEnv,
+    env: PolicyEnv,
     budget: dp.BudgetLimit,
 ):
     """
@@ -343,7 +344,7 @@ def with_budget[T](
 @stream_transformer
 def take[T](
     stream: Stream[T],
-    env: dp.PolicyEnv,
+    env: PolicyEnv,
     num_generated: int,
     strict: bool = True,
 ):
@@ -356,7 +357,7 @@ def take[T](
 @stream_transformer
 def loop[T](
     stream: Stream[T],
-    env: dp.PolicyEnv,
+    env: PolicyEnv,
     n: int | None = None,
     *,
     stop_on_reject: bool = True,

@@ -21,18 +21,6 @@ from delphyne.core.demos import (
     QueryDemo,
     StrategyDemo,
 )
-from delphyne.core.environments import (
-    Example,
-    ExampleDatabase,
-    ExportableLogMessage,
-    InvalidDemoFile,
-    LogMessage,
-    PolicyEnv,
-    TemplateError,
-    TemplateFileMissing,
-    TemplatesManager,
-    Tracer,
-)
 from delphyne.core.errors import Error
 from delphyne.core.policies import (
     AbstractPolicy,
@@ -41,9 +29,12 @@ from delphyne.core.policies import (
 )
 from delphyne.core.queries import (
     AbstractQuery,
+    AbstractTemplatesManager,
     ParseError,
     QuerySettings,
     StructuredOutputSettings,
+    TemplateError,
+    TemplateFileMissing,
     ToolSettings,
 )
 from delphyne.core.refs import (
@@ -60,7 +51,6 @@ from delphyne.core.reification import (
     TreeMonitor,
     reify,
     spawn_standalone_query,
-    tracer_hook,
 )
 from delphyne.core.streams import (
     AbstractStream,
@@ -72,11 +62,15 @@ from delphyne.core.streams import (
     StreamGen,
 )
 from delphyne.core.traces import (
+    ExportableLogMessage,
     ExportableTrace,
     Location,
+    LogMessage,
     QueryOrigin,
     Trace,
+    Tracer,
     TraceReverseMap,
+    tracer_hook,
 )
 from delphyne.core.trees import (
     AbstractTreeTransformer,

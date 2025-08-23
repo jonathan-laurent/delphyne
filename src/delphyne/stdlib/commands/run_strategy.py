@@ -13,8 +13,9 @@ from typing import Any, Literal, cast
 import delphyne.analysis as analysis
 import delphyne.analysis.feedback as fb
 import delphyne.core as dp
+import delphyne.stdlib.environments as en
 import delphyne.stdlib.models as md
-import delphyne.stdlib.streams as dps
+import delphyne.stdlib.policies as pol
 import delphyne.stdlib.tasks as ta
 import delphyne.utils.caching as ca
 from delphyne.core.streams import Barrier, Solution, Spent
@@ -60,7 +61,7 @@ class RunLoadedStrategyArgs[N: dp.Node, P, T]:
     """
 
     strategy: dp.StrategyComp[N, P, T]
-    policy: dp.AbstractPolicy[N, P]
+    policy: pol.Policy[N, P]
     num_generated: int = 1
     budget: dict[str, float] | None = None
     cache_dir: str | None = None
@@ -77,7 +78,7 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
     args: RunLoadedStrategyArgs[N, P, T],
     cache_spec: ca.CacheSpec | None,
 ):
-    env = dp.PolicyEnv(
+    env = en.PolicyEnv(
         prompt_dirs=exe.prompt_dirs,
         data_dirs=exe.data_dirs,
         demonstration_files=exe.demo_files,
@@ -89,10 +90,10 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
     monitor = dp.TreeMonitor(cache, hooks=[dp.tracer_hook(env.tracer)])
     tree = dp.reify(args.strategy, monitor)
     policy = args.policy
-    stream = policy.search(tree, env, policy.inner).gen()
+    stream = policy.search(tree, env, policy.inner)
     if args.budget is not None:
-        stream = dps.stream_with_budget(stream, dp.BudgetLimit(args.budget))
-    stream = dps.stream_take(stream, args.num_generated)
+        stream = stream.with_budget(dp.BudgetLimit(args.budget))
+    stream = stream.take(args.num_generated)
     results: list[T] = []
     success = False
     total_budget = dp.Budget.zero()
@@ -143,7 +144,7 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
     last_refreshed_status = time.time()
     # TODO: generating each element is blocking here. Should we spawn a
     # thread for every new element?
-    for msg in stream:
+    for msg in stream.gen():
         match msg:
             case Solution():
                 success = True
@@ -264,7 +265,7 @@ def run_strategy(
     strategy = loader.load_strategy_instance(args.strategy, args.args)
     policy = loader.load_and_call_function(args.policy, args.policy_args)
     assert isinstance(policy, dp.AbstractPolicy)
-    policy = cast(dp.AbstractPolicy[Any, Any], policy)
+    policy = cast(pol.Policy[Any, Any], policy)
     run_loaded_strategy(
         task=task,
         exe=exe,

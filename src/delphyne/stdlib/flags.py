@@ -9,6 +9,7 @@ from typing import Any, Never, cast
 import delphyne.core as dp
 import delphyne.core.inspect as insp
 import delphyne.stdlib.policies as pol
+from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.nodes import spawn_node
 from delphyne.stdlib.queries import Query
 
@@ -110,7 +111,7 @@ def get_flag[T: str](
 
 @pol.contextual_tree_transformer
 def elim_flag[F: FlagQuery[Any]](
-    env: dp.PolicyEnv,
+    env: PolicyEnv,
     policy: Any,
     flag: type[F],
     val: str,

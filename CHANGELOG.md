@@ -1,5 +1,9 @@
 # Changelog
 
+## DEV
+
+- Moved `PolicyEnv` from `core` to the standard library and make `AbstractPolicy` parametric in the policy environment type.
+
 ## Version 0.7.0 (2025-08-22)
 
 - **Breaking:** overhaul of parsers in the standard library. Parsers are now simpler and more composable. In particular, it is now possible to transform parsers by mapping a function to their results or adding validators. Some (partial) upgrading instructions:

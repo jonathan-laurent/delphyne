@@ -8,6 +8,7 @@ from functools import partial
 
 import delphyne.analysis as analysis
 import delphyne.core as dp
+import delphyne.stdlib.environments as en
 import delphyne.stdlib.models as md
 import delphyne.stdlib.models as mo
 import delphyne.stdlib.queries as qu
@@ -69,7 +70,7 @@ def answer_query_with_cache(
     # TODO: no examples for now. Also, we have to externalize this anyway.
     loader = analysis.ObjectLoader(exe.base)
     query = loader.load_query(cmd.query, cmd.args)
-    env = dp.PolicyEnv(
+    env = en.PolicyEnv(
         prompt_dirs=exe.prompt_dirs,
         data_dirs=exe.data_dirs,
         demonstration_files=exe.demo_files,

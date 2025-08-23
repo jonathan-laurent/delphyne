@@ -12,13 +12,11 @@ from typing import Any
 
 import delphyne.core as dp
 from delphyne.core.streams import StreamGen
+from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.nodes import Branch, Fail, Join, NodeMeta
 from delphyne.stdlib.policies import log, search_policy, unsupported_node
 from delphyne.stdlib.queries import ProbInfo
-from delphyne.stdlib.streams import (
-    Stream,
-    StreamCombinator,
-)
+from delphyne.stdlib.streams import Stream, StreamCombinator
 
 #####
 ##### Meta Annotations
@@ -73,7 +71,7 @@ class OneOfEachSequentially(NodeMeta):
 @search_policy
 def recursive_search[P, T](
     tree: dp.Tree[Branch | Join | Fail, P, T],
-    env: dp.PolicyEnv,
+    env: PolicyEnv,
     policy: P,
 ) -> StreamGen[T]:
     match tree.node:
@@ -140,7 +138,7 @@ def combine_via_repeated_sampling(
     def combine[T](
         streams: Sequence[Stream[T]],
         probs: Sequence[float],
-        env: dp.PolicyEnv,
+        env: PolicyEnv,
     ) -> dp.StreamGen[T]:
         i = 0
         while max_attempts is None or i < max_attempts:

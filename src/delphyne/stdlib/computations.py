@@ -16,6 +16,7 @@ import delphyne.stdlib.models as md
 import delphyne.stdlib.policies as pol
 import delphyne.stdlib.queries as dq
 import delphyne.utils.typing as ty
+from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.nodes import spawn_node
 from delphyne.utils.yaml import dump_yaml
 
@@ -43,7 +44,7 @@ class __Computation__(dp.AbstractQuery[object]):
         mode: dp.AnswerMode,
         params: dict[str, object],
         extra_args: dict[str, object] | None = None,
-        env: dp.TemplatesManager | None = None,
+        env: dp.AbstractTemplatesManager | None = None,
     ):
         return dump_yaml(Any, self.__dict__)
 
@@ -181,7 +182,7 @@ class ComputationOracle(md.LLM):
 
 @pol.contextual_tree_transformer
 def elim_compute(
-    env: dp.PolicyEnv,
+    env: PolicyEnv,
     policy: Any,
     force_bypass_cache: bool = False,
 ) -> pol.PureTreeTransformerFn[Compute, Never]:

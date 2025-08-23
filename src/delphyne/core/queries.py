@@ -12,7 +12,6 @@ from typing import Any, Literal, Self, cast, final
 
 import delphyne.utils.typing as ty
 from delphyne.core.chats import AnswerPrefix
-from delphyne.core.environments import TemplatesManager
 from delphyne.core.errors import Error
 from delphyne.core.refs import Answer, AnswerMode
 
@@ -92,6 +91,74 @@ Convenience alias for a query of any type.
 """
 
 
+#####
+##### Abstract Templates Manager
+#####
+
+
+class AbstractTemplatesManager(ABC):
+    @abstractmethod
+    def prompt(
+        self,
+        *,
+        query_name: str,
+        prompt_kind: Literal["system", "instance"] | str,
+        template_args: dict[str, Any],
+        default_template: str | None = None,
+    ) -> str:
+        """
+        Render a prompt message using a template.
+
+        Args:
+            query_name: The name of the query for which the prompt is
+                built. Used to determine the template file name
+                (e.g. "{query_name}.{prompt_kind}.jinja").
+            prompt_kind: The kind of prompt (e.g. "system" or "instance")
+                that is being rendered, used to determine the name of the
+                template file to use.
+            template_args: A dictionary of arguments to pass to the
+                template. It must not contain key "data", which is
+                reserved for the data loaded from the data directories.
+            default_template: If provided, this template will be used if
+                no template file is found for the given query name and
+                kind instead of raising an error.
+
+        Raises:
+            TemplateFileMissing: template file not found.
+            TemplateError: error raised while rendering the template.
+        """
+
+        pass
+
+
+@dataclass
+class TemplateError(Exception):
+    """
+    Wrapper for template-related exceptions.
+    """
+
+    name: str
+    exn: Exception
+
+
+@dataclass
+class TemplateFileMissing(Exception):
+    """
+    Exception raised when a template file is missing.
+
+    This exception should only be raised when a top-level template file
+    is missing. If an `include` statement fails within a template, a
+    `TemplateError` exception should be raised instead.
+    """
+
+    file: str
+
+
+#####
+##### Abstract Queries
+#####
+
+
 class AbstractQuery[T](ABC):
     """
     Abstract Class for Delphyne Queries.
@@ -115,7 +182,7 @@ class AbstractQuery[T](ABC):
         mode: AnswerMode,
         params: dict[str, object],
         extra_args: dict[str, object] | None = None,
-        env: TemplatesManager | None,
+        env: AbstractTemplatesManager | None,
     ) -> str:
         """
         Generate a prompt message for the query.
