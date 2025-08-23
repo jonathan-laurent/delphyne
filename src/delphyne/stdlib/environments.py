@@ -187,10 +187,27 @@ class TemplatesManager(qu.AbstractTemplatesManager):
     """
     A class for managing Jinja prompt templates.
 
+    Templates are configured with the `trim_blocks` and `lstrip_blocks`
+    options set to `True` (no newlines are inserted after blocks and
+    indentation can be used within blocks without affecting the output).
+    The `keep_trailing_newline` option is set to `False` so trailing new
+    lines at the end of template files are ignored.
+
+    Templates are first searched in the provided prompt folders and then
+    in the standard library (`delphyne.stdlib.templates`). For example,
+    to show standard formatting instructions, you can include the
+    following in your instance prompts:
+
+    ```jinja
+    {% include 'stdlib/format_instructions.jinja' %}
+    ```
+
     All templates automatically have access to the following global
     objects:
 
     - A `yaml` filter for converting an object into a YAML string.
+    - A `fail` function that takes an error message as an argument and
+      raises an exception on Python side.
     """
 
     def __init__(self, prompt_dirs: Sequence[Path], data_dirs: Sequence[Path]):
@@ -203,10 +220,17 @@ class TemplatesManager(qu.AbstractTemplatesManager):
         """
         self.prompt_folders = prompt_dirs
         self.data = _load_data(data_dirs)
+        loader = jinja2.ChoiceLoader(
+            [
+                jinja2.FileSystemLoader(self.prompt_folders),
+                jinja2.PackageLoader("delphyne.stdlib"),
+            ]
+        )
         self.env = jinja2.Environment(
-            loader=jinja2.FileSystemLoader(self.prompt_folders),
+            loader=loader,
             trim_blocks=True,
             lstrip_blocks=True,
+            keep_trailing_newline=False,
         )
         self.env.filters["yaml"] = dump_yaml_object  # type: ignore
         self.env.globals["fail"] = _fail_from_template  # type: ignore
@@ -282,9 +306,9 @@ class PolicyEnv:
     def __init__(
         self,
         *,
-        prompt_dirs: Sequence[Path],
-        demonstration_files: Sequence[Path],
-        data_dirs: Sequence[Path],
+        prompt_dirs: Sequence[Path] = (),
+        demonstration_files: Sequence[Path] = (),
+        data_dirs: Sequence[Path] = (),
         cache: CacheSpec | None = None,
         do_not_match_identical_queries: bool = False,
     ):
@@ -300,6 +324,7 @@ class PolicyEnv:
             cache: A cache specification, or `None` to disable caching.
                 When caching is enabled, the `requests_cache` attribute
                 can be accessed by policies to properly wrap LLM models.
+            do_not_match_identical_queries: See `ExampleDatabase`.
         """
         self.templates = TemplatesManager(prompt_dirs, data_dirs)
         self.examples = ExampleDatabase(do_not_match_identical_queries)
