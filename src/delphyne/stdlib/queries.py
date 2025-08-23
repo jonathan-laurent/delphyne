@@ -148,6 +148,23 @@ class WrappedParseError:
 
 
 #####
+##### Formatting Metadata
+#####
+
+
+@dataclass
+class FormattingMetadata:
+    """
+    Metadata passed to prompt templates for generating formatting
+    instructions. Such metadata can be produced by parsers.
+    """
+
+    where: Literal["last_code_block", "full_answer"] | str | None
+    what: Literal["yaml", "json", "text", "one_word"] | str | None
+    schema: md.Schema | None
+
+
+#####
 ##### Parsers
 #####
 
@@ -599,6 +616,31 @@ type `T = Literal[s1,...,sn]`.
 """
 
 
+class QueryTemplateArgs(typing.TypedDict):
+    """
+    Template arguments passed to all query templates.
+
+    For particular kinds of templates, additional arguments may be
+    provided (e.g., `feedback` for feedback prompts).
+
+    Attributes:
+        query: The query instance.
+        mode: The requested answer mode.
+        available_modes: The sequence of all available answer modes for
+            the query type.
+        params: The query hyperparameters (e.g., as passed to `few_shot`)
+        format: Formatting metadata.
+    """
+
+    # TODO: in future Python versions, use `extra_items=Any` (PEP 728)
+
+    query: "Query[Any]"
+    mode: dp.AnswerMode
+    available_modes: Sequence[dp.AnswerMode]
+    params: dict[str, Any]
+    format: FormattingMetadata | None
+
+
 #####
 ##### Standard Queries
 #####
@@ -636,17 +678,12 @@ class Query[T](dp.AbstractQuery[T]):
     System and instance prompts can be specified via Jinja templates.
     The templates manager (`TemplatesManager`) looks for templates named
     "<QueryName>.<instance|system>.jinja". Templates can also be
-    provided by defining the `__system_prompt__` and/or `__instance_prompt__`
-    class attributes. If none of these are provided, the query's
-    docstring is used as a system prompt and `DEFAULT_INSTANCE_PROMPT`
-    is used as an instance prompt template.
-
-    The following arguments are usually made available to templates
-    (although specific prompting policies can add more):
-
-    - `query`: the query instance.
-    - `mode`: the requested answer mode.
-    - `params`: the query hyperparameters (e.g., as passed to `few_shot`)
+    provided by defining the `__system_prompt__` and/or
+    `__instance_prompt__` class attributes. If none of these are
+    provided, the query's docstring is used as a system prompt and
+    `DEFAULT_INSTANCE_PROMPT` is used as an instance prompt template.
+    All attributes from `QueryTemplateArgs` are made available to
+    templates, with possibly extra ones.
 
     ## Answer Modes and Configurations
 
@@ -790,11 +827,14 @@ class Query[T](dp.AbstractQuery[T]):
         env: dp.AbstractTemplatesManager | None = None,
     ) -> str:
         assert env is not None, _no_prompt_manager_error()
-        args: dict[str, object] = {
+        args_min: QueryTemplateArgs = {
             "query": self,
             "mode": mode,
+            "available_modes": self.query_modes(),
             "params": params,
+            "format": None,
         }
+        args: dict[str, object] = {**args_min}
         if extra_args:
             args.update(extra_args)
         if (glob := self.globals()) is not None:

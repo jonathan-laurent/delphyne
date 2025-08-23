@@ -12,13 +12,15 @@
 
 ::: delphyne.ParserDict
 
-::: delphyne.stdlib.queries.Response
+::: delphyne.Response
 
-::: delphyne.stdlib.queries.FinalAnswer
+::: delphyne.FinalAnswer
 
-::: delphyne.stdlib.queries.ToolRequests
+::: delphyne.ToolRequests
 
-::: delphyne.stdlib.queries.WrappedParseError
+::: delphyne.WrappedParseError
+
+::: delphyne.stdlib.queries.QueryTemplateArgs
 
 ## Standard Parsers
 
