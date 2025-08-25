@@ -1230,6 +1230,54 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#universal-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Universal Queries
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Universal Queries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.UniversalQuery" class="md-nav__link">
+    <span class="md-ellipsis">
+      UniversalQuery
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="UniversalQuery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.UniversalQuery.strategy_source" class="md-nav__link">
+    <span class="md-ellipsis">
+      strategy_source
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.guess" class="md-nav__link">
+    <span class="md-ellipsis">
+      guess
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#abduction" class="md-nav__link">
     <span class="md-ellipsis">
       Abduction
@@ -1539,6 +1587,54 @@
   <a href="#delphyne.ambient" class="md-nav__link">
     <span class="md-ellipsis">
       ambient
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#universal-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Universal Queries
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Universal Queries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.UniversalQuery" class="md-nav__link">
+    <span class="md-ellipsis">
+      UniversalQuery
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="UniversalQuery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.UniversalQuery.strategy_source" class="md-nav__link">
+    <span class="md-ellipsis">
+      strategy_source
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.guess" class="md-nav__link">
+    <span class="md-ellipsis">
+      guess
     </span>
   </a>
   
@@ -2813,6 +2909,484 @@ sub-policy (or as a sub- prompting policy).</p>
 <span class="sd">    sub-policy (or as a sub- prompting policy).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">policy</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div><h2 id="universal-queries">Universal Queries</h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="delphyne.UniversalQuery" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">UniversalQuery</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Query (delphyne.stdlib.queries.Query)" href="../queries/#delphyne.Query">Query</a>[<span title="object">object</span>]</code></p>
+
+
+        <p>A universal query, implicitly defined by the surrounding context of
+its call. See <a class="autorefs autorefs-internal" title="guess" href="#delphyne.guess"><code>guess</code></a> for more information.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.UniversalQuery.strategy">strategy</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Fully qualified name of the surrounding strategy
+(e.g., <code>my_package.my_module.my_strategy</code>).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.UniversalQuery.expected_type">expected_type</span></code></td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A string rendition of the expected answer type.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.UniversalQuery.tags">tags</span></code></td>
+            <td>
+                  <code><span title="collections.abc.Sequence">Sequence</span>[<span title="str">str</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Tags associated with the space induced by the query, which
+can be used to locate the exact location where the query is
+issued (the default tag takes the name of the variable that
+the query result is assigned to).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.UniversalQuery.locals">locals</span></code></td>
+            <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="object">object</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A dictionary that provides the values of a subset of
+local variables or expressions (as JSON values).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <div class="admonition warning">
+<p class="admonition-title">Experimental</p>
+<p>This feature is experimental and subject to change.</p>
+</div>
+
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/delphyne/stdlib/universal_queries.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UniversalQuery</span><span class="p">(</span><span class="n">Query</span><span class="p">[</span><span class="nb">object</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A universal query, implicitly defined by the surrounding context of</span>
+<span class="sd">    its call. See `guess` for more information.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        strategy: Fully qualified name of the surrounding strategy</span>
+<span class="sd">            (e.g., `my_package.my_module.my_strategy`).</span>
+<span class="sd">        expected_type: A string rendition of the expected answer type.</span>
+<span class="sd">        tags: Tags associated with the space induced by the query, which</span>
+<span class="sd">            can be used to locate the exact location where the query is</span>
+<span class="sd">            issued (the default tag takes the name of the variable that</span>
+<span class="sd">            the query result is assigned to).</span>
+<span class="sd">        locals: A dictionary that provides the values of a subset of</span>
+<span class="sd">            local variables or expressions (as JSON values).</span>
+
+<span class="sd">    !!! warning &quot;Experimental&quot;</span>
+<span class="sd">        This feature is experimental and subject to change.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># TODO: add a `context` field where we store objects whose</span>
+    <span class="c1"># documentation or source should be added to the prompt.</span>
+
+    <span class="n">strategy</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">expected_type</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">tags</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="nb">locals</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span>
+
+    <span class="n">__parser__</span> <span class="o">=</span> <span class="n">last_code_block</span><span class="o">.</span><span class="n">yaml</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">default_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">strategy_source</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the source code of the strategy that contains this query.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">strategy_obj</span> <span class="o">=</span> <span class="n">_load_from_qualified_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">callable</span><span class="p">(</span><span class="n">strategy_obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_source_code</span><span class="p">(</span><span class="n">strategy_obj</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="delphyne.UniversalQuery.strategy_source" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">strategy_source</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">strategy_source</span><span class="p">:</span> <span class="n"><span title="str">str</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Return the source code of the strategy that contains this query.</p>
+
+    </div>
+
+</div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="delphyne.guess" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">guess</span>
+
+
+</h3>
+          <div class="doc-overloads">
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">guess</span><span class="p">(</span><span class="n">annot</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="T">T</span></span><span class="p">],</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">using</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="object">object</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Branch
+
+
+  
+      dataclass
+   (delphyne.stdlib.nodes.Branch)" href="../effects/#delphyne.stdlib.nodes.Branch">Branch</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="Fail
+
+
+  
+      dataclass
+   (delphyne.stdlib.nodes.Fail)" href="../effects/#delphyne.stdlib.nodes.Fail">Fail</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="IPDict (delphyne.stdlib.policies.IPDict)" href="../basic/#delphyne.IPDict">IPDict</a></span><span class="p">,</span> <span class="n"><span title="T">T</span></span><span class="p">]</span>
+</code></pre></div><div class="doc-signature highlight"><pre><span></span><code><span class="nf">guess</span><span class="p">(</span><span class="n">annot</span><span class="p">:</span> <span class="n"><span title="delphyne.utils.typing.TypeAnnot">TypeAnnot</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">],</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">using</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="object">object</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Branch
+
+
+  
+      dataclass
+   (delphyne.stdlib.nodes.Branch)" href="../effects/#delphyne.stdlib.nodes.Branch">Branch</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="Fail
+
+
+  
+      dataclass
+   (delphyne.stdlib.nodes.Fail)" href="../effects/#delphyne.stdlib.nodes.Fail">Fail</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="IPDict (delphyne.stdlib.policies.IPDict)" href="../basic/#delphyne.IPDict">IPDict</a></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">]</span>
+</code></pre></div>          </div>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">guess</span><span class="p">(</span><span class="n">annot</span><span class="p">:</span> <span class="n"><span title="delphyne.utils.typing.TypeAnnot">TypeAnnot</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">],</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">using</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="object">object</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Branch
+
+
+  
+      dataclass
+   (delphyne.stdlib.nodes.Branch)" href="../effects/#delphyne.stdlib.nodes.Branch">Branch</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="Fail
+
+
+  
+      dataclass
+   (delphyne.stdlib.nodes.Fail)" href="../effects/#delphyne.stdlib.nodes.Fail">Fail</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="IPDict (delphyne.stdlib.policies.IPDict)" href="../basic/#delphyne.IPDict">IPDict</a></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Attempt to guess a value of a given type, using the surrounding
+context of the call site along with the value of some local
+variables or expressions.</p>
+<p>This function inspects the call stack to determine the context in
+which it is called and issues a <a class="autorefs autorefs-internal" title="UniversalQuery
+
+
+  
+      dataclass
+  " href="#delphyne.UniversalQuery"><code>UniversalQuery</code></a>, with a tag
+corresponding to the name of the assigned variable. A failure node is
+issued if the oracle result cannot be parsed into the expected type.
+For example:</p>
+<div class="highlight"><pre><span></span><code><span class="n">res</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">guess</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">using</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">summary</span><span class="p">()])</span>
+</code></pre></div>
+<p>issues a <a class="autorefs autorefs-internal" title="UniversalQuery
+
+
+  
+      dataclass
+  " href="#delphyne.UniversalQuery"><code>UniversalQuery</code></a> query tagged <code>res</code>, with attribute
+<code>locals</code> a dictionary with string keys <code>"x"</code> and <code>"y.summary()"</code>.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.guess.annot">annot</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The expected type of the value to be guessed.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.guess.using">using</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A sequence of local variables or expressions whose value
+should be communicated to the oracle (a label for each
+expression is automatically generated using source information).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Our use of an overloaded type should not be necessary anymore
+when <code>TypeExpr</code> is released with Python 3.14.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Experimental</p>
+<p>This feature is experimental and subject to change.</p>
+</div>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/universal_queries.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">guess</span><span class="p">(</span>
+    <span class="n">annot</span><span class="p">:</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">using</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">IPDict</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Attempt to guess a value of a given type, using the surrounding</span>
+<span class="sd">    context of the call site along with the value of some local</span>
+<span class="sd">    variables or expressions.</span>
+
+<span class="sd">    This function inspects the call stack to determine the context in</span>
+<span class="sd">    which it is called and issues a `UniversalQuery`, with a tag</span>
+<span class="sd">    corresponding to the name of the assigned variable. A failure node is</span>
+<span class="sd">    issued if the oracle result cannot be parsed into the expected type.</span>
+<span class="sd">    For example:</span>
+
+<span class="sd">    ```python</span>
+<span class="sd">    res = yield from guess(int, using=[x, y.summary()])</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    issues a `UniversalQuery` query tagged `res`, with attribute</span>
+<span class="sd">    `locals` a dictionary with string keys `&quot;x&quot;` and `&quot;y.summary()&quot;`.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        annot: The expected type of the value to be guessed.</span>
+<span class="sd">        using: A sequence of local variables or expressions whose value</span>
+<span class="sd">            should be communicated to the oracle (a label for each</span>
+<span class="sd">            expression is automatically generated using source information).</span>
+
+<span class="sd">    !!! note</span>
+<span class="sd">        Our use of an overloaded type should not be necessary anymore</span>
+<span class="sd">        when `TypeExpr` is released with Python 3.14.</span>
+
+<span class="sd">    !!! warning &quot;Experimental&quot;</span>
+<span class="sd">        This feature is experimental and subject to change.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Extracting the name of the surrounding strategy</span>
+    <span class="n">strategy</span> <span class="o">=</span> <span class="n">surrounding_qualname</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">strategy</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">strategy</span> <span class="o">=</span> <span class="n">_rename_main_module_in_qualified_name</span><span class="p">(</span><span class="n">strategy</span><span class="p">)</span>
+
+    <span class="c1"># Extracting the name of the variable being assigned</span>
+    <span class="n">cur_instr_src</span> <span class="o">=</span> <span class="n">current_instruction_source</span><span class="p">(</span><span class="n">skip</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ret_val_name</span> <span class="o">=</span> <span class="n">assigned_var_name</span><span class="p">(</span><span class="n">cur_instr_src</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret_val_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+
+    <span class="c1"># Computing the &#39;locals&#39; dictionary</span>
+    <span class="n">guess_args</span> <span class="o">=</span> <span class="n">call_argument_sources</span><span class="p">(</span><span class="n">cur_instr_src</span><span class="p">,</span> <span class="n">guess</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">guess_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">_args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">guess_args</span>
+    <span class="n">using_args</span> <span class="o">=</span> <span class="n">_parse_list_of_ids</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;using&quot;</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">using</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">using_args</span><span class="p">)</span>
+    <span class="nb">locals</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">pydantic_dump</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">using_args</span><span class="p">,</span> <span class="n">using</span><span class="p">)}</span>
+
+    <span class="c1"># Building the query</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">UniversalQuery</span><span class="p">(</span><span class="n">strategy</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">annot</span><span class="p">),</span> <span class="p">[</span><span class="n">ret_val_name</span><span class="p">],</span> <span class="nb">locals</span><span class="p">)</span>
+
+    <span class="n">ret</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">branch</span><span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">parsed</span> <span class="o">=</span> <span class="n">pydantic_load</span><span class="p">(</span><span class="n">annot</span><span class="p">,</span> <span class="n">ret</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">assert_never</span><span class="p">((</span><span class="k">yield from</span> <span class="n">fail</span><span class="p">(</span><span class="s2">&quot;parse_error&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))))</span>
+    <span class="k">return</span> <span class="n">parsed</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
