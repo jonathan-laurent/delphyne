@@ -241,8 +241,8 @@ class RunStrategyArgs:
     args: dict[str, object]
     policy: str
     policy_args: dict[str, object]
-    num_generated: int
     budget: dict[str, float]
+    num_generated: int = 1
     cache_dir: str | None = None
     cache_mode: ca.CacheMode = "read_write"
     cache_format: CacheFormat = "yaml"

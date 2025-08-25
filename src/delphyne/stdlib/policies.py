@@ -415,7 +415,6 @@ def ensure_compatible[**A, N: Node, P](
     strategy argument.
     """
 
-    # TODO: this decorator does not seem to work with pyright.
     return lambda f: f
 
 

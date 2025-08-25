@@ -1,0 +1,13 @@
+# @config
+# modules: [find_param_value]
+# @end
+
+command: run_strategy
+args:
+  strategy: find_param_value
+  args:
+    expr: "2*x**2 - 4*x + n"
+  policy: serial_policy
+  policy_args: {}
+  budget:
+    num_requests: 2

@@ -1,1 +1,0 @@
-# A Basic Strategy Example
