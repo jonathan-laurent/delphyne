@@ -6,13 +6,12 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Iterable, Literal, Never, cast, overload
 
-import delphyne.core as dp
-import delphyne.stdlib.policies as pol
+import delphyne.core_and_base as dp
+from delphyne.core_and_base import Opaque
 from delphyne.stdlib.computations import Compute, elim_compute
 from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.flags import Flag, FlagQuery, elim_flag, get_flag
 from delphyne.stdlib.nodes import Branch, Fail, branch
-from delphyne.stdlib.opaque import Opaque
 from delphyne.stdlib.policies import Policy, PromptingPolicy, SearchPolicy
 from delphyne.stdlib.search.dfs import dfs
 from delphyne.stdlib.strategies import strategy
@@ -132,7 +131,7 @@ def sequence_search_policies[N: dp.Node](
 def sequence_policies[N: dp.Node, P](
     policies: Iterable[Policy[N, P]], *, stop_on_reject: bool = True
 ) -> Policy[N, P]:
-    @pol.search_policy
+    @dp.search_policy
     def search[T](
         tree: dp.Tree[N, Any, T], env: PolicyEnv, policy: Any
     ) -> dp.StreamGen[T]:
@@ -248,7 +247,7 @@ def policy_or_else[N: dp.Node, P](
 ) -> Policy[N, P]:
     # TODO: this is not the cleanest implementation since we lie about
     # the return type by returning a dummy internal policy.
-    @pol.search_policy
+    @dp.search_policy
     def sp[T](
         tree: dp.Tree[N, Any, T], env: PolicyEnv, policy: Any
     ) -> dp.StreamGen[T]:

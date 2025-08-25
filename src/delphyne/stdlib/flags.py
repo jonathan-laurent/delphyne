@@ -6,11 +6,9 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any, Never, cast
 
-import delphyne.core as dp
 import delphyne.core.inspect as insp
-import delphyne.stdlib.policies as pol
-from delphyne.stdlib.environments import PolicyEnv
-from delphyne.stdlib.nodes import spawn_node
+import delphyne.core_and_base as dp
+from delphyne.core_and_base import PolicyEnv, spawn_node
 from delphyne.stdlib.queries import Query
 
 
@@ -109,13 +107,13 @@ def get_flag[T: str](
     return cast(T, ret)
 
 
-@pol.contextual_tree_transformer
+@dp.contextual_tree_transformer
 def elim_flag[F: FlagQuery[Any]](
     env: PolicyEnv,
     policy: Any,
     flag: type[F],
     val: str,
-) -> pol.PureTreeTransformerFn[Flag[F], Never]:
+) -> dp.PureTreeTransformerFn[Flag[F], Never]:
     assert val in flag.flag_values()
 
     def transform[N: dp.Node, P, T](
