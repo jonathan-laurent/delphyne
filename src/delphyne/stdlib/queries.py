@@ -353,6 +353,7 @@ class Parser[A]:
             replaced with `TypeExpr` (incoming in Python 3.14).
         """
 
+        _assert_not_response_type(type, where="json_as")
         schema = md.Schema.make(type)
         return self.map(partial(_parse_json_as, type)).update_formatting(
             lambda f: replace(f, what="json", schema=schema)
@@ -368,6 +369,7 @@ class Parser[A]:
             type of `U`. This should work better once `TypeAnnot` can be
             replaced with `TypeExpr` (incoming in Python 3.14).
         """
+        _assert_not_response_type(type, where="yaml_as")
         schema = md.Schema.make(type)
         return self.map(partial(_parse_yaml_as, type)).update_formatting(
             lambda f: replace(f, what="yaml", schema=schema)
@@ -461,10 +463,7 @@ def structured_as[T](type: TypeAnnot[T], /) -> Parser[T]:
     Only dataclass types are supported, since most LLM providers
     only support structured output and tool calls for JSON objects.
     """
-    assert not (type is Response or typing.get_origin(type) is Response), (
-        f"Unexpected target type for `structured_as`: {type}.\n"
-        + "Did you forget to append `.response` to your parser definition?"
-    )
+    _assert_not_response_type(type, where="structured_as")
     _check_valid_structured_output_type(type)
     settings = dp.QuerySettings(dp.StructuredOutputSettings(type))
     formatting = FormattingMetadata(
@@ -473,6 +472,14 @@ def structured_as[T](type: TypeAnnot[T], /) -> Parser[T]:
     return Parser(
         settings, formatting, lambda ans: _parse_structured_output(type, ans)
     )
+
+
+def _assert_not_response_type(annot: TypeAnnot[Any], *, where: str) -> None:
+    if annot is Response or typing.get_origin(annot) is Response:
+        raise ValueError(
+            f"Unexpected target type for `{where}`: {annot}.\n"
+            + "Did you forget to append `.response` to your parser definition?"
+        )
 
 
 def final_tool_call_as[T](annot: TypeAnnot[T], /) -> Parser[T]:
