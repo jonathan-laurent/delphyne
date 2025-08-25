@@ -248,16 +248,13 @@ class TemplatesManager(qu.AbstractTemplatesManager):
     ) -> str:
         suffix = "." + prompt_kind
         template_name = f"{query_name}{suffix}{JINJA_EXTENSION}"
-        prompt_file_exists = any(
-            (d / template_name).exists() for d in self.prompt_folders
-        )
-        if not prompt_file_exists:
+        try:
+            template = self.env.get_template(template_name)
+        except jinja2.TemplateNotFound:
             if default_template is not None:
                 template = self.env.from_string(default_template)
             else:
                 raise qu.TemplateFileMissing(template_name)
-        else:
-            template = self.env.get_template(template_name)
         try:
             assert "data" not in template_args
             template_args |= {"data": self.data}
