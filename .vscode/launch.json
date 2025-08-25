@@ -29,6 +29,15 @@
             "request": "launch",
             "module": "delphyne.server",
             "console": "integratedTerminal"
+        },
+        {
+        "name": "Attach",
+        "type": "debugpy",
+        "request": "attach",
+        "connect": {
+            "host": "localhost",
+            "port": 5678
+            }
         }
     ]
 }
