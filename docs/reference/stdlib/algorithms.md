@@ -30,6 +30,11 @@
 
 ::: delphyne.ambient
 
+## Universal Queries
+
+::: delphyne.UniversalQuery
+::: delphyne.guess
+
 ## Abduction
 
 ::: delphyne.Abduction

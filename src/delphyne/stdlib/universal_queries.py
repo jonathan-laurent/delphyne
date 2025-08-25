@@ -22,7 +22,8 @@ from delphyne.utils.typing import TypeAnnot, pydantic_dump, pydantic_load
 @dataclass
 class UniversalQuery(Query[object]):
     """
-    A universal query defined by the context surrounding its call.
+    A universal query, implicitly defined by the surrounding context of
+    its call. See `guess` for more information.
 
     Attributes:
         strategy: Fully qualified name of the surrounding strategy
@@ -33,7 +34,7 @@ class UniversalQuery(Query[object]):
             issued (the default tag takes the name of the variable that
             the query result is assigned to).
         locals: A dictionary that provides the values of a subset of
-            local variables (as JSON values).
+            local variables or expressions (as JSON values).
 
     !!! warning "Experimental"
         This feature is experimental and subject to change.
@@ -81,11 +82,33 @@ def guess(
     """
     Attempt to guess a value of a given type, using the surrounding
     context of the call site along with the value of some local
-    variables.
+    variables or expressions.
+
+    This function inspects the call stack to determine the context in
+    which it is called and issues a `UniversalQuery`, with a tag
+    corresponding to the name of the assigned variable. A failure node is
+    issued if the oracle result cannot be parsed into the expected type.
+    For example:
+
+    ```python
+    res = yield from guess(int, using=[x, y.summary()])
+    ```
+
+    issues a `UniversalQuery` query tagged `res`, with attribute
+    `locals` a dictionary with string keys `"x"` and `"y.summary()"`.
+
+    Attributes:
+        annot: The expected type of the value to be guessed.
+        using: A sequence of local variables or expressions whose value
+            should be communicated to the oracle (a label for each
+            expression is automatically generated using source information).
 
     !!! note
         Our use of an overloaded type should not be necessary anymore
         when `TypeExpr` is released with Python 3.14.
+
+    !!! warning "Experimental"
+        This feature is experimental and subject to change.
     """
 
     # Extracting the name of the surrounding strategy
