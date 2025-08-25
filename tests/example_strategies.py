@@ -18,7 +18,6 @@ from example_strategies_untyped import (
 
 import delphyne as dp
 from delphyne import Branch, Fail, IPDict, Strategy, strategy
-from delphyne.stdlib.universal_queries import guess
 
 #####
 ##### MakeSum
@@ -933,7 +932,7 @@ def make_sum_using_guess(
     Given a list of numbers and a target number, return a sub-list whose
     elements sum up to the target.
     """
-    sub = yield from guess(list[int], using=[allowed, goal])
+    sub = yield from dp.guess(list[int], using=[allowed, goal])
     yield from dp.ensure(all(x in allowed for x in sub), label="forbidden_num")
     yield from dp.ensure(sum(sub) == goal, label="wrong_sum")
     return sub

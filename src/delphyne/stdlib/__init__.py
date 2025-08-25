@@ -180,3 +180,4 @@ from delphyne.stdlib.tasks import (
     command_result_type,
     run_command,
 )
+from delphyne.stdlib.universal_queries import UniversalQuery, guess

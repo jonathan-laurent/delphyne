@@ -17,7 +17,6 @@ dependencies = [
     "setuptools>=68.2",
     "uvicorn>=0.30",  # to implement the delphyne language server
     "fire>=0.7.0",  # e.g., to implement the delphyne CLI
-    "varname>=0.15.0"  # for universal queries
 ]
 
 # Install the `delphyne` CLI

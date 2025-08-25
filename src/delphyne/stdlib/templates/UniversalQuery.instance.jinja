@@ -1,7 +1,7 @@
 Program:
 
 ```
-{{ query.strategy_source }}
+{{ query.strategy_source | trim }}
 ```
 
 Variable being currently assigned: {{ query.tags[0] }}
@@ -9,5 +9,7 @@ Variable being currently assigned: {{ query.tags[0] }}
 Selected local variables:
 
 ```yaml
-{{ query.locals | yaml }}
+{{ query.locals | yaml | trim }}
 ```
+
+Type of value to generate (as a YAML object): {{ query.expected_type }}

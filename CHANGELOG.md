@@ -5,6 +5,7 @@
 - Moved `PolicyEnv` from `core` to the standard library and make `AbstractPolicy` parametric in the policy environment type. As a consequence, the `PolicyEnv.__init__.make_cache` argument can be removed.
 - Added support for standard library templates (e.g. stdlib/format).
 - Parsers can emit formatting hints to be rendered by prompt templates.
+- Initial implementation of _universal queries_. See new `guess` export and `test_program.py::test_make_sum_using_guess`.
 
 ## Version 0.7.0 (2025-08-22)
 
