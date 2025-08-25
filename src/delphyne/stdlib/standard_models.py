@@ -28,7 +28,13 @@ type MistralModelName = Literal["mistral-small-2503", "magistral-small-2506"]
 
 type DeepSeekModelName = Literal["deepseek-chat", "deepseek-reasoner"]
 
-type StandardModelName = OpenAIModelName | MistralModelName | DeepSeekModelName
+type GeminiModelName = Literal[
+    "gemini-2.5-pro", "gemini-2.5-flash", "gemini-2.5-flash-lite"
+]
+
+type StandardModelName = (
+    OpenAIModelName | MistralModelName | DeepSeekModelName | GeminiModelName
+)
 
 
 def is_standard_model_name(
@@ -62,6 +68,12 @@ PRICING: dict[str, tuple[float, float, float]] = {
     "mistral-small-2503": (0.10, 0.10, 0.30),
     "deepseek-chat": (0.27, 0.07, 1.10),
     "deepseek-reasoner": (0.55, 0.14, 2.19),
+    # Costs are higher above 200k tokens for Gemini.
+    # We are assuming here that we stay below that threshold.
+    # https://ai.google.dev/gemini-api/docs/pricing
+    "gemini-2.5-pro": (1.25, 0.31, 10.00),
+    "gemini-2.5-flash": (0.30, 0.075, 2.50),
+    "gemini-2.5-flash-lite": (0.10, 0.025, 0.40),
 }
 
 
@@ -80,6 +92,30 @@ def get_pricing(model_name: str) -> md.ModelPricing:
     assert False, f"Unknown model: {model_name}"
 
 
+def openai_compatible_model(
+    model: str,
+    *,
+    options: md.RequestOptions | None = None,
+    pricing: md.ModelPricing | None = None,
+    model_class: str | None = None,
+    base_url: str,
+    api_key_env_var: str,
+):
+    api_key = os.getenv(api_key_env_var)
+    if pricing is None:
+        pricing = get_pricing(model)
+    all_options: md.RequestOptions = {"model": model}
+    if options is not None:
+        all_options.update(options)
+    return OpenAICompatibleModel(
+        base_url=base_url,
+        api_key=api_key,
+        options=all_options,
+        model_class=model_class,
+        pricing=pricing,
+    )
+
+
 def openai_model(
     model: OpenAIModelName | str,
     *,
@@ -87,13 +123,13 @@ def openai_model(
     pricing: md.ModelPricing | None = None,
     model_class: str | None = None,
 ):
-    if pricing is None:
-        pricing = get_pricing(model)
-    all_options: md.RequestOptions = {"model": model}
-    if options is not None:
-        all_options.update(options)
-    return OpenAICompatibleModel(
-        options=all_options, model_class=model_class, pricing=pricing
+    return openai_compatible_model(
+        model,
+        options=options,
+        pricing=pricing,
+        model_class=model_class,
+        base_url="https://api.openai.com/v1",
+        api_key_env_var="OPENAI_API_KEY",
     )
 
 
@@ -104,19 +140,13 @@ def mistral_model(
     pricing: md.ModelPricing | None = None,
     model_class: str | None = None,
 ):
-    api_key = os.getenv("MISTRAL_API_KEY")
-    url = "https://api.mistral.ai/v1"
-    if pricing is None:
-        pricing = get_pricing(model)
-    all_options: md.RequestOptions = {"model": model}
-    if options is not None:
-        all_options.update(options)
-    return OpenAICompatibleModel(
-        options=all_options,
-        api_key=api_key,
-        base_url=url,
+    return openai_compatible_model(
+        model,
+        options=options,
         pricing=pricing,
         model_class=model_class,
+        base_url="https://api.mistral.ai/v1",
+        api_key_env_var="MISTRAL_API_KEY",
     )
 
 
@@ -127,20 +157,30 @@ def deepseek_model(
     pricing: md.ModelPricing | None = None,
     model_class: str | None = None,
 ):
-    api_key = os.getenv("DEEPSEEK_API_KEY")
-    url = "https://api.deepseek.com"
-    if pricing is None:
-        pricing = get_pricing(model)
-    all_options: md.RequestOptions = {"model": model}
-    if options is not None:
-        all_options.update(options)
-    return OpenAICompatibleModel(
-        options=all_options,
-        api_key=api_key,
-        base_url=url,
-        no_json_schema=True,
+    return openai_compatible_model(
+        model,
+        options=options,
         pricing=pricing,
         model_class=model_class,
+        base_url="https://api.deepseek.com",
+        api_key_env_var="DEEPSEEK_API_KEY",
+    )
+
+
+def gemini_model(
+    model: GeminiModelName | str,
+    *,
+    options: md.RequestOptions | None = None,
+    pricing: md.ModelPricing | None = None,
+    model_class: str | None = None,
+):
+    return openai_compatible_model(
+        model,
+        options=options,
+        pricing=pricing,
+        model_class=model_class,
+        base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+        api_key_env_var="GEMINI_API_KEY",
     )
 
 
@@ -163,6 +203,7 @@ def standard_model(
     - `OPENAI_API_KEY` for OpenAI models
     - `MISTRAL_API_KEY` for Mistral models
     - `DEEPSEEK_API_KEY` for DeepSeek models
+    - `GEMINI_API_KEY` for Gemini models
 
     Attributes:
         model: The name of the model to use.
@@ -180,6 +221,7 @@ def standard_model(
     openai_models = _values(OpenAIModelName)
     mistral_models = _values(MistralModelName)
     deepseek_models = _values(DeepSeekModelName)
+    gemini_models = _values(GeminiModelName)
     if model in openai_models:
         return openai_model(
             model, options=options, pricing=pricing, model_class=model_class
@@ -190,6 +232,10 @@ def standard_model(
         )
     elif model in deepseek_models:
         return deepseek_model(
+            model, options=options, pricing=pricing, model_class=model_class
+        )
+    elif model in gemini_models:
+        return gemini_model(
             model, options=options, pricing=pricing, model_class=model_class
         )
     else:

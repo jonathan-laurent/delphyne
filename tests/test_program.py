@@ -264,6 +264,7 @@ def test_apply_bias():
     [
         ("mistral-small-2503", None, None),
         ("deepseek-chat", None, None),
+        ("gemini-2.5-flash", None, None),
         ("gpt-5-mini", {"reasoning_effort": "minimal"}, "minimal_reasoning"),
         ("gpt-5-mini", {"reasoning_effort": "high"}, "high_reasoning"),
         # ("deepseek-reasoner", None, None),  # long latency

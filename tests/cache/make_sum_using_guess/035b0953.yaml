@@ -27,7 +27,7 @@
                 Given a list of numbers and a target number, return a sub-list whose
                 elements sum up to the target.
                 """
-                sub = yield from guess(list[int], using=[allowed, goal])
+                sub = yield from dp.guess(list[int], using=[allowed, goal])
                 yield from dp.ensure(all(x in allowed for x in sub), label="forbidden_num")
                 yield from dp.ensure(sum(sub) == goal, label="wrong_sum")
                 return sub
@@ -56,7 +56,7 @@
   output:
     outputs:
       - content: |-
-          ```yaml
+          ```
           - 2
           - 3
           ```
@@ -68,16 +68,16 @@
       values:
         num_requests: 1
         num_completions: 1
-        input_tokens: 377
-        output_tokens: 149
+        input_tokens: 379
+        output_tokens: 148
         cached_input_tokens: 0
-        price: 9.7975e-05
+        price: 9.845e-05
     log_items: []
     model_name: gpt-5-mini-2025-08-07
     usage_info:
-      completion_tokens: 149
-      prompt_tokens: 377
-      total_tokens: 526
+      completion_tokens: 148
+      prompt_tokens: 379
+      total_tokens: 527
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
