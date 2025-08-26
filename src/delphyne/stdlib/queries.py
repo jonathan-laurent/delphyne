@@ -857,10 +857,21 @@ class Query[T](dp.AbstractQuery[T]):
 
     def _instantiated_parser_for(self, mode: dp.AnswerMode) -> Parser[T]:
         parser = self.parser_for(mode)
-        if isinstance(parser, GenericParser):
-            return parser.for_type(self._answer_type())
-        else:
-            return parser
+        try:
+            if isinstance(parser, GenericParser):
+                return parser.for_type(self._answer_type())
+            else:
+                return parser
+        except Exception as e:
+            qcls = type(self)
+            qfile = inspect.getsourcefile(qcls) or "<unknown>"
+            # Common cause: forgot to implement `parser()`, so it fell back to `structured` which doesn't support this answer type.
+            msg = (
+            f"[ParserSetupError] Failed to build parser for query {qcls.__name__} "
+            f"({qfile}). Did you mean to implement `parser(self)`? "
+            f"Cause: {e}"
+            )
+            raise dp.ParseError(description=msg)
 
     @override
     def parse_answer(self, answer: dp.Answer) -> T | dp.ParseError:
