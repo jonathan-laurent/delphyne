@@ -10,7 +10,7 @@ configs:
       - - gpt-4.1-mini
         - 1
       temperature: 1.5
-      num_concurrent: 4
+      num_completions: 4
       max_requests_per_attempt: 4
       max_dollar_budget: 0.1
       seed: 0
@@ -24,7 +24,7 @@ configs:
       - - gpt-4.1-mini
         - 1
       temperature: 1.5
-      num_concurrent: 4
+      num_completions: 4
       max_requests_per_attempt: 4
       max_dollar_budget: 0.1
       seed: 0

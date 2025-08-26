@@ -707,9 +707,9 @@ def obtain_item(
     return exchanges
 
 
-def obtain_item_policy(model: dp.LLM, num_concurrent: int = 1):
-    pp = dp.take(num_concurrent) @ dp.few_shot(
-        model, num_concurrent=num_concurrent
+def obtain_item_policy(model: dp.LLM, num_completions: int = 1):
+    pp = dp.take(num_completions) @ dp.few_shot(
+        model, num_completions=num_completions
     )
     return dp.abduct_and_saturate(verbose=True) @ dp.elim_messages() & pp
 

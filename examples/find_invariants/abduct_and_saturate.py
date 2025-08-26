@@ -152,7 +152,7 @@ class SuggestInvariants(dp.Query[InvariantSuggestions]):
 def prove_program_by_saturation(
     model_name: dp.StandardModelName | None = None,
     model_cycle: Sequence[tuple[dp.StandardModelName, int]] | None = None,
-    num_concurrent: int = 4,
+    num_completions: int = 4,
     max_rollout_depth: int = 3,
     max_requests_per_attempt: int = 4,
     temperature: float | None = None,
@@ -167,7 +167,7 @@ def prove_program_by_saturation(
         return dp.few_shot(
             model,
             temperature=temperature,
-            num_concurrent=num_concurrent,
+            num_completions=num_completions,
             max_requests=1
         )
     

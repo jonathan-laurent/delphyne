@@ -46,7 +46,7 @@ class AbductionConfig:
     bench_name: str
     model_cycle: Sequence[tuple[str, int]]
     temperature: float
-    num_concurrent: int
+    num_completions: int
     max_requests_per_attempt: int
     max_dollar_budget: float
     seed: int
@@ -60,7 +60,7 @@ def abduction_experiment(config: AbductionConfig):
         policy_args={
             "model_cycle": config.model_cycle,
             "temperature": config.temperature,
-            "num_concurrent": config.num_concurrent,
+            "num_completions": config.num_completions,
             "max_requests_per_attempt": config.max_requests_per_attempt,
         },
         num_generated=1,

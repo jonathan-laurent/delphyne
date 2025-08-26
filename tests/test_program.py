@@ -37,7 +37,7 @@ def _eval_query(
     query: dp.Query[object],
     cache_name: str,
     budget: int = 1,
-    concurrent: int = 1,
+    num_completions: int = 1,
     model_name: dp.StandardModelName = "gpt-4.1-mini",
     model_options: dp.RequestOptions | None = None,
     model_class: str | None = None,
@@ -54,7 +54,7 @@ def _eval_query(
     model = dp.CachedModel(base_model, cache)
     bl = dp.BudgetLimit({dp.NUM_REQUESTS: budget})
     pp = dp.with_budget(bl) @ dp.few_shot(
-        model, num_concurrent=concurrent, mode=mode
+        model, num_completions=num_completions, mode=mode
     )
     stream = query.run_toplevel(env, pp)
     res, _ = stream.collect()
@@ -89,7 +89,7 @@ def test_concurrent():
         ex.StructuredOutput(topic="Love"),
         "structured_output_concurrent",
         budget=4,
-        concurrent=2,
+        num_completions=2,
     )
     assert len(res) == 8  # 4 requests, 2 completions each time
 
@@ -333,7 +333,7 @@ def test_abduction():
         ex.MarketMember("R6", ["C"], "F"),
     ]
     strategy = ex.obtain_item(market, "F")
-    policy = partial(ex.obtain_item_policy, num_concurrent=1)
+    policy = partial(ex.obtain_item_policy, num_completions=1)
     cache_name = "abduction"
     res, log = _eval_strategy(
         strategy, policy, cache_name, max_requests=10, max_res=1
@@ -359,7 +359,7 @@ def test_sequence():
         return dp.sequence(
             [
                 one_req @ dp.dfs()
-                & ex.MakeSumIP(dp.few_shot(model, num_concurrent=k))
+                & ex.MakeSumIP(dp.few_shot(model, num_completions=k))
                 for k in [1, 2]
             ]
         )

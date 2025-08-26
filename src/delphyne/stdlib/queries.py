@@ -1425,7 +1425,7 @@ def few_shot[T](
     mode: dp.AnswerMode = None,
     enable_logging: bool = True,
     temperature: float | None = None,
-    num_concurrent: int = 1,
+    num_completions: int = 1,
     max_requests: int | None = None,
     no_wrap_parse_errors: bool = False,
     iterative_mode: bool = False,
@@ -1450,7 +1450,7 @@ def few_shot[T](
         enable_logging: Whether to log raw oracle responses.
         temperature: The temperature parameter to use with the LLM, as a
             number from 0 to 2.
-        num_concurrent: The number of completions to request for each
+        num_completions: The number of completions to request for each
             LLM call. Note that most LLM providers only bill input
             tokens once, regardless of the number of completions.
         max_requests: The maximum number of LLM requests to perform
@@ -1477,7 +1477,7 @@ def few_shot[T](
             implementing more advanced conversational agents, see
             the standard `interact` strategy.
     """
-    assert not iterative_mode or num_concurrent == 1
+    assert not iterative_mode or num_completions == 1
     assert max_requests is None or max_requests > 0
     env.tracer.trace_query(query.ref)
     examples = fetch_examples(env.examples, query.query, select_examples)
@@ -1503,7 +1503,7 @@ def few_shot[T](
         num_reqs += 1
         req = md.LLMRequest(
             prompt,
-            num_completions=num_concurrent,
+            num_completions=num_completions,
             options=options,
             tools=tools,
             structured_output=structured_output,

@@ -70,8 +70,16 @@ class FindParamValueIP:
 
 
 @dp.ensure_compatible(find_param_value)
-def serial_policy():
-    model = dp.standard_model("gpt-5-mini")
+def serial_policy(model_name: dp.StandardModelName = "gpt-5-mini"):
+    model = dp.standard_model(model_name)
     return dp.dfs() & FindParamValueIP(
         find=dp.few_shot(model),
+        rewrite=dp.take(2) @ dp.few_shot(model))
+
+
+@dp.ensure_compatible(find_param_value)
+def parallel_policy(model_name: dp.StandardModelName = "gpt-5-mini"):
+    model = dp.standard_model(model_name)
+    return dp.loop() @ dp.par_dfs() & FindParamValueIP(
+        find=dp.take(3) @ dp.few_shot(model),
         rewrite=dp.take(2) @ dp.few_shot(model))

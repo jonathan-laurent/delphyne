@@ -19,7 +19,7 @@ args:
   policy_args:
     model_name: gpt-4.1-mini
     temperature: 1
-    num_concurrent: 4
+    num_completions: 4
   num_generated: 1
   budget:
     num_requests: 5

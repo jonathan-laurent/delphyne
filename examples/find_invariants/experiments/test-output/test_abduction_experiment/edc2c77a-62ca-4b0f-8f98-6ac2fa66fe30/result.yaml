@@ -25,7 +25,7 @@ args:
       - - gpt-4.1-mini
         - 1
     temperature: 1.5
-    num_concurrent: 4
+    num_completions: 4
     max_requests_per_attempt: 4
   num_generated: 1
   budget:

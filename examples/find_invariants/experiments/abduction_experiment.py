@@ -5,14 +5,14 @@ configs = [
         bench_name=bench,
         model_cycle=[("gpt-4o-mini", 1)],
         temperature=temp,
-        num_concurrent=num_concurrent,
+        num_completions=num_completions,
         max_requests_per_attempt=max_requests_per_attempt,
         max_dollar_budget=0.2,
         seed=seed,
     )
     for bench in c2i.BENCHS
     for seed in range(3)
-    for num_concurrent in [8]
+    for num_completions in [8]
     for temp in [1.5, 1.7]
     for max_requests_per_attempt in [4, 8]
 ]

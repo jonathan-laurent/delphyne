@@ -1,4 +1,4 @@
-bench_name,model_cycle,temperature,num_concurrent,max_requests_per_attempt,max_dollar_budget,seed,success,num_completions,num_requests,input_tokens,cached_input_tokens,output_tokens,price
+bench_name,model_cycle,temperature,num_completions,max_requests_per_attempt,max_dollar_budget,seed,success,num_completions,num_requests,input_tokens,cached_input_tokens,output_tokens,price
 59,"[['gpt-4o-mini', 1]]",1.5,8,4,0.2,0,True,8,1,3341,0,425,0.000533025
 59,"[['gpt-4o-mini', 1]]",1.5,8,8,0.2,0,True,8,1,3341,3200,438,0.0019739999999999996
 59,"[['gpt-4o-mini', 1]]",1.7,8,4,0.2,0,True,8,1,3341,3200,463,0.0019758749999999998
