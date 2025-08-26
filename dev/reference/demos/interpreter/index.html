@@ -3077,7 +3077,11 @@ pretty-printed, local space reference.</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">NodeOrigin</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;root&#39;</span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;child&#39;</span><span class="p">],</span> <span class="n"><span title="delphyne.analysis.feedback.TraceNodeId">TraceNodeId</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="TraceActionId (delphyne.analysis.feedback.TraceActionId)" href="#delphyne.analysis.feedback.TraceActionId">TraceActionId</a></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;nested&#39;</span><span class="p">],</span> <span class="n"><span title="delphyne.analysis.feedback.TraceNodeId">TraceNodeId</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="TraceNodePropertyId (delphyne.analysis.feedback.TraceNodePropertyId)" href="#delphyne.analysis.feedback.TraceNodePropertyId">TraceNodePropertyId</a></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">NodeOrigin</span><span class="p">:</span> <span class="p">(</span>
+    <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">]</span>
+    <span class="o">|</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s2">&quot;child&quot;</span><span class="p">],</span> <span class="n"><span title="delphyne.analysis.feedback.TraceNodeId">TraceNodeId</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="TraceActionId (delphyne.analysis.feedback.TraceActionId)" href="#delphyne.analysis.feedback.TraceActionId">TraceActionId</a></span><span class="p">]</span>
+    <span class="o">|</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s2">&quot;nested&quot;</span><span class="p">],</span> <span class="n"><span title="delphyne.analysis.feedback.TraceNodeId">TraceNodeId</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="TraceNodePropertyId (delphyne.analysis.feedback.TraceNodePropertyId)" href="#delphyne.analysis.feedback.TraceNodePropertyId">TraceNodePropertyId</a></span><span class="p">]</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -4276,12 +4280,14 @@ nested tree or some data.</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">evaluate_demo</span><span class="p">(</span><span class="n">demo</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Demo (delphyne.core.demos.Demo)" href="../definitions/#delphyne.core.demos.Demo">Demo</a></span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="DemoExecutionContext
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">evaluate_demo</span><span class="p">(</span>
+    <span class="n">demo</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Demo (delphyne.core.demos.Demo)" href="../definitions/#delphyne.core.demos.Demo">Demo</a></span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="DemoExecutionContext
 
 
   
       dataclass
-   (delphyne.analysis.demo_interpreter.DemoExecutionContext)" href="#delphyne.DemoExecutionContext">DemoExecutionContext</a></span><span class="p">,</span> <span class="n">extra_objects</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="DemoFeedback (delphyne.analysis.feedback.DemoFeedback)" href="#delphyne.analysis.feedback.DemoFeedback">DemoFeedback</a></span>
+   (delphyne.analysis.demo_interpreter.DemoExecutionContext)" href="#delphyne.DemoExecutionContext">DemoExecutionContext</a></span><span class="p">,</span> <span class="n">extra_objects</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="DemoFeedback (delphyne.analysis.feedback.DemoFeedback)" href="#delphyne.analysis.feedback.DemoFeedback">DemoFeedback</a></span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -4895,12 +4901,16 @@ can be found in several modules.</p>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">__init__</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="DemoExecutionContext
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">__init__</span><span class="p">(</span>
+    <span class="n">ctx</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="DemoExecutionContext
 
 
   
       dataclass
-   (delphyne.analysis.demo_interpreter.DemoExecutionContext)" href="#delphyne.DemoExecutionContext">DemoExecutionContext</a></span><span class="p">,</span> <span class="n">extra_objects</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reload</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+   (delphyne.analysis.demo_interpreter.DemoExecutionContext)" href="#delphyne.DemoExecutionContext">DemoExecutionContext</a></span><span class="p">,</span>
+    <span class="n">extra_objects</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">reload</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
