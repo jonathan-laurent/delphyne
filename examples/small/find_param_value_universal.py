@@ -37,10 +37,27 @@ def find_param_value(expr: str) -> Strategy[Branch | Fail, IPDict, int]:
         assert_never((yield from dp.fail("sympy_error", message=str(e))))
 
 
-@dp.ensure_compatible(find_param_value)
 def serial_policy():
     model = dp.standard_model("gpt-5-mini")
     return dp.dfs() & {
         "n_val": dp.few_shot(model),
         "equiv": dp.take(2) @ dp.few_shot(model),
     }
+
+
+def parallel_policy():
+    model = dp.standard_model("gpt-5-mini")
+    return dp.loop() @ dp.par_dfs() & {
+        "n_val": dp.few_shot(model, max_requests=1, num_completions=3),
+        "equiv": dp.few_shot(model, max_requests=1, num_completions=2),
+    }
+
+
+if __name__ == "__main__":
+    budget = dp.BudgetLimit({"dp.NUM_REQUESTS": 2})
+    res, _ = (
+        find_param_value("2*x**2 - 4*x + n")
+        .run_toplevel(dp.PolicyEnv(), serial_policy())
+        .collect(budget=budget, num_generated=1)
+    )
+    print(res[0].tracked.value)  # e.g. 2

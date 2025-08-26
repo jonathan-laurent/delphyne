@@ -70,16 +70,33 @@ class FindParamValueIP:
 
 
 @dp.ensure_compatible(find_param_value)
-def serial_policy(model_name: dp.StandardModelName = "gpt-5-mini"):
+def serial_policy(
+    model_name: dp.StandardModelName = "gpt-5-mini",
+    rewrite_reattempts: int = 1
+):
     model = dp.standard_model(model_name)
     return dp.dfs() & FindParamValueIP(
         find=dp.few_shot(model),
-        rewrite=dp.take(2) @ dp.few_shot(model))
+        rewrite=dp.take(rewrite_reattempts + 1) @ dp.few_shot(model))
 
 
 @dp.ensure_compatible(find_param_value)
-def parallel_policy(model_name: dp.StandardModelName = "gpt-5-mini"):
+def parallel_policy(
+    model_name: dp.StandardModelName = "gpt-5-mini",
+    par_find: int = 2,
+    par_rewrite: int = 2
+):
     model = dp.standard_model(model_name)
     return dp.loop() @ dp.par_dfs() & FindParamValueIP(
-        find=dp.take(3) @ dp.few_shot(model),
-        rewrite=dp.take(2) @ dp.few_shot(model))
+        find=dp.few_shot(model, max_requests=1, num_completions=par_find),
+        rewrite=dp.few_shot(model, max_requests=1, num_completions=par_rewrite))
+
+
+if __name__ == "__main__":
+    budget = dp.BudgetLimit({"dp.NUM_REQUESTS": 2})
+    res, _ = (
+        find_param_value("2*x**2 - 4*x + n")
+        .run_toplevel(dp.PolicyEnv(), serial_policy())
+        .collect(budget=budget, num_generated=1)
+    )
+    print(res[0].tracked.value)  # e.g. 2
