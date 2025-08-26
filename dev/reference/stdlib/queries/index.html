@@ -3807,27 +3807,19 @@ attribute.</p>
 </h4>
           <div class="doc-overloads">
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="IPDict (delphyne.stdlib.policies.IPDict)" href="../basic/#delphyne.IPDict">IPDict</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">T</span></span><span class="p">]</span>
-</code></pre></div><div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span>
-    <span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">P</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="PromptingPolicy
+</code></pre></div><div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">P</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="PromptingPolicy
 
 
   
       dataclass
-   (delphyne.stdlib.policies.PromptingPolicy)" href="../basic/#delphyne.PromptingPolicy">PromptingPolicy</a></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">P</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">T</span></span><span class="p">]</span>
+   (delphyne.stdlib.policies.PromptingPolicy)" href="../basic/#delphyne.PromptingPolicy">PromptingPolicy</a></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">P</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">T</span></span><span class="p">]</span>
 </code></pre></div>          </div>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span>
-    <span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">P</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="PromptingPolicy
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">P</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="PromptingPolicy
 
 
   
       dataclass
-   (delphyne.stdlib.policies.PromptingPolicy)" href="../basic/#delphyne.PromptingPolicy">PromptingPolicy</a></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">P</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">T</span></span><span class="p">]</span>
+   (delphyne.stdlib.policies.PromptingPolicy)" href="../basic/#delphyne.PromptingPolicy">PromptingPolicy</a></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">P</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.Query.using[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">T</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4951,14 +4943,12 @@ caught and wrapped into a <a class="autorefs autorefs-internal" title="ParseErro
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">validate</span><span class="p">(</span>
-    <span class="n">f</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.queries.Parser[A]">A</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="ParseError
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">validate</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.queries.Parser[A]">A</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="ParseError
 
 
   
       dataclass
-   (delphyne.core.ParseError)" href="../../strategies/queries/#delphyne.ParseError">ParseError</a></span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">catch_exn</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Parser
+   (delphyne.core.ParseError)" href="../../strategies/queries/#delphyne.ParseError">ParseError</a></span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">catch_exn</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Parser
 
 
   
@@ -6580,9 +6570,7 @@ only support structured output and tool calls for JSON objects.</p>
 
   
       dataclass
-   (delphyne.stdlib.queries.Parser)" href="#delphyne.Parser">Parser</a></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">]</span> <span class="o">=</span> <span class="n"><span title="update_formatting">update_formatting</span></span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n"><span title="dataclasses.replace">replace</span></span><span class="p">(</span><span class="n"><span title="f">f</span></span><span class="p">,</span> <span class="n"><span title="dataclasses.replace(where)">where</span></span><span class="o">=</span><span class="s2">&quot;last_code_block&quot;</span><span class="p">)</span>
-<span class="p">)</span>
+   (delphyne.stdlib.queries.Parser)" href="#delphyne.Parser">Parser</a></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">]</span> <span class="o">=</span> <span class="n"><span title="update_formatting">update_formatting</span></span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n"><span title="dataclasses.replace">replace</span></span><span class="p">(</span><span class="n"><span title="f">f</span></span><span class="p">,</span> <span class="n"><span title="dataclasses.replace(where)">where</span></span><span class="o">=</span><span class="s1">&#39;last_code_block&#39;</span><span class="p">))</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -6611,16 +6599,12 @@ only support structured output and tool calls for JSON objects.</p>
 
   
       dataclass
-   (delphyne.stdlib.queries.Parser)" href="#delphyne.Parser">Parser</a></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">](</span>
-    <span class="n"><a class="autorefs autorefs-internal" title="QuerySettings
+   (delphyne.stdlib.queries.Parser)" href="#delphyne.Parser">Parser</a></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">](</span><span class="n"><a class="autorefs autorefs-internal" title="QuerySettings
 
 
   
       dataclass
-   (delphyne.core.QuerySettings)" href="../../strategies/queries/#delphyne.QuerySettings">QuerySettings</a></span><span class="p">(),</span>
-    <span class="n"><span title="delphyne.stdlib.queries.FormattingMetadata">FormattingMetadata</span></span><span class="p">(</span><span class="n"><span title="delphyne.stdlib.queries.FormattingMetadata(where)">where</span></span><span class="o">=</span><span class="s2">&quot;full_answer&quot;</span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.FormattingMetadata(what)">what</span></span><span class="o">=</span><span class="s2">&quot;text&quot;</span><span class="p">),</span>
-    <span class="n"><span title="delphyne.stdlib.queries._get_text_answer">_get_text_answer</span></span><span class="p">,</span>
-<span class="p">)</span>
+   (delphyne.core.QuerySettings)" href="../../strategies/queries/#delphyne.QuerySettings">QuerySettings</a></span><span class="p">(),</span> <span class="n"><span title="delphyne.stdlib.queries.FormattingMetadata">FormattingMetadata</span></span><span class="p">(</span><span class="n"><span title="delphyne.stdlib.queries.FormattingMetadata(where)">where</span></span><span class="o">=</span><span class="s1">&#39;full_answer&#39;</span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.queries.FormattingMetadata(what)">what</span></span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">),</span> <span class="n"><span title="delphyne.stdlib.queries._get_text_answer">_get_text_answer</span></span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -6641,26 +6625,12 @@ only support structured output and tool calls for JSON objects.</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">few_shot</span><span class="p">(</span>
-    <span class="n">query</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AttachedQuery
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">few_shot</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AttachedQuery
 
 
   
       dataclass
-   (delphyne.core.AttachedQuery)" href="../../strategies/trees/#delphyne.AttachedQuery">AttachedQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.few_shot[T]">T</span></span><span class="p">],</span>
-    <span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span>
-    <span class="n">model</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="LLM (delphyne.stdlib.models.LLM)" href="#delphyne.stdlib.models.LLM">LLM</a></span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">params</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">select_examples</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.ExampleSelector">ExampleSelector</span></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
-    <span class="n">mode</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AnswerMode (delphyne.core.AnswerMode)" href="../../strategies/traces/#delphyne.AnswerMode">AnswerMode</a></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">enable_logging</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">temperature</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">num_completions</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="n">max_requests</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">no_wrap_parse_errors</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">iterative_mode</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="StreamGen (delphyne.core.StreamGen)" href="../../policies/streams/#delphyne.StreamGen">StreamGen</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.few_shot[T]">T</span></span><span class="p">]</span>
+   (delphyne.core.AttachedQuery)" href="../../strategies/trees/#delphyne.AttachedQuery">AttachedQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.few_shot[T]">T</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="LLM (delphyne.stdlib.models.LLM)" href="#delphyne.stdlib.models.LLM">LLM</a></span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">select_examples</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.ExampleSelector">ExampleSelector</span></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">mode</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AnswerMode (delphyne.core.AnswerMode)" href="../../strategies/traces/#delphyne.AnswerMode">AnswerMode</a></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">enable_logging</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">num_completions</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_requests</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">no_wrap_parse_errors</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">iterative_mode</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="StreamGen (delphyne.core.StreamGen)" href="../../policies/streams/#delphyne.StreamGen">StreamGen</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.few_shot[T]">T</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -7212,23 +7182,12 @@ the standard <a class="autorefs autorefs-internal" title="interact" href="../alg
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">classify</span><span class="p">(</span>
-    <span class="n">query</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AttachedQuery
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">classify</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AttachedQuery
 
 
   
       dataclass
-   (delphyne.core.AttachedQuery)" href="../../strategies/trees/#delphyne.AttachedQuery">AttachedQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.classify[T]">T</span></span><span class="p">],</span>
-    <span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span>
-    <span class="n">model</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="LLM (delphyne.stdlib.models.LLM)" href="#delphyne.stdlib.models.LLM">LLM</a></span><span class="p">,</span>
-    <span class="n">params</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">select_examples</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.ExampleSelector">ExampleSelector</span></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
-    <span class="n">mode</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AnswerMode (delphyne.core.AnswerMode)" href="../../strategies/traces/#delphyne.AnswerMode">AnswerMode</a></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">enable_logging</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">top_logprobs</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
-    <span class="n">temperature</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-    <span class="n">bias</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="float">float</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="StreamGen (delphyne.core.StreamGen)" href="../../policies/streams/#delphyne.StreamGen">StreamGen</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.classify[T]">T</span></span><span class="p">]</span>
+   (delphyne.core.AttachedQuery)" href="../../strategies/trees/#delphyne.AttachedQuery">AttachedQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.classify[T]">T</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="LLM (delphyne.stdlib.models.LLM)" href="#delphyne.stdlib.models.LLM">LLM</a></span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">select_examples</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.ExampleSelector">ExampleSelector</span></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span> <span class="n">mode</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AnswerMode (delphyne.core.AnswerMode)" href="../../strategies/traces/#delphyne.AnswerMode">AnswerMode</a></span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">enable_logging</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">top_logprobs</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="float">float</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="StreamGen (delphyne.core.StreamGen)" href="../../policies/streams/#delphyne.StreamGen">StreamGen</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.queries.classify[T]">T</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -10552,14 +10511,7 @@ added into <a class="autorefs autorefs-internal" title="LLMResponse
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">BudgetCategory</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span>
-    <span class="s2">&quot;num_requests&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;num_completions&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;input_tokens&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;cached_input_tokens&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;output_tokens&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;price&quot;</span><span class="p">,</span>
-<span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">BudgetCategory</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;num_requests&#39;</span><span class="p">,</span> <span class="s1">&#39;num_completions&#39;</span><span class="p">,</span> <span class="s1">&#39;input_tokens&#39;</span><span class="p">,</span> <span class="s1">&#39;cached_input_tokens&#39;</span><span class="p">,</span> <span class="s1">&#39;output_tokens&#39;</span><span class="p">,</span> <span class="s1">&#39;price&#39;</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">

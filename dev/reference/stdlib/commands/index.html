@@ -1962,22 +1962,12 @@ intermediate results.</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">run_command</span><span class="p">(</span>
-    <span class="n">command</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.tasks.Command">Command</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.tasks.run_command[A]">A</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.tasks.run_command[T]">T</span></span><span class="p">],</span>
-    <span class="n">args</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.tasks.run_command[A]">A</span></span><span class="p">,</span>
-    <span class="n">ctx</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="CommandExecutionContext
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">run_command</span><span class="p">(</span><span class="n">command</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.tasks.Command">Command</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.tasks.run_command[A]">A</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.tasks.run_command[T]">T</span></span><span class="p">],</span> <span class="n">args</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.tasks.run_command[A]">A</span></span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="CommandExecutionContext
 
 
   
       dataclass
-   (delphyne.stdlib.tasks.CommandExecutionContext)" href="#delphyne.CommandExecutionContext">CommandExecutionContext</a></span><span class="p">,</span>
-    <span class="n">dump_statuses</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">dump_result</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">dump_log</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">on_status</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="str">str</span></span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">add_header</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">handle_sigint</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.tasks.CommandResult">CommandResult</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.tasks.run_command[T]">T</span></span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+   (delphyne.stdlib.tasks.CommandExecutionContext)" href="#delphyne.CommandExecutionContext">CommandExecutionContext</a></span><span class="p">,</span> <span class="n">dump_statuses</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dump_result</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dump_log</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">on_status</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="str">str</span></span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">add_header</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">handle_sigint</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.tasks.CommandResult">CommandResult</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.tasks.run_command[T]">T</span></span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -2353,21 +2343,17 @@ instead of abruptly interrupting it.</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">run_strategy</span><span class="p">(</span>
-    <span class="n">task</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="TaskContext (delphyne.stdlib.tasks.TaskContext)" href="#delphyne.TaskContext">TaskContext</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.tasks.CommandResult">CommandResult</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.commands.run_strategy.RunStrategyResponse">RunStrategyResponse</span></span><span class="p">]],</span>
-    <span class="n">exe</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="CommandExecutionContext
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">run_strategy</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="TaskContext (delphyne.stdlib.tasks.TaskContext)" href="#delphyne.TaskContext">TaskContext</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.tasks.CommandResult">CommandResult</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.commands.run_strategy.RunStrategyResponse">RunStrategyResponse</span></span><span class="p">]],</span> <span class="n">exe</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="CommandExecutionContext
 
 
   
       dataclass
-   (delphyne.stdlib.tasks.CommandExecutionContext)" href="#delphyne.CommandExecutionContext">CommandExecutionContext</a></span><span class="p">,</span>
-    <span class="n">args</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="RunStrategyArgs
+   (delphyne.stdlib.tasks.CommandExecutionContext)" href="#delphyne.CommandExecutionContext">CommandExecutionContext</a></span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="RunStrategyArgs
 
 
   
       dataclass
-   (delphyne.stdlib.commands.run_strategy.RunStrategyArgs)" href="#delphyne.stdlib.commands.run_strategy.RunStrategyArgs">RunStrategyArgs</a></span><span class="p">,</span>
-<span class="p">)</span>
+   (delphyne.stdlib.commands.run_strategy.RunStrategyArgs)" href="#delphyne.stdlib.commands.run_strategy.RunStrategyArgs">RunStrategyArgs</a></span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -2730,21 +2716,17 @@ which can be visualized in the VSCode extension (see
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">answer_query</span><span class="p">(</span>
-    <span class="n">task</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="TaskContext (delphyne.stdlib.tasks.TaskContext)" href="#delphyne.TaskContext">TaskContext</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.tasks.CommandResult">CommandResult</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.commands.answer_query.AnswerQueryResponse">AnswerQueryResponse</span></span><span class="p">]],</span>
-    <span class="n">exe</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="CommandExecutionContext
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">answer_query</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="TaskContext (delphyne.stdlib.tasks.TaskContext)" href="#delphyne.TaskContext">TaskContext</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.tasks.CommandResult">CommandResult</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.commands.answer_query.AnswerQueryResponse">AnswerQueryResponse</span></span><span class="p">]],</span> <span class="n">exe</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="CommandExecutionContext
 
 
   
       dataclass
-   (delphyne.stdlib.tasks.CommandExecutionContext)" href="#delphyne.CommandExecutionContext">CommandExecutionContext</a></span><span class="p">,</span>
-    <span class="n">cmd</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AnswerQueryArgs
+   (delphyne.stdlib.tasks.CommandExecutionContext)" href="#delphyne.CommandExecutionContext">CommandExecutionContext</a></span><span class="p">,</span> <span class="n">cmd</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AnswerQueryArgs
 
 
   
       dataclass
-   (delphyne.stdlib.commands.answer_query.AnswerQueryArgs)" href="#delphyne.stdlib.commands.answer_query.AnswerQueryArgs">AnswerQueryArgs</a></span><span class="p">,</span>
-<span class="p">)</span>
+   (delphyne.stdlib.commands.answer_query.AnswerQueryArgs)" href="#delphyne.stdlib.commands.answer_query.AnswerQueryArgs">AnswerQueryArgs</a></span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
