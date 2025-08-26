@@ -2030,6 +2030,7 @@ created, preserving abstraction.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/opaque.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 18</span>
@@ -2214,6 +2215,7 @@ created, preserving abstraction.</p>
 
 
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2226,7 +2228,7 @@ created, preserving abstraction.</p>
   </span>
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">from_query</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AbstractQuery (delphyne.core.AbstractQuery)" href="../../strategies/queries/#delphyne.AbstractQuery">AbstractQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_query[T1]">from_query[T1]</span></span><span class="p">],</span> <span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_query[P1]">from_query[P1]</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Tag (delphyne.core.Tag)" href="../../strategies/trees/#delphyne.Tag">Tag</a></span><span class="p">]],</span> <span class="n"><a class="autorefs autorefs-internal" title="PromptingPolicy
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">from_query</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AbstractQuery (delphyne.core.AbstractQuery)" href="../../strategies/queries/#delphyne.AbstractQuery">AbstractQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_query[T1]">T1</span></span><span class="p">],</span> <span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_query[P1]">P1</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Tag (delphyne.core.Tag)" href="../../strategies/trees/#delphyne.Tag">Tag</a></span><span class="p">]],</span> <span class="n"><a class="autorefs autorefs-internal" title="PromptingPolicy
 
 
   
@@ -2241,7 +2243,7 @@ created, preserving abstraction.</p>
 
   
       dataclass
-   (delphyne.stdlib.opaque.OpaqueSpace)" href="#delphyne.OpaqueSpace">OpaqueSpace</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_query[P1]">from_query[P1]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_query[T1]">from_query[T1]</span></span><span class="p">]]</span>
+   (delphyne.stdlib.opaque.OpaqueSpace)" href="#delphyne.OpaqueSpace">OpaqueSpace</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_query[P1]">P1</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_query[T1]">T1</span></span><span class="p">]]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2324,12 +2326,12 @@ created, preserving abstraction.</p>
 
   
       dataclass
-   (delphyne.core.StrategyComp)" href="../../strategies/strategies/#delphyne.StrategyComp">StrategyComp</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_strategy[N]">from_strategy[N]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_strategy[P2]">from_strategy[P2]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_strategy[T1]">from_strategy[T1]</span></span><span class="p">],</span> <span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_strategy[P1]">from_strategy[P1]</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Tag (delphyne.core.Tag)" href="../../strategies/trees/#delphyne.Tag">Tag</a></span><span class="p">]],</span> <span class="n"><a class="autorefs autorefs-internal" title="Policy
+   (delphyne.core.StrategyComp)" href="../../strategies/strategies/#delphyne.StrategyComp">StrategyComp</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_strategy[N]">N</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_strategy[P2]">P2</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_strategy[T1]">T1</span></span><span class="p">],</span> <span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_strategy[P1]">P1</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Tag (delphyne.core.Tag)" href="../../strategies/trees/#delphyne.Tag">Tag</a></span><span class="p">]],</span> <span class="n"><a class="autorefs autorefs-internal" title="Policy
 
 
   
       dataclass
-   (delphyne.stdlib.policies.Policy)" href="#delphyne.Policy">Policy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_strategy[N]">from_strategy[N]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_strategy[P2]">from_strategy[P2]</span></span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="SpaceBuilder
+   (delphyne.stdlib.policies.Policy)" href="#delphyne.Policy">Policy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_strategy[N]">N</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_strategy[P2]">P2</span></span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="SpaceBuilder
 
 
   
@@ -2339,7 +2341,7 @@ created, preserving abstraction.</p>
 
   
       dataclass
-   (delphyne.stdlib.opaque.OpaqueSpace)" href="#delphyne.OpaqueSpace">OpaqueSpace</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_strategy[P1]">from_strategy[P1]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_strategy[T1]">from_strategy[T1]</span></span><span class="p">]]</span>
+   (delphyne.stdlib.opaque.OpaqueSpace)" href="#delphyne.OpaqueSpace">OpaqueSpace</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_strategy[P1]">P1</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.opaque.OpaqueSpace.from_strategy[T1]">T1</span></span><span class="p">]]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2549,6 +2551,7 @@ defined on type <a class="autorefs autorefs-internal" title="SearchPolicy
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">23</span>
@@ -2613,6 +2616,7 @@ defined on type <a class="autorefs autorefs-internal" title="SearchPolicy
 
 
 
+
   </div>
 
     </div>
@@ -2636,7 +2640,7 @@ defined on type <a class="autorefs autorefs-internal" title="SearchPolicy
 
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="AbstractSearchPolicy (delphyne.core.AbstractSearchPolicy)" href="../../policies/definitions/#delphyne.AbstractSearchPolicy">AbstractSearchPolicy</a>[<a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a>, <span title="delphyne.stdlib.policies.SearchPolicy[N]">SearchPolicy[N]</span>]</code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="AbstractSearchPolicy (delphyne.core.AbstractSearchPolicy)" href="../../policies/definitions/#delphyne.AbstractSearchPolicy">AbstractSearchPolicy</a>[<a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a>, <span title="delphyne.stdlib.policies.SearchPolicy[N]">N</span>]</code></p>
 
 
         <p>A search policy takes as arguments a tree with a given signature
@@ -2652,6 +2656,7 @@ provides convenience features such as support for the <code>@</code>
 composition operator (for composing search policies with stream
 transformers and tree transformers) and the <code>&amp;</code> operator for pairing
 a search policy with an inner policy.</p>
+
 
 
 
@@ -2771,6 +2776,7 @@ a search policy with an inner policy.</p>
 
 
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2779,12 +2785,12 @@ a search policy with an inner policy.</p>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">__and__</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.policies.SearchPolicy.__and__[P]">__and__[P]</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Policy
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">__and__</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.policies.SearchPolicy.__and__[P]">P</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Policy
 
 
   
       dataclass
-   (delphyne.stdlib.policies.Policy)" href="#delphyne.Policy">Policy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.SearchPolicy[N]">SearchPolicy[N]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.policies.SearchPolicy.__and__[P]">__and__[P]</span></span><span class="p">]</span>
+   (delphyne.stdlib.policies.Policy)" href="#delphyne.Policy">Policy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.SearchPolicy[N]">N</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.policies.SearchPolicy.__and__[P]">P</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2827,7 +2833,7 @@ a search policy with an inner policy.</p>
 
   
       dataclass
-   (delphyne.stdlib.policies.SearchPolicy)" href="#delphyne.SearchPolicy">SearchPolicy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.SearchPolicy[N]">SearchPolicy[N]</span></span><span class="p">]</span>
+   (delphyne.stdlib.policies.SearchPolicy)" href="#delphyne.SearchPolicy">SearchPolicy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.SearchPolicy[N]">N</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2896,6 +2902,7 @@ stream (<code>SearchStream</code>).</p>
 provides convenience features such as support for the <code>@</code>
 composition operator (for composing prompting policies with stream
 transformers).</p>
+
 
 
 
@@ -2986,6 +2993,7 @@ transformers).</p>
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -3133,7 +3141,7 @@ added).</p>
           <tr class="doc-section-item">
             <td><code><span title="delphyne.ContextualTreeTransformer.fn">fn</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="_ContextualTreeTransformerFn (delphyne.stdlib.policies._ContextualTreeTransformerFn)" href="#delphyne.stdlib.policies._ContextualTreeTransformerFn">_ContextualTreeTransformerFn</a>[<span title="delphyne.stdlib.policies.ContextualTreeTransformer[A]">ContextualTreeTransformer[A]</span>, <span title="delphyne.stdlib.policies.ContextualTreeTransformer[B]">ContextualTreeTransformer[B]</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="_ContextualTreeTransformerFn (delphyne.stdlib.policies._ContextualTreeTransformerFn)" href="#delphyne.stdlib.policies._ContextualTreeTransformerFn">_ContextualTreeTransformerFn</a>[<span title="delphyne.stdlib.policies.ContextualTreeTransformer[A]">A</span>, <span title="delphyne.stdlib.policies.ContextualTreeTransformer[B]">B</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3145,6 +3153,7 @@ returns a pure tree transformer (<a class="autorefs autorefs-internal" title="Pu
           </tr>
       </tbody>
     </table>
+
 
 
 
@@ -3274,6 +3283,7 @@ returns a pure tree transformer (<a class="autorefs autorefs-internal" title="Pu
 
 
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3286,12 +3296,12 @@ returns a pure tree transformer (<a class="autorefs autorefs-internal" title="Pu
   </span>
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">pure</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PureTreeTransformerFn (delphyne.stdlib.policies.PureTreeTransformerFn)" href="#delphyne.stdlib.policies.PureTreeTransformerFn">PureTreeTransformerFn</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer[A]">ContextualTreeTransformer[A]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer[B]">ContextualTreeTransformer[B]</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="ContextualTreeTransformer
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">pure</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PureTreeTransformerFn (delphyne.stdlib.policies.PureTreeTransformerFn)" href="#delphyne.stdlib.policies.PureTreeTransformerFn">PureTreeTransformerFn</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer[A]">A</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer[B]">B</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="ContextualTreeTransformer
 
 
   
       dataclass
-   (delphyne.stdlib.policies.ContextualTreeTransformer)" href="#delphyne.ContextualTreeTransformer">ContextualTreeTransformer</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer[A]">ContextualTreeTransformer[A]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer[B]">ContextualTreeTransformer[B]</span></span><span class="p">]</span>
+   (delphyne.stdlib.policies.ContextualTreeTransformer)" href="#delphyne.ContextualTreeTransformer">ContextualTreeTransformer</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer[A]">A</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer[B]">B</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3346,12 +3356,12 @@ transformer.</p>
 
   
       dataclass
-   (delphyne.stdlib.policies.SearchPolicy)" href="#delphyne.SearchPolicy">SearchPolicy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer[B]">ContextualTreeTransformer[B]</span></span> <span class="o">|</span> <span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer.__rmatmul__[N]">__rmatmul__[N]</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="SearchPolicy
+   (delphyne.stdlib.policies.SearchPolicy)" href="#delphyne.SearchPolicy">SearchPolicy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer[B]">B</span></span> <span class="o">|</span> <span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer.__rmatmul__[N]">N</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="SearchPolicy
 
 
   
       dataclass
-   (delphyne.stdlib.policies.SearchPolicy)" href="#delphyne.SearchPolicy">SearchPolicy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer[A]">ContextualTreeTransformer[A]</span></span> <span class="o">|</span> <span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer.__rmatmul__[N]">__rmatmul__[N]</span></span><span class="p">]</span>
+   (delphyne.stdlib.policies.SearchPolicy)" href="#delphyne.SearchPolicy">SearchPolicy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer[A]">A</span></span> <span class="o">|</span> <span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer.__rmatmul__[N]">N</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3419,7 +3429,7 @@ transformer.</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">search_policy</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="_ParametricSearchPolicyFn (delphyne.stdlib.policies._ParametricSearchPolicyFn)" href="#delphyne.stdlib.policies._ParametricSearchPolicyFn">_ParametricSearchPolicyFn</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.search_policy[N]">search_policy[N]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.policies.search_policy[**A]">search_policy[**A]</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="_ParametricSearchPolicy (delphyne.stdlib.policies._ParametricSearchPolicy)" href="#delphyne.stdlib.policies._ParametricSearchPolicy">_ParametricSearchPolicy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.search_policy[N]">search_policy[N]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.policies.search_policy[**A]">search_policy[**A]</span></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">search_policy</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="_ParametricSearchPolicyFn (delphyne.stdlib.policies._ParametricSearchPolicyFn)" href="#delphyne.stdlib.policies._ParametricSearchPolicyFn">_ParametricSearchPolicyFn</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.search_policy[N]">N</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.policies.search_policy[**A]">A</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="_ParametricSearchPolicy (delphyne.stdlib.policies._ParametricSearchPolicy)" href="#delphyne.stdlib.policies._ParametricSearchPolicy">_ParametricSearchPolicy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.search_policy[N]">N</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.policies.search_policy[**A]">A</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -3466,7 +3476,7 @@ search stream generator (<code>SearchStreamGen</code>).</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><a class="autorefs autorefs-internal" title="_ParametricSearchPolicy (delphyne.stdlib.policies._ParametricSearchPolicy)" href="#delphyne.stdlib.policies._ParametricSearchPolicy">_ParametricSearchPolicy</a>[<span title="delphyne.stdlib.policies.search_policy[N]">search_policy[N]</span>, <span title="delphyne.stdlib.policies.search_policy[**A]">search_policy[**A]</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="_ParametricSearchPolicy (delphyne.stdlib.policies._ParametricSearchPolicy)" href="#delphyne.stdlib.policies._ParametricSearchPolicy">_ParametricSearchPolicy</a>[<span title="delphyne.stdlib.policies.search_policy[N]">N</span>, <span title="delphyne.stdlib.policies.search_policy[**A]">A</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3476,7 +3486,7 @@ search stream generator (<code>SearchStreamGen</code>).</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                  <code><a class="autorefs autorefs-internal" title="_ParametricSearchPolicy (delphyne.stdlib.policies._ParametricSearchPolicy)" href="#delphyne.stdlib.policies._ParametricSearchPolicy">_ParametricSearchPolicy</a>[<span title="delphyne.stdlib.policies.search_policy[N]">search_policy[N]</span>, <span title="delphyne.stdlib.policies.search_policy[**A]">search_policy[**A]</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="_ParametricSearchPolicy (delphyne.stdlib.policies._ParametricSearchPolicy)" href="#delphyne.stdlib.policies._ParametricSearchPolicy">_ParametricSearchPolicy</a>[<span title="delphyne.stdlib.policies.search_policy[N]">N</span>, <span title="delphyne.stdlib.policies.search_policy[**A]">A</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3578,6 +3588,7 @@ search stream generator (<code>SearchStreamGen</code>).</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">103</span>
@@ -3610,6 +3621,7 @@ search stream generator (<code>SearchStreamGen</code>).</p>
 
 
 
+
   </div>
 
     </div>
@@ -3630,6 +3642,7 @@ search stream generator (<code>SearchStreamGen</code>).</p>
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
               Bases: <code><span title="typing.Protocol">Protocol</span></code></p>
+
 
 
 
@@ -3674,6 +3687,7 @@ search stream generator (<code>SearchStreamGen</code>).</p>
 
 
 
+
   </div>
 
     </div>
@@ -3694,6 +3708,7 @@ search stream generator (<code>SearchStreamGen</code>).</p>
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
               Bases: <code><span title="typing.Protocol">Protocol</span></code></p>
+
 
 
 
@@ -3728,6 +3743,7 @@ search stream generator (<code>SearchStreamGen</code>).</p>
 
 
 
+
   </div>
 
     </div>
@@ -3742,7 +3758,7 @@ search stream generator (<code>SearchStreamGen</code>).</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">prompting_policy</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="_ParametricPromptingPolicyFn (delphyne.stdlib.policies._ParametricPromptingPolicyFn)" href="#delphyne.stdlib.policies._ParametricPromptingPolicyFn">_ParametricPromptingPolicyFn</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.prompting_policy[**A]">prompting_policy[**A]</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="_ParametricPromptingPolicy (delphyne.stdlib.policies._ParametricPromptingPolicy)" href="#delphyne.stdlib.policies._ParametricPromptingPolicy">_ParametricPromptingPolicy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.prompting_policy[**A]">prompting_policy[**A]</span></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">prompting_policy</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="_ParametricPromptingPolicyFn (delphyne.stdlib.policies._ParametricPromptingPolicyFn)" href="#delphyne.stdlib.policies._ParametricPromptingPolicyFn">_ParametricPromptingPolicyFn</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.prompting_policy[**A]">A</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="_ParametricPromptingPolicy (delphyne.stdlib.policies._ParametricPromptingPolicy)" href="#delphyne.stdlib.policies._ParametricPromptingPolicy">_ParametricPromptingPolicy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.prompting_policy[**A]">A</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -3789,7 +3805,7 @@ returns a search stream generator (<code>SearchStreamGen</code>).</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><a class="autorefs autorefs-internal" title="_ParametricPromptingPolicy (delphyne.stdlib.policies._ParametricPromptingPolicy)" href="#delphyne.stdlib.policies._ParametricPromptingPolicy">_ParametricPromptingPolicy</a>[<span title="delphyne.stdlib.policies.prompting_policy[**A]">prompting_policy[**A]</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="_ParametricPromptingPolicy (delphyne.stdlib.policies._ParametricPromptingPolicy)" href="#delphyne.stdlib.policies._ParametricPromptingPolicy">_ParametricPromptingPolicy</a>[<span title="delphyne.stdlib.policies.prompting_policy[**A]">A</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3799,7 +3815,7 @@ returns a search stream generator (<code>SearchStreamGen</code>).</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                  <code><a class="autorefs autorefs-internal" title="_ParametricPromptingPolicy (delphyne.stdlib.policies._ParametricPromptingPolicy)" href="#delphyne.stdlib.policies._ParametricPromptingPolicy">_ParametricPromptingPolicy</a>[<span title="delphyne.stdlib.policies.prompting_policy[**A]">prompting_policy[**A]</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="_ParametricPromptingPolicy (delphyne.stdlib.policies._ParametricPromptingPolicy)" href="#delphyne.stdlib.policies._ParametricPromptingPolicy">_ParametricPromptingPolicy</a>[<span title="delphyne.stdlib.policies.prompting_policy[**A]">A</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3901,6 +3917,7 @@ returns a search stream generator (<code>SearchStreamGen</code>).</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">204</span>
@@ -3920,6 +3937,7 @@ returns a search stream generator (<code>SearchStreamGen</code>).</p>
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -3951,6 +3969,7 @@ returns a search stream generator (<code>SearchStreamGen</code>).</p>
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
               Bases: <code><span title="typing.Protocol">Protocol</span></code></p>
+
 
 
 
@@ -3993,6 +4012,7 @@ returns a search stream generator (<code>SearchStreamGen</code>).</p>
 
 
 
+
   </div>
 
     </div>
@@ -4013,6 +4033,7 @@ returns a search stream generator (<code>SearchStreamGen</code>).</p>
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
               Bases: <code><span title="typing.Protocol">Protocol</span></code></p>
+
 
 
 
@@ -4047,6 +4068,7 @@ returns a search stream generator (<code>SearchStreamGen</code>).</p>
 
 
 
+
   </div>
 
     </div>
@@ -4061,12 +4083,12 @@ returns a search stream generator (<code>SearchStreamGen</code>).</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">contextual_tree_transformer</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="_ParametricContextualTreeTransformerFn (delphyne.stdlib.policies._ParametricContextualTreeTransformerFn)" href="#delphyne.stdlib.policies._ParametricContextualTreeTransformerFn">_ParametricContextualTreeTransformerFn</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.contextual_tree_transformer[A]">contextual_tree_transformer[A]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.policies.contextual_tree_transformer[B]">contextual_tree_transformer[B]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.policies.contextual_tree_transformer[**C]">contextual_tree_transformer[**C]</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.contextual_tree_transformer[**C]">contextual_tree_transformer[**C]</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="ContextualTreeTransformer
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">contextual_tree_transformer</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="_ParametricContextualTreeTransformerFn (delphyne.stdlib.policies._ParametricContextualTreeTransformerFn)" href="#delphyne.stdlib.policies._ParametricContextualTreeTransformerFn">_ParametricContextualTreeTransformerFn</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.contextual_tree_transformer[A]">A</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.policies.contextual_tree_transformer[B]">B</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.policies.contextual_tree_transformer[**C]">C</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.contextual_tree_transformer[**C]">C</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="ContextualTreeTransformer
 
 
   
       dataclass
-   (delphyne.stdlib.policies.ContextualTreeTransformer)" href="#delphyne.ContextualTreeTransformer">ContextualTreeTransformer</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.contextual_tree_transformer[A]">contextual_tree_transformer[A]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.policies.contextual_tree_transformer[B]">contextual_tree_transformer[B]</span></span><span class="p">]]</span>
+   (delphyne.stdlib.policies.ContextualTreeTransformer)" href="#delphyne.ContextualTreeTransformer">ContextualTreeTransformer</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.contextual_tree_transformer[A]">A</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.policies.contextual_tree_transformer[B]">B</span></span><span class="p">]]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -4091,7 +4113,7 @@ returns a search stream generator (<code>SearchStreamGen</code>).</p>
                 <code>f</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="_ParametricContextualTreeTransformerFn (delphyne.stdlib.policies._ParametricContextualTreeTransformerFn)" href="#delphyne.stdlib.policies._ParametricContextualTreeTransformerFn">_ParametricContextualTreeTransformerFn</a>[<span title="delphyne.stdlib.policies.contextual_tree_transformer[A]">contextual_tree_transformer[A]</span>, <span title="delphyne.stdlib.policies.contextual_tree_transformer[B]">contextual_tree_transformer[B]</span>, <span title="delphyne.stdlib.policies.contextual_tree_transformer[**C]">contextual_tree_transformer[**C]</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="_ParametricContextualTreeTransformerFn (delphyne.stdlib.policies._ParametricContextualTreeTransformerFn)" href="#delphyne.stdlib.policies._ParametricContextualTreeTransformerFn">_ParametricContextualTreeTransformerFn</a>[<span title="delphyne.stdlib.policies.contextual_tree_transformer[A]">A</span>, <span title="delphyne.stdlib.policies.contextual_tree_transformer[B]">B</span>, <span title="delphyne.stdlib.policies.contextual_tree_transformer[**C]">C</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4119,12 +4141,12 @@ tree transformer (<a class="autorefs autorefs-internal" title="PureTreeTransform
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[<span title="delphyne.stdlib.policies.contextual_tree_transformer[**C]">contextual_tree_transformer[**C]</span>, <a class="autorefs autorefs-internal" title="ContextualTreeTransformer
+                  <code><span title="collections.abc.Callable">Callable</span>[<span title="delphyne.stdlib.policies.contextual_tree_transformer[**C]">C</span>, <a class="autorefs autorefs-internal" title="ContextualTreeTransformer
 
 
   
       dataclass
-   (delphyne.stdlib.policies.ContextualTreeTransformer)" href="#delphyne.ContextualTreeTransformer">ContextualTreeTransformer</a>[<span title="delphyne.stdlib.policies.contextual_tree_transformer[A]">contextual_tree_transformer[A]</span>, <span title="delphyne.stdlib.policies.contextual_tree_transformer[B]">contextual_tree_transformer[B]</span>]]</code>
+   (delphyne.stdlib.policies.ContextualTreeTransformer)" href="#delphyne.ContextualTreeTransformer">ContextualTreeTransformer</a>[<span title="delphyne.stdlib.policies.contextual_tree_transformer[A]">A</span>, <span title="delphyne.stdlib.policies.contextual_tree_transformer[B]">B</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4134,12 +4156,12 @@ tree transformer (<a class="autorefs autorefs-internal" title="PureTreeTransform
           </tr>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[<span title="delphyne.stdlib.policies.contextual_tree_transformer[**C]">contextual_tree_transformer[**C]</span>, <a class="autorefs autorefs-internal" title="ContextualTreeTransformer
+                  <code><span title="collections.abc.Callable">Callable</span>[<span title="delphyne.stdlib.policies.contextual_tree_transformer[**C]">C</span>, <a class="autorefs autorefs-internal" title="ContextualTreeTransformer
 
 
   
       dataclass
-   (delphyne.stdlib.policies.ContextualTreeTransformer)" href="#delphyne.ContextualTreeTransformer">ContextualTreeTransformer</a>[<span title="delphyne.stdlib.policies.contextual_tree_transformer[A]">contextual_tree_transformer[A]</span>, <span title="delphyne.stdlib.policies.contextual_tree_transformer[B]">contextual_tree_transformer[B]</span>]]</code>
+   (delphyne.stdlib.policies.ContextualTreeTransformer)" href="#delphyne.ContextualTreeTransformer">ContextualTreeTransformer</a>[<span title="delphyne.stdlib.policies.contextual_tree_transformer[A]">A</span>, <span title="delphyne.stdlib.policies.contextual_tree_transformer[B]">B</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4149,12 +4171,12 @@ tree transformer (<a class="autorefs autorefs-internal" title="PureTreeTransform
           </tr>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[<span title="delphyne.stdlib.policies.contextual_tree_transformer[**C]">contextual_tree_transformer[**C]</span>, <a class="autorefs autorefs-internal" title="ContextualTreeTransformer
+                  <code><span title="collections.abc.Callable">Callable</span>[<span title="delphyne.stdlib.policies.contextual_tree_transformer[**C]">C</span>, <a class="autorefs autorefs-internal" title="ContextualTreeTransformer
 
 
   
       dataclass
-   (delphyne.stdlib.policies.ContextualTreeTransformer)" href="#delphyne.ContextualTreeTransformer">ContextualTreeTransformer</a>[<span title="delphyne.stdlib.policies.contextual_tree_transformer[A]">contextual_tree_transformer[A]</span>, <span title="delphyne.stdlib.policies.contextual_tree_transformer[B]">contextual_tree_transformer[B]</span>]]</code>
+   (delphyne.stdlib.policies.ContextualTreeTransformer)" href="#delphyne.ContextualTreeTransformer">ContextualTreeTransformer</a>[<span title="delphyne.stdlib.policies.contextual_tree_transformer[A]">A</span>, <span title="delphyne.stdlib.policies.contextual_tree_transformer[B]">B</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4255,6 +4277,7 @@ signature <code>B | N</code>, for all <code>N</code>.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">263</span>
@@ -4280,6 +4303,7 @@ signature <code>B | N</code>, for all <code>N</code>.</p>
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -4319,6 +4343,7 @@ signature <code>B | N</code>, for all <code>N</code>.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">274</span>
@@ -4334,6 +4359,7 @@ signature <code>B | N</code>, for all <code>N</code>.</p>
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -4373,6 +4399,7 @@ signature <code>B | N</code>, for all <code>N</code>.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">280</span>
@@ -4388,6 +4415,7 @@ signature <code>B | N</code>, for all <code>N</code>.</p>
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -4428,7 +4456,7 @@ signature <code>B | N</code>, for all <code>N</code>.</p>
 
   
       dataclass
-   (delphyne.core.StrategyComp)" href="../../strategies/strategies/#delphyne.StrategyComp">StrategyComp</a>[<span title="delphyne.stdlib.strategies.StrategyInstance[N]">StrategyInstance[N]</span>, <span title="delphyne.stdlib.strategies.StrategyInstance[P]">StrategyInstance[P]</span>, <span title="delphyne.stdlib.strategies.StrategyInstance[T]">StrategyInstance[T]</span>]</code></p>
+   (delphyne.core.StrategyComp)" href="../../strategies/strategies/#delphyne.StrategyComp">StrategyComp</a>[<span title="delphyne.stdlib.strategies.StrategyInstance[N]">N</span>, <span title="delphyne.stdlib.strategies.StrategyInstance[P]">P</span>, <span title="delphyne.stdlib.strategies.StrategyInstance[T]">T</span>]</code></p>
 
 
         <p>A <em>strategy computation</em> that can be reified into a search tree,
@@ -4452,6 +4480,7 @@ functions so as to have them return <a class="autorefs autorefs-internal" title=
   
       dataclass
   " href="#delphyne.StrategyInstance"><code>StrategyInstance</code></a> objects.</p>
+
 
 
 
@@ -4623,6 +4652,7 @@ functions so as to have them return <a class="autorefs autorefs-internal" title=
 
 
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -4632,20 +4662,20 @@ functions so as to have them return <a class="autorefs autorefs-internal" title=
 
 </h4>
           <div class="doc-overloads">
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="IPDict (delphyne.stdlib.policies.IPDict)" href="#delphyne.IPDict">IPDict</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[T]">StrategyInstance[T]</span></span><span class="p">]</span>
-</code></pre></div><div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance.using[Pout]">using[Pout]</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Policy
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="IPDict (delphyne.stdlib.policies.IPDict)" href="#delphyne.IPDict">IPDict</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[T]">T</span></span><span class="p">]</span>
+</code></pre></div><div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance.using[Pout]">Pout</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Policy
 
 
   
       dataclass
-   (delphyne.stdlib.policies.Policy)" href="#delphyne.Policy">Policy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[N]">StrategyInstance[N]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[P]">StrategyInstance[P]</span></span><span class="p">]]</span> <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance.using[Pout]">using[Pout]</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance.using[Pout]">using[Pout]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[T]">StrategyInstance[T]</span></span><span class="p">]</span>
+   (delphyne.stdlib.policies.Policy)" href="#delphyne.Policy">Policy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[N]">N</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[P]">P</span></span><span class="p">]]</span> <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance.using[Pout]">Pout</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance.using[Pout]">Pout</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[T]">T</span></span><span class="p">]</span>
 </code></pre></div>          </div>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance.using[Pout]">using[Pout]</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Policy
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">using</span><span class="p">(</span><span class="n">get_policy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance.using[Pout]">Pout</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Policy
 
 
   
       dataclass
-   (delphyne.stdlib.policies.Policy)" href="#delphyne.Policy">Policy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[N]">StrategyInstance[N]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[P]">StrategyInstance[P]</span></span><span class="p">]]</span> <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance.using[Pout]">using[Pout]</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance.using[Pout]">using[Pout]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[T]">StrategyInstance[T]</span></span><span class="p">]</span>
+   (delphyne.stdlib.policies.Policy)" href="#delphyne.Policy">Policy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[N]">N</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[P]">P</span></span><span class="p">]]</span> <span class="o">|</span> <span class="n"><span title="types.EllipsisType">EllipsisType</span></span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance.using[Pout]">Pout</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance.using[Pout]">Pout</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[T]">T</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4841,7 +4871,7 @@ strategy from which the strategy is called.</p>
 
   
       dataclass
-   (delphyne.stdlib.policies.Policy)" href="#delphyne.Policy">Policy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[N]">StrategyInstance[N]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[P]">StrategyInstance[P]</span></span><span class="p">],</span> <span class="n">monitor</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="TreeMonitor
+   (delphyne.stdlib.policies.Policy)" href="#delphyne.Policy">Policy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[N]">N</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[P]">P</span></span><span class="p">],</span> <span class="n">monitor</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="TreeMonitor
 
 
   
@@ -4856,7 +4886,7 @@ strategy from which the strategy is called.</p>
 
   
       dataclass
-   (delphyne.stdlib.policies.Stream)" href="../streams/#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[T]">StrategyInstance[T]</span></span><span class="p">]</span>
+   (delphyne.stdlib.policies.Stream)" href="../streams/#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.strategies.StrategyInstance[T]">T</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5252,6 +5282,7 @@ instantiated.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/strategies.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 96</span>
@@ -5291,6 +5322,7 @@ instantiated.</p>
 
 
   <div class="doc doc-children">
+
 
 
 

@@ -1706,7 +1706,7 @@
 
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="AbstractStream (delphyne.core.AbstractStream)" href="../../policies/streams/#delphyne.AbstractStream">AbstractStream</a>[<span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span>]</code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="AbstractStream (delphyne.core.AbstractStream)" href="../../policies/streams/#delphyne.AbstractStream">AbstractStream</a>[<span title="delphyne.stdlib.streams.Stream[T]">T</span>]</code></p>
 
 
         <p>A search stream produced by a search policy or prompting policy.</p>
@@ -1728,7 +1728,7 @@ to the <a class="autorefs autorefs-internal" title="delphyne.core.streams" href=
           <tr class="doc-section-item">
             <td><code><span title="delphyne.Stream._generate">_generate</span></code></td>
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[[], <a class="autorefs autorefs-internal" title="StreamGen (delphyne.core.StreamGen)" href="../../policies/streams/#delphyne.StreamGen">StreamGen</a>[<span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span>]]</code>
+                  <code><span title="collections.abc.Callable">Callable</span>[[], <a class="autorefs autorefs-internal" title="StreamGen (delphyne.core.StreamGen)" href="../../policies/streams/#delphyne.StreamGen">StreamGen</a>[<span title="delphyne.stdlib.streams.Stream[T]">T</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1738,6 +1738,7 @@ to the <a class="autorefs autorefs-internal" title="delphyne.core.streams" href=
           </tr>
       </tbody>
     </table>
+
 
 
 
@@ -2113,6 +2114,7 @@ to the <a class="autorefs autorefs-internal" title="delphyne.core.streams" href=
 
 
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -2131,7 +2133,7 @@ to the <a class="autorefs autorefs-internal" title="delphyne.core.streams" href=
 
   
       dataclass
-   (delphyne.core.Solution)" href="../../policies/streams/#delphyne.Solution">Solution</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span></span><span class="p">]],</span> <span class="n"><a class="autorefs autorefs-internal" title="Budget
+   (delphyne.core.Solution)" href="../../policies/streams/#delphyne.Solution">Solution</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">T</span></span><span class="p">]],</span> <span class="n"><a class="autorefs autorefs-internal" title="Budget
 
 
   
@@ -2197,7 +2199,7 @@ to the <a class="autorefs autorefs-internal" title="delphyne.core.streams" href=
 
   
       dataclass
-   (delphyne.core.Solution)" href="../../policies/streams/#delphyne.Solution">Solution</a>[<span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span>]], <a class="autorefs autorefs-internal" title="Budget
+   (delphyne.core.Solution)" href="../../policies/streams/#delphyne.Solution">Solution</a>[<span title="delphyne.stdlib.streams.Stream[T]">T</span>]], <a class="autorefs autorefs-internal" title="Budget
 
 
   
@@ -2398,7 +2400,7 @@ must be spent for generating them.</p>
 
   
       dataclass
-   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span></span><span class="p">]</span>
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">T</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2517,12 +2519,12 @@ termination, even if <code>n</code> is <code>None</code>.</p>
 
   
       dataclass
-   (delphyne.core.Solution)" href="../../policies/streams/#delphyne.Solution">Solution</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span></span><span class="p">]],</span> <span class="n"><a class="autorefs autorefs-internal" title="StreamGen (delphyne.core.StreamGen)" href="../../policies/streams/#delphyne.StreamGen">StreamGen</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.bind[U]">bind[U]</span></span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
+   (delphyne.core.Solution)" href="../../policies/streams/#delphyne.Solution">Solution</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">T</span></span><span class="p">]],</span> <span class="n"><a class="autorefs autorefs-internal" title="StreamGen (delphyne.core.StreamGen)" href="../../policies/streams/#delphyne.StreamGen">StreamGen</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.bind[U]">U</span></span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
 
 
   
       dataclass
-   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.bind[U]">bind[U]</span></span><span class="p">]</span>
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.bind[U]">U</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2581,7 +2583,7 @@ concatenate the resulting streams.</p>
 
   
       dataclass
-   (delphyne.core.Solution)" href="../../policies/streams/#delphyne.Solution">Solution</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+   (delphyne.core.Solution)" href="../../policies/streams/#delphyne.Solution">Solution</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">T</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2622,7 +2624,7 @@ stream terminates without yielding any solution.</p>
 
   
       dataclass
-   (delphyne.core.Solution)" href="../../policies/streams/#delphyne.Solution">Solution</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span></span><span class="p">]]]</span>
+   (delphyne.core.Solution)" href="../../policies/streams/#delphyne.Solution">Solution</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">T</span></span><span class="p">]]]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2660,7 +2662,7 @@ stream terminates without yielding any solution.</p>
 
   
       dataclass
-   (delphyne.core.Solution)" href="../../policies/streams/#delphyne.Solution">Solution</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span></span><span class="p">]],</span> <span class="n"><a class="autorefs autorefs-internal" title="Budget
+   (delphyne.core.Solution)" href="../../policies/streams/#delphyne.Solution">Solution</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">T</span></span><span class="p">]],</span> <span class="n"><a class="autorefs autorefs-internal" title="Budget
 
 
   
@@ -2670,7 +2672,7 @@ stream terminates without yielding any solution.</p>
 
   
       dataclass
-   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">Stream[T]</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]]</span>
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">T</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2735,12 +2737,12 @@ budget, and the remaining stream, if any.</p>
 
   
       dataclass
-   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.sequence[U]">sequence[U]</span></span><span class="p">]],</span> <span class="o">*</span><span class="p">,</span> <span class="n">stop_on_reject</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.sequence[U]">U</span></span><span class="p">]],</span> <span class="o">*</span><span class="p">,</span> <span class="n">stop_on_reject</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
 
 
   
       dataclass
-   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.sequence[U]">sequence[U]</span></span><span class="p">]</span>
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.sequence[U]">U</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2813,12 +2815,12 @@ infinite collection of streams is passed.</p>
 
   
       dataclass
-   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.parallel[U]">parallel[U]</span></span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.parallel[U]">U</span></span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
 
 
   
       dataclass
-   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.parallel[U]">parallel[U]</span></span><span class="p">]</span>
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.parallel[U]">U</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2865,17 +2867,17 @@ interleaving the resulting solutions.</p>
 
   
       dataclass
-   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.or_else[U]">or_else[U]</span></span><span class="p">],</span> <span class="n">fallback</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.or_else[U]">U</span></span><span class="p">],</span> <span class="n">fallback</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
 
 
   
       dataclass
-   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.or_else[U]">or_else[U]</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.or_else[U]">U</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
 
 
   
       dataclass
-   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.or_else[U]">or_else[U]</span></span><span class="p">]</span>
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.or_else[U]">U</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2921,7 +2923,7 @@ run the <code>fallback</code> stream.</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">spend_on</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[],</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.spend_on[T]">spend_on[T]</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="Budget
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">spend_on</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[],</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.spend_on[T]">T</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="Budget
 
 
   
@@ -2931,7 +2933,7 @@ run the <code>fallback</code> stream.</p>
 
   
       dataclass
-   (delphyne.core.Budget)" href="../../policies/streams/#delphyne.Budget">Budget</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.StreamContext">StreamContext</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.spend_on[T]">spend_on[T]</span></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="SpendingDeclined
+   (delphyne.core.Budget)" href="../../policies/streams/#delphyne.Budget">Budget</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.StreamContext">StreamContext</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.spend_on[T]">T</span></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="SpendingDeclined
 
 
   
@@ -2992,7 +2994,7 @@ computation. This estimate is allowed to be inaccurate. See
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="delphyne.core.StreamContext">StreamContext</span>[<span title="delphyne.stdlib.streams.spend_on[T]">spend_on[T]</span> | <a class="autorefs autorefs-internal" title="SpendingDeclined
+                  <code><span title="delphyne.core.StreamContext">StreamContext</span>[<span title="delphyne.stdlib.streams.spend_on[T]">T</span> | <a class="autorefs autorefs-internal" title="SpendingDeclined
 
 
   
@@ -3007,7 +3009,7 @@ computation. This estimate is allowed to be inaccurate. See
           </tr>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="delphyne.core.StreamContext">StreamContext</span>[<span title="delphyne.stdlib.streams.spend_on[T]">spend_on[T]</span> | <a class="autorefs autorefs-internal" title="SpendingDeclined
+                  <code><span title="delphyne.core.StreamContext">StreamContext</span>[<span title="delphyne.stdlib.streams.spend_on[T]">T</span> | <a class="autorefs autorefs-internal" title="SpendingDeclined
 
 
   
@@ -3027,7 +3029,7 @@ computation. This estimate is allowed to be inaccurate. See
           </tr>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="delphyne.core.StreamContext">StreamContext</span>[<span title="delphyne.stdlib.streams.spend_on[T]">spend_on[T]</span> | <a class="autorefs autorefs-internal" title="SpendingDeclined
+                  <code><span title="delphyne.core.StreamContext">StreamContext</span>[<span title="delphyne.stdlib.streams.spend_on[T]">T</span> | <a class="autorefs autorefs-internal" title="SpendingDeclined
 
 
   
@@ -3131,6 +3133,7 @@ computation. This estimate is allowed to be inaccurate. See
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">378</span>
@@ -3152,6 +3155,7 @@ computation. This estimate is allowed to be inaccurate. See
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -3217,6 +3221,7 @@ policies, search policies and other stream transformers using the
           </tr>
       </tbody>
     </table>
+
 
 
 
@@ -3310,6 +3315,7 @@ policies, search policies and other stream transformers using the
 
 
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3392,7 +3398,7 @@ policies, search policies and other stream transformers using the
 
   
       dataclass
-   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.take[T]">take[T]</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">num_generated</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.take[T]">T</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">num_generated</span><span class="p">:</span> <span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -3442,7 +3448,7 @@ policies, search policies and other stream transformers using the
 
   
       dataclass
-   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.with_budget[T]">with_budget[T]</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">budget</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="BudgetLimit
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.with_budget[T]">T</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">budget</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="BudgetLimit
 
 
   
@@ -3495,7 +3501,7 @@ policies, search policies and other stream transformers using the
 
   
       dataclass
-   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.loop[T]">loop[T]</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">stop_on_reject</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="StreamGen (delphyne.core.StreamGen)" href="../../policies/streams/#delphyne.StreamGen">StreamGen</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.loop[T]">loop[T]</span></span><span class="p">]</span>
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.loop[T]">T</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">stop_on_reject</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="StreamGen (delphyne.core.StreamGen)" href="../../policies/streams/#delphyne.StreamGen">StreamGen</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.loop[T]">T</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -3547,7 +3553,7 @@ up to an (optional) limit.</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">stream_transformer</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="_ParametricStreamTransformerFn (delphyne.stdlib.streams._ParametricStreamTransformerFn)" href="#delphyne.stdlib.streams._ParametricStreamTransformerFn">_ParametricStreamTransformerFn</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.stream_transformer[**A]">stream_transformer[**A]</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.stream_transformer[**A]">stream_transformer[**A]</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="StreamTransformer
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">stream_transformer</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="_ParametricStreamTransformerFn (delphyne.stdlib.streams._ParametricStreamTransformerFn)" href="#delphyne.stdlib.streams._ParametricStreamTransformerFn">_ParametricStreamTransformerFn</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.stream_transformer[**A]">A</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.stream_transformer[**A]">A</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="StreamTransformer
 
 
   
@@ -3598,7 +3604,7 @@ additional parameters, and returns a stream generator.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[<span title="delphyne.stdlib.streams.stream_transformer[**A]">stream_transformer[**A]</span>, <a class="autorefs autorefs-internal" title="StreamTransformer
+                  <code><span title="collections.abc.Callable">Callable</span>[<span title="delphyne.stdlib.streams.stream_transformer[**A]">A</span>, <a class="autorefs autorefs-internal" title="StreamTransformer
 
 
   
@@ -3613,7 +3619,7 @@ additional parameters, and returns a stream generator.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[<span title="delphyne.stdlib.streams.stream_transformer[**A]">stream_transformer[**A]</span>, <a class="autorefs autorefs-internal" title="StreamTransformer
+                  <code><span title="collections.abc.Callable">Callable</span>[<span title="delphyne.stdlib.streams.stream_transformer[**A]">A</span>, <a class="autorefs autorefs-internal" title="StreamTransformer
 
 
   
@@ -3720,6 +3726,7 @@ additional parameters, and returns a stream generator.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">202</span>
@@ -3739,6 +3746,7 @@ additional parameters, and returns a stream generator.</p>
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -3778,6 +3786,7 @@ additional parameters, and returns a stream generator.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">210</span>
@@ -3801,6 +3810,7 @@ additional parameters, and returns a stream generator.</p>
 
 
   <div class="doc doc-children">
+
 
 
 

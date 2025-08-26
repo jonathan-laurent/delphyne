@@ -1907,7 +1907,7 @@
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">spawn_node</span><span class="p">(</span><span class="n">node_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.spawn_node[N]">spawn_node[N]</span></span><span class="p">],</span> <span class="o">**</span><span class="n">args</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeBuilder
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">spawn_node</span><span class="p">(</span><span class="n">node_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.spawn_node[N]">N</span></span><span class="p">],</span> <span class="o">**</span><span class="n">args</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeBuilder
 
 
   
@@ -2051,6 +2051,7 @@ accidentally passing uninstantiated parametric inner policy fields.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
@@ -2119,6 +2120,7 @@ over elements of an opaque space.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">62</span>
@@ -2175,6 +2177,7 @@ over elements of an opaque space.</p>
 
 
 
+
   </div>
 
     </div>
@@ -2189,12 +2192,12 @@ over elements of an opaque space.</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">branch</span><span class="p">(</span><span class="n">cands</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">branch[P]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.branch[T]">branch[T]</span></span><span class="p">],</span> <span class="n">meta</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">branch[P]</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">branch[P]</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Branch
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">branch</span><span class="p">(</span><span class="n">cands</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.branch[T]">T</span></span><span class="p">],</span> <span class="n">meta</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Branch
 
 
   
       dataclass
-   (delphyne.stdlib.nodes.Branch)" href="#delphyne.stdlib.nodes.Branch">Branch</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.branch[P]">branch[P]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.branch[T]">branch[T]</span></span><span class="p">]</span>
+   (delphyne.stdlib.nodes.Branch)" href="#delphyne.stdlib.nodes.Branch">Branch</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.branch[T]">T</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -2218,7 +2221,7 @@ over elements of an opaque space.</p>
                 <code>cands</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a>[<span title="delphyne.stdlib.nodes.branch[P]">branch[P]</span>, <span title="delphyne.stdlib.nodes.branch[T]">branch[T]</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a>[<span title="delphyne.stdlib.nodes.branch[P]">P</span>, <span title="delphyne.stdlib.nodes.branch[T]">T</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2235,7 +2238,7 @@ or a strategy via the <code>using</code> method.</p>
                 <code>meta</code>
             </td>
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.nodes.branch[P]">branch[P]</span>], <a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a>] | None</code>
+                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.nodes.branch[P]">P</span>], <a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a>] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2252,7 +2255,7 @@ arbitrary metadata accessible to search policies.</p>
                 <code>inner_policy_type</code>
             </td>
             <td>
-                  <code><span title="type">type</span>[<span title="delphyne.stdlib.nodes.branch[P]">branch[P]</span>] | None</code>
+                  <code><span title="type">type</span>[<span title="delphyne.stdlib.nodes.branch[P]">P</span>] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2349,6 +2352,7 @@ inference when necessary.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
@@ -2400,6 +2404,7 @@ inference when necessary.</p>
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -2648,6 +2653,7 @@ causing the same message to be repeatedly printed.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">202</span>
@@ -2707,6 +2713,7 @@ causing the same message to be repeatedly printed.</p>
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -3010,6 +3017,7 @@ whole node is ignored.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">284</span>
@@ -3080,6 +3088,7 @@ whole node is ignored.</p>
 
 
 
+
   </div>
 
     </div>
@@ -3094,12 +3103,12 @@ whole node is ignored.</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">factor</span><span class="p">(</span><span class="nb">eval</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.factor[P]">factor[P]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.factor[E]">factor[E]</span></span><span class="p">],</span> <span class="n">factor</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.factor[P]">factor[P]</span></span><span class="p">],</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.factor[E]">factor[E]</span></span><span class="p">],</span> <span class="n"><span title="float">float</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.factor[P]">factor[P]</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Factor
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">factor</span><span class="p">(</span><span class="nb">eval</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.factor[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.factor[E]">E</span></span><span class="p">],</span> <span class="n">factor</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.factor[P]">P</span></span><span class="p">],</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.factor[E]">E</span></span><span class="p">],</span> <span class="n"><span title="float">float</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.factor[P]">P</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Factor
 
 
   
       dataclass
-   (delphyne.stdlib.nodes.Factor)" href="#delphyne.stdlib.nodes.Factor">Factor</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.factor[P]">factor[P]</span></span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+   (delphyne.stdlib.nodes.Factor)" href="#delphyne.stdlib.nodes.Factor">Factor</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.factor[P]">P</span></span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -3123,7 +3132,7 @@ whole node is ignored.</p>
                 <code>eval</code>
             </td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a>[<span title="delphyne.stdlib.nodes.factor[P]">factor[P]</span>, <span title="delphyne.stdlib.nodes.factor[E]">factor[E]</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a>[<span title="delphyne.stdlib.nodes.factor[P]">P</span>, <span title="delphyne.stdlib.nodes.factor[E]">E</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3142,7 +3151,7 @@ typically extract a single element from this space.</p>
                 <code>factor</code>
             </td>
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.nodes.factor[P]">factor[P]</span>], <span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.nodes.factor[E]">factor[E]</span>], <span title="float">float</span>] | None]</code>
+                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.nodes.factor[P]">P</span>], <span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.nodes.factor[E]">E</span>], <span title="float">float</span>] | None]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3281,6 +3290,7 @@ the whole value of the branch instead of just multiplying it.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">350</span>
@@ -3339,6 +3349,7 @@ the whole value of the branch instead of just multiplying it.</p>
 
 
 
+
   </div>
 
     </div>
@@ -3353,12 +3364,12 @@ the whole value of the branch instead of just multiplying it.</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">value</span><span class="p">(</span><span class="nb">eval</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.value[P]">value[P]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.value[E]">value[E]</span></span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.value[P]">value[P]</span></span><span class="p">],</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.value[E]">value[E]</span></span><span class="p">],</span> <span class="n"><span title="float">float</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.value[P]">value[P]</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Value
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">value</span><span class="p">(</span><span class="nb">eval</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.value[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.value[E]">E</span></span><span class="p">],</span> <span class="n">value</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.value[P]">P</span></span><span class="p">],</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.value[E]">E</span></span><span class="p">],</span> <span class="n"><span title="float">float</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span> <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.value[P]">P</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Value
 
 
   
       dataclass
-   (delphyne.stdlib.nodes.Value)" href="#delphyne.stdlib.nodes.Value">Value</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.value[P]">value[P]</span></span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+   (delphyne.stdlib.nodes.Value)" href="#delphyne.stdlib.nodes.Value">Value</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.value[P]">P</span></span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -3464,6 +3475,7 @@ node features a sequence of embedded trees.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">399</span>
@@ -3518,6 +3530,7 @@ node features a sequence of embedded trees.</p>
 
 
 
+
   </div>
 
     </div>
@@ -3537,7 +3550,7 @@ node features a sequence of embedded trees.</p>
 
   
       dataclass
-   (delphyne.core.StrategyComp)" href="../../strategies/strategies/#delphyne.StrategyComp">StrategyComp</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.join[N]">join[N]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.join[P]">join[P]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.join[T]">join[T]</span></span><span class="p">]],</span> <span class="n">meta</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.join[P]">join[P]</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.join[N]">join[N]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.join[P]">join[P]</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.join[T]">join[T]</span></span><span class="p">]]</span>
+   (delphyne.core.StrategyComp)" href="../../strategies/strategies/#delphyne.StrategyComp">StrategyComp</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.join[N]">N</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.join[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.join[T]">T</span></span><span class="p">]],</span> <span class="n">meta</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.join[P]">P</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.join[N]">N</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.join[P]">P</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.join[T]">T</span></span><span class="p">]]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -3567,7 +3580,7 @@ in parallel.</p>
 
   
       dataclass
-   (delphyne.core.StrategyComp)" href="../../strategies/strategies/#delphyne.StrategyComp">StrategyComp</a>[<span title="delphyne.stdlib.nodes.join[N]">join[N]</span>, <span title="delphyne.stdlib.nodes.join[P]">join[P]</span>, <span title="delphyne.stdlib.nodes.join[T]">join[T]</span>]]</code>
+   (delphyne.core.StrategyComp)" href="../../strategies/strategies/#delphyne.StrategyComp">StrategyComp</a>[<span title="delphyne.stdlib.nodes.join[N]">N</span>, <span title="delphyne.stdlib.nodes.join[P]">P</span>, <span title="delphyne.stdlib.nodes.join[T]">T</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3583,7 +3596,7 @@ in parallel.</p>
                 <code>meta</code>
             </td>
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.nodes.join[P]">join[P]</span>], <a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a>] | None</code>
+                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.nodes.join[P]">P</span>], <a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a>] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3610,7 +3623,7 @@ arbitrary metadata accessible to search policies.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                  <code><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a>[<span title="delphyne.stdlib.nodes.join[N]">join[N]</span>, <span title="delphyne.stdlib.nodes.join[P]">join[P]</span>, <span title="collections.abc.Sequence">Sequence</span>[<span title="delphyne.stdlib.nodes.join[T]">join[T]</span>]]</code>
+                  <code><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a>[<span title="delphyne.stdlib.nodes.join[N]">N</span>, <span title="delphyne.stdlib.nodes.join[P]">P</span>, <span title="collections.abc.Sequence">Sequence</span>[<span title="delphyne.stdlib.nodes.join[T]">T</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3716,6 +3729,7 @@ interpreter in the form of <em>implicit answers</em>, allowing
 <code>__Computation__</code> queries to be automatically answered when running
 tests. Generated answers can be hardcoded in demonstrations <strong>after</strong>
 the fact via proper editor support.</p>
+
 
 
 
@@ -3855,6 +3869,7 @@ the fact via proper editor support.</p>
 
 
 
+
   </div>
 
     </div>
@@ -3869,12 +3884,12 @@ the fact via proper editor support.</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.computations.compute[**P]">compute[**P]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.computations.compute[T]">compute[T]</span></span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.computations.compute[**P].args">args</span></span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.computations.compute[**P].kwargs">kwargs</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core_and_base.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Compute
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.computations.compute[**P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.computations.compute[T]">T</span></span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.computations.compute[**P]">P</span></span><span class="o">.</span><span class="n"><span title="delphyne.stdlib.computations.compute[**P].args">args</span></span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.computations.compute[**P]">P</span></span><span class="o">.</span><span class="n"><span title="delphyne.stdlib.computations.compute[**P].kwargs">kwargs</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core_and_base.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Compute
 
 
   
       dataclass
-   (delphyne.stdlib.computations.Compute)" href="#delphyne.stdlib.computations.Compute">Compute</a></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.computations.compute[T]">compute[T]</span></span><span class="p">]</span>
+   (delphyne.stdlib.computations.Compute)" href="#delphyne.stdlib.computations.Compute">Compute</a></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.computations.compute[T]">T</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -3903,7 +3918,7 @@ the fact via proper editor support.</p>
                 <code>f</code>
             </td>
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[<span title="delphyne.stdlib.computations.compute[**P]">compute[**P]</span>, <span title="delphyne.stdlib.computations.compute[T]">compute[T]</span>]</code>
+                  <code><span title="collections.abc.Callable">Callable</span>[<span title="delphyne.stdlib.computations.compute[**P]">P</span>, <span title="delphyne.stdlib.computations.compute[T]">T</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3921,7 +3936,7 @@ JSON-serializable. It does not need to be deterministic.</p>
                 <code>*args</code>
             </td>
             <td>
-                  <code><span title="delphyne.stdlib.computations.compute[**P].args">args</span></code>
+                  <code><span title="delphyne.stdlib.computations.compute[**P]">P</span>.<span title="delphyne.stdlib.computations.compute[**P].args">args</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3937,7 +3952,7 @@ JSON-serializable. It does not need to be deterministic.</p>
                 <code>**kwargs</code>
             </td>
             <td>
-                  <code><span title="delphyne.stdlib.computations.compute[**P].kwargs">kwargs</span></code>
+                  <code><span title="delphyne.stdlib.computations.compute[**P]">P</span>.<span title="delphyne.stdlib.computations.compute[**P].kwargs">kwargs</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -4210,6 +4225,7 @@ environment.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">21</span>
@@ -4312,6 +4328,7 @@ environment.</p>
 
 
 
+
   </div>
 
     </div>
@@ -4363,6 +4380,7 @@ adding answers for flag queries in the <code>queries</code> section, or by
 using value-based hints (i.e., <code>#flag_value</code>, which is possible
 since flag queries implement <code>AbstractQuery.finite_answer_set</code>).</p>
 </details>
+
 
 
 
@@ -4458,6 +4476,7 @@ since flag queries implement <code>AbstractQuery.finite_answer_set</code>).</p>
 
 
 
+
   </div>
 
     </div>
@@ -4472,12 +4491,12 @@ since flag queries implement <code>AbstractQuery.finite_answer_set</code>).</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_flag</span><span class="p">(</span><span class="n">flag</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="FlagQuery (delphyne.stdlib.flags.FlagQuery)" href="#delphyne.FlagQuery">FlagQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.flags.get_flag[T]">get_flag[T]</span></span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core_and_base.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Flag
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">get_flag</span><span class="p">(</span><span class="n">flag</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="FlagQuery (delphyne.stdlib.flags.FlagQuery)" href="#delphyne.FlagQuery">FlagQuery</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.flags.get_flag[T]">T</span></span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core_and_base.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Flag
 
 
   
       dataclass
-   (delphyne.stdlib.flags.Flag)" href="#delphyne.Flag">Flag</a></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">],</span> <span class="n"><span title="object">object</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.flags.get_flag[T]">get_flag[T]</span></span><span class="p">]</span>
+   (delphyne.stdlib.flags.Flag)" href="#delphyne.Flag">Flag</a></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">],</span> <span class="n"><span title="object">object</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.flags.get_flag[T]">T</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -4541,12 +4560,12 @@ Python does not support higher-kinded types.</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">elim_flag</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.core_and_base.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n">flag</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.flags.elim_flag[F]">elim_flag[F]</span></span><span class="p">],</span> <span class="n">val</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="PureTreeTransformerFn (delphyne.core_and_base.PureTreeTransformerFn)" href="../basic/#delphyne.stdlib.policies.PureTreeTransformerFn">PureTreeTransformerFn</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Flag
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">elim_flag</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.core_and_base.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n">flag</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.flags.elim_flag[F]">F</span></span><span class="p">],</span> <span class="n">val</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="PureTreeTransformerFn (delphyne.core_and_base.PureTreeTransformerFn)" href="../basic/#delphyne.stdlib.policies.PureTreeTransformerFn">PureTreeTransformerFn</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Flag
 
 
   
       dataclass
-   (delphyne.stdlib.flags.Flag)" href="#delphyne.Flag">Flag</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.flags.elim_flag[F]">elim_flag[F]</span></span><span class="p">],</span> <span class="n"><span title="typing.Never">Never</span></span><span class="p">]</span>
+   (delphyne.stdlib.flags.Flag)" href="#delphyne.Flag">Flag</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.flags.elim_flag[F]">F</span></span><span class="p">],</span> <span class="n"><span title="typing.Never">Never</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -4626,12 +4645,13 @@ Python does not support higher-kinded types.</p>
 
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="Query (delphyne.stdlib.queries.Query)" href="../queries/#delphyne.Query">Query</a>[<span title="delphyne.stdlib.flags.FlagQuery[T]">FlagQuery[T]</span>]</code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="Query (delphyne.stdlib.queries.Query)" href="../queries/#delphyne.Query">Query</a>[<span title="delphyne.stdlib.flags.FlagQuery[T]">T</span>]</code></p>
 
 
         <p>Base class for flag queries.</p>
 <p>Type parameter <code>T</code> must be of the form <code>Literal[s1, ..., sn]</code> where
 <code>si</code> are string literals. The first value is considered the default.</p>
+
 
 
 
@@ -4708,6 +4728,7 @@ Python does not support higher-kinded types.</p>
 
 
   <div class="doc doc-children">
+
 
 
 
