@@ -148,7 +148,9 @@ export interface ExecutionContext {
 
 function executionContextOfConfig(config: Config): ExecutionContext {
   return {
-    strategy_dirs: config.strategy_dirs ?? [],
+    // By default, look for strategies in the workspace root directory. This is
+    // consistent with the defaults of `CommandExecutionContext`.
+    strategy_dirs: config.strategy_dirs ?? ["."],
     modules: config.modules ?? [],
   };
 }
