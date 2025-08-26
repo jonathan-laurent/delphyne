@@ -3,6 +3,7 @@ Global objects
 """
 
 from delphyne.stdlib.computations import __Computation__
+from delphyne.stdlib.universal_queries import UniversalQuery
 
 
 def stdlib_globals() -> dict[str, object]:
@@ -12,4 +13,7 @@ def stdlib_globals() -> dict[str, object]:
     command files (to be passed to `ObjectLoader` via the
     `extra_objects` option).
     """
-    return {__Computation__.__name__: __Computation__}
+    return {
+        __Computation__.__name__: __Computation__,
+        UniversalQuery.__name__: UniversalQuery,
+    }

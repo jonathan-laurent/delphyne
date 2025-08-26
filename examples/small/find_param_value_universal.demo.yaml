@@ -1,0 +1,33 @@
+# @config
+# modules: [find_param_value_universal]
+# @end
+
+- strategy: find_param_value
+  args: {expr: "x**2 - 2*x + n"}
+  tests:
+    - run | success
+  queries: 
+    - query: UniversalQuery
+      args:
+        strategy: find_param_value_universal.find_param_value
+        expected_type: <class 'int'>
+        tags: [n_val]
+        locals:
+          expr: x**2 - 2*x + n
+      answers:
+        - answer: |
+            ```
+            1
+            ```
+    - query: UniversalQuery
+      args:
+        strategy: find_param_value_universal.find_param_value
+        expected_type: <class 'str'>
+        tags: [equiv]
+        locals:
+          str(expr_sp): x**2 - 2*x + 1
+      answers:
+        - answer: |
+            ```
+            (x - 1)**2
+            ```
