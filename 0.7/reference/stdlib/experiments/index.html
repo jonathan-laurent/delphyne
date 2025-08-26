@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../../None">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.17">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
     
     
       
@@ -658,8 +658,6 @@
       
         
       
-        
-      
     
     
     
@@ -727,29 +725,6 @@
   
   <span class="md-ellipsis">
     Search Streams
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../policies/envs/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Policy Environments
     
   </span>
   
@@ -891,6 +866,8 @@
       
         
       
+        
+      
     
     
     
@@ -981,6 +958,29 @@
   
   <span class="md-ellipsis">
     Streams
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Environments
     
   </span>
   
@@ -1767,7 +1767,7 @@ dataclass that holds all experiment hyperparameters.</p>
           <tr class="doc-section-item">
             <td><code><span title="delphyne.stdlib.experiments.experiment_launcher.Experiment.experiment">experiment</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="ExperimentFun (delphyne.stdlib.experiments.experiment_launcher.ExperimentFun)" href="#delphyne.stdlib.experiments.experiment_launcher.ExperimentFun">ExperimentFun</a>[<span title="delphyne.stdlib.experiments.experiment_launcher.Experiment[Config]">Experiment[Config]</span>]</code>
+                  <code><a class="autorefs autorefs-internal" title="ExperimentFun (delphyne.stdlib.experiments.experiment_launcher.ExperimentFun)" href="#delphyne.stdlib.experiments.experiment_launcher.ExperimentFun">ExperimentFun</a>[<span title="delphyne.stdlib.experiments.experiment_launcher.Experiment[Config]">Config</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1812,7 +1812,7 @@ disregarded and overriden by the <code>Experiment</code> class.</p>
           <tr class="doc-section-item">
             <td><code><span title="delphyne.stdlib.experiments.experiment_launcher.Experiment.configs">configs</span></code></td>
             <td>
-                  <code><span title="collections.abc.Sequence">Sequence</span>[<span title="delphyne.stdlib.experiments.experiment_launcher.Experiment[Config]">Experiment[Config]</span>] | None</code>
+                  <code><span title="collections.abc.Sequence">Sequence</span>[<span title="delphyne.stdlib.experiments.experiment_launcher.Experiment[Config]">Config</span>] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1826,7 +1826,7 @@ there upon loading.</p>
           <tr class="doc-section-item">
             <td><code><span title="delphyne.stdlib.experiments.experiment_launcher.Experiment.config_type">config_type</span></code></td>
             <td>
-                  <code><span title="type">type</span>[<span title="delphyne.stdlib.experiments.experiment_launcher.Experiment[Config]">Experiment[Config]</span>] | <span title="delphyne.utils.typing.NoTypeInfo">NoTypeInfo</span></code>
+                  <code><span title="type">type</span>[<span title="delphyne.stdlib.experiments.experiment_launcher.Experiment[Config]">Config</span>] | <span title="delphyne.utils.typing.NoTypeInfo">NoTypeInfo</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1862,7 +1862,7 @@ persistent state file when provided and is otherwise not used.</p>
           <tr class="doc-section-item">
             <td><code><span title="delphyne.stdlib.experiments.experiment_launcher.Experiment.config_naming">config_naming</span></code></td>
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.experiments.experiment_launcher.Experiment[Config]">Experiment[Config]</span>, <span title="uuid.UUID">UUID</span>], <span title="str">str</span>] | None</code>
+                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.experiments.experiment_launcher.Experiment[Config]">Config</span>, <span title="uuid.UUID">UUID</span>], <span title="str">str</span>] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1949,6 +1949,7 @@ such traces can be large.</p>
   invalidating an existing experiment's persistent state, by
   providing default values for them.</li>
 </ul>
+
 
 
 
@@ -2716,6 +2717,7 @@ such traces can be large.</p>
 
 
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3247,7 +3249,7 @@ fact, without any LLMs being called.</p>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">replay_config</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.experiments.experiment_launcher.Experiment[Config]">Experiment[Config]</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">replay_config</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.experiments.experiment_launcher.Experiment[Config]">Config</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3605,6 +3607,7 @@ since they are overriden by the <code>Experiment</code> class.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">76</span>
@@ -3641,6 +3644,7 @@ since they are overriden by the <code>Experiment</code> class.</p>
 
 
 
+
   </div>
 
     </div>
@@ -3666,6 +3670,7 @@ since they are overriden by the <code>Experiment</code> class.</p>
 
 
         <p>Persistent state of an experiment, stored on disk as a YAML file.</p>
+
 
 
 
@@ -3735,6 +3740,7 @@ since they are overriden by the <code>Experiment</code> class.</p>
 
 
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -3743,7 +3749,7 @@ since they are overriden by the <code>Experiment</code> class.</p>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">inverse_mapping</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.experiments.experiment_launcher.ExperimentState[Config]">ExperimentState[Config]</span></span><span class="p">],</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">inverse_mapping</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.experiments.experiment_launcher.ExperimentState[Config]">Config</span></span><span class="p">],</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3828,7 +3834,7 @@ configuration.</p>
           <tr class="doc-section-item">
             <td><code><span title="delphyne.stdlib.experiments.experiment_launcher.ConfigInfo.params">params</span></code></td>
             <td>
-                  <code><span title="delphyne.stdlib.experiments.experiment_launcher.ConfigInfo[Config]">ConfigInfo[Config]</span></code>
+                  <code><span title="delphyne.stdlib.experiments.experiment_launcher.ConfigInfo[Config]">Config</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3849,6 +3855,7 @@ configuration.</p>
           </tr>
       </tbody>
     </table>
+
 
 
 
@@ -3900,6 +3907,7 @@ configuration.</p>
 
 
 
+
   </div>
 
     </div>
@@ -3921,6 +3929,7 @@ configuration.</p>
 
 
         <p>A CLI application for controlling an experiment from the shell.</p>
+
 
 
 
@@ -4101,6 +4110,7 @@ configuration.</p>
 
 
   <div class="doc doc-children">
+
 
 
 

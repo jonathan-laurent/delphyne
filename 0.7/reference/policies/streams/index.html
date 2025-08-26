@@ -12,11 +12,11 @@
         <link rel="prev" href="../definitions/">
       
       
-        <link rel="next" href="../envs/">
+        <link rel="next" href="../../demos/definitions/">
       
       
       <link rel="icon" href="../../../None">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.17">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
     
     
       
@@ -660,8 +660,6 @@
       
         
       
-        
-      
     
     
     
@@ -916,29 +914,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../envs/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Policy Environments
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -1068,6 +1043,8 @@
       
         
       
+        
+      
     
     
     
@@ -1158,6 +1135,29 @@
   
   <span class="md-ellipsis">
     Streams
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stdlib/environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Environments
     
   </span>
   
@@ -1547,7 +1547,9 @@ the standard library).</p>
 
 
 
+
   <div class="doc doc-children">
+
 
 
 
@@ -1613,6 +1615,7 @@ of this field are associated a spending of 0.</p>
           </tr>
       </tbody>
     </table>
+
 
 
 
@@ -1732,6 +1735,7 @@ of this field are associated a spending of 0.</p>
 
 
 
+
   </div>
 
     </div>
@@ -1771,6 +1775,7 @@ infinite vector with finite support.</p>
   
       dataclass
   " href="#delphyne.BudgetLimit"><code>BudgetLimit</code></a>.</p>
+
 
 
 
@@ -1826,6 +1831,7 @@ infinite vector with finite support.</p>
 
 
 
+
   </div>
 
     </div>
@@ -1857,6 +1863,7 @@ features (<a class="autorefs autorefs-internal" title="Stream
   
       dataclass
   " href="../../stdlib/streams/#delphyne.Stream"><code>Stream</code></a>).</p>
+
 
 
 
@@ -1912,6 +1919,7 @@ features (<a class="autorefs autorefs-internal" title="Stream
 
 
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -1924,7 +1932,7 @@ features (<a class="autorefs autorefs-internal" title="Stream
   </span>
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">gen</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="StreamGen (delphyne.core.streams.StreamGen)" href="#delphyne.StreamGen">StreamGen</a></span><span class="p">[</span><span class="n"><span title="delphyne.core.streams.AbstractStream[T]">AbstractStream[T]</span></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">gen</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="StreamGen (delphyne.core.streams.StreamGen)" href="#delphyne.StreamGen">StreamGen</a></span><span class="p">[</span><span class="n"><span title="delphyne.core.streams.AbstractStream[T]">T</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2039,7 +2047,7 @@ value with optional metadata.</p>
 
   
       dataclass
-   (delphyne.core.refs.Tracked)" href="../../strategies/traces/#delphyne.core.refs.Tracked">Tracked</a>[<span title="delphyne.core.streams.Solution[T]">Solution[T]</span>]</code>
+   (delphyne.core.refs.Tracked)" href="../../strategies/traces/#delphyne.core.refs.Tracked">Tracked</a>[<span title="delphyne.core.streams.Solution[T]">T</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2060,6 +2068,7 @@ value with optional metadata.</p>
           </tr>
       </tbody>
     </table>
+
 
 
 
@@ -2100,6 +2109,7 @@ value with optional metadata.</p>
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -2211,6 +2221,7 @@ the <a class="autorefs autorefs-internal" title="Stream
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/streams.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">158</span>
@@ -2282,6 +2293,7 @@ the <a class="autorefs autorefs-internal" title="Stream
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -2380,6 +2392,7 @@ the <a class="autorefs autorefs-internal" title="Stream
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/streams.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">192</span>
@@ -2429,6 +2442,7 @@ the <a class="autorefs autorefs-internal" title="Stream
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -2491,6 +2505,7 @@ stream. See <a class="autorefs autorefs-internal" title="ProbInfo
   
       dataclass
   " href="../../stdlib/queries/#delphyne.ProbInfo"><code>ProbInfo</code></a> for an example.</p>
+
 
 
 

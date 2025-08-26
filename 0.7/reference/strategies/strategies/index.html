@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../../None">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.17">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
     
     
       
@@ -778,15 +778,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#delphyne.tracer_hook" class="md-nav__link">
-    <span class="md-ellipsis">
-      tracer_hook
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -933,8 +924,6 @@
       
         
       
-        
-      
     
     
     
@@ -1002,29 +991,6 @@
   
   <span class="md-ellipsis">
     Search Streams
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../policies/envs/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Policy Environments
     
   </span>
   
@@ -1164,6 +1130,8 @@
       
         
       
+        
+      
     
     
     
@@ -1254,6 +1222,29 @@
   
   <span class="md-ellipsis">
     Streams
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stdlib/environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Environments
     
   </span>
   
@@ -1595,15 +1586,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#delphyne.tracer_hook" class="md-nav__link">
-    <span class="md-ellipsis">
-      tracer_hook
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1743,6 +1725,7 @@ requires knowing its reference along with the associated hooks.</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">468</span>
@@ -1776,6 +1759,7 @@ requires knowing its reference along with the associated hooks.</p>
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -1828,6 +1812,7 @@ annotations are inspected by methods such as <code>return_type</code> and
 <code>inner_policy_type</code>. Thus, passing an anonymous function as
 <code>_comp</code> is not recommended.</p>
 </details>
+
 
 
 
@@ -2100,6 +2085,7 @@ annotations are inspected by methods such as <code>return_type</code> and
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -2528,7 +2514,7 @@ associated policy.</p>
 
   
       dataclass
-   (delphyne.core.trees.StrategyComp)" href="#delphyne.StrategyComp">StrategyComp</a></span><span class="p">[</span><span class="n"><span title="delphyne.core.reification.reify[N]">reify[N]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.core.reification.reify[P]">reify[P]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.core.reification.reify[T]">reify[T]</span></span><span class="p">],</span>
+   (delphyne.core.trees.StrategyComp)" href="#delphyne.StrategyComp">StrategyComp</a></span><span class="p">[</span><span class="n"><span title="delphyne.core.reification.reify[N]">N</span></span><span class="p">,</span> <span class="n"><span title="delphyne.core.reification.reify[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.core.reification.reify[T]">T</span></span><span class="p">],</span>
     <span class="n">monitor</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="TreeMonitor
 
 
@@ -2546,7 +2532,7 @@ associated policy.</p>
 
   
       dataclass
-   (delphyne.core.trees.Tree)" href="../trees/#delphyne.Tree">Tree</a></span><span class="p">[</span><span class="n"><span title="delphyne.core.reification.reify[N]">reify[N]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.core.reification.reify[P]">reify[P]</span></span><span class="p">,</span> <span class="n"><span title="delphyne.core.reification.reify[T]">reify[T]</span></span><span class="p">]</span>
+   (delphyne.core.trees.Tree)" href="../trees/#delphyne.Tree">Tree</a></span><span class="p">[</span><span class="n"><span title="delphyne.core.reification.reify[N]">N</span></span><span class="p">,</span> <span class="n"><span title="delphyne.core.reification.reify[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.core.reification.reify[T]">T</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -2586,7 +2572,7 @@ start with the new, augmented path.</p>
 
   
       dataclass
-   (delphyne.core.trees.StrategyComp)" href="#delphyne.StrategyComp">StrategyComp</a>[<span title="delphyne.core.reification.reify[N]">reify[N]</span>, <span title="delphyne.core.reification.reify[P]">reify[P]</span>, <span title="delphyne.core.reification.reify[T]">reify[T]</span>]</code>
+   (delphyne.core.trees.StrategyComp)" href="#delphyne.StrategyComp">StrategyComp</a>[<span title="delphyne.core.reification.reify[N]">N</span>, <span title="delphyne.core.reification.reify[P]">P</span>, <span title="delphyne.core.reification.reify[T]">T</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2674,7 +2660,8 @@ closure returns the same closure unchanged).</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/reification.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 60</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 59</span>
+<span class="normal"> 60</span>
 <span class="normal"> 61</span>
 <span class="normal"> 62</span>
 <span class="normal"> 63</span>
@@ -2729,8 +2716,7 @@ closure returns the same closure unchanged).</p>
 <span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">reify</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+<span class="normal">115</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">reify</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="n">strategy</span><span class="p">:</span> <span class="n">StrategyComp</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
     <span class="n">monitor</span><span class="p">:</span> <span class="n">TreeMonitor</span> <span class="o">=</span> <span class="n">TreeMonitor</span><span class="p">(),</span>
     <span class="n">allow_noncopyable_actions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -2847,6 +2833,7 @@ assertion or an index-out-of-bounds error).</p>
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">866</span>
@@ -2876,6 +2863,7 @@ assertion or an index-out-of-bounds error).</p>
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -2949,7 +2937,7 @@ side effects in the form of caching and hooks.</p>
                 <p>functions to be called every time a new node is created.
 For example, hooks can be used to automatically produce a
 trace that keeps track of all visited nodes (see
-<a class="autorefs autorefs-internal" title="tracer_hook" href="#delphyne.tracer_hook"><code>tracer_hook</code></a>).</p>
+<a class="autorefs autorefs-internal" title="tracer_hook" href="../traces/#delphyne.tracer_hook"><code>tracer_hook</code></a>).</p>
               </div>
             </td>
           </tr>
@@ -2962,9 +2950,11 @@ trace that keeps track of all visited nodes (see
 
 
 
+
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/reification.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">37</span>
+<span class="normal">38</span>
 <span class="normal">39</span>
 <span class="normal">40</span>
 <span class="normal">41</span>
@@ -2982,8 +2972,7 @@ trace that keeps track of all visited nodes (see
 <span class="normal">53</span>
 <span class="normal">54</span>
 <span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">TreeMonitor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A record that gathers a tree cache along with a series of hooks to</span>
@@ -3009,6 +2998,7 @@ trace that keeps track of all visited nodes (see
 
 
   <div class="doc doc-children">
+
 
 
 
@@ -3076,52 +3066,6 @@ indexed by its global reference.</p>
 
     </div>
 
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="delphyne.tracer_hook" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">tracer_hook</span>
-
-
-</h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">tracer_hook</span><span class="p">(</span><span class="n">tracer</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Tracer (delphyne.core.environments.Tracer)" href="../../policies/envs/#delphyne.Tracer">Tracer</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><a class="autorefs autorefs-internal" title="Tree
-
-
-  
-      dataclass
-   (delphyne.core.trees.Tree)" href="../trees/#delphyne.Tree">Tree</a></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">]],</span> <span class="kc">None</span><span class="p">]</span>
-</code></pre></div>
-
-    <div class="doc doc-contents first">
-
-        <p>Standard hook to be passed to <a class="autorefs autorefs-internal" title="TreeMonitor
-
-
-  
-      dataclass
-  " href="#delphyne.TreeMonitor"><code>TreeMonitor</code></a> to automatically log
-visited nodes into a trace.</p>
-
-
-            <details class="quote">
-              <summary>Source code in <code>src/delphyne/core/reification.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">tracer_hook</span><span class="p">(</span><span class="n">tracer</span><span class="p">:</span> <span class="n">en</span><span class="o">.</span><span class="n">Tracer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Tree</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Standard hook to be passed to `TreeMonitor` to automatically log</span>
-<span class="sd">    visited nodes into a trace.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="k">lambda</span> <span class="n">tree</span><span class="p">:</span> <span class="n">tracer</span><span class="o">.</span><span class="n">trace_node</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">ref</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
 </div><h2 id="internals">Internals</h2>
 
 
@@ -3143,6 +3087,7 @@ visited nodes into a trace.</p>
 
         <p>A function providing the ability to spawn nested trees attached to a
 given node.</p>
+
 
 
 
@@ -3186,6 +3131,7 @@ given node.</p>
 
 
 
+
   </div>
 
     </div>
@@ -3209,6 +3155,7 @@ given node.</p>
 
 
         <p>A function providing the ability to attach queries to a given node.</p>
+
 
 
 
@@ -3246,6 +3193,7 @@ given node.</p>
 
 
 
+
   </div>
 
     </div>
@@ -3272,6 +3220,7 @@ given node.</p>
 <p>An executor implements the ability of converting space builders into
 actual spaces. The <a class="autorefs autorefs-internal" title="reify" href="#delphyne.reify"><code>reify</code></a> function relies on such an executor
 internally.</p>
+
 
 
 
@@ -3324,6 +3273,7 @@ internally.</p>
 
 
   <div class="doc doc-children">
+
 
 
 
