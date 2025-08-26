@@ -1,0 +1,25 @@
+# @config
+# modules: [find_param_value]
+# @end
+
+- strategy: find_param_value
+  args: {expr: "x**2 - 2*x + n"}
+  tests:
+    - run | success
+  queries: 
+    - query: FindParamValue
+      args:
+        expr: x**2 - 2*x + n
+      answers:
+        - answer: |
+            ```
+            1
+            ```
+    - query: RewriteExpr
+      args:
+        expr: x**2 - 2*x + 1
+      answers:
+        - answer: |
+            ```
+            (x - 1)**2
+            ```
