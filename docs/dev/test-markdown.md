@@ -21,7 +21,7 @@ def my_strategy(spec): # (1)!
     prog = yield from branch(AskProg(spec))
 ```
 
-1. I am not using any return type here.
+1. I am not using any return type here.  <!-- Content of the annotation in the block above -->
 
 I can show some math: \\[ \int_0^1 F \varphi(u) du. \\]
 

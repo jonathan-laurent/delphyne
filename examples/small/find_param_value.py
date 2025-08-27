@@ -22,11 +22,12 @@ def find_param_value(
     symbs = {"x": x, "n": n}
     try:
         n_val = yield from dp.branch(
-            FindParamValue(expr).using(lambda p: p.find, FindParamValueIP))
+            FindParamValue(expr)
+                .using(lambda p: p.find, FindParamValueIP))
         expr_sp = sp.parse_expr(expr, symbs).subs({n: n_val})
         equiv = yield from dp.branch(
             RewriteExpr(str(expr_sp))
-            .using(lambda p: p.rewrite, FindParamValueIP))
+                .using(lambda p: p.rewrite, FindParamValueIP))
         equiv_sp = sp.parse_expr(equiv, symbs)
         equivalent = (expr_sp - equiv_sp).simplify() == 0
         yield from dp.ensure(equivalent, "not_equivalent")
