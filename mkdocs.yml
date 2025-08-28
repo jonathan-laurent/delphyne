@@ -48,7 +48,7 @@ plugins:
             extensions:
               - delphyne.doc_hooks:TypeAliasesAsAttributes:
                   include: ["*"]
-                  exclude: []
+                  exclude: ["delphyne.core.refs.AnswerMode"]
               - delphyne.doc_hooks:DelphyneAutoCrossrefs
 
 markdown_extensions:
