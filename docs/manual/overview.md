@@ -9,35 +9,36 @@ Delphyne lets you combine prompting with traditional programming to solve proble
 ```python linenums="1"
 import sympy as sp
 from typing import assert_never
-import delphyne as dp
+import delphyne as dp # (1)!
 from delphyne import Branch, Fail, Strategy, strategy
 
 @strategy
 def find_param_value(
     expr: str
-) -> Strategy[Branch | Fail, FindParamValueIP, int]: # (1)!
+) -> Strategy[Branch | Fail, FindParamValueIP, int]: # (2)!
     x, n = sp.Symbol("x", real=True), sp.Symbol("n")
     symbs = {"x": x, "n": n}
     try:
         n_val = yield from dp.branch(
             FindParamValue(expr)
-              .using(lambda p: p.find, FindParamValueIP)) # (2)!
+              .using(lambda p: p.guess, FindParamValueIP)) # (3)!
         expr_sp = sp.parse_expr(expr, symbs).subs({n: n_val})
         equiv = yield from dp.branch(
             RewriteExpr(str(expr_sp))
-              .using(lambda p: p.rewrite, FindParamValueIP))
+              .using(lambda p: p.prove, FindParamValueIP))
         equiv_sp = sp.parse_expr(equiv, symbs)
         equivalent = (expr_sp - equiv_sp).simplify() == 0
         yield from dp.ensure(equivalent, "not_equivalent")
         yield from dp.ensure(equiv_sp.is_nonnegative, "not_nonneg")
         return n_val
-    except Exception as e: # (3)!
+    except Exception as e: # (4)!
         assert_never((yield from dp.fail("sympy_error", message=str(e))))
 ```
 
-1. This return type can be ignored on first reading. The first type parameter passed to `Strategy` is the strategy's _signature_ (the list of _effects_ it can trigger or, equivalently, the types of tree nodes that can appear in the induced tree), the second parameter is the strategy's associated _inner policy type_ (see explanations in [Writing a Policy](#writing-a-policy)), and the third parameter is the type of returned values (here, an integer denoting the value of `n`).
-2. The `using` method can be ignored on first reading. It takes as an argument a mapping from the ambient inner policy (of type `FindParamValueIP`, as specified in the strategy's return type) to a prompting policy for handling the `FindParamValue` query).
-3. If a SymPy expression fails to parse or `simplify` raises an exception, the whole strategy fails.
+1. We recommend importing Delphyne under alias `dp`, which is a convention we use in most examples. Most symbols from Delphyne's core or standard library can be accessed in this way. 
+2. This return type can be ignored on first reading. The first type parameter passed to `Strategy` is the strategy's _signature_ (the list of _effects_ it can trigger or, equivalently, the types of tree nodes that can appear in the induced tree), the second parameter is the strategy's associated _inner policy type_ (see explanations in [Writing a Policy](#writing-a-policy)), and the third parameter is the type of returned values (here, an integer denoting the value of `n`).
+3. The `using` method can be ignored on first reading. It takes as an argument a mapping from the ambient inner policy (of type `FindParamValueIP`, as specified in the strategy's return type) to a prompting policy for handling the `FindParamValue` query).
+4. If a SymPy expression fails to parse or `simplify` raises an exception, the whole strategy fails.
 
 The strategy above proceeds in three steps. First, it prompts an LLM to conjecture a value for $n$ (Lines 13-15). Then, it substitutes $n$ with the provided value and asks an LLM for a _proof_ that the resulting expression is positive for all $x$, in the form of an equivalent expression for which this fact obvious, in the sense that it can be derived from simple [interval arithmetic](https://en.wikipedia.org/wiki/Interval_arithmetic) (Lines 16-19). For example, expression $x^2 - 2x + 3$ can be rewritten into $(x - 1)^2 + 2.$ Finally, [SymPy](https://www.sympy.org/) is used to check the validity of this proof (Lines 20-23) and the value of $n$ is returned if the proof is valid. The two aforementioned LLM queries are defined as follows:
 
@@ -97,9 +98,99 @@ Going back to the above [definition](#find_param_value) of the `find_param_value
 
 ## Writing a Policy
 
+Crucially, Delphyne allows fully separating the definition of search spaces (induced by _strategies_) from the algorithms used to navigate them (i.e., _policies_). This separation serves multiple practical purposes:
+
+1. Many different policies can be implemented for any given strategy without modifying it, realizing different tradeoffs in terms of latency, budget consumption, reliability...
+2. Policies can be tuned _independently_ without changing strategy code. In addition, [demonstrations](#adding-demonstrations) are query-agnostic and so tuning policies is guaranteed not to break demonstrations either (see [next section](#adding-demonstrations)).
+
+In practice, policies tend to require more tuning and faster iteration cycles than strategies, since they often feature search hyperparameters for which good values are hard to guess _a priori_. Thus, they tend to evolve on a shorter time-scale and keeping them independent is valuable.
+
+Below, we show a possible (parametric) policy for the `find_param_value` strategy.
+
+```py linenums="1"
+@dp.ensure_compatible(find_param_value) # (1)!
+def serial_policy(
+    model_name: dp.StandardModelName = "gpt-5-mini",
+    proof_reattempts: int = 1
+) -> dp.Policy[Branch | Fail, FindParamValueIP]:
+    model = dp.standard_model(model_name)
+    return dp.dfs() & FindParamValueIP(
+        guess=dp.few_shot(model),
+        prove=dp.take(proof_reattempts + 1) @ dp.few_shot(model))
+```
+
+1. This decorator is only used statically to have the type checker verify that the policy being defined has a type compatible with the `find_param_value` strategy.
+
+As shown on Line 7, a policy ([`Policy`][delphyne.Policy]) consists in two components that are paired using the `&` operator. The first one is a search policy ([`SearchPolicy`][delphyne.SearchPolicy]), which consists in a search algorithm used to navigate the tree defined by the strategy, and which must be capable of handling `Branch` and `Fail` nodes in this case. Here, we use _depth-first search_, which is implemented in the [`dfs`][delphyne.dfs] standard library function. In addition, for every query issued by our strategy, we need to provide a suitable _prompting policy_ ([`PromptingPolicy`][delphyne.PromptingPolicy]) to describe how the query must be answered by LLMs. These prompting policies are gathered in an record of type `FindParamValueIP`, which is called the __inner policy type__ associated with `find_param_value` and which is defined as follows:
+
+```py
+@dataclass
+class FindParamValueIP: # (1)!
+    guess: dp.PromptingPolicy
+    prove: dp.PromptingPolicy
+```
+
+1. The `IP` suffix stands for _inner policy_.
+
+In general, for every strategy, an associated inner policy type is defined that precisely indicates what information must be provided to build associated policies (in addition to the toplevel search algorithm). Although the inner policy type is fairly simple in this case, it can get more complicated when (1) a strategy branches over results of another sub-strategy (in which case a [`Policy`](delphyne.Policy) must be provided) or (2) strategies involve loops or recursion (in which case prompting policies and sub-policies may depend on extra parameters such as the iteration number or recursion depth). In the definition of [`find_param_value`](#find_param_value), the [`using`][delphyne.Query.using] method is called on queries to provide each time a mapping from the ambient inner policy (of type `FindParamValueIP`) to the prompting policy to use.
+
+??? tip "A More Concise Alternative for Handling Inner Policies"
+    Defining inner policy types and specifying functions from those to prompting policies or sub-policies via [`using`][delphyne.Query.using] allows a maximal degree of flexibility, static type safety and editor support. However, one might find it verbose. Thus, inner policies can also be specified via simple Python dictionaries (see [`IPDict`][delphyne.IPDict]), as we [soon](#a-more-concise-version) demonstrate.
+
+The `serial_policy` policy defined above uses depth-first search ([`dfs`][delphyne.dfs]) to find solutions: every time a branching node is reached in the search tree, branching candidates are lazily enumerated and explored in order. As specified in the inner policy, branching candidates are generated by repeatedly sampling LLM answers, using the [`few_shot`][delphyne.few_shot] prompting policy (we discuss how few-shot examples can be added in the [next section](#adding-demonstrations)). The branching factor for producing proofs is set to `proof_reattempts + 1`, while the branching factor for producing candidates for $n$ is set to infinity (LLM answers are not deduplicated by default). As mentioned earlier, alternative policies can be defined. For example, the following policy repeatedly performs a parallel variant of depth-first search ([`par_dfs`][delphyne.par_dfs]), where multiple LLM completions are requested at every branching nodes and children are explored in parallel.
+
+```python
+@dp.ensure_compatible(find_param_value)
+def parallel_policy(
+    model_name: dp.StandardModelName = "gpt-5-mini",
+    par_find: int = 2,
+    par_rewrite: int = 2
+) -> dp.Policy[Branch | Fail, FindParamValueIP]:
+    model = dp.standard_model(model_name)
+    return dp.loop() @ dp.par_dfs() & FindParamValueIP(
+        guess=dp.few_shot(model, max_requests=1, num_completions=par_find),
+        prove=dp.few_shot(model, max_requests=1, num_completions=par_rewrite))
+```
+
+In general, a wide variety of policies can be assembled using standard basic blocks such as [`dfs`][delphyne.dfs], [`par_dfs`][delphyne.par_dfs], [`few_shot`][delphyne.few_shot] and [`take`][delphyne.take] (many others are available, e.g., [`best_first_search`][delphyne.best_first_search]). However, adding new building blocks or search algorithms is easy. For example, [`par_dfs`][delphyne.par_dfs] can be simply redefined as follows:
+
+```python
+@search_policy
+def par_dfs[P, T](
+    tree: Tree[Branch | Fail, P, T],
+    env: PolicyEnv,
+    policy: P,
+) -> StreamGen[T]:
+    match tree.node:
+        case Success(x):
+            yield Solution(x)
+        case Fail():
+            pass
+        case Branch(cands):
+            cands = yield from cands.stream(env, policy).all()
+            yield from Stream.parallel(
+                [par_dfs()(tree.child(a.tracked), env, policy) for a in cands]
+            ).gen()
+```
+
+The manual [chapter](../policies.md) on policies provides details on how new policy components can be defined, using [search stream combinators](../../reference/stdlib/streams/).
+
+Once a policy is specified, we can run our strategy as follows:
+
+```py
+budget = dp.BudgetLimit({"dp.NUM_REQUESTS": 2}) # (1)!
+res, _ = (
+    find_param_value("2*x**2 - 4*x + n")
+    .run_toplevel(dp.PolicyEnv(demonstration_files=[]), serial_policy()) # (2)!
+    .collect(budget=budget, num_generated=1))
+print(res[0].tracked.value)  # e.g. 2
+```
+
+1. We define a budget limit for search, in terms of number of LLM requests. Other metrics are available: number if input/output tokens, API spending in dollars...
+2. In addition to a policy, we also provide a _global policy environment_ ([`PolicyEnv`][delphyne.PolicyEnv]), which can be used to specify demonstration files (for few-shot prompting), prompt templates, LLM request caches...
+
+Here, `gpt-5-mini` (the default model specified by `serial_policy`) is used to answer queries via zero-shot prompting. However, LLMs often work better when provided examples of answering similar queries. Delphyne features a domain-specific language for writing and maintaining such examples in the form of _demonstrations_.
+
 ## Adding Demonstrations
 
-<!-- ::: examples.small.find_param_value.find_param_value
-    options:
-      show_root_heading: false -->
-
+## A More Concise Version

@@ -23,11 +23,11 @@ def find_param_value(
     try:
         n_val = yield from dp.branch(
             FindParamValue(expr)
-                .using(lambda p: p.find, FindParamValueIP))
+                .using(lambda p: p.guess, FindParamValueIP))
         expr_sp = sp.parse_expr(expr, symbs).subs({n: n_val})
         equiv = yield from dp.branch(
             RewriteExpr(str(expr_sp))
-                .using(lambda p: p.rewrite, FindParamValueIP))
+                .using(lambda p: p.prove, FindParamValueIP))
         equiv_sp = sp.parse_expr(equiv, symbs)
         equivalent = (expr_sp - equiv_sp).simplify() == 0
         yield from dp.ensure(equivalent, "not_equivalent")
@@ -66,19 +66,19 @@ class RewriteExpr(dp.Query[str]):
 
 @dataclass
 class FindParamValueIP:
-    find: dp.PromptingPolicy
-    rewrite: dp.PromptingPolicy
+    guess: dp.PromptingPolicy
+    prove: dp.PromptingPolicy
 
 
 @dp.ensure_compatible(find_param_value)
 def serial_policy(
     model_name: dp.StandardModelName = "gpt-5-mini",
-    rewrite_reattempts: int = 1
-):
+    proof_reattempts: int = 1
+) -> dp.Policy[Branch | Fail, FindParamValueIP]:
     model = dp.standard_model(model_name)
     return dp.dfs() & FindParamValueIP(
-        find=dp.few_shot(model),
-        rewrite=dp.take(rewrite_reattempts + 1) @ dp.few_shot(model))
+        guess=dp.few_shot(model),
+        prove=dp.take(proof_reattempts + 1) @ dp.few_shot(model))
 
 
 @dp.ensure_compatible(find_param_value)
@@ -86,18 +86,18 @@ def parallel_policy(
     model_name: dp.StandardModelName = "gpt-5-mini",
     par_find: int = 2,
     par_rewrite: int = 2
-):
+) -> dp.Policy[Branch | Fail, FindParamValueIP]:
     model = dp.standard_model(model_name)
     return dp.loop() @ dp.par_dfs() & FindParamValueIP(
-        find=dp.few_shot(model, max_requests=1, num_completions=par_find),
-        rewrite=dp.few_shot(model, max_requests=1, num_completions=par_rewrite))
+        guess=dp.few_shot(model, max_requests=1, num_completions=par_find),
+        prove=dp.few_shot(model, max_requests=1, num_completions=par_rewrite))
 
 
 if __name__ == "__main__":
     budget = dp.BudgetLimit({"dp.NUM_REQUESTS": 2})
     res, _ = (
         find_param_value("2*x**2 - 4*x + n")
-        .run_toplevel(dp.PolicyEnv(), serial_policy())
+        .run_toplevel(dp.PolicyEnv(demonstration_files=[]), serial_policy())
         .collect(budget=budget, num_generated=1)
     )
     print(res[0].tracked.value)  # e.g. 2

@@ -35,6 +35,10 @@
 ::: delphyne.UniversalQuery
 ::: delphyne.guess
 
+## Best-First Search
+
+::: delphyne.best_first_search
+
 ## Abduction
 
 ::: delphyne.Abduction
