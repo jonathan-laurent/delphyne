@@ -1,4 +1,4 @@
-.PHONY: install-dev-deps pyright clean clean-ignored test full-test full-clean all examples schemas stubs install doc-logo cloc deploy-doc-release deploy-doc-dev prepare-release release
+.PHONY: pyright clean clean-ignored test full-test full-clean schemas stubs install doc-logo cloc deploy-doc-release deploy-doc-dev prepare-release release
 
 RELEASE_SCRIPT := python scripts/prepare_release.py
 
@@ -16,10 +16,12 @@ SCHEMAS_FOLDER := vscode-ui/resources
 STUBS_FOLDER := vscode-ui/src/stubs
 
 
+# Install Delphyne (and its dependencies) in editable mode.
 install:
-	pip install -e .
+	pip install -e ".[dev]"
 
 
+# Perform typechecking for the whole codebase and examples.
 pyright:
 	@echo "Checking main project"
 	pyright
@@ -29,26 +31,27 @@ pyright:
 	pyright examples/mini_eqns
 
 
-install-dev-deps:
-	pip install pyright ruff
-	pip install mkdocs mkdocstrings[python] mkdocs-autolinks-plugin mkdocs-material mkdocs-glightbox
-
-
+# Run a quick, minimal test suite. These tests should not require additional
+# dependencies on top of those specified in Delphyne's pyproject.toml.
 test:
 	pytest tests
 	make -C examples/find_invariants test
 
 
+# Run a longer test suite. This might require additional dependencies, as
+# specified by individual example projects.
 full-test: test
 	make -C examples/find_invariants full-test
 	make -C examples/mini_eqns full-test
 	make -C examples/small full-test
 
 
+# Clean files ignored by git.
 clean-ignored:
 	find . \( $(TO_CLEAN) \) -exec rm -rf {} +
 
 
+# Clean all files that are cheap to regenerate.
 clean: clean-ignored
 	rm -rf build
 	rm -rf site
@@ -59,6 +62,7 @@ clean: clean-ignored
 	make -C examples/mini_eqns clean
 
 
+# Perform a complete cleaning.
 full-clean: clean
 	make -C examples/libraries/why3py full-clean
 
@@ -81,16 +85,14 @@ stubs:
 	python -m delphyne.server.generate_stubs feedback > $(STUBS_FOLDER)/feedback.ts
 
 
-all: install
-	make -C vscode-ui install
-
+# Clean the request cache of the test suite. Using `make test` will regenerate
+# the cache, although doing so can take time and require API keys for a number
+# of LLM providers.
 clean-cache:
 	rm -rf tests/cache
 
-examples: all
-	make -C examples/libraries/why3py install
 
-
+# Generate white logos from the black logos (for dark mode themes).
 LOGOS_DIR := docs/assets/logos
 BLACK_LOGOS := $(wildcard $(LOGOS_DIR)/black/*.png)
 WHITE_LOGOS := $(subst /black/,/white/,$(BLACK_LOGOS))
@@ -99,23 +101,33 @@ $(LOGOS_DIR)/white/%.png: $(LOGOS_DIR)/black/%.png
 doc-logo: $(WHITE_LOGOS)
 
 
+# Build and deploy the documentation for the latest stable release.
+# Warning: this should only be used if the documentation on the current commit
+# is valid for the latest stable release.
 deploy-doc-release:
 	git fetch origin gh-pages
 	mike deploy 0.7 latest --update-aliases --push
 
 
+# Build and deploy the documentation for the dev version
 deploy-doc-dev:
 	git fetch origin gh-pages
 	mike deploy dev --push
 
 
-# A release is made in two steps, first prepare it using this command, then
-# inspect the diff, commit the changes, and finally use make-release.
+# Prepare a new release.
+#
+# To make a new release, follow the following steps:
+#     1. Bump the version number in `pyproject.toml`
+#     2. Run `make prepare-release`
+#	  3. Check that the changes are ok using `git diff`
+#     4. If so, finalize and push the release using make release``
 prepare-release:
 	${RELEASE_SCRIPT} prepare `${RELEASE_SCRIPT} current-version`
 	@$(MAKE) full-test
 
 
+# Finalize and push a release (see `prepare-release`).
 release:
 	@test -z "$$(git status --porcelain)" || (echo "Uncommitted changes found" && exit 1)
 	@$(MAKE) deploy-doc-release
