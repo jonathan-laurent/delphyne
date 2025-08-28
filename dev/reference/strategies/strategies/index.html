@@ -1680,21 +1680,21 @@
 <h2 id="strategies">Strategies</h2>
 
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.Strategy" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">Strategy</span>
+            <span class="doc doc-object-name doc-type_alias-name">Strategy</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">Strategy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Generator">Generator</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="NodeBuilder
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">Strategy</span> <span class="o">=</span> <span class="n"><span title="collections.abc.Generator">Generator</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="NodeBuilder
 
 
   
       dataclass
-   (delphyne.core.trees.NodeBuilder)" href="#delphyne.NodeBuilder">NodeBuilder</a></span><span class="p">[</span><span class="n"><span title="delphyne.core.trees.N">N</span></span><span class="p">,</span> <span class="n"><span title="delphyne.core.trees.P">P</span></span><span class="p">],</span> <span class="n"><span title="object">object</span></span><span class="p">,</span> <span class="n"><span title="delphyne.core.trees.T">T</span></span><span class="p">]</span>
+   (delphyne.core.trees.NodeBuilder)" href="#delphyne.NodeBuilder">NodeBuilder</a></span><span class="p">[</span><span class="n"><span title="delphyne.core.trees.Strategy[N]">N</span></span><span class="p">,</span> <span class="n"><span title="delphyne.core.trees.Strategy[P]">P</span></span><span class="p">],</span> <span class="n"><span title="object">object</span></span><span class="p">,</span> <span class="n"><span title="delphyne.core.trees.Strategy[T]">T</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -1713,7 +1713,6 @@ computations cannot create nodes since they are unaware of
 references. The task of concretely building nodes and maintaining
 references is delegated to the <code>refine</code> function.</p>
 </div>
-
     </div>
 
 </div>
@@ -3037,16 +3036,16 @@ trace that keeps track of all visited nodes (see
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.TreeCache" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">TreeCache</span>
+            <span class="doc doc-object-name doc-type_alias-name">TreeCache</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">TreeCache</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="GlobalNodePath (delphyne.core.refs.GlobalNodePath)" href="../traces/#delphyne.core.refs.GlobalNodePath">GlobalNodePath</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="Tree
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">TreeCache</span> <span class="o">=</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="GlobalNodePath (delphyne.core.refs.GlobalNodePath)" href="../traces/#delphyne.core.refs.GlobalNodePath">GlobalNodePath</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="Tree
 
 
   
@@ -3059,21 +3058,20 @@ trace that keeps track of all visited nodes (see
         <p>A cache for never recomputing the same node twice.</p>
 <p>Each encountered subtree and (recursively) nested tree is stored,
 indexed by its global reference.</p>
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.TreeHook" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">TreeHook</span>
+            <span class="doc doc-object-name doc-type_alias-name">TreeHook</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">TreeHook</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><a class="autorefs autorefs-internal" title="Tree
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">TreeHook</span> <span class="o">=</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><a class="autorefs autorefs-internal" title="Tree
 
 
   
@@ -3084,7 +3082,6 @@ indexed by its global reference.</p>
     <div class="doc doc-contents first">
 
         <p>A function to be called every time a new tree node is created.</p>
-
     </div>
 
 </div><h2 id="internals">Internals</h2>

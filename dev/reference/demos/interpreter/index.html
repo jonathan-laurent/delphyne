@@ -1896,16 +1896,16 @@
 <h2 id="evaluation-feedback">Evaluation Feedback</h2>
 
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.analysis.feedback.DemoFeedback" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">DemoFeedback</span>
+            <span class="doc doc-object-name doc-type_alias-name">DemoFeedback</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">DemoFeedback</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="StrategyDemoFeedback
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">DemoFeedback</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="StrategyDemoFeedback
 
 
   
@@ -1921,7 +1921,6 @@
     <div class="doc doc-contents first">
 
         <p>Feedback sent by the server for each demonstration in a file.</p>
-
     </div>
 
 </div>
@@ -2590,82 +2589,78 @@ is implicitly used for parsing).</p>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.analysis.feedback.DemoAnswerId" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">DemoAnswerId</span>
+            <span class="doc doc-object-name doc-type_alias-name">DemoAnswerId</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">DemoAnswerId</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n"><span title="int">int</span></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">DemoAnswerId</span> <span class="o">=</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n"><span title="int">int</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
 
         <p>A (query_id, answer_index) pair that identifies an answer in a demo.</p>
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.analysis.feedback.DemoQueryId" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">DemoQueryId</span>
+            <span class="doc doc-object-name doc-type_alias-name">DemoQueryId</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">DemoQueryId</span><span class="p">:</span> <span class="n"><span title="int">int</span></span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">DemoQueryId</span> <span class="o">=</span> <span class="n"><span title="int">int</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
 
         <p>Index of the query in the <em>queries</em> section of a demo.</p>
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.analysis.feedback.Diagnostic" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">Diagnostic</span>
+            <span class="doc doc-object-name doc-type_alias-name">Diagnostic</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">Diagnostic</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="DiagnosticType (delphyne.analysis.feedback.DiagnosticType)" href="#delphyne.analysis.feedback.DiagnosticType">DiagnosticType</a></span><span class="p">,</span> <span class="n"><span title="str">str</span></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">Diagnostic</span> <span class="o">=</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="DiagnosticType (delphyne.analysis.feedback.DiagnosticType)" href="#delphyne.analysis.feedback.DiagnosticType">DiagnosticType</a></span><span class="p">,</span> <span class="n"><span title="str">str</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
 
         <p>A diagnostic gathers a type (i.e. severity) and a message.</p>
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.analysis.feedback.DiagnosticType" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">DiagnosticType</span>
+            <span class="doc doc-object-name doc-type_alias-name">DiagnosticType</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">DiagnosticType</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="s1">&#39;warning&#39;</span><span class="p">,</span> <span class="s1">&#39;info&#39;</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">DiagnosticType</span> <span class="o">=</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="s1">&#39;warning&#39;</span><span class="p">,</span> <span class="s1">&#39;info&#39;</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
 
         <p>Diagnostic type.</p>
-
     </div>
 
 </div><h2 id="browsable-traces">Browsable Traces</h2>
@@ -3093,16 +3088,16 @@ pretty-printed, local space reference.</p>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.analysis.feedback.NodeOrigin" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">NodeOrigin</span>
+            <span class="doc doc-object-name doc-type_alias-name">NodeOrigin</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">NodeOrigin</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;root&#39;</span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;child&#39;</span><span class="p">],</span> <span class="n"><span title="delphyne.analysis.feedback.TraceNodeId">TraceNodeId</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="TraceActionId (delphyne.analysis.feedback.TraceActionId)" href="#delphyne.analysis.feedback.TraceActionId">TraceActionId</a></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;nested&#39;</span><span class="p">],</span> <span class="n"><span title="delphyne.analysis.feedback.TraceNodeId">TraceNodeId</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="TraceNodePropertyId (delphyne.analysis.feedback.TraceNodePropertyId)" href="#delphyne.analysis.feedback.TraceNodePropertyId">TraceNodePropertyId</a></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">NodeOrigin</span> <span class="o">=</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;root&#39;</span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;child&#39;</span><span class="p">],</span> <span class="n"><span title="delphyne.analysis.feedback.TraceNodeId">TraceNodeId</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="TraceActionId (delphyne.analysis.feedback.TraceActionId)" href="#delphyne.analysis.feedback.TraceActionId">TraceActionId</a></span><span class="p">]</span> <span class="o">|</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;nested&#39;</span><span class="p">],</span> <span class="n"><span title="delphyne.analysis.feedback.TraceNodeId">TraceNodeId</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="TraceNodePropertyId (delphyne.analysis.feedback.TraceNodePropertyId)" href="#delphyne.analysis.feedback.TraceNodePropertyId">TraceNodePropertyId</a></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -3110,7 +3105,6 @@ pretty-printed, local space reference.</p>
         <p>Origin of a node.</p>
 <p>A node can be the global root, the child of another node, or the root of
 a nested tree.</p>
-
     </div>
 
 </div>
@@ -3315,16 +3309,16 @@ that are not used in any action.</p>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.analysis.feedback.NodeProperty" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">NodeProperty</span>
+            <span class="doc doc-object-name doc-type_alias-name">NodeProperty</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">NodeProperty</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Data
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">NodeProperty</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="Data
 
 
   
@@ -3345,7 +3339,6 @@ that are not used in any action.</p>
     <div class="doc doc-contents first">
 
         <p>Description of a node property (see <code>NodePropertyId</code>).</p>
-
     </div>
 
 </div>
@@ -4230,56 +4223,54 @@ since not all Python objects can be serialized to JSON.</p>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.analysis.feedback.TraceAnswerId" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">TraceAnswerId</span>
+            <span class="doc doc-object-name doc-type_alias-name">TraceAnswerId</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">TraceAnswerId</span><span class="p">:</span> <span class="n"><span title="int">int</span></span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">TraceAnswerId</span> <span class="o">=</span> <span class="n"><span title="int">int</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
 
         <p>Global answer id, as set by <code>core.traces.Trace</code>.</p>
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.analysis.feedback.TraceActionId" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">TraceActionId</span>
+            <span class="doc doc-object-name doc-type_alias-name">TraceActionId</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">TraceActionId</span><span class="p">:</span> <span class="n"><span title="int">int</span></span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">TraceActionId</span> <span class="o">=</span> <span class="n"><span title="int">int</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
 
         <p>Index of an action within a given node.</p>
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.analysis.feedback.TraceNodePropertyId" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">TraceNodePropertyId</span>
+            <span class="doc doc-object-name doc-type_alias-name">TraceNodePropertyId</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">TraceNodePropertyId</span><span class="p">:</span> <span class="n"><span title="int">int</span></span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">TraceNodePropertyId</span> <span class="o">=</span> <span class="n"><span title="int">int</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -4287,7 +4278,6 @@ since not all Python objects can be serialized to JSON.</p>
         <p>Index of a property within a given node. A property is an element
 that can be listed in the UI, which is either an attached query, a
 nested tree or some data.</p>
-
     </div>
 
 </div><h2 id="demonstration-interpreter">Demonstration Interpreter</h2>

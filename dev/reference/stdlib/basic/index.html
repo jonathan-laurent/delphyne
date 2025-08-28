@@ -2448,16 +2448,16 @@ created, preserving abstraction.</p>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.Opaque" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">Opaque</span>
+            <span class="doc doc-object-name doc-type_alias-name">Opaque</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">Opaque</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="SpaceBuilder
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">Opaque</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="SpaceBuilder
 
 
   
@@ -2467,27 +2467,26 @@ created, preserving abstraction.</p>
 
   
       dataclass
-   (delphyne.stdlib.opaque.OpaqueSpace)" href="#delphyne.OpaqueSpace">OpaqueSpace</a></span><span class="p">[</span><span class="n"><span title="P">P</span></span><span class="p">,</span> <span class="n"><span title="T">T</span></span><span class="p">]]</span>
+   (delphyne.stdlib.opaque.OpaqueSpace)" href="#delphyne.OpaqueSpace">OpaqueSpace</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.opaque.Opaque[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.opaque.Opaque[T]">T</span></span><span class="p">]]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
 
         <p>A convenience type alias for an opaque space builder.</p>
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.IPDict" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">IPDict</span>
+            <span class="doc doc-object-name doc-type_alias-name">IPDict</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">IPDict</span><span class="p">:</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="Policy
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">IPDict</span> <span class="o">=</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="Policy
 
 
   
@@ -2537,7 +2536,6 @@ be added to a space builder using the <code>SpaceBuilder.tagged</code> method.</
 instance of <code>.using(...)</code>, a runtime error is raised.</p>
 </div>
 <p>See <code>tests/example_strategies:generate_number</code> for another example.</p>
-
     </div>
 
 </div>

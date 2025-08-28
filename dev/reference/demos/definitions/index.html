@@ -1731,37 +1731,36 @@ syntax.</p>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.demos.DemoFile" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">DemoFile</span>
+            <span class="doc doc-object-name doc-type_alias-name">DemoFile</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">DemoFile</span><span class="p">:</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Demo (delphyne.core.demos.Demo)" href="#delphyne.core.demos.Demo">Demo</a></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">DemoFile</span> <span class="o">=</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Demo (delphyne.core.demos.Demo)" href="#delphyne.core.demos.Demo">Demo</a></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
 
         <p>A demonstration file is a sequence of demonstrations. Demonstrations are
 independent and can thus be separately evaluted.</p>
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.demos.Demo" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">Demo</span>
+            <span class="doc doc-object-name doc-type_alias-name">Demo</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">Demo</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="QueryDemo
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">Demo</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="QueryDemo
 
 
   
@@ -1778,7 +1777,6 @@ independent and can thus be separately evaluted.</p>
 
         <p>A demonstration is either a standalone query demonstration or a strategy
 demonstration.</p>
-
     </div>
 
 </div>
@@ -2465,37 +2463,36 @@ select appropriate examples.</p>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.demos.TestCommandString" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">TestCommandString</span>
+            <span class="doc doc-object-name doc-type_alias-name">TestCommandString</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">TestCommandString</span><span class="p">:</span> <span class="n"><span title="str">str</span></span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">TestCommandString</span> <span class="o">=</span> <span class="n"><span title="str">str</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
 
         <p>A non-parsed test command (<code>TestCommand</code>).</p>
-
     </div>
 
 </div><h2 id="demonstration-tests">Demonstration Tests</h2>
 
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.demos.TestCommand" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">TestCommand</span>
+            <span class="doc doc-object-name doc-type_alias-name">TestCommand</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">TestCommand</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="TestStep (delphyne.core.demos.TestStep)" href="#delphyne.core.demos.TestStep">TestStep</a></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">TestCommand</span> <span class="o">=</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="TestStep (delphyne.core.demos.TestStep)" href="#delphyne.core.demos.TestStep">TestStep</a></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -2506,21 +2503,20 @@ reaching a destination node. A test can succeed, error or be stuck
 (i.e., reach a node where it cannot make further progress due to a
 missing answer in the <code>queries</code> section). It can also emit various
 warnings (i.e., a hint was not used).</p>
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.demos.TestStep" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">TestStep</span>
+            <span class="doc doc-object-name doc-type_alias-name">TestStep</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">TestStep</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Run
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">TestStep</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="Run
 
 
   
@@ -2558,7 +2554,6 @@ warnings (i.e., a hint was not used).</p>
         <p>A test instruction.</p>
 <p>Each instruction updates the current node position in the strategy tree.
 In addition, instructions can error or get stuck.</p>
-
     </div>
 
 </div>
@@ -3094,16 +3089,16 @@ instruction fails if this space is induced by a query).</p>
 </div><h2 id="node-and-space-selectors">Node and Space Selectors</h2>
 
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.demos.NodeSelector" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">NodeSelector</span>
+            <span class="doc doc-object-name doc-type_alias-name">NodeSelector</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">NodeSelector</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="TagSelectors (delphyne.core.demos.TagSelectors)" href="#delphyne.core.demos.TagSelectors">TagSelectors</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="WithinSpace
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">NodeSelector</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="TagSelectors (delphyne.core.demos.TagSelectors)" href="#delphyne.core.demos.TagSelectors">TagSelectors</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="WithinSpace
 
 
   
@@ -3118,21 +3113,20 @@ instruction fails if this space is induced by a query).</p>
 the surrounding tree (<code>TagSelectors</code>), or a node within nested tree,
 which induces a space that is itself described by a series of tags
 (<code>WithinSpace</code>).</p>
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.demos.TagSelectors" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">TagSelectors</span>
+            <span class="doc doc-object-name doc-type_alias-name">TagSelectors</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">TagSelectors</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="TagSelector
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">TagSelectors</span> <span class="o">=</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="TagSelector
 
 
   
@@ -3144,7 +3138,6 @@ which induces a space that is itself described by a series of tags
 
         <p>A series of tag selectors that must <strong>all</strong> be matched.</p>
 <p>Tag selectors apply to either nodes or spaces.</p>
-
     </div>
 
 </div>

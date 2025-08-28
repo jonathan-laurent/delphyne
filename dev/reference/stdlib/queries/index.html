@@ -5704,16 +5704,16 @@ and an exception is raised if this type does not have the form
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.ParserDict" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">ParserDict</span>
+            <span class="doc doc-object-name doc-type_alias-name">ParserDict</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">ParserDict</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="AnswerMode (delphyne.core.AnswerMode)" href="../../strategies/traces/#delphyne.AnswerMode">AnswerMode</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="Parser
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">ParserDict</span> <span class="o">=</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="AnswerMode (delphyne.core.AnswerMode)" href="../../strategies/traces/#delphyne.AnswerMode">AnswerMode</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="Parser
 
 
   
@@ -5730,7 +5730,6 @@ and an exception is raised if this type does not have the form
 
         <p>A mapping from answer modes to parser specifications.</p>
 <p>Can be used as a value for the <code>__parser__</code> class attribute of queries.</p>
-
     </div>
 
 </div>
@@ -8598,34 +8597,33 @@ a message in a chat history.</p>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.stdlib.models.Chat" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">Chat</span>
+            <span class="doc doc-object-name doc-type_alias-name">Chat</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">Chat</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="ChatMessage (delphyne.stdlib.models.ChatMessage)" href="#delphyne.stdlib.models.ChatMessage">ChatMessage</a></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">Chat</span> <span class="o">=</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="ChatMessage (delphyne.stdlib.models.ChatMessage)" href="#delphyne.stdlib.models.ChatMessage">ChatMessage</a></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.stdlib.models.ChatMessage" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">ChatMessage</span>
+            <span class="doc doc-object-name doc-type_alias-name">ChatMessage</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">ChatMessage</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="SystemMessage
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">ChatMessage</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="SystemMessage
 
 
   
@@ -8649,7 +8647,6 @@ a message in a chat history.</p>
 </code></pre></div>
 
     <div class="doc doc-contents first">
-
     </div>
 
 </div>
@@ -9608,22 +9605,21 @@ generally does not).</p>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.stdlib.models.FinishReason" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">FinishReason</span>
+            <span class="doc doc-object-name doc-type_alias-name">FinishReason</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">FinishReason</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;stop&#39;</span><span class="p">,</span> <span class="s1">&#39;length&#39;</span><span class="p">,</span> <span class="s1">&#39;content_filter&#39;</span><span class="p">,</span> <span class="s1">&#39;tool_calls&#39;</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">FinishReason</span> <span class="o">=</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;stop&#39;</span><span class="p">,</span> <span class="s1">&#39;length&#39;</span><span class="p">,</span> <span class="s1">&#39;content_filter&#39;</span><span class="p">,</span> <span class="s1">&#39;tool_calls&#39;</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
 
         <p>Reason why the LLM stopped generating content.</p>
-
     </div>
 
 </div>
@@ -10527,22 +10523,21 @@ added into <a class="autorefs autorefs-internal" title="LLMResponse
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.stdlib.models.BudgetCategory" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">BudgetCategory</span>
+            <span class="doc doc-object-name doc-type_alias-name">BudgetCategory</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">BudgetCategory</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;num_requests&#39;</span><span class="p">,</span> <span class="s1">&#39;num_completions&#39;</span><span class="p">,</span> <span class="s1">&#39;input_tokens&#39;</span><span class="p">,</span> <span class="s1">&#39;cached_input_tokens&#39;</span><span class="p">,</span> <span class="s1">&#39;output_tokens&#39;</span><span class="p">,</span> <span class="s1">&#39;price&#39;</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">BudgetCategory</span> <span class="o">=</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;num_requests&#39;</span><span class="p">,</span> <span class="s1">&#39;num_completions&#39;</span><span class="p">,</span> <span class="s1">&#39;input_tokens&#39;</span><span class="p">,</span> <span class="s1">&#39;cached_input_tokens&#39;</span><span class="p">,</span> <span class="s1">&#39;output_tokens&#39;</span><span class="p">,</span> <span class="s1">&#39;price&#39;</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
 
         <p>Standard metrics to measure LLM inference usage.</p>
-
     </div>
 
 </div>

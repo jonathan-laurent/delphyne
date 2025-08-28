@@ -4163,16 +4163,16 @@ implementing standard tree transformers such as <code>elim_join</code> and
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.Navigation" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">Navigation</span>
+            <span class="doc doc-object-name doc-type_alias-name">Navigation</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">Navigation</span><span class="p">:</span> <span class="n"><span title="collections.abc.Generator">Generator</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Space (delphyne.core.trees.Space)" href="#delphyne.Space">Space</a></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Tracked
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">Navigation</span> <span class="o">=</span> <span class="n"><span title="collections.abc.Generator">Generator</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Space (delphyne.core.trees.Space)" href="#delphyne.Space">Space</a></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Tracked
 
 
   
@@ -4192,7 +4192,6 @@ implementing standard tree transformers such as <code>elim_join</code> and
   " href="#delphyne.Node.navigate"><code>navigate</code></a> method of non-leaf nodes. It yields
 local spaces and receives corresponding elements until an action is
 generated and returned.</p>
-
     </div>
 
 </div>
@@ -4371,36 +4370,35 @@ custom node via inspection (<code>detect_node_structure</code>).</p>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.node_fields.NodeFields" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">NodeFields</span>
+            <span class="doc doc-object-name doc-type_alias-name">NodeFields</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">NodeFields</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="FieldKind (delphyne.core.node_fields.FieldKind)" href="#delphyne.core.node_fields.FieldKind">FieldKind</a></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">NodeFields</span> <span class="o">=</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="FieldKind (delphyne.core.node_fields.FieldKind)" href="#delphyne.core.node_fields.FieldKind">FieldKind</a></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
 
         <p>A dictionary mapping each field name to its kind.</p>
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.node_fields.FieldKind" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">FieldKind</span>
+            <span class="doc doc-object-name doc-type_alias-name">FieldKind</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">FieldKind</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="LeafFieldKind (delphyne.core.node_fields.LeafFieldKind)" href="#delphyne.core.node_fields.LeafFieldKind">LeafFieldKind</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="SequenceF
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">FieldKind</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="LeafFieldKind (delphyne.core.node_fields.LeafFieldKind)" href="#delphyne.core.node_fields.LeafFieldKind">LeafFieldKind</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="SequenceF
 
 
   
@@ -4419,21 +4417,20 @@ custom node via inspection (<code>detect_node_structure</code>).</p>
 <p>A node field can be an embedded tree, another local space, a parametric
 embedded tree or space, a sequence of such elements or an optional
 element.</p>
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.node_fields.FieldKind" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">FieldKind</span>
+            <span class="doc doc-object-name doc-type_alias-name">FieldKind</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">FieldKind</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="LeafFieldKind (delphyne.core.node_fields.LeafFieldKind)" href="#delphyne.core.node_fields.LeafFieldKind">LeafFieldKind</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="SequenceF
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">FieldKind</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="LeafFieldKind (delphyne.core.node_fields.LeafFieldKind)" href="#delphyne.core.node_fields.LeafFieldKind">LeafFieldKind</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="SequenceF
 
 
   
@@ -4452,21 +4449,20 @@ element.</p>
 <p>A node field can be an embedded tree, another local space, a parametric
 embedded tree or space, a sequence of such elements or an optional
 element.</p>
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.node_fields.LeafFieldKind" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">LeafFieldKind</span>
+            <span class="doc doc-object-name doc-type_alias-name">LeafFieldKind</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">LeafFieldKind</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="SpaceF
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">LeafFieldKind</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="SpaceF
 
 
   
@@ -4490,7 +4486,6 @@ element.</p>
 </code></pre></div>
 
     <div class="doc doc-contents first">
-
     </div>
 
 </div>
@@ -5171,16 +5166,16 @@ a query or a strategy is irrelevant).</p>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.Tag" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">Tag</span>
+            <span class="doc doc-object-name doc-type_alias-name">Tag</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">Tag</span><span class="p">:</span> <span class="n"><span title="str">str</span></span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">Tag</span> <span class="o">=</span> <span class="n"><span title="str">str</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -5190,7 +5185,6 @@ a query or a strategy is irrelevant).</p>
 referenced in demonstration tests or when defining inner policies
 (e.g., <a class="autorefs autorefs-internal" title="IPDict" href="../../stdlib/basic/#delphyne.IPDict"><code>IPDict</code></a>). Tags should contain only alphanumeric characters,
 underscores, dots, and dashes.</p>
-
     </div>
 
 </div>
