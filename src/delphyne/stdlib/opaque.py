@@ -26,7 +26,7 @@ class OpaqueSpace(Generic[P, T], dp.Space[T]):
     method. Crucially, policies are unaware of how an opaque space was
     created, preserving abstraction.
 
-    Parameters:
+    Type Parameters:
         P: Type parameter for the ambient inner policy type.
         T: Type parameter for the element type.
 

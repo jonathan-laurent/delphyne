@@ -98,7 +98,7 @@ class Experiment[Config]:
     some of its configurations replayed with a debugger) without issuing
     calls to LLMs or to tools with non-replicable outputs.
 
-    Parameters:
+    Type Parameters:
         Config: Type parameter for the configuration type, which is a
             dataclass that holds all experiment hyperparameters.
 

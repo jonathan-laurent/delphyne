@@ -63,7 +63,7 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
                 information is not used at runtime but it can be
                 provided to help type inference when necessary.
 
-        Parameters:
+        Type Parameters:
             P: Inner policy type associated with the strategy.
             Pout: Ambient inner policy type associated with the outer
                 strategy from which the strategy is called.

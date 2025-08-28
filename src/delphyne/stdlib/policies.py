@@ -289,7 +289,7 @@ class ContextualTreeTransformer[A: Node, B: Node]:
     Contextual tree transformer, which can be composed with search
     policies to modify their accepted signature.
 
-    Parameters:
+    Type Parameters:
         A: The type of nodes that the transformer removes from search
             policy signature.
         B: The type of nodes that the transformer adds to search policy
