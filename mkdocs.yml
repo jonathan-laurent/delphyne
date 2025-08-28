@@ -84,7 +84,7 @@ nav:
     - manual/extension.md
   - how-to-guides.md
   - Reference:
-    # - reference/index.md
+    # - reference/index.md  # Uncomment this if an index is wanted
     - Strategy Language:
       - Trees and Spaces: reference/strategies/trees.md
       - Strategies and Reification: reference/strategies/strategies.md
