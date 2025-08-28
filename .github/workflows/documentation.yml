@@ -24,8 +24,7 @@ jobs:
           path: .cache
           restore-keys: |
             mkdocs-material-
-      - run: pip install mkdocs mkdocstrings-python mkdocs-autolinks-plugin mkdocs-material mkdocs-glightbox mike
       - run: |
           git fetch origin gh-pages
-          pip install -e .  # Building the doc requires delphyne to be installed.
+          pip install -e ".[dev]"  # Building the doc requires delphyne to be installed.
           mike deploy --push dev

@@ -5,6 +5,7 @@ description = ""
 authors = [{name="Jonathan Laurent", email="jonathan.laurent@cs.cmu.edu"}]
 readme = "README.md"
 requires-python = ">=3.12"
+
 dependencies = [
     "fastapi>=0.111",  # to implement the delphyne language server
     "Jinja2>=3.1",  # for rendering prompt templates
@@ -14,9 +15,21 @@ dependencies = [
     "pyyaml>=6.0",  # standard `yaml` module
     "pydantic>=2.8",
     "pytest>=8.2",
-    "setuptools>=68.2",
+    "setuptools>=80.0",
     "uvicorn>=0.30",  # to implement the delphyne language server
     "fire>=0.7.0",  # e.g., to implement the delphyne CLI
+    "pandas>=2.3.2", # to produce summary files in the experiment launcher
+]
+
+[project.optional-dependencies]
+dev = [
+    "pyright",
+    "pytest",
+    "mkdocs",
+    "mkdocstrings-python",
+    "mkdocs-autolinks-plugin",
+    "mkdocs-material",
+    "mike"
 ]
 
 # Install the `delphyne` CLI
