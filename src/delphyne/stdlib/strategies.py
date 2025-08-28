@@ -27,6 +27,11 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
     convenience features such as the `using` method for building opaque
     spaces. The `strategy` decorator can be used to wrap strategy
     functions so as to have them return `StrategyInstance` objects.
+
+    Type Parameters:
+        N: Signature of the strategy.
+        P: Inner policy type associated with the strategy.
+        T: Return type of the strategy.
     """
 
     @overload
@@ -64,7 +69,6 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
                 provided to help type inference when necessary.
 
         Type Parameters:
-            P: Inner policy type associated with the strategy.
             Pout: Ambient inner policy type associated with the outer
                 strategy from which the strategy is called.
         """
@@ -126,7 +130,14 @@ def strategy(
 ) -> _StrategyDecorator: ...
 
 
-def strategy(*dec_args: Any, **dec_kwargs: Any) -> Any:
+def strategy(
+    f: Callable[..., Any] | None = None,
+    /,
+    *,
+    name: str | None = None,
+    ret: TypeAnnot[Any] | NoTypeInfo = NoTypeInfo(),
+    inherit_tags: Callable[..., Sequence[dp.SpaceBuilder[Any]]] | None = None,
+) -> Any:
     """
     Standard parametric decorator for wrapping strategy functions into
     functions returning `StrategyInstance` objects.
@@ -167,15 +178,12 @@ def strategy(*dec_args: Any, **dec_kwargs: Any) -> Any:
 
     # Using functools.wraps is important so that the object loader can
     # get the type hints to properly instantiate arguments.
-    error_msg = "Invalid use of the @strategy decorator."
-    # If no positional argument is provided, we have a call of the form
-    # `@strategy(...)(f)`. Otherwise, we have a call of the form
-    # `@strategy(f)`.
-    assert len(dec_args) in [0, 1], error_msg
 
     # @strategy(f) case
-    if not dec_kwargs and len(dec_args) == 1 and callable(dec_args[0]):
-        f: Any = dec_args[0]
+    if f is not None:
+        assert name is None
+        assert isinstance(ret, NoTypeInfo)
+        assert inherit_tags is None
         name = inspect.function_name(f)
         tags = (name,) if name else ()
 
@@ -192,18 +200,17 @@ def strategy(*dec_args: Any, **dec_kwargs: Any) -> Any:
         return functools.wraps(f)(wrapped)
 
     # @strategy(...)(f) case
-    elif not dec_args:
+    else:
 
         def decorator(f: Any):
             def wrapped(*args: Any, **kwargs: Any):
-                name = dec_kwargs.get("name")
+                nonlocal name
                 if name is None:
                     name = inspect.function_name(f)
                 tags = (name,) if name else ()
                 # Inherit tags from space arguments if needed.
-                inherited_fun = dec_kwargs.get("inherit_tags", None)
-                if inherited_fun is not None:
-                    inherited = inherited_fun(*args, **kwargs)
+                if inherit_tags is not None:
+                    inherited = inherit_tags(*args, **kwargs)
                     for space in inherited:
                         assert isinstance(space, dp.SpaceBuilder)
                         tags = (*tags, *space.tags)
@@ -212,12 +219,10 @@ def strategy(*dec_args: Any, **dec_kwargs: Any) -> Any:
                     args,
                     kwargs,
                     _name=name,
-                    _return_type=dec_kwargs.get("ret", NoTypeInfo()),
+                    _return_type=ret,
                     _tags=tags,
                 )
 
             return functools.wraps(f)(wrapped)
 
         return decorator
-
-    assert False, error_msg

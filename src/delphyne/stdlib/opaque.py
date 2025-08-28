@@ -4,19 +4,16 @@ Definition of Opaque Spaces
 
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Any, Generic, TypeVar, override
+from typing import Any, override
 
 import delphyne.core as dp
 from delphyne.core.trees import NestedTreeSpawner, QuerySpawner
 from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.policies import Policy, PromptingPolicy, Stream
 
-T = TypeVar("T", covariant=True)
-P = TypeVar("P", contravariant=True)
-
 
 @dataclass(frozen=True)
-class OpaqueSpace(Generic[P, T], dp.Space[T]):
+class OpaqueSpace[P, T](dp.Space[T]):
     """
     A space defined by a mapping from the ambient inner policy to a
     search stream.
