@@ -386,6 +386,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#a-more-concise-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      A More Concise Version
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1266,6 +1275,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#a-more-concise-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      A More Concise Version
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1313,32 +1331,33 @@
 <span class="normal">25</span>
 <span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">sympy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">assert_never</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">delphyne</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">delphyne</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dp</span> <span class="c1"># (1)!</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">delphyne</span><span class="w"> </span><span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">Strategy</span><span class="p">,</span> <span class="n">strategy</span>
 
 <span class="nd">@strategy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">find_param_value</span><span class="p">(</span>
     <span class="n">expr</span><span class="p">:</span> <span class="nb">str</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">FindParamValueIP</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span> <span class="c1"># (1)!</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">FindParamValueIP</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span> <span class="c1"># (2)!</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">)</span>
     <span class="n">symbs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="n">n</span><span class="p">}</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">n_val</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">branch</span><span class="p">(</span>
             <span class="n">FindParamValue</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
-              <span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">find</span><span class="p">,</span> <span class="n">FindParamValueIP</span><span class="p">))</span> <span class="c1"># (2)!</span>
+              <span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">guess</span><span class="p">,</span> <span class="n">FindParamValueIP</span><span class="p">))</span> <span class="c1"># (3)!</span>
         <span class="n">expr_sp</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">parse_expr</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">symbs</span><span class="p">)</span><span class="o">.</span><span class="n">subs</span><span class="p">({</span><span class="n">n</span><span class="p">:</span> <span class="n">n_val</span><span class="p">})</span>
         <span class="n">equiv</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">branch</span><span class="p">(</span>
             <span class="n">RewriteExpr</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">expr_sp</span><span class="p">))</span>
-              <span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">rewrite</span><span class="p">,</span> <span class="n">FindParamValueIP</span><span class="p">))</span>
+              <span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">prove</span><span class="p">,</span> <span class="n">FindParamValueIP</span><span class="p">))</span>
         <span class="n">equiv_sp</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">parse_expr</span><span class="p">(</span><span class="n">equiv</span><span class="p">,</span> <span class="n">symbs</span><span class="p">)</span>
         <span class="n">equivalent</span> <span class="o">=</span> <span class="p">(</span><span class="n">expr_sp</span> <span class="o">-</span> <span class="n">equiv_sp</span><span class="p">)</span><span class="o">.</span><span class="n">simplify</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
         <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">equivalent</span><span class="p">,</span> <span class="s2">&quot;not_equivalent&quot;</span><span class="p">)</span>
         <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">equiv_sp</span><span class="o">.</span><span class="n">is_nonnegative</span><span class="p">,</span> <span class="s2">&quot;not_nonneg&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">n_val</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="c1"># (3)!</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="c1"># (4)!</span>
         <span class="n">assert_never</span><span class="p">((</span><span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="s2">&quot;sympy_error&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))))</span>
 </code></pre></div></td></tr></table></div>
 <ol>
+<li>We recommend importing Delphyne under alias <code>dp</code>, which is a convention we use in most examples. Most symbols from Delphyne's core or standard library can be accessed in this way. </li>
 <li>This return type can be ignored on first reading. The first type parameter passed to <code>Strategy</code> is the strategy's <em>signature</em> (the list of <em>effects</em> it can trigger or, equivalently, the types of tree nodes that can appear in the induced tree), the second parameter is the strategy's associated <em>inner policy type</em> (see explanations in <a href="#writing-a-policy">Writing a Policy</a>), and the third parameter is the type of returned values (here, an integer denoting the value of <code>n</code>).</li>
 <li>The <code>using</code> method can be ignored on first reading. It takes as an argument a mapping from the ambient inner policy (of type <code>FindParamValueIP</code>, as specified in the strategy's return type) to a prompting policy for handling the <code>FindParamValue</code> query).</li>
 <li>If a SymPy expression fails to parse or <code>simplify</code> raises an exception, the whole strategy fails.</li>
@@ -1400,10 +1419,109 @@
 <p>Strategies can be precisely typed, and their types statically checked using <a href="https://github.com/microsoft/pyright">Pyright</a> in <em>strict mode</em>.</p>
 </details>
 <h2 id="writing-a-policy">Writing a Policy</h2>
+<p>Crucially, Delphyne allows fully separating the definition of search spaces (induced by <em>strategies</em>) from the algorithms used to navigate them (i.e., <em>policies</em>). This separation serves multiple practical purposes:</p>
+<ol>
+<li>Many different policies can be implemented for any given strategy without modifying it, realizing different tradeoffs in terms of latency, budget consumption, reliability...</li>
+<li>Policies can be tuned <em>independently</em> without changing strategy code. In addition, <a href="#adding-demonstrations">demonstrations</a> are query-agnostic and so tuning policies is guaranteed not to break demonstrations either (see <a href="#adding-demonstrations">next section</a>).</li>
+</ol>
+<p>In practice, policies tend to require more tuning and faster iteration cycles than strategies, since they often feature search hyperparameters for which good values are hard to guess <em>a priori</em>. Thus, they tend to evolve on a shorter time-scale and keeping them independent is valuable.</p>
+<p>Below, we show a possible (parametric) policy for the <code>find_param_value</code> strategy.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dp</span><span class="o">.</span><span class="n">ensure_compatible</span><span class="p">(</span><span class="n">find_param_value</span><span class="p">)</span> <span class="c1"># (1)!</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">serial_policy</span><span class="p">(</span>
+    <span class="n">model_name</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">StandardModelName</span> <span class="o">=</span> <span class="s2">&quot;gpt-5-mini&quot;</span><span class="p">,</span>
+    <span class="n">proof_reattempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Policy</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">FindParamValueIP</span><span class="p">]:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">standard_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dp</span><span class="o">.</span><span class="n">dfs</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">FindParamValueIP</span><span class="p">(</span>
+        <span class="n">guess</span><span class="o">=</span><span class="n">dp</span><span class="o">.</span><span class="n">few_shot</span><span class="p">(</span><span class="n">model</span><span class="p">),</span>
+        <span class="n">prove</span><span class="o">=</span><span class="n">dp</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">proof_reattempts</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">@</span> <span class="n">dp</span><span class="o">.</span><span class="n">few_shot</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+<ol>
+<li>This decorator is only used statically to have the type checker verify that the policy being defined has a type compatible with the <code>find_param_value</code> strategy.</li>
+</ol>
+<p>As shown on Line 7, a policy (<a class="autorefs autorefs-internal" title="Policy
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/basic/#delphyne.Policy"><code>Policy</code></a>) consists in two components that are paired using the <code>&amp;</code> operator. The first one is a search policy (<a class="autorefs autorefs-internal" title="SearchPolicy
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/basic/#delphyne.SearchPolicy"><code>SearchPolicy</code></a>), which consists in a search algorithm used to navigate the tree defined by the strategy, and which must be capable of handling <code>Branch</code> and <code>Fail</code> nodes in this case. Here, we use <em>depth-first search</em>, which is implemented in the <a class="autorefs autorefs-internal" title="dfs" href="../../reference/stdlib/algorithms/#delphyne.stdlib.search.dfs.dfs"><code>dfs</code></a> standard library function. In addition, for every query issued by our strategy, we need to provide a suitable <em>prompting policy</em> (<a class="autorefs autorefs-internal" title="PromptingPolicy
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/basic/#delphyne.PromptingPolicy"><code>PromptingPolicy</code></a>) to describe how the query must be answered by LLMs. These prompting policies are gathered in an record of type <code>FindParamValueIP</code>, which is called the <strong>inner policy type</strong> associated with <code>find_param_value</code> and which is defined as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FindParamValueIP</span><span class="p">:</span> <span class="c1"># (1)!</span>
+    <span class="n">guess</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PromptingPolicy</span>
+    <span class="n">prove</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PromptingPolicy</span>
+</code></pre></div>
+<ol>
+<li>The <code>IP</code> suffix stands for <em>inner policy</em>.</li>
+</ol>
+<p>In general, for every strategy, an associated inner policy type is defined that precisely indicates what information must be provided to build associated policies (in addition to the toplevel search algorithm). Although the inner policy type is fairly simple in this case, it can get more complicated when (1) a strategy branches over results of another sub-strategy (in which case a <a href="delphyne.Policy"><code>Policy</code></a> must be provided) or (2) strategies involve loops or recursion (in which case prompting policies and sub-policies may depend on extra parameters such as the iteration number or recursion depth). In the definition of <a href="#find_param_value"><code>find_param_value</code></a>, the <a class="autorefs autorefs-internal" title="using" href="../../reference/stdlib/queries/#delphyne.Query.using"><code>using</code></a> method is called on queries to provide each time a mapping from the ambient inner policy (of type <code>FindParamValueIP</code>) to the prompting policy to use.</p>
+<details class="tip">
+<summary>A More Concise Alternative for Handling Inner Policies</summary>
+<p>Defining inner policy types and specifying functions from those to prompting policies or sub-policies via <a class="autorefs autorefs-internal" title="using" href="../../reference/stdlib/queries/#delphyne.Query.using"><code>using</code></a> allows a maximal degree of flexibility, static type safety and editor support. However, one might find it verbose. Thus, inner policies can also be specified via simple Python dictionaries (see <a class="autorefs autorefs-internal" title="IPDict" href="../../reference/stdlib/basic/#delphyne.IPDict"><code>IPDict</code></a>), as we <a href="#a-more-concise-version">soon</a> demonstrate.</p>
+</details>
+<p>The <code>serial_policy</code> policy defined above uses depth-first search (<a class="autorefs autorefs-internal" title="dfs" href="../../reference/stdlib/algorithms/#delphyne.stdlib.search.dfs.dfs"><code>dfs</code></a>) to find solutions: every time a branching node is reached in the search tree, branching candidates are lazily enumerated and explored in order. As specified in the inner policy, branching candidates are generated by repeatedly sampling LLM answers, using the <a class="autorefs autorefs-internal" title="few_shot" href="../../reference/stdlib/queries/#delphyne.few_shot"><code>few_shot</code></a> prompting policy (we discuss how few-shot examples can be added in the <a href="#adding-demonstrations">next section</a>). The branching factor for producing proofs is set to <code>proof_reattempts + 1</code>, while the branching factor for producing candidates for <span class="arithmatex">\(n\)</span> is set to infinity (LLM answers are not deduplicated by default). As mentioned earlier, alternative policies can be defined. For example, the following policy repeatedly performs a parallel variant of depth-first search (<a class="autorefs autorefs-internal" title="par_dfs" href="../../reference/stdlib/algorithms/#delphyne.stdlib.search.dfs.par_dfs"><code>par_dfs</code></a>), where multiple LLM completions are requested at every branching nodes and children are explored in parallel.</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@dp</span><span class="o">.</span><span class="n">ensure_compatible</span><span class="p">(</span><span class="n">find_param_value</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">parallel_policy</span><span class="p">(</span>
+    <span class="n">model_name</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">StandardModelName</span> <span class="o">=</span> <span class="s2">&quot;gpt-5-mini&quot;</span><span class="p">,</span>
+    <span class="n">par_find</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">par_rewrite</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Policy</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">FindParamValueIP</span><span class="p">]:</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">standard_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dp</span><span class="o">.</span><span class="n">loop</span><span class="p">()</span> <span class="o">@</span> <span class="n">dp</span><span class="o">.</span><span class="n">par_dfs</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">FindParamValueIP</span><span class="p">(</span>
+        <span class="n">guess</span><span class="o">=</span><span class="n">dp</span><span class="o">.</span><span class="n">few_shot</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">max_requests</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_completions</span><span class="o">=</span><span class="n">par_find</span><span class="p">),</span>
+        <span class="n">prove</span><span class="o">=</span><span class="n">dp</span><span class="o">.</span><span class="n">few_shot</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">max_requests</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_completions</span><span class="o">=</span><span class="n">par_rewrite</span><span class="p">))</span>
+</code></pre></div>
+<p>In general, a wide variety of policies can be assembled using standard basic blocks such as <a class="autorefs autorefs-internal" title="dfs" href="../../reference/stdlib/algorithms/#delphyne.stdlib.search.dfs.dfs"><code>dfs</code></a>, <a class="autorefs autorefs-internal" title="par_dfs" href="../../reference/stdlib/algorithms/#delphyne.stdlib.search.dfs.par_dfs"><code>par_dfs</code></a>, <a class="autorefs autorefs-internal" title="few_shot" href="../../reference/stdlib/queries/#delphyne.few_shot"><code>few_shot</code></a> and <a class="autorefs autorefs-internal" title="take" href="../../reference/stdlib/streams/#delphyne.take"><code>take</code></a> (many others are available, e.g., <a class="autorefs autorefs-internal" title="best_first_search" href="../../reference/stdlib/algorithms/#delphyne.best_first_search"><code>best_first_search</code></a>). However, adding new building blocks or search algorithms is easy. For example, <a class="autorefs autorefs-internal" title="par_dfs" href="../../reference/stdlib/algorithms/#delphyne.stdlib.search.dfs.par_dfs"><code>par_dfs</code></a> can be simply redefined as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@search_policy</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">par_dfs</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+    <span class="n">tree</span><span class="p">:</span> <span class="n">Tree</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
+    <span class="n">policy</span><span class="p">:</span> <span class="n">P</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+    <span class="k">match</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="p">:</span>
+        <span class="k">case</span> <span class="n">Success</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">Solution</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">case</span> <span class="n">Fail</span><span class="p">():</span>
+            <span class="k">pass</span>
+        <span class="k">case</span> <span class="n">Branch</span><span class="p">(</span><span class="n">cands</span><span class="p">):</span>
+            <span class="n">cands</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">cands</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="k">yield from</span> <span class="n">Stream</span><span class="o">.</span><span class="n">parallel</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">par_dfs</span><span class="p">()(</span><span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">tracked</span><span class="p">),</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">cands</span><span class="p">]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
+</code></pre></div>
+<p>The manual <a href="../policies.md">chapter</a> on policies provides details on how new policy components can be defined, using <a href="../../reference/stdlib/streams/">search stream combinators</a>.</p>
+<p>Once a policy is specified, we can run our strategy as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="n">budget</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">BudgetLimit</span><span class="p">({</span><span class="s2">&quot;dp.NUM_REQUESTS&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span> <span class="c1"># (1)!</span>
+<span class="n">res</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">find_param_value</span><span class="p">(</span><span class="s2">&quot;2*x**2 - 4*x + n&quot;</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">run_toplevel</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">PolicyEnv</span><span class="p">(</span><span class="n">demonstration_files</span><span class="o">=</span><span class="p">[]),</span> <span class="n">serial_policy</span><span class="p">())</span> <span class="c1"># (2)!</span>
+    <span class="o">.</span><span class="n">collect</span><span class="p">(</span><span class="n">budget</span><span class="o">=</span><span class="n">budget</span><span class="p">,</span> <span class="n">num_generated</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tracked</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>  <span class="c1"># e.g. 2</span>
+</code></pre></div>
+<ol>
+<li>We define a budget limit for search, in terms of number of LLM requests. Other metrics are available: number if input/output tokens, API spending in dollars...</li>
+<li>In addition to a policy, we also provide a <em>global policy environment</em> (<a class="autorefs autorefs-internal" title="PolicyEnv" href="../../reference/stdlib/environments/#delphyne.PolicyEnv"><code>PolicyEnv</code></a>), which can be used to specify demonstration files (for few-shot prompting), prompt templates, LLM request caches...</li>
+</ol>
+<p>Here, <code>gpt-5-mini</code> (the default model specified by <code>serial_policy</code>) is used to answer queries via zero-shot prompting. However, LLMs often work better when provided examples of answering similar queries. Delphyne features a domain-specific language for writing and maintaining such examples in the form of <em>demonstrations</em>.</p>
 <h2 id="adding-demonstrations">Adding Demonstrations</h2>
-<!-- ::: examples.small.find_param_value.find_param_value
-    options:
-      show_root_heading: false -->
+<h2 id="a-more-concise-version">A More Concise Version</h2>
 
 
 
