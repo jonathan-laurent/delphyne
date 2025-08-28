@@ -26,7 +26,7 @@ dev = [
     "pyright",
     "pytest",
     "mkdocs",
-    "mkdocstrings-python",
+    "mkdocstrings-python>=1.18.2",
     "mkdocs-autolinks-plugin",
     "mkdocs-material",
     "mike"

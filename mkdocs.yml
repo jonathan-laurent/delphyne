@@ -46,9 +46,6 @@ plugins:
             extra: 
               cross_references: true
             extensions:
-              - delphyne.doc_hooks:TypeAliasesAsAttributes:
-                  include: ["*"]
-                  exclude: []
               - delphyne.doc_hooks:DelphyneAutoCrossrefs
 
 markdown_extensions:

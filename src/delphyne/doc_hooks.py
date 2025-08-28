@@ -5,7 +5,6 @@ Mkdocs Extensions for Generating the Delphyne Documentation.
 # pyright: basic
 
 import ast
-import fnmatch
 import importlib
 import re
 from typing import Any
@@ -91,74 +90,3 @@ class DelphyneAutoCrossrefs(griffe.Extension):
         return hasattr(root_mod, name) and not inspect.ismodule(
             getattr(root_mod, name)
         )
-
-
-#####
-##### Workaround to support type aliases
-#####
-
-
-class TypeAliasesAsAttributes(griffe.Extension):
-    """
-    Turn `type X = ...` (PEP 695) into Attributes for rendering
-    purposes. This is useful since mkdocs-material does not support type
-    aliases yet.
-
-    Options (all optional):
-
-    - include: fnmatch-style patterns of fully-qualified names to include
-    - exclude: fnmatch-style patterns of fully-qualified names to exclude
-    """
-
-    def __init__(
-        self,
-        include: list[str] | None = None,
-        exclude: list[str] | None = None,
-    ) -> None:
-        super().__init__()
-        self.include = include or []
-        self.exclude = exclude or []
-
-    def _wanted(self, path: str) -> bool:
-        if self.include and not any(
-            fnmatch.fnmatch(path, pat) for pat in self.include
-        ):
-            return False
-        if any(fnmatch.fnmatch(path, pat) for pat in self.exclude):
-            return False
-        return True
-
-    # Hook fired after a TypeAlias is created and added to its parent.
-    def on_type_alias_instance(
-        self,
-        *,
-        node: ast.AST | griffe.ObjectNode,
-        type_alias: griffe.TypeAlias,
-        agent: griffe.Visitor | griffe.Inspector,
-        **kwargs: Any,
-    ) -> None:
-        parent = type_alias.parent
-        if parent is None:
-            return
-        if not self._wanted(type_alias.path):
-            return
-
-        # Create an Attribute that carries the alias's name and points
-        # its *annotation* to the alias target. Keep docstring, lines,
-        # labels, etc., when available.
-        attr = griffe.Attribute(type_alias.name, annotation=type_alias.value)
-        # Preserve common metadata useful for mkdocstrings’ rendering.
-        attr.docstring = type_alias.docstring
-        attr.lineno = type_alias.lineno
-        attr.endlineno = type_alias.endlineno
-        attr.public = type_alias.public
-        attr.parent = parent
-        attr.labels.update(type_alias.labels)
-        attr.extra.update(type_alias.extra)
-
-        # Setting Kind.TYPE_ALIAS would cause the wrong template to be used.
-        attr.kind = griffe.Kind.ATTRIBUTE
-
-        # Replace in the parent’s members (the TypeAlias was just
-        # inserted there).
-        parent.members[type_alias.name] = attr
