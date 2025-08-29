@@ -5,6 +5,7 @@
   "repository": "https://github.com/jonathan-laurent/delphyne",
   "publisher": "jonathan-laurent",
   "version": "0.7.0",
+  "icon": "media/logo/delphyne.png",
   "engines": {
     "vscode": "^1.89.0"
   },
@@ -49,7 +50,7 @@
         {
           "id": "delphyneContainer",
           "title": "Delphyne",
-          "icon": "media/logo/converted/delphyne-tree-snake.png"
+          "icon": "media/logo/delphyne.png"
         }
       ]
     },

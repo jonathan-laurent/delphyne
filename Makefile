@@ -96,9 +96,13 @@ clean-cache:
 LOGOS_DIR := docs/assets/logos
 BLACK_LOGOS := $(wildcard $(LOGOS_DIR)/black/*.png)
 WHITE_LOGOS := $(subst /black/,/white/,$(BLACK_LOGOS))
+GRAY_LOGOS := $(subst /black/,/gray/,$(BLACK_LOGOS))
 $(LOGOS_DIR)/white/%.png: $(LOGOS_DIR)/black/%.png
 	convert $< -fill black -colorize 100% -channel RGB -negate +channel $@
-doc-logo: $(WHITE_LOGOS)
+$(LOGOS_DIR)/gray/%.png: $(LOGOS_DIR)/black/%.png
+	convert $< -fill '#666d77' -colorize 100% $@
+doc-logo: $(WHITE_LOGOS) $(GRAY_LOGOS)
+	cp $(LOGOS_DIR)/gray/mini.png vscode-ui/media/logo/delphyne.png
 
 
 # Build and deploy the documentation for the latest stable release.
