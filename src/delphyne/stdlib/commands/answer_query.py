@@ -17,6 +17,7 @@ import delphyne.stdlib.tasks as ta
 import delphyne.utils.caching as ca
 from delphyne.core.streams import Barrier, Solution, Spent
 from delphyne.stdlib.commands.run_strategy import CacheFormat, with_cache_spec
+from delphyne.stdlib.globals import stdlib_globals
 
 DEFAULT_MODEL_NAME = "gpt-4o"
 
@@ -66,8 +67,9 @@ def answer_query_with_cache(
     cmd: AnswerQueryArgs,
     cache_spec: ca.CacheSpec | None,
 ):
-    # TODO: no examples for now. Also, we have to externalize this anyway.
-    loader = analysis.ObjectLoader(exe.base)
+    # TODO: no examples for now. Also, we have to externalize this
+    # anyway.
+    loader = analysis.ObjectLoader(exe.base, extra_objects=stdlib_globals())
     query = loader.load_query(cmd.query, cmd.args)
     env = en.PolicyEnv(
         prompt_dirs=exe.prompt_dirs,
