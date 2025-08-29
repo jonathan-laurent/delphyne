@@ -437,10 +437,12 @@ sub-policy, often in the form of an anonymous function:
 
 ```python
 @dataclass class MyInnerPolicy:
-    foo: PromptingPolicy # etc
+    foo: PromptingPolicy
+    # etc
 
 def my_strategy() -> Strategy[Branch, MyInnerPolicy, str]:
-    x = yield from branch(Foo().using(lambda p: p.foo)) # etc
+    x = yield from branch(Foo().using(lambda p: p.foo))
+    # etc
 ```
     
 As an alternative, one can have a strategy use an inner policy
@@ -448,7 +450,8 @@ dictionary, by passing ellipses (`...`) to the `using` method:
 
 ```python
 def my_strategy() -> Strategy[Branch, IPDict, str]:
-    x = yield from branch(Foo().using(...)) # etc
+    x = yield from branch(Foo().using(...))
+    # etc
 ```
 
 When doing so, a simple Python dictionary can be used as an inner

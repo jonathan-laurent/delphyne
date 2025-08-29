@@ -208,6 +208,11 @@ Let us add a demonstration for the `find_param_value` strategy. We do so by addi
 
 The test in this snippet indicates that the goal is to demonstrate how to successfully solve a specific instance of our strategy, using a set of query/answer pairs provided in the `queries` section. This section is initially empty. Thus, evaluating the demonstration above (using the `Evaluate Demonstration` code action from the [VSCode extension](./extension.md)) results in a warning:
 
+![](../assets/screenshot/overview-extension-example/dark-large.png#only-dark)
+![](../assets/screenshot/overview-extension-example/light-large.png#only-light)
+
+Here, the extension indicates that the demonstation's unique test is _stuck_, due to a missing query answer. Using the extension's tree view, the user can visualize _where_ in the tree it is stuck and add the missing query to the demonstration by clicking on the `+` icon:
+
 ```yaml
 - strategy: find_param_value
   args:
@@ -221,8 +226,7 @@ The test in this snippet indicates that the goal is to demonstrate how to succes
       answers: []
 ```
 
-![](../assets/screenshot/overview-extension-example/dark-large.png#only-dark)
-![](../assets/screenshot/overview-extension-example/light-large.png#only-light)
+The user can then add an answer to the query, either manually or by querying an LLM and editing the result. After this, the demonstration can be evaluated again and the process repeats, until all tests pass. In this case, the final demonstration is:
 
 
 ```yaml
@@ -236,7 +240,7 @@ The test in this snippet indicates that the goal is to demonstrate how to succes
       args:
         expr: x**2 - 2*x + n
       answers:
-        - answer: |
+        - answer: | # (1)!
             ```
             1
             ```
@@ -250,4 +254,119 @@ The test in this snippet indicates that the goal is to demonstrate how to succes
             ```
 ```
 
+1. As specified by the [parser](#writing-a-strategy) of `FindParamValue`, answers must end with a code block featuring a YAML object. A chain of thoughts or an explanation can be provided outside the code block, although we do not do so here.
+
+Once such a demonstration is written, the associated tests guarantee that it stays relevant and consistent as the whole program evolves. The Delphyne language server provides a wide range of diagnostics for demonstrations, from detecting unreachable or unparseable answers to indicating runtime strategy exceptions.
+
+The demonstration language allows expressing more advanced tests. In particular, it allows specifying negative examples and describing scenarios of recovering from bad decisions during search. More details are provided in the [Demonstrations](./demos.md) chapter of the manual.
+
+!!! note "Demonstrations are Policy-Agnostic"
+    Crucially, demonstrations are **policy-agnostic**. In fact, a common practice is to start writing demonstrations after a strategy is defined and _before_ associated policies are specified. Modifying policies is guaranteed never to break a demonstration, leveraging the full separation between _strategies_ and _policies_ at the heart of Delphyne's design.
+
+    In order to walk through search trees without depending on a specific policy, the `run` test instruction leverages local [navigation functions][delphyne.Navigation] that are defined for every type of tree node (including custom nodes added by users). For example, upon encountering a branching node of type [`Branch`][delphyne.Branch], `run` examines whether branching occurs over query answers or over the results of another strategy. In the first case, an answer to the featured query is fetched from the `queries` section of the demonstration. In the second case, `run` executes recursively.
+
 ## A More Concise Version
+
+<!-- trading some static type safety and flexibility in exchange for concision.  -->
+
+There are two ways in which the strategy above can be shortened (while preserving its logic). First, one can use _inner policy dictionaries_ instead of manually defining and manipulating inner policy types such as `FindParamValueIP` (see [`IPDict`][delphyne.IPDict] for details). Second, Delphyne offers an experimental feature that saves users from manually defining queries. Indeed, the [`guess`][delphyne.guess] operator can be used to ask LLMs for an object of a given type, given some context that is automatically extracted from the stack frame at the call site.
+
+Using these two features, the `find_param_value` strategy can be rewritten as follows:
+
+```py
+import sympy as sp
+from typing import assert_never
+import delphyne as dp 
+from delphyne import Branch, Fail, Strategy, strategy
+
+
+@strategy
+def find_param_value(expr: str) -> Strategy[Branch | Fail, IPDict, int]:
+    """
+    Find an integer parameter `n` that makes a given math expression
+    nonnegative for all real `x`. Then, prove that the resulting
+    expression is indeed nonnegative for all real `x` by rewriting it
+    into an equivalent form that makes this fact clear.
+    """
+    x, n = sp.Symbol("x", real=True), sp.Symbol("n")
+    symbs = {"x": x, "n": n}
+    try:
+        n_val = yield from dp.guess(int, using=[expr])
+        expr_sp = sp.parse_expr(expr, symbs).subs({n: n_val})
+        equiv = yield from dp.guess(str, using=[str(expr_sp)])
+        equiv_sp = sp.parse_expr(equiv, symbs)
+        equivalent = (expr_sp - equiv_sp).simplify() == 0
+        yield from dp.ensure(equivalent, "not_equivalent")
+        yield from dp.ensure(equiv_sp.is_nonnegative, "not_nonneg")
+        return n_val
+    except Exception as e:
+        assert_never((yield from dp.fail("sympy_error", message=str(e))))
+
+
+def serial_policy():
+    model = dp.standard_model("gpt-5-mini")
+    return dp.dfs() & {
+        "n_val": dp.few_shot(model),
+        "equiv": dp.take(2) @ dp.few_shot(model),
+    }
+```
+
+Behind the scenes, [`guess`][delphyne.guess] issues instances of the [`UniversalQuery`][delphyne.UniversalQuery] query from Delphyne's standard library. We show a concrete example of a generated prompt below:
+
+??? info "Prompt Details"
+
+    Here is an instance of the exact prompt that is generated for the second instance of `guess` that assigns a value to `equiv`.
+
+    **System Prompt:**
+
+    I am executing a program that contains nondeterministic assignments along with assertions (e.g., in the form of `ensure` and `fail` statements). I am stuck at one of these nondeterministic assignments and your goal is to generate an assigned value, in such a way that the program can go on and not fail any assertion.
+
+    More specifically, I'll give you three pieces of information:
+
+    - A nondeterministic program.
+    - The name of the variable that is being assigned at the program location where I am currently stuck.
+    - Some values for a number of local variables.
+
+    Your job is to generate a correct value to assign. The expected type of this value is indicated inside the nondeterministic assignment operator.
+
+    Terminate your answer with a code block (delimited by triple backquotes) that contains a YAML object of the requested type. Do not wrap this YAML value into an object with a field named like the assigned variable.
+
+    **Instance Prompt:**
+
+    ~~~md
+    Program:
+
+    ```
+    @strategy
+    def find_param_value(expr: str) -> Strategy[Branch | Fail, IPDict, int]:
+        """
+        Find an integer parameter `n` that makes a given math expression
+        nonnegative for all real `x`. Then, prove that the resulting
+        expression is indeed nonnegative for all real `x` by rewriting it
+        into an equivalent form that makes this fact clear.
+        """
+        x, n = sp.Symbol("x", dummy=True, real=True), sp.Symbol("n", dummy=True)
+        symbs = {"x": x, "n": n}
+        try:
+            n_val = yield from dp.guess(int, using=[expr])
+            expr_sp = sp.parse_expr(expr, symbs).subs({n: n_val})
+            equiv = yield from dp.guess(str, using=[str(expr_sp)])
+            equiv_sp = sp.parse_expr(equiv, symbs)
+            equivalent = (expr_sp - equiv_sp).simplify() == 0
+            yield from dp.ensure(equivalent, "not_equivalent")
+            yield from dp.ensure(equiv_sp.is_nonnegative, "not_nonneg")
+            return n_val
+        except Exception as e:
+            assert_never((yield from dp.fail("sympy_error", message=str(e))))
+    ```
+
+    Variable being currently assigned: equiv
+
+    Selected local variables:
+
+    ```yaml
+    str(expr_sp): x**2 - 2*x + 1
+    ```
+
+    Type of value to generate (as a YAML object): <class 'str'>
+    ~~~
