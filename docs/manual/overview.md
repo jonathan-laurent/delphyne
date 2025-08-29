@@ -221,6 +221,10 @@ The test in this snippet indicates that the goal is to demonstrate how to succes
       answers: []
 ```
 
+![](../assets/screenshot/overview-extension-example/dark-large.png#only-dark)
+![](../assets/screenshot/overview-extension-example/light-large.png#only-light)
+
+
 ```yaml
 - strategy: find_param_value
   args:

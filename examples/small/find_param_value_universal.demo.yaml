@@ -19,3 +19,15 @@
             ```
             1
             ```
+    - query: UniversalQuery
+      args:
+        strategy: find_param_value_universal.find_param_value
+        expected_type: <class 'str'>
+        tags: [equiv]
+        locals:
+          str(expr_sp): x**2 - 2*x + 1
+      answers:
+        - answer: |
+            ```
+            (x - 1)**2
+            ```
