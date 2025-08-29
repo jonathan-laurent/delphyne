@@ -1527,6 +1527,49 @@
 <p>Here, <code>gpt-5-mini</code> (the default model specified by <code>serial_policy</code>) is used to answer queries via zero-shot prompting. However, LLMs often work better when provided examples of answering similar queries. Delphyne features a domain-specific language for writing and maintaining such examples in the form of <em>demonstrations</em>.</p>
 <h2 id="adding-demonstrations">Adding Demonstrations</h2>
 <p>Although queries can sometimes be successfully answered via <em>zero-shot</em> prompting, LLMs typically work better when examples of answering queries of the same type are provided. Such examples become essential parts of an LLM-enabled program, which must be kept in sync as it evolves. Delphyne offers a dedicated language for writing and maintaining examples. In this language, related examples are bundled with unit tests into coherent <em>demonstrations</em>. Demonstrations showcase concrete scenarios of navigating search trees and can be written interactively, using a tool-assisted, test-driven workflow.</p>
+<p>Let us add a demonstration for the <code>find_param_value</code> strategy. We do so by adding the following to a demonstration file (with extension <code>.demo.yaml</code>):</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">find_param_value</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;x**2</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">2*x</span><span class="nv"> </span><span class="s">+</span><span class="nv"> </span><span class="s">n&quot;</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run | success</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+</code></pre></div>
+<p>The test in this snippet indicates that the goal is to demonstrate how to successfully solve a specific instance of our strategy, using a set of query/answer pairs provided in the <code>queries</code> section. This section is initially empty. Thus, evaluating the demonstration above (using the <code>Evaluate Demonstration</code> code action from the <a href="../extension/">VSCode extension</a>) results in a warning:</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">find_param_value</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;x**2</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">2*x</span><span class="nv"> </span><span class="s">+</span><span class="nv"> </span><span class="s">n&quot;</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run | success</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span><span class="w"> </span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FindParamValue</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">x**2 - 2*x + n</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">find_param_value</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;x**2</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">2*x</span><span class="nv"> </span><span class="s">+</span><span class="nv"> </span><span class="s">n&quot;</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run | success</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span><span class="w"> </span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FindParamValue</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">x**2 - 2*x + n</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">            </span><span class="no">```</span>
+<span class="w">            </span><span class="no">1</span>
+<span class="w">            </span><span class="no">```</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RewriteExpr</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">x**2 - 2*x + 1</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">            </span><span class="no">```</span>
+<span class="w">            </span><span class="no">(x - 1)**2</span>
+<span class="w">            </span><span class="no">```</span>
+</code></pre></div>
 <h2 id="a-more-concise-version">A More Concise Version</h2>
 
 
