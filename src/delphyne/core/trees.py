@@ -446,9 +446,11 @@ A strategy computation is a generator (i.e., a coroutine) that yields
 node builders and receives corresponding actions, until it returns a
 success value.
 
-Type parameter `N` (covariant) corresponds to the strategy's type
-signature (typically a union of node types), `P` (contravariant) is its
-associated inner policy type and `T` (covariant) its return type.
+Type Parameters:
+    N: The strategy's signature, typically a union of node types
+        (covariant).
+    P: The strategy's associated inner policy type (contravariant).
+    T: The strategy's return type (covariant).
 
 !!! info
     Node builders are yielded instead of nodes. Indeed, strategy

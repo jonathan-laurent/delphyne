@@ -168,9 +168,9 @@ def par_dfs[P, T](
             pass
         case Branch(cands):
             cands = yield from cands.stream(env, policy).all()
-            yield from Stream.parallel(
-                [par_dfs()(tree.child(a.tracked), env, policy) for a in cands]
-            ).gen()
+            yield from Stream.parallel([
+                par_dfs()(tree.child(a.tracked), env, policy)
+                for a in cands]).gen()
 ```
 
 The manual [chapter](./policies.md) on policies provides details on how new policy components can be defined, using [search stream combinators](../reference/stdlib/streams.md).
@@ -192,5 +192,7 @@ print(res[0].tracked.value)  # e.g. 2
 Here, `gpt-5-mini` (the default model specified by `serial_policy`) is used to answer queries via zero-shot prompting. However, LLMs often work better when provided examples of answering similar queries. Delphyne features a domain-specific language for writing and maintaining such examples in the form of _demonstrations_.
 
 ## Adding Demonstrations
+
+Although queries can sometimes be successfully answered via _zero-shot_ prompting, LLMs typically work better when examples of answering queries of the same type are provided. Such examples become essential parts of an LLM-enabled program, which must be kept in sync as it evolves. Delphyne offers a dedicated language for writing and maintaining examples. In this language, related examples are bundled with unit tests into coherent _demonstrations_. Demonstrations showcase concrete scenarios of navigating search trees and can be written interactively, using a tool-assisted, test-driven workflow.
 
 ## A More Concise Version
