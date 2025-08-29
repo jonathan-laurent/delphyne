@@ -195,4 +195,55 @@ Here, `gpt-5-mini` (the default model specified by `serial_policy`) is used to a
 
 Although queries can sometimes be successfully answered via _zero-shot_ prompting, LLMs typically work better when examples of answering queries of the same type are provided. Such examples become essential parts of an LLM-enabled program, which must be kept in sync as it evolves. Delphyne offers a dedicated language for writing and maintaining examples. In this language, related examples are bundled with unit tests into coherent _demonstrations_. Demonstrations showcase concrete scenarios of navigating search trees and can be written interactively, using a tool-assisted, test-driven workflow.
 
+Let us add a demonstration for the `find_param_value` strategy. We do so by adding the following to a demonstration file (with extension `.demo.yaml`):
+
+```yaml
+- strategy: find_param_value
+  args:
+    expr: "x**2 - 2*x + n"
+  tests:
+    - run | success
+  queries: []
+```
+
+The test in this snippet indicates that the goal is to demonstrate how to successfully solve a specific instance of our strategy, using a set of query/answer pairs provided in the `queries` section. This section is initially empty. Thus, evaluating the demonstration above (using the `Evaluate Demonstration` code action from the [VSCode extension](./extension.md)) results in a warning:
+
+```yaml
+- strategy: find_param_value
+  args:
+    expr: "x**2 - 2*x + n"
+  tests:
+    - run | success
+  queries: 
+    - query: FindParamValue
+      args:
+        expr: x**2 - 2*x + n
+      answers: []
+```
+
+```yaml
+- strategy: find_param_value
+  args:
+    expr: "x**2 - 2*x + n"
+  tests:
+    - run | success
+  queries: 
+    - query: FindParamValue
+      args:
+        expr: x**2 - 2*x + n
+      answers:
+        - answer: |
+            ```
+            1
+            ```
+    - query: RewriteExpr
+      args:
+        expr: x**2 - 2*x + 1
+      answers:
+        - answer: |
+            ```
+            (x - 1)**2
+            ```
+```
+
 ## A More Concise Version
