@@ -24,7 +24,7 @@ import { waitFor } from "./utils";
 import { ReadableStreamReadResult } from "stream/web";
 
 const CANCEL_POLLING_INTERVAL = 100;
-const SERVER_ADDRESS = "http://localhost:8000";
+const SERVER_ADDRESS = "http://localhost:3008";
 
 //////
 /// Server wrapper

@@ -204,13 +204,13 @@ class DelphyneCLI:
         with open(path, "w") as f:
             f.write(new_content)
 
-    def serve(self):
+    def serve(self, *, port: int = 3008):
         """
         Launch an instance of the Delphyne language server.
         """
         from delphyne.server.__main__ import main
 
-        main()
+        main(port=port)
 
 
 def main():

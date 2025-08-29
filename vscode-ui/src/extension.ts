@@ -156,7 +156,7 @@ function killServerCommand(server: DelphyneServer) {
   loadingStatusBar.hide();
   loadingStatusBar.dispose();
 
-  const killCommand = '"sudo kill -9 $(sudo lsof -t -i :8000)"';
+  const killCommand = '"sudo kill -9 $(sudo lsof -t -i :3008)"';
   if (killResult === undefined) {
     logWarning(
       "No server instance is managed by the Delphyne extension. " +
