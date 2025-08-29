@@ -2514,15 +2514,18 @@ opaque spaces are created from queries or strategy by passing the
 <code>using</code> method a mapping from the ambient inner policy to a proper
 sub-policy, often in the form of an anonymous function:</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span> <span class="k">class</span><span class="w"> </span><span class="nc">MyInnerPolicy</span><span class="p">:</span>
-    <span class="n">foo</span><span class="p">:</span> <span class="n">PromptingPolicy</span> <span class="c1"># etc</span>
+    <span class="n">foo</span><span class="p">:</span> <span class="n">PromptingPolicy</span>
+    <span class="c1"># etc</span>
 
 <span class="k">def</span><span class="w"> </span><span class="nf">my_strategy</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span><span class="p">,</span> <span class="n">MyInnerPolicy</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">branch</span><span class="p">(</span><span class="n">Foo</span><span class="p">()</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">foo</span><span class="p">))</span> <span class="c1"># etc</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">branch</span><span class="p">(</span><span class="n">Foo</span><span class="p">()</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">foo</span><span class="p">))</span>
+    <span class="c1"># etc</span>
 </code></pre></div>
 <p>As an alternative, one can have a strategy use an inner policy
 dictionary, by passing ellipses (<code>...</code>) to the <code>using</code> method:</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">my_strategy</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span><span class="p">,</span> <span class="n">IPDict</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">branch</span><span class="p">(</span><span class="n">Foo</span><span class="p">()</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="o">...</span><span class="p">))</span> <span class="c1"># etc</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">branch</span><span class="p">(</span><span class="n">Foo</span><span class="p">()</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+    <span class="c1"># etc</span>
 </code></pre></div>
 <p>When doing so, a simple Python dictionary can be used as an inner
 policy, whose keys are space tags (the same tags can be referenced in

@@ -1536,6 +1536,9 @@
 <span class="w">  </span><span class="nt">queries</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
 </code></pre></div>
 <p>The test in this snippet indicates that the goal is to demonstrate how to successfully solve a specific instance of our strategy, using a set of query/answer pairs provided in the <code>queries</code> section. This section is initially empty. Thus, evaluating the demonstration above (using the <code>Evaluate Demonstration</code> code action from the <a href="../extension/">VSCode extension</a>) results in a warning:</p>
+<p><img alt="" src="../../assets/screenshot/overview-extension-example/dark-large.png#only-dark" />
+<img alt="" src="../../assets/screenshot/overview-extension-example/light-large.png#only-light" /></p>
+<p>Here, the extension indicates that the demonstation's unique test is <em>stuck</em>, due to a missing query answer. Using the extension's tree view, the user can visualize <em>where</em> in the tree it is stuck and add the missing query to the demonstration by clicking on the <code>+</code> icon:</p>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">find_param_value</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;x**2</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">2*x</span><span class="nv"> </span><span class="s">+</span><span class="nv"> </span><span class="s">n&quot;</span>
@@ -1547,8 +1550,7 @@
 <span class="w">        </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">x**2 - 2*x + n</span>
 <span class="w">      </span><span class="nt">answers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
 </code></pre></div>
-<p><img alt="" src="../../assets/screenshot/overview-extension-example/dark-large.png#only-dark" />
-<img alt="" src="../../assets/screenshot/overview-extension-example/light-large.png#only-light" /></p>
+<p>The user can then add an answer to the query, either manually or by querying an LLM and editing the result. After this, the demonstration can be evaluated again and the process repeats, until all tests pass. In this case, the final demonstration is:</p>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">find_param_value</span>
 <span class="w">  </span><span class="nt">args</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;x**2</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">2*x</span><span class="nv"> </span><span class="s">+</span><span class="nv"> </span><span class="s">n&quot;</span>
@@ -1559,7 +1561,7 @@
 <span class="w">      </span><span class="nt">args</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">x**2 - 2*x + n</span>
 <span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span><span class="w"> </span><span class="c1"># (1)!</span>
 <span class="w">            </span><span class="no">```</span>
 <span class="w">            </span><span class="no">1</span>
 <span class="w">            </span><span class="no">```</span>
@@ -1572,7 +1574,119 @@
 <span class="w">            </span><span class="no">(x - 1)**2</span>
 <span class="w">            </span><span class="no">```</span>
 </code></pre></div>
+<ol>
+<li>As specified by the <a href="#writing-a-strategy">parser</a> of <code>FindParamValue</code>, answers must end with a code block featuring a YAML object. A chain of thoughts or an explanation can be provided outside the code block, although we do not do so here.</li>
+</ol>
+<p>Once such a demonstration is written, the associated tests guarantee that it stays relevant and consistent as the whole program evolves. The Delphyne language server provides a wide range of diagnostics for demonstrations, from detecting unreachable or unparseable answers to indicating runtime strategy exceptions.</p>
+<p>The demonstration language allows expressing more advanced tests. In particular, it allows specifying negative examples and describing scenarios of recovering from bad decisions during search. More details are provided in the <a href="../demos/">Demonstrations</a> chapter of the manual.</p>
+<div class="admonition note">
+<p class="admonition-title">Demonstrations are Policy-Agnostic</p>
+<p>Crucially, demonstrations are <strong>policy-agnostic</strong>. In fact, a common practice is to start writing demonstrations after a strategy is defined and <em>before</em> associated policies are specified. Modifying policies is guaranteed never to break a demonstration, leveraging the full separation between <em>strategies</em> and <em>policies</em> at the heart of Delphyne's design.</p>
+<p>In order to walk through search trees without depending on a specific policy, the <code>run</code> test instruction leverages local <a class="autorefs autorefs-internal" title="Navigation" href="../../reference/strategies/trees/#delphyne.Navigation">navigation functions</a> that are defined for every type of tree node (including custom nodes added by users). For example, upon encountering a branching node of type <a class="autorefs autorefs-internal" title="Branch
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.Branch"><code>Branch</code></a>, <code>run</code> examines whether branching occurs over query answers or over the results of another strategy. In the first case, an answer to the featured query is fetched from the <code>queries</code> section of the demonstration. In the second case, <code>run</code> executes recursively.</p>
+</div>
 <h2 id="a-more-concise-version">A More Concise Version</h2>
+<!-- trading some static type safety and flexibility in exchange for concision.  -->
+
+<p>There are two ways in which the strategy above can be shortened (while preserving its logic). First, one can use <em>inner policy dictionaries</em> instead of manually defining and manipulating inner policy types such as <code>FindParamValueIP</code> (see <a class="autorefs autorefs-internal" title="IPDict" href="../../reference/stdlib/basic/#delphyne.IPDict"><code>IPDict</code></a> for details). Second, Delphyne offers an experimental feature that saves users from manually defining queries. Indeed, the <a class="autorefs autorefs-internal" title="guess" href="../../reference/stdlib/algorithms/#delphyne.guess"><code>guess</code></a> operator can be used to ask LLMs for an object of a given type, given some context that is automatically extracted from the stack frame at the call site.</p>
+<p>Using these two features, the <code>find_param_value</code> strategy can be rewritten as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">sympy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">assert_never</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">delphyne</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dp</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">delphyne</span><span class="w"> </span><span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">Strategy</span><span class="p">,</span> <span class="n">strategy</span>
+
+
+<span class="nd">@strategy</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_param_value</span><span class="p">(</span><span class="n">expr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">IPDict</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find an integer parameter `n` that makes a given math expression</span>
+<span class="sd">    nonnegative for all real `x`. Then, prove that the resulting</span>
+<span class="sd">    expression is indeed nonnegative for all real `x` by rewriting it</span>
+<span class="sd">    into an equivalent form that makes this fact clear.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">)</span>
+    <span class="n">symbs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="n">n</span><span class="p">}</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">n_val</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">guess</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">using</span><span class="o">=</span><span class="p">[</span><span class="n">expr</span><span class="p">])</span>
+        <span class="n">expr_sp</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">parse_expr</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">symbs</span><span class="p">)</span><span class="o">.</span><span class="n">subs</span><span class="p">({</span><span class="n">n</span><span class="p">:</span> <span class="n">n_val</span><span class="p">})</span>
+        <span class="n">equiv</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">guess</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">using</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">expr_sp</span><span class="p">)])</span>
+        <span class="n">equiv_sp</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">parse_expr</span><span class="p">(</span><span class="n">equiv</span><span class="p">,</span> <span class="n">symbs</span><span class="p">)</span>
+        <span class="n">equivalent</span> <span class="o">=</span> <span class="p">(</span><span class="n">expr_sp</span> <span class="o">-</span> <span class="n">equiv_sp</span><span class="p">)</span><span class="o">.</span><span class="n">simplify</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">equivalent</span><span class="p">,</span> <span class="s2">&quot;not_equivalent&quot;</span><span class="p">)</span>
+        <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">equiv_sp</span><span class="o">.</span><span class="n">is_nonnegative</span><span class="p">,</span> <span class="s2">&quot;not_nonneg&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">n_val</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">assert_never</span><span class="p">((</span><span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="s2">&quot;sympy_error&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">serial_policy</span><span class="p">():</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">standard_model</span><span class="p">(</span><span class="s2">&quot;gpt-5-mini&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dp</span><span class="o">.</span><span class="n">dfs</span><span class="p">()</span> <span class="o">&amp;</span> <span class="p">{</span>
+        <span class="s2">&quot;n_val&quot;</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">few_shot</span><span class="p">(</span><span class="n">model</span><span class="p">),</span>
+        <span class="s2">&quot;equiv&quot;</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">@</span> <span class="n">dp</span><span class="o">.</span><span class="n">few_shot</span><span class="p">(</span><span class="n">model</span><span class="p">),</span>
+    <span class="p">}</span>
+</code></pre></div>
+<p>Behind the scenes, <a class="autorefs autorefs-internal" title="guess" href="../../reference/stdlib/algorithms/#delphyne.guess"><code>guess</code></a> issues instances of the <a class="autorefs autorefs-internal" title="UniversalQuery
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/algorithms/#delphyne.UniversalQuery"><code>UniversalQuery</code></a> query from Delphyne's standard library. We show a concrete example of a generated prompt below:</p>
+<details class="info">
+<summary>Prompt Details</summary>
+<p>Here is an instance of the exact prompt that is generated for the second instance of <code>guess</code> that assigns a value to <code>equiv</code>.</p>
+<p><strong>System Prompt:</strong></p>
+<p>I am executing a program that contains nondeterministic assignments along with assertions (e.g., in the form of <code>ensure</code> and <code>fail</code> statements). I am stuck at one of these nondeterministic assignments and your goal is to generate an assigned value, in such a way that the program can go on and not fail any assertion.</p>
+<p>More specifically, I'll give you three pieces of information:</p>
+<ul>
+<li>A nondeterministic program.</li>
+<li>The name of the variable that is being assigned at the program location where I am currently stuck.</li>
+<li>Some values for a number of local variables.</li>
+</ul>
+<p>Your job is to generate a correct value to assign. The expected type of this value is indicated inside the nondeterministic assignment operator.</p>
+<p>Terminate your answer with a code block (delimited by triple backquotes) that contains a YAML object of the requested type. Do not wrap this YAML value into an object with a field named like the assigned variable.</p>
+<p><strong>Instance Prompt:</strong></p>
+<div class="highlight"><pre><span></span><code>Program:
+
+<span class="sb">```</span>
+<span class="sb">@strategy</span>
+<span class="sb">def find_param_value(expr: str) -&gt; Strategy[Branch | Fail, IPDict, int]:</span>
+<span class="sb">    &quot;&quot;&quot;</span>
+<span class="sb">    Find an integer parameter `n` that makes a given math expression</span>
+<span class="sb">    nonnegative for all real `x`. Then, prove that the resulting</span>
+<span class="sb">    expression is indeed nonnegative for all real `x` by rewriting it</span>
+<span class="sb">    into an equivalent form that makes this fact clear.</span>
+<span class="sb">    &quot;&quot;&quot;</span>
+<span class="sb">    x, n = sp.Symbol(&quot;x&quot;, dummy=True, real=True), sp.Symbol(&quot;n&quot;, dummy=True)</span>
+<span class="sb">    symbs = {&quot;x&quot;: x, &quot;n&quot;: n}</span>
+<span class="sb">    try:</span>
+<span class="sb">        n_val = yield from dp.guess(int, using=[expr])</span>
+<span class="sb">        expr_sp = sp.parse_expr(expr, symbs).subs({n: n_val})</span>
+<span class="sb">        equiv = yield from dp.guess(str, using=[str(expr_sp)])</span>
+<span class="sb">        equiv_sp = sp.parse_expr(equiv, symbs)</span>
+<span class="sb">        equivalent = (expr_sp - equiv_sp).simplify() == 0</span>
+<span class="sb">        yield from dp.ensure(equivalent, &quot;not_equivalent&quot;)</span>
+<span class="sb">        yield from dp.ensure(equiv_sp.is_nonnegative, &quot;not_nonneg&quot;)</span>
+<span class="sb">        return n_val</span>
+<span class="sb">    except Exception as e:</span>
+<span class="sb">        assert_never((yield from dp.fail(&quot;sympy_error&quot;, message=str(e))))</span>
+<span class="sb">```</span>
+
+Variable being currently assigned: equiv
+
+Selected local variables:
+
+<span class="sb">```yaml</span>
+<span class="nt">str(expr_sp)</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">x**2 - 2*x + 1</span>
+<span class="sb">```</span>
+
+Type of value to generate (as a YAML object): &lt;class &#39;str&#39;&gt;
+</code></pre></div>
+</details>
 
 
 
