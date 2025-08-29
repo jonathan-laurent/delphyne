@@ -1507,9 +1507,9 @@
             <span class="k">pass</span>
         <span class="k">case</span> <span class="n">Branch</span><span class="p">(</span><span class="n">cands</span><span class="p">):</span>
             <span class="n">cands</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">cands</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-            <span class="k">yield from</span> <span class="n">Stream</span><span class="o">.</span><span class="n">parallel</span><span class="p">(</span>
-                <span class="p">[</span><span class="n">par_dfs</span><span class="p">()(</span><span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">tracked</span><span class="p">),</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">cands</span><span class="p">]</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
+            <span class="k">yield from</span> <span class="n">Stream</span><span class="o">.</span><span class="n">parallel</span><span class="p">([</span>
+                <span class="n">par_dfs</span><span class="p">()(</span><span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">tracked</span><span class="p">),</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">cands</span><span class="p">])</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
 </code></pre></div>
 <p>The manual <a href="../policies/">chapter</a> on policies provides details on how new policy components can be defined, using <a href="../../reference/stdlib/streams/">search stream combinators</a>.</p>
 <p>Once a policy is specified, we can run our strategy as follows:</p>
@@ -1526,6 +1526,7 @@
 </ol>
 <p>Here, <code>gpt-5-mini</code> (the default model specified by <code>serial_policy</code>) is used to answer queries via zero-shot prompting. However, LLMs often work better when provided examples of answering similar queries. Delphyne features a domain-specific language for writing and maintaining such examples in the form of <em>demonstrations</em>.</p>
 <h2 id="adding-demonstrations">Adding Demonstrations</h2>
+<p>Although queries can sometimes be successfully answered via <em>zero-shot</em> prompting, LLMs typically work better when examples of answering queries of the same type are provided. Such examples become essential parts of an LLM-enabled program, which must be kept in sync as it evolves. Delphyne offers a dedicated language for writing and maintaining examples. In this language, related examples are bundled with unit tests into coherent <em>demonstrations</em>. Demonstrations showcase concrete scenarios of navigating search trees and can be written interactively, using a tool-assisted, test-driven workflow.</p>
 <h2 id="a-more-concise-version">A More Concise Version</h2>
 
 
