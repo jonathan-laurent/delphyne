@@ -388,6 +388,19 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Demonstration Language
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -399,6 +412,43 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#demonstration-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Demonstration Files
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#demonstration-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Demonstration Tests
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1174,6 +1224,32 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#demonstration-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Demonstration Files
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#demonstration-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Demonstration Tests
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1189,7 +1265,651 @@
 
 
 <h1 id="demonstration-language">Demonstration Language</h1>
-<p>This page is under construction. In the meantime, you can read about Delphyne's key concepts in the paper <a href="https://arxiv.org/abs/2502.05310"><em>Oracular Programming: A Modular Foundation for Building LLM-Enabled Software</em></a>.</p>
+<p>Delphyne includes a demonstration language for writing and maintaining few-shot prompting examples, in the form of coherent scenarios of navigating search trees. The demonstration language is amenable to a test-driven development workflow. This workflow is supported by a dedicated VSCode extension, which is described in the <a href="../extension/">next chapter</a>.</p>
+<h2 id="demonstration-files">Demonstration Files</h2>
+<p>Demonstrations can be written in demonstration files with a <code>.demo.yaml</code> extension. A demonstration file features a list of demonstrations (<a class="autorefs autorefs-internal" title="Demo" href="../../reference/demos/definitions/#delphyne.core.demos.Demo"><code>Demo</code></a>). Each demonstration can be separately evaluated. Many short examples can be found in the demonstation file from the Delphyne's test suite:</p>
+<details class="info">
+<summary>Source for <code>tests/example_strategies.demo.yaml</code></summary>
+<div class="highlight"><pre><span></span><code><span class="c1">#####</span>
+<span class="c1">##### Unit Tests for the Demonstration Language</span>
+<span class="c1">#####</span>
+
+<span class="c1"># Note: some demonstrations feature errors or failing tests.</span>
+<span class="c1"># Some demonstrations also contain an additional `expect` section</span>
+<span class="c1"># describing parts of the expected demonstration interpreter feedback.</span>
+
+
+<span class="c1">##### Used for testing the UI</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make_sum</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">9</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">6</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">goal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">11</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+
+
+<span class="c1">##### Testing standalone query demos</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MakeSum_demo</span>
+<span class="w">  </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MakeSum</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">9</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">6</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">goal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">11</span>
+<span class="w">  </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;[9,</span><span class="nv"> </span><span class="s">2]&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;wrong_sum&quot;</span>
+<span class="w">      </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;[9,</span><span class="nv"> </span><span class="s">6]&quot;</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Unknown_query</span>
+<span class="w">  </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Unknown</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">answers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+
+
+<span class="c1">##### Testing make_sum</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make_sum_demo</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make_sum</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">9</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">6</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">goal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">11</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run | success</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run &#39;wrong_sum&#39; | success</span><span class="w">  </span><span class="c1"># error</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run &#39;alt_order&#39;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">failure | run</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MakeSum</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">9</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">6</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">goal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">11</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;[9,</span><span class="nv"> </span><span class="s">2]&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;wrong_sum&quot;</span>
+<span class="w">          </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;[9,</span><span class="nv"> </span><span class="s">6]&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;alt_order&quot;</span>
+<span class="w">          </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;[2,</span><span class="nv"> </span><span class="s">9]&quot;</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">trace</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">nodes</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">1</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="nv">Branch</span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">2</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="nv">Success</span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">3</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="nv">Fail</span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">4</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="nv">Success</span><span class="p p-Indicator">}</span>
+<span class="w">    </span><span class="nt">test_feedback</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">node_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">        </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">node_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">        </span><span class="nt">diagnostics</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;error&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;Success</span><span class="nv"> </span><span class="s">check</span><span class="nv"> </span><span class="s">failed.&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">node_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="w">        </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">node_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">        </span><span class="nt">diagnostics</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;error&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;Failure</span><span class="nv"> </span><span class="s">check</span><span class="nv"> </span><span class="s">failed.&quot;</span><span class="p p-Indicator">]</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make_sum_selectors</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make_sum</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">9</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">6</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">goal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">11</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run &#39;wrong_sum&#39;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run &#39;unknown_hint&#39;</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MakeSum</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">9</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">6</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">goal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">11</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;[9,</span><span class="nv"> </span><span class="s">2]&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;wrong_sum&quot;</span>
+<span class="w">          </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;[9,</span><span class="nv"> </span><span class="s">6]&quot;</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">trace</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">nodes</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">1</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="nv">Branch</span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">2</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="nv">Fail</span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">3</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="nv">Success</span><span class="p p-Indicator">}</span>
+<span class="w">    </span><span class="nt">test_feedback</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">node_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">node_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">        </span><span class="nt">diagnostics</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;warning&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;Unused</span><span class="nv"> </span><span class="s">hints:</span><span class="nv"> </span><span class="s">&#39;unknown_hint&#39;.&quot;</span><span class="p p-Indicator">]</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make_sum_at</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make_sum</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">9</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">6</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">goal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">11</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">at Unknown</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">at MakeSum | run</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MakeSum</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">9</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">6</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">goal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">11</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;[9,</span><span class="nv"> </span><span class="s">2]&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;wrong_sum&quot;</span>
+<span class="w">          </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;[9,</span><span class="nv"> </span><span class="s">6]&quot;</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">trace</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">nodes</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">1</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="nv">Branch</span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">2</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="nv">Success</span><span class="p p-Indicator">}</span>
+<span class="w">    </span><span class="nt">test_feedback</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">node_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">        </span><span class="nt">diagnostics</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;warning&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;Leaf</span><span class="nv"> </span><span class="s">node</span><span class="nv"> </span><span class="s">reached</span><span class="nv"> </span><span class="s">before</span><span class="nv"> </span><span class="s">&#39;Unknown&#39;.&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make_sum_stuck</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make_sum</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">9</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">6</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">goal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">11</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">trace</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">nodes</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">1</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="nv">Branch</span><span class="p p-Indicator">}}</span>
+<span class="w">    </span><span class="nt">test_feedback</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[[</span><span class="s">&quot;warning&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;Test</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">stuck.&quot;</span><span class="p p-Indicator">]]</span>
+<span class="w">        </span><span class="nt">node_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make_sum_test_parse_error</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make_sum</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">9</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">6</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">goal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">11</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bad_command</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">test_feedback</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[[</span><span class="s">&quot;error&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;Syntax</span><span class="nv"> </span><span class="s">error.&quot;</span><span class="p p-Indicator">]]</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">trivial_strategy</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">trivial_strategy</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">run</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">trace</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">nodes</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">1</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="nv">Success</span><span class="p p-Indicator">}}}}</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">buggy_strategy</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">buggy_strategy</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">run</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">global_diagnostics</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;error&quot;</span><span class="p p-Indicator">]</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">strategy_not_found</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unknown_strategy</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">run</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">global_diagnostics</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;error&quot;</span><span class="p p-Indicator">]</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">invalid_arguments</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make_sum</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">bad_arg</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;foo&quot;</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">run</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">global_diagnostics</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;error&quot;</span><span class="p p-Indicator">]</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unknown_query</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make_sum</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">9</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">6</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">goal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">11</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MakeSum</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">9</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">6</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">goal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">11</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">UnknownQuery</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">query_diagnostics</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;error&quot;</span><span class="p p-Indicator">]]</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">invalid_answer</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">make_sum</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">9</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">6</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">goal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">11</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MakeSum</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">9</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">6</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">goal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">11</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&#39;foo&#39;&quot;</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">answer_diagnostics</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">[[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">],</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;error&quot;</span><span class="p p-Indicator">]]</span>
+
+
+<span class="c1">##### Testing synthetize_fun</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">synthetize_fun_demo</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">synthetize_fun</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">vars</span><span class="p">:</span><span class="w"> </span><span class="nl">&amp;vars_1</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;x&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;y&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">prop</span><span class="p">:</span><span class="w"> </span><span class="nl">&amp;prop_1</span><span class="w"> </span><span class="p p-Indicator">[[</span><span class="s">&quot;a&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="p p-Indicator">],</span><span class="w"> </span><span class="s">&quot;F(a,</span><span class="nv"> </span><span class="s">b)</span><span class="nv"> </span><span class="s">==</span><span class="nv"> </span><span class="s">F(b,</span><span class="nv"> </span><span class="s">a)</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">F(0,</span><span class="nv"> </span><span class="s">1)</span><span class="nv"> </span><span class="s">==</span><span class="nv"> </span><span class="s">2&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run | success</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run &#39;invalid&#39; | failure</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">at conjecture_expr | go disprove(&#39;wrong1&#39;) | save wrong1</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">load wrong1 | run | success</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">load wrong1 | run &#39;bad_cex&#39; | failure</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">load wrong1 | run &#39;malformed_cex&#39; | failure</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">at conjecture_expr | go aggregate([&#39;&#39;, &#39;wrong1&#39;, &#39;wrong2&#39;])</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">at conjecture_expr | go aggregate([&#39;&#39;, &#39;unknown&#39;, &#39;wrong2&#39;])</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">at conjecture_expr | answer aggregate([&#39;wrong1&#39;, &#39;wrong2&#39;])</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">at conjecture_expr | answer aggregate([&#39;&#39;, &#39;wrong1&#39;, &#39;wrong2&#39;])</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ConjectureExpr</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">vars</span><span class="p">:</span><span class="w"> </span><span class="nv">*vars_1</span><span class="p p-Indicator">,</span><span class="nt"> prop</span><span class="p">:</span><span class="w"> </span><span class="nv">*prop_1</span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">right</span>
+<span class="w">          </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2*(x</span><span class="nv"> </span><span class="s">+</span><span class="nv"> </span><span class="s">y)&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wrong1</span>
+<span class="w">          </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;x</span><span class="nv"> </span><span class="s">+</span><span class="nv"> </span><span class="s">2*y&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wrong2</span>
+<span class="w">          </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2*y</span><span class="nv"> </span><span class="s">+</span><span class="nv"> </span><span class="s">x&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">invalid</span>
+<span class="w">          </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;sys.exit()&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ProposeCex</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">prop</span><span class="p">:</span><span class="w"> </span><span class="nv">*prop_1</span><span class="p p-Indicator">,</span><span class="nt"> fun</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[[</span><span class="nv">x</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">y</span><span class="p p-Indicator">],</span><span class="w"> </span><span class="s">&quot;x</span><span class="nv"> </span><span class="s">+</span><span class="nv"> </span><span class="s">2*y&quot;</span><span class="p p-Indicator">]}</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{a:</span><span class="nv"> </span><span class="s">0,</span><span class="nv"> </span><span class="s">b:</span><span class="nv"> </span><span class="s">1}&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">malformed_cex</span>
+<span class="w">          </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{x:</span><span class="nv"> </span><span class="s">1,</span><span class="nv"> </span><span class="s">y:</span><span class="nv"> </span><span class="s">1}&quot;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bad_cex</span>
+<span class="w">          </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{a:</span><span class="nv"> </span><span class="s">0,</span><span class="nv"> </span><span class="s">b:</span><span class="nv"> </span><span class="s">0}&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RemoveDuplicates</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">exprs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;2*(x</span><span class="nv"> </span><span class="s">+</span><span class="nv"> </span><span class="s">y)&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;x</span><span class="nv"> </span><span class="s">+</span><span class="nv"> </span><span class="s">2*y&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;2*y</span><span class="nv"> </span><span class="s">+</span><span class="nv"> </span><span class="s">x&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;[&quot;2*(x</span><span class="nv"> </span><span class="s">+</span><span class="nv"> </span><span class="s">y)&quot;,</span><span class="nv"> </span><span class="s">&quot;x</span><span class="nv"> </span><span class="s">+</span><span class="nv"> </span><span class="s">2*y&quot;]&#39;</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">test_feedback</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;error&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Not</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">nested</span><span class="nv"> </span><span class="s">tree:</span><span class="nv"> </span><span class="s">aggregate([&#39;&#39;,</span><span class="nv"> </span><span class="s">&#39;wrong1&#39;,</span><span class="nv"> </span><span class="s">&#39;wrong2&#39;]).&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;warning&quot;</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Unused</span><span class="nv"> </span><span class="s">hints:</span><span class="nv"> </span><span class="s">&#39;unknown&#39;.&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;error&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+
+<span class="w">    </span><span class="nt">global_diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">    </span><span class="nt">saved_nodes</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">wrong1</span><span class="p">:</span><span class="w"> </span><span class="nv">__any__</span><span class="p p-Indicator">}</span>
+
+
+<span class="c1">##### Testing pick_nice_boy_name</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test_iterate</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pick_nice_boy_name</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">names</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;Adeline&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;Noah&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;Julia&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;Jonathan&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run | success</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run &#39;girl_name&#39; | failure</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run &#39;other_boy_name&#39; | failure</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">go cands | go next(nil)</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">go cands | go next(next(nil){&#39;other_boy_name&#39;}[1]) | run | success</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">go cands | go next(next(next(nil){&#39;other_boy_name&#39;}[1]){&#39;&#39;}[1]) | run | failure</span>
+<span class="w">    </span><span class="c1"># Valid selectors</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">at iterate</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">at pick_boy_name</span><span class="w">  </span><span class="c1"># synonym because `iterate` uses `inherit_tags`</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">at iterate&amp;pick_boy_name</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">at iterate/pick_boy_name/PickBoyName</span>
+<span class="w">    </span><span class="c1"># Invalid selectors</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">at iterate/pick_boy_name</span><span class="w">  </span><span class="c1"># `Iteration` node has no tags or primary space</span>
+
+<span class="w">    </span><span class="c1"># Mistakenly send the wrong value to `next` by using index 0 instead of 1. The strategy raises</span>
+<span class="w">    </span><span class="c1"># an exception because it explicitly checks the type of its arguments but without this</span>
+<span class="w">    </span><span class="c1"># assertion, we would get stuck on a query with ill-typed arguments.</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">go cands | go next(next(nil){&#39;other_boy_name&#39;}[0]) | run | success</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PickBoyName</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">names</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Adeline</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Noah</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Julia</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Jonathan</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">picked_already</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Jonathan&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">girl_name</span>
+<span class="w">        </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Julia&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">other_boy_name</span>
+<span class="w">        </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Noah&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PickBoyName</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">names</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Adeline</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Noah</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Julia</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Jonathan</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">picked_already</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Noah</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Jonathan&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PickBoyName</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">names</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Adeline</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Noah</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Julia</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Jonathan</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">picked_already</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">Noah</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">Jonathan</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Sigmund&quot;</span>
+
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">test_feedback</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;warning&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;error&quot;</span>
+
+
+<span class="c1">##### Testing generate_pairs and advanced selectors</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test_generate_pairs</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">generate_pairs</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run | success</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">at PickPositiveInteger#1</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">at PickPositiveInteger#2</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">at PickPositiveInteger#3</span><span class="w">  </span><span class="c1"># error</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PickPositiveInteger</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">prev</span><span class="p">:</span><span class="w"> </span><span class="nv">null</span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;1&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PickPositiveInteger</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">prev</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2&quot;</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">test_feedback</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;warning&quot;</span>
+
+
+<span class="c1">##### Testing cached computations</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">comp_result_in_cache</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test_cached_computations</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">n</span><span class="p">:</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run | success</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__Computation__</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">fun</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">expensive_computation</span>
+<span class="w">        </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">n</span><span class="p">:</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;[2,</span><span class="nv"> </span><span class="s">3]&quot;</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__Computation__</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">fun</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">expensive_computation</span>
+<span class="w">        </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">n</span><span class="p">:</span><span class="w"> </span><span class="nv">3</span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;[3,</span><span class="nv"> </span><span class="s">4]&quot;</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">test_feedback</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">comp_result_outside_cache</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">test_cached_computations</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">n</span><span class="p">:</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run | success</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">test_feedback</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">    </span><span class="nt">implicit_answers</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__Computation__</span>
+<span class="w">        </span><span class="nt">query_args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">fun</span><span class="p">:</span><span class="w"> </span><span class="nv">expensive_computation</span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__Computation__</span>
+<span class="w">        </span><span class="nt">query_args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">fun</span><span class="p">:</span><span class="w"> </span><span class="nv">expensive_computation</span><span class="p p-Indicator">}</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">structured_output</span>
+<span class="w">  </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">StructuredOutput</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">topic</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Music&quot;</span>
+<span class="w">  </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Understanding</span><span class="nv"> </span><span class="s">Bach&quot;</span>
+<span class="w">        </span><span class="nt">authors</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;Brigitte</span><span class="nv"> </span><span class="s">Mouterde&quot;</span><span class="p p-Indicator">]</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tool_use</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">propose_article</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">user_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Jonathan</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run | success</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ProposeArticle</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">user_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Jonathan</span>
+<span class="w">        </span><span class="nt">prefix</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+<span class="w">          </span><span class="nt">call</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">tool</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GetUserFavoriteTopic</span>
+<span class="w">              </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">user_name</span><span class="p">:</span><span class="w"> </span><span class="nv">Jonathan</span><span class="p p-Indicator">}</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ProposeArticle</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">user_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Jonathan</span>
+<span class="w">        </span><span class="nt">prefix</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">oracle</span>
+<span class="w">            </span><span class="nt">answer</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">              </span><span class="nt">content</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+<span class="w">              </span><span class="nt">tool_calls</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GetUserFavoriteTopic</span>
+<span class="w">                  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">user_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Jonathan</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tool</span>
+<span class="w">            </span><span class="nt">call</span><span class="p">:</span>
+<span class="w">              </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GetUserFavoriteTopic</span>
+<span class="w">              </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">user_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Jonathan</span>
+<span class="w">            </span><span class="nt">result</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Soccer</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span>
+<span class="w">        </span><span class="nt">call</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[{</span><span class="nt">tool</span><span class="p">:</span><span class="w"> </span><span class="nv">Article</span><span class="p p-Indicator">,</span><span class="nt"> args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;All</span><span class="nv"> </span><span class="s">about</span><span class="nv"> </span><span class="s">Messi&quot;</span><span class="p p-Indicator">,</span><span class="nt"> authors</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;Raf&quot;</span><span class="p p-Indicator">]}}]</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">test_feedback</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flags</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pick_flag</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run | success</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run &#39;#alt&#39; | success</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run &#39;#unk&#39;</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">test_feedback</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;warning&quot;</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">flags_global</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pick_flag</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run | success</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MethodFlag</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">answer</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="nv">alt</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">test_feedback</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">abduction</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">obtain_item</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">market</span><span class="p">:</span><span class="w"> </span><span class="nl">&amp;market</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Joe</span>
+<span class="w">        </span><span class="nt">asked_items</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">apple</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">cherry</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">offered_item</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">banana</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Eric</span>
+<span class="w">        </span><span class="nt">asked_items</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">        </span><span class="nt">offered_item</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apple</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Alice</span>
+<span class="w">        </span><span class="nt">asked_items</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">        </span><span class="nt">offered_item</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cherry</span>
+<span class="w">    </span><span class="nt">goal</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">banana</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run | success</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span><span class="w"> </span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ObtainItem</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">market</span><span class="p">:</span><span class="w"> </span><span class="nv">*market</span>
+<span class="w">        </span><span class="nt">possessed_items</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">        </span><span class="nt">item</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">banana</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">items</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">apple</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">cherry</span><span class="p p-Indicator">]}</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">test_feedback</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">trivial_untyped_strategy</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">trivial_untyped_strategy</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">string</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;hello&quot;</span>
+<span class="w">    </span><span class="nt">integer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">42</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run | success</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">test_feedback</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+</code></pre></div>
+</details>
+<div class="admonition tip">
+<p class="admonition-title">On Reading Demonstration Files</p>
+<p>Demonstration files are much easier to read and understand using Delphyne's <a href="../extension/">VSCode extension</a>. <a href="https://code.visualstudio.com/docs/editing/codebasics#_folding">Standard shortcuts</a> can be used to fold and unfold sections. The additional <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-d">D</kbd><span>+</span><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-k">K</kbd></span> shortcut can be used to automatically fold all large sections. Demonstrations can be evaluated and the path followed by each test inspected in the extension's <a href="../extension/#navigating-trees">Tree View</a>.</p>
+</div>
+<p>A demonstration is either a standalone <em>query demonstration</em><sup id="fnref:standalone-ex"><a class="footnote-ref" href="#fn:standalone-ex">1</a></sup> or a <em>strategy demonstration</em>. A <em>query demonstration</em> describes a query instance along with one or several associated answers. A <em>strategy demonstration</em> bundles multiple query demonstrations with unit tests that describe tree navigation scenarios.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>It is possible to specify few shot examples using one <em>standalone</em> query demonstration per example <em>and nothing else</em>. However, doing so is not recommended. Indeed, such demonstrations are harder to write since tooling cannot be leveraged to generate query descriptions automatically. More importantly, they are harder to read and maintain because individual examples are presented without proper context. Strategy demonstrations allow grounding examples in concrete scenarios, while enforcing this relationship through unit tests.</p>
+</div>
+<p>Strategy demonstrations have the following shape:</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w">    </span><span class="c1"># optional demonstration name</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w">         </span><span class="c1"># name of a strategy function decorated with @strategy</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w">             </span><span class="c1"># dictionary of arguments to pass to this strategy</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w">       </span><span class="c1"># Query name</span>
+<span class="w">      </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w">        </span><span class="c1"># Query arguments</span>
+<span class="w">      </span><span class="nt">answers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w">   </span><span class="c1"># Optional label (to be referenced in tests)</span>
+<span class="w">          </span><span class="nt">example</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"> </span><span class="c1"># Whether to use as an example (optional boolean) </span>
+<span class="w">          </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w">    </span><span class="c1"># Optional set of tags</span>
+<span class="w">          </span><span class="nt">answer</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">            </span><span class="no">...</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+</code></pre></div>
+<p>The Delphyne VSCode extension automatically checks the syntactic well-formedness of demonstrations (in addition of allowing their evaluation). For explanations on specific fields, see the <a class="autorefs autorefs-internal" title="StrategyDemo
+
+
+  
+      dataclass
+  " href="../../reference/demos/definitions/#delphyne.core.demos.StrategyDemo">API Reference</a>. Tests are expressed using a custom DSL that we describe below.</p>
+<h2 id="demonstration-tests">Demonstration Tests</h2>
+<details class="info">
+<summary>Extract from <code>examples/find_invariants/abduct_and_branch.demo.yaml</code></summary>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prove_program_via_abduction_and_branching</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">prog</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"> </span><span class="c1"># (1)!</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run | success</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run &#39;partial&#39; | success</span>
+<span class="w">    </span><span class="c1"># Demonstrating `EvaluateProofState`</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">at EvaluateProofState#1 &#39;partial&#39; | answer eval</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">at EvaluateProofState#2 &#39;partial propose_same&#39; | answer eval</span>
+<span class="w">    </span><span class="c1"># Demonstrating `IsProposalNovel`</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">at iterate#1 | go cands | go next(next(nil){&#39;partial&#39;}[1]) | save second_attempt</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">load second_attempt | at IsProposalNovel &#39;blacklisted&#39; | answer cands</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">load second_attempt | at IsProposalNovel &#39;not_blacklisted&#39; | answer cands</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">...</span><span class="w"> </span><span class="c1"># (2)!</span>
+</code></pre></div>
+<ol>
+<li>See details in original file.</li>
+<li>See details in original file.</li>
+</ol>
+</details>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:standalone-ex">
+<p>An example of a standalone query demonstration is <code>MakeSum_demo</code> in <code>tests/example_strategies.demo.yaml</code>.&#160;<a class="footnote-backref" href="#fnref:standalone-ex" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
 
 
