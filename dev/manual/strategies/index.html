@@ -383,20 +383,26 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#strategies-and-modularity" class="md-nav__link">
+  <a href="#defining-strategies" class="md-nav__link">
     <span class="md-ellipsis">
-      Strategies and Modularity
+      Defining Strategies
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="Defining Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#queries" class="md-nav__link">
     <span class="md-ellipsis">
       Queries
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -407,14 +413,20 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="Trees and Reification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#adding-new-effects" class="md-nav__link">
     <span class="md-ellipsis">
       Adding new Effects
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1249,20 +1261,26 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#strategies-and-modularity" class="md-nav__link">
+  <a href="#defining-strategies" class="md-nav__link">
     <span class="md-ellipsis">
-      Strategies and Modularity
+      Defining Strategies
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="Defining Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#queries" class="md-nav__link">
     <span class="md-ellipsis">
       Queries
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1273,14 +1291,20 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="Trees and Reification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#adding-new-effects" class="md-nav__link">
     <span class="md-ellipsis">
       Adding new Effects
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1302,7 +1326,7 @@
 
 <h1 id="strategy-language">Strategy Language</h1>
 <p>Following the previous <a href="../overview/">Overview</a> chapter, we now provide more details on Delphyne's <em>strategy language</em>. We provide a quick overview of the most useful techniques and concepts and refer to the <a href="../../reference/strategies/trees/">Reference</a> for more details and explanations (follow the hypertext links).</p>
-<h2 id="strategies-and-modularity">Strategies and Modularity</h2>
+<h2 id="defining-strategies">Defining Strategies</h2>
 <p>A <em>strategy</em> is a program with unresolved choice points, which can be reified into a search tree. Delphyne allows writing strategies as Python <a href="https://wiki.python.org/moin/Generators">generators</a> that yield internal tree nodes and receive associated actions in return. The <a class="autorefs autorefs-internal" title="Strategy" href="../../reference/strategies/strategies/#delphyne.Strategy"><code>Strategy</code></a> type has three type parameters, corresponding to the strategy's <em>signature</em> (i.e., the type of nodes it can emit), its associated <em>inner policy type</em> and its <em>return type</em>. Strategy functions are typically defined via the <a class="autorefs autorefs-internal" title="strategy" href="../../reference/stdlib/basic/#delphyne.strategy"><code>strategy</code></a> decorator, which creates functions that return <a class="autorefs autorefs-internal" title="StrategyInstance
 
 
@@ -1523,19 +1547,86 @@
     <span class="k">return</span> <span class="n">bestfs</span> <span class="o">@</span> <span class="n">dp</span><span class="o">.</span><span class="n">elim_compute</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">prove_prog_ip</span>
 </code></pre></div>
 </details>
-<h2 id="queries">Queries</h2>
+<h3 id="queries">Queries</h3>
+<p>New query types can be defined by subclassing the <a class="autorefs autorefs-internal" title="Query" href="../../reference/stdlib/queries/#delphyne.Query"><code>Query</code></a> class. We refer to the associated <a class="autorefs autorefs-internal" title="Query" href="../../reference/stdlib/queries/#delphyne.Query">API documentation</a> for details. Some highlights:</p>
+<ul>
+<li>Queries can be associated <em>system prompts</em> and <em>instance prompts</em>. Prompts can be defined inline or in separate <a href="https://jinja.palletsprojects.com/en/stable/">Jinja</a> files (see <code>find_invariants</code> example).</li>
+<li>Prompts can be parameterized, and parameters instantiated on the policy side (e.g., <code>params</code> argument of <a class="autorefs autorefs-internal" title="few_shot" href="../../reference/stdlib/queries/#delphyne.few_shot"><code>few_shot</code></a>). This is useful for testing prompt variations, specializing specific prompt fragments for particular, etc...</li>
+<li>It is possible to define several <a class="autorefs autorefs-internal" title="AnswerMode" href="../../reference/strategies/traces/#delphyne.AnswerMode"><em>answer modes</em></a> for a query, each mode being associated a distinct parser (see <code>tests/example_strategies.py:GetFavoriteDish</code> for an example).</li>
+<li>Queries support <a href="https://platform.openai.com/docs/guides/structured-outputs">structured output</a> and <a href="https://platform.openai.com/docs/guides/function-calling">tool calls</a>.</li>
+</ul>
 <h2 id="trees-and-reification">Trees and Reification</h2>
-<h2 id="adding-new-effects">Adding new Effects</h2>
-<!--
-Strategies:
-    Coroutines, branch, using, opaque spaces composition, ...
-Queries:
-    Parsers, generic parsers, 
-Trees and Reification:
-    Tree datastructure, warnings about purity, implementation details...
-Trees:
-    Adding effects.
--->
+<p>Strategies can be reified (i.e. compiled) into trees using the <a class="autorefs autorefs-internal" title="reify" href="../../reference/strategies/strategies/#delphyne.reify"><code>reify</code></a> function (see <a href="delphyne.reify">reference documentation</a> for details and caveats). The <a class="autorefs autorefs-internal" title="Tree
+
+
+  
+      dataclass
+  " href="../../reference/strategies/trees/#delphyne.Tree"><code>Tree</code></a> class is defined as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Tree</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+    <span class="n">node</span><span class="p">:</span> <span class="n">N</span> <span class="o">|</span> <span class="n">Success</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+    <span class="n">child</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Value</span><span class="p">],</span> <span class="n">Tree</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]]</span>
+    <span class="n">ref</span><span class="p">:</span> <span class="n">GlobalNodePath</span> <span class="c1"># (1)!</span>
+</code></pre></div>
+<ol>
+<li>To ignore on first reading. See <a href="../../reference/strategies/traces/">documentation on references</a>.</li>
+</ol>
+<p>A tree contains either a node (<a class="autorefs autorefs-internal" title="Node" href="../../reference/strategies/trees/#delphyne.Node"><code>Node</code></a>) or a success leaf (<a class="autorefs autorefs-internal" title="Success
+
+
+  
+      dataclass
+  " href="../../reference/strategies/trees/#delphyne.Success"><code>Node</code></a>). When applicable, children trees are indexed by <em>actions</em> (<a class="autorefs autorefs-internal" title="Value" href="../../reference/strategies/traces/#delphyne.core.refs.Value"><code>Value</code></a>). Actions result from combining elements of local spaces (<a class="autorefs autorefs-internal" title="Space" href="../../reference/strategies/trees/#delphyne.Space"><code>Space</code></a>). For example, if <code>node</code> has type <a class="autorefs autorefs-internal" title="Branch
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.Branch"><code>Branch</code></a>, then an action corresponds to a branching candidate.</p>
+<h3 id="adding-new-effects">Adding new Effects</h3>
+<p>New types of effects beyond <a class="autorefs autorefs-internal" title="Branch
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.Branch"><code>Branch</code></a> and <a class="autorefs autorefs-internal" title="Fail
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.Fail"><code>Fail</code></a> can be added easily, by subclassing <a class="autorefs autorefs-internal" title="Node" href="../../reference/strategies/trees/#delphyne.Node"><code>Node</code></a>. Here are a number of additional effects defined in the Delphyne standard library:</p>
+<ul>
+<li><a class="autorefs autorefs-internal" title="Join
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.Join"><code>Join</code></a>: allows evaluating a sequence of independent sub-strategies, possibly in parallel.</li>
+<li><a class="autorefs autorefs-internal" title="Compute
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/effects/#delphyne.stdlib.computations.Compute"><code>Compute</code></a>: allows performing expensive and possibly non-replicable/nondeterministic computations in strategies (see details in <a href="../../how-to-guides/#performing-expensive-computations-in-strategies">How-To Guide</a>).</li>
+<li><a class="autorefs autorefs-internal" title="Value
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.Value"><code>Value</code></a>: allows adding value information into strategy trees. Such information can be leveraged by search policies (e.g. <a class="autorefs autorefs-internal" title="best_first_search" href="../../reference/stdlib/algorithms/#delphyne.best_first_search"><code>best_first_search</code></a>).</li>
+<li><a class="autorefs autorefs-internal" title="Flag
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/effects/#delphyne.Flag"><code>Flag</code></a>: allows providing a finite number of alternative implementations for sub-tasks, to be selected either offline or at runtime.</li>
+<li><a class="autorefs autorefs-internal" title="Message
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.Message"><code>Message</code></a>: allows decorating trees with debugging messages.</li>
+</ul>
+<p>For examples of defining new effects, you can refer to the source code of the aforementioned effects in the Delphyne standard library (<code>stdlib.nodes</code>).</p>
 
 
 

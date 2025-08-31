@@ -6392,9 +6392,9 @@ the query type.</p>
         <p>Parse an LLM structured answer into a given target type.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-</div>
 <p>Only dataclass types are supported, since most LLM providers
 only support structured output and tool calls for JSON objects.</p>
+</div>
 
 
             <details class="quote">
@@ -6420,8 +6420,8 @@ only support structured output and tool calls for JSON objects.</p>
 <span class="sd">    Parse an LLM structured answer into a given target type.</span>
 
 <span class="sd">    !!! warning</span>
-<span class="sd">    Only dataclass types are supported, since most LLM providers</span>
-<span class="sd">    only support structured output and tool calls for JSON objects.</span>
+<span class="sd">        Only dataclass types are supported, since most LLM providers</span>
+<span class="sd">        only support structured output and tool calls for JSON objects.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_assert_not_response_type</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="s2">&quot;structured_as&quot;</span><span class="p">)</span>
     <span class="n">_check_valid_structured_output_type</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
