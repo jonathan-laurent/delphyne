@@ -8,7 +8,7 @@ test the server (see `test_server`).
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, ClassVar, Literal, Never, Sequence, TypeAlias, cast
+from typing import Any, ClassVar, Literal, Never, Sequence, cast
 
 # Reexporting untyped strategies
 # ruff: noqa: F401
@@ -140,14 +140,12 @@ def one_pp(p: dp.PromptingPolicy) -> dp.PromptingPolicy:
 #####
 
 
-# Pydantic does not work with Python 3.12 `type` syntax here.
-# https://github.com/pydantic/pydantic/issues/8984
-Vars: TypeAlias = list[str]
-Expr: TypeAlias = str
-Fun: TypeAlias = tuple[Vars, Expr]
-IntFun: TypeAlias = Fun
-IntPred: TypeAlias = Fun
-State: TypeAlias = dict[str, int]
+type Vars = list[str]
+type Expr = str
+type Fun = tuple[Vars, Expr]
+type IntFun = Fun
+type IntPred = Fun
+type State = dict[str, int]
 
 
 @dataclass
