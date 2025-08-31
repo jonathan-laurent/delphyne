@@ -12,6 +12,8 @@ def find_param_value(
     expr: str) -> Strategy[Branch | Fail, FindParamValueIP, int]: ...
 ```
 
+Query functions can have arguments of arbitrary type (including functions). When launching strategies from [commands](./extension.md#commands) and in the presence of type annotations, arguments are automatically unserialized using Pydantic. Thus, it is _useful_ for _top-level strategies_ to have serializable argument types that are properly annotated.
+
 Branching nodes can be yielded via the [`branch`][delphyne.branch] function:
 <!-- , whose type is worth examining (we ignore some optional arguments): -->
 
@@ -19,7 +21,7 @@ Branching nodes can be yielded via the [`branch`][delphyne.branch] function:
 def branch[P, T](cands: Opaque[P, T]) -> Strategy[Branch, P, T]: ...
 ```
 
-Crucially, `branch` does not take a query as an argument but an **opaque space** ([`Opaque`][delphyne.Opaque]). An opaque space can be seen as a mapping from the ambient inner policy to an iterator of values (or, more precisely, a [search stream](./policies.md)). Opaque spaces can be produced from queries or strategy instances, by providing a mapping from the ambient inner policy to a prompting policy or a policy respectively:
+Crucially, `branch` does not take a query as an argument but an **opaque space** ([`Opaque`][delphyne.Opaque]). An opaque space can be seen as a mapping from the ambient inner policy to an iterator of values (more precisely, a [search stream](./policies.md)). Opaque spaces can be produced from queries or strategy instances, by mapping the ambient inner policy to a prompting policy or a policy respectively:
 
 ```py
 class Query[T]:
@@ -48,6 +50,7 @@ For an example of a strategy that branches over results of a sub-strategy, see t
 New query types can be defined by subclassing the [`Query`][delphyne.Query] class. We refer to the associated [API documentation][delphyne.Query] for details. Some highlights:
 
 - Queries can be associated _system prompts_ and _instance prompts_. Prompts can be defined inline or in separate [Jinja](https://jinja.palletsprojects.com/en/stable/) files (see `find_invariants` example).
+- Query types can have fields of any type as long as they can be serialized and unserialized using Pydantic (this includes custom dataclasses).
 - Prompts can be parameterized, and parameters instantiated on the policy side (e.g., `params` argument of [`few_shot`][delphyne.few_shot]). This is useful for testing prompt variations, specializing specific prompt fragments for particular, etc...
 - It is possible to define several [_answer modes_][delphyne.AnswerMode] for a query, each mode being associated a distinct parser (see `tests/example_strategies.py:GetFavoriteDish` for an example).
 - Queries support [structured output](https://platform.openai.com/docs/guides/structured-outputs) and [tool calls](https://platform.openai.com/docs/guides/function-calling).

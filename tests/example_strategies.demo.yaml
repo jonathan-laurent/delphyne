@@ -1,6 +1,10 @@
 #####
-##### Simple unit tests for the server
+##### Unit Tests for the Demonstration Language
 #####
+
+# Note: some demonstrations feature errors or failing tests.
+# Some demonstrations also contain an additional `expect` section
+# describing parts of the expected demonstration interpreter feedback.
 
 
 ##### Used for testing the UI

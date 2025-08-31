@@ -52,6 +52,7 @@ markdown_extensions:
   - admonition  # Boxes such as 'info', 'question', 'warning'...
   - pymdownx.details
   - pymdownx.superfences
+  - pymdownx.extra  # For footnotes
   - attr_list
   - md_in_html  # allows using markdown inside of HTML elements
   - pymdownx.keys
