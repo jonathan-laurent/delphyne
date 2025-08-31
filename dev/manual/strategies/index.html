@@ -1628,7 +1628,23 @@
       dataclass
   " href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.Message"><code>Message</code></a>: allows decorating trees with debugging messages.</li>
 </ul>
-<p>For examples of defining new effects, you can refer to the source code of the aforementioned effects in the Delphyne standard library (<code>stdlib.nodes</code>).</p>
+<p>Node types are dataclasses whose fields can be of several kinds:</p>
+<ul>
+<li><strong>Nonparametric local spaces</strong> (<a class="autorefs autorefs-internal" title="Space" href="../../reference/strategies/trees/#delphyne.Space"><code>Space</code></a>), the main types of which are <em>opaque spaces</em> (<a class="autorefs autorefs-internal" title="OpaqueSpace
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/basic/#delphyne.OpaqueSpace"><code>OpaqueSpace</code></a>) and <em>embedded trees</em> (<a class="autorefs autorefs-internal" title="EmbeddedTree
+
+
+  
+      dataclass
+  " href="../../reference/strategies/trees/#delphyne.EmbeddedTree"><code>EmbeddedTree</code></a>).</li>
+<li><strong>Parametric local spaces</strong>, which are functions from local <a class="autorefs autorefs-internal" title="Value" href="../../reference/strategies/traces/#delphyne.core.refs.Value">values</a> (i.e. assembly of elements from local spaces) to local spaces.</li>
+<li><strong>Data fields</strong> that contain policy metadata, debugging information, etc...</li>
+</ul>
+<p>More details are available in the <a class="autorefs autorefs-internal" title="Node" href="../../reference/strategies/trees/#delphyne.Node">API Reference</a>. For examples of defining new effects, you can refer to the source code of the aforementioned effects in the Delphyne standard library (<code>stdlib.nodes</code>).</p>
 
 
 
