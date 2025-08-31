@@ -2691,6 +2691,8 @@ provides convenience features such as support for the <code>@</code>
 composition operator (for composing search policies with stream
 transformers and tree transformers) and the <code>&amp;</code> operator for pairing
 a search policy with an inner policy.</p>
+<p>Search policies can be conveniently defined using the
+<a class="autorefs autorefs-internal" title="search_policy" href="#delphyne.search_policy"><code>search_policy</code></a> decorator. See <a class="autorefs autorefs-internal" title="dfs" href="../algorithms/#delphyne.stdlib.search.dfs.dfs"><code>dfs</code></a> for an example.</p>
 
 
 
@@ -2748,7 +2750,10 @@ a search policy with an inner policy.</p>
 <span class="normal"> 97</span>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
-<span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">SearchPolicy</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractSearchPolicy</span><span class="p">[</span><span class="n">PolicyEnv</span><span class="p">,</span> <span class="n">N</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A search policy takes as arguments a tree with a given signature</span>
@@ -2760,6 +2765,9 @@ a search policy with an inner policy.</p>
 <span class="sd">    composition operator (for composing search policies with stream</span>
 <span class="sd">    transformers and tree transformers) and the `&amp;` operator for pairing</span>
 <span class="sd">    a search policy with an inner policy.</span>
+
+<span class="sd">    Search policies can be conveniently defined using the</span>
+<span class="sd">    `search_policy` decorator. See `dfs` for an example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_fn</span><span class="p">:</span> <span class="s2">&quot;_SearchPolicyFn[N]&quot;</span>
@@ -2835,11 +2843,11 @@ a search policy with an inner policy.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__and__</span><span class="p">[</span><span class="n">P</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">P</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Policy[N, P]&quot;</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__and__</span><span class="p">[</span><span class="n">P</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">P</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Policy[N, P]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pair a search policy with an inner policy to form a policy.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2878,13 +2886,13 @@ a search policy with an inner policy.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">86</span>
 <span class="normal">87</span>
 <span class="normal">88</span>
-<span class="normal">89</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__rmatmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">StreamTransformer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SearchPolicy[N]&quot;</span><span class="p">:</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__rmatmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">StreamTransformer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SearchPolicy[N]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compose a search policy with a stream transformer.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2937,6 +2945,9 @@ stream (<code>SearchStream</code>).</p>
 provides convenience features such as support for the <code>@</code>
 composition operator (for composing prompting policies with stream
 transformers).</p>
+<p>Prompting policies can be conveniently defined using the
+<a class="autorefs autorefs-internal" title="prompting_policy" href="#delphyne.prompting_policy"><code>prompting_policy</code></a> decorator. See the definition of <a class="autorefs autorefs-internal" title="few_shot" href="../queries/#delphyne.few_shot"><code>few_shot</code></a> for
+an example.</p>
 
 
 
@@ -2947,10 +2958,7 @@ transformers).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
 <span class="normal">168</span>
 <span class="normal">169</span>
 <span class="normal">170</span>
@@ -2984,7 +2992,14 @@ transformers).</p>
 <span class="normal">198</span>
 <span class="normal">199</span>
 <span class="normal">200</span>
-<span class="normal">201</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">PromptingPolicy</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractPromptingPolicy</span><span class="p">[</span><span class="n">PolicyEnv</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A prompting policy takes as arguments a query (attached to a</span>
@@ -2995,6 +3010,10 @@ transformers).</p>
 <span class="sd">    provides convenience features such as support for the `@`</span>
 <span class="sd">    composition operator (for composing prompting policies with stream</span>
 <span class="sd">    transformers).</span>
+
+<span class="sd">    Prompting policies can be conveniently defined using the</span>
+<span class="sd">    `prompting_policy` decorator. See the definition of `few_shot` for</span>
+<span class="sd">    an example.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_fn</span><span class="p">:</span> <span class="s2">&quot;_PromptingPolicyFn&quot;</span>
@@ -3066,13 +3085,13 @@ transformers).</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__rmatmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">StreamTransformer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PromptingPolicy&quot;</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__rmatmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">StreamTransformer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PromptingPolicy&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compose a prompting policy with a stream transformer.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3111,8 +3130,13 @@ transformers).</p>
     <div class="doc doc-contents first">
 
 
-        <p>Contextual tree transformer, which can be composed with search
-policies to modify their accepted signature.</p>
+        <p>Wrapper for a function that maps trees to trees, possibly
+changing their signature. Can depend on the global policy
+environment (hence the <em>contextual</em> aspect).</p>
+<p>Contextual tree transformers can be composed with search policies to
+modify their accepted signature. They can be convniently defined
+using the <a class="autorefs autorefs-internal" title="contextual_tree_transformer" href="#delphyne.contextual_tree_transformer"><code>contextual_tree_transformer</code></a> decorator. See
+<a class="autorefs autorefs-internal" title="elim_compute" href="../effects/#delphyne.stdlib.computations.elim_compute"><code>elim_compute</code></a> and <a class="autorefs autorefs-internal" title="elim_messages" href="../effects/#delphyne.stdlib.nodes.elim_messages"><code>elim_messages</code></a> for an examples.</p>
 
 
 <p>
@@ -3204,14 +3228,7 @@ returns a pure tree transformer (<a class="autorefs autorefs-internal" title="Pu
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span>
-<span class="normal">290</span>
-<span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">293</span>
 <span class="normal">294</span>
 <span class="normal">295</span>
 <span class="normal">296</span>
@@ -3256,11 +3273,30 @@ returns a pure tree transformer (<a class="autorefs autorefs-internal" title="Pu
 <span class="normal">335</span>
 <span class="normal">336</span>
 <span class="normal">337</span>
-<span class="normal">338</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ContextualTreeTransformer</span><span class="p">[</span><span class="n">A</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">Node</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Contextual tree transformer, which can be composed with search</span>
-<span class="sd">    policies to modify their accepted signature.</span>
+<span class="sd">    Wrapper for a function that maps trees to trees, possibly</span>
+<span class="sd">    changing their signature. Can depend on the global policy</span>
+<span class="sd">    environment (hence the *contextual* aspect).</span>
+
+<span class="sd">    Contextual tree transformers can be composed with search policies to</span>
+<span class="sd">    modify their accepted signature. They can be convniently defined</span>
+<span class="sd">    using the `contextual_tree_transformer` decorator. See</span>
+<span class="sd">    `elim_compute` and `elim_messages` for an examples.</span>
 
 <span class="sd">    Type Parameters:</span>
 <span class="sd">        A: The type of nodes that the transformer removes from search</span>
@@ -3353,19 +3389,19 @@ transformer.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span>
-<span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
-<span class="normal">318</span>
-<span class="normal">319</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">pure</span><span class="p">(</span>
     <span class="n">fn</span><span class="p">:</span> <span class="n">PureTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ContextualTreeTransformer[A, B]&quot;</span><span class="p">:</span>
@@ -3412,24 +3448,24 @@ transformer.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">321</span>
-<span class="normal">322</span>
-<span class="normal">323</span>
-<span class="normal">324</span>
-<span class="normal">325</span>
-<span class="normal">326</span>
-<span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span>
-<span class="normal">334</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">334</span>
 <span class="normal">335</span>
 <span class="normal">336</span>
 <span class="normal">337</span>
-<span class="normal">338</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__rmatmul__</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__rmatmul__</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">search_policy</span><span class="p">:</span> <span class="s2">&quot;SearchPolicy[B | N]&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SearchPolicy[A | N]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3546,10 +3582,7 @@ search stream generator (<code>SearchStreamGen</code>).</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">132</span>
 <span class="normal">133</span>
 <span class="normal">134</span>
 <span class="normal">135</span>
@@ -3573,7 +3606,10 @@ search stream generator (<code>SearchStreamGen</code>).</p>
 <span class="normal">153</span>
 <span class="normal">154</span>
 <span class="normal">155</span>
-<span class="normal">156</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">search_policy</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">A</span><span class="p">](</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">search_policy</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">A</span><span class="p">](</span>
     <span class="n">fn</span><span class="p">:</span> <span class="n">_ParametricSearchPolicyFn</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">A</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_ParametricSearchPolicy</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">A</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3632,13 +3668,13 @@ search stream generator (<code>SearchStreamGen</code>).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">106</span>
 <span class="normal">107</span>
 <span class="normal">108</span>
-<span class="normal">109</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_SearchPolicyFn</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_SearchPolicyFn</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
@@ -3694,15 +3730,15 @@ search stream generator (<code>SearchStreamGen</code>).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
 <span class="normal">116</span>
 <span class="normal">117</span>
 <span class="normal">118</span>
 <span class="normal">119</span>
-<span class="normal">120</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricSearchPolicyFn</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">A</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricSearchPolicyFn</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">A</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
@@ -3760,10 +3796,10 @@ search stream generator (<code>SearchStreamGen</code>).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricSearchPolicy</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">A</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricSearchPolicy</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">A</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">A</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">A</span><span class="o">.</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SearchPolicy</span><span class="p">[</span><span class="n">N</span><span class="p">]:</span> <span class="o">...</span>
@@ -3877,14 +3913,7 @@ returns a search stream generator (<code>SearchStreamGen</code>).</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">235</span>
 <span class="normal">236</span>
 <span class="normal">237</span>
 <span class="normal">238</span>
@@ -3904,7 +3933,14 @@ returns a search stream generator (<code>SearchStreamGen</code>).</p>
 <span class="normal">252</span>
 <span class="normal">253</span>
 <span class="normal">254</span>
-<span class="normal">255</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">prompting_policy</span><span class="p">[</span><span class="o">**</span><span class="n">A</span><span class="p">](</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">prompting_policy</span><span class="p">[</span><span class="o">**</span><span class="n">A</span><span class="p">](</span>
     <span class="n">fn</span><span class="p">:</span> <span class="n">_ParametricPromptingPolicyFn</span><span class="p">[</span><span class="n">A</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_ParametricPromptingPolicy</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3963,12 +3999,12 @@ returns a search stream generator (<code>SearchStreamGen</code>).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_PromptingPolicyFn</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_PromptingPolicyFn</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
@@ -4023,14 +4059,14 @@ returns a search stream generator (<code>SearchStreamGen</code>).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricPromptingPolicyFn</span><span class="p">[</span><span class="o">**</span><span class="n">A</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricPromptingPolicyFn</span><span class="p">[</span><span class="o">**</span><span class="n">A</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
@@ -4087,10 +4123,10 @@ returns a search stream generator (<code>SearchStreamGen</code>).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricPromptingPolicy</span><span class="p">[</span><span class="o">**</span><span class="n">A</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricPromptingPolicy</span><span class="p">[</span><span class="o">**</span><span class="n">A</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">A</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">A</span><span class="o">.</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PromptingPolicy</span><span class="p">:</span> <span class="o">...</span>
@@ -4240,20 +4276,7 @@ tree transformer (<a class="autorefs autorefs-internal" title="PureTreeTransform
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span>
-<span class="normal">344</span>
-<span class="normal">345</span>
-<span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
-<span class="normal">352</span>
-<span class="normal">353</span>
-<span class="normal">354</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">354</span>
 <span class="normal">355</span>
 <span class="normal">356</span>
 <span class="normal">357</span>
@@ -4265,7 +4288,20 @@ tree transformer (<a class="autorefs autorefs-internal" title="PureTreeTransform
 <span class="normal">363</span>
 <span class="normal">364</span>
 <span class="normal">365</span>
-<span class="normal">366</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">contextual_tree_transformer</span><span class="p">[</span><span class="n">A</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">C</span><span class="p">](</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">contextual_tree_transformer</span><span class="p">[</span><span class="n">A</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">C</span><span class="p">](</span>
     <span class="n">f</span><span class="p">:</span> <span class="n">_ParametricContextualTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">],</span> <span class="o">/</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">C</span><span class="p">,</span> <span class="n">ContextualTreeTransformer</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4325,15 +4361,15 @@ signature <code>B | N</code>, for all <code>N</code>.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PureTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PureTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A function that maps any tree with signature `A | N` to a tree with</span>
 <span class="sd">    signature `B | N`, for all `N`.</span>
@@ -4391,10 +4427,10 @@ signature <code>B | N</code>, for all <code>N</code>.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ContextualTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ContextualTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PureTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">]:</span> <span class="o">...</span>
@@ -4447,10 +4483,10 @@ signature <code>B | N</code>, for all <code>N</code>.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricContextualTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">C</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricContextualTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">C</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PureTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">]:</span> <span class="o">...</span>

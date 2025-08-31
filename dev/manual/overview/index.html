@@ -360,7 +360,7 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#find_param_value" class="md-nav__link">
+  <a href="#writing-a-strategy" class="md-nav__link">
     <span class="md-ellipsis">
       Writing a Strategy
     </span>
@@ -1249,7 +1249,7 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#find_param_value" class="md-nav__link">
+  <a href="#writing-a-strategy" class="md-nav__link">
     <span class="md-ellipsis">
       Writing a Strategy
     </span>
@@ -1302,7 +1302,7 @@
 
 <h1 id="overview">Overview</h1>
 <p>Let us illustrate the Delphyne framework using a simple example that is also featured in the <a href="../../">Getting Started</a> section. The task being solved in this example is, given a mathematical expression featuring real variables <span class="arithmatex">\(x\)</span> and <span class="arithmatex">\(n\)</span>, to find an integer value for <span class="arithmatex">\(n\)</span> for which the expression is nonnegative for all values of <span class="arithmatex">\(x\)</span>. We first propose a more verbose solution that better illustrates Delphyne's fundamental abstractions, and then demonstrate a shorter one. All code for these examples is available in <code>examples/small/find_param_value.py</code> and <code>examples/small/find_param_value_universal.py</code></p>
-<h2 id="find_param_value">Writing a Strategy</h2>
+<h2 id="writing-a-strategy">Writing a Strategy</h2>
 <p>Delphyne lets you combine prompting with traditional programming to solve problems. The first step is defining a <em>strategy</em>. A strategy provides a high-level sketch for solving a problem. It consists in a program with unresolved choice points, which are determined by LLMs at runtime. For example, here is an example of a strategy for the problem defined above (finding a value for integer parameter <span class="arithmatex">\(n\)</span> that makes a mathematical expression nonnegative for all <span class="arithmatex">\(x\)</span>):</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
 <span class="normal"> 2</span>
@@ -1405,7 +1405,7 @@
 <p class="admonition-title">Few-Shot Prompting</p>
 <p>As we discuss later, organizing queries into types is especially useful for implementing <em>few-shot</em> prompting. Indeed, to answer a query of a given type, one can build a prompt that concatenates (1) the <em>system prompt</em> associated with the query's type, (2) a sequence of <em>examples</em> that each consist in a query of the same type along with the expected answer, and (3) the query to be answered.</p>
 </div>
-<p>Going back to the above <a href="#find_param_value">definition</a> of the <code>find_param_value</code> strategy, one can branch over possible answers to a query using the <a class="autorefs autorefs-internal" title="branch" href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.branch"><code>branch</code></a> operator. In addition, one can ensure that a property holds using the <a class="autorefs autorefs-internal" title="ensure" href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.ensure"><code>ensure</code></a> operator, or fail straight using <a class="autorefs autorefs-internal" title="fail" href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.fail"><code>fail</code></a>. Strategies can be <a class="autorefs autorefs-internal" title="reify" href="../../reference/strategies/strategies/#delphyne.reify"><em>reified</em></a> (i.e., compiled) into search trees that feature <strong>success leaves</strong> (corresponding to reaching a <code>return</code> statement), <strong>failure leaves</strong> (corresponding to failing an <code>ensure</code> statement or reaching a <code>fail</code> statement), and internal <strong>branching nodes</strong> (corresponding to reaching a <code>branch</code> statement). How such trees must be navigated at runtime (using LLM guidance) is defined by separate <em>policies</em>, which is the topic of the <a href="#writing-a-policy">next section</a>.</p>
+<p>Going back to the above <a href="#writing-a-strategy">definition</a> of the <code>find_param_value</code> strategy, one can branch over possible answers to a query using the <a class="autorefs autorefs-internal" title="branch" href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.branch"><code>branch</code></a> operator. In addition, one can ensure that a property holds using the <a class="autorefs autorefs-internal" title="ensure" href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.ensure"><code>ensure</code></a> operator, or fail straight using <a class="autorefs autorefs-internal" title="fail" href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.fail"><code>fail</code></a>. Strategies can be <a class="autorefs autorefs-internal" title="reify" href="../../reference/strategies/strategies/#delphyne.reify"><em>reified</em></a> (i.e., compiled) into search trees that feature <strong>success leaves</strong> (corresponding to reaching a <code>return</code> statement), <strong>failure leaves</strong> (corresponding to failing an <code>ensure</code> statement or reaching a <code>fail</code> statement), and internal <strong>branching nodes</strong> (corresponding to reaching a <code>branch</code> statement). How such trees must be navigated at runtime (using LLM guidance) is defined by separate <em>policies</em>, which is the topic of the <a href="#writing-a-policy">next section</a>.</p>
 <details class="info">
 <summary>Difference between <code>ensure</code> and <code>assert</code></summary>
 <p>Strategies can also feature Python assertions (<code>assert</code> statements) but these serve a different purpose from <code>ensure</code>. An <code>assert</code> statement failing means that an <em>internal</em> error happened, either indicating a bug in the strategy code or invalid toplevel inputs. In contrast, an <code>ensure</code> statement can fail following incorrect LLM answers (and thereby induce a failure leaf), as a normal part of performing search.</p>
@@ -1476,7 +1476,7 @@
 
   
       dataclass
-  " href="../../reference/stdlib/basic/#delphyne.Policy"><code>Policy</code></a> must be provided) or (2) strategies involve loops or recursion (in which case prompting policies and sub-policies may depend on extra parameters such as the iteration number or recursion depth). In the definition of <a href="#find_param_value"><code>find_param_value</code></a>, the <a class="autorefs autorefs-internal" title="using" href="../../reference/stdlib/queries/#delphyne.Query.using"><code>using</code></a> method is called on queries to provide each time a mapping from the ambient inner policy (of type <code>FindParamValueIP</code>) to the prompting policy to use.</p>
+  " href="../../reference/stdlib/basic/#delphyne.Policy"><code>Policy</code></a> must be provided) or (2) strategies involve loops or recursion (in which case prompting policies and sub-policies may depend on extra parameters such as the iteration number or recursion depth). In the definition of <a href="#writing-a-strategy"><code>find_param_value</code></a>, the <a class="autorefs autorefs-internal" title="using" href="../../reference/stdlib/queries/#delphyne.Query.using"><code>using</code></a> method is called on queries to provide each time a mapping from the ambient inner policy (of type <code>FindParamValueIP</code>) to the prompting policy to use.</p>
 <details class="tip">
 <summary>A More Concise Alternative for Handling Inner Policies</summary>
 <p>Defining inner policy types and specifying functions from those to prompting policies or sub-policies via <a class="autorefs autorefs-internal" title="using" href="../../reference/stdlib/queries/#delphyne.Query.using"><code>using</code></a> allows a maximal degree of flexibility, static type safety and editor support. However, one might find it verbose. Thus, inner policies can also be specified via simple Python dictionaries (see <a class="autorefs autorefs-internal" title="IPDict" href="../../reference/stdlib/basic/#delphyne.IPDict"><code>IPDict</code></a>), as we <a href="#a-more-concise-version">soon</a> demonstrate.</p>
