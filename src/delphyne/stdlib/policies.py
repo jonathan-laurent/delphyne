@@ -62,6 +62,9 @@ class SearchPolicy[N: Node](dp.AbstractSearchPolicy[PolicyEnv, N]):
     composition operator (for composing search policies with stream
     transformers and tree transformers) and the `&` operator for pairing
     a search policy with an inner policy.
+
+    Search policies can be conveniently defined using the
+    `search_policy` decorator. See `dfs` for an example.
     """
 
     _fn: "_SearchPolicyFn[N]"
@@ -172,6 +175,10 @@ class PromptingPolicy(dp.AbstractPromptingPolicy[PolicyEnv]):
     provides convenience features such as support for the `@`
     composition operator (for composing prompting policies with stream
     transformers).
+
+    Prompting policies can be conveniently defined using the
+    `prompting_policy` decorator. See the definition of `few_shot` for
+    an example.
     """
 
     _fn: "_PromptingPolicyFn"
@@ -286,8 +293,14 @@ class _ParametricContextualTreeTransformerFn[A: Node, B: Node, **C](Protocol):
 @dataclass
 class ContextualTreeTransformer[A: Node, B: Node]:
     """
-    Contextual tree transformer, which can be composed with search
-    policies to modify their accepted signature.
+    Wrapper for a function that maps trees to trees, possibly
+    changing their signature. Can depend on the global policy
+    environment (hence the *contextual* aspect).
+
+    Contextual tree transformers can be composed with search policies to
+    modify their accepted signature. They can be convniently defined
+    using the `contextual_tree_transformer` decorator. See
+    `elim_compute` and `elim_messages` for an examples.
 
     Type Parameters:
         A: The type of nodes that the transformer removes from search
