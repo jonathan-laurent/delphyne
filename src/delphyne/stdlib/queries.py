@@ -493,8 +493,8 @@ def structured_as[T](type: TypeAnnot[T], /) -> Parser[T]:
     Parse an LLM structured answer into a given target type.
 
     !!! warning
-    Only dataclass types are supported, since most LLM providers
-    only support structured output and tool calls for JSON objects.
+        Only dataclass types are supported, since most LLM providers
+        only support structured output and tool calls for JSON objects.
     """
     _assert_not_response_type(type, where="structured_as")
     _check_valid_structured_output_type(type)

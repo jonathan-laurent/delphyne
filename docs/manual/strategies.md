@@ -2,7 +2,7 @@
 
 Following the previous [Overview](./overview.md) chapter, we now provide more details on Delphyne's _strategy language_. We provide a quick overview of the most useful techniques and concepts and refer to the [Reference](../reference/strategies/trees.md) for more details and explanations (follow the hypertext links).
 
-## Strategies and Modularity
+## Defining Strategies
 
 A _strategy_ is a program with unresolved choice points, which can be reified into a search tree. Delphyne allows writing strategies as Python [generators](https://wiki.python.org/moin/Generators) that yield internal tree nodes and receive associated actions in return. The [`Strategy`][delphyne.Strategy] type has three type parameters, corresponding to the strategy's _signature_ (i.e., the type of nodes it can emit), its associated _inner policy type_ and its _return type_. Strategy functions are typically defined via the [`strategy`][delphyne.strategy] decorator, which creates functions that return [`StrategyInstance`][delphyne.StrategyInstance] values, wrapping the underlying generator while adding some metadata and convenience methods (e.g., [`using`][delphyne.StrategyInstance.using]).
 
@@ -43,22 +43,40 @@ For an example of a strategy that branches over results of a sub-strategy, see t
     --8<-- "examples/find_invariants/abduct_and_branch.py"
     ```
 
-## Queries
+### Queries
+
+New query types can be defined by subclassing the [`Query`][delphyne.Query] class. We refer to the associated [API documentation][delphyne.Query] for details. Some highlights:
+
+- Queries can be associated _system prompts_ and _instance prompts_. Prompts can be defined inline or in separate [Jinja](https://jinja.palletsprojects.com/en/stable/) files (see `find_invariants` example).
+- Prompts can be parameterized, and parameters instantiated on the policy side (e.g., `params` argument of [`few_shot`][delphyne.few_shot]). This is useful for testing prompt variations, specializing specific prompt fragments for particular, etc...
+- It is possible to define several [_answer modes_][delphyne.AnswerMode] for a query, each mode being associated a distinct parser (see `tests/example_strategies.py:GetFavoriteDish` for an example).
+- Queries support [structured output](https://platform.openai.com/docs/guides/structured-outputs) and [tool calls](https://platform.openai.com/docs/guides/function-calling).
+
 
 ## Trees and Reification
 
-## Adding new Effects
+Strategies can be reified (i.e. compiled) into trees using the [`reify`][delphyne.reify] function (see [reference documentation](delphyne.reify) for details and caveats). The [`Tree`][delphyne.Tree] class is defined as follows:
 
+```py
+@dataclass(frozen=True)
+class Tree[N: Node, P, T]:
+    node: N | Success[T]
+    child: Callable[[Value], Tree[N, P, T]]
+    ref: GlobalNodePath # (1)!
+```
 
+1. To ignore on first reading. See [documentation on references](../reference/strategies/traces.md).
 
+A tree contains either a node ([`Node`][delphyne.Node]) or a success leaf ([`Node`][delphyne.Success]). When applicable, children trees are indexed by _actions_ ([`Value`][delphyne.core.refs.Value]). Actions result from combining elements of local spaces ([`Space`][delphyne.Space]). For example, if `node` has type [`Branch`][delphyne.Branch], then an action corresponds to a branching candidate.
 
-<!--
-Strategies:
-    Coroutines, branch, using, opaque spaces composition, ...
-Queries:
-    Parsers, generic parsers, 
-Trees and Reification:
-    Tree datastructure, warnings about purity, implementation details...
-Trees:
-    Adding effects.
--->
+### Adding new Effects
+
+New types of effects beyond [`Branch`][delphyne.Branch] and [`Fail`][delphyne.Fail] can be added easily, by subclassing [`Node`][delphyne.Node]. Here are a number of additional effects defined in the Delphyne standard library:
+
+- [`Join`][delphyne.Join]: allows evaluating a sequence of independent sub-strategies, possibly in parallel.
+- [`Compute`][delphyne.Compute]: allows performing expensive and possibly non-replicable/nondeterministic computations in strategies (see details in [How-To Guide](../how-to-guides.md#performing-expensive-computations-in-strategies)).
+- [`Value`][delphyne.Value]: allows adding value information into strategy trees. Such information can be leveraged by search policies (e.g. [`best_first_search`][delphyne.best_first_search]).
+- [`Flag`][delphyne.Flag]: allows providing a finite number of alternative implementations for sub-tasks, to be selected either offline or at runtime.
+- [`Message`][delphyne.Message]: allows decorating trees with debugging messages.
+
+For examples of defining new effects, you can refer to the source code of the aforementioned effects in the Delphyne standard library (`stdlib.nodes`).
