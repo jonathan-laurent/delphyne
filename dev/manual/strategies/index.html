@@ -20,7 +20,7 @@
     
     
       
-        <title>Strategies and Trees - Delphyne</title>
+        <title>Strategy Language - Delphyne</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#strategies-and-trees" class="md-skip">
+        <a href="#strategy-language" class="md-skip">
           Skip to content
         </a>
       
@@ -115,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Strategies and Trees
+              Strategy Language
             
           </span>
         </div>
@@ -342,17 +342,85 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Strategy Language
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
-    Strategies and Trees
+    Strategy Language
     
   </span>
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#strategies-and-modularity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Strategies and Modularity
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Queries
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trees-and-reification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trees and Reification
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-new-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding new Effects
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -371,7 +439,7 @@
   
   
   <span class="md-ellipsis">
-    Policies
+    Policy Language
     
   </span>
   
@@ -394,7 +462,7 @@
   
   
   <span class="md-ellipsis">
-    Demonstrations
+    Demonstration Language
     
   </span>
   
@@ -1174,6 +1242,50 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#strategies-and-modularity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Strategies and Modularity
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Queries
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trees-and-reification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trees and Reification
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-new-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding new Effects
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1188,8 +1300,242 @@
 
 
 
-<h1 id="strategies-and-trees">Strategies and Trees</h1>
-<p>This page is under construction. In the meantime, you can read about Delphyne's key concepts in the paper <a href="https://arxiv.org/abs/2502.05310"><em>Oracular Programming: A Modular Foundation for Building LLM-Enabled Software</em></a>.</p>
+<h1 id="strategy-language">Strategy Language</h1>
+<p>Following the previous <a href="../overview/">Overview</a> chapter, we now provide more details on Delphyne's <em>strategy language</em>. We provide a quick overview of the most useful techniques and concepts and refer to the <a href="../../reference/strategies/trees/">Reference</a> for more details and explanations (follow the hypertext links).</p>
+<h2 id="strategies-and-modularity">Strategies and Modularity</h2>
+<p>A <em>strategy</em> is a program with unresolved choice points, which can be reified into a search tree. Delphyne allows writing strategies as Python <a href="https://wiki.python.org/moin/Generators">generators</a> that yield internal tree nodes and receive associated actions in return. The <a class="autorefs autorefs-internal" title="Strategy" href="../../reference/strategies/strategies/#delphyne.Strategy"><code>Strategy</code></a> type has three type parameters, corresponding to the strategy's <em>signature</em> (i.e., the type of nodes it can emit), its associated <em>inner policy type</em> and its <em>return type</em>. Strategy functions are typically defined via the <a class="autorefs autorefs-internal" title="strategy" href="../../reference/stdlib/basic/#delphyne.strategy"><code>strategy</code></a> decorator, which creates functions that return <a class="autorefs autorefs-internal" title="StrategyInstance
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/basic/#delphyne.StrategyInstance"><code>StrategyInstance</code></a> values, wrapping the underlying generator while adding some metadata and convenience methods (e.g., <a class="autorefs autorefs-internal" title="using" href="../../reference/stdlib/basic/#delphyne.StrategyInstance.using"><code>using</code></a>).</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@strategy</span>  <span class="c1"># Example from the previous chapter</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_param_value</span><span class="p">(</span>
+    <span class="n">expr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">FindParamValueIP</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span> <span class="o">...</span>
+</code></pre></div>
+<p>Branching nodes can be yielded via the <a class="autorefs autorefs-internal" title="branch" href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.branch"><code>branch</code></a> function:</p>
+<!-- , whose type is worth examining (we ignore some optional arguments): -->
+
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">branch</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span><span class="n">cands</span><span class="p">:</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
+</code></pre></div>
+<p>Crucially, <code>branch</code> does not take a query as an argument but an <strong>opaque space</strong> (<a class="autorefs autorefs-internal" title="Opaque" href="../../reference/stdlib/basic/#delphyne.Opaque"><code>Opaque</code></a>). An opaque space can be seen as a mapping from the ambient inner policy to an iterator of values (or, more precisely, a <a href="../policies/">search stream</a>). Opaque spaces can be produced from queries or strategy instances, by providing a mapping from the ambient inner policy to a prompting policy or a policy respectively:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Query</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">Pout</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span>
+        <span class="n">get_policy</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Pout</span><span class="p">],</span> <span class="n">PromptingPolicy</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">Pout</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">StrategyInstance</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+        <span class="n">get_policy</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Pout</span><span class="p">],</span> <span class="n">Policy</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">Pout</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
+</code></pre></div>
+<p>Importantly, search policies such as <a class="autorefs autorefs-internal" title="dfs" href="../../reference/stdlib/algorithms/#delphyne.stdlib.search.dfs.dfs"><code>dfs</code></a> are unaware of whether an opaque space originates from a query or a strategy. This guarantees modularity and allows queries to be transparently refined into dedicated strategies whenever more guidance is desired. Opaque spaces also allow queries with different signatures (i.e., yielding different kinds of tree nodes) to be composed, while being associated independent search policies.</p>
+<div class="admonition info">
+<p class="admonition-title">Strategy Inlining</p>
+<p>It is also possible to <em>inline</em> a strategy call within another strategy, provided that both strategies share the same signature and inner policy type. This can be done using the <a class="autorefs autorefs-internal" title="inline" href="../../reference/strategies/strategies/#delphyne.StrategyComp.inline"><code>inline</code></a> method, which <em>unwraps</em> a <a class="autorefs autorefs-internal" title="StrategyInstance
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/basic/#delphyne.StrategyInstance"><code>StrategyInstance</code></a> value and gives access to the underlying generator.</p>
+</div>
+<p>For an example of a strategy that branches over results of a sub-strategy, see the <code>prove_program_via_abduction_and_branching</code> strategy from the <code>find_invariants</code> example. In particular, see how doing so results in nested inner policy records.</p>
+<details class="info">
+<summary>Source for <code>examples/find_invariants/abduct_and_branch.py</code></summary>
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A simple Delphyne strategy to discover loop invariants with Why3.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">delphyne</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">delphyne</span><span class="w"> </span><span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Compute</span><span class="p">,</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">Strategy</span><span class="p">,</span> <span class="n">Value</span><span class="p">,</span> <span class="n">strategy</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">why3_utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">why3</span>
+
+<span class="c1"># fmt: off</span>
+
+
+<span class="c1">#####</span>
+<span class="c1">##### Inner Policy Types</span>
+<span class="c1">#####</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProposeInvsIP</span><span class="p">:</span>
+    <span class="n">propose</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PromptingPolicy</span>
+    <span class="n">novel</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PromptingPolicy</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProveProgIP</span><span class="p">:</span>
+    <span class="n">propose</span><span class="p">:</span> <span class="s2">&quot;dp.Policy[Branch | Fail, ProposeInvsIP]&quot;</span>
+    <span class="nb">eval</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PromptingPolicy</span>
+    <span class="n">quantify_eval</span><span class="p">:</span> <span class="s2">&quot;Callable[[ProofStateMetrics], float] | None&quot;</span>
+
+
+<span class="c1">#####</span>
+<span class="c1">##### Type Definitions</span>
+<span class="c1">#####</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProofStateMetrics</span><span class="p">:</span>
+    <span class="n">has_redundant_invs</span><span class="p">:</span> <span class="nb">bool</span>
+
+
+<span class="nb">type</span> <span class="n">Proposal</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">why3</span><span class="o">.</span><span class="n">Formula</span><span class="p">]</span>
+
+
+<span class="nb">type</span> <span class="n">Blacklist</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Proposal</span><span class="p">]</span>
+
+
+
+<span class="c1">#####</span>
+<span class="c1">##### Strategies</span>
+<span class="c1">#####</span>
+
+
+<span class="nd">@strategy</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">prove_program_via_abduction_and_branching</span><span class="p">(</span>
+    <span class="n">prog</span><span class="p">:</span> <span class="n">why3</span><span class="o">.</span><span class="n">File</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Value</span> <span class="o">|</span> <span class="n">Fail</span> <span class="o">|</span> <span class="n">Compute</span><span class="p">,</span> <span class="n">ProveProgIP</span><span class="p">,</span> <span class="n">why3</span><span class="o">.</span><span class="n">File</span><span class="p">]:</span>
+    <span class="n">annotated</span><span class="p">:</span> <span class="n">why3</span><span class="o">.</span><span class="n">File</span> <span class="o">=</span> <span class="n">prog</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">feedback</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">why3</span><span class="o">.</span><span class="n">check</span><span class="p">,</span> <span class="n">prog</span><span class="p">,</span> <span class="n">annotated</span><span class="p">)</span>
+        <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">feedback</span><span class="o">.</span><span class="n">error</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;invalid program&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">feedback</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">annotated</span>
+        <span class="n">remaining</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">feedback</span><span class="o">.</span><span class="n">obligations</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">o</span><span class="o">.</span><span class="n">proved</span><span class="p">]</span>
+        <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">remaining</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;too many remaining obligations&quot;</span><span class="p">)</span>
+        <span class="n">unproved</span> <span class="o">=</span> <span class="n">remaining</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span>
+            <span class="ow">not</span> <span class="n">why3</span><span class="o">.</span><span class="n">invariant_init_obligation</span><span class="p">(</span><span class="n">unproved</span><span class="p">),</span> <span class="s2">&quot;init&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">annotated</span> <span class="o">!=</span> <span class="n">prog</span><span class="p">:</span>  <span class="c1"># if invariant annotations are present</span>
+            <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">value</span><span class="p">(</span>
+                <span class="n">EvaluateProofState</span><span class="p">(</span><span class="n">unproved</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">eval</span><span class="p">,</span> <span class="n">ProveProgIP</span><span class="p">),</span>
+                <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">quantify_eval</span><span class="p">)</span>
+        <span class="n">new_invariants</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">branch</span><span class="p">(</span>
+            <span class="n">dp</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">prior</span><span class="p">:</span>
+                    <span class="n">propose_invariants</span><span class="p">(</span><span class="n">unproved</span><span class="p">,</span> <span class="n">prior</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">propose</span><span class="p">,</span> <span class="n">ProveProgIP</span><span class="p">)))</span>
+        <span class="n">annotated</span> <span class="o">=</span> <span class="n">why3</span><span class="o">.</span><span class="n">add_invariants</span><span class="p">(</span><span class="n">annotated</span><span class="p">,</span> <span class="n">new_invariants</span><span class="p">)</span>
+
+
+<span class="nd">@strategy</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">propose_invariants</span><span class="p">(</span>
+    <span class="n">obligation</span><span class="p">:</span> <span class="n">why3</span><span class="o">.</span><span class="n">Obligation</span><span class="p">,</span>
+    <span class="n">blacklist</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Proposal</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">ProposeInvsIP</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Proposal</span><span class="p">,</span> <span class="n">Blacklist</span><span class="p">]]:</span>
+    <span class="k">if</span> <span class="n">blacklist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">blacklist</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">proposal</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">branch</span><span class="p">(</span>
+        <span class="n">ProposeInvariants</span><span class="p">(</span><span class="n">obligation</span><span class="p">,</span> <span class="n">blacklist</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">propose</span><span class="p">,</span> <span class="n">ProposeInvsIP</span><span class="p">))</span>
+    <span class="n">sanity_check</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span><span class="n">why3</span><span class="o">.</span><span class="n">no_invalid_formula_symbol</span><span class="p">(</span><span class="n">inv</span><span class="p">)</span> <span class="k">for</span> <span class="n">inv</span> <span class="ow">in</span> <span class="n">proposal</span><span class="p">)</span>
+    <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">sanity_check</span><span class="p">,</span> <span class="s2">&quot;sanity check failed&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">blacklist</span><span class="p">:</span>
+        <span class="n">novel</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">branch</span><span class="p">(</span>
+            <span class="n">IsProposalNovel</span><span class="p">(</span><span class="n">proposal</span><span class="p">,</span> <span class="n">blacklist</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">novel</span><span class="p">,</span> <span class="n">ProposeInvsIP</span><span class="p">))</span>
+        <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">novel</span><span class="p">,</span> <span class="s2">&quot;proposal is not novel&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">proposal</span><span class="p">,</span> <span class="p">[</span><span class="o">*</span><span class="n">blacklist</span><span class="p">,</span> <span class="n">proposal</span><span class="p">]</span>
+
+
+<span class="c1">#####</span>
+<span class="c1">##### Queries</span>
+<span class="c1">#####</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProposeInvariants</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Query</span><span class="p">[</span><span class="n">Proposal</span><span class="p">]):</span>
+    <span class="n">unproved</span><span class="p">:</span> <span class="n">why3</span><span class="o">.</span><span class="n">Obligation</span>
+    <span class="n">blacklist</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Proposal</span><span class="p">]</span>
+
+    <span class="n">__parser__</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">last_code_block</span><span class="o">.</span><span class="n">yaml</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">IsProposalNovel</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Query</span><span class="p">[</span><span class="nb">bool</span><span class="p">]):</span>
+    <span class="n">proposal</span><span class="p">:</span> <span class="n">Proposal</span>
+    <span class="n">blacklist</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Proposal</span><span class="p">]</span>
+
+    <span class="n">__parser__</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">last_code_block</span><span class="o">.</span><span class="n">yaml</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvaluateProofState</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Query</span><span class="p">[</span><span class="n">ProofStateMetrics</span><span class="p">]):</span>
+    <span class="n">unproved</span><span class="p">:</span> <span class="n">why3</span><span class="o">.</span><span class="n">Obligation</span>
+
+    <span class="n">__parser__</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">last_code_block</span><span class="o">.</span><span class="n">yaml</span>
+
+
+<span class="c1">#####</span>
+<span class="c1">##### Policies</span>
+<span class="c1">#####</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">prove_program_via_abduction_and_branching_policy</span><span class="p">(</span>
+    <span class="n">fancy_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span>
+    <span class="n">base_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span>
+    <span class="n">max_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">max_requests_per_proposal</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">root_proposal_penalty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span>
+    <span class="n">nonroot_proposal_penalty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">max_nonroot_proposals</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="n">enable_state_evaluation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">min_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Policy</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Value</span> <span class="o">|</span> <span class="n">Fail</span> <span class="o">|</span> <span class="n">Compute</span><span class="p">,</span> <span class="n">ProveProgIP</span><span class="p">]:</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_value</span><span class="p">(</span><span class="n">metrics</span><span class="p">:</span> <span class="n">ProofStateMetrics</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="n">prob</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">metrics</span><span class="o">.</span><span class="n">has_redundant_invs</span><span class="p">:</span>
+            <span class="n">prob</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">min_value</span><span class="p">,</span> <span class="n">prob</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">child_confidence_prior</span><span class="p">(</span><span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">prev_gen</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">prev_gen</span> <span class="o">&gt;=</span> <span class="n">max_nonroot_proposals</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="n">nonroot_proposal_penalty</span> <span class="o">**</span> <span class="n">prev_gen</span>
+        <span class="k">return</span> <span class="n">root_proposal_penalty</span> <span class="o">**</span> <span class="n">prev_gen</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">NUM_REQUESTS</span>
+    <span class="n">fancy</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">openai_model</span><span class="p">(</span><span class="n">fancy_model</span><span class="p">)</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">openai_model</span><span class="p">(</span><span class="n">base_model</span><span class="p">)</span>
+
+    <span class="n">propose_ip</span> <span class="o">=</span> <span class="n">ProposeInvsIP</span><span class="p">(</span>
+        <span class="n">propose</span><span class="o">=</span><span class="n">dp</span><span class="o">.</span><span class="n">few_shot</span><span class="p">(</span><span class="n">fancy</span><span class="p">),</span>
+        <span class="n">novel</span><span class="o">=</span><span class="n">dp</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">@</span> <span class="n">dp</span><span class="o">.</span><span class="n">few_shot</span><span class="p">(</span><span class="n">base</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">proposal_limit</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">BudgetLimit</span><span class="p">({</span><span class="n">n</span><span class="p">:</span> <span class="n">max_requests_per_proposal</span><span class="p">})</span>
+    <span class="n">prove_prog_ip</span> <span class="o">=</span> <span class="n">ProveProgIP</span><span class="p">(</span>
+        <span class="n">propose</span><span class="o">=</span><span class="n">dp</span><span class="o">.</span><span class="n">with_budget</span><span class="p">(</span><span class="n">proposal_limit</span><span class="p">)</span> <span class="o">@</span> <span class="n">dp</span><span class="o">.</span><span class="n">dfs</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">propose_ip</span><span class="p">,</span>
+        <span class="nb">eval</span><span class="o">=</span><span class="n">dp</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">@</span> <span class="n">dp</span><span class="o">.</span><span class="n">few_shot</span><span class="p">(</span><span class="n">base</span><span class="p">),</span>
+        <span class="n">quantify_eval</span><span class="o">=</span><span class="n">compute_value</span> <span class="k">if</span> <span class="n">enable_state_evaluation</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">bestfs</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">best_first_search</span><span class="p">(</span>
+        <span class="n">child_confidence_prior</span><span class="o">=</span><span class="n">child_confidence_prior</span><span class="p">,</span>
+        <span class="n">max_depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">bestfs</span> <span class="o">@</span> <span class="n">dp</span><span class="o">.</span><span class="n">elim_compute</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">prove_prog_ip</span>
+</code></pre></div>
+</details>
+<h2 id="queries">Queries</h2>
+<h2 id="trees-and-reification">Trees and Reification</h2>
+<h2 id="adding-new-effects">Adding new Effects</h2>
+<!--
+Strategies:
+    Coroutines, branch, using, opaque spaces composition, ...
+Queries:
+    Parsers, generic parsers, 
+Trees and Reification:
+    Tree datastructure, warnings about purity, implementation details...
+Trees:
+    Adding effects.
+-->
 
 
 
