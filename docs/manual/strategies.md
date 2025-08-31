@@ -55,7 +55,7 @@ New query types can be defined by subclassing the [`Query`][delphyne.Query] clas
 
 ## Trees and Reification
 
-Strategies can be reified (i.e. compiled) into trees using the [`reify`][delphyne.reify] function (see [reference documentation](delphyne.reify) for details and caveats). The [`Tree`][delphyne.Tree] class is defined as follows:
+Strategies can be reified (i.e. compiled) into trees using the [`reify`][delphyne.reify] function (see [reference documentation][delphyne.reify] for details and caveats). The [`Tree`][delphyne.Tree] class is defined as follows:
 
 ```py
 @dataclass(frozen=True)
@@ -75,7 +75,7 @@ New types of effects beyond [`Branch`][delphyne.Branch] and [`Fail`][delphyne.Fa
 
 - [`Join`][delphyne.Join]: allows evaluating a sequence of independent sub-strategies, possibly in parallel.
 - [`Compute`][delphyne.Compute]: allows performing expensive and possibly non-replicable/nondeterministic computations in strategies (see details in [How-To Guide](../how-to-guides.md#performing-expensive-computations-in-strategies)).
-- [`Value`][delphyne.Value]: allows adding value information into strategy trees. Such information can be leveraged by search policies (e.g. [`best_first_search`][delphyne.best_first_search]).
+- [`Value`][delphyne.stdlib.Value]: allows adding value information into strategy trees. Such information can be leveraged by search policies (e.g. [`best_first_search`][delphyne.best_first_search]).
 - [`Flag`][delphyne.Flag]: allows providing a finite number of alternative implementations for sub-tasks, to be selected either offline or at runtime.
 - [`Message`][delphyne.Message]: allows decorating trees with debugging messages.
 
