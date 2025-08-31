@@ -82,4 +82,10 @@ New types of effects beyond [`Branch`][delphyne.Branch] and [`Fail`][delphyne.Fa
 - [`Flag`][delphyne.Flag]: allows providing a finite number of alternative implementations for sub-tasks, to be selected either offline or at runtime.
 - [`Message`][delphyne.Message]: allows decorating trees with debugging messages.
 
-For examples of defining new effects, you can refer to the source code of the aforementioned effects in the Delphyne standard library (`stdlib.nodes`).
+Node types are dataclasses whose fields can be of several kinds:
+
+- **Nonparametric local spaces** ([`Space`][delphyne.Space]), the main types of which are _opaque spaces_ ([`OpaqueSpace`][delphyne.OpaqueSpace]) and _embedded trees_ ([`EmbeddedTree`][delphyne.EmbeddedTree]).
+- **Parametric local spaces**, which are functions from local [values][delphyne.core.refs.Value] (i.e. assembly of elements from local spaces) to local spaces.
+- **Data fields** that contain policy metadata, debugging information, etc...
+
+More details are available in the [API Reference][delphyne.Node]. For examples of defining new effects, you can refer to the source code of the aforementioned effects in the Delphyne standard library (`stdlib.nodes`).

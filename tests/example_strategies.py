@@ -8,7 +8,7 @@ test the server (see `test_server`).
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, ClassVar, Literal, Never, Sequence, cast
+from typing import Any, ClassVar, Literal, Never, Sequence, cast, override
 
 # Reexporting untyped strategies
 # ruff: noqa: F401
@@ -82,15 +82,21 @@ def make_sum_dict_ip_policy(model: dp.LLM):
 
 @dataclass(frozen=True)
 class Conjecture(dp.Node):
+    """
+    An example effect `Conjecture`. See `make_conjecture`.
+    """
+
     cands: dp.OpaqueSpace[Any, Any]
     disprove: Callable[[dp.Tracked[Any]], dp.OpaqueSpace[Any, None]]
     aggregate: Callable[
         [tuple[dp.Tracked[Any], ...]], dp.OpaqueSpace[Any, Sequence[Any]]
     ]
 
+    @override
     def navigate(self) -> dp.Navigation:
         return (yield self.cands)
 
+    @override
     def primary_space(self):
         return self.cands
 
@@ -101,6 +107,14 @@ def make_conjecture[P, T](
     aggregate: Callable[[tuple[T, ...]], dp.Opaque[P, Sequence[T]]],
     inner_policy_type: type[P] | None = None,
 ) -> Strategy[Conjecture, P, T]:
+    """
+    Triggering function for the `Conjecture` effect.
+
+    This acts like the `branch` function, except that an additional
+    function for disproving candidates is provided, as well as an
+    aggregation function that combines several candidates into a list of
+    candidates (e.g. removing semantic duplicates).
+    """
     cand = yield dp.spawn_node(
         Conjecture, cands=cands, disprove=disprove, aggregate=aggregate
     )
