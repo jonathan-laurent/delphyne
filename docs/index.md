@@ -23,6 +23,8 @@ Users can describe high-level problem solving _strategies_ as arbitrary programs
 
 ## Quick Example
 
+Let us illustrate Delphyne with a complete example. Consider the task of  finding a parameter value that makes a mathematical expression nonnegative for all values of `x`. For example, given expression `x² - 2x + n`, `n = -1` is an incorrect answer (take `x = 0`), but `n = 1` is a correct answer since `x² - 2x + 1 = (x - 1)²`. Here is a Delphyne **strategy** for solving this problem:
+
 ```py
 import sympy as sp
 from typing import assert_never
@@ -51,6 +53,8 @@ def find_param_value(expr: str) -> Strategy[Branch | Fail, IPDict, int]:
         assert_never((yield from dp.fail("sympy_error", message=str(e))))
 ```
 
+A strategy is a program with unresolved choice points, represented here by the `guess` operator. At runtime, LLM oracles are tasked with producing return values for `guess`, in such a way as to pass all `ensure` assertions. Such a program induces a search tree that can be explored in many different ways, as specified by a separate **policy**:
+
 ```py
 def serial_policy():
     model = dp.standard_model("gpt-5-mini")
@@ -58,6 +62,8 @@ def serial_policy():
         "n_val": dp.few_shot(model),
         "equiv": dp.take(2) @ dp.few_shot(model)}
 ```
+
+This policy uses _sequential depth-first search_ (`dfs`), making at most two proof attempts for every parameter guess and sampling choices using `gpt-5-mini`. Here is another policy that uses a parallel variant of `dfs`, where multiple completions are repeatedly sampled and the resulting branches explored in parallel:
 
 ```py
 def parallel_policy():
@@ -67,13 +73,17 @@ def parallel_policy():
         "equiv": dp.few_shot(model, max_requests=1, num_completions=2)}
 ```
 
+Given an associated policy and a _budget limit_, our strategy can now be executed:
+
 ```py
-budget = dp.BudgetLimit({dp.NUM_REQUESTS: 2})
+budget = dp.BudgetLimit({dp.NUM_REQUESTS: 8, dp.DOLLAR_PRICE: 1e-3})
 res, _ = (find_param_value("2*x**2 - 4*x + n")
           .run_toplevel(dp.PolicyEnv(), serial_policy())
           .collect(budget=budget, num_generated=1))
 print(res[0].tracked.value)  # e.g. 2
 ```
+
+Here, choice points are resolved via zero-shot prompting. To increase reliability, one can provide examples of correct decisions by adding **demonstrations**. Demonstrations can be expressed in a dedicated language that supports an interactive, test-driven development workflow. In the screenshot below, the VSCode extension indicates the next unresolved choice point for solving a particular problem instance, which the user can answer before receiving new feedback:
 
 ![](./assets/screenshot/readme-extension-example/dark.png#only-dark)
 ![](./assets/screenshot/readme-extension-example/light.png#only-light)
