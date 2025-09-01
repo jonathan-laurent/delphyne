@@ -15,12 +15,14 @@ To start a new Delphyne project, we recommend taking the following steps:
 9. Create a [demonstration file](./manual/extension.md#editing-demonstrations) with extension `.demo.yaml`.
 10. As your project matures, consider adding tests along with a `pyproject.toml` file.
 
+
 ## Running an Oracular Program {#running}
 
 There are mostly two ways to run oracular programs:
 
 - **Using [`StrategyInstance.run_toplevel`][delphyne.StrategyInstance.run_toplevel]**: As demonstrated in the [Overview](./manual/overview.md#writing-a-policy), one can manually create a [policy environment][delphyne.PolicyEnv] and extract a [search stream][delphyne.Stream] from a pair of a strategy instance and of a policy. This can be done within any Python script, but offers by default no support for exporting logs and traces, displaying progress, caching LLM requests, handling interruption, etc... Enabling all these features requires substantial additional setup.
 - **Running a command**: Instead, a [command file](./manual/extension.md#commands) can be created that specifies a strategy instance, a policy, some search budget along with [extra information][delphyne.stdlib.commands.run_strategy.RunStrategyArgs]. The specified command can be launched from [within VSCode](./manual/extension.md#commands) or from the shell, using the [Delphyne CLI][delphyne.__main__.DelphyneCLI.run] (e.g. `run my_command.exec.yaml --cache --update`).
+
 
 ## Debugging an Oracular Program {#debugging}
 
@@ -54,10 +56,24 @@ Here are some various tips for debugging oracular programs:
     ```
     You can then run the Delphyne CLI with a debugger attached by simply substituting `delphyne` with `debug-delphyne`. For example, `debug-delphyne serve` launches a Delphyne server with a debugger attached. Note that the server does not immediately start after running this command, which waits for the user to launch the `Attach` debugging profile from inside VSCode.
 
-<!-- To debug the language server or even specific strategies, it is useful to attach a debugger to the language server. To do so, you should open VSCode at the root of the Delphyne repository and use the `Debug Server` debugging profile. This will start the server in debug mode (on port 8000). Starting the Delphyne extension when a server instance is running already will cause the extension to use this instance (as confirmed by the log output in the `Delphyne` channel). You can then put arbitrary breakpoints in the server source code or even in strategy code. -->
 
 ## Tuning an Oracular Program {#tuning}
 
+Policies often feature many hyperparameters that must be tuned for the associated oracular program to perform well. The Delphyne standard library defines an [`Experiment`][delphyne.stdlib.experiments.experiment_launcher.Experiment] class for running an oracular program on a set of different hyperparameter combinations. It supports the use of multiple workers, allows interrupting and resuming experiments, retrying failed attempts, and caching all LLM requests for replicability.
+
+For a usage example, see `examples/find_invariants/experiments`.
+
+
 ## Writing a Conversational Agent {#conversational}
 
+A common pattern for interacting with LLMs is to have multi-message exchanges where the full conversation history is resent repeatedly. LLMs are also sometimes allowed to request tool calls. This pattern is implemented by the [`interact`][delphyne.interact] strategy from Delphyne's standard library. For usage examples, see:
+
+- `examples/find_invariants/baseline.py`: real-world example from the [oracular programming paper](https://arxiv.org/abs/2502.05310)
+- `tests/example_strategies.py:propose_article`: simple example also involving tool calls
+
+!!! tip "Vertical vs Horizontal LLM Pipelines"
+    Delphyne supports the bidirectional integration of two complementary kinds of agents: __vertical__ agents, where a specialized program orchestrates calls to LLMs, and __horizontal__ agents, where an LLM orchestrates calls to tools. Delphyne supports the implementation of horizontal agents via its [`interact`][delphyne.interact] strategy, and allows these agents to invoke tools that are themselves implemented as oracular programs -- whether vertical or horizontal.
+
 ## Performing Expensive Computations in Strategies {#compute}
+
+For efficiency and replicability reasons, strategies must not directly perform expensive and possibly nondeterministic computations (e.g. a call to an external SMT solver with a wall clock timeout). In such cases, the [`Compute`][delphyne.Compute] effect should be used. See the [reference page][delphyne.Compute] for details and explanations. For example usage, see `examples/find_invariants/abduct_and_branch.py` and the associated demonstration file.

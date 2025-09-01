@@ -45,23 +45,23 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
 
     A common pattern for interacting with LLMs is to have multi-message
     exchanges where the full conversation history is resent repeatedly.
-    LLMs are also often allowed to request tool call. This strategy
+    LLMs are also often allowed to request tool calls. This strategy
     implements this pattern. It is meant to be inlined into a wrapping
     strategy (since it is not decorated with `strategy`).
 
-    Attributes:
-        step: a parametric opaque space, induced by a strategy or query
+    Parameters:
+        step: A parametric opaque space, induced by a strategy or query
             that takes as an argument the current chat history (possibly
             empty) along with some statistics, and returns an answer to
             be processed. Oftentimes, this parametric opaque space is
             induced by a query with a special `prefix` field for
             receiving the chat history (see `Query`).
-        process: an opaque space induced by a query or strategy that is
+        process: An opaque space induced by a query or strategy that is
             called on all model responses that are not tool calls, and
             which returns either a final response to be returned, or an
             error to be transmitted to the model as feedback (as an
             `Error` value with an absent or serializable `meta` field).
-        tools: a mapping from supported tool interfaces to
+        tools: A mapping from supported tool interfaces to
             implementations. Tools themselves can be implemented using
             arbitrary strategies or queries, allowing the integration of
             horizontal and vertical LLM pipelines.

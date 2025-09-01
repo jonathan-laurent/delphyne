@@ -783,7 +783,7 @@ class Query[T](dp.AbstractQuery[T]):
 
     A common pattern for interacting with LLMs is to have multi-message
     exchanges where the full conversation history is resent repeatedly.
-    LLMs are also often allowed to request tool call. This interaction
+    LLMs are also often allowed to request tool calls. This interaction
     pattern is implemented in the `interact` standard strategy. It is
     enabled by several features on the `Query` side.
 

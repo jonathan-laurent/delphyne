@@ -4,6 +4,8 @@
 
 ::: delphyne.interact
 
+::: delphyne.InteractStats
+
 ## Policies
 
 ::: delphyne.stdlib.search.dfs.dfs
@@ -33,6 +35,7 @@
 ## Universal Queries
 
 ::: delphyne.UniversalQuery
+
 ::: delphyne.guess
 
 ## Best-First Search

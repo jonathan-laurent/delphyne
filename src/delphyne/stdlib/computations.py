@@ -85,7 +85,8 @@ class Compute(dp.ComputationNode):
     interpreter in the form of *implicit answers*, allowing
     `__Computation__` queries to be automatically answered when running
     tests. Generated answers can be hardcoded in demonstrations **after**
-    the fact via proper editor support.
+    the fact via proper editor support (i.e. using the `Add Implicit
+    Answers` code action from Delphyne's VSCode extension).
     """
 
     query: dp.TransparentQuery[Any]
