@@ -1,0 +1,21 @@
+- replace: |
+    # Getting Started
+
+    <!-- We do not show the page title -->
+    <style> .md-content .md-typeset h1 { display: none; } </style>
+
+    <p align="center" style="margin-bottom: 45px">
+      <img src="assets/logos/black/banner.png#only-light" alt="Delphyne Logo" width="50%"/>
+      <img src="assets/logos/white/banner.png#only-dark" alt="Delphyne Logo" width="50%"/>
+    </p>
+  by: |
+    <p align="center">
+      <img src="docs/assets/logos/black/banner.png#gh-light-mode-only" alt="Delphyne Logo" width="50%"/>
+      <img src="docs/assets/logos/white/banner.png#gh-dark-mode-only" alt="Delphyne Logo" width="50%"/>
+    </p>
+- replace: |
+    ![](./assets/screenshot/readme-extension-example/dark.png#only-dark)
+    ![](./assets/screenshot/readme-extension-example/light.png#only-light)
+  by: |
+    ![](docs/assets/screenshot/readme-extension-example/dark.png#gh-dark-mode-only)
+    ![](docs/assets/screenshot/readme-extension-example/light.png#gh-light-mode-only)

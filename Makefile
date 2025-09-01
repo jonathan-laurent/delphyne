@@ -1,4 +1,4 @@
-.PHONY: pyright clean clean-ignored test full-test full-clean schemas stubs install doc-logo cloc count-doc-words deploy-doc-release deploy-doc-dev prepare-release release repomix
+.PHONY: pyright clean clean-ignored test full-test full-clean schemas stubs install doc-logo cloc count-doc-words deploy-doc-release deploy-doc-dev prepare-release release readme repomix
 
 RELEASE_SCRIPT := python scripts/prepare_release.py
 
@@ -152,6 +152,12 @@ count-doc-words:
 	find docs -name '*.md' -exec cat {} + | wc -w
 	@echo "Number of words in Python docstrings:"
 	rg --multiline --multiline-dotall '"""(.*?)"""' -o src | wc -w
+
+
+# Generate README.md from docs/index.md
+readme:
+	python scripts/generate_readme.py > README.md
+
 
 
 # Folders and files to ignore by repomix.

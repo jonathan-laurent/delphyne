@@ -12,15 +12,6 @@ Delphyne is a programming framework for building _reliable_ and _modular_ LLM ap
 
 Users can describe high-level problem solving _strategies_ as arbitrary programs with unresolved choice points. _Policies_ for navigating the resulting search spaces with LLMs can be independently assembled and tuned. Examples of correct choices can be expressed in a dedicated _demonstration language_ that supports interactive test-driven developement.
 
-<!-- and used for few-shot prompting. -->
-<!-- by composing reusable components -->
-
-<!-- Delphyne is a programming framework for building _reliable_ and _modular_ LLM applications. It is based on a new paradigm named _oracular programming_, where high-level problem-solving strategies are expressed as nondeterministic programs whose choice points are annotated with examples and resolved by LLMs. Delphyne combines three languages:
-
-- A _strategy language_ embedded in Python that allows writing nondeterministic programs that can be reified into (modular) search trees.
-- A _policy language_ for specifying ways to navigate such trees (with LLM guidance) by composing reusable search primitives.
-- A _demonstration language_ for describing successful _and_ unsuccessful search scenarios to be used as training or prompting examples. A dedicated language server allows writing demonstrations interactively and keeping them synchronized with evolving strategies. -->
-
 ## Quick Example
 
 Let us illustrate Delphyne with a complete example. Consider the task of  finding a parameter value that makes a mathematical expression nonnegative for all values of `x`. For example, given expression `x² - 2x + n`, `n = -1` is an incorrect answer (take `x = 0`), but `n = 1` is a correct answer since `x² - 2x + 1 = (x - 1)²`. Here is a Delphyne **strategy** for solving this problem:
@@ -102,7 +93,6 @@ A complete explanation of this example is provided in the [Delphyne Manual](./ma
 - **Access a rich library of components**
 - **Run replicable experiments**
 
-
 ## Installation {#installation}
 
 First, download the Delphyne repository and enter it:
@@ -145,7 +135,6 @@ To test the Delphyne extension, we recommend reading the corresponding [manual c
 - A complete [API Reference](./reference/strategies/trees.md) is also available, along with a series of [How-To Guides](./how-to-guides.md).
 - The `examples` directory provides a gallery of Delphyne programs (see  `README` files).
 - For a more technical presentation, see the original paper that introduces Delphyne: [_Oracular Programming: A Modular Foundation for Building LLM-Enabled Software_](https://arxiv.org/abs/2502.05310).
-
 
 ## Citing this Work
 
