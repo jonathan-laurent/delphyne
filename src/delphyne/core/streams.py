@@ -171,9 +171,9 @@ class Barrier:
             `Spent` message, to be yielded later.
 
     !!! warning
-    Manually yielding `Spent` and `Barrier` messages is error-prone
-    and usually not recommended. Use stream combinators instead (see
-    the `Stream` class from the standard library).
+        Manually yielding `Spent` and `Barrier` messages is error-prone
+        and usually not recommended. Use stream combinators instead (see
+        the `Stream` class from the standard library).
     """
 
     budget: Budget
