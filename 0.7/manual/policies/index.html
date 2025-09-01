@@ -20,7 +20,7 @@
     
     
       
-        <title>Policies - Delphyne</title>
+        <title>Policy Language - Delphyne</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#policies" class="md-skip">
+        <a href="#the-policy-language" class="md-skip">
           Skip to content
         </a>
       
@@ -115,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Policies
+              Policy Language
             
           </span>
         </div>
@@ -270,6 +270,8 @@
       
         
       
+        
+      
     
     
     
@@ -308,12 +310,35 @@
   
   
     <li class="md-nav__item">
+      <a href="../overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../strategies/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Strategies and Trees
+    Strategy Language
     
   </span>
   
@@ -340,17 +365,67 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Policy Language
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
-    Policies
+    Policy Language
     
   </span>
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#key-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Concepts
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#defining-new-search-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defining New Search Policies
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -369,7 +444,7 @@
   
   
   <span class="md-ellipsis">
-    Demonstrations
+    Demonstration Language
     
   </span>
   
@@ -1149,6 +1224,32 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#key-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Concepts
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#defining-new-search-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defining New Search Policies
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1163,8 +1264,74 @@
 
 
 
-<h1 id="policies">Policies</h1>
-<p>This page is under construction. In the meantime, you can read about Delphyne's key concepts in the paper <a href="https://arxiv.org/abs/2502.05310"><em>Oracular Programming: A Modular Foundation for Building LLM-Enabled Software</em></a>.</p>
+<h1 id="the-policy-language">The Policy Language</h1>
+<!-- TODO: where is caching documented precisely? -->
+
+<p>Delphyne offers a <a href="https://www.fast.ai/posts/2020-02-13-fastai-A-Layered-API-for-Deep-Learning.html">layered API</a> for defining policies. At a high level, policies can be specified by assembling standard components. At a lower level, atomic components can be defined using search stream combinators. We summarize the key concepts and abstractions underlying Delphyne's policy language below. Links are provided to the <a href="../../reference/policies/definitions/">Reference</a> for details.</p>
+<h2 id="key-concepts">Key Concepts</h2>
+<ul>
+<li><a class="autorefs autorefs-internal" title="Policy
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/basic/#delphyne.Policy"><strong>Policy</strong></a>: a policy is a pair of a <em>search policy</em> and of an <em>inner policy</em>. Combining a <em>strategy</em> and a <em>policy</em> results in a <em>search stream</em>.</li>
+<li><a class="autorefs autorefs-internal" title="SearchPolicy
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/basic/#delphyne.SearchPolicy"><strong>Search Policy</strong></a>: a search policy is a function that takes a tree, a <em>global policy environment</em> and an <em>inner policy</em> as arguments and returns a search stream.</li>
+<li><strong>Inner Policy</strong>: an object that associates some prompting policies and policies to all query and sub-strategy instances inside a strategy. Inner policies are typically instances of custom dataclasses but Python dictionaries can also be used, trading flexibility and static type safety in exchange for concision (see <a class="autorefs autorefs-internal" title="IPDict" href="../../reference/stdlib/basic/#delphyne.IPDict"><code>IPDict</code></a>).</li>
+<li><a class="autorefs autorefs-internal" title="PromptingPolicy
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/basic/#delphyne.PromptingPolicy"><strong>Prompting Policy</strong></a>: a function that maps a query along with a <em>global policy environment</em> to a <em>search stream</em> (e.g. <a class="autorefs autorefs-internal" title="few_shot" href="../../reference/stdlib/queries/#delphyne.few_shot"><code>few_shot</code></a>).</li>
+<li><a class="autorefs autorefs-internal" title="PolicyEnv" href="../../reference/stdlib/environments/#delphyne.PolicyEnv"><strong>Global Policy Environment</strong></a>: global environment accessible to all policies, which allows: fetching prompts and examples, caching LLM requests, generating traces and logs...</li>
+<li><a class="autorefs autorefs-internal" title="Stream
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/streams/#delphyne.Stream"><strong>Search Stream</strong></a>: a (possibly infinite) iterator of yielded solutions and resource management messages (requesting authorization for spending some resource <em>budget</em> or declaring actual resource consumption). Search streams follow the <a class="autorefs autorefs-internal" title="delphyne.core.streams" href="../../reference/policies/streams/#delphyne.core.streams">search stream protocol</a> and can be assembled using <a class="autorefs autorefs-internal" title="Stream
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/streams/#delphyne.Stream">standard combinators</a>.</li>
+<li><a class="autorefs autorefs-internal" title="Budget
+
+
+  
+      dataclass
+  " href="../../reference/policies/streams/#delphyne.Budget"><strong>Budget</strong></a>: a finite-support function from resource consumption metrics (e.g. <a class="autorefs autorefs-internal" title="NUM_REQUESTS
+
+
+  
+      module-attribute
+  " href="../../reference/stdlib/queries/#delphyne.stdlib.models.NUM_REQUESTS">number of requests</a>, <a class="autorefs autorefs-internal" title="DOLLAR_PRICE
+
+
+  
+      module-attribute
+  " href="../../reference/stdlib/queries/#delphyne.stdlib.models.DOLLAR_PRICE">LLM API spending in dollars</a>) to real values.</li>
+<li><a class="autorefs autorefs-internal" title="StreamTransformer
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/streams/#delphyne.StreamTransformer"><strong>Stream Transformer</strong></a>: a function that maps a search stream into another search stream (e.g. <a class="autorefs autorefs-internal" title="with_budget" href="../../reference/stdlib/streams/#delphyne.with_budget"><code>with_budget</code></a> and <a class="autorefs autorefs-internal" title="take" href="../../reference/stdlib/streams/#delphyne.take"><code>take</code></a>). Stream transformers can be composed with search policies, prompting policies and other stream transformers using <code>@</code>.</li>
+<li><a class="autorefs autorefs-internal" title="ContextualTreeTransformer
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/basic/#delphyne.ContextualTreeTransformer"><strong>Tree Transformer</strong></a>: a function that maps a tree into another one, possible with a different signature (e.g. <a class="autorefs autorefs-internal" title="elim_compute" href="../../reference/stdlib/effects/#delphyne.stdlib.computations.elim_compute"><code>elim_compute</code></a>, <a class="autorefs autorefs-internal" title="elim_messages" href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.elim_messages"><code>elim_messages</code></a>). Can be composed with search policies using <code>@</code> to modify their accepted signature.</li>
+</ul>
+<h2 id="defining-new-search-policies">Defining New Search Policies</h2>
+<p>For examples of defining new search policies, we recommend inspecting the source code of <a class="autorefs autorefs-internal" title="dfs" href="../../reference/stdlib/algorithms/#delphyne.stdlib.search.dfs.dfs"><code>dfs</code></a>, <a class="autorefs autorefs-internal" title="par_dfs" href="../../reference/stdlib/algorithms/#delphyne.stdlib.search.dfs.par_dfs"><code>par_dfs</code></a> and <a class="autorefs autorefs-internal" title="best_first_search" href="../../reference/stdlib/algorithms/#delphyne.best_first_search"><code>best_first_search</code></a>.</p>
 
 
 

@@ -268,6 +268,8 @@
       
         
       
+        
+      
     
     
     
@@ -306,12 +308,35 @@
   
   
     <li class="md-nav__item">
+      <a href="../manual/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../manual/strategies/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Strategies and Trees
+    Strategy Language
     
   </span>
   
@@ -334,7 +359,7 @@
   
   
   <span class="md-ellipsis">
-    Policies
+    Policy Language
     
   </span>
   
@@ -357,7 +382,7 @@
   
   
   <span class="md-ellipsis">
-    Demonstrations
+    Demonstration Language
     
   </span>
   
@@ -455,7 +480,7 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#creating-a-new-delphyne-project" class="md-nav__link">
+  <a href="#new-project" class="md-nav__link">
     <span class="md-ellipsis">
       Creating a New Delphyne Project
     </span>
@@ -464,7 +489,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-an-oracular-program" class="md-nav__link">
+  <a href="#running" class="md-nav__link">
     <span class="md-ellipsis">
       Running an Oracular Program
     </span>
@@ -473,7 +498,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#debugging-an-oracular-program" class="md-nav__link">
+  <a href="#debugging" class="md-nav__link">
     <span class="md-ellipsis">
       Debugging an Oracular Program
     </span>
@@ -482,25 +507,16 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#defining-a-new-effect" class="md-nav__link">
+  <a href="#tuning" class="md-nav__link">
     <span class="md-ellipsis">
-      Defining a New Effect
+      Tuning an Oracular Program
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#defining-a-new-policy" class="md-nav__link">
-    <span class="md-ellipsis">
-      Defining a New Policy
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#writing-a-conversational-agent" class="md-nav__link">
+  <a href="#conversational" class="md-nav__link">
     <span class="md-ellipsis">
       Writing a Conversational Agent
     </span>
@@ -509,7 +525,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#performing-expensive-computations-in-strategies" class="md-nav__link">
+  <a href="#compute" class="md-nav__link">
     <span class="md-ellipsis">
       Performing Expensive Computations in Strategies
     </span>
@@ -1249,7 +1265,7 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#creating-a-new-delphyne-project" class="md-nav__link">
+  <a href="#new-project" class="md-nav__link">
     <span class="md-ellipsis">
       Creating a New Delphyne Project
     </span>
@@ -1258,7 +1274,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-an-oracular-program" class="md-nav__link">
+  <a href="#running" class="md-nav__link">
     <span class="md-ellipsis">
       Running an Oracular Program
     </span>
@@ -1267,7 +1283,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#debugging-an-oracular-program" class="md-nav__link">
+  <a href="#debugging" class="md-nav__link">
     <span class="md-ellipsis">
       Debugging an Oracular Program
     </span>
@@ -1276,25 +1292,16 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#defining-a-new-effect" class="md-nav__link">
+  <a href="#tuning" class="md-nav__link">
     <span class="md-ellipsis">
-      Defining a New Effect
+      Tuning an Oracular Program
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#defining-a-new-policy" class="md-nav__link">
-    <span class="md-ellipsis">
-      Defining a New Policy
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#writing-a-conversational-agent" class="md-nav__link">
+  <a href="#conversational" class="md-nav__link">
     <span class="md-ellipsis">
       Writing a Conversational Agent
     </span>
@@ -1303,7 +1310,7 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#performing-expensive-computations-in-strategies" class="md-nav__link">
+  <a href="#compute" class="md-nav__link">
     <span class="md-ellipsis">
       Performing Expensive Computations in Strategies
     </span>
@@ -1328,13 +1335,97 @@
 
 
 <h1 id="how-to-guides">How-To Guides</h1>
-<h2 id="creating-a-new-delphyne-project">Creating a New Delphyne Project</h2>
-<h2 id="running-an-oracular-program">Running an Oracular Program</h2>
-<h2 id="debugging-an-oracular-program">Debugging an Oracular Program</h2>
-<h2 id="defining-a-new-effect">Defining a New Effect</h2>
-<h2 id="defining-a-new-policy">Defining a New Policy</h2>
-<h2 id="writing-a-conversational-agent">Writing a Conversational Agent</h2>
-<h2 id="performing-expensive-computations-in-strategies">Performing Expensive Computations in Strategies</h2>
+<h2 id="new-project">Creating a New Delphyne Project</h2>
+<p>To start a new Delphyne project, we recommend taking the following steps:</p>
+<ol>
+<li>Ensure Delphyne is properly <a href="../#installation">installed</a>.</li>
+<li>Create a new folder for your project.</li>
+<li>Add an initially empty <a href="../manual/extension/#config"><code>delphyne.yaml</code></a> file in this folder.</li>
+<li>Ensure that your local or global <a href="../manual/extension/#editor-config">VSCode settings</a> are right.</li>
+<li>Create a Python file and define a strategy inside it.</li>
+<li>Register this file in the <a href="../manual/extension/#config"><code>modules</code></a> section of <code>delphyne.yaml</code>.</li>
+<li>To benefit from typechecking, ensure that Pyright is running in strict mode.</li>
+<li>Optionally, create a <code>prompts</code> folder for storing <a href="https://jinja.palletsprojects.com/en/stable/">Jinja</a> prompt templates.</li>
+<li>Create a <a href="../manual/extension/#editing-demonstrations">demonstration file</a> with extension <code>.demo.yaml</code>.</li>
+<li>As your project matures, consider adding tests along with a <code>pyproject.toml</code> file.</li>
+</ol>
+<h2 id="running">Running an Oracular Program</h2>
+<p>There are mostly two ways to run oracular programs:</p>
+<ul>
+<li><strong>Using <a class="autorefs autorefs-internal" title="run_toplevel" href="../reference/stdlib/basic/#delphyne.StrategyInstance.run_toplevel"><code>StrategyInstance.run_toplevel</code></a></strong>: As demonstrated in the <a href="../manual/overview/#writing-a-policy">Overview</a>, one can manually create a <a class="autorefs autorefs-internal" title="PolicyEnv" href="../reference/stdlib/environments/#delphyne.PolicyEnv">policy environment</a> and extract a <a class="autorefs autorefs-internal" title="Stream
+
+
+  
+      dataclass
+  " href="../reference/stdlib/streams/#delphyne.Stream">search stream</a> from a pair of a strategy instance and of a policy. This can be done within any Python script, but offers by default no support for exporting logs and traces, displaying progress, caching LLM requests, handling interruption, etc... Enabling all these features requires substantial additional setup.</li>
+<li><strong>Running a command</strong>: Instead, a <a href="../manual/extension/#commands">command file</a> can be created that specifies a strategy instance, a policy, some search budget along with <a class="autorefs autorefs-internal" title="RunStrategyArgs
+
+
+  
+      dataclass
+  " href="../reference/stdlib/commands/#delphyne.stdlib.commands.run_strategy.RunStrategyArgs">extra information</a>. The specified command can be launched from <a href="../manual/extension/#commands">within VSCode</a> or from the shell, using the <a class="autorefs autorefs-internal" title="run" href="../reference/cli/#delphyne.__main__.DelphyneCLI.run">Delphyne CLI</a> (e.g. <code>run my_command.exec.yaml --cache --update</code>).</li>
+</ul>
+<h2 id="debugging">Debugging an Oracular Program</h2>
+<p>Here are some various tips for debugging oracular programs:</p>
+<ul>
+<li>Strategies can be debugged before associated policies are defined by writing demonstrations, for which the Delphyne VSCode extension provides <a href="../manual/extension/#editing-demonstrations">rich feedback</a>.</li>
+<li>For VSCode to stop at breakpoints in strategies while evaluating demonstrations, the Delphyne server must be started with a debugger attached. See the box below for how to do this. Instructions for killing and starting Delphyne servers is available <a href="../manual/extension/#starting-server">here</a>. </li>
+<li>Debugging messages can be included in strategy trees using the <a class="autorefs autorefs-internal" title="message" href="../reference/stdlib/effects/#delphyne.stdlib.nodes.message"><code>message</code></a> function.</li>
+<li>When running oracular programs via <a href="../manual/extension/#commands">commands</a>, the command output features various useful debugging information by default, in the form of policy logs (including a log of all LLM requests, parsing errors, etc...) and of an <a href="../manual/extension/#navigating-trees">inspectable trace</a>.</li>
+<li>If request caching is enabled (by specifying the <a class="autorefs autorefs-internal" title="RunStrategyArgs
+
+
+  
+      dataclass
+  " href="../reference/stdlib/commands/#delphyne.stdlib.commands.run_strategy.RunStrategyArgs"><code>cache_dir</code></a> argument in the command file <em>or</em> passing the <code>--cache</code> option in the <a class="autorefs autorefs-internal" title="run" href="../reference/cli/#delphyne.__main__.DelphyneCLI.run">CLI</a>), then any run of a command can be replayed identically with a debugger attached (see information below), unless a nondeterministic policy is used (e.g. most policies that use multiple threads).</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Attaching a Debugger to the Delphyne CLI</p>
+<p>For debugging purposes, it is useful to attach a Python debugger to the <a class="autorefs autorefs-internal" title="DelphyneCLI" href="../reference/cli/#delphyne.__main__.DelphyneCLI">Delphyne CLI</a>. To do so, we recommend defining the following <code>debug-delphyne</code> alias:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">alias</span><span class="w"> </span>debug-delphyne<span class="o">=</span><span class="s1">&#39;python -m debugpy --listen 5678 --wait-for-client -m delphyne&#39;</span>
+</code></pre></div>
+<p>In addition, you should add the following to your <code>.vscode/launch.json</code> file.</p>
+<p><div class="highlight"><pre><span></span><code><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Attach&quot;</span><span class="p">,</span>
+<span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;debugpy&quot;</span><span class="p">,</span>
+<span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;attach&quot;</span><span class="p">,</span>
+<span class="nt">&quot;connect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;host&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;port&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5678</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+You can then run the Delphyne CLI with a debugger attached by simply substituting <code>delphyne</code> with <code>debug-delphyne</code>. For example, <code>debug-delphyne serve</code> launches a Delphyne server with a debugger attached. Note that the server does not immediately start after running this command, which waits for the user to launch the <code>Attach</code> debugging profile from inside VSCode.</p>
+</div>
+<h2 id="tuning">Tuning an Oracular Program</h2>
+<p>Policies often feature many hyperparameters that must be tuned for the associated oracular program to perform well. The Delphyne standard library defines an <a class="autorefs autorefs-internal" title="Experiment
+
+
+  
+      dataclass
+  " href="../reference/stdlib/experiments/#delphyne.stdlib.experiments.experiment_launcher.Experiment"><code>Experiment</code></a> class for running an oracular program on a set of different hyperparameter combinations. It supports the use of multiple workers, allows interrupting and resuming experiments, retrying failed attempts, and caching all LLM requests for replicability.</p>
+<p>For a usage example, see <code>examples/find_invariants/experiments</code>.</p>
+<h2 id="conversational">Writing a Conversational Agent</h2>
+<p>A common pattern for interacting with LLMs is to have multi-message exchanges where the full conversation history is resent repeatedly. LLMs are also sometimes allowed to request tool calls. This pattern is implemented by the <a class="autorefs autorefs-internal" title="interact" href="../reference/stdlib/algorithms/#delphyne.interact"><code>interact</code></a> strategy from Delphyne's standard library. For usage examples, see:</p>
+<ul>
+<li><code>examples/find_invariants/baseline.py</code>: real-world example from the <a href="https://arxiv.org/abs/2502.05310">oracular programming paper</a></li>
+<li><code>tests/example_strategies.py:propose_article</code>: simple example also involving tool calls</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Vertical vs Horizontal LLM Pipelines</p>
+<p>Delphyne supports the bidirectional integration of two complementary kinds of agents: <strong>vertical</strong> agents, where a specialized program orchestrates calls to LLMs, and <strong>horizontal</strong> agents, where an LLM orchestrates calls to tools. Delphyne supports the implementation of horizontal agents via its <a class="autorefs autorefs-internal" title="interact" href="../reference/stdlib/algorithms/#delphyne.interact"><code>interact</code></a> strategy, and allows these agents to invoke tools that are themselves implemented as oracular programs -- whether vertical or horizontal.</p>
+</div>
+<h2 id="compute">Performing Expensive Computations in Strategies</h2>
+<p>For efficiency and replicability reasons, strategies must not directly perform expensive and possibly nondeterministic computations (e.g. a call to an external SMT solver with a wall clock timeout). In such cases, the <a class="autorefs autorefs-internal" title="Compute
+
+
+  
+      dataclass
+  " href="../reference/stdlib/effects/#delphyne.stdlib.computations.Compute"><code>Compute</code></a> effect should be used. See the <a class="autorefs autorefs-internal" title="Compute
+
+
+  
+      dataclass
+  " href="../reference/stdlib/effects/#delphyne.stdlib.computations.Compute">reference page</a> for details and explanations. For example usage, see <code>examples/find_invariants/abduct_and_branch.py</code> and the associated demonstration file.</p>
 
 
 

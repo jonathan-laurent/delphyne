@@ -268,6 +268,8 @@
       
         
       
+        
+      
     
     
     
@@ -306,12 +308,35 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../manual/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../manual/strategies/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Strategies and Trees
+    Strategy Language
     
   </span>
   
@@ -334,7 +359,7 @@
   
   
   <span class="md-ellipsis">
-    Policies
+    Policy Language
     
   </span>
   
@@ -357,7 +382,7 @@
   
   
   <span class="md-ellipsis">
-    Demonstrations
+    Demonstration Language
     
   </span>
   
@@ -1996,16 +2021,16 @@
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.stdlib.nodes.FromPolicy" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">FromPolicy</span>
+            <span class="doc doc-object-name doc-type_alias-name">FromPolicy</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">FromPolicy</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">],</span> <span class="n"><span title="T">T</span></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">FromPolicy</span> <span class="o">=</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">],</span> <span class="n"><span title="delphyne.stdlib.nodes.FromPolicy[T]">T</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -2014,7 +2039,6 @@
 <p>We use <code>Any</code> instead of introducing an inner policy type parameter <code>P</code>,
 since <a class="autorefs autorefs-internal" title="Node" href="../../strategies/trees/#delphyne.Node"><code>Node</code></a> is not parametric either. Thus, this alias is mostly meant
 for readability and expressing intent.</p>
-
     </div>
 
 </div>
@@ -2761,7 +2785,12 @@ causing the same message to be repeatedly printed.</p>
 
     <div class="doc doc-contents first">
 
-        <p>Log a debugging message.</p>
+        <p>Log a debugging message. See <a class="autorefs autorefs-internal" title="Message
+
+
+  
+      dataclass
+  " href="#delphyne.stdlib.nodes.Message"><code>Message</code></a> for more details.</p>
 
 
 <p><span class="doc-section-title">Parameters:</span></p>
@@ -2845,7 +2874,7 @@ result in a no-op at runtime.</p>
     <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Message</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Log a debugging message.</span>
+<span class="sd">    Log a debugging message. See `Message` for more details.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        msg: The message to log.</span>
@@ -3753,7 +3782,8 @@ computation. Special support is available in the demonstration
 interpreter in the form of <em>implicit answers</em>, allowing
 <code>__Computation__</code> queries to be automatically answered when running
 tests. Generated answers can be hardcoded in demonstrations <strong>after</strong>
-the fact via proper editor support.</p>
+the fact via proper editor support (i.e. using the <code>Add Implicit
+Answers</code> code action from Delphyne's VSCode extension).</p>
 
 
 
@@ -3820,7 +3850,8 @@ the fact via proper editor support.</p>
 <span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
-<span class="normal">121</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">121</span>
+<span class="normal">122</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Compute</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">ComputationNode</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The standard `Compute` effect.</span>
@@ -3843,7 +3874,8 @@ the fact via proper editor support.</p>
 <span class="sd">    interpreter in the form of *implicit answers*, allowing</span>
 <span class="sd">    `__Computation__` queries to be automatically answered when running</span>
 <span class="sd">    tests. Generated answers can be hardcoded in demonstrations **after**</span>
-<span class="sd">    the fact via proper editor support.</span>
+<span class="sd">    the fact via proper editor support (i.e. using the `Add Implicit</span>
+<span class="sd">    Answers` code action from Delphyne&#39;s VSCode extension).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">TransparentQuery</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
@@ -3996,8 +4028,7 @@ JSON-serializable. It does not need to be deterministic.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
-<span class="normal">125</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">125</span>
 <span class="normal">126</span>
 <span class="normal">127</span>
 <span class="normal">128</span>
@@ -4020,7 +4051,8 @@ JSON-serializable. It does not need to be deterministic.</p>
 <span class="normal">145</span>
 <span class="normal">146</span>
 <span class="normal">147</span>
-<span class="normal">148</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">[</span><span class="o">**</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+<span class="normal">148</span>
+<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">[</span><span class="o">**</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Compute</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4116,8 +4148,7 @@ environment.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">180</span>
-<span class="normal">181</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">181</span>
 <span class="normal">182</span>
 <span class="normal">183</span>
 <span class="normal">184</span>
@@ -4149,7 +4180,8 @@ environment.</p>
 <span class="normal">210</span>
 <span class="normal">211</span>
 <span class="normal">212</span>
-<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dp</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
+<span class="normal">213</span>
+<span class="normal">214</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dp</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">elim_compute</span><span class="p">(</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>

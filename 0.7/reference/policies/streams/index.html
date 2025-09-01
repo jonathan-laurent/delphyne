@@ -268,6 +268,8 @@
       
         
       
+        
+      
     
     
     
@@ -306,12 +308,35 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../manual/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../manual/strategies/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Strategies and Trees
+    Strategy Language
     
   </span>
   
@@ -334,7 +359,7 @@
   
   
   <span class="md-ellipsis">
-    Policies
+    Policy Language
     
   </span>
   
@@ -357,7 +382,7 @@
   
   
   <span class="md-ellipsis">
-    Demonstrations
+    Demonstration Language
     
   </span>
   
@@ -1970,21 +1995,21 @@ features (<a class="autorefs autorefs-internal" title="Stream
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.StreamGen" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">StreamGen</span>
+            <span class="doc doc-object-name doc-type_alias-name">StreamGen</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">StreamGen</span><span class="p">:</span> <span class="n"><span title="collections.abc.Generator">Generator</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Solution
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">StreamGen</span> <span class="o">=</span> <span class="n"><span title="collections.abc.Generator">Generator</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Solution
 
 
   
       dataclass
-   (delphyne.core.streams.Solution)" href="#delphyne.Solution">Solution</a></span><span class="p">[</span><span class="n"><span title="T">T</span></span><span class="p">]</span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="Barrier
+   (delphyne.core.streams.Solution)" href="#delphyne.Solution">Solution</a></span><span class="p">[</span><span class="n"><span title="delphyne.core.streams.StreamGen[T]">T</span></span><span class="p">]</span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="Barrier
 
 
   
@@ -2002,7 +2027,6 @@ features (<a class="autorefs autorefs-internal" title="Stream
         <p>A search stream generator.</p>
 <p>See <a class="autorefs autorefs-internal" title="delphyne.core.streams" href="#delphyne.core.streams">delphyne.core.streams</a> for more explanations about the search
 stream protocol.</p>
-
     </div>
 
 </div>
@@ -2205,7 +2229,6 @@ the stream to deny the request.</p>
     </table>
         <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-</div>
 <p>Manually yielding <code>Spent</code> and <code>Barrier</code> messages is error-prone
 and usually not recommended. Use stream combinators instead (see
 the <a class="autorefs autorefs-internal" title="Stream
@@ -2214,6 +2237,7 @@ the <a class="autorefs autorefs-internal" title="Stream
   
       dataclass
   " href="../../stdlib/streams/#delphyne.Stream"><code>Stream</code></a> class from the standard library).</p>
+</div>
 
 
 
@@ -2271,9 +2295,9 @@ the <a class="autorefs autorefs-internal" title="Stream
 <span class="sd">            `Spent` message, to be yielded later.</span>
 
 <span class="sd">    !!! warning</span>
-<span class="sd">    Manually yielding `Spent` and `Barrier` messages is error-prone</span>
-<span class="sd">    and usually not recommended. Use stream combinators instead (see</span>
-<span class="sd">    the `Stream` class from the standard library).</span>
+<span class="sd">        Manually yielding `Spent` and `Barrier` messages is error-prone</span>
+<span class="sd">        and usually not recommended. Use stream combinators instead (see</span>
+<span class="sd">        the `Stream` class from the standard library).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">budget</span><span class="p">:</span> <span class="n">Budget</span>
@@ -2460,16 +2484,16 @@ the <a class="autorefs autorefs-internal" title="Stream
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.streams.BarrierId" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">BarrierId</span>
+            <span class="doc doc-object-name doc-type_alias-name">BarrierId</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">BarrierId</span><span class="p">:</span> <span class="n"><span title="int">int</span></span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">BarrierId</span> <span class="o">=</span> <span class="n"><span title="int">int</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -2478,7 +2502,6 @@ the <a class="autorefs autorefs-internal" title="Stream
 a matching <code>Spent</code> message. Overlapping barrier messages must not share
 the same identifier (barrier messages are considered to overlap if the
 second one occurs before the <code>Spent</code> message associated with the first).</p>
-
     </div>
 
 </div>

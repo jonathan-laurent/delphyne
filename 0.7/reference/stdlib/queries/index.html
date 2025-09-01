@@ -268,6 +268,8 @@
       
         
       
+        
+      
     
     
     
@@ -306,12 +308,35 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../manual/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../manual/strategies/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Strategies and Trees
+    Strategy Language
     
   </span>
   
@@ -334,7 +359,7 @@
   
   
   <span class="md-ellipsis">
-    Policies
+    Policy Language
     
   </span>
   
@@ -357,7 +382,7 @@
   
   
   <span class="md-ellipsis">
-    Demonstrations
+    Demonstration Language
     
   </span>
   
@@ -2871,7 +2896,7 @@ is used as a default parser.</p>
 <h5 id="delphyne.Query--allowing-multi-message-exchanges-and-tool-calls">Allowing Multi-Message Exchanges and Tool Calls</h5>
 <p>A common pattern for interacting with LLMs is to have multi-message
 exchanges where the full conversation history is resent repeatedly.
-LLMs are also often allowed to request tool call. This interaction
+LLMs are also often allowed to request tool calls. This interaction
 pattern is implemented in the <a class="autorefs autorefs-internal" title="interact" href="../algorithms/#delphyne.interact"><code>interact</code></a> standard strategy. It is
 enabled by several features on the <a class="autorefs autorefs-internal" title="Query" href="#delphyne.Query"><code>Query</code></a> side.</p>
 <h6 id="delphyne.Query--answer-prefixes">Answer Prefixes</h6>
@@ -3274,7 +3299,7 @@ appended to a chat history), and possibly a sequence of tool calls.</p>
 
 <span class="sd">    A common pattern for interacting with LLMs is to have multi-message</span>
 <span class="sd">    exchanges where the full conversation history is resent repeatedly.</span>
-<span class="sd">    LLMs are also often allowed to request tool call. This interaction</span>
+<span class="sd">    LLMs are also often allowed to request tool calls. This interaction</span>
 <span class="sd">    pattern is implemented in the `interact` standard strategy. It is</span>
 <span class="sd">    enabled by several features on the `Query` side.</span>
 
@@ -5689,16 +5714,16 @@ and an exception is raised if this type does not have the form
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.ParserDict" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">ParserDict</span>
+            <span class="doc doc-object-name doc-type_alias-name">ParserDict</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">ParserDict</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="AnswerMode (delphyne.core.AnswerMode)" href="../../strategies/traces/#delphyne.AnswerMode">AnswerMode</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="Parser
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">ParserDict</span> <span class="o">=</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="AnswerMode (delphyne.core.AnswerMode)" href="../../strategies/traces/#delphyne.AnswerMode">AnswerMode</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="Parser
 
 
   
@@ -5715,7 +5740,6 @@ and an exception is raised if this type does not have the form
 
         <p>A mapping from answer modes to parser specifications.</p>
 <p>Can be used as a value for the <code>__parser__</code> class attribute of queries.</p>
-
     </div>
 
 </div>
@@ -6368,9 +6392,9 @@ the query type.</p>
         <p>Parse an LLM structured answer into a given target type.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-</div>
 <p>Only dataclass types are supported, since most LLM providers
 only support structured output and tool calls for JSON objects.</p>
+</div>
 
 
             <details class="quote">
@@ -6396,8 +6420,8 @@ only support structured output and tool calls for JSON objects.</p>
 <span class="sd">    Parse an LLM structured answer into a given target type.</span>
 
 <span class="sd">    !!! warning</span>
-<span class="sd">    Only dataclass types are supported, since most LLM providers</span>
-<span class="sd">    only support structured output and tool calls for JSON objects.</span>
+<span class="sd">        Only dataclass types are supported, since most LLM providers</span>
+<span class="sd">        only support structured output and tool calls for JSON objects.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_assert_not_response_type</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="s2">&quot;structured_as&quot;</span><span class="p">)</span>
     <span class="n">_check_valid_structured_output_type</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
@@ -8614,34 +8638,33 @@ a message in a chat history.</p>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.stdlib.models.Chat" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">Chat</span>
+            <span class="doc doc-object-name doc-type_alias-name">Chat</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">Chat</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="ChatMessage (delphyne.stdlib.models.ChatMessage)" href="#delphyne.stdlib.models.ChatMessage">ChatMessage</a></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">Chat</span> <span class="o">=</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="ChatMessage (delphyne.stdlib.models.ChatMessage)" href="#delphyne.stdlib.models.ChatMessage">ChatMessage</a></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.stdlib.models.ChatMessage" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">ChatMessage</span>
+            <span class="doc doc-object-name doc-type_alias-name">ChatMessage</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">ChatMessage</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="SystemMessage
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">ChatMessage</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="SystemMessage
 
 
   
@@ -8665,7 +8688,6 @@ a message in a chat history.</p>
 </code></pre></div>
 
     <div class="doc doc-contents first">
-
     </div>
 
 </div>
@@ -9624,22 +9646,21 @@ generally does not).</p>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.stdlib.models.FinishReason" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">FinishReason</span>
+            <span class="doc doc-object-name doc-type_alias-name">FinishReason</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">FinishReason</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;stop&#39;</span><span class="p">,</span> <span class="s1">&#39;length&#39;</span><span class="p">,</span> <span class="s1">&#39;content_filter&#39;</span><span class="p">,</span> <span class="s1">&#39;tool_calls&#39;</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">FinishReason</span> <span class="o">=</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;stop&#39;</span><span class="p">,</span> <span class="s1">&#39;length&#39;</span><span class="p">,</span> <span class="s1">&#39;content_filter&#39;</span><span class="p">,</span> <span class="s1">&#39;tool_calls&#39;</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
 
         <p>Reason why the LLM stopped generating content.</p>
-
     </div>
 
 </div>
@@ -10543,16 +10564,16 @@ added into <a class="autorefs autorefs-internal" title="LLMResponse
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.stdlib.models.BudgetCategory" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">BudgetCategory</span>
+            <span class="doc doc-object-name doc-type_alias-name">BudgetCategory</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">BudgetCategory</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">BudgetCategory</span> <span class="o">=</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span>
     <span class="s2">&quot;num_requests&quot;</span><span class="p">,</span>
     <span class="s2">&quot;num_completions&quot;</span><span class="p">,</span>
     <span class="s2">&quot;input_tokens&quot;</span><span class="p">,</span>
@@ -10565,7 +10586,6 @@ added into <a class="autorefs autorefs-internal" title="LLMResponse
     <div class="doc doc-contents first">
 
         <p>Standard metrics to measure LLM inference usage.</p>
-
     </div>
 
 </div>

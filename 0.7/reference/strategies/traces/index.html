@@ -268,6 +268,8 @@
       
         
       
+        
+      
     
     
     
@@ -306,12 +308,35 @@
   
   
     <li class="md-nav__item">
+      <a href="../../../manual/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../manual/strategies/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Strategies and Trees
+    Strategy Language
     
   </span>
   
@@ -334,7 +359,7 @@
   
   
   <span class="md-ellipsis">
-    Policies
+    Policy Language
     
   </span>
   
@@ -357,7 +382,7 @@
   
   
   <span class="md-ellipsis">
-    Demonstrations
+    Demonstration Language
     
   </span>
   
@@ -2776,16 +2801,16 @@ prompting.</p>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.AnswerMode" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">AnswerMode</span>
+            <span class="doc doc-object-name doc-type_alias-name">AnswerMode</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">AnswerMode</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">AnswerMode</span> <span class="o">=</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -2800,7 +2825,6 @@ An <a class="autorefs autorefs-internal" title="Answer
   
       dataclass
   " href="#delphyne.Answer"><code>Answer</code></a> value features the mode that must be used to parse it.</p>
-
     </div>
 
 </div>
@@ -2986,16 +3010,16 @@ given schema) instead of plain text.</p>
 </div><h2 id="references">References</h2>
 
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.refs.NodeRef" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">NodeRef</span>
+            <span class="doc doc-object-name doc-type_alias-name">NodeRef</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">NodeRef</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="NodePath (delphyne.core.refs.NodePath)" href="#delphyne.core.refs.NodePath">NodePath</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeId
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">NodeRef</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="NodePath (delphyne.core.refs.NodePath)" href="#delphyne.core.refs.NodePath">NodePath</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeId
 
 
   
@@ -3010,28 +3034,26 @@ given schema) instead of plain text.</p>
 the id-based references used for exporting traces, only node identifiers
 are used, while in the full references attached to trees by <a class="autorefs autorefs-internal" title="reify" href="../strategies/#delphyne.reify"><code>reify</code></a>,
 only paths are used).</p>
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.refs.NodePath" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">NodePath</span>
+            <span class="doc doc-object-name doc-type_alias-name">NodePath</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">NodePath</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="ValueRef (delphyne.core.refs.ValueRef)" href="#delphyne.core.refs.ValueRef">ValueRef</a></span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">NodePath</span> <span class="o">=</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="ValueRef (delphyne.core.refs.ValueRef)" href="#delphyne.core.refs.ValueRef">ValueRef</a></span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
 
         <p>Encodes a sequence of actions leading to a node with respect to a
 given root.</p>
-
     </div>
 
 </div>
@@ -3102,57 +3124,55 @@ given root.</p>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.refs.ValueRef" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">ValueRef</span>
+            <span class="doc doc-object-name doc-type_alias-name">ValueRef</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">ValueRef</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Assembly (delphyne.core.refs.Assembly)" href="#delphyne.core.refs.Assembly">Assembly</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="AtomicValueRef (delphyne.core.refs.AtomicValueRef)" href="#delphyne.core.refs.AtomicValueRef">AtomicValueRef</a></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">ValueRef</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="Assembly (delphyne.core.refs.Assembly)" href="#delphyne.core.refs.Assembly">Assembly</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="AtomicValueRef (delphyne.core.refs.AtomicValueRef)" href="#delphyne.core.refs.AtomicValueRef">AtomicValueRef</a></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
 
         <p>A reference to a local value, which is obtained by combining elements of
 (possibly multiple) local spaces.</p>
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.refs.Assembly" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">Assembly</span>
+            <span class="doc doc-object-name doc-type_alias-name">Assembly</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">Assembly</span><span class="p">:</span> <span class="n"><span title="delphyne.core.refs.T">T</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Assembly (delphyne.core.refs.Assembly)" href="#delphyne.core.refs.Assembly">Assembly</a></span><span class="p">[</span><span class="n"><span title="delphyne.core.refs.T">T</span></span><span class="p">],</span> <span class="o">...</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">Assembly</span> <span class="o">=</span> <span class="n"><span title="delphyne.core.refs.Assembly[T]">T</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Assembly (delphyne.core.refs.Assembly)" href="#delphyne.core.refs.Assembly">Assembly</a></span><span class="p">[</span><span class="n"><span title="delphyne.core.refs.Assembly[T]">T</span></span><span class="p">],</span> <span class="o">...</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
 
         <p>An S-expression whose atoms have type <code>T</code>.</p>
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.refs.AtomicValueRef" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">AtomicValueRef</span>
+            <span class="doc doc-object-name doc-type_alias-name">AtomicValueRef</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">AtomicValueRef</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="IndexedRef
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">AtomicValueRef</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="IndexedRef
 
 
   
@@ -3169,7 +3189,6 @@ given root.</p>
 
         <p>An atomic value reference is a space element reference that is indexed
 zero or a finite number of times: <code>space_elt_ref[i1][i2]...[in]</code>.</p>
-
     </div>
 
 </div>
@@ -3484,16 +3503,16 @@ denotes the first subgoal of a <a class="autorefs autorefs-internal" title="Join
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.refs.AnswerRef" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">AnswerRef</span>
+            <span class="doc doc-object-name doc-type_alias-name">AnswerRef</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">AnswerRef</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Answer
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">AnswerRef</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="Answer
 
 
   
@@ -3509,7 +3528,6 @@ denotes the first subgoal of a <a class="autorefs autorefs-internal" title="Join
     <div class="doc doc-contents first">
 
         <p>A reference to a query answer.</p>
-
     </div>
 
 </div>
@@ -3725,38 +3743,37 @@ imported demonstration defining the hint.</p>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.refs.HintValue" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">HintValue</span>
+            <span class="doc doc-object-name doc-type_alias-name">HintValue</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">HintValue</span><span class="p">:</span> <span class="n"><span title="str">str</span></span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">HintValue</span> <span class="o">=</span> <span class="n"><span title="str">str</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
 
         <p>A string that hints at a query answer.</p>
-
     </div>
 
 </div><!-- ## Global References -->
 
 
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.refs.GlobalNodePath" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">GlobalNodePath</span>
+            <span class="doc doc-object-name doc-type_alias-name">GlobalNodePath</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">GlobalNodePath</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="SpaceRef
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">GlobalNodePath</span> <span class="o">=</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="SpaceRef
 
 
   
@@ -3768,21 +3785,20 @@ imported demonstration defining the hint.</p>
 
         <p>Path to a node from the global origin, as a sequence of (space to enter,
 path to follow) instruction pairs.</p>
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.refs.GlobalSpacePath" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">GlobalSpacePath</span>
+            <span class="doc doc-object-name doc-type_alias-name">GlobalSpacePath</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">GlobalSpacePath</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="GlobalNodePath (delphyne.core.refs.GlobalNodePath)" href="#delphyne.core.refs.GlobalNodePath">GlobalNodePath</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="SpaceRef
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">GlobalSpacePath</span> <span class="o">=</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="GlobalNodePath (delphyne.core.refs.GlobalNodePath)" href="#delphyne.core.refs.GlobalNodePath">GlobalNodePath</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="SpaceRef
 
 
   
@@ -3793,23 +3809,22 @@ path to follow) instruction pairs.</p>
     <div class="doc doc-contents first">
 
         <p>A path to a global node</p>
-
     </div>
 
 </div><!-- ## Node Origins -->
 
 
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.refs.NodeOrigin" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">NodeOrigin</span>
+            <span class="doc doc-object-name doc-type_alias-name">NodeOrigin</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">NodeOrigin</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="ChildOf
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">NodeOrigin</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="ChildOf
 
 
   
@@ -3828,7 +3843,6 @@ path to follow) instruction pairs.</p>
 <p>A tree is either the child of another tree or the root of a nested tree.
 Traces can be exported as mappings from node identifiers to node origin
 information featuring id-based references (see <a class="autorefs autorefs-internal" title="Trace" href="#delphyne.core.traces.Trace"><code>Trace</code></a>).</p>
-
     </div>
 
 </div>
@@ -4196,16 +4210,16 @@ resulting in tracked values with <code>IndexedRef</code> references. Since
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.refs.Value" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">Value</span>
+            <span class="doc doc-object-name doc-type_alias-name">Value</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">Value</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="ExtAssembly (delphyne.core.refs.ExtAssembly)" href="#delphyne.core.refs.ExtAssembly">ExtAssembly</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Tracked
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">Value</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="ExtAssembly (delphyne.core.refs.ExtAssembly)" href="#delphyne.core.refs.ExtAssembly">ExtAssembly</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Tracked
 
 
   
@@ -4217,21 +4231,20 @@ resulting in tracked values with <code>IndexedRef</code> references. Since
 
         <p>An assembly of <em>local</em>, tracked values.</p>
 <p>Values can serve as actions or space parameters.</p>
-
     </div>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.refs.ExtAssembly" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">ExtAssembly</span>
+            <span class="doc doc-object-name doc-type_alias-name">ExtAssembly</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">ExtAssembly</span><span class="p">:</span> <span class="n"><span title="delphyne.core.refs.T">T</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="ExtAssembly (delphyne.core.refs.ExtAssembly)" href="#delphyne.core.refs.ExtAssembly">ExtAssembly</a></span><span class="p">[</span><span class="n"><span title="delphyne.core.refs.T">T</span></span><span class="p">]]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">ExtAssembly</span> <span class="o">=</span> <span class="n"><span title="delphyne.core.refs.ExtAssembly[T]">T</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">|</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="ExtAssembly (delphyne.core.refs.ExtAssembly)" href="#delphyne.core.refs.ExtAssembly">ExtAssembly</a></span><span class="p">[</span><span class="n"><span title="delphyne.core.refs.ExtAssembly[T]">T</span></span><span class="p">]]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -4239,7 +4252,6 @@ resulting in tracked values with <code>IndexedRef</code> references. Since
         <p>Generalizing <code>Assembly</code> to allow arbitrary sequences (and not just
 tuples). The distinction is important because <code>ValueRef</code> needs to be
 hashable and so cannot contain lists, while <a class="autorefs autorefs-internal" title="Value" href="#delphyne.core.refs.Value"><code>Value</code></a> can contain lists.</p>
-
     </div>
 
 </div>
@@ -6287,22 +6299,21 @@ trace (and not only across an <code>ExportableQueryInfo</code> value).</p>
 
 </div>
 
-<div class="doc doc-object doc-attribute">
+<div class="doc doc-object doc-type_alias">
 
 
 
 <h3 id="delphyne.core.traces.NodeOriginStr" class="doc doc-heading">
-            <span class="doc doc-object-name doc-attribute-name">NodeOriginStr</span>
+            <span class="doc doc-object-name doc-type_alias-name">NodeOriginStr</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="n">NodeOriginStr</span><span class="p">:</span> <span class="n"><span title="str">str</span></span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">NodeOriginStr</span> <span class="o">=</span> <span class="n"><span title="str">str</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
 
         <p>A concise, serialized representation for <code>NodeOrigin</code>.</p>
-
     </div>
 
 </div>
