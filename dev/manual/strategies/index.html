@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#strategy-language" class="md-skip">
+        <a href="#the-strategy-language" class="md-skip">
           Skip to content
         </a>
       
@@ -1324,7 +1324,7 @@
 
 
 
-<h1 id="strategy-language">Strategy Language</h1>
+<h1 id="the-strategy-language">The Strategy Language</h1>
 <p>Following the previous <a href="../overview/">Overview</a> chapter, we now provide more details on Delphyne's <em>strategy language</em>. We provide a quick overview of the most useful techniques and concepts and refer to the <a href="../../reference/strategies/trees/">Reference</a> for more details and explanations (follow the hypertext links).</p>
 <h2 id="defining-strategies">Defining Strategies</h2>
 <p>A <em>strategy</em> is a program with unresolved choice points, which can be reified into a search tree. Delphyne allows writing strategies as Python <a href="https://wiki.python.org/moin/Generators">generators</a> that yield internal tree nodes and receive associated actions in return. The <a class="autorefs autorefs-internal" title="Strategy" href="../../reference/strategies/strategies/#delphyne.Strategy"><code>Strategy</code></a> type has three type parameters, corresponding to the strategy's <em>signature</em> (i.e., the type of nodes it can emit), its associated <em>inner policy type</em> and its <em>return type</em>. Strategy functions are typically defined via the <a class="autorefs autorefs-internal" title="strategy" href="../../reference/stdlib/basic/#delphyne.strategy"><code>strategy</code></a> decorator, which creates functions that return <a class="autorefs autorefs-internal" title="StrategyInstance

@@ -1329,17 +1329,22 @@
 <span class="nb">cd</span><span class="w"> </span>delphyne
 git<span class="w"> </span>checkout<span class="w"> </span>v0.7.0<span class="w">  </span><span class="c1"># latest stable version</span>
 </code></pre></div>
-<p>Then, to install the Delphyne library in your current Python environment:</p>
-<div class="highlight"><pre><span></span><code>pip install -e .
+<p>Then, to install the Delphyne library and CLI in your current Python environment:</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
 </code></pre></div>
-<p>Note that Python 3.12 (or more recent) is required. Once this is done, it should be possible to run <code>import delphyne</code> inside a Python interpreter. Next, you should build the Delphyne vscode extension. For this, assuming you have <a href="https://nodejs.org/en/download">Node.js</a> installed (version 22 or later), run:</p>
+<p>Note that Python 3.12 (or more recent) is required. Next, you should build the Delphyne vscode extension. For this, assuming you have <a href="https://nodejs.org/en/download">Node.js</a> installed (version 22 or later), run:</p>
 <div class="highlight"><pre><span></span><code>cd vscode-ui
 npm install
 npx vsce package
 </code></pre></div>
-<p>The last command should create a <code>delphyne-xxx.vsix</code> extensions archive, which can be installed in vscode using the <code>Extensions: Install from VSIX</code> command (use <code>Ctrl+Shift+P</code> to search for this command).</p>
+<p>The last command should create a <code>delphyne-xxx.vsix</code> extensions archive, which can be installed in vscode using the <code>Extensions: Install from VSIX</code> command (use <code>Ctrl+Shift+P</code> to search for it in the command palette).</p>
 <h3 id="testing-your-installation">Testing your installation</h3>
-<p>To test your installation, open VSCode and set the <code>examples/find_invariants</code> folder as your workspace root. Click on the Delphyne logo on the Activity Bar to start the Delphyne extension, and open the demonstration file <code>abduct_and_branch.demo.yaml</code>. Then, open the command palette (<code>Ctrl+Shift+P</code>) and run the command <code>Delphyne: Evaluate All Demonstrations in File</code>. Diagnostics should then appear to indicate that all tests passed (but no warning or error). Note that adding new demonstrations requires installing <code>why3py</code>, as explained in the example's README.</p>
+<p>You can verify your installation by running the short test suite:</p>
+<div class="highlight"><pre><span></span><code>make test
+</code></pre></div>
+<p>To test the Delphyne extension, we recommend reading the corresponding <a href="manual/extension/">manual chapter</a>, opening the <code>examples/find_invariants/abduct_and_branch.demo.yaml</code> demonstration file, and then executing the <code>Delphyne: Evaluate All Demonstrations in File</code> command (accessible from the palette via <code>Ctrl+Shift+P</code>). Diagnostics should appear to indicate that all tests passed.</p>
+<!-- ## Learning More -->
+
 <h2 id="citing-this-work">Citing this Work</h2>
 <p>If you use Delphyne in an academic paper, please cite our work as follows:</p>
 <div class="highlight"><pre><span></span><code><span class="nc">@article</span><span class="p">{</span><span class="nl">oracular-programming-2025</span><span class="p">,</span>
