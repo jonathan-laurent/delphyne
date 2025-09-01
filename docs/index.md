@@ -92,6 +92,17 @@ A complete explanation of this example is provided in the [Delphyne Manual](./ma
 
 ## Features Overview
 
+- **Separate your business logic from your search logic**
+- **Write and repair demonstrations interactively**
+- **Compose heterogeneous strategies in a modular fashion**
+- **Refactor without fear**
+- **Extend Delphyne with new search algorithms**
+- **Precisely control your resource spending**
+- **Leverage the full Python ecosystem**
+- **Access a rich library of components**
+- **Run replicable experiments**
+
+
 ## Installation {#installation}
 
 First, download the Delphyne repository and enter it:
@@ -129,6 +140,12 @@ make test
 To test the Delphyne extension, we recommend reading the corresponding [manual chapter](./manual/extension.md), opening the `examples/find_invariants/abduct_and_branch.demo.yaml` demonstration file, and then executing the `Delphyne: Evaluate All Demonstrations in File` command (accessible from the palette via `Ctrl+Shift+P`). Diagnostics should appear to indicate that all tests passed.
 
 ## Learning More
+
+- The key concepts underlying Delphyne are presented in the [Manual](./manual/overview.md).
+- A complete [API Reference](./reference/strategies/trees.md) is also available, along with a series of [How-To Guides](./how-to-guides.md).
+- The `examples` directory provides a gallery of Delphyne programs (see  `README` files).
+- For a more technical presentation, see the original paper that introduces Delphyne: [_Oracular Programming: A Modular Foundation for Building LLM-Enabled Software_](https://arxiv.org/abs/2502.05310).
+
 
 ## Citing this Work
 
