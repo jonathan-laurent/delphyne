@@ -1373,15 +1373,6 @@
 
 <p>Delphyne is a programming framework for building <em>reliable</em> and <em>modular</em> LLM applications. It offers a powerful approach for integrating traditional programming and prompting.</p>
 <p>Users can describe high-level problem solving <em>strategies</em> as arbitrary programs with unresolved choice points. <em>Policies</em> for navigating the resulting search spaces with LLMs can be independently assembled and tuned. Examples of correct choices can be expressed in a dedicated <em>demonstration language</em> that supports interactive test-driven developement.</p>
-<!-- and used for few-shot prompting. -->
-<!-- by composing reusable components -->
-
-<!-- Delphyne is a programming framework for building _reliable_ and _modular_ LLM applications. It is based on a new paradigm named _oracular programming_, where high-level problem-solving strategies are expressed as nondeterministic programs whose choice points are annotated with examples and resolved by LLMs. Delphyne combines three languages:
-
-- A _strategy language_ embedded in Python that allows writing nondeterministic programs that can be reified into (modular) search trees.
-- A _policy language_ for specifying ways to navigate such trees (with LLM guidance) by composing reusable search primitives.
-- A _demonstration language_ for describing successful _and_ unsuccessful search scenarios to be used as training or prompting examples. A dedicated language server allows writing demonstrations interactively and keeping them synchronized with evolving strategies. -->
-
 <h2 id="quick-example">Quick Example</h2>
 <p>Let us illustrate Delphyne with a complete example. Consider the task of  finding a parameter value that makes a mathematical expression nonnegative for all values of <code>x</code>. For example, given expression <code>x² - 2x + n</code>, <code>n = -1</code> is an incorrect answer (take <code>x = 0</code>), but <code>n = 1</code> is a correct answer since <code>x² - 2x + 1 = (x - 1)²</code>. Here is a Delphyne <strong>strategy</strong> for solving this problem:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">sympy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
