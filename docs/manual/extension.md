@@ -42,7 +42,7 @@ In addition, for optimal readability of demonstration files, line wrapping shoul
 ```
 </details>
 
-### Starting The Delphyne Server
+### Starting The Delphyne Server {#starting-server}
 
 The Delphyne extension relies on Delphyne's _language server_ to [evaluate demonstrations](#editing-demonstrations) and [run commands](#commands). The language server is automatically started in the background when the Delphyne extension is activated (by clicking on the Delphyne icon on the VSCode [activity bar](https://code.visualstudio.com/api/ux-guidelines/activity-bar)), if it is not running already (listening on port 3008).
 

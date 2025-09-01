@@ -231,7 +231,7 @@ def message(
     msg: str, data: object | None = None
 ) -> dp.Strategy[Message, object, None]:
     """
-    Log a debugging message.
+    Log a debugging message. See `Message` for more details.
 
     Arguments:
         msg: The message to log.
