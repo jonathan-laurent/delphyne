@@ -94,7 +94,7 @@ def parallel_policy(
 
 
 if __name__ == "__main__":
-    budget = dp.BudgetLimit({"dp.NUM_REQUESTS": 2})
+    budget = dp.BudgetLimit({dp.NUM_REQUESTS: 2})
     res, _ = (
         find_param_value("2*x**2 - 4*x + n")
         .run_toplevel(dp.PolicyEnv(demonstration_files=[]), serial_policy())

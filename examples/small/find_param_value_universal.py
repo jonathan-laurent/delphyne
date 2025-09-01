@@ -17,10 +17,9 @@ from delphyne import Branch, Fail, IPDict, Strategy, strategy
 @strategy
 def find_param_value(expr: str) -> Strategy[Branch | Fail, IPDict, int]:
     """
-    Find an integer parameter `n` that makes a given math expression
-    nonnegative for all real `x`. Then, prove that the resulting
-    expression is indeed nonnegative for all real `x` by rewriting it
-    into an equivalent form that makes this fact clear.
+    Find an integer `n` that makes a given math expression nonnegative
+    for all real `x`. Prove that the resulting expression is nonnegative
+    by rewriting it into an equivalent form.
     """
     x, n = sp.Symbol("x", dummy=True, real=True), sp.Symbol("n", dummy=True)
     symbs = {"x": x, "n": n}
@@ -54,7 +53,7 @@ def parallel_policy():
 
 
 if __name__ == "__main__":
-    budget = dp.BudgetLimit({"dp.NUM_REQUESTS": 2})
+    budget = dp.BudgetLimit({dp.NUM_REQUESTS: 2})
     res, _ = (
         find_param_value("2*x**2 - 4*x + n")
         .run_toplevel(dp.PolicyEnv(), serial_policy())
