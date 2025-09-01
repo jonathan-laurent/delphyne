@@ -43,3 +43,20 @@ The last command should create a `delphyne-xxx.vsix` extensions archive, which c
 ### Testing your installation
 
 To test your installation, open VSCode and set the `examples/find_invariants` folder as your workspace root. Click on the Delphyne logo on the Activity Bar to start the Delphyne extension, and open the demonstration file `abduct_and_branch.demo.yaml`. Then, open the command palette (`Ctrl+Shift+P`) and run the command `Delphyne: Evaluate All Demonstrations in File`. Diagnostics should then appear to indicate that all tests passed (but no warning or error). Note that adding new demonstrations requires installing `why3py`, as explained in the example's README.
+
+## Citing this Work
+
+If you use Delphyne in an academic paper, please cite our work as follows:
+
+```bib
+@article{oracular-programming-2025,
+  title={Oracular Programming: A Modular Foundation for Building LLM-Enabled Software},
+  author={Laurent, Jonathan and Platzer, Andr{\'e}},
+  journal={arXiv preprint arXiv:2502.05310},
+  year={2025}
+}
+```
+
+## Acknowledgements
+
+This work was supported by the [Alexander von Humboldt Professorship program](https://www.humboldt-foundation.de/en/apply/sponsorship-programmes/alexander-von-humboldt-professorship).
