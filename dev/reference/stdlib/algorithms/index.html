@@ -1114,6 +1114,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#delphyne.InteractStats" class="md-nav__link">
+    <span class="md-ellipsis">
+      InteractStats
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1506,6 +1515,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#delphyne.InteractStats" class="md-nav__link">
+    <span class="md-ellipsis">
+      InteractStats
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1790,7 +1808,12 @@
 </h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">interact</span><span class="p">(</span>
     <span class="n">step</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span>
-        <span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="AnswerPrefix (delphyne.core.AnswerPrefix)" href="../../strategies/queries/#delphyne.AnswerPrefix">AnswerPrefix</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.interactive.InteractStats">InteractStats</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[P]">P</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="Response
+        <span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="AnswerPrefix (delphyne.core.AnswerPrefix)" href="../../strategies/queries/#delphyne.AnswerPrefix">AnswerPrefix</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="InteractStats
+
+
+  
+      dataclass
+   (delphyne.stdlib.search.interactive.InteractStats)" href="#delphyne.InteractStats">InteractStats</a></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[P]">P</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="Response
 
 
   
@@ -1802,7 +1825,12 @@
       dataclass
    (delphyne.stdlib.queries.WrappedParseError)" href="../queries/#delphyne.WrappedParseError">WrappedParseError</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.interactive.interact[T]">T</span></span><span class="p">]]</span>
     <span class="p">],</span>
-    <span class="n">process</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[A]">A</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.interactive.InteractStats">InteractStats</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.interactive.interact[B]">B</span></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="Error
+    <span class="n">process</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[A]">A</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="InteractStats
+
+
+  
+      dataclass
+   (delphyne.stdlib.search.interactive.InteractStats)" href="#delphyne.InteractStats">InteractStats</a></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.interactive.interact[B]">B</span></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="Error
 
 
   
@@ -1823,28 +1851,47 @@
         <p>A standard strategy for creating conversational agents.</p>
 <p>A common pattern for interacting with LLMs is to have multi-message
 exchanges where the full conversation history is resent repeatedly.
-LLMs are also often allowed to request tool call. This strategy
+LLMs are also often allowed to request tool calls. This strategy
 implements this pattern. It is meant to be inlined into a wrapping
 strategy (since it is not decorated with <a class="autorefs autorefs-internal" title="strategy" href="../basic/#delphyne.strategy"><code>strategy</code></a>).</p>
 
 
-<p><span class="doc-section-title">Attributes:</span></p>
+<p><span class="doc-section-title">Parameters:</span></p>
     <table>
       <thead>
         <tr>
           <th>Name</th>
           <th>Type</th>
           <th>Description</th>
+          <th>Default</th>
         </tr>
       </thead>
       <tbody>
           <tr class="doc-section-item">
-            <td><code><span title="delphyne.interact.step">step</span></code></td>
             <td>
+                <code>step</code>
+            </td>
+            <td>
+                  <code><span title="collections.abc.Callable">Callable</span>[[<a class="autorefs autorefs-internal" title="AnswerPrefix (delphyne.core.AnswerPrefix)" href="../../strategies/queries/#delphyne.AnswerPrefix">AnswerPrefix</a>, <a class="autorefs autorefs-internal" title="InteractStats
+
+
+  
+      dataclass
+   (delphyne.stdlib.search.interactive.InteractStats)" href="#delphyne.InteractStats">InteractStats</a>], <a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a>[<span title="delphyne.stdlib.search.interactive.interact[P]">P</span>, <a class="autorefs autorefs-internal" title="Response
+
+
+  
+      dataclass
+   (delphyne.stdlib.queries.Response)" href="../queries/#delphyne.Response">Response</a>[<span title="delphyne.stdlib.search.interactive.interact[A]">A</span> | <a class="autorefs autorefs-internal" title="WrappedParseError
+
+
+  
+      dataclass
+   (delphyne.stdlib.queries.WrappedParseError)" href="../queries/#delphyne.WrappedParseError">WrappedParseError</a>, <span title="delphyne.stdlib.search.interactive.interact[T]">T</span>]]]</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>a parametric opaque space, induced by a strategy or query
+                <p>A parametric opaque space, induced by a strategy or query
 that takes as an argument the current chat history (possibly
 empty) along with some statistics, and returns an answer to
 be processed. Oftentimes, this parametric opaque space is
@@ -1852,14 +1899,30 @@ induced by a query with a special <code>prefix</code> field for
 receiving the chat history (see <a class="autorefs autorefs-internal" title="Query" href="../queries/#delphyne.Query"><code>Query</code></a>).</p>
               </div>
             </td>
+            <td>
+                <em>required</em>
+            </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><span title="delphyne.interact.process">process</span></code></td>
             <td>
+                <code>process</code>
+            </td>
+            <td>
+                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.search.interactive.interact[A]">A</span>, <a class="autorefs autorefs-internal" title="InteractStats
+
+
+  
+      dataclass
+   (delphyne.stdlib.search.interactive.InteractStats)" href="#delphyne.InteractStats">InteractStats</a>], <a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a>[<span title="delphyne.stdlib.search.interactive.interact[P]">P</span>, <span title="delphyne.stdlib.search.interactive.interact[B]">B</span> | <a class="autorefs autorefs-internal" title="Error
+
+
+  
+      dataclass
+   (delphyne.core.Error)" href="../../strategies/misc/#delphyne.Error">Error</a>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>an opaque space induced by a query or strategy that is
+                <p>An opaque space induced by a query or strategy that is
 called on all model responses that are not tool calls, and
 which returns either a final response to be returned, or an
 error to be transmitted to the model as feedback (as an
@@ -1871,23 +1934,35 @@ error to be transmitted to the model as feedback (as an
   " href="../../strategies/misc/#delphyne.Error"><code>Error</code></a> value with an absent or serializable <code>meta</code> field).</p>
               </div>
             </td>
+            <td>
+                <em>required</em>
+            </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><span title="delphyne.interact.tools">tools</span></code></td>
             <td>
+                <code>tools</code>
+            </td>
+            <td>
+                  <code><span title="collections.abc.Mapping">Mapping</span>[<span title="type">type</span>[<span title="delphyne.stdlib.search.interactive.interact[T]">T</span>], <span title="collections.abc.Callable">Callable</span>[[<span title="typing.Any">Any</span>], <a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a>[<span title="delphyne.stdlib.search.interactive.interact[P]">P</span>, <span title="typing.Any">Any</span>]]] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>a mapping from supported tool interfaces to
+                <p>A mapping from supported tool interfaces to
 implementations. Tools themselves can be implemented using
 arbitrary strategies or queries, allowing the integration of
 horizontal and vertical LLM pipelines.</p>
               </div>
             </td>
+            <td>
+                  <code>None</code>
+            </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><span title="delphyne.interact.inner_policy_type">inner_policy_type</span></code></td>
             <td>
+                <code>inner_policy_type</code>
+            </td>
+            <td>
+                  <code><span title="type">type</span>[<span title="delphyne.stdlib.search.interactive.interact[P]">P</span>] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1895,6 +1970,9 @@ horizontal and vertical LLM pipelines.</p>
 is not used at runtime but it can be provided to help type
 inference when necessary.</p>
               </div>
+            </td>
+            <td>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
@@ -1995,23 +2073,23 @@ inference when necessary.</p>
 
 <span class="sd">    A common pattern for interacting with LLMs is to have multi-message</span>
 <span class="sd">    exchanges where the full conversation history is resent repeatedly.</span>
-<span class="sd">    LLMs are also often allowed to request tool call. This strategy</span>
+<span class="sd">    LLMs are also often allowed to request tool calls. This strategy</span>
 <span class="sd">    implements this pattern. It is meant to be inlined into a wrapping</span>
 <span class="sd">    strategy (since it is not decorated with `strategy`).</span>
 
-<span class="sd">    Attributes:</span>
-<span class="sd">        step: a parametric opaque space, induced by a strategy or query</span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        step: A parametric opaque space, induced by a strategy or query</span>
 <span class="sd">            that takes as an argument the current chat history (possibly</span>
 <span class="sd">            empty) along with some statistics, and returns an answer to</span>
 <span class="sd">            be processed. Oftentimes, this parametric opaque space is</span>
 <span class="sd">            induced by a query with a special `prefix` field for</span>
 <span class="sd">            receiving the chat history (see `Query`).</span>
-<span class="sd">        process: an opaque space induced by a query or strategy that is</span>
+<span class="sd">        process: An opaque space induced by a query or strategy that is</span>
 <span class="sd">            called on all model responses that are not tool calls, and</span>
 <span class="sd">            which returns either a final response to be returned, or an</span>
 <span class="sd">            error to be transmitted to the model as feedback (as an</span>
 <span class="sd">            `Error` value with an absent or serializable `meta` field).</span>
-<span class="sd">        tools: a mapping from supported tool interfaces to</span>
+<span class="sd">        tools: A mapping from supported tool interfaces to</span>
 <span class="sd">            implementations. Tools themselves can be implemented using</span>
 <span class="sd">            arbitrary strategies or queries, allowing the integration of</span>
 <span class="sd">            horizontal and vertical LLM pipelines.</span>
@@ -2062,6 +2140,127 @@ inference when necessary.</p>
                 <span class="n">stats</span><span class="o">.</span><span class="n">num_tool_call_rounds</span> <span class="o">+=</span> <span class="mi">1</span>
 </code></pre></div></td></tr></table></div>
             </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="delphyne.InteractStats" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">InteractStats</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+
+
+        <p>Statistics maintained by <a class="autorefs autorefs-internal" title="interact" href="#delphyne.interact"><code>interact</code></a>.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.InteractStats.num_rejected">num_rejected</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of answers that have been rejected so far,
+due to either parsing or processing errors.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.InteractStats.num_tool_call_rounds">num_tool_call_rounds</span></code></td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of tool call rounds that have been
+reuqetsed by the LLM so far (a round consists in a single
+message that can contain several tool call requests).</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/delphyne/stdlib/search/interactive.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">InteractStats</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Statistics maintained by `interact`.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        num_rejected: Number of answers that have been rejected so far,</span>
+<span class="sd">            due to either parsing or processing errors.</span>
+<span class="sd">        num_tool_call_rounds: Number of tool call rounds that have been</span>
+<span class="sd">            reuqetsed by the LLM so far (a round consists in a single</span>
+<span class="sd">            message that can contain several tool call requests).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">num_rejected</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">num_tool_call_rounds</span><span class="p">:</span> <span class="nb">int</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
     </div>
 
 </div><h2 id="policies">Policies</h2>
