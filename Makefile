@@ -1,4 +1,4 @@
-.PHONY: pyright clean clean-ignored test full-test full-clean schemas stubs install doc-logo cloc deploy-doc-release deploy-doc-dev prepare-release release
+.PHONY: pyright clean clean-ignored test full-test full-clean schemas stubs install doc-logo cloc deploy-doc-release deploy-doc-dev prepare-release release repomix
 
 RELEASE_SCRIPT := python scripts/prepare_release.py
 
@@ -10,7 +10,8 @@ TO_CLEAN := \
 	-name '.pytest_cache' -o \
 	-name '_build' -o \
 	-name '.ruff_cache' -o \
-	-name '.DS_Store'
+	-name '.DS_Store' -o \
+	-name 'repomix-output.xml'
 
 SCHEMAS_FOLDER := vscode-ui/resources
 STUBS_FOLDER := vscode-ui/src/stubs
@@ -142,3 +143,20 @@ release:
 # Count the number of lines of code
 cloc:
 	cloc . --exclude-dir=node_modules,out,.vscode-test --include-lang=python,typescript
+
+
+# Folders and files to ignore by repomix.
+# Use commas after each item except the last.
+REPOMIX_IGNORE = \
+	examples/find_invariants/experiments/analysis/,\
+	examples/find_invariants/experiments/test-output/,\
+	examples/find_invariants/benchmarks/,\
+	examples/libraries/,\
+	scripts/prepare_release.py
+
+# Not excluded so far:
+# tests/cache/
+
+# Generate a single file summarizing the repo, to be passed to LLMs for context.
+repomix:
+	repomix --ignore "$(REPOMIX_IGNORE)"
