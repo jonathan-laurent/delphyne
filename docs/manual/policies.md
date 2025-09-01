@@ -1,4 +1,4 @@
-# Policy Language
+# The Policy Language
 
 <!-- TODO: where is caching documented precisely? -->
 

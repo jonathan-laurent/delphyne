@@ -1,4 +1,4 @@
-# VSCode Extension
+# The Delphyne VSCode Extension
 
 A _Visual Studio Code_ extension is available for interactively writing demonstrations, navigating strategy trees, and running oracular programs.
 

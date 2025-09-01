@@ -102,6 +102,9 @@ def openai_compatible_model(
     api_key_env_var: str,
 ):
     api_key = os.getenv(api_key_env_var)
+    assert api_key is not None, (
+        f"Please set environment variable {api_key_env_var}."
+    )
     if pricing is None:
         pricing = get_pricing(model)
     all_options: md.RequestOptions = {"model": model}

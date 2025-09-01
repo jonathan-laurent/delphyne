@@ -1,4 +1,4 @@
-# Strategy Language
+# The Strategy Language
 
 Following the previous [Overview](./overview.md) chapter, we now provide more details on Delphyne's _strategy language_. We provide a quick overview of the most useful techniques and concepts and refer to the [Reference](../reference/strategies/trees.md) for more details and explanations (follow the hypertext links).
 

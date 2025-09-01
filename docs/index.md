@@ -24,13 +24,13 @@ cd delphyne
 git checkout v0.7.0  # latest stable version
 ```
 
-Then, to install the Delphyne library in your current Python environment:
+Then, to install the Delphyne library and CLI in your current Python environment:
 
-```
-pip install -e .
+```sh
+pip install -e ".[dev]"
 ```
 
-Note that Python 3.12 (or more recent) is required. Once this is done, it should be possible to run `import delphyne` inside a Python interpreter. Next, you should build the Delphyne vscode extension. For this, assuming you have [Node.js](https://nodejs.org/en/download) installed (version 22 or later), run:
+Note that Python 3.12 (or more recent) is required. Next, you should build the Delphyne vscode extension. For this, assuming you have [Node.js](https://nodejs.org/en/download) installed (version 22 or later), run:
 
 ```
 cd vscode-ui
@@ -38,11 +38,19 @@ npm install
 npx vsce package
 ```
 
-The last command should create a `delphyne-xxx.vsix` extensions archive, which can be installed in vscode using the `Extensions: Install from VSIX` command (use `Ctrl+Shift+P` to search for this command).
+The last command should create a `delphyne-xxx.vsix` extensions archive, which can be installed in vscode using the `Extensions: Install from VSIX` command (use `Ctrl+Shift+P` to search for it in the command palette).
 
 ### Testing your installation
 
-To test your installation, open VSCode and set the `examples/find_invariants` folder as your workspace root. Click on the Delphyne logo on the Activity Bar to start the Delphyne extension, and open the demonstration file `abduct_and_branch.demo.yaml`. Then, open the command palette (`Ctrl+Shift+P`) and run the command `Delphyne: Evaluate All Demonstrations in File`. Diagnostics should then appear to indicate that all tests passed (but no warning or error). Note that adding new demonstrations requires installing `why3py`, as explained in the example's README.
+You can verify your installation by running the short test suite:
+
+```
+make test
+```
+
+To test the Delphyne extension, we recommend reading the corresponding [manual chapter](./manual/extension.md), opening the `examples/find_invariants/abduct_and_branch.demo.yaml` demonstration file, and then executing the `Delphyne: Evaluate All Demonstrations in File` command (accessible from the palette via `Ctrl+Shift+P`). Diagnostics should appear to indicate that all tests passed.
+
+<!-- ## Learning More -->
 
 ## Citing this Work
 

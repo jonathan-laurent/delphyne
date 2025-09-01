@@ -78,12 +78,12 @@ extra:
 nav:
   - index.md
   - Manual:
-    - manual/overview.md
-    - manual/strategies.md
-    - manual/policies.md
-    - manual/demos.md
-    - manual/extension.md
-  - how-to-guides.md
+    - Overview: manual/overview.md
+    - Strategy Language: manual/strategies.md
+    - Policy Language: manual/policies.md
+    - Demonstration Language: manual/demos.md
+    - VSCode Extension: manual/extension.md
+  - How-To Guides: how-to-guides.md
   - Reference:
     # - reference/index.md  # Uncomment this if an index is wanted
     - Strategy Language:

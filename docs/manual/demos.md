@@ -1,4 +1,4 @@
-# Demonstration Language
+# The Demonstration Language
 
 Delphyne includes a demonstration language for writing and maintaining few-shot prompting examples, in the form of coherent scenarios of navigating search trees. The demonstration language is amenable to a test-driven development workflow. This workflow is supported by a dedicated VSCode extension, which is described in the [next chapter](./extension.md).
 
