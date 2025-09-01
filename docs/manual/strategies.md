@@ -77,7 +77,7 @@ A tree contains either a node ([`Node`][delphyne.Node]) or a success leaf ([`Nod
 New types of effects beyond [`Branch`][delphyne.Branch] and [`Fail`][delphyne.Fail] can be added easily, by subclassing [`Node`][delphyne.Node]. Here are a number of additional effects defined in the Delphyne standard library:
 
 - [`Join`][delphyne.Join]: allows evaluating a sequence of independent sub-strategies, possibly in parallel.
-- [`Compute`][delphyne.Compute]: allows performing expensive and possibly non-replicable/nondeterministic computations in strategies (see details in [How-To Guide](../how-to-guides.md#performing-expensive-computations-in-strategies)).
+- [`Compute`][delphyne.Compute]: allows performing expensive and possibly non-replicable/nondeterministic computations in strategies (see details in [How-To Guide](../how-to-guides.md#compute)).
 - [`Value`][delphyne.stdlib.Value]: allows adding value information into strategy trees. Such information can be leveraged by search policies (e.g. [`best_first_search`][delphyne.best_first_search]).
 - [`Flag`][delphyne.Flag]: allows providing a finite number of alternative implementations for sub-tasks, to be selected either offline or at runtime.
 - [`Message`][delphyne.Message]: allows decorating trees with debugging messages.

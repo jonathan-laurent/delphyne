@@ -5,6 +5,12 @@
 
 ::: delphyne.CommandExecutionContext
 
+::: delphyne.stdlib.tasks.DEFAULT_STRATEGY_DIRS
+
+::: delphyne.stdlib.tasks.DEFAULT_PROMPTS_DIRS
+
+::: delphyne.stdlib.tasks.DEFAULT_DATA_DIRS
+
 ::: delphyne.TaskContext
 
 ::: delphyne.run_command

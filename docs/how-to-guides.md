@@ -1,15 +1,11 @@
 # How-To Guides
 
-## Creating a New Delphyne Project
+## Creating a New Delphyne Project {#new-project}
 
-## Running an Oracular Program
+## Running an Oracular Program {#running}
 
-## Debugging an Oracular Program
+## Debugging an Oracular Program {#debugging}
 
-## Defining a New Effect
+## Writing a Conversational Agent {#conversational}
 
-## Defining a New Policy
-
-## Writing a Conversational Agent
-
-## Performing Expensive Computations in Strategies
+## Performing Expensive Computations in Strategies {#compute}

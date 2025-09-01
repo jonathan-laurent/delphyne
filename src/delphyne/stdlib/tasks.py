@@ -106,7 +106,7 @@ class CommandExecutionContext:
     workspace root directory, and can be made absolute using the
     `with_root` method.
 
-    Attributes:
+    Parameters:
         strategy_dirs: A sequence of directories in which strategy
             modules can be found.
         modules: A sequence of module in which Python object identifiers
