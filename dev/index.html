@@ -284,6 +284,24 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#quick-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Example
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#features-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       Installation
@@ -304,6 +322,15 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#learning-more" class="md-nav__link">
+    <span class="md-ellipsis">
+      Learning More
+    </span>
+  </a>
   
 </li>
       
@@ -1251,6 +1278,24 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#quick-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Example
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#features-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Features Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       Installation
@@ -1271,6 +1316,15 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#learning-more" class="md-nav__link">
+    <span class="md-ellipsis">
+      Learning More
+    </span>
+  </a>
   
 </li>
       
@@ -1317,12 +1371,66 @@
   <img src="assets/logos/white/banner.png#only-dark" alt="Delphyne Logo" width="50%"/>
 </p>
 
-<p>Delphyne is a programming framework for building <em>reliable</em> and <em>modular</em> LLM applications. It is based on a new paradigm named <em>oracular programming</em>, where high-level problem-solving strategies are expressed as nondeterministic programs whose choice points are annotated with examples and resolved by LLMs. Delphyne combines three languages:</p>
-<ul>
-<li>A <em>strategy language</em> embedded in Python that allows writing nondeterministic programs that can be reified into (modular) search trees.</li>
-<li>A <em>policy language</em> for specifying ways to navigate such trees (with LLM guidance) by composing reusable search primitives.</li>
-<li>A <em>demonstration language</em> for describing successful <em>and</em> unsuccessful search scenarios to be used as training or prompting examples. A dedicated language server allows writing demonstrations interactively and keeping them synchronized with evolving strategies.</li>
-</ul>
+<p>Delphyne is a programming framework for building <em>reliable</em> and <em>modular</em> LLM applications. It offers a powerful approach for integrating traditional programming and prompting.</p>
+<p>Users can describe high-level problem solving <em>strategies</em> as arbitrary programs with unresolved choice points. <em>Policies</em> for navigating the resulting search spaces with LLMs can be independently assembled and tuned. Examples of correct choices can be expressed in a dedicated <em>demonstration language</em> that supports interactive test-driven developement.</p>
+<!-- and used for few-shot prompting. -->
+<!-- by composing reusable components -->
+
+<!-- Delphyne is a programming framework for building _reliable_ and _modular_ LLM applications. It is based on a new paradigm named _oracular programming_, where high-level problem-solving strategies are expressed as nondeterministic programs whose choice points are annotated with examples and resolved by LLMs. Delphyne combines three languages:
+
+- A _strategy language_ embedded in Python that allows writing nondeterministic programs that can be reified into (modular) search trees.
+- A _policy language_ for specifying ways to navigate such trees (with LLM guidance) by composing reusable search primitives.
+- A _demonstration language_ for describing successful _and_ unsuccessful search scenarios to be used as training or prompting examples. A dedicated language server allows writing demonstrations interactively and keeping them synchronized with evolving strategies. -->
+
+<h2 id="quick-example">Quick Example</h2>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">sympy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">assert_never</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">delphyne</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dp</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">delphyne</span><span class="w"> </span><span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">Strategy</span><span class="p">,</span> <span class="n">strategy</span>
+
+<span class="nd">@strategy</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_param_value</span><span class="p">(</span><span class="n">expr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">IPDict</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find an integer `n` that makes a given math expression nonnegative</span>
+<span class="sd">    for all real `x`. Prove that the resulting expression is nonnegative</span>
+<span class="sd">    by rewriting it into an equivalent form.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">sp</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">)</span>
+    <span class="n">symbs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="n">n</span><span class="p">}</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">n_val</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">guess</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">using</span><span class="o">=</span><span class="p">[</span><span class="n">expr</span><span class="p">])</span>
+        <span class="n">expr_sp</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">parse_expr</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">symbs</span><span class="p">)</span><span class="o">.</span><span class="n">subs</span><span class="p">({</span><span class="n">n</span><span class="p">:</span> <span class="n">n_val</span><span class="p">})</span>
+        <span class="n">equiv</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">guess</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">using</span><span class="o">=</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">expr_sp</span><span class="p">)])</span>
+        <span class="n">equiv_sp</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">parse_expr</span><span class="p">(</span><span class="n">equiv</span><span class="p">,</span> <span class="n">symbs</span><span class="p">)</span>
+        <span class="n">equivalent</span> <span class="o">=</span> <span class="p">(</span><span class="n">expr_sp</span> <span class="o">-</span> <span class="n">equiv_sp</span><span class="p">)</span><span class="o">.</span><span class="n">simplify</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">equivalent</span><span class="p">,</span> <span class="s2">&quot;not_equivalent&quot;</span><span class="p">)</span>
+        <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">equiv_sp</span><span class="o">.</span><span class="n">is_nonnegative</span><span class="p">,</span> <span class="s2">&quot;not_nonneg&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">n_val</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">assert_never</span><span class="p">((</span><span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="s2">&quot;sympy_error&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))))</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">serial_policy</span><span class="p">():</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">standard_model</span><span class="p">(</span><span class="s2">&quot;gpt-5-mini&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dp</span><span class="o">.</span><span class="n">dfs</span><span class="p">()</span> <span class="o">&amp;</span> <span class="p">{</span>
+        <span class="s2">&quot;n_val&quot;</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">few_shot</span><span class="p">(</span><span class="n">model</span><span class="p">),</span>
+        <span class="s2">&quot;equiv&quot;</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">@</span> <span class="n">dp</span><span class="o">.</span><span class="n">few_shot</span><span class="p">(</span><span class="n">model</span><span class="p">)}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parallel_policy</span><span class="p">():</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">standard_model</span><span class="p">(</span><span class="s2">&quot;gpt-5-mini&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dp</span><span class="o">.</span><span class="n">loop</span><span class="p">()</span> <span class="o">@</span> <span class="n">dp</span><span class="o">.</span><span class="n">par_dfs</span><span class="p">()</span> <span class="o">&amp;</span> <span class="p">{</span>
+        <span class="s2">&quot;n_val&quot;</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">few_shot</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">max_requests</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_completions</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+        <span class="s2">&quot;equiv&quot;</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">few_shot</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">max_requests</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_completions</span><span class="o">=</span><span class="mi">2</span><span class="p">)}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="n">budget</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">BudgetLimit</span><span class="p">({</span><span class="n">dp</span><span class="o">.</span><span class="n">NUM_REQUESTS</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
+<span class="n">res</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="p">(</span><span class="n">find_param_value</span><span class="p">(</span><span class="s2">&quot;2*x**2 - 4*x + n&quot;</span><span class="p">)</span>
+          <span class="o">.</span><span class="n">run_toplevel</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">PolicyEnv</span><span class="p">(),</span> <span class="n">serial_policy</span><span class="p">())</span>
+          <span class="o">.</span><span class="n">collect</span><span class="p">(</span><span class="n">budget</span><span class="o">=</span><span class="n">budget</span><span class="p">,</span> <span class="n">num_generated</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tracked</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>  <span class="c1"># e.g. 2</span>
+</code></pre></div>
+<p><img alt="" src="assets/screenshot/readme-extension-example/dark.png#only-dark" />
+<img alt="" src="assets/screenshot/readme-extension-example/light.png#only-light" /></p>
+<p>A complete explanation of this example is provided in the <a href="manual/overview/">Delphyne Manual</a>.</p>
+<h2 id="features-overview">Features Overview</h2>
 <h2 id="installation">Installation</h2>
 <p>First, download the Delphyne repository and enter it:</p>
 <div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:jonathan-laurent/delphyne.git
@@ -1343,8 +1451,7 @@ npx vsce package
 <div class="highlight"><pre><span></span><code>make test
 </code></pre></div>
 <p>To test the Delphyne extension, we recommend reading the corresponding <a href="manual/extension/">manual chapter</a>, opening the <code>examples/find_invariants/abduct_and_branch.demo.yaml</code> demonstration file, and then executing the <code>Delphyne: Evaluate All Demonstrations in File</code> command (accessible from the palette via <code>Ctrl+Shift+P</code>). Diagnostics should appear to indicate that all tests passed.</p>
-<!-- ## Learning More -->
-
+<h2 id="learning-more">Learning More</h2>
 <h2 id="citing-this-work">Citing this Work</h2>
 <p>If you use Delphyne in an academic paper, please cite our work as follows:</p>
 <div class="highlight"><pre><span></span><code><span class="nc">@article</span><span class="p">{</span><span class="nl">oracular-programming-2025</span><span class="p">,</span>
