@@ -454,15 +454,15 @@
         <li class="md-nav__item">
   <a href="#setting-up-the-extension" class="md-nav__link">
     <span class="md-ellipsis">
-      Setting up the extension
+      Setting Up The Extension
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Setting up the extension">
+    <nav class="md-nav" aria-label="Setting Up The Extension">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#recommended-editor-configuration" class="md-nav__link">
+  <a href="#editor-config" class="md-nav__link">
     <span class="md-ellipsis">
       Recommended Editor Configuration
     </span>
@@ -471,9 +471,27 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#delphyne-workspace-file" class="md-nav__link">
+  <a href="#starting-the-delphyne-server" class="md-nav__link">
     <span class="md-ellipsis">
-      The Delphyne Workspace File
+      Starting The Delphyne Server
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#project-root" class="md-nav__link">
+    <span class="md-ellipsis">
+      Detecting Project Root Directories
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Global and Local Configuration
     </span>
   </a>
   
@@ -1326,15 +1344,15 @@
         <li class="md-nav__item">
   <a href="#setting-up-the-extension" class="md-nav__link">
     <span class="md-ellipsis">
-      Setting up the extension
+      Setting Up The Extension
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Setting up the extension">
+    <nav class="md-nav" aria-label="Setting Up The Extension">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#recommended-editor-configuration" class="md-nav__link">
+  <a href="#editor-config" class="md-nav__link">
     <span class="md-ellipsis">
       Recommended Editor Configuration
     </span>
@@ -1343,9 +1361,27 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#delphyne-workspace-file" class="md-nav__link">
+  <a href="#starting-the-delphyne-server" class="md-nav__link">
     <span class="md-ellipsis">
-      The Delphyne Workspace File
+      Starting The Delphyne Server
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#project-root" class="md-nav__link">
+    <span class="md-ellipsis">
+      Detecting Project Root Directories
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Global and Local Configuration
     </span>
   </a>
   
@@ -1456,15 +1492,9 @@
   <img src="../../assets/extension-screenshot.png" alt="Extension Screenshot" style="width: 100%;">
 </p>
 
-<h2 id="setting-up-the-extension">Setting up the extension</h2>
-<p>After <a href="../../#installation">installing</a> the Delphyne extension and opening a workspace containing a Delphyne project (whose root features a <a href="#delphyne-workspace-file"><code>delphyne.yaml</code> file</a>), you can start the Delphyne extension by clicking on the Delphyne icon on the VSCode <a href="https://code.visualstudio.com/api/ux-guidelines/activity-bar">activity bar</a>. Doing so will spawn a Delphyne language server if one is not running already. You can confirm that the language server is running by looking at the <code>Delphyne</code> output channel (from the <code>Output</code> tab in the panel). See the <a href="#troubleshooting">Troubleshooting</a> section if you encounter any problem.</p>
-<div class="admonition info">
-<p class="admonition-title">Locating the language server</p>
-<p>The Delphyne extension uses the Python distribution currently selected for the workspace by <a href="https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance">Pylance</a> to launch the language server. If no such distribution is configured, you can set it via the <code>Python: Select Interpreter</code> command and then restart VSCode.</p>
-</div>
-<p>Once this is done, you can open a demonstration file and start <a href="#editing-demonstrations">evaluating demonstrations</a>.</p>
-<h3 id="recommended-editor-configuration">Recommended Editor Configuration</h3>
-<p>For the best experience, we recommend also installing the following VSCode extensions:</p>
+<h2 id="setting-up-the-extension">Setting Up The Extension</h2>
+<h3 id="editor-config">Recommended Editor Configuration</h3>
+<p>We provide instructions for installing the Delphyne extension on the documentation <a href="../../#installation">home page</a>. For the best experience, we recommend also installing the following VSCode extensions:</p>
 <ul>
 <li><a href="https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml">YAML Language Support</a></li>
 <li><a href="https://marketplace.visualstudio.com/items?itemName=samuelcolvin.jinjahtml">Better Jinja</a></li>
@@ -1494,18 +1524,43 @@
 </code></pre></div>
 </details>
 
-<h3 id="delphyne-workspace-file">The Delphyne Workspace File</h3>
-<p>A Delphyne workspace must have a <code>delphyne.yaml</code> file as its roots:</p>
+<h3 id="starting-the-delphyne-server">Starting The Delphyne Server</h3>
+<p>The Delphyne extension relies on Delphyne's <em>language server</em> to <a href="#editing-demonstrations">evaluate demonstrations</a> and <a href="#commands">run commands</a>. The language server is automatically started in the background when the Delphyne extension is activated (by clicking on the Delphyne icon on the VSCode <a href="https://code.visualstudio.com/api/ux-guidelines/activity-bar">activity bar</a>), if it is not running already (listening on port 3008).</p>
+<div class="admonition info">
+<p class="admonition-title">Locating the language server</p>
+<p>The Delphyne extension uses the Python distribution currently selected for the workspace by <a href="https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance">Pylance</a> to launch the language server. If no such distribution is configured, you can set it via the <code>Python: Select Interpreter</code> command and then try again using the <code>Delphyne: Start Server Command</code>.</p>
+</div>
+<p>The background server process can be shut down using the <code>Delphyne: Kill Server</code> command. The <code>Delphyne: Start Server Command</code> can be used to restart it, if it is not running already. The server can be launched outside VSCode using the <a class="autorefs autorefs-internal" title="serve" href="../../reference/cli/#delphyne.__main__.DelphyneCLI.serve"><code>delphyne serve</code></a> shell command. Since the server is stateless, it can be restarted at any time. One reason for running the server outside VSCode is to <a href="../../how-to-guides/#debugging">attach a debugger to it</a>, which allows setting breakpoints inside strategies, policies, or even inside the demonstration interpreter.</p>
+<p>You can confirm that the language server is running by looking at the <code>Delphyne</code> output channel (from the <code>Output</code> tab in the panel). See <a href="#troubleshooting">Troubleshooting</a> if you encounter any problem.</p>
+<h3 id="project-root">Detecting Project Root Directories</h3>
+<p>When <a href="#editing-demonstrations">evaluating a demonstration</a> or <a href="#commands">running a command</a>, the Delphyne extension locates the corresponding project root directory as follows:</p>
+<ol>
+<li>If a transitive parent directory for the current demonstration or command file contains a <code>delphyne.yaml</code> configuration file, it is selected.</li>
+<li>If the current editor is not attached to an existing file<sup id="fnref:anon-file"><a class="footnote-ref" href="#fn:anon-file">1</a></sup> or no <code>delphyne.yaml</code> file can be found, the current VSCode's workspace directory is used.</li>
+</ol>
+<p>The <code>Delphyne: Show Root Directory for Current File</code> command can be used to show the current project root. The rules above allow browsing and editing multiple Delphyne projects within a single VSCode workspace.</p>
+<h3 id="config">Global and Local Configuration</h3>
+<p>Both <a href="#editing-demonstrations">demonstration</a> and <a href="#commands">command</a> files are evaluated in the context of a given <a class="autorefs autorefs-internal" title="CommandExecutionContext
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/commands/#delphyne.CommandExecutionContext">configuration record</a>, which specifies information such as the location and names of Python modules in which strategies can be found, the location of prompting templates and demonstration files, etc... This information can be stored in the project's <code>delphyne.yaml</code> file, whose content may look like:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">strategy_dirs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;.&quot;</span><span class="p p-Indicator">]</span>
 <span class="nt">modules</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;module_1&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;module_2&quot;</span><span class="p p-Indicator">]</span>
 <span class="nt">demo_files</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;demo_1&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;demo_2&quot;</span><span class="p p-Indicator">]</span>
 </code></pre></div>
-<p>This files features the following information:</p>
-<ul>
-<li>A list of directories within which strategy files can be found, relative to the root of the workspace.</li>
-<li>A list of module (i.e. file names without extensions) containing those strategies, to be found within those directories. For <a href="#editing-demonstrations">hot reloading</a> to work, a module should alwways be listed <em>after</em> its dependencies.</li>
-<li>A list of demonstration files, to be passed implicitly to all commands (e.g. when running an oracular program).</li>
-</ul>
+<p>See the <a class="autorefs autorefs-internal" title="CommandExecutionContext
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/commands/#delphyne.CommandExecutionContext">Reference</a> for the list and description of all available settings. All settings have default values so empty <code>delphyne.yaml</code> files are allowed (or no file at all if the project root coincides with the VSCode workspace). In addition, any subset of global settings from the <code>delphyne.yaml</code> file can be locally overriden in individual demonstration or command files by prefixing it with a <a class="autorefs autorefs-internal" title="CommandExecutionContext
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/commands/#delphyne.CommandExecutionContext"><code>@config</code> comment block</a>.</p>
 <h2 id="editing-demonstrations">Editing Demonstrations</h2>
 <p>Once activated, the Delphyne extension recognizes demonstration files via their extension <code>*.demo.yaml</code>. A proper YAML schema is automatically loaded and syntax errors are displayed within the editor. To quickly add a new demonstration, you can use the <code>demo</code> snippet (by typing <code>demo</code> and clicking on <span class="keys"><kbd class="key-tab">Tab</kbd></span>). All available snippets are listed in <a href="https://github.com/jonathan-laurent/delphyne/blob/main/vscode-ui/snippets.json"><code>vscode-ui/snippets.json</code></a>.</p>
 <p>To evaluate a demonstration, put your cursor anywhere in its scope. A light bulb should then appear, suggesting that code actions are available. Use <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-period">.</kbd></span> to see available code actions and select <code>Evaluate Demonstration</code>. Diagnostics should then appear, possibly after a moment of waiting (in which case a pending task should be displayed in Delphyne's <code>Tasks</code> view). If the demonstration was successfully evaluated, an <code>info</code> diagnostic should be shown for every test. Otherwise, warnings and errors can be displayed. These diagnostics will stay displayed until the demo file ir closed or the demonstration gets updated. Note that adding comments or modifying other demonstrations does <em>not</em> invalidate them.</p>
@@ -1516,7 +1571,7 @@
 <p>The language server reloads all modules listed in <a href="#delphyne-workspace-file"><code>delphyne.yaml</code></a> for <em>every</em> query, using <code>importlib.reload</code>. This way, strategies can be updated interactively without effort. Note that modules are reloaded in the order in which they are listed. Thus, a module should always be listed after its dependencies.</p>
 </div>
 <h2 id="commands">Running Commands</h2>
-<p>Many interactions with Delphyne can be performed by executing <strong>commands</strong>. A command can be invoked via a YAML file specifying its name and arguments, starting with header <code># delphyne-command</code>. A standard command is the <code>run_strategy</code> command that can be used to run an oracular program by specifying a strategy along with a policy (demonstrations are automatically extracted from the files listed in <a href="#delphyne-workspace-file">delphyne.yaml</a>). To create a new tab with a template for invoking the <code>run_strategy</code> command, you can use <code>Delphyne: Run Strategy</code> from the VSCode command palette.</p>
+<p>Many interactions with Delphyne can be performed by executing <strong>commands</strong>. A command can be invoked via a YAML file specifying its name and arguments, starting with header <code># delphyne-command</code>. A standard command is the <code>run_strategy</code> command that can be used to run an oracular program by specifying a strategy along with a policy (demonstrations are automatically extracted from the files listed in <a href="#config">delphyne.yaml</a>). To create a new tab with a template for invoking the <code>run_strategy</code> command, you can use <code>Delphyne: Run Strategy</code> from the VSCode command palette.</p>
 <details>
 <summary>A Command Example</summary>
 <div class="highlight"><pre><span></span><code><span class="c1"># delphyne-command</span>
@@ -1577,6 +1632,14 @@
 </code></pre></div>
 <h3 id="debug-server">Debugging the language server</h3>
 <p>To debug the language server or even specific strategies, it is useful to attach a debugger to the language server. To do so, you should open VSCode at the root of the Delphyne repository and use the <code>Debug Server</code> debugging profile. This will start the server in debug mode (on port 8000). Starting the Delphyne extension when a server instance is running already will cause the extension to use this instance (as confirmed by the log output in the <code>Delphyne</code> channel). You can then put arbitrary breakpoints in the server source code or even in strategy code.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:anon-file">
+<p>For example, it may contain an unsaved command specification.&#160;<a class="footnote-backref" href="#fnref:anon-file" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
 
 
 

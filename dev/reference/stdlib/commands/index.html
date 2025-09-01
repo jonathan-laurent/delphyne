@@ -1162,6 +1162,33 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#delphyne.stdlib.tasks.DEFAULT_STRATEGY_DIRS" class="md-nav__link">
+    <span class="md-ellipsis">
+      DEFAULT_STRATEGY_DIRS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.tasks.DEFAULT_PROMPTS_DIRS" class="md-nav__link">
+    <span class="md-ellipsis">
+      DEFAULT_PROMPTS_DIRS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.tasks.DEFAULT_DATA_DIRS" class="md-nav__link">
+    <span class="md-ellipsis">
+      DEFAULT_DATA_DIRS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#delphyne.TaskContext" class="md-nav__link">
     <span class="md-ellipsis">
       TaskContext
@@ -1375,6 +1402,33 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#delphyne.stdlib.tasks.DEFAULT_STRATEGY_DIRS" class="md-nav__link">
+    <span class="md-ellipsis">
+      DEFAULT_STRATEGY_DIRS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.tasks.DEFAULT_PROMPTS_DIRS" class="md-nav__link">
+    <span class="md-ellipsis">
+      DEFAULT_PROMPTS_DIRS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.tasks.DEFAULT_DATA_DIRS" class="md-nav__link">
+    <span class="md-ellipsis">
+      DEFAULT_DATA_DIRS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#delphyne.TaskContext" class="md-nav__link">
     <span class="md-ellipsis">
       TaskContext
@@ -1494,18 +1548,21 @@ workspace root directory, and can be made absolute using the
 <code>with_root</code> method.</p>
 
 
-<p><span class="doc-section-title">Attributes:</span></p>
+<p><span class="doc-section-title">Parameters:</span></p>
     <table>
       <thead>
         <tr>
           <th>Name</th>
           <th>Type</th>
           <th>Description</th>
+          <th>Default</th>
         </tr>
       </thead>
       <tbody>
           <tr class="doc-section-item">
-            <td><code><span title="delphyne.CommandExecutionContext.strategy_dirs">strategy_dirs</span></code></td>
+            <td>
+                <code>strategy_dirs</code>
+            </td>
             <td>
                   <code><span title="collections.abc.Sequence">Sequence</span>[<span title="pathlib.Path">Path</span>]</code>
             </td>
@@ -1515,9 +1572,19 @@ workspace root directory, and can be made absolute using the
 modules can be found.</p>
               </div>
             </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DEFAULT_STRATEGY_DIRS
+
+
+  
+      module-attribute
+   (delphyne.stdlib.tasks.DEFAULT_STRATEGY_DIRS)" href="#delphyne.stdlib.tasks.DEFAULT_STRATEGY_DIRS">DEFAULT_STRATEGY_DIRS</a></code>
+            </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><span title="delphyne.CommandExecutionContext.modules">modules</span></code></td>
+            <td>
+                <code>modules</code>
+            </td>
             <td>
                   <code><span title="collections.abc.Sequence">Sequence</span>[<span title="str">str</span>]</code>
             </td>
@@ -1527,9 +1594,14 @@ modules can be found.</p>
 can be resolved (module names can feature <code>.</code>).</p>
               </div>
             </td>
+            <td>
+                  <code>()</code>
+            </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><span title="delphyne.CommandExecutionContext.demo_files">demo_files</span></code></td>
+            <td>
+                <code>demo_files</code>
+            </td>
             <td>
                   <code><span title="collections.abc.Sequence">Sequence</span>[<span title="pathlib.Path">Path</span>]</code>
             </td>
@@ -1539,9 +1611,14 @@ can be resolved (module names can feature <code>.</code>).</p>
 excluding the <code>*.demo.yaml</code> extension).</p>
               </div>
             </td>
+            <td>
+                  <code>()</code>
+            </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><span title="delphyne.CommandExecutionContext.prompt_dirs">prompt_dirs</span></code></td>
+            <td>
+                <code>prompt_dirs</code>
+            </td>
             <td>
                   <code><span title="collections.abc.Sequence">Sequence</span>[<span title="pathlib.Path">Path</span>]</code>
             </td>
@@ -1551,9 +1628,19 @@ excluding the <code>*.demo.yaml</code> extension).</p>
 prompt templates.</p>
               </div>
             </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DEFAULT_PROMPTS_DIRS
+
+
+  
+      module-attribute
+   (delphyne.stdlib.tasks.DEFAULT_PROMPTS_DIRS)" href="#delphyne.stdlib.tasks.DEFAULT_PROMPTS_DIRS">DEFAULT_PROMPTS_DIRS</a></code>
+            </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><span title="delphyne.CommandExecutionContext.data_dirs">data_dirs</span></code></td>
+            <td>
+                <code>data_dirs</code>
+            </td>
             <td>
                   <code><span title="collections.abc.Sequence">Sequence</span>[<span title="pathlib.Path">Path</span>]</code>
             </td>
@@ -1563,9 +1650,19 @@ prompt templates.</p>
 files.</p>
               </div>
             </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DEFAULT_DATA_DIRS
+
+
+  
+      module-attribute
+   (delphyne.stdlib.tasks.DEFAULT_DATA_DIRS)" href="#delphyne.stdlib.tasks.DEFAULT_DATA_DIRS">DEFAULT_DATA_DIRS</a></code>
+            </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><span title="delphyne.CommandExecutionContext.cache_root">cache_root</span></code></td>
+            <td>
+                <code>cache_root</code>
+            </td>
             <td>
                   <code><span title="pathlib.Path">Path</span> | None</code>
             </td>
@@ -1575,9 +1672,14 @@ files.</p>
 subdirectories.</p>
               </div>
             </td>
+            <td>
+                  <code>None</code>
+            </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><span title="delphyne.CommandExecutionContext.result_refresh_period">result_refresh_period</span></code></td>
+            <td>
+                <code>result_refresh_period</code>
+            </td>
             <td>
                   <code><span title="float">float</span> | None</code>
             </td>
@@ -1590,9 +1692,14 @@ running oracular programs). If <code>None</code>, the result is never
 refreshed (until the command terminates).</p>
               </div>
             </td>
+            <td>
+                  <code>None</code>
+            </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><span title="delphyne.CommandExecutionContext.status_refresh_period">status_refresh_period</span></code></td>
+            <td>
+                <code>status_refresh_period</code>
+            </td>
             <td>
                   <code><span title="float">float</span> | None</code>
             </td>
@@ -1603,6 +1710,9 @@ current status message is communicated to the UI. If <code>None</code>,
 the status is never refreshed (until the command
 terminates).</p>
               </div>
+            </td>
+            <td>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
@@ -1720,7 +1830,7 @@ possibly after other comments.</p>
 <span class="sd">    workspace root directory, and can be made absolute using the</span>
 <span class="sd">    `with_root` method.</span>
 
-<span class="sd">    Attributes:</span>
+<span class="sd">    Parameters:</span>
 <span class="sd">        strategy_dirs: A sequence of directories in which strategy</span>
 <span class="sd">            modules can be found.</span>
 <span class="sd">        modules: A sequence of module in which Python object identifiers</span>
@@ -1893,6 +2003,72 @@ possibly after other comments.</p>
 
 
   </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="delphyne.stdlib.tasks.DEFAULT_STRATEGY_DIRS" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">DEFAULT_STRATEGY_DIRS</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">DEFAULT_STRATEGY_DIRS</span> <span class="o">=</span> <span class="p">(</span><span class="n"><span title="pathlib.Path">Path</span></span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">),)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="delphyne.stdlib.tasks.DEFAULT_PROMPTS_DIRS" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">DEFAULT_PROMPTS_DIRS</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">DEFAULT_PROMPTS_DIRS</span> <span class="o">=</span> <span class="p">(</span><span class="n"><span title="pathlib.Path">Path</span></span><span class="p">(</span><span class="s1">&#39;prompts&#39;</span><span class="p">),)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="delphyne.stdlib.tasks.DEFAULT_DATA_DIRS" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">DEFAULT_DATA_DIRS</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="n">DEFAULT_DATA_DIRS</span> <span class="o">=</span> <span class="p">(</span><span class="n"><span title="pathlib.Path">Path</span></span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">),)</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
 
     </div>
 
