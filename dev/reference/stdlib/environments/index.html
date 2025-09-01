@@ -1084,6 +1084,33 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#delphyne.utils.caching.CacheSpec" class="md-nav__link">
+    <span class="md-ellipsis">
+      CacheSpec
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.utils.caching.CacheInfo" class="md-nav__link">
+    <span class="md-ellipsis">
+      CacheInfo
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.utils.caching.CacheMode" class="md-nav__link">
+    <span class="md-ellipsis">
+      CacheMode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#delphyne.InvalidDemoFile" class="md-nav__link">
     <span class="md-ellipsis">
       InvalidDemoFile
@@ -1416,6 +1443,33 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.utils.caching.CacheSpec" class="md-nav__link">
+    <span class="md-ellipsis">
+      CacheSpec
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.utils.caching.CacheInfo" class="md-nav__link">
+    <span class="md-ellipsis">
+      CacheInfo
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.utils.caching.CacheMode" class="md-nav__link">
+    <span class="md-ellipsis">
+      CacheMode
+    </span>
+  </a>
   
 </li>
         
@@ -1820,7 +1874,12 @@ constructor argument <code>make_cache</code>.</p>
     <span class="n">prompt_dirs</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="pathlib.Path">Path</span></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
     <span class="n">demonstration_files</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="pathlib.Path">Path</span></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
     <span class="n">data_dirs</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="pathlib.Path">Path</span></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
-    <span class="n">cache</span><span class="p">:</span> <span class="n"><span title="delphyne.utils.caching.CacheSpec">CacheSpec</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">cache</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="CacheSpec
+
+
+  
+      dataclass
+   (delphyne.utils.caching.CacheSpec)" href="#delphyne.utils.caching.CacheSpec">CacheSpec</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">do_not_match_identical_queries</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
@@ -1897,7 +1956,12 @@ found.</p>
                 <code>cache</code>
             </td>
             <td>
-                  <code><span title="delphyne.utils.caching.CacheSpec">CacheSpec</span> | None</code>
+                  <code><a class="autorefs autorefs-internal" title="CacheSpec
+
+
+  
+      dataclass
+   (delphyne.utils.caching.CacheSpec)" href="#delphyne.utils.caching.CacheSpec">CacheSpec</a> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2026,6 +2090,165 @@ can be accessed by policies to properly wrap LLM models.</p>
 
   </div>
 
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="delphyne.utils.caching.CacheSpec" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">CacheSpec</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+
+
+        <p>Specification for a function cache.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.utils.caching.CacheSpec.info">info</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="CacheInfo (delphyne.utils.caching.CacheInfo)" href="#delphyne.utils.caching.CacheInfo">CacheInfo</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to use a YAML or DBM database, and where this
+database is located.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.utils.caching.CacheSpec.mode">mode</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="CacheMode (delphyne.utils.caching.CacheMode)" href="#delphyne.utils.caching.CacheMode">CacheMode</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Desired caching behavior.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/delphyne/utils/caching.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CacheSpec</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specification for a function cache.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        info: Whether to use a YAML or DBM database, and where this</span>
+<span class="sd">            database is located.</span>
+<span class="sd">        mode: Desired caching behavior.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">info</span><span class="p">:</span> <span class="n">CacheInfo</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="n">CacheMode</span> <span class="o">=</span> <span class="s2">&quot;read_write&quot;</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-type_alias">
+
+
+
+<h3 id="delphyne.utils.caching.CacheInfo" class="doc doc-heading">
+            <span class="doc doc-object-name doc-type_alias-name">CacheInfo</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">CacheInfo</span> <span class="o">=</span> <span class="n"><span title="delphyne.utils.caching.CacheDb">CacheDb</span></span> <span class="o">|</span> <span class="n"><span title="delphyne.utils.caching.CacheYaml">CacheYaml</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-type_alias">
+
+
+
+<h3 id="delphyne.utils.caching.CacheMode" class="doc doc-heading">
+            <span class="doc doc-object-name doc-type_alias-name">CacheMode</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">CacheMode</span> <span class="o">=</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;read_write&#39;</span><span class="p">,</span> <span class="s1">&#39;off&#39;</span><span class="p">,</span> <span class="s1">&#39;create&#39;</span><span class="p">,</span> <span class="s1">&#39;replay&#39;</span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Caching mode:</p>
+<ul>
+<li><code>off</code>: the cache is disabled.</li>
+<li><code>read_write</code>: values can be read and written to the cache (no extra
+      check is made).</li>
+<li><code>create</code>: the cache is used in write-only mode, and an exception is
+      raided if a cached value already exists.</li>
+<li><code>replay</code>: all requests must hit the cache or an exception is raised.</li>
+</ul>
     </div>
 
 </div>

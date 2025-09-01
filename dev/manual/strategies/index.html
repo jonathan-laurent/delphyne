@@ -1333,10 +1333,13 @@
   
       dataclass
   " href="../../reference/stdlib/basic/#delphyne.StrategyInstance"><code>StrategyInstance</code></a> values, wrapping the underlying generator while adding some metadata and convenience methods (e.g., <a class="autorefs autorefs-internal" title="using" href="../../reference/stdlib/basic/#delphyne.StrategyInstance.using"><code>using</code></a>).</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@strategy</span>  <span class="c1"># Example from the previous chapter</span>
+<div class="highlight"><pre><span></span><code><span class="nd">@strategy</span> <span class="c1"># (1)!</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">find_param_value</span><span class="p">(</span>
     <span class="n">expr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">FindParamValueIP</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span> <span class="o">...</span>
 </code></pre></div>
+<ol>
+<li>Example from the <a href="../overview/">previous chapter</a>.</li>
+</ol>
 <p>Query functions can have arguments of arbitrary type (including functions). When launching strategies from <a href="../extension/#commands">commands</a> and in the presence of type annotations, arguments are automatically unserialized using Pydantic. Thus, it is <em>useful</em> for <em>top-level strategies</em> to have serializable argument types that are properly annotated.</p>
 <p>Branching nodes can be yielded via the <a class="autorefs autorefs-internal" title="branch" href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.branch"><code>branch</code></a> function:</p>
 <!-- , whose type is worth examining (we ignore some optional arguments): -->

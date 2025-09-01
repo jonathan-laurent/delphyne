@@ -566,15 +566,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#debug-server" class="md-nav__link">
-    <span class="md-ellipsis">
-      Debugging the language server
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1456,15 +1447,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#debug-server" class="md-nav__link">
-    <span class="md-ellipsis">
-      Debugging the language server
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1568,10 +1550,15 @@
 <p>To evaluate all demonstrations within a file, you can use the <code>Delphyne: Evaluate All Demonstrations in File</code> command (use <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-shift">Shift</kbd><span>+</span><kbd class="key-p">P</kbd></span> to open the command palette). To see the prompt associated to a query, put your cursor on this query and use the <code>See Prompt</code> code action. Doing so will create and run the appropriate <a href="#commands">command</a> in a new tab.</p>
 <div class="admonition info">
 <p class="admonition-title">Automatic Reloading of Strategies</p>
-<p>The language server reloads all modules listed in <a href="#delphyne-workspace-file"><code>delphyne.yaml</code></a> for <em>every</em> query, using <code>importlib.reload</code>. This way, strategies can be updated interactively without effort. Note that modules are reloaded in the order in which they are listed. Thus, a module should always be listed after its dependencies.</p>
+<p>The language server reloads all modules listed in <a href="#config"><code>delphyne.yaml</code></a> for <em>every</em> query, using <code>importlib.reload</code>. This way, strategies can be updated interactively without effort. Note that modules are reloaded in the order in which they are listed. Thus, a module should always be listed after its dependencies.</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Evaluating Demonstrations using the CLI</p>
+<p>Demonstrations can also be evaluated from the shell, using the <a class="autorefs autorefs-internal" title="DelphyneCLI" href="../../reference/cli/#delphyne.__main__.DelphyneCLI">Delphyne CLI</a>. However, the CLI provides much more limited feedback so it is mainly useful for testing and continuous integration.</p>
 </div>
 <h2 id="commands">Running Commands</h2>
-<p>Many interactions with Delphyne can be performed by executing <strong>commands</strong>. A command can be invoked via a YAML file specifying its name and arguments, starting with header <code># delphyne-command</code>. A standard command is the <code>run_strategy</code> command that can be used to run an oracular program by specifying a strategy along with a policy (demonstrations are automatically extracted from the files listed in <a href="#config">delphyne.yaml</a>). To create a new tab with a template for invoking the <code>run_strategy</code> command, you can use <code>Delphyne: Run Strategy</code> from the VSCode command palette.</p>
+<p>Many interactions with Delphyne can be performed by executing <strong>commands</strong>.Commands can be specified in YAML files with extension <code>.exec.yaml</code>. Unnamed documents are also recognized as command files if they start with line <code># delphyne-command</code>, possibly following other YAML comments. Commands can emit diagnostics and intermediate status updates, output a stream of partial results and be safely interrupted. The Delphyne extension provides editor support for these features, via its <code>Task View</code>. Commands can also be run from the <a class="autorefs autorefs-internal" title="DelphyneCLI" href="../../reference/cli/#delphyne.__main__.DelphyneCLI">Delphyne CLI</a>, which is useful for specifying test suites or launching a large number of commands. </p>
+<p>A standard command is <a class="autorefs autorefs-internal" title="run_strategy" href="../../reference/stdlib/commands/#delphyne.stdlib.commands.run_strategy.run_strategy"><code>run_strategy</code></a>, which can be used to run an oracular program by specifying a strategy along with a policy (demonstrations are automatically extracted from the files listed in <a href="#config">delphyne.yaml</a>). To create a new tab with a template for invoking the <code>run_strategy</code> command, you can use <code>Delphyne: Run Strategy</code> from the VSCode command palette.</p>
 <details>
 <summary>A Command Example</summary>
 <div class="highlight"><pre><span></span><code><span class="c1"># delphyne-command</span>
@@ -1600,14 +1587,14 @@
 </code></pre></div>
 </details>
 
-<p>To execute a command, one can put the cursor over it and use the <code>Execute Command</code> code action. Doing so will launch a new task that can be viewed in the Delphyne <code>Task</code> view. When the task terminates (successfully or with an error), the command's result is appended at the end of the command file (and can be discarded using the <code>Clear Output</code> code action). When a command returns a trace, the latter can be <a href="#navigating-trees">inspected</a> via the <code>Show Trace</code> code action.</p>
-<p>The progress of commands can be supervised while they are running through the <code>Tasks</code> view. This view lists all currently running commands and maps each one to a set of actions. For example, a command can be cancelled or its progress indicator shown on the status bar. In addition, the <code>Update Source</code> action (pen icon) allows dumping the command's current <em>partial</em> result to the command file. In the case of the <code>run_strategy</code> command, this allows inspecting the current trace <em>at any point in time</em> while search is still undergoing.</p>
+<p>To execute a command, one can put the cursor over it and use the <code>Execute Command</code> code action. Doing so will launch a new task that can be viewed in the Delphyne <code>Task</code> view. When the task terminates (successfully or with an error), the command's result is appended at the end of the command file (and can be discarded using the <code>Clear Output</code> code action). When a command returns a <a class="autorefs autorefs-internal" title="Trace" href="../../reference/strategies/traces/#delphyne.core.traces.Trace">trace</a>, the latter can be <a href="#navigating-trees">inspected</a> via the <code>Show Trace</code> code action.</p>
+<p>The progress of commands can be supervised while they are running through the <code>Tasks</code> view. This view lists all currently running commands and maps each one to a set of actions. For example, a command can be cancelled or its progress indicator shown on the status bar. In addition, the <code>Update Source</code> action (pen icon) allows dumping the command's current <em>partial</em> result to the command file. In the case of the <code>run_strategy</code> command, this allows inspecting the current <a class="autorefs autorefs-internal" title="Trace" href="../../reference/strategies/traces/#delphyne.core.traces.Trace">trace</a> (i.e. the set of all visited tree nodes and spaces) <em>at any point in time</em> while search is still undergoing.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>In the future, Delphyne will allow adding new commands by registering command scripts. </p>
 </div>
 <h2 id="navigating-trees">Navigating Strategy Trees</h2>
-<p>Traces can be inspected using the <code>Tree</code>, <code>Node</code> and <code>Actions</code> views (see screenshot at the top of this page). These views are synchronized together and display information about a single node at a time. The <code>Tree</code> view indicates a path from the root to the current node and allows jumping to every intermediate node on this path. The <code>Node</code> view shows the node type and all associated spaces. For each space, it shows the underlying query or allows jumping to the underlying tree. Finally, the <code>Actions</code> view lists all children of the current node that belong to the trace. Actions leading to subtrees containing success nodes are indicated by small checkmarks.</p>
+<p>Whether they originate from evaluating demonstrations or running commands, <a class="autorefs autorefs-internal" title="Trace" href="../../reference/strategies/traces/#delphyne.core.traces.Trace">traces</a> can be inspected using the <code>Tree</code>, <code>Node</code> and <code>Actions</code> views (see screenshot at the top of this page). These views are synchronized together and display information about a single node at a time. The <code>Tree</code> view indicates a path from the root to the current node and allows jumping to every intermediate node on this path. The <code>Node</code> view shows the node type and all associated spaces. For each space, it shows the underlying query or allows jumping to the underlying tree. Finally, the <code>Actions</code> view lists all children of the current node that belong to the trace. Actions leading to subtrees containing success nodes are indicated by small checkmarks.</p>
 <p>Navigation operations can be undone by clicking on the <code>Undo</code> icon on the header of the tree view or by using shortcut <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-d">D</kbd></span> followed by <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-z">Z</kbd></span>. </p>
 <h2 id="tips-and-shortcuts">Tips and Shortcuts</h2>
 <ul>
@@ -1616,6 +1603,7 @@
 <li>The Github Copilot Code Actions can get in the way of using Delphyne and can be disabled with the <code>"github.copilot.editor.enableCodeActions": false</code> setting.</li>
 <li>When editing YAML files (and demonstration files in particular), VSCode allows semantically expanding and shrinking the selection with respect to the underlying syntax tree via <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-control">Ctrl</kbd><span>+</span><kbd class="key-shift">Shift</kbd><span>+</span><kbd class="key-arrow-left">Left</kbd></span> and <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-control">Ctrl</kbd><span>+</span><kbd class="key-shift">Shift</kbd><span>+</span><kbd class="key-arrow-right">Right</kbd></span>.</li>
 <li>To close a tab (and in particular a command tab), you can use shortcut <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-w">W</kbd></span>, followed by <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-d">D</kbd></span> to decline saving the tab's content if prompted.</li>
+<li>Since command outputs can be verbose, it is recommended to start folding sections starting at level 4 (using <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-k">K</kbd><span>+</span><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-4">4</kbd></span>) and then unfolding sections as needed.</li>
 </ul>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <h3 id="accessing-log-information">Accessing log information</h3>
@@ -1627,11 +1615,9 @@
 </ul>
 <p>You should consult those channels if anything goes wrong. Also, to output more information, you can ask the extension to log more information by raising the log level to <code>Debug</code> or <code>Trace</code> via the <code>Developer: Set Log Level</code> command.</p>
 <h3 id="killing-a-server-instance-still-running-in-the-background">Killing a server instance still running in the background</h3>
-<p>After VSCode quitted unexpectedly, the language server may still be running in background, which may cause problem when trying to restart the extension. On Unix systems, the language server can be killed by killing the program listening to port 8000:</p>
-<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span><span class="nb">kill</span><span class="w"> </span>-9<span class="w"> </span><span class="k">$(</span>sudo<span class="w"> </span>lsof<span class="w"> </span>-t<span class="w"> </span>-i<span class="w"> </span>:8000<span class="k">)</span>
+<p>After VSCode quitted unexpectedly, the language server may still be running in background, which may cause problem when trying to restart the extension. On Unix systems, the language server can be killed by killing the program listening to port 3008:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span><span class="nb">kill</span><span class="w"> </span>-9<span class="w"> </span><span class="k">$(</span>sudo<span class="w"> </span>lsof<span class="w"> </span>-t<span class="w"> </span>-i<span class="w"> </span>:3008<span class="k">)</span>
 </code></pre></div>
-<h3 id="debug-server">Debugging the language server</h3>
-<p>To debug the language server or even specific strategies, it is useful to attach a debugger to the language server. To do so, you should open VSCode at the root of the Delphyne repository and use the <code>Debug Server</code> debugging profile. This will start the server in debug mode (on port 8000). Starting the Delphyne extension when a server instance is running already will cause the extension to use this instance (as confirmed by the log output in the <code>Delphyne</code> channel). You can then put arbitrary breakpoints in the server source code or even in strategy code.</p>
 <div class="footnote">
 <hr />
 <ol>
