@@ -10,7 +10,8 @@ docs/index.md file. This is done in two passes:
 2. Convert all remaining relative markdown links into absolute links to
    the documentation. Specifically, every markdown link of the form
    `[...](./xxx.md)` must be translated into
-   `[...]({SITE_BASE}/xxx.md)`.
+   `[...]({SITE_BASE}/xxx/)`.
+3. Remove header ids of the form `{#...}`.
 
 The script emits the resulting README.md file on stdout.
 """
@@ -55,14 +56,20 @@ def apply_substitutions(
 def convert_relative_links(content: str, site_base: str) -> str:
     """Convert relative markdown links to absolute links"""
     # Pattern to match markdown links of the form [text](./path.md)
-    pattern = r"\[([^\]]+)\]\(\./([^)]+\.md)\)"
+    pattern = r"\[([^\]]+)\]\(\./([^)]+)\.md\)"
 
     def replace_link(match: re.Match[str]) -> str:
         text = match.group(1)
         path = match.group(2)
-        return f"[{text}]({site_base}/{path})"
+        return f"[{text}]({site_base}/{path}/)"
 
     return re.sub(pattern, replace_link, content)
+
+
+def remove_header_ids(content: str) -> str:
+    """Remove header ids of the form {#...}"""
+    pattern = r" \{#[^}]*\}"
+    return re.sub(pattern, "", content)
 
 
 def main() -> None:
@@ -84,6 +91,9 @@ def main() -> None:
 
     # Convert relative links to absolute links
     content = convert_relative_links(content, SITE_BASE)
+
+    # Remove header ids
+    content = remove_header_ids(content)
 
     # Output the result
     print(content)

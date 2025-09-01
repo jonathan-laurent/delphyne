@@ -74,7 +74,7 @@ Here, choice points are resolved via zero-shot prompting. To increase reliabilit
 ![](docs/assets/screenshot/readme-extension-example/dark.png#gh-dark-mode-only)
 ![](docs/assets/screenshot/readme-extension-example/light.png#gh-light-mode-only)
 
-A complete explanation of this example is provided in the [Delphyne Manual](https://jonathan-laurent.github.io/delphyne/latest/manual/overview.md).
+A complete explanation of this example is provided in the [Delphyne Manual](https://jonathan-laurent.github.io/delphyne/latest/manual/overview/).
 
 ## Features Overview
 
@@ -88,7 +88,7 @@ A complete explanation of this example is provided in the [Delphyne Manual](http
 - **Access a rich library of components**
 - **Run replicable experiments**
 
-## Installation {#installation}
+## Installation
 
 First, download the Delphyne repository and enter it:
 
@@ -122,12 +122,12 @@ You can verify your installation by running the short test suite:
 make test
 ```
 
-To test the Delphyne extension, we recommend reading the corresponding [manual chapter](https://jonathan-laurent.github.io/delphyne/latest/manual/extension.md), opening the `examples/find_invariants/abduct_and_branch.demo.yaml` demonstration file, and then executing the `Delphyne: Evaluate All Demonstrations in File` command (accessible from the palette via `Ctrl+Shift+P`). Diagnostics should appear to indicate that all tests passed.
+To test the Delphyne extension, we recommend reading the corresponding [manual chapter](https://jonathan-laurent.github.io/delphyne/latest/manual/extension/), opening the `examples/find_invariants/abduct_and_branch.demo.yaml` demonstration file, and then executing the `Delphyne: Evaluate All Demonstrations in File` command (accessible from the palette via `Ctrl+Shift+P`). Diagnostics should appear to indicate that all tests passed.
 
 ## Learning More
 
-- The key concepts underlying Delphyne are presented in the [Manual](https://jonathan-laurent.github.io/delphyne/latest/manual/overview.md).
-- A complete [API Reference](https://jonathan-laurent.github.io/delphyne/latest/reference/strategies/trees.md) is also available, along with a series of [How-To Guides](https://jonathan-laurent.github.io/delphyne/latest/how-to-guides.md).
+- The key concepts underlying Delphyne are presented in the [Manual](https://jonathan-laurent.github.io/delphyne/latest/manual/overview/).
+- A complete [API Reference](https://jonathan-laurent.github.io/delphyne/latest/reference/strategies/trees/) is also available, along with a series of [How-To Guides](https://jonathan-laurent.github.io/delphyne/latest/how-to-guides/).
 - The `examples` directory provides a gallery of Delphyne programs (see  `README` files).
 - For a more technical presentation, see the original paper that introduces Delphyne: [_Oracular Programming: A Modular Foundation for Building LLM-Enabled Software_](https://arxiv.org/abs/2502.05310).
 
