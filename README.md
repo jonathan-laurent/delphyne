@@ -1,6 +1,10 @@
 <p align="center">
-  <img src="docs/assets/logos/black/banner.png#gh-light-mode-only" alt="Delphyne Logo" width="50%"/>
-  <img src="docs/assets/logos/white/banner.png#gh-dark-mode-only" alt="Delphyne Logo" width="50%"/>
+  <a href="https://jonathan-laurent.github.io/delphyne/latest#gh-light-mode-only">
+    <img src="docs/assets/logos/black/banner.png#gh-light-mode-only" alt="Delphyne Logo" width="50%"/>
+  </a>
+  <a href="https://jonathan-laurent.github.io/delphyne/latest#gh-dark-mode-only">
+    <img src="docs/assets/logos/white/banner.png#gh-dark-mode-only" alt="Delphyne Logo" width="50%"/>
+  </a>
 </p>
 
 Delphyne is a programming framework for building _reliable_ and _modular_ LLM applications. It offers a powerful approach for integrating traditional programming and prompting.

@@ -159,7 +159,6 @@ readme:
 	python scripts/generate_readme.py > README.md
 
 
-
 # Folders and files to ignore by repomix.
 # Use commas after each item except the last.
 REPOMIX_IGNORE = \
