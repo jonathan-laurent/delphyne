@@ -7,10 +7,12 @@ Following the previous [Overview](./overview.md) chapter, we now provide more de
 A _strategy_ is a program with unresolved choice points, which can be reified into a search tree. Delphyne allows writing strategies as Python [generators](https://wiki.python.org/moin/Generators) that yield internal tree nodes and receive associated actions in return. The [`Strategy`][delphyne.Strategy] type has three type parameters, corresponding to the strategy's _signature_ (i.e., the type of nodes it can emit), its associated _inner policy type_ and its _return type_. Strategy functions are typically defined via the [`strategy`][delphyne.strategy] decorator, which creates functions that return [`StrategyInstance`][delphyne.StrategyInstance] values, wrapping the underlying generator while adding some metadata and convenience methods (e.g., [`using`][delphyne.StrategyInstance.using]).
 
 ```py
-@strategy  # Example from the previous chapter
+@strategy # (1)!
 def find_param_value(
     expr: str) -> Strategy[Branch | Fail, FindParamValueIP, int]: ...
 ```
+
+1. Example from the [previous chapter](./overview.md).
 
 Query functions can have arguments of arbitrary type (including functions). When launching strategies from [commands](./extension.md#commands) and in the presence of type annotations, arguments are automatically unserialized using Pydantic. Thus, it is _useful_ for _top-level strategies_ to have serializable argument types that are properly annotated.
 

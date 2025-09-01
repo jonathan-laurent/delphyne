@@ -18,9 +18,9 @@ type CacheMode = Literal["read_write", "off", "create", "replay"]
 """
 Caching mode:
 
-- `off`: the cache is disabled
+- `off`: the cache is disabled.
 - `read_write`: values can be read and written to the cache (no extra
-      check is made)
+      check is made).
 - `create`: the cache is used in write-only mode, and an exception is
       raided if a cached value already exists.
 - `replay`: all requests must hit the cache or an exception is raised.
