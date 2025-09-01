@@ -1,4 +1,4 @@
-.PHONY: pyright clean clean-ignored test full-test full-clean schemas stubs install doc-logo cloc deploy-doc-release deploy-doc-dev prepare-release release repomix
+.PHONY: pyright clean clean-ignored test full-test full-clean schemas stubs install doc-logo cloc count-doc-words deploy-doc-release deploy-doc-dev prepare-release release repomix
 
 RELEASE_SCRIPT := python scripts/prepare_release.py
 
@@ -143,6 +143,15 @@ release:
 # Count the number of lines of code
 cloc:
 	cloc . --exclude-dir=node_modules,out,.vscode-test --include-lang=python,typescript
+
+
+# Estimate the size of the documentation. A page is traditionally defined as 250
+# words (double spaced) or 500 words (single spaced).
+count-doc-words:
+	@echo "Number of words in mkdocs website (excluding references):"
+	find docs -name '*.md' -exec cat {} + | wc -w
+	@echo "Number of words in Python docstrings:"
+	rg --multiline --multiline-dotall '"""(.*?)"""' -o src | wc -w
 
 
 # Folders and files to ignore by repomix.
