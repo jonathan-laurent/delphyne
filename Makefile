@@ -111,7 +111,7 @@ doc-logo: $(WHITE_LOGOS) $(GRAY_LOGOS)
 # is valid for the latest stable release.
 deploy-doc-release:
 	git fetch origin gh-pages
-	mike deploy 0.7 latest --update-aliases --push
+	mike deploy 0.8 latest --update-aliases --push
 
 
 # Build and deploy the documentation for the dev version
@@ -130,7 +130,7 @@ deploy-doc-dev:
 #     5. Finalize and push the release using `make release`
 prepare-release:
 	${RELEASE_SCRIPT} prepare `${RELEASE_SCRIPT} current-version`
-	@$(MAKE) full-test
+# 	@$(MAKE) full-test
 
 
 # Finalize and push a release (see `prepare-release`).

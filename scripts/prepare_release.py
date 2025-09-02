@@ -132,8 +132,8 @@ def update_makefile_mike_deploy(version: str, project_root: Path) -> None:
         content = f.read()
 
     # Pattern to match mike deploy X.Y latest --push
-    pattern = r"mike deploy \d+\.\d+ latest --push"
-    replacement = f"mike deploy {major_minor} latest --push"
+    pattern = r"mike deploy \d+\.\d+ latest --update-aliases --push"
+    replacement = f"mike deploy {major_minor} latest --update-aliases --push"
 
     old_matches = re.findall(pattern, content)
     new_content = re.sub(pattern, replacement, content)
