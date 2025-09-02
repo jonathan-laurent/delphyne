@@ -4,7 +4,7 @@ Delphyne includes a demonstration language for writing and maintaining few-shot 
 
 ## Demonstration Files
 
-Demonstrations can be written in demonstration files with a `.demo.yaml` extension. A demonstration file features a list of demonstrations ([`Demo`][delphyne.core.demos.Demo]). Each demonstration can be separately evaluated. Many short examples can be found in the demonstation file from the Delphyne's test suite:
+Demonstrations can be written in demonstration files with a `.demo.yaml` extension. A demonstration file features a list of demonstrations ([`Demo`][delphyne.core.demos.Demo]). Each demonstration can be separately evaluated. Many short examples can be found in the demonstration file from Delphyne's test suite:
 
 
 ??? info "Source for `tests/example_strategies.demo.yaml`"
@@ -45,7 +45,7 @@ Strategy demonstrations have the following shape:
         - ...
 ```
 
-The Delphyne VSCode extension automatically checks the syntactic well-formedness of demonstrations (in addition of allowing their evaluation). For explanations on specific fields, see the [API Reference][delphyne.core.demos.StrategyDemo]. Tests are expressed using a custom DSL that we describe below.
+The Delphyne VSCode extension automatically checks the syntactic well-formedness of demonstrations (in addition to allowing their evaluation). For explanations on specific fields, see the [API Reference][delphyne.core.demos.StrategyDemo]. Tests are expressed using a custom DSL that we describe below.
 
 ## Demonstration Tests
     

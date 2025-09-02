@@ -14,7 +14,7 @@ Delphyne offers a [layered API](https://www.fast.ai/posts/2020-02-13-fastai-A-La
 - [**Search Stream**][delphyne.Stream]: a (possibly infinite) iterator of yielded solutions and resource management messages (requesting authorization for spending some resource _budget_ or declaring actual resource consumption). Search streams follow the [search stream protocol][delphyne.core.streams] and can be assembled using [standard combinators][delphyne.Stream].
 - [**Budget**][delphyne.Budget]: a finite-support function from resource consumption metrics (e.g. [number of requests][delphyne.NUM_REQUESTS], [LLM API spending in dollars][delphyne.DOLLAR_PRICE]) to real values.
 - [**Stream Transformer**][delphyne.StreamTransformer]: a function that maps a search stream into another search stream (e.g. [`with_budget`][delphyne.with_budget] and [`take`][delphyne.take]). Stream transformers can be composed with search policies, prompting policies and other stream transformers using `@`.
-- [**Tree Transformer**][delphyne.ContextualTreeTransformer]: a function that maps a tree into another one, possible with a different signature (e.g. [`elim_compute`][delphyne.elim_compute], [`elim_messages`][delphyne.elim_messages]). Can be composed with search policies using `@` to modify their accepted signature.
+- [**Tree Transformer**][delphyne.ContextualTreeTransformer]: a function that maps a tree into another one, possibly with a different signature (e.g. [`elim_compute`][delphyne.elim_compute], [`elim_messages`][delphyne.elim_messages]). Can be composed with search policies using `@` to modify their accepted signature.
 
 ## Defining New Search Policies
 

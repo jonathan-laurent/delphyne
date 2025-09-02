@@ -73,12 +73,12 @@ class FindParamValueIP:
 @dp.ensure_compatible(find_param_value)
 def serial_policy(
     model_name: dp.StandardModelName = "gpt-5-mini",
-    proof_reattempts: int = 1
+    proof_retries: int = 1
 ) -> dp.Policy[Branch | Fail, FindParamValueIP]:
     model = dp.standard_model(model_name)
     return dp.dfs() & FindParamValueIP(
         guess=dp.few_shot(model),
-        prove=dp.take(proof_reattempts + 1) @ dp.few_shot(model))
+        prove=dp.take(proof_retries + 1) @ dp.few_shot(model))
 
 
 @dp.ensure_compatible(find_param_value)
