@@ -1,0 +1,180 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            I am executing a program that contains nondeterministic assignments along with assertions (e.g., in the form of `ensure` and `fail` statements). I am stuck at one of these nondeterministic assignments and your goal is to generate an assigned value, in such a way that the program can go on and not fail any assertion.
+
+            More specifically, I'll give you three pieces of information:
+
+            - A nondeterministic program.
+            - The name of the variable that is being assigned at the program location where I am currently stuck.
+            - Some values for a number of local variables.
+
+            Your job is to generate a correct value to assign. The expected type of this value is indicated inside the nondeterministic assignment operator.
+
+            Terminate your answer with a code block (delimited by triple backquotes) that contains a YAML object of the requested type. Do not wrap this YAML value into an object with a field named like the assigned variable.
+        - role: user
+          content: |-
+            Program:
+
+            ```
+            @strategy
+            def find_param_value(expr: str) -> Strategy[Branch | Fail, IPDict, int]:
+                """
+                Find an integer `n` that makes a given math expression nonnegative
+                for all real `x`. Prove that the resulting expression is nonnegative
+                by rewriting it into an equivalent form.
+                """
+                x, n = sp.Symbol("x", dummy=True, real=True), sp.Symbol("n", dummy=True)
+                symbs = {"x": x, "n": n}
+                try:
+                    n_val = yield from dp.guess(int, using=[expr])
+                    expr_sp = sp.parse_expr(expr, symbs).subs({n: n_val})
+                    equiv = yield from dp.guess(str, using=[str(expr_sp)])
+                    equiv_sp = sp.parse_expr(equiv, symbs)
+                    equivalent = (expr_sp - equiv_sp).simplify() == 0
+                    yield from dp.ensure(equivalent, "not_equivalent")
+                    yield from dp.ensure(equiv_sp.is_nonnegative, "not_nonneg")
+                    return n_val
+                except Exception as e:
+                    assert_never((yield from dp.fail("sympy_error", message=str(e))))
+            ```
+
+            Variable being currently assigned: n_val
+
+            Selected local variables:
+
+            ```yaml
+            expr: 2*x**2 - 4*x + n
+            ```
+
+            Type of value to generate (as a YAML object): <class 'int'>
+      num_completions: 1
+      options:
+        model: gpt-5-mini
+      tools: []
+      structured_output: null
+    iter: 1
+  output:
+    outputs:
+      - content: |-
+          ```
+          2
+          ```
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1.0
+        num_completions: 1.0
+        input_tokens: 499.0
+        output_tokens: 654.0
+        cached_input_tokens: 0.0
+        price: 0.0001411
+    log_items: []
+    model_name: gpt-5-mini-2025-08-07
+    usage_info:
+      completion_tokens: 654
+      prompt_tokens: 499
+      total_tokens: 1153
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 640
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            I am executing a program that contains nondeterministic assignments along with assertions (e.g., in the form of `ensure` and `fail` statements). I am stuck at one of these nondeterministic assignments and your goal is to generate an assigned value, in such a way that the program can go on and not fail any assertion.
+
+            More specifically, I'll give you three pieces of information:
+
+            - A nondeterministic program.
+            - The name of the variable that is being assigned at the program location where I am currently stuck.
+            - Some values for a number of local variables.
+
+            Your job is to generate a correct value to assign. The expected type of this value is indicated inside the nondeterministic assignment operator.
+
+            Terminate your answer with a code block (delimited by triple backquotes) that contains a YAML object of the requested type. Do not wrap this YAML value into an object with a field named like the assigned variable.
+        - role: user
+          content: |-
+            Program:
+
+            ```
+            @strategy
+            def find_param_value(expr: str) -> Strategy[Branch | Fail, IPDict, int]:
+                """
+                Find an integer `n` that makes a given math expression nonnegative
+                for all real `x`. Prove that the resulting expression is nonnegative
+                by rewriting it into an equivalent form.
+                """
+                x, n = sp.Symbol("x", dummy=True, real=True), sp.Symbol("n", dummy=True)
+                symbs = {"x": x, "n": n}
+                try:
+                    n_val = yield from dp.guess(int, using=[expr])
+                    expr_sp = sp.parse_expr(expr, symbs).subs({n: n_val})
+                    equiv = yield from dp.guess(str, using=[str(expr_sp)])
+                    equiv_sp = sp.parse_expr(equiv, symbs)
+                    equivalent = (expr_sp - equiv_sp).simplify() == 0
+                    yield from dp.ensure(equivalent, "not_equivalent")
+                    yield from dp.ensure(equiv_sp.is_nonnegative, "not_nonneg")
+                    return n_val
+                except Exception as e:
+                    assert_never((yield from dp.fail("sympy_error", message=str(e))))
+            ```
+
+            Variable being currently assigned: equiv
+
+            Selected local variables:
+
+            ```yaml
+            str(expr_sp): 2*x**2 - 4*x + 2
+            ```
+
+            Type of value to generate (as a YAML object): <class 'str'>
+      num_completions: 1
+      options:
+        model: gpt-5-mini
+      tools: []
+      structured_output: null
+    iter: 1
+  output:
+    outputs:
+      - content: |-
+          ```
+          "2*(x-1)**2"
+          ```
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1.0
+        num_completions: 1.0
+        input_tokens: 501.0
+        output_tokens: 405.0
+        cached_input_tokens: 0.0
+        price: 0.00013537499999999997
+    log_items: []
+    model_name: gpt-5-mini-2025-08-07
+    usage_info:
+      completion_tokens: 405
+      prompt_tokens: 501
+      total_tokens: 906
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 384
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0

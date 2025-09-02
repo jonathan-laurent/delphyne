@@ -154,15 +154,11 @@ class DelphyneCLI:
             spec = ty.pydantic_load(CommandSpec, yaml.safe_load(f))
         cmd, args = spec.load(config.base)
         if cache:
-            assert hasattr(args, "cache_dir"), (
-                "Command does not have a `cache_dir` argument."
+            assert hasattr(args, "cache_file"), (
+                "Command does not have a `cache_file` argument."
             )
-            assert hasattr(args, "cache_format"), (
-                "Command does not have a `cache_format` argument."
-            )
-            if not args.cache_dir:
-                args.cache_dir = file_path.stem
-            args.cache_format = "db"
+            if not args.cache_file:
+                args.cache_file = file_path.stem + ".yaml"
         progress = StatusIndicator(sys.stderr, show=not no_status)
         res = std.run_command(cmd, args, config, on_status=progress.on_status)
         progress.done()

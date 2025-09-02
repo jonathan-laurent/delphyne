@@ -1,7 +1,7 @@
 name: test_abduction_experiment
 description: null
 configs:
-  edc2c77a-62ca-4b0f-8f98-6ac2fa66fe30:
+  245ea84b-e1cb-42c8-92a5-27f25f7abe5f:
     params:
       bench_name: '1'
       model_cycle:
@@ -15,7 +15,7 @@ configs:
       max_dollar_budget: 0.1
       seed: 0
     status: done
-  703c26fe-06e6-4f05-ae9e-26495d0d5564:
+  72cb2790-134e-4037-91a0-1a524ff08c3b:
     params:
       bench_name: '7'
       model_cycle:

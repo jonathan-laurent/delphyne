@@ -1,0 +1,103 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            Given a sympy expression featuring a real variable `x` and an
+            integer parameter `n`, find an integer value for `n` such that the
+            expression is non-negative for all real `x`. Terminate your answer
+            with a code block delimited by triple backquotes containing an integer.
+        - role: user
+          content: 'expr: 2*x**2 - 4*x + n'
+      num_completions: 1
+      options:
+        model: gpt-5-mini
+      tools: []
+      structured_output: null
+    iter: 1
+  output:
+    outputs:
+      - content: |-
+          The quadratic has minimum at x = 1 with value n - 2. For non-negativity we need n - 2 >= 0, so any integer n >= 2 works. One valid choice is
+
+          ```
+          2
+          ```
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1.0
+        num_completions: 1.0
+        input_tokens: 84.0
+        output_tokens: 250.0
+        cached_input_tokens: 0.0
+        price: 2.7249999999999998e-05
+    log_items: []
+    model_name: gpt-5-mini-2025-08-07
+    usage_info:
+      completion_tokens: 250
+      prompt_tokens: 84
+      total_tokens: 334
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 192
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            Given a sympy expression featuring variable `x`, rewrite it into an
+            equivalent form that makes it clear that the expression is
+            nonnegative for all real values of `x`. Terminate your answer with a
+            code block delimited by triple backquotes. This block must contain a
+            new sympy expression, or nothing if no rewriting could be found.
+        - role: user
+          content: 'expr: 2*x**2 - 4*x + 2'
+      num_completions: 1
+      options:
+        model: gpt-5-mini
+      tools: []
+      structured_output: null
+    iter: 1
+  output:
+    outputs:
+      - content: |-
+          The expression is a perfect square:
+
+          ```
+          2*(x - 1)**2
+          ```
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1.0
+        num_completions: 1.0
+        input_tokens: 97.0
+        output_tokens: 284.0
+        cached_input_tokens: 0.0
+        price: 3.135e-05
+    log_items: []
+    model_name: gpt-5-mini-2025-08-07
+    usage_info:
+      completion_tokens: 284
+      prompt_tokens: 97
+      total_tokens: 381
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 256
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0

@@ -75,6 +75,7 @@ def load_cache(
     # Yield the cache
     yield Cache(cache, mode)
     # Upon destruction, write the cache back to disk
+    file.parent.mkdir(parents=True, exist_ok=True)
     with file.open("w") as f:
         assoc = [_Assoc(i, o) for i, o in cache.items()]
         assoc_yaml = assoc_adapter.dump_python(assoc)
