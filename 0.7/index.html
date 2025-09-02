@@ -1372,11 +1372,10 @@
 </p>
 
 <p>Delphyne is a programming framework for building <em>reliable</em> and <em>modular</em> LLM applications. It offers a powerful approach for integrating traditional programming and prompting.</p>
-<p>Users can describe high-level problem solving <em>strategies</em> as arbitrary programs with unresolved choice points. <em>Policies</em> for navigating the resulting search spaces with LLMs can be independently assembled and tuned. Examples of correct choices can be expressed in a dedicated <em>demonstration language</em> that supports interactive test-driven developement.</p>
+<p>Users can describe high-level problem solving <em>strategies</em> as arbitrary programs with unresolved choice points. <em>Policies</em> for navigating the resulting search spaces with LLMs can be independently assembled and tuned. Examples of correct choices can be expressed in a dedicated <em>demonstration language</em> that supports interactive, test-driven development.</p>
 <h2 id="quick-example">Quick Example</h2>
 <p>Let us illustrate Delphyne with a complete example. Consider the task of  finding a parameter value that makes a mathematical expression nonnegative for all values of <code>x</code>. For example, given expression <code>x² - 2x + n</code>, <code>n = -1</code> is an incorrect answer (take <code>x = 0</code>), but <code>n = 1</code> is a correct answer since <code>x² - 2x + 1 = (x - 1)²</code>. Here is a Delphyne <strong>strategy</strong> for solving this problem:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">sympy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">assert_never</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">delphyne</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dp</span> 
 <span class="kn">from</span><span class="w"> </span><span class="nn">delphyne</span><span class="w"> </span><span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">Strategy</span><span class="p">,</span> <span class="n">strategy</span>
 
@@ -1399,7 +1398,7 @@
         <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">equiv_sp</span><span class="o">.</span><span class="n">is_nonnegative</span><span class="p">,</span> <span class="s2">&quot;not_nonneg&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">n_val</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">assert_never</span><span class="p">((</span><span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="s2">&quot;sympy_error&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))))</span>
+        <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="s2">&quot;sympy_error&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 </code></pre></div>
 <p>A strategy is a program with unresolved choice points, represented here by the <code>guess</code> operator. At runtime, LLM oracles are tasked with producing return values for <code>guess</code>, in such a way as to pass all <code>ensure</code> assertions. Such a program induces a search tree that can be explored in many different ways, as specified by a separate <strong>policy</strong>:</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">serial_policy</span><span class="p">():</span>
@@ -1428,26 +1427,26 @@
 <p>A complete explanation of this example is provided in the <a href="manual/overview/">Delphyne Manual</a>.</p>
 <h2 id="features-overview">Features Overview</h2>
 <ul>
-<li><strong>Separate your business logic from your search logic</strong></li>
-<li><strong>Write and repair demonstrations interactively</strong></li>
-<li><strong>Compose heterogeneous strategies in a modular fashion</strong></li>
-<li><strong>Refactor without fear</strong></li>
-<li><strong>Extend Delphyne with new search algorithms</strong></li>
-<li><strong>Precisely control your resource spending</strong></li>
-<li><strong>Leverage the full Python ecosystem</strong></li>
-<li><strong>Access a rich library of components</strong></li>
-<li><strong>Run replicable experiments</strong></li>
+<li><strong>Separate your business logic from your search logic.</strong> Prompting offers a powerful but unreliable programming primitive, making validation and search essential. At the same time, retries and backtracking are costly. Resolving this tension requires careful tuning. Delphyne enforces a strict separation between <em>business logic</em> (i.e. strategies) and <em>search logic</em> (i.e. policies), allowing users to iterate on the latter without any refactoring.</li>
+<li><strong>Write and repair demonstrations interactively.</strong> Few-shot examples are crucial components of an LLM pipeline, but writing them and keeping them consistent as the pipeline evolves can be error-prone and time-consuming. Delphyne's dedicated <a href="manual/demos/"><em>demonstration language</em></a> allows bundling examples with unit tests and updating them interactively.</li>
+<li><strong>Refactor without fear.</strong> Delphyne leverages <em>static types</em> to enforce consistency between strategies and policies, and a <em>testing DSL</em> to enforce consistency between strategies and demonstrations. Modifying policies is <em>guaranteed</em> to never break demonstrations.</li>
+<li><strong>Compose heterogeneous strategies in a modular fashion.</strong> Delphyne allows modularly composing heterogeneous strategies while keeping the associated policies independent. This is enabled by having arbitrary search algorithms cooperate through a <a href="reference/policies/streams/">shared protocol</a>. In addition, any prompt can be <em>locally</em> and <em>transparently</em> refined into a dedicated strategy.</li>
+<li><strong>Leverage advanced search algorithms.</strong> Thanks to an <a href="manual/strategies/#adding-effects">extensible effect system</a>, strategies can produce search trees with arbitrary metadata, structure, and shape, which advanced algorithms (e.g. <a href="https://arxiv.org/pdf/2205.11491">HyperTree Proof Search</a>) can exploit. Tree transformers enable conversions between tree types, allowing the same strategy to pair with vastly different algorithms.</li>
+<li><strong>Precisely control your resource spending.</strong> Delphyne offers a resource-aware, combinator-based <a href="manual/policies/">language</a> for defining search policies that prevents overspending <em>by construction</em>.</li>
+<li><strong>Leverage the full Python ecosystem.</strong> Delphyne integrates seamlessly with Python libraries and tooling. It is fully typed and works smoothly with the Python debugger.</li>
+<li><strong>Access a rich library of components.</strong> Delphyne comes with batteries included: its standard library supports many models and prompting idioms, including structured output, tool use, classification, assistant priming, and chain of thought.</li>
+<li><strong>Run reproducible experiments.</strong> Delphyne provides utilities for benchmarking and tuning LLM pipelines. Request caching allows experiments to be replicated at no cost.</li>
 </ul>
 <h2 id="installation">Installation</h2>
 <p>First, download the Delphyne repository and enter it:</p>
 <div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:jonathan-laurent/delphyne.git
 <span class="nb">cd</span><span class="w"> </span>delphyne
-git<span class="w"> </span>checkout<span class="w"> </span>v0.7.0<span class="w">  </span><span class="c1"># latest stable version</span>
+git<span class="w"> </span>checkout<span class="w"> </span>v0.8.0<span class="w">  </span><span class="c1"># latest stable version</span>
 </code></pre></div>
 <p>Then, to install the Delphyne library and CLI in your current Python environment:</p>
 <div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
 </code></pre></div>
-<p>Note that Python 3.12 (or more recent) is required. Next, you should build the Delphyne vscode extension. For this, assuming you have <a href="https://nodejs.org/en/download">Node.js</a> installed (version 22 or later), run:</p>
+<p>Note that Python 3.12 (or more recent) is required, since Delphyne makes heavy use of <a href="https://peps.python.org/pep-0695/">PEP 695 generics</a>. Next, you should build the Delphyne vscode extension. For this, assuming you have <a href="https://nodejs.org/en/download">Node.js</a> installed (version 22 or later), run:</p>
 <div class="highlight"><pre><span></span><code>cd vscode-ui
 npm install
 npx vsce package

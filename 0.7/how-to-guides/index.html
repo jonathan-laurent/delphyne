@@ -1350,14 +1350,14 @@
 <li>As your project matures, consider adding tests along with a <code>pyproject.toml</code> file.</li>
 </ol>
 <h2 id="running">Running an Oracular Program</h2>
-<p>There are mostly two ways to run oracular programs:</p>
+<p>There are mainly two ways to run oracular programs:</p>
 <ul>
 <li><strong>Using <a class="autorefs autorefs-internal" title="run_toplevel" href="../reference/stdlib/basic/#delphyne.StrategyInstance.run_toplevel"><code>StrategyInstance.run_toplevel</code></a></strong>: As demonstrated in the <a href="../manual/overview/#writing-a-policy">Overview</a>, one can manually create a <a class="autorefs autorefs-internal" title="PolicyEnv" href="../reference/stdlib/environments/#delphyne.PolicyEnv">policy environment</a> and extract a <a class="autorefs autorefs-internal" title="Stream
 
 
   
       dataclass
-  " href="../reference/stdlib/streams/#delphyne.Stream">search stream</a> from a pair of a strategy instance and of a policy. This can be done within any Python script, but offers by default no support for exporting logs and traces, displaying progress, caching LLM requests, handling interruption, etc... Enabling all these features requires substantial additional setup.</li>
+  " href="../reference/stdlib/streams/#delphyne.Stream">search stream</a> from a pair of a strategy instance and of a policy. This can be done within any Python script, but by default offers no support for exporting logs and traces, displaying progress, caching LLM requests, handling interruption, etc... Enabling all these features requires substantial additional setup.</li>
 <li><strong>Running a command</strong>: Instead, a <a href="../manual/extension/#commands">command file</a> can be created that specifies a strategy instance, a policy, some search budget along with <a class="autorefs autorefs-internal" title="RunStrategyArgs
 
 
