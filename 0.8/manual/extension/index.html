@@ -1,0 +1,1693 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../demos/">
+      
+      
+        <link rel="next" href="../../how-to-guides/">
+      
+      
+      <link rel="icon" href="../../None">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>VSCode Extension - Delphyne</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="https://unpkg.com/katex@0/dist/katex.min.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#the-delphyne-vscode-extension" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Delphyne" class="md-header__button md-logo" aria-label="Delphyne" data-md-component="logo">
+      
+  <img src="../../assets/logos/white/mini.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Delphyne
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              VSCode Extension
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Delphyne" class="md-nav__button md-logo" aria-label="Delphyne" data-md-component="logo">
+      
+  <img src="../../assets/logos/white/mini.png" alt="logo">
+
+    </a>
+    Delphyne
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Manual
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Manual
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../strategies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Strategy Language
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../policies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Policy Language
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Demonstration Language
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    VSCode Extension
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    VSCode Extension
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#setting-up-the-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setting Up The Extension
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setting Up The Extension">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#editor-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommended Editor Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#starting-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      Starting The Delphyne Server
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#project-root" class="md-nav__link">
+    <span class="md-ellipsis">
+      Detecting Project Root Directories
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Global and Local Configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#editing-demonstrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Editing Demonstrations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running Commands
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#navigating-trees" class="md-nav__link">
+    <span class="md-ellipsis">
+      Navigating Strategy Trees
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tips-and-shortcuts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tips and Shortcuts
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accessing-log-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      Accessing log information
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#killing-a-server-instance-still-running-in-the-background" class="md-nav__link">
+    <span class="md-ellipsis">
+      Killing a server instance still running in the background
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to-guides/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    How-To Guides
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Strategy Language
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            Strategy Language
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/strategies/trees/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Trees and Spaces
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/strategies/strategies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Strategies and Reification
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/strategies/queries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Queries and Chats
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/strategies/traces/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    References and Traces
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/strategies/misc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Miscellaneous
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Policy Language
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Policy Language
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/policies/definitions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Definitions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/policies/streams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Search Streams
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Demonstration Language
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Demonstration Language
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/demos/definitions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Definitions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/demos/interpreter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Interpreter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Standard Library
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            Standard Library
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/stdlib/basic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Basic
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/stdlib/queries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Queries
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/stdlib/streams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Streams
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/stdlib/environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Environments
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/stdlib/effects/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Effects
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/stdlib/algorithms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Algorithms
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/stdlib/commands/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Commands
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/stdlib/experiments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Experiments
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Delphyne CLI
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#setting-up-the-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setting Up The Extension
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setting Up The Extension">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#editor-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommended Editor Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#starting-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      Starting The Delphyne Server
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#project-root" class="md-nav__link">
+    <span class="md-ellipsis">
+      Detecting Project Root Directories
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config" class="md-nav__link">
+    <span class="md-ellipsis">
+      Global and Local Configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#editing-demonstrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Editing Demonstrations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running Commands
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#navigating-trees" class="md-nav__link">
+    <span class="md-ellipsis">
+      Navigating Strategy Trees
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tips-and-shortcuts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Tips and Shortcuts
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accessing-log-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      Accessing log information
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#killing-a-server-instance-still-running-in-the-background" class="md-nav__link">
+    <span class="md-ellipsis">
+      Killing a server instance still running in the background
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="the-delphyne-vscode-extension">The Delphyne VSCode Extension</h1>
+<p>A <em>Visual Studio Code</em> extension is available for interactively writing demonstrations, navigating strategy trees, and running oracular programs.</p>
+<p align="center">
+  <img src="../../assets/screenshot/extension-screenshot/dark.png#only-dark" alt="Extension Screenshot" style="width: 100%;">
+  <img src="../../assets/screenshot/extension-screenshot/light.png#only-light" alt="Extension Screenshot" style="width: 100%;">
+</p>
+
+<h2 id="setting-up-the-extension">Setting Up The Extension</h2>
+<h3 id="editor-config">Recommended Editor Configuration</h3>
+<p>We provide instructions for installing the Delphyne extension on the documentation <a href="../../#installation">home page</a>. For the best experience, we recommend also installing the following VSCode extensions:</p>
+<ul>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml">YAML Language Support</a></li>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=samuelcolvin.jinjahtml">Better Jinja</a></li>
+</ul>
+<p>In addition, for optimal readability of demonstration files, line wrapping should be activated for YAML files. We recommend doing the same for Jinja files. Finally, we recommend associating the <code>*.jinja</code> extension with the <code>jinja-md</code> file format. See below for the recommended JSON configuration, which you can copy to your VSCode settings.</p>
+<details>
+<summary>.vscode/settings.json</summary>
+<div class="highlight"><pre><span></span><code><span class="nt">&quot;[yaml]&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;editor.wrappingIndent&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;indent&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;editor.wordWrap&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;wordWrapColumn&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;editor.indentSize&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;editor.wordWrapColumn&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;editor.rulers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">100</span><span class="p">],</span>
+<span class="p">},</span>
+<span class="c1">// Wrap template files for readability.</span>
+<span class="nt">&quot;[jinja-md]&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;editor.wrappingIndent&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;indent&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;editor.wordWrap&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;wordWrapColumn&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;editor.wordWrapColumn&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">80</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;editor.indentSize&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;editor.rulers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">80</span><span class="p">],</span>
+<span class="p">},</span>
+<span class="c1">// Indicate that the Jinja templates are written in Markdown</span>
+<span class="nt">&quot;files.associations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;*.jinja&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;jinja-md&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+</details>
+
+<h3 id="starting-server">Starting The Delphyne Server</h3>
+<p>The Delphyne extension relies on Delphyne's <em>language server</em> to <a href="#editing-demonstrations">evaluate demonstrations</a> and <a href="#commands">run commands</a>. The language server is automatically started in the background when the Delphyne extension is activated (by clicking on the Delphyne icon on the VSCode <a href="https://code.visualstudio.com/api/ux-guidelines/activity-bar">activity bar</a>), if it is not running already (listening on port 3008).</p>
+<div class="admonition info">
+<p class="admonition-title">Locating the language server</p>
+<p>The Delphyne extension uses the Python distribution currently selected for the workspace by <a href="https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance">Pylance</a> to launch the language server. If no such distribution is configured, you can set it via the <code>Python: Select Interpreter</code> command and then try again using the <code>Delphyne: Start Server Command</code>.</p>
+</div>
+<p>The background server process can be shut down using the <code>Delphyne: Kill Server</code> command. The <code>Delphyne: Start Server Command</code> can be used to restart it, if it is not running already. The server can be launched outside VSCode using the <a class="autorefs autorefs-internal" title="serve" href="../../reference/cli/#delphyne.__main__.DelphyneCLI.serve"><code>delphyne serve</code></a> shell command. Since the server is stateless, it can be restarted at any time. One reason for running the server outside VSCode is to <a href="../../how-to-guides/#debugging">attach a debugger to it</a>, which allows setting breakpoints inside strategies, policies, or even inside the demonstration interpreter.</p>
+<p>You can confirm that the language server is running by looking at the <code>Delphyne</code> output channel (from the <code>Output</code> tab in the panel). See <a href="#troubleshooting">Troubleshooting</a> if you encounter any problem.</p>
+<h3 id="project-root">Detecting Project Root Directories</h3>
+<p>When <a href="#editing-demonstrations">evaluating a demonstration</a> or <a href="#commands">running a command</a>, the Delphyne extension locates the corresponding project root directory as follows:</p>
+<ol>
+<li>If a transitive parent directory for the current demonstration or command file contains a <code>delphyne.yaml</code> configuration file, it is selected.</li>
+<li>If the current editor is not attached to an existing file<sup id="fnref:anon-file"><a class="footnote-ref" href="#fn:anon-file">1</a></sup> or no <code>delphyne.yaml</code> file can be found, the current VSCode's workspace directory is used.</li>
+</ol>
+<p>The <code>Delphyne: Show Root Directory for Current File</code> command can be used to show the current project root. The rules above allow browsing and editing multiple Delphyne projects within a single VSCode workspace.</p>
+<h3 id="config">Global and Local Configuration</h3>
+<p>Both <a href="#editing-demonstrations">demonstration</a> and <a href="#commands">command</a> files are evaluated in the context of a given <a class="autorefs autorefs-internal" title="CommandExecutionContext
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/commands/#delphyne.CommandExecutionContext">configuration record</a>, which specifies information such as the location and names of Python modules in which strategies can be found, the location of prompting templates and demonstration files, etc... This information can be stored in the project's <code>delphyne.yaml</code> file, whose content may look like:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">strategy_dirs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;.&quot;</span><span class="p p-Indicator">]</span>
+<span class="nt">modules</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;module_1&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;module_2&quot;</span><span class="p p-Indicator">]</span>
+<span class="nt">demo_files</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;demo_1&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;demo_2&quot;</span><span class="p p-Indicator">]</span>
+</code></pre></div>
+<p>See the <a class="autorefs autorefs-internal" title="CommandExecutionContext
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/commands/#delphyne.CommandExecutionContext">Reference</a> for the list and description of all available settings. All settings have default values so empty <code>delphyne.yaml</code> files are allowed (or no file at all if the project root coincides with the VSCode workspace). In addition, any subset of global settings from the <code>delphyne.yaml</code> file can be locally overriden in individual demonstration or command files by prefixing it with a <a class="autorefs autorefs-internal" title="CommandExecutionContext
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/commands/#delphyne.CommandExecutionContext"><code>@config</code> comment block</a>.</p>
+<h2 id="editing-demonstrations">Editing Demonstrations</h2>
+<p>Once activated, the Delphyne extension recognizes demonstration files via their extension <code>*.demo.yaml</code>. A proper YAML schema is automatically loaded and syntax errors are displayed within the editor. To quickly add a new demonstration, you can use the <code>demo</code> snippet (by typing <code>demo</code> and clicking on <span class="keys"><kbd class="key-tab">Tab</kbd></span>). All available snippets are listed in <a href="https://github.com/jonathan-laurent/delphyne/blob/main/vscode-ui/snippets.json"><code>vscode-ui/snippets.json</code></a>.</p>
+<p>To evaluate a demonstration, put your cursor anywhere in its scope. A light bulb should then appear, suggesting that code actions are available. Use <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-period">.</kbd></span> to see available code actions and select <code>Evaluate Demonstration</code>. Diagnostics should then appear, possibly after a moment of waiting (in which case a pending task should be displayed in Delphyne's <code>Tasks</code> view). If the demonstration was successfully evaluated, an <code>info</code> diagnostic should be shown for every test. Otherwise, warnings and errors can be displayed. These diagnostics will stay displayed until the demo file is closed or the demonstration gets updated. Note that adding comments or modifying other demonstrations does <em>not</em> invalidate them.</p>
+<p>Each test in a demonstration, even a failing one, describes a path through the underlying search tree. In order to visualize the endpoint of this path, you can put your cursor on the test and select the <code>View Test Destination</code> code action. The resulting node and its context will then be displayed in Delphyne's <code>Tree</code>, <code>Node</code> and <code>Actions</code> view. In the typical case where the test is stuck on a query that is unanswered in the demonstration, one can then click on the <code>+</code> icon next to its description (within the <code>Node</code> view) to add it to the demonstration (if the query exists already, a <code>Jump To</code> icon will be shown instead). The standard workflow is then to add an answer to this query and evaluate the demonstration again.</p>
+<p>To evaluate all demonstrations within a file, you can use the <code>Delphyne: Evaluate All Demonstrations in File</code> command (use <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-shift">Shift</kbd><span>+</span><kbd class="key-p">P</kbd></span> to open the command palette). To see the prompt associated to a query, put your cursor on this query and use the <code>See Prompt</code> code action. Doing so will create and run the appropriate <a href="#commands">command</a> in a new tab.</p>
+<div class="admonition info">
+<p class="admonition-title">Automatic Reloading of Strategies</p>
+<p>The language server reloads all modules listed in <a href="#config"><code>delphyne.yaml</code></a> for <em>every</em> query, using <code>importlib.reload</code>. This way, strategies can be updated interactively without effort. Note that modules are reloaded in the order in which they are listed. Thus, a module should always be listed after its dependencies.</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Evaluating Demonstrations using the CLI</p>
+<p>Demonstrations can also be evaluated from the shell, using the <a class="autorefs autorefs-internal" title="DelphyneCLI" href="../../reference/cli/#delphyne.__main__.DelphyneCLI">Delphyne CLI</a>. However, the CLI provides much more limited feedback so it is mainly useful for testing and continuous integration.</p>
+</div>
+<h2 id="commands">Running Commands</h2>
+<p>Many interactions with Delphyne can be performed by executing <strong>commands</strong>.Commands can be specified in YAML files with extension <code>.exec.yaml</code>. Unnamed documents are also recognized as command files if they start with line <code># delphyne-command</code>, possibly following other YAML comments. Commands can emit diagnostics and intermediate status updates, output a stream of partial results and be safely interrupted. The Delphyne extension provides editor support for these features, via its <code>Task View</code>. Commands can also be run from the <a class="autorefs autorefs-internal" title="DelphyneCLI" href="../../reference/cli/#delphyne.__main__.DelphyneCLI">Delphyne CLI</a>, which is useful for specifying test suites or launching a large number of commands. </p>
+<p>A standard command is <a class="autorefs autorefs-internal" title="run_strategy" href="../../reference/stdlib/commands/#delphyne.stdlib.commands.run_strategy.run_strategy"><code>run_strategy</code></a>, which can be used to run an oracular program by specifying a strategy along with a policy (demonstrations are automatically extracted from the files listed in <a href="#config">delphyne.yaml</a>). To create a new tab with a template for invoking the <code>run_strategy</code> command, you can use <code>Delphyne: Run Strategy</code> from the VSCode command palette.</p>
+<details>
+<summary>A Command Example</summary>
+<div class="highlight"><pre><span></span><code><span class="c1"># delphyne-command</span>
+
+<span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run_strategy</span>
+<span class="nt">args</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prove_program</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">prog</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">      </span><span class="no">use int.Int</span>
+
+<span class="w">      </span><span class="no">let main () diverges =</span>
+<span class="w">        </span><span class="no">let ref a = any int in</span>
+<span class="w">        </span><span class="no">let ref b = a * a + 2 in</span>
+<span class="w">        </span><span class="no">let ref x = 0 in</span>
+<span class="w">        </span><span class="no">while b &lt; 50 do</span>
+<span class="w">          </span><span class="no">x &lt;- x * (b - 1) + 1;</span>
+<span class="w">          </span><span class="no">b &lt;- b + 1;</span>
+<span class="w">        </span><span class="no">done;</span>
+<span class="w">        </span><span class="no">assert { x &gt;= 0 }</span>
+<span class="w">  </span><span class="nt">policy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prove_program_policy</span>
+<span class="w">  </span><span class="nt">policy_args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="w">  </span><span class="nt">num_generated</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">budget</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">num_requests</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
+</code></pre></div>
+</details>
+
+<p>To execute a command, one can put the cursor over it and use the <code>Execute Command</code> code action. Doing so will launch a new task that can be viewed in the Delphyne <code>Task</code> view. When the task terminates (successfully or with an error), the command's result is appended at the end of the command file (and can be discarded using the <code>Clear Output</code> code action). When a command returns a <a class="autorefs autorefs-internal" title="Trace" href="../../reference/strategies/traces/#delphyne.core.traces.Trace">trace</a>, the latter can be <a href="#navigating-trees">inspected</a> via the <code>Show Trace</code> code action.</p>
+<p>The progress of commands can be supervised while they are running through the <code>Tasks</code> view. This view lists all currently running commands and maps each one to a set of actions. For example, a command can be cancelled or its progress indicator shown on the status bar. In addition, the <code>Update Source</code> action (pen icon) allows dumping the command's current <em>partial</em> result to the command file. In the case of the <code>run_strategy</code> command, this allows inspecting the current <a class="autorefs autorefs-internal" title="Trace" href="../../reference/strategies/traces/#delphyne.core.traces.Trace">trace</a> (i.e. the set of all visited tree nodes and spaces) <em>at any point in time</em> while search is still undergoing.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the future, Delphyne will allow adding new commands by registering command scripts. </p>
+</div>
+<h2 id="navigating-trees">Navigating Strategy Trees</h2>
+<p>Whether they originate from evaluating demonstrations or running commands, <a class="autorefs autorefs-internal" title="Trace" href="../../reference/strategies/traces/#delphyne.core.traces.Trace">traces</a> can be inspected using the <code>Tree</code>, <code>Node</code> and <code>Actions</code> views (see screenshot at the top of this page). These views are synchronized together and display information about a single node at a time. The <code>Tree</code> view indicates a path from the root to the current node and allows jumping to every intermediate node on this path. The <code>Node</code> view shows the node type and all associated spaces. For each space, it shows the underlying query or allows jumping to the underlying tree. Finally, the <code>Actions</code> view lists all children of the current node that belong to the trace. Actions leading to subtrees containing success nodes are indicated by small checkmarks.</p>
+<p>Navigation operations can be undone by clicking on the <code>Undo</code> icon on the header of the tree view or by using shortcut <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-d">D</kbd></span> followed by <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-z">Z</kbd></span>. </p>
+<h2 id="tips-and-shortcuts">Tips and Shortcuts</h2>
+<ul>
+<li>Folding is very useful to keep demonstration readable. You should learn the standard <a href="https://code.visualstudio.com/docs/editor/codebasics#_folding">VSCode shortcuts</a> for controlling folding (<span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-k">K</kbd><span>+</span><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-l">L</kbd></span> for toggling folding under the cursor, <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-k">K</kbd><span>+</span><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-0">0</kbd></span> for folding everything, <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-k">K</kbd><span>+</span><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-3">3</kbd></span> for folding everything at depth 3, <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-k">K</kbd><span>+</span><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-j">J</kbd></span> for unfolding everything...). In addition, the custom Delphyne shortcut <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-d">D</kbd><span>+</span><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-k">K</kbd></span> can be used to fold all strategy and query arguments outside of the cursor's scope.</li>
+<li>Shortcut <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-d">D</kbd><span>+</span><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-v">V</kbd></span> can be used to focus on Delphyne's views.</li>
+<li>The Github Copilot Code Actions can get in the way of using Delphyne and can be disabled with the <code>"github.copilot.editor.enableCodeActions": false</code> setting.</li>
+<li>When editing YAML files (and demonstration files in particular), VSCode allows semantically expanding and shrinking the selection with respect to the underlying syntax tree via <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-control">Ctrl</kbd><span>+</span><kbd class="key-shift">Shift</kbd><span>+</span><kbd class="key-arrow-left">Left</kbd></span> and <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-control">Ctrl</kbd><span>+</span><kbd class="key-shift">Shift</kbd><span>+</span><kbd class="key-arrow-right">Right</kbd></span>.</li>
+<li>To close a tab (and in particular a command tab), you can use shortcut <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-w">W</kbd></span>, followed by <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-d">D</kbd></span> to decline saving the tab's content if prompted.</li>
+<li>Since command outputs can be verbose, it is recommended to start folding sections starting at level 4 (using <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-k">K</kbd><span>+</span><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-4">4</kbd></span>) and then unfolding sections as needed.</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="accessing-log-information">Accessing log information</h3>
+<p>The Delphyne extension outputs logging information in three different output channels:</p>
+<ul>
+<li><code>Delphyne</code>: main logging channel</li>
+<li><code>Delphyne Server</code>: the output of the language server is redirected here (only when the server was started by the extension)</li>
+<li><code>Delphyne Tasks</code>: displays the logging information produced by commands such as <code>run_strategy</code></li>
+</ul>
+<p>You should consult those channels if anything goes wrong. Also, to output more information, you can ask the extension to log more information by raising the log level to <code>Debug</code> or <code>Trace</code> via the <code>Developer: Set Log Level</code> command.</p>
+<h3 id="killing-a-server-instance-still-running-in-the-background">Killing a server instance still running in the background</h3>
+<p>After VSCode quit unexpectedly, the language server may still be running in background, which may cause problems when trying to restart the extension. On Unix systems, the language server can be killed by killing the program listening to port 3008:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span><span class="nb">kill</span><span class="w"> </span>-9<span class="w"> </span><span class="k">$(</span>sudo<span class="w"> </span>lsof<span class="w"> </span>-t<span class="w"> </span>-i<span class="w"> </span>:3008<span class="k">)</span>
+</code></pre></div>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:anon-file">
+<p>For example, it may contain an unsaved command specification.&#160;<a class="footnote-backref" href="#fnref:anon-file" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tabs.link", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+        <script src="../../javascript/katex.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/contrib/auto-render.min.js"></script>
+      
+    
+  </body>
+</html>
