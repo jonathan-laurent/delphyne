@@ -1,0 +1,63 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: |
+            Describe the favorite dish of the provided user.
+
+            Finish your answer with a triple-quoted YAML block containing a
+            single object with fields `name` (str) and `ingredients` (list[str]).
+        - role: user
+          content: 'user: Jonathan Laurent'
+      num_completions: 1
+      options:
+        model: gpt-4.1-mini
+      tools: []
+      structured_output: null
+    iter: 1
+  output:
+    outputs:
+      - content: |-
+          Jonathan Laurent's favorite dish is a classic French Ratatouille. It's a vibrant vegetable stew featuring zucchini, eggplant, bell peppers, tomatoes, onions, garlic, and fresh herbs like thyme and basil. The vegetables are sautéed and then slowly simmered to blend the flavors, resulting in a hearty yet light dish that's both comforting and nutritious.
+
+          ```yaml
+          name: Ratatouille
+          ingredients:
+            - zucchini
+            - eggplant
+            - bell peppers
+            - tomatoes
+            - onions
+            - garlic
+            - thyme
+            - basil
+            - olive oil
+            - salt
+            - pepper
+          ```
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1.0
+        num_completions: 1.0
+        input_tokens: 55.0
+        output_tokens: 128.0
+        cached_input_tokens: 0.0
+        price: 6.96e-05
+    log_items: []
+    model_name: gpt-4.1-mini-2025-04-14
+    usage_info:
+      completion_tokens: 128
+      prompt_tokens: 55
+      total_tokens: 183
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 0
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0

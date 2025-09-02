@@ -1,0 +1,88 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            I am executing a program that contains nondeterministic assignments along with assertions (e.g., in the form of `ensure` and `fail` statements). I am stuck at one of these nondeterministic assignments and your goal is to generate an assigned value, in such a way that the program can go on and not fail any assertion.
+
+            More specifically, I'll give you three pieces of information:
+
+            - A nondeterministic program.
+            - The name of the variable that is being assigned at the program location where I am currently stuck.
+            - Some values for a number of local variables.
+
+            Your job is to generate a correct value to assign. The expected type of this value is indicated inside the nondeterministic assignment operator.
+
+            Terminate your answer with a code block (delimited by triple backquotes) that contains a YAML object of the requested type. Do not wrap this YAML value into an object with a field named like the assigned variable.
+        - role: user
+          content: |-
+            Program:
+
+            ```
+            @dp.strategy
+            def make_sum_using_guess(
+                allowed: list[int], goal: int
+            ) -> Strategy[Branch | Fail, IPDict, list[int]]:
+                """
+                Given a list of numbers and a target number, return a sub-list whose
+                elements sum up to the target.
+                """
+                sub = yield from dp.guess(list[int], using=[allowed, goal])
+                yield from dp.ensure(all(x in allowed for x in sub), label="forbidden_num")
+                yield from dp.ensure(sum(sub) == goal, label="wrong_sum")
+                return sub
+            ```
+
+            Variable being currently assigned: sub
+
+            Selected local variables:
+
+            ```yaml
+            allowed:
+              - 1
+              - 2
+              - 3
+              - 4
+            goal: 5
+            ```
+
+            Type of value to generate (as a YAML object): list[int]
+      num_completions: 1
+      options:
+        model: gpt-5-mini
+      tools: []
+      structured_output: null
+    iter: 1
+  output:
+    outputs:
+      - content: |-
+          ```
+          - 2
+          - 3
+          ```
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1.0
+        num_completions: 1.0
+        input_tokens: 379.0
+        output_tokens: 212.0
+        cached_input_tokens: 0.0
+        price: 0.00010004999999999999
+    log_items: []
+    model_name: gpt-5-mini-2025-08-07
+    usage_info:
+      completion_tokens: 212
+      prompt_tokens: 379
+      total_tokens: 591
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 192
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0

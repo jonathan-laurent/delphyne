@@ -1,0 +1,55 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: Generate an article on the given topic. Answer as a JSON object.
+        - role: user
+          content: 'topic: AI'
+      num_completions: 1
+      options:
+        model: mistral-small-2503
+      tools: []
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content:
+          structured:
+            title: 'The Future of Artificial Intelligence: Opportunities and Challenges'
+            authors:
+              - Jane Doe
+              - John Smith
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1.0
+        num_completions: 1.0
+        input_tokens: 22.0
+        output_tokens: 36.0
+        price: 5.8e-06
+    log_items: []
+    model_name: mistral-small-2503
+    usage_info:
+      completion_tokens: 36
+      prompt_tokens: 22
+      total_tokens: 58

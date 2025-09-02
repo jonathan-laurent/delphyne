@@ -62,7 +62,7 @@ def load_cache(
     """
     Load a cache from a YAML file on disk.
     """
-    assoc_type = _Assoc[input_type, output_type]
+    assoc_type = _AssocList[input_type, output_type]
     assoc_adapter = TypeAdapter[_AssocList[Any, Any]](assoc_type)
     # Load the cache content
     if file.exists():

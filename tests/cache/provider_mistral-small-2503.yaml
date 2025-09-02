@@ -1,0 +1,57 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: |
+            Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+            Answer with the following and nothing else (no need for quotes or a code block):
+            A YAML object that matches the following JSON schema.
+
+            Schema:
+            ```
+            {
+              "name": "list[int]",
+              "description": null,
+              "schema": {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              }
+            }
+            ```
+        - role: user
+          content: |-
+            List: [1, 2, 3, 4]
+            Target: 5
+      num_completions: 1
+      options:
+        model: mistral-small-2503
+      tools: []
+      structured_output: null
+    iter: 1
+  output:
+    outputs:
+      - content: |-
+          - 1
+          - 2
+          - 2
+          - 3
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1.0
+        num_completions: 1.0
+        input_tokens: 124.0
+        output_tokens: 16.0
+        price: 1.4e-05
+    log_items: []
+    model_name: mistral-small-2503
+    usage_info:
+      completion_tokens: 16
+      prompt_tokens: 124
+      total_tokens: 140

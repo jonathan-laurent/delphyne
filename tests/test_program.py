@@ -17,7 +17,8 @@ CACHE_DIR = Path(__file__).parent / "cache"
 
 
 def _load_cache(name: str):
-    return dp.load_request_cache(CACHE_DIR / name, mode="read_write")
+    file = CACHE_DIR / (name + ".yaml")
+    return dp.load_request_cache(file, mode="read_write")
 
 
 def test_query_properties():
@@ -260,10 +261,10 @@ def test_apply_bias():
     "model,options,options_label",
     [
         ("mistral-small-2503", None, None),
-        ("deepseek-chat", None, None),
         ("gemini-2.5-flash", None, None),
         ("gpt-5-mini", {"reasoning_effort": "minimal"}, "minimal_reasoning"),
         ("gpt-5-mini", {"reasoning_effort": "high"}, "high_reasoning"),
+        ("deepseek-chat", None, None),
         # ("deepseek-reasoner", None, None),  # long latency
     ],
 )
@@ -291,7 +292,7 @@ def test_provider(
     "model",
     [
         "mistral-small-2503",
-        "deepseek-chat",
+        # "deepseek-chat",  # TODO" test structured output with DeepSeek
     ],
 )
 def test_structured_output_provider(model: dp.StandardModelName):

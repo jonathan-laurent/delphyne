@@ -1,0 +1,96 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: |
+            fun: expensive_computation
+            args:
+              n: 3
+        - role: user
+          content: |
+            fun: expensive_computation
+            args:
+              n: 3
+      num_completions: 1
+      options: {}
+      tools: []
+      structured_output: null
+    iter: 1
+  output:
+    outputs:
+      - content: |
+          - 3
+          - 4
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values: {}
+    log_items: []
+    model_name: null
+    usage_info: null
+- input:
+    request:
+      chat:
+        - role: system
+          content: |
+            fun: expensive_computation
+            args:
+              n: 3
+        - role: user
+          content: |
+            fun: expensive_computation
+            args:
+              n: 3
+      num_completions: 1
+      options: {}
+      tools: []
+      structured_output: null
+    iter: 2
+  output:
+    outputs:
+      - content: |
+          - 3
+          - 4
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values: {}
+    log_items: []
+    model_name: null
+    usage_info: null
+- input:
+    request:
+      chat:
+        - role: system
+          content: |
+            fun: expensive_computation
+            args:
+              n: 4
+        - role: user
+          content: |
+            fun: expensive_computation
+            args:
+              n: 4
+      num_completions: 1
+      options: {}
+      tools: []
+      structured_output: null
+    iter: 1
+  output:
+    outputs:
+      - content: |
+          - 4
+          - 5
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values: {}
+    log_items: []
+    model_name: null
+    usage_info: null

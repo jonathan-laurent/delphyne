@@ -1,0 +1,185 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: Find the user's tastes and propose an article for them.
+        - role: user
+          content: 'user_name: Jonathan'
+      num_completions: 1
+      options:
+        model: gpt-4.1-mini
+      tools:
+        - name: GetUserFavoriteTopic
+          description: Retrieve the favorite topic of a given user.
+          schema:
+            properties:
+              user_name:
+                title: User Name
+                type: string
+            required:
+              - user_name
+            title: GetUserFavoriteTopic
+            type: object
+        - name: Calculator
+          description: Compute the value of a numerical Python expression.
+          schema:
+            properties:
+              expr:
+                title: Expr
+                type: string
+            required:
+              - expr
+            title: Calculator
+            type: object
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content: ''
+        tool_calls:
+          - name: GetUserFavoriteTopic
+            args:
+              user_name: Jonathan
+        finish_reason: tool_calls
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1.0
+        num_completions: 1.0
+        input_tokens: 161.0
+        output_tokens: 17.0
+        cached_input_tokens: 0.0
+        price: 0.0001322
+    log_items: []
+    model_name: gpt-4.1-mini-2025-04-14
+    usage_info:
+      completion_tokens: 17
+      prompt_tokens: 161
+      total_tokens: 178
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 0
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+- input:
+    request:
+      chat:
+        - role: system
+          content: Find the user's tastes and propose an article for them.
+        - role: user
+          content: 'user_name: Jonathan'
+        - role: assistant
+          answer:
+            mode: null
+            content: ''
+            tool_calls:
+              - name: GetUserFavoriteTopic
+                args:
+                  user_name: Jonathan
+            justification: null
+        - role: tool
+          call:
+            name: GetUserFavoriteTopic
+            args:
+              user_name: Jonathan
+          result: Soccer
+      num_completions: 1
+      options:
+        model: gpt-4.1-mini
+      tools:
+        - name: GetUserFavoriteTopic
+          description: Retrieve the favorite topic of a given user.
+          schema:
+            properties:
+              user_name:
+                title: User Name
+                type: string
+            required:
+              - user_name
+            title: GetUserFavoriteTopic
+            type: object
+        - name: Calculator
+          description: Compute the value of a numerical Python expression.
+          schema:
+            properties:
+              expr:
+                title: Expr
+                type: string
+            required:
+              - expr
+            title: Calculator
+            type: object
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content:
+          structured:
+            title: 'The Evolution of Soccer: From Ancient Origins to Modern Global Phenomenon'
+            authors:
+              - Alex Morgan
+              - David Beckham
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1.0
+        num_completions: 1.0
+        input_tokens: 190.0
+        output_tokens: 31.0
+        cached_input_tokens: 0.0
+        price: 0.00015819999999999997
+    log_items: []
+    model_name: gpt-4.1-mini-2025-04-14
+    usage_info:
+      completion_tokens: 31
+      prompt_tokens: 190
+      total_tokens: 221
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 0
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
