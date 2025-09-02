@@ -1,0 +1,226 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            Classify the user name as either "common" or "rare".
+            Just answer with one of those words and nothing else.
+        - role: user
+          content: 'user_name: Jonathan'
+      num_completions: 1
+      options:
+        model: gpt-4.1-mini
+        temperature: 0.0
+        logprobs: true
+        top_logprobs: 20
+      tools: []
+      structured_output: null
+    iter: 1
+  output:
+    outputs:
+      - content: common
+        tool_calls: []
+        finish_reason: stop
+        logprobs:
+          - token:
+              token: common
+              bytes:
+                - 99
+                - 111
+                - 109
+                - 109
+                - 111
+                - 110
+            logprob: 0.0
+            top_logprobs:
+              - - token: common
+                  bytes:
+                    - 99
+                    - 111
+                    - 109
+                    - 109
+                    - 111
+                    - 110
+                - 0.0
+              - - token: rare
+                  bytes:
+                    - 114
+                    - 97
+                    - 114
+                    - 101
+                - -18.5
+              - - token: ' common'
+                  bytes:
+                    - 32
+                    - 99
+                    - 111
+                    - 109
+                    - 109
+                    - 111
+                    - 110
+                - -22.25
+              - - token: (common
+                  bytes:
+                    - 40
+                    - 99
+                    - 111
+                    - 109
+                    - 109
+                    - 111
+                    - 110
+                - -23.625
+              - - token: Common
+                  bytes:
+                    - 67
+                    - 111
+                    - 109
+                    - 109
+                    - 111
+                    - 110
+                - -24.625
+              - - token: "\tcommon"
+                  bytes:
+                    - 9
+                    - 99
+                    - 111
+                    - 109
+                    - 109
+                    - 111
+                    - 110
+                - -24.75
+              - - token: -common
+                  bytes:
+                    - 45
+                    - 99
+                    - 111
+                    - 109
+                    - 109
+                    - 111
+                    - 110
+                - -26.875
+              - - token: _common
+                  bytes:
+                    - 95
+                    - 99
+                    - 111
+                    - 109
+                    - 109
+                    - 111
+                    - 110
+                - -27.0
+              - - token: .common
+                  bytes:
+                    - 46
+                    - 99
+                    - 111
+                    - 109
+                    - 109
+                    - 111
+                    - 110
+                - -27.5
+              - - token: comm
+                  bytes:
+                    - 99
+                    - 111
+                    - 109
+                    - 109
+                - -27.625
+              - - token: usual
+                  bytes:
+                    - 117
+                    - 115
+                    - 117
+                    - 97
+                    - 108
+                - -28.125
+              - - token: un
+                  bytes:
+                    - 117
+                    - 110
+                - -28.75
+              - - token: commons
+                  bytes:
+                    - 99
+                    - 111
+                    - 109
+                    - 109
+                    - 111
+                    - 110
+                    - 115
+                - -29.125
+              - - token: /common
+                  bytes:
+                    - 47
+                    - 99
+                    - 111
+                    - 109
+                    - 109
+                    - 111
+                    - 110
+                - -29.375
+              - - token: rar
+                  bytes:
+                    - 114
+                    - 97
+                    - 114
+                - -29.5
+              - - token: standard
+                  bytes:
+                    - 115
+                    - 116
+                    - 97
+                    - 110
+                    - 100
+                    - 97
+                    - 114
+                    - 100
+                - -29.625
+              - - token: classic
+                  bytes:
+                    - 99
+                    - 108
+                    - 97
+                    - 115
+                    - 115
+                    - 105
+                    - 99
+                - -29.875
+              - - token: '-'
+                  bytes:
+                    - 45
+                - -30.0
+              - - token: '**'
+                  bytes:
+                    - 42
+                    - 42
+                - -30.0
+              - - token: more
+                  bytes:
+                    - 109
+                    - 111
+                    - 114
+                    - 101
+                - -30.0
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1.0
+        num_completions: 1.0
+        input_tokens: 40.0
+        output_tokens: 1.0
+        cached_input_tokens: 0.0
+        price: 3.22e-05
+    log_items: []
+    model_name: gpt-4.1-mini-2025-04-14
+    usage_info:
+      completion_tokens: 1
+      prompt_tokens: 40
+      total_tokens: 41
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 0
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0

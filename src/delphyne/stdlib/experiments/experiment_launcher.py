@@ -566,7 +566,7 @@ def _config_unique_repr(config: object):
     python = pydantic_dump(cls, config)
     config = pydantic_load(cls, python)
     python = pydantic_dump(cls, config)
-    return json.dumps(python)
+    return json.dumps(python, sort_keys=True)
 
 
 class ExperimentCLI:

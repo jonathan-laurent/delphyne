@@ -202,7 +202,7 @@ def _eval_classifier_query(
 )
 def test_classifiers(name: str, right: str, wrong: str):
     res = _eval_classifier_query(
-        ex.EvalNameRarity(name), "classify", temperature=1.0
+        ex.EvalNameRarity(name), f"classify_{right}", temperature=1.0
     )
     assert isinstance(res, dp.ProbInfo)
     D = {k.value: v for k, v in res.distr}

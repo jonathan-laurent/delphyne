@@ -251,7 +251,7 @@ class SerializedQuery:
 
     @staticmethod
     def make(query: dp.AbstractQuery[Any]) -> "SerializedQuery":
-        args = json.dumps(query.serialize_args())
+        args = json.dumps(query.serialize_args(), sort_keys=True)
         return SerializedQuery(query.query_name(), args)
 
 

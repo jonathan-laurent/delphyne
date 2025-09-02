@@ -57,7 +57,7 @@ class ToolCall:
         # objects.
         import json
 
-        return json.dumps(self.__dict__)
+        return json.dumps(self.__dict__, sort_keys=True)
 
     def __hash__(self) -> int:
         return hash(self._hashable_repr())
@@ -83,7 +83,7 @@ class Structured:
         # See comment in ToolCall._hashable_repr
         import json
 
-        return json.dumps(self.__dict__)
+        return json.dumps(self.__dict__, sort_keys=True)
 
     def __hash__(self) -> int:
         return hash(self._hashable_repr())

@@ -47,7 +47,9 @@ def _equal_query_args(
     # Comparing the dictionaries directly would not work because the
     # same object where a tuple is used instead of a list would be
     # considered different.
-    return json.dumps(args1) == json.dumps(args2)
+    return json.dumps(args1, sort_keys=True) == json.dumps(
+        args2, sort_keys=True
+    )
 
 
 @dataclass

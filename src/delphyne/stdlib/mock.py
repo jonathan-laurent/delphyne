@@ -40,7 +40,9 @@ def demo_mock_oracle(
         for q in demo.queries:
             if q.query != query.query_name():
                 continue
-            if json.dumps(q.args) != json.dumps(query.serialize_args()):
+            if json.dumps(q.args, sort_keys=True) != json.dumps(
+                query.serialize_args(), sort_keys=True
+            ):
                 continue
             for a in q.answers:
                 yield dm.translate_answer(a)
