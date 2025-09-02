@@ -2579,36 +2579,35 @@ specification.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/commands/run_strategy.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">254</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
 <span class="normal">255</span>
 <span class="normal">256</span>
 <span class="normal">257</span>
 <span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_strategy</span><span class="p">(</span>
+<span class="normal">259</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_strategy</span><span class="p">(</span>
     <span class="n">task</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">TaskContext</span><span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">CommandResult</span><span class="p">[</span><span class="n">RunStrategyResponse</span><span class="p">]],</span>
     <span class="n">exe</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">CommandExecutionContext</span><span class="p">,</span>
     <span class="n">args</span><span class="p">:</span> <span class="n">RunStrategyArgs</span><span class="p">,</span>
@@ -2630,9 +2629,8 @@ specification.</p>
             <span class="n">policy</span><span class="o">=</span><span class="n">policy</span><span class="p">,</span>
             <span class="n">num_generated</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_generated</span><span class="p">,</span>
             <span class="n">budget</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">budget</span><span class="p">,</span>
-            <span class="n">cache_dir</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span>
+            <span class="n">cache_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cache_file</span><span class="p">,</span>
             <span class="n">cache_mode</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cache_mode</span><span class="p">,</span>
-            <span class="n">cache_format</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cache_format</span><span class="p">,</span>
             <span class="n">export_raw_trace</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">export_raw_trace</span><span class="p">,</span>
             <span class="n">export_log</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">export_log</span><span class="p">,</span>
             <span class="n">export_browsable_trace</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">export_browsable_trace</span><span class="p">,</span>
@@ -2743,36 +2741,25 @@ program.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><span title="delphyne.stdlib.commands.run_strategy.RunStrategyArgs.cache_dir">cache_dir</span></code></td>
+            <td><code><span title="delphyne.stdlib.commands.run_strategy.RunStrategyArgs.cache_file">cache_file</span></code></td>
             <td>
                   <code><span title="str">str</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Subdirectory of the global cache directory to use for
-caching, or <code>None</code> to disable caching.</p>
+                <p>File within the global cache directory to use for
+request caching, or <code>None</code> to disable caching.</p>
               </div>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td><code><span title="delphyne.stdlib.commands.run_strategy.RunStrategyArgs.cache_mode">cache_mode</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="CacheMode (delphyne.utils.caching.CacheMode)" href="../environments/#delphyne.utils.caching.CacheMode">CacheMode</a></code>
+                  <code><a class="autorefs autorefs-internal" title="CacheMode (delphyne.utils.caching.CacheMode)" href="../queries/#delphyne.utils.caching.CacheMode">CacheMode</a></code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>Cache mode to use.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="delphyne.stdlib.commands.run_strategy.RunStrategyArgs.cache_format">cache_format</span></code></td>
-            <td>
-                  <code><span title="delphyne.stdlib.commands.run_strategy.CacheFormat">CacheFormat</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Cache format to use.</p>
               </div>
             </td>
           </tr>
@@ -2828,7 +2815,28 @@ which can be visualized in the VSCode extension (see
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/commands/run_strategy.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">216</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
 <span class="normal">217</span>
 <span class="normal">218</span>
 <span class="normal">219</span>
@@ -2840,30 +2848,7 @@ which can be visualized in the VSCode extension (see
 <span class="normal">225</span>
 <span class="normal">226</span>
 <span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">228</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">RunStrategyArgs</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments for the `run_strategy` command that runs an oracular</span>
@@ -2876,10 +2861,9 @@ which can be visualized in the VSCode extension (see
 <span class="sd">        policy_args: Arguments to pass to the policy constructor.</span>
 <span class="sd">        num_generated: Number of success values to generate.</span>
 <span class="sd">        budget: Budget limit (infinite for unspecified metrics).</span>
-<span class="sd">        cache_dir: Subdirectory of the global cache directory to use for</span>
-<span class="sd">            caching, or `None` to disable caching.</span>
+<span class="sd">        cache_file: File within the global cache directory to use for</span>
+<span class="sd">            request caching, or `None` to disable caching.</span>
 <span class="sd">        cache_mode: Cache mode to use.</span>
-<span class="sd">        cache_format: Cache format to use.</span>
 <span class="sd">        export_raw_trace: Whether to export the raw execution trace.</span>
 <span class="sd">        export_log: Whether to export the log messages.</span>
 <span class="sd">        export_browsable_trace: Whether to export a browsable trace,</span>
@@ -2893,9 +2877,8 @@ which can be visualized in the VSCode extension (see
     <span class="n">policy_args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span>
     <span class="n">budget</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
     <span class="n">num_generated</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">cache_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">cache_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">cache_mode</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">CacheMode</span> <span class="o">=</span> <span class="s2">&quot;read_write&quot;</span>
-    <span class="n">cache_format</span><span class="p">:</span> <span class="n">CacheFormat</span> <span class="o">=</span> <span class="s2">&quot;yaml&quot;</span>
     <span class="n">export_raw_trace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">export_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">export_browsable_trace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
@@ -2955,7 +2938,8 @@ which can be visualized in the VSCode extension (see
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/commands/answer_query.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">126</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">125</span>
+<span class="normal">126</span>
 <span class="normal">127</span>
 <span class="normal">128</span>
 <span class="normal">129</span>
@@ -2967,9 +2951,7 @@ which can be visualized in the VSCode extension (see
 <span class="normal">135</span>
 <span class="normal">136</span>
 <span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">answer_query</span><span class="p">(</span>
+<span class="normal">138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">answer_query</span><span class="p">(</span>
     <span class="n">task</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">TaskContext</span><span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">CommandResult</span><span class="p">[</span><span class="n">AnswerQueryResponse</span><span class="p">]],</span>
     <span class="n">exe</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">CommandExecutionContext</span><span class="p">,</span>
     <span class="n">cmd</span><span class="p">:</span> <span class="n">AnswerQueryArgs</span><span class="p">,</span>
@@ -2980,9 +2962,8 @@ which can be visualized in the VSCode extension (see
     <span class="n">with_cache_spec</span><span class="p">(</span>
         <span class="n">partial</span><span class="p">(</span><span class="n">answer_query_with_cache</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">exe</span><span class="p">,</span> <span class="n">cmd</span><span class="p">),</span>
         <span class="n">cache_root</span><span class="o">=</span><span class="n">exe</span><span class="o">.</span><span class="n">cache_root</span><span class="p">,</span>
-        <span class="n">cache_dir</span><span class="o">=</span><span class="n">cmd</span><span class="o">.</span><span class="n">cache_dir</span><span class="p">,</span>
+        <span class="n">cache_file</span><span class="o">=</span><span class="n">cmd</span><span class="o">.</span><span class="n">cache_file</span><span class="p">,</span>
         <span class="n">cache_mode</span><span class="o">=</span><span class="n">cmd</span><span class="o">.</span><span class="n">cache_mode</span><span class="p">,</span>
-        <span class="n">cache_format</span><span class="o">=</span><span class="n">cmd</span><span class="o">.</span><span class="n">cache_format</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -3101,36 +3082,25 @@ errors, so that only the prompt can be seen in the logs.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><span title="delphyne.stdlib.commands.answer_query.AnswerQueryArgs.cache_dir">cache_dir</span></code></td>
+            <td><code><span title="delphyne.stdlib.commands.answer_query.AnswerQueryArgs.cache_file">cache_file</span></code></td>
             <td>
                   <code><span title="str">str</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Subdirectory of the global cache directory to use for
-caching, or <code>None</code> to disable caching.</p>
+                <p>File within the global cache directory to use for
+request caching, or <code>None</code> to disable caching.</p>
               </div>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td><code><span title="delphyne.stdlib.commands.answer_query.AnswerQueryArgs.cache_mode">cache_mode</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="CacheMode (delphyne.utils.caching.CacheMode)" href="../environments/#delphyne.utils.caching.CacheMode">CacheMode</a></code>
+                  <code><a class="autorefs autorefs-internal" title="CacheMode (delphyne.utils.caching.CacheMode)" href="../queries/#delphyne.utils.caching.CacheMode">CacheMode</a></code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>Cache mode to use.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="delphyne.stdlib.commands.answer_query.AnswerQueryArgs.cache_format">cache_format</span></code></td>
-            <td>
-                  <code><span title="delphyne.stdlib.commands.run_strategy.CacheFormat">CacheFormat</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Cache format to use.</p>
               </div>
             </td>
           </tr>
@@ -3146,8 +3116,7 @@ caching, or <code>None</code> to disable caching.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/commands/answer_query.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">25</span>
-<span class="normal">26</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
 <span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
@@ -3175,8 +3144,7 @@ caching, or <code>None</code> to disable caching.</p>
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AnswerQueryArgs</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments for the `answer_query` command.</span>
@@ -3191,10 +3159,9 @@ caching, or <code>None</code> to disable caching.</p>
 <span class="sd">        iterative_mode: Whether to answer the query in iterative mode</span>
 <span class="sd">            (see `few_shot` for details).</span>
 <span class="sd">        budget: Budget limit (infinite for unspecified metrics).</span>
-<span class="sd">        cache_dir: Subdirectory of the global cache directory to use for</span>
-<span class="sd">            caching, or `None` to disable caching.</span>
+<span class="sd">        cache_file: File within the global cache directory to use for</span>
+<span class="sd">            request caching, or `None` to disable caching.</span>
 <span class="sd">        cache_mode: Cache mode to use.</span>
-<span class="sd">        cache_format: Cache format to use.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">query</span><span class="p">:</span> <span class="nb">str</span>
@@ -3204,9 +3171,8 @@ caching, or <code>None</code> to disable caching.</p>
     <span class="n">num_answers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">iterative_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">budget</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">cache_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">cache_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">cache_mode</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">CacheMode</span> <span class="o">=</span> <span class="s2">&quot;read_write&quot;</span>
-    <span class="n">cache_format</span><span class="p">:</span> <span class="n">CacheFormat</span> <span class="o">=</span> <span class="s2">&quot;yaml&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 

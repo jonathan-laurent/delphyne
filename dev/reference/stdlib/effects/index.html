@@ -4204,7 +4204,7 @@ environment.</p>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="p">,</span> <span class="n">Compute</span><span class="p">):</span>
             <span class="n">cache</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">force_bypass_cache</span><span class="p">:</span>
-                <span class="n">cache</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">requests_cache</span>
+                <span class="n">cache</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">cache</span>
             <span class="n">answer</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">run_computation_with_cache</span><span class="p">(</span><span class="n">cache</span><span class="p">)</span>
             <span class="n">tracked</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">attached</span><span class="o">.</span><span class="n">parse_answer</span><span class="p">(</span>
                 <span class="n">dp</span><span class="o">.</span><span class="n">Answer</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">answer</span><span class="p">)</span>
