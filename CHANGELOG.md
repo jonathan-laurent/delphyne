@@ -1,6 +1,6 @@
 # Changelog
 
-## DEV
+## Version 0.8.0 (2025-09-02)
 
 ### Changes
 
@@ -12,6 +12,7 @@
 - Parsers can emit formatting hints to be rendered by prompt templates.
 - Initial implementation of _universal queries_. See new `guess` export and `test_program.py::test_make_sum_using_guess`.
 - Added Gemini Integration.
+- Completed a first version of the user documentation.
 
 ## Version 0.7.0 (2025-08-22)
 

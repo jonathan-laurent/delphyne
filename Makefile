@@ -126,7 +126,8 @@ deploy-doc-dev:
 #     1. Bump the version number in `pyproject.toml`
 #     2. Run `make prepare-release`
 #	  3. Check that the changes are ok using `git diff`
-#     4. If so, finalize and push the release using make release``
+#     4. Commit the changes (with "Bump version" message).
+#     5. Finalize and push the release using `make release`
 prepare-release:
 	${RELEASE_SCRIPT} prepare `${RELEASE_SCRIPT} current-version`
 	@$(MAKE) full-test
