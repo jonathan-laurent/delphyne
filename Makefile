@@ -111,7 +111,7 @@ doc-logo: $(WHITE_LOGOS) $(GRAY_LOGOS)
 # is valid for the latest stable release.
 deploy-doc-release:
 	git fetch origin gh-pages
-	mike deploy 0.8 latest --update-aliases --push
+	mike deploy 0.9 latest --update-aliases --push
 
 
 # Build and deploy the documentation for the dev version
