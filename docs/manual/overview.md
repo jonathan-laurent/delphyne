@@ -277,7 +277,7 @@ Using these two features, the `find_param_value` strategy can be rewritten as fo
 import sympy as sp
 from typing import assert_never
 import delphyne as dp 
-from delphyne import Branch, Fail, Strategy, strategy
+from delphyne import Branch, Fail, IPDict, Strategy, strategy
 
 
 @strategy

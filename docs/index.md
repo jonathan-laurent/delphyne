@@ -19,7 +19,7 @@ Let us illustrate Delphyne with a complete example. Consider the task of  findin
 ```py
 import sympy as sp
 import delphyne as dp 
-from delphyne import Branch, Fail, Strategy, strategy
+from delphyne import Branch, Fail, IPDict, Strategy, strategy
 
 @strategy
 def find_param_value(expr: str) -> Strategy[Branch | Fail, IPDict, int]:
