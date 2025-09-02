@@ -6,12 +6,6 @@
 
 ::: delphyne.PolicyEnv
 
-::: delphyne.utils.caching.CacheSpec
-
-::: delphyne.utils.caching.CacheInfo
-
-::: delphyne.utils.caching.CacheMode
-
 ::: delphyne.InvalidDemoFile
 
 ## Example Database

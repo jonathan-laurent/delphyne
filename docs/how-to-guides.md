@@ -32,7 +32,7 @@ Here are some various tips for debugging oracular programs:
 - For VSCode to stop at breakpoints in strategies while evaluating demonstrations, the Delphyne server must be started with a debugger attached. See the box below for how to do this. Instructions for killing and starting Delphyne servers is available [here](./manual/extension.md#starting-server). 
 - Debugging messages can be included in strategy trees using the [`message`][delphyne.message] function.
 - When running oracular programs via [commands](./manual/extension.md#commands), the command output features various useful debugging information by default, in the form of policy logs (including a log of all LLM requests, parsing errors, etc...) and of an [inspectable trace](./manual/extension.md#navigating-trees).
-- If request caching is enabled (by specifying the [`cache_dir`][delphyne.stdlib.commands.run_strategy.RunStrategyArgs] argument in the command file *or* passing the `--cache` option in the [CLI][delphyne.__main__.DelphyneCLI.run]), then any run of a command can be replayed identically with a debugger attached (see information below), unless a nondeterministic policy is used (e.g. most policies that use multiple threads).
+- If request caching is enabled (by specifying the [`cache_file`][delphyne.stdlib.commands.run_strategy.RunStrategyArgs] argument in the command file *or* passing the `--cache` option in the [CLI][delphyne.__main__.DelphyneCLI.run]), then any run of a command can be replayed identically with a debugger attached (see information below), unless a nondeterministic policy is used (e.g. most policies that use multiple threads).
 
 !!! tip "Attaching a Debugger to the Delphyne CLI"
 

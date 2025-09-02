@@ -609,6 +609,9 @@ class LLMCache:
     a policy samples multiple answers for the same request.
 
     Multiple models can share the same cache.
+
+    `LLMCache` objects can be created using the `load_request_cache`
+    context manager.
     """
 
     cache: Cache[_CachedRequest, LLMResponse]

@@ -82,6 +82,10 @@
 
 ::: delphyne.stdlib.models.LLMCache
 
+::: delphyne.stdlib.models.load_request_cache
+
+::: delphyne.utils.caching.CacheMode
+
 ::: delphyne.stdlib.models.Token
 
 ::: delphyne.stdlib.models.TokenInfo
