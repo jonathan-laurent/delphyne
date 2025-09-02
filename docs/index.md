@@ -18,7 +18,6 @@ Let us illustrate Delphyne with a complete example. Consider the task of  findin
 
 ```py
 import sympy as sp
-from typing import assert_never
 import delphyne as dp 
 from delphyne import Branch, Fail, Strategy, strategy
 
@@ -41,7 +40,7 @@ def find_param_value(expr: str) -> Strategy[Branch | Fail, IPDict, int]:
         yield from dp.ensure(equiv_sp.is_nonnegative, "not_nonneg")
         return n_val
     except Exception as e:
-        assert_never((yield from dp.fail("sympy_error", message=str(e))))
+        yield from dp.fail("sympy_error", message=str(e))
 ```
 
 A strategy is a program with unresolved choice points, represented here by the `guess` operator. At runtime, LLM oracles are tasked with producing return values for `guess`, in such a way as to pass all `ensure` assertions. Such a program induces a search tree that can be explored in many different ways, as specified by a separate **policy**:
