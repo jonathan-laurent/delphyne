@@ -46,7 +46,7 @@ class HintReverseMap:
 class NavigationInfo:
     """
     An object that is mutated during navigation to emit warnings and
-    keep track of information neecssary to generate good feedback.
+    keep track of information necessary to generate good feedback.
     """
 
     hints_rev: HintReverseMap = field(default_factory=HintReverseMap)

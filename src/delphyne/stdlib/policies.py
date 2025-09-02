@@ -25,7 +25,7 @@ class Policy(Generic[N, P], dp.AbstractPolicy[PolicyEnv, N, P]):
     """
     A pair of a search policy and of an inner policy.
 
-    More preciely, a policy for trees with effects `N` (contravariant)
+    More precisely, a policy for trees with effects `N` (contravariant)
     gathers a search policy handling `N` along with an inner policy
     object of type `P` (covariant).
 

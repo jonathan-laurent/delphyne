@@ -110,7 +110,7 @@ class ExampleDatabase:
 
     def add_demonstration(self, demo: Demo):
         """
-        Add all exmples from a demonstration to the database.
+        Add all examples from a demonstration to the database.
         """
         if isinstance(demo, QueryDemo):
             self.add_query_demonstration(demo)
