@@ -9,7 +9,7 @@
 
 Delphyne is a programming framework for building _reliable_ and _modular_ LLM applications. It offers a powerful approach for integrating traditional programming and prompting.
 
-Users can describe high-level problem solving _strategies_ as arbitrary programs with unresolved choice points. _Policies_ for navigating the resulting search spaces with LLMs can be independently assembled and tuned. Examples of correct choices can be expressed in a dedicated _demonstration language_ that supports interactive test-driven developement.
+Users can describe high-level problem solving _strategies_ as arbitrary programs with unresolved choice points. _Policies_ for navigating the resulting search spaces with LLMs can be independently assembled and tuned. Examples of correct choices can be expressed in a dedicated _demonstration language_ that supports interactive, test-driven development.
 
 ## Quick Example
 
@@ -81,15 +81,15 @@ A complete explanation of this example is provided in the [Delphyne Manual](http
 
 ## Features Overview
 
-- **Separate your business logic from your search logic**
-- **Write and repair demonstrations interactively**
-- **Compose heterogeneous strategies in a modular fashion**
-- **Refactor without fear**
-- **Extend Delphyne with new search algorithms**
-- **Precisely control your resource spending**
-- **Leverage the full Python ecosystem**
-- **Access a rich library of components**
-- **Run replicable experiments**
+- **Separate your business logic from your search logic.** Prompting offers a powerful but unreliable programming primitive, making validation and search essential. At the same time, retries and backtracking are costly. Resolving this tension requires careful tuning. Delphyne enforces a strict separation between _business logic_ (i.e. strategies) and _search logic_ (i.e. policies), allowing users to iterate on the latter without any refactoring.
+- **Write and repair demonstrations interactively.** Few-shot examples are crucial components of an LLM pipeline, but writing them and keeping them consistent as the pipeline evolves can be error-prone and time-consuming. Delphyne's dedicated [_demonstration language_](https://jonathan-laurent.github.io/delphyne/latest/manual/demos/) allows bundling examples with unit tests and updating them interactively.
+- **Refactor without fear.** Delphyne leverages _static types_ to enforce consistency between strategies and policies, and a _testing DSL_ to enforce consistency between strategies and demonstrations. Modifying policies is _guaranteed_ to never break demonstrations.
+- **Compose heterogeneous strategies in a modular fashion.** Delphyne allows modularly composing heterogeneous strategies while keeping the associated policies independent. This is enabled by having arbitrary search algorithms cooperate through a [shared protocol](https://jonathan-laurent.github.io/delphyne/latest/reference/policies/streams/). In addition, any prompt can be _locally_ and _transparently_ refined into a dedicated strategy.
+- **Leverage advanced search algorithms.** Thanks to an [extensible effect system](./manual/strategies.md#adding-effects), strategies can produce search trees with arbitrary metadata, structure, and shape, which advanced algorithms (e.g. [HyperTree Proof Search](https://arxiv.org/pdf/2205.11491)) can exploit. Tree transformers enable conversions between tree types, allowing the same strategy to pair with vastly different algorithms.
+- **Precisely control your resource spending.** Delphyne offers a resource-aware, combinator-based [language](https://jonathan-laurent.github.io/delphyne/latest/manual/policies/) for defining search policies that prevents overspending _by construction_.
+- **Leverage the full Python ecosystem.** Delphyne integrates seamlessly with Python libraries and tooling. It is fully typed and works smoothly with the Python debugger.
+- **Access a rich library of components.** Delphyne comes with batteries included: its standard library supports many models and prompting idioms, including structured output, tool use, classification, assistant priming, and chain of thought.
+- **Run reproducible experiments.** Delphyne provides utilities for benchmarking and tuning LLM pipelines. Request caching allows experiments to be replicated at no cost.
 
 ## Installation
 
@@ -107,7 +107,7 @@ Then, to install the Delphyne library and CLI in your current Python environment
 pip install -e ".[dev]"
 ```
 
-Note that Python 3.12 (or more recent) is required. Next, you should build the Delphyne vscode extension. For this, assuming you have [Node.js](https://nodejs.org/en/download) installed (version 22 or later), run:
+Note that Python 3.12 (or more recent) is required, since Delphyne makes heavy use of [PEP 695 generics](https://peps.python.org/pep-0695/). Next, you should build the Delphyne vscode extension. For this, assuming you have [Node.js](https://nodejs.org/en/download) installed (version 22 or later), run:
 
 ```
 cd vscode-ui

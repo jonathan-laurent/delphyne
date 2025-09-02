@@ -74,7 +74,7 @@ class Tree[N: Node, P, T]:
 
 A tree contains either a node ([`Node`][delphyne.Node]) or a success leaf ([`Node`][delphyne.Success]). When applicable, children trees are indexed by _actions_ ([`Value`][delphyne.core.refs.Value]). Actions result from combining elements of local spaces ([`Space`][delphyne.Space]). For example, if `node` has type [`Branch`][delphyne.Branch], then an action corresponds to a branching candidate.
 
-### Adding New Effects
+### Adding New Effects {#adding-effects}
 
 New types of effects beyond [`Branch`][delphyne.Branch] and [`Fail`][delphyne.Fail] can be added easily, by subclassing [`Node`][delphyne.Node]. Here are a number of additional effects defined in the Delphyne standard library:
 

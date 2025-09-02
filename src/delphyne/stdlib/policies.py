@@ -300,7 +300,7 @@ class ContextualTreeTransformer[A: Node, B: Node]:
     Contextual tree transformers can be composed with search policies to
     modify their accepted signature. They can be convniently defined
     using the `contextual_tree_transformer` decorator. See
-    `elim_compute` and `elim_messages` for an examples.
+    `elim_compute` and `elim_messages` for examples.
 
     Type Parameters:
         A: The type of nodes that the transformer removes from search
