@@ -43,6 +43,7 @@ from delphyne.stdlib.models import (
     UserMessage,
     WithRetry,
     budget_entry,
+    load_request_cache,
 )
 from delphyne.stdlib.nodes import (
     Branch,

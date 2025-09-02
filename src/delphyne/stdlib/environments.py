@@ -20,7 +20,6 @@ import delphyne.stdlib.models as md
 from delphyne.core.demos import Demo, QueryDemo, StrategyDemo, translate_answer
 from delphyne.core.refs import Answer
 from delphyne.core.traces import Tracer
-from delphyne.utils.caching import CacheSpec
 from delphyne.utils.typing import pydantic_load
 from delphyne.utils.yaml import dump_yaml_object
 
@@ -319,10 +318,7 @@ class PolicyEnv:
     - Tracing nodes, query, answers, and logging information.
 
     Attributes:
-        requests_cache: The requests cache, or `None` if caching is
-            disabled. The exact type of the request cache is not
-            statically determined and depends on the value of
-            constructor argument `make_cache`.
+        cache: The (optional) request cache.
         templates: The prompt templates manager.
         tracer: The tracer, which can also be used for logging.
         examples: The example database.
@@ -334,7 +330,7 @@ class PolicyEnv:
         prompt_dirs: Sequence[Path] = (),
         demonstration_files: Sequence[Path] = (),
         data_dirs: Sequence[Path] = (),
-        cache: CacheSpec | None = None,
+        cache: md.LLMCache | None = None,
         do_not_match_identical_queries: bool = False,
     ):
         """
@@ -346,17 +342,13 @@ class PolicyEnv:
                 create an example database from.
             data_dirs: A sequence of directories where data files can be
                 found.
-            cache: A cache specification, or `None` to disable caching.
-                When caching is enabled, the `requests_cache` attribute
-                can be accessed by policies to properly wrap LLM models.
+            cache: A request cache, or `None` to disable caching.
             do_not_match_identical_queries: See `ExampleDatabase`.
         """
         self.templates = TemplatesManager(prompt_dirs, data_dirs)
         self.examples = ExampleDatabase(do_not_match_identical_queries)
         self.tracer = Tracer()
-        self.requests_cache: md.LLMCache | None = None
-        if cache is not None:
-            self.requests_cache = md.LLMCache(cache)
+        self.cache = cache
         for path in demonstration_files:
             if not path.suffix.endswith(DEMO_FILE_EXT):
                 path = path.with_suffix(DEMO_FILE_EXT)

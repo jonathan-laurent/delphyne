@@ -201,7 +201,7 @@ def elim_compute(
         if isinstance(tree.node, Compute):
             cache = None
             if not force_bypass_cache:
-                cache = env.requests_cache
+                cache = env.cache
             answer = tree.node.run_computation_with_cache(cache)
             tracked = tree.node.query.attached.parse_answer(
                 dp.Answer(None, answer)

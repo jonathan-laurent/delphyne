@@ -51,13 +51,21 @@ class ToolCall:
     name: str
     args: Mapping[str, Any]
 
-    def __hash__(self) -> int:
+    def _hashable_repr(self) -> str:
         # Tool calls need to be hashable since they are part of answers
         # and references. However, they can feature arbitrary JSON
-        # objects. This, we compute a hash for the serialized value.
+        # objects.
         import json
 
-        return hash(json.dumps(self.__dict__))
+        return json.dumps(self.__dict__)
+
+    def __hash__(self) -> int:
+        return hash(self._hashable_repr())
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, ToolCall):
+            return NotImplemented
+        return self._hashable_repr() == other._hashable_repr()
 
 
 @dataclass(frozen=True)
@@ -71,11 +79,19 @@ class Structured:
 
     structured: Any  # JSON object
 
-    def __hash__(self) -> int:
-        # See `ToolCall.__hash__` for explanations.
+    def _hashable_repr(self) -> str:
+        # See comment in ToolCall._hashable_repr
         import json
 
-        return hash(json.dumps(self.__dict__))
+        return json.dumps(self.__dict__)
+
+    def __hash__(self) -> int:
+        return hash(self._hashable_repr())
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Structured):
+            return NotImplemented
+        return self._hashable_repr() == other._hashable_repr()
 
 
 type AnswerMode = str | None

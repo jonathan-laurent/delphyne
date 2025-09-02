@@ -1198,7 +1198,7 @@ def create_prompt(
         msgs.append(md.AssistantMessage(ans))
     # TODO: handle different modes
     msgs.extend(_instance_prompt(query, env, params, mode))
-    return msgs
+    return tuple(msgs)
 
 
 def log_oracle_response(
@@ -1273,7 +1273,7 @@ def _send_request(
 ) -> dp.StreamContext[md.LLMResponse | SpendingDeclined]:
     res = yield from spend_on(
         lambda: (
-            resp := model.send_request(req, env.requests_cache),
+            resp := model.send_request(req, env.cache),
             resp.budget,
         ),
         estimate=model.estimate_budget(req),
@@ -1505,7 +1505,7 @@ def few_shot[T](
             prompt,
             num_completions=num_completions,
             options=options,
-            tools=tools,
+            tools=tuple(tools),
             structured_output=structured_output,
         )
         resp = yield from _send_request(model, req, env)

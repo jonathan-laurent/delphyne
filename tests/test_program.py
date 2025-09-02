@@ -11,15 +11,13 @@ import example_strategies as ex
 import pytest
 
 import delphyne as dp
-import delphyne.utils.caching as ca
 
 PROMPT_DIR = Path(__file__).parent / "prompts"
 CACHE_DIR = Path(__file__).parent / "cache"
 
 
-def _make_cache(name: str) -> dp.LLMCache:
-    cache_spec = ca.CacheSpec(ca.CacheYaml(CACHE_DIR / name))
-    return dp.LLMCache(cache_spec)
+def _load_cache(name: str):
+    return dp.load_request_cache(CACHE_DIR / name, mode="read_write")
 
 
 def test_query_properties():
@@ -46,21 +44,20 @@ def _eval_query(
     env = dp.PolicyEnv(
         demonstration_files=(), prompt_dirs=(PROMPT_DIR,), data_dirs=()
     )
-    cache_spec = ca.CacheSpec(ca.CacheYaml(CACHE_DIR / cache_name))
-    cache = dp.LLMCache(cache_spec)
-    base_model = dp.standard_model(
-        model_name, options=model_options, model_class=model_class
-    )
-    model = dp.CachedModel(base_model, cache)
-    bl = dp.BudgetLimit({dp.NUM_REQUESTS: budget})
-    pp = dp.with_budget(bl) @ dp.few_shot(
-        model, num_completions=num_completions, mode=mode
-    )
-    stream = query.run_toplevel(env, pp)
-    res, _ = stream.collect()
-    log = list(env.tracer.export_log())
-    print(log)
-    return res, log
+    with _load_cache(cache_name) as cache:
+        base_model = dp.standard_model(
+            model_name, options=model_options, model_class=model_class
+        )
+        model = dp.CachedModel(base_model, cache)
+        bl = dp.BudgetLimit({dp.NUM_REQUESTS: budget})
+        pp = dp.with_budget(bl) @ dp.few_shot(
+            model, num_completions=num_completions, mode=mode
+        )
+        stream = query.run_toplevel(env, pp)
+        res, _ = stream.collect()
+        log = list(env.tracer.export_log())
+        print(log)
+        return res, log
 
 
 def _eval_strategy[N: dp.Node, P, T](
@@ -74,14 +71,14 @@ def _eval_strategy[N: dp.Node, P, T](
     env = dp.PolicyEnv(
         prompt_dirs=[PROMPT_DIR], demonstration_files=(), data_dirs=()
     )
-    cache = _make_cache(cache_name)
-    model = dp.CachedModel(dp.standard_model(model_name), cache)
-    stream = strategy.run_toplevel(env, policy(model))
-    budget = dp.BudgetLimit({dp.NUM_REQUESTS: max_requests})
-    ret, _spent = stream.collect(budget=budget, num_generated=max_res)
-    log = list(env.tracer.export_log())
-    log_str = "\n".join(e.message for e in log)
-    return ret, log_str
+    with _load_cache(cache_name) as cache:
+        model = dp.CachedModel(dp.standard_model(model_name), cache)
+        stream = strategy.run_toplevel(env, policy(model))
+        budget = dp.BudgetLimit({dp.NUM_REQUESTS: max_requests})
+        ret, _spent = stream.collect(budget=budget, num_generated=max_res)
+        log = list(env.tracer.export_log())
+        log_str = "\n".join(e.message for e in log)
+        return ret, log_str
 
 
 def test_concurrent():
@@ -98,15 +95,15 @@ def test_basic_llm_call():
     env = dp.PolicyEnv(
         demonstration_files=(), prompt_dirs=(PROMPT_DIR,), data_dirs=()
     )
-    cache = _make_cache("basic_llm_call")
-    model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
-    pp = dp.few_shot(model)
-    bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
-    policy = dp.take(1) @ dp.with_budget(bl) @ dp.dfs() & ex.MakeSumIP(pp)
-    stream = ex.make_sum([1, 2, 3, 4], 7).run_toplevel(env, policy)
-    res, _ = stream.collect()
-    # print(list(env.tracer.export_log()))
-    assert res
+    with _load_cache("basic_llm_call") as cache:
+        model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
+        pp = dp.few_shot(model)
+        bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
+        policy = dp.take(1) @ dp.with_budget(bl) @ dp.dfs() & ex.MakeSumIP(pp)
+        stream = ex.make_sum([1, 2, 3, 4], 7).run_toplevel(env, policy)
+        res, _ = stream.collect()
+        # print(list(env.tracer.export_log()))
+        assert res
 
 
 def test_structured_output():
@@ -137,15 +134,15 @@ def test_interact():
     env = dp.PolicyEnv(
         demonstration_files=(), prompt_dirs=(PROMPT_DIR,), data_dirs=()
     )
-    cache = _make_cache("interact")
-    model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
-    pp = dp.few_shot(model)
-    bl = dp.BudgetLimit({dp.NUM_REQUESTS: 2})
-    policy = dp.take(1) @ dp.with_budget(bl) @ dp.dfs() & pp
-    stream = ex.propose_article("Jonathan").run_toplevel(env, policy)
-    res, _ = stream.collect()
-    print(list(env.tracer.export_log()))
-    assert res
+    with _load_cache("interact") as cache:
+        model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
+        pp = dp.few_shot(model)
+        bl = dp.BudgetLimit({dp.NUM_REQUESTS: 2})
+        policy = dp.take(1) @ dp.with_budget(bl) @ dp.dfs() & pp
+        stream = ex.propose_article("Jonathan").run_toplevel(env, policy)
+        res, _ = stream.collect()
+        print(list(env.tracer.export_log()))
+        assert res
 
 
 def test_both_tool_call_and_structured_output():
@@ -184,18 +181,18 @@ def _eval_classifier_query(
     env = dp.PolicyEnv(
         demonstration_files=(), prompt_dirs=(PROMPT_DIR,), data_dirs=()
     )
-    cache = _make_cache(cache_name)
-    model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
-    bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
-    pp = dp.with_budget(bl) @ dp.classify(
-        model, temperature=temperature, bias=bias
-    )
-    stream = query.run_toplevel(env, pp)
-    res, _ = stream.collect()
-    log = list(env.tracer.export_log())
-    print(log)
-    assert res
-    return res[0].meta
+    with _load_cache(cache_name) as cache:
+        model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
+        bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
+        pp = dp.with_budget(bl) @ dp.classify(
+            model, temperature=temperature, bias=bias
+        )
+        stream = query.run_toplevel(env, pp)
+        res, _ = stream.collect()
+        log = list(env.tracer.export_log())
+        print(log)
+        assert res
+        return res[0].meta
 
 
 @pytest.mark.parametrize(

@@ -1,7 +1,7 @@
 # Demonstrations for `prove_program_via_abduction_and_branching`
 #
 # Note: all demonstrations in this file can be evaluated without installing `why3py` since the
-# results of all solver calls are hardcoded (see __Compute__ queries). However, modifying a
+# results of all solver calls are hardcoded (see __Computation__ queries). However, modifying a
 # demonstration or adding a new one may require installing `why3py`. See README.md for details.
 
 # A demonstration with conditionals, which involves abducting an additional assumption

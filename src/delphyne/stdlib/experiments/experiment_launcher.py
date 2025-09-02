@@ -3,7 +3,6 @@ A utility class for defining, launching and managing experiments.
 """
 
 import json
-import shutil
 import uuid
 from collections.abc import Callable, Sequence
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -17,7 +16,6 @@ import yaml
 
 import delphyne.stdlib.commands as cmd
 import delphyne.stdlib.models as md
-from delphyne.stdlib.commands.run_strategy import CacheFormat
 from delphyne.stdlib.tasks import CommandExecutionContext, run_command
 from delphyne.utils.typing import NoTypeInfo, pydantic_dump, pydantic_load
 
@@ -29,7 +27,7 @@ STATUS_FILE = "statuses.txt"
 RESULT_FILE = "result.yaml"
 LOG_FILE = "log.txt"
 EXCEPTION_FILE = "exception.txt"
-CACHE_DIR = "cache"
+CACHE_FILE = "cache.yaml"
 RESULTS_SUMMARY = "results_summary.csv"
 
 
@@ -130,8 +128,6 @@ class Experiment[Config]:
             and expensive computations (see `Compute`). When this is
             done, the experiment can be reliably replicated, without
             issuing LLM calls.
-        cache_format: Whether to cache requests using a DBM database or
-            a directory of YAML files.
         export_raw_trace: Whether to export the raw trace for all
             configuration runs.
         export_log: Whether to export the log messages for all
@@ -157,7 +153,6 @@ class Experiment[Config]:
     description: str | None = None
     config_naming: Callable[[Config, uuid.UUID], str] | None = None
     cache_requests: bool = True
-    cache_format: CacheFormat = "db"
     export_raw_trace: bool = True
     export_log: bool = True
     export_browsable_trace: bool = True
@@ -281,7 +276,6 @@ class Experiment[Config]:
                     export_raw_trace=self.export_raw_trace,
                     export_log=self.export_log,
                     export_browsable_trace=self.export_browsable_trace,
-                    cache_format=self.cache_format,
                 )
                 for name, info in state.configs.items()
                 if info.status == "todo"
@@ -326,9 +320,8 @@ class Experiment[Config]:
         info = state.configs[config_name]
         assert info.status == "done"
         cmdargs = self.experiment(info.params)
-        cmdargs.cache_dir = config_name + "/" + CACHE_DIR
+        cmdargs.cache_file = config_name + "/" + CACHE_FILE
         cmdargs.cache_mode = "replay"
-        cmdargs.cache_format = self.cache_format
         run_command(
             command=cmd.run_strategy,
             args=cmdargs,
@@ -526,13 +519,12 @@ def _run_config[Config](
     export_raw_trace: bool,
     export_log: bool,
     export_browsable_trace: bool,
-    cache_format: CacheFormat,
 ) -> tuple[str, bool]:
-    cache_dir = None
+    cache_file = None
     if cache_requests:
-        cache_dir = config_dir / CACHE_DIR
-        if cache_dir.exists():
-            shutil.rmtree(cache_dir, ignore_errors=True)
+        cache_file = config_dir / CACHE_FILE
+        if cache_file.exists():
+            cache_file.unlink(missing_ok=True)
     for f in (STATUS_FILE, RESULT_FILE, LOG_FILE):
         file_path = config_dir / f
         if file_path.exists():
@@ -540,12 +532,11 @@ def _run_config[Config](
     cmdargs = experiment(config)
     if cache_requests:
         # A relative path is expected!
-        cmdargs.cache_dir = config_name + "/" + CACHE_DIR
+        cmdargs.cache_file = config_name + "/" + CACHE_FILE
     cmdargs.cache_mode = "create"
     cmdargs.export_browsable_trace = export_browsable_trace
     cmdargs.export_log = export_log
     cmdargs.export_raw_trace = export_raw_trace
-    cmdargs.cache_format = cache_format
     try:
         run_command(
             command=cmd.run_strategy,

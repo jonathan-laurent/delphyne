@@ -1,13 +1,13 @@
 """
-Utilities for memoizing function calls on disk.
+Utilities for memoizing function calls.
 """
 
 import functools
-import hashlib
 from collections.abc import Callable
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal, get_type_hints
+from typing import Any, Literal
 
 import yaml
 from pydantic import TypeAdapter
@@ -27,202 +27,64 @@ Caching mode:
 """
 
 
-def cache_database_file(dir: Path) -> Path:
-    dir.mkdir(parents=True, exist_ok=True)
-    return dir / DATABASE_FILE_NAME
+@dataclass(frozen=True)
+class Cache[P, T]:
+    """
+    A cache backed by a dictionary, which can be used to memoize
+    function calls.
+    """
 
+    dict: dict[P, T]
+    mode: CacheMode
 
-#####
-##### DBM Caching
-#####
-
-
-DATABASE_FILE_NAME = "cache"  # dbm will add the *.db extension
-
-
-def cache_db[P, T](
-    database: Any,
-    mode: CacheMode = "read_write",
-) -> Callable[[Callable[[P], T]], Callable[[P], T]]:
-    def decorator(func: Callable[[P], T]) -> Callable[[P], T]:
-        arg_type, ret_type = _inspect_arg_and_ret_types(func)
-        arg_adapter = TypeAdapter[P](arg_type)
-        ret_adapter = TypeAdapter[T](ret_type)
-
+    def __call__(self, func: Callable[[P], T]) -> Callable[[P], T]:
         @functools.wraps(func)
         def cached_func(arg: P) -> T:
-            if mode == "off":
+            if self.mode == "off":
                 return func(arg)
-            arg_json = arg_adapter.dump_json(arg)
-            if arg_json in database:
-                assert mode != "create", "Cache entry already exists."
-                ret_json = database[arg_json]
-                ret = ret_adapter.validate_json(ret_json)
-                return ret
-            assert mode != "replay", f"Cache entry not found for:\n\n {arg}"
+            if arg in self.dict:
+                assert self.mode != "create", "Cache entry already exists."
+                return self.dict[arg]
+            assert self.mode != "replay", (
+                f"Cache entry not found for:\n\n {arg}"
+            )
             ret = func(arg)
-            ret_json = ret_adapter.dump_json(ret)
-            database[arg_json] = ret_json
+            self.dict[arg] = ret
             return ret
 
         return cached_func
 
-    return decorator
 
-
-def _inspect_arg_and_ret_types(func: Callable[[Any], Any]) -> tuple[Any, Any]:
-    arg_types = list(get_type_hints(func).items())
-    assert len(arg_types) == 2, "Function must have exactly one argument"
-    arg_type = arg_types[0][1]
-    ret_type = arg_types[1][1]
-    return arg_type, ret_type
-
-
-#####
-##### YAML Caching
-#####
+@contextmanager
+def load_cache(
+    file: Path, *, input_type: Any, output_type: Any, mode: CacheMode
+):
+    """
+    Load a cache from a YAML file on disk.
+    """
+    assoc_type = _Assoc[input_type, output_type]
+    assoc_adapter = TypeAdapter[_AssocList[Any, Any]](assoc_type)
+    # Load the cache content
+    if file.exists():
+        with file.open("r") as f:
+            cache_yaml = yaml.safe_load(f)
+            assoc = assoc_adapter.validate_python(cache_yaml)
+            cache = {a.input: a.output for a in assoc}
+    else:
+        cache = {}
+    # Yield the cache
+    yield Cache(cache, mode)
+    # Upon destruction, write the cache back to disk
+    with file.open("w") as f:
+        assoc = [_Assoc(i, o) for i, o in cache.items()]
+        assoc_yaml = assoc_adapter.dump_python(assoc)
+        f.write(pretty_yaml(assoc_yaml))
 
 
 @dataclass
-class _BucketItem[P, T]:
+class _Assoc[P, T]:
     input: P
     output: T
 
 
-type _Bucket[P, T] = list[_BucketItem[P, T]]
-
-
-def cache_yaml[P, T](
-    dir: Path,
-    hash_arg: Callable[[P], bytes] | None = None,
-    hash_len: int = 8,
-    mode: CacheMode = "read_write",
-) -> Callable[[Callable[[P], T]], Callable[[P], T]]:
-    """
-    A decorator that adds hard-disk caching to a function.
-
-    When presented with an argument, the cached function converts this
-    argument to YAML and computes a hash of the resulting YAML string.
-    The `dir` directory contains a memoization hash-table, where each
-    bucket is a file named after the corresponding hash. We use pydantic
-    for serialization/deserialization, `using pydantic.TypeAdapter` and
-    `typing.get_type_hints` to automatically derive the type of P.
-
-    Note that decorating a function is fast and does not perform any
-    operation on disk (these are only performed when executing the
-    cached function).
-    """
-
-    def decorator(func: Callable[[P], T]) -> Callable[[P], T]:
-        arg_type, ret_type = _inspect_arg_and_ret_types(func)
-        arg_adapter = TypeAdapter[P](arg_type)
-        bucket_adapter = TypeAdapter[_Bucket[P, T]](
-            list[_BucketItem[arg_type, ret_type]]
-        )
-
-        @functools.wraps(func)
-        def cached_func(arg: P) -> T:
-            if mode == "off":
-                return func(arg)
-            dir.mkdir(parents=True, exist_ok=True)
-            if hash_arg is not None:
-                arg_bytes = hash_arg(arg)
-            else:
-                arg_bytes = arg_adapter.dump_json(arg)
-            arg_hash = hashlib.md5(arg_bytes).hexdigest()
-            arg_hash = arg_hash[:hash_len]
-            cache_file = dir / f"{arg_hash}.yaml"
-            if cache_file.exists():
-                with cache_file.open("r") as f:
-                    bucket_yaml = yaml.safe_load(f)
-                    bucket = bucket_adapter.validate_python(bucket_yaml)
-            else:
-                bucket: _Bucket[P, T] = []
-            # if `arg.x: Sequence[int] = ()`, then parsing `arg` again
-            # might make it an empty list instead so we test equality
-            # with the roundabout conversion.
-            arg_roundabout = arg_adapter.validate_json(
-                arg_adapter.dump_json(arg)
-            )
-            for b in bucket:
-                if b.input == arg_roundabout:
-                    assert mode != "create", "Cache entry already exists."
-                    return b.output
-            assert mode != "replay", f"Cache entry not found for:\n\n {arg}"
-            # if not found, we execute the function
-            ret = func(arg)
-            bucket.append(_BucketItem(arg, ret))
-            with cache_file.open("w") as f:
-                bucket_py = bucket_adapter.dump_python(bucket)
-                f.write(pretty_yaml(bucket_py))
-            return ret
-
-        return cached_func
-
-    return decorator
-
-
-#####
-##### Generic Interface
-#####
-
-
-@dataclass(frozen=True)
-class CacheDb:
-    """
-    Wraps a dbm cache database. Build using:
-
-        with open(caching.cache_database_file(dir), "c") as db:
-            info = CacheDb(db)
-            ...
-    """
-
-    database: Any  # dbm._Database
-
-
-@dataclass(frozen=True)
-class CacheYaml:
-    """
-    Use a human-readable, YAML-based database on disk.
-
-    Attributes:
-        cache_dir: Path to the directory where the YAML database files
-            are stored.
-    """
-
-    cache_dir: Path
-
-
-type CacheInfo = CacheDb | CacheYaml
-
-
-@dataclass(frozen=True)
-class CacheSpec:
-    """
-    Specification for a function cache.
-
-    Attributes:
-        info: Whether to use a YAML or DBM database, and where this
-            database is located.
-        mode: Desired caching behavior.
-    """
-
-    info: CacheInfo
-    mode: CacheMode = "read_write"
-
-
-def cache[P, T](
-    cache_spec: CacheSpec,
-    hash_arg: Callable[[P], bytes] | None = None,
-    hash_len: int = 8,
-) -> Callable[[Callable[[P], T]], Callable[[P], T]]:
-    match cache_spec.info:
-        case CacheDb(database):
-            return cache_db(database, cache_spec.mode)
-        case CacheYaml(cache_dir):
-            return cache_yaml(
-                cache_dir,
-                mode=cache_spec.mode,
-                hash_arg=hash_arg,
-                hash_len=hash_len,
-            )
+type _AssocList[P, T] = list[_Assoc[P, T]]

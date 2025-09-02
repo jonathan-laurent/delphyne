@@ -8,7 +8,9 @@ import typing
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import AsyncIterable, Iterable, Sequence
+from contextlib import contextmanager
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Literal, cast, final, override
 
 import pydantic
@@ -16,7 +18,7 @@ import pydantic
 import delphyne.core.inspect as dpi
 from delphyne.core.refs import Answer, Structured, ToolCall
 from delphyne.core.streams import Budget
-from delphyne.utils.caching import CacheSpec, cache
+from delphyne.utils.caching import Cache, CacheMode, load_cache
 from delphyne.utils.typing import TypeAnnot, pydantic_dump
 
 #####
@@ -121,7 +123,8 @@ class ToolMessage:
 type ChatMessage = SystemMessage | UserMessage | AssistantMessage | ToolMessage
 
 
-type Chat = Sequence[ChatMessage]
+type Chat = tuple[ChatMessage, ...]
+# We specifically require tuples so that Chat is hashable.
 
 
 class RequestOptions(typing.TypedDict, total=False):
@@ -147,6 +150,10 @@ class RequestOptions(typing.TypedDict, total=False):
             tokens.
         top_logprobs: The number of top log probabilities to return for
             each generated token, as an integer between 0 and 20.
+
+    !!! warning
+        Dictionaries of this type should be treated as immutable, since
+        they are used as part of the hash of `LLMRequest` objects.
     """
 
     model: str
@@ -203,6 +210,20 @@ class Schema:
             description=description,
             schema=adapter.json_schema(),
         )
+
+    def _hashable_repr(self) -> str:
+        # See comment in ToolCall._hashable_repr
+        import json
+
+        return json.dumps(self.__dict__)
+
+    def __hash__(self) -> int:
+        return hash(self._hashable_repr())
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Schema):
+            return NotImplemented
+        return self._hashable_repr() == other._hashable_repr()
 
 
 #####
@@ -365,17 +386,36 @@ class LLMRequest:
         tools: Available tools.
         structured_output: Provide a schema to enable structured output,
             or `None` for disabling it.
+
+    !!! note
+        This class is hashable, as needed by `LLMCache`. For soundness,
+        it is assumed that `RequestOptions` dictionaries are immutable.
     """
 
     chat: Chat
     num_completions: int
     options: RequestOptions
-    tools: Sequence[Schema] = ()
+    tools: tuple[Schema, ...] = ()
     structured_output: Schema | None = None
 
+    def _hashable_repr(self) -> Any:
+        import json
+
+        return (
+            self.chat,
+            self.num_completions,
+            json.dumps(self.options),
+            self.tools,
+            self.structured_output,
+        )
+
     def __hash__(self) -> int:
-        # LLMRequest needs to be hashable for `CachedModel` to work.
-        return hash(repr((self.chat, self.num_completions, self.options)))
+        return hash(self._hashable_repr())
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, LLMRequest):
+            return NotImplemented
+        return self._hashable_repr() == other._hashable_repr()
 
 
 @dataclass
@@ -552,6 +592,12 @@ class WithRetry(LLM):
 #####
 
 
+@dataclass(frozen=True)
+class _CachedRequest:
+    request: LLMRequest
+    iter: int
+
+
 @dataclass
 class LLMCache:
     """
@@ -565,24 +611,23 @@ class LLMCache:
     Multiple models can share the same cache.
     """
 
-    spec: CacheSpec
+    cache: Cache[_CachedRequest, LLMResponse]
     num_seen: dict[LLMRequest, int]
 
-    def __init__(self, spec: CacheSpec):
-        self.spec = spec
+    def __init__(self, cache: Cache[_CachedRequest, LLMResponse]):
+        self.cache = cache
         self.num_seen: dict[LLMRequest, int] = defaultdict(lambda: 0)
 
 
-@dataclass(frozen=True)
-class _CachedRequest:
-    request: LLMRequest
-    iter: int
-
-    def stable_repr(self) -> bytes:
-        # We define a custom stable hash so that different iterations of the
-        # same request are stored within the same bucket.
-        adapter = pydantic.TypeAdapter(LLMRequest)
-        return adapter.dump_json(self.request)
+@contextmanager
+def load_request_cache(file: Path, *, mode: CacheMode):
+    """
+    Context manager that loads an LLM request cache from a YAML file.
+    """
+    with load_cache(
+        file, mode=mode, input_type=_CachedRequest, output_type=LLMResponse
+    ) as cache:
+        yield LLMCache(cache)
 
 
 @dataclass
@@ -602,10 +647,7 @@ class CachedModel(LLM):
     cache: LLMCache
 
     def __post_init__(self):
-        @cache(
-            cache_spec=self.cache.spec,
-            hash_arg=_CachedRequest.stable_repr,
-        )
+        @self.cache.cache
         def run_request(req: _CachedRequest) -> LLMResponse:
             base = req.request
             return self.model.send_request(base, None)
