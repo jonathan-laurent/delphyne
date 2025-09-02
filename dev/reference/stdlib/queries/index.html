@@ -8379,7 +8379,7 @@ it is assumed that <a class="autorefs autorefs-internal" title="RequestOptions" 
         <span class="k">return</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">chat</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">num_completions</span><span class="p">,</span>
-            <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">),</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">structured_output</span><span class="p">,</span>
         <span class="p">)</span>
@@ -9466,7 +9466,7 @@ typically generated using pydantic's <code>json_schema</code> method.</p>
         <span class="c1"># See comment in ToolCall._hashable_repr</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
-        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hashable_repr</span><span class="p">())</span>
