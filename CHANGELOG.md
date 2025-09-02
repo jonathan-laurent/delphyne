@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 0.9.0 (2025-09-02)
+## Version 0.9.1 (2025-09-02)
 
 - **Breaking**: simplified and optimized the request caching mechanism. Only one caching backend is now available, which uses an in-memory dictionary that is dumped as a YAML file on closing.
 
