@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.9.2 (2025-09-03)
+
+- Various improvements on `standard_model`:
+  - Handle snapshot suffixes (e.g. `gpt-4o-2024-08-06`) when inferring model provider or pricing.
+  - Avoid silent failures of infering model pricing.
+
 ## Version 0.9.1 (2025-09-02)
 
 - **Breaking**: simplified and optimized the request caching mechanism. Only one caching backend is now available, which uses an in-memory dictionary that is dumped as a YAML file on closing.
