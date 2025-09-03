@@ -1,3 +1,4 @@
+import pytest
 from example_strategies import Conjecture
 
 import delphyne as dp
@@ -64,3 +65,13 @@ def test_pricing_dict_exhaustiveness():
     import delphyne.stdlib.standard_models as sm
 
     sm.test_pricing_dict_exhaustiveness()
+
+
+def test_unknown_model():
+    import delphyne.stdlib.standard_models as sm
+
+    with pytest.raises(ValueError, match="provider"):
+        sm.standard_model("unknown-model-123")
+
+    with pytest.raises(ValueError, match="Pricing"):
+        sm.openai_model("unknown-model-123")

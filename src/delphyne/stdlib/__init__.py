@@ -55,6 +55,7 @@ from delphyne.stdlib.standard_models import (
     deepseek_model,
     mistral_model,
     openai_model,
+    gemini_model,
     standard_model,
 )
 from delphyne.stdlib.tasks import (

@@ -112,3 +112,14 @@
 
 ::: delphyne.stdlib.models.DOLLAR_PRICE
 
+## Standard Models
+
+::: delphyne.standard_model
+
+::: delphyne.openai_model
+
+::: delphyne.mistral_model
+
+::: delphyne.deepseek_model
+
+::: delphyne.gemini_model
