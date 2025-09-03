@@ -66,7 +66,7 @@ def parallel_policy():
 Given an associated policy and a _budget limit_, our strategy can now be executed:
 
 ```py
-budget = dp.BudgetLimit({dp.NUM_REQUESTS: 8, dp.DOLLAR_PRICE: 1e-3})
+budget = dp.BudgetLimit({dp.NUM_REQUESTS: 8, dp.DOLLAR_PRICE: 1e-4})
 res, _ = (find_param_value("2*x**2 - 4*x + n")
           .run_toplevel(dp.PolicyEnv(), serial_policy())
           .collect(budget=budget, num_generated=1))
