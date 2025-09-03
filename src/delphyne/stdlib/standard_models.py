@@ -36,6 +36,50 @@ type StandardModelName = (
     OpenAIModelName | MistralModelName | DeepSeekModelName | GeminiModelName
 )
 
+PRICING: dict[str, tuple[float, float, float]] = {
+    "gpt-5": (1.25, 0.125, 10.00),  # cached input 10x less expensive!
+    "gpt-5-mini": (0.250, 0.025, 2.00),
+    "gpt-5-nano": (0.050, 0.005, 0.40),
+    "gpt-4.1": (1.10, 0.275, 4.40),
+    "gpt-4.1-mini": (0.80, 0.20, 3.20),
+    "gpt-4.1-nano": (0.20, 0.05, 0.80),
+    "gpt-4o": (2.50, 1.25, 10.00),
+    "gpt-4o-mini": (0.15, 0.075, 0.60),  # cached input = input ×50% ⇒ 0.075
+    "o4-mini": (4.00, 1.00, 16.00),
+    "o3": (10.00, 2.50, 40.00),
+    "mistral-small-2503": (0.10, 0.10, 0.30),
+    "magistral-small-2506": (0.5, 0.5, 1.5),
+    "deepseek-chat": (0.27, 0.07, 1.10),
+    "deepseek-reasoner": (0.55, 0.14, 2.19),
+    # Costs are higher above 200k tokens for Gemini.
+    # We are assuming here that we stay below that threshold.
+    # https://ai.google.dev/gemini-api/docs/pricing
+    "gemini-2.5-pro": (1.25, 0.31, 10.00),
+    "gemini-2.5-flash": (0.30, 0.075, 2.50),
+    "gemini-2.5-flash-lite": (0.10, 0.025, 0.40),
+}
+
+
+def test_pricing_dict_exhaustiveness():
+    # To be called within the test suite.
+    pricing_keys = set(PRICING.keys())
+    literal_values = set(
+        [
+            *_values(OpenAIModelName),
+            *_values(MistralModelName),
+            *_values(DeepSeekModelName),
+            *_values(GeminiModelName),
+        ]
+    )
+    not_in_pricing = literal_values - pricing_keys
+    assert not_in_pricing == set(), (
+        f"Models are missing from standard_models.PRICING: {not_in_pricing}"
+    )
+    not_in_literals = pricing_keys - literal_values
+    assert not_in_literals == set(), (
+        f"Extra models found in standard_models.PRICING: {not_in_literals}"
+    )
+
 
 def is_standard_model_name(
     model_name: str,
@@ -52,29 +96,6 @@ def is_standard_model_name(
         or (mistral_models is not None and model_name in mistral_models)
         or (deepseek_models is not None and model_name in deepseek_models)
     )
-
-
-PRICING: dict[str, tuple[float, float, float]] = {
-    "gpt-5": (1.25, 0.125, 10.00),  # cached input 10x less expensive!
-    "gpt-5-mini": (0.250, 0.025, 2.00),
-    "gpt-5-nano": (0.050, 0.005, 0.40),
-    "gpt-4.1": (1.10, 0.275, 4.40),
-    "gpt-4.1-mini": (0.80, 0.20, 3.20),
-    "gpt-4.1-nano": (0.20, 0.05, 0.80),
-    "gpt-4o": (2.50, 1.25, 10.00),
-    "gpt-4o-mini": (0.15, 0.075, 0.60),  # cached input = input ×50% ⇒ 0.075
-    "o4-mini": (4.00, 1.00, 16.00),
-    "o3": (10.00, 2.50, 40.00),
-    "mistral-small-2503": (0.10, 0.10, 0.30),
-    "deepseek-chat": (0.27, 0.07, 1.10),
-    "deepseek-reasoner": (0.55, 0.14, 2.19),
-    # Costs are higher above 200k tokens for Gemini.
-    # We are assuming here that we stay below that threshold.
-    # https://ai.google.dev/gemini-api/docs/pricing
-    "gemini-2.5-pro": (1.25, 0.31, 10.00),
-    "gemini-2.5-flash": (0.30, 0.075, 2.50),
-    "gemini-2.5-flash-lite": (0.10, 0.025, 0.40),
-}
 
 
 def get_pricing(model_name: str) -> md.ModelPricing:
@@ -188,6 +209,9 @@ def gemini_model(
 
 
 def _values(alias: Any) -> Sequence[str]:
+    """
+    Return the possible values of a literal type alias.
+    """
     return typing.get_args(alias.__value__)
 
 

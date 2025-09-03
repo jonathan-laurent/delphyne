@@ -53,3 +53,14 @@ def test_yaml_block():
 
     assert extract_final_block(UNBALANCED) == "hello\n"
     assert extract_final_block(BALANCED) == "bar\n"
+
+
+#####
+##### Testing standard models
+#####
+
+
+def test_pricing_dict_exhaustiveness():
+    import delphyne.stdlib.standard_models as sm
+
+    sm.test_pricing_dict_exhaustiveness()
