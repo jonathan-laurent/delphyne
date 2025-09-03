@@ -15,12 +15,8 @@ import pandas as pd  # type: ignore
 import yaml
 
 import delphyne.stdlib.commands as cmd
-import delphyne.stdlib.models as md
 from delphyne.stdlib.tasks import CommandExecutionContext, run_command
 from delphyne.utils.typing import NoTypeInfo, pydantic_dump, pydantic_load
-
-type _ModelWrapper = Callable[[md.LLM], md.LLM]
-
 
 EXPERIMENT_STATE_FILE = "experiment.yaml"
 STATUS_FILE = "statuses.txt"
