@@ -573,12 +573,6 @@ class ExperimentCLI:
     def __init__(self, experiment: Experiment[Any]):
         self.experiment = experiment
 
-    def __call__(self):
-        """
-        If no argument is provided, the `run` method is called.
-        """
-        self.run()
-
     def run(
         self,
         *,
