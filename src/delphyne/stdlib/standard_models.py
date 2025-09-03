@@ -4,7 +4,7 @@ Models from standard LLM providers
 
 import os
 import typing
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from typing import Any, Literal
 
 from delphyne.stdlib import models as md
@@ -91,6 +91,18 @@ def _values(alias: Any) -> Sequence[str]:
     return typing.get_args(alias.__value__)
 
 
+def _standard_model_names() -> Iterable[str]:
+    return PRICING.keys()
+
+
+def _longest_standard_model_prefix_or_self(model_name: str) -> str:
+    all = _standard_model_names()
+    cands = [m for m in all if model_name.startswith(m)]
+    if not cands:
+        return model_name
+    return max(cands, key=len)  # Return the longest matching candidate
+
+
 #####
 ##### Utilities for building standard models
 #####
@@ -136,7 +148,7 @@ def _openai_compatible_model(
         f"Please set environment variable {api_key_env_var}."
     )
     if pricing == "auto":
-        pricing = _get_pricing(model)
+        pricing = _get_pricing(_longest_standard_model_prefix_or_self(model))
         if pricing is None:
             raise ValueError(
                 f"Pricing information could not be inferred for {model}."
@@ -279,28 +291,27 @@ def standard_model(
     Raises:
         ValueError: The provider or pricing model could not be inferred.
     """
+
     openai_models = _values(OpenAIModelName)
     mistral_models = _values(MistralModelName)
     deepseek_models = _values(DeepSeekModelName)
     gemini_models = _values(GeminiModelName)
-    if model in openai_models:
-        return openai_model(
-            model, options=options, pricing=pricing, model_class=model_class
-        )
-    elif model in mistral_models:
-        return mistral_model(
-            model, options=options, pricing=pricing, model_class=model_class
-        )
-    elif model in deepseek_models:
-        return deepseek_model(
-            model, options=options, pricing=pricing, model_class=model_class
-        )
-    elif model in gemini_models:
-        return gemini_model(
-            model, options=options, pricing=pricing, model_class=model_class
-        )
+
+    prefix = _longest_standard_model_prefix_or_self(model)
+
+    if prefix in openai_models:
+        make_model = openai_model
+    elif prefix in mistral_models:
+        make_model = mistral_model
+    elif prefix in deepseek_models:
+        make_model = deepseek_model
+    elif prefix in gemini_models:
+        make_model = gemini_model
     else:
         raise ValueError(
             f"Failed to infer provider for model: {model}.\n"
             + "Use a more specific function such as `openai_model`."
         )
+    return make_model(
+        model, options=options, pricing=pricing, model_class=model_class
+    )

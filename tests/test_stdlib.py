@@ -68,10 +68,17 @@ def test_pricing_dict_exhaustiveness():
 
 
 def test_unknown_model():
-    import delphyne.stdlib.standard_models as sm
-
     with pytest.raises(ValueError, match="provider"):
-        sm.standard_model("unknown-model-123")
+        dp.standard_model("unknown-model-123")
 
     with pytest.raises(ValueError, match="Pricing"):
-        sm.openai_model("unknown-model-123")
+        dp.openai_model("unknown-model-123")
+
+
+def test_standard_model_with_suffix():
+    model = dp.standard_model("gpt-4o-2024-08-06")
+    assert model.pricing is not None
+
+    # We explicitly choose not to infer pricing
+    model = dp.openai_model("unknown_openai_model", pricing=None)
+    assert model.pricing is None
