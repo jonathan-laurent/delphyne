@@ -9,11 +9,11 @@ import itertools
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-import delphyne as dp
-from delphyne import Branch, Compute, Fail, Strategy, strategy
-
 import why3_utils as why3
 from why3_utils import File, Formula
+
+import delphyne as dp
+from delphyne import Branch, Compute, Fail, Strategy, strategy
 
 # fmt: off
 
@@ -150,8 +150,8 @@ class SuggestInvariants(dp.Query[InvariantSuggestions]):
 
 
 def prove_program_by_saturation(
-    model_name: dp.StandardModelName | None = None,
-    model_cycle: Sequence[tuple[dp.StandardModelName, int]] | None = None,
+    model_name: str | None = None,
+    model_cycle: Sequence[tuple[str, int]] | None = None,
     num_completions: int = 4,
     max_rollout_depth: int = 3,
     max_requests_per_attempt: int = 4,

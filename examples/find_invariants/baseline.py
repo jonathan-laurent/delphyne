@@ -8,10 +8,10 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Never
 
+import why3_utils as why3
+
 import delphyne as dp
 from delphyne import Branch, Compute, Strategy, dfs, strategy
-
-import why3_utils as why3
 
 # fmt: off
 
@@ -60,7 +60,7 @@ def check_invariants(
 
 
 def prove_program_interactive_policy(
-    model_name: dp.StandardModelName,
+    model_name: str,
     temperature: float | None = None,
     max_feedback_cycles: int = 3,
     loop: bool = False,

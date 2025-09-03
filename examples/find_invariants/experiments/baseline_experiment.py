@@ -1,7 +1,7 @@
 import code2inv_experiments as c2i
 
-SMALL = ["gpt-4o-mini"]
-LARGE = ["gpt-4o", "o3"]
+SMALL = ["gpt-4o-mini-2024-07-18"]
+LARGE = ["gpt-4o-2024-08-06", "o3-2025-04-16"]
 
 configs = [
     c2i.BaselineConfig(

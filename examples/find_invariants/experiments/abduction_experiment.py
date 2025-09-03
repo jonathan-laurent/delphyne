@@ -3,7 +3,7 @@ import code2inv_experiments as c2i
 configs = [
     c2i.AbductionConfig(
         bench_name=bench,
-        model_cycle=[("gpt-4o-mini", 1)],
+        model_cycle=[("gpt-4o-mini-2024-07-18", 1)],
         temperature=temp,
         num_completions=num_completions,
         max_requests_per_attempt=max_requests_per_attempt,

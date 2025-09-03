@@ -37,7 +37,7 @@ def _eval_query(
     cache_name: str,
     budget: int = 1,
     num_completions: int = 1,
-    model_name: dp.StandardModelName = "gpt-4.1-mini",
+    model_name: dp.StandardModelName | str = "gpt-4.1-mini",
     model_options: dp.RequestOptions | None = None,
     model_class: str | None = None,
     mode: dp.AnswerMode = None,
@@ -67,7 +67,7 @@ def _eval_strategy[N: dp.Node, P, T](
     cache_name: str,
     max_requests: int = 1,
     max_res: int = 1,
-    model_name: dp.StandardModelName = "gpt-4.1-mini",
+    model_name: dp.StandardModelName | str = "gpt-4.1-mini",
 ) -> tuple[Sequence[dp.Solution[T]], str]:
     env = dp.PolicyEnv(
         prompt_dirs=[PROMPT_DIR], demonstration_files=(), data_dirs=()
@@ -269,7 +269,7 @@ def test_apply_bias():
     ],
 )
 def test_provider(
-    model: dp.StandardModelName,
+    model: dp.StandardModelName | str,
     options: dp.RequestOptions | None,
     options_label: str | None,
 ):
@@ -295,7 +295,7 @@ def test_provider(
         # "deepseek-chat",  # TODO" test structured output with DeepSeek
     ],
 )
-def test_structured_output_provider(model: dp.StandardModelName):
+def test_structured_output_provider(model: dp.StandardModelName | str):
     cache_name = f"provider_structured_{model}"
     query = ex.StructuredOutput(topic="AI")
     _ = _eval_query(query, cache_name, model_name=model)
