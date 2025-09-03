@@ -20,7 +20,10 @@ DEMO_FILES = [Path(m) for m in MODULES]
 
 
 def make_experiment[C](
-    experiment: ExperimentFun[C], configs: Sequence[C], exp_file: str
+    experiment: ExperimentFun[C],
+    configs: Sequence[C],
+    output_dir: str,
+    exp_file: str,
 ) -> Experiment[C]:
     workspace_root = Path(exp_file).parent.parent
     exp_name = Path(exp_file).stem
@@ -32,7 +35,7 @@ def make_experiment[C](
         context=context,
         configs=configs,
         name=exp_name,
-        output_dir=workspace_root / "experiments" / "test-output" / exp_name,
+        output_dir=workspace_root / "experiments" / output_dir / exp_name,
     )
 
 

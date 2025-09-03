@@ -13,4 +13,6 @@ configs = [
 ]
 
 if __name__ == "__main__":
-    c2i.make_experiment(c2i.baseline_experiment, configs, __file__).run_cli()
+    c2i.make_experiment(
+        c2i.baseline_experiment, configs, "test-output", __file__
+    ).run_cli()
