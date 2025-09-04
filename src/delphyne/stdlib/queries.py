@@ -1201,29 +1201,6 @@ def create_prompt(
     return tuple(msgs)
 
 
-def log_oracle_response(
-    env: PolicyEnv,
-    query: dp.AttachedQuery[Any],
-    req: md.LLMRequest,
-    resp: md.LLMResponse,
-    *,
-    verbose: bool,
-):
-    with env.tracer.lock:  # to avoid interleaving logs with other threads
-        if verbose:
-            info = {
-                "request": ty.pydantic_dump(md.LLMRequest, req),
-                "response": ty.pydantic_dump(md.LLMResponse, resp),
-            }
-            log(env, "llm_response", info, loc=query)
-        # TODO: severity
-        for extra in resp.log_items:
-            log(env, extra.message, extra.metadata, loc=query)
-        if resp.usage_info is not None:
-            usage = {"model": resp.model_name, "usage": resp.usage_info}
-            log(env, "llm_usage", usage, loc=query)
-
-
 def _compute_value_distribution(
     values: Sequence[str], info: md.TokenInfo
 ) -> dict[str, float]:
@@ -1268,17 +1245,86 @@ def _parse_or_log_and_raise[T](
     return parsed
 
 
+type _RequestDigest = str
+
+
+def _json_digest(obj: Any) -> str:
+    import hashlib
+    import json
+
+    obj_str = json.dumps(obj).encode("utf-8")
+    return hashlib.md5(obj_str).hexdigest()[:8]
+
+
+def _log_request(
+    env: PolicyEnv,
+    *,
+    query: dp.AttachedQuery[Any],
+    request: md.LLMRequest,
+    verbose: bool,
+):
+    req_json = ty.pydantic_dump(md.LLMRequest, request)
+    req_digest = _json_digest(req_json)
+    if verbose:
+        info = {
+            "hash": req_digest,
+            "query": query.query.query_name(),
+            "request": req_json,
+        }
+        log(env, "llm_request", info, loc=query)
+    return req_digest
+
+
+def _log_response(
+    env: PolicyEnv,
+    *,
+    query: dp.AttachedQuery[Any],
+    request: md.LLMRequest,
+    response: md.LLMResponse,
+    verbose: bool,
+):
+    req_json = ty.pydantic_dump(md.LLMRequest, request)
+    req_digest = _json_digest(req_json)
+    if verbose:
+        info = {
+            "request": req_digest,
+            "response": ty.pydantic_dump(md.LLMResponse, response),
+        }
+        if response.usage_info is not None:
+            usage = {
+                "model": response.model_name,
+                "usage": response.usage_info,
+            }
+            info["usage"] = usage
+        log(env, "llm_response", info, loc=query)
+    for extra in response.log_items:
+        if verbose or extra.severity != "info":
+            meta = {"request": req_digest, "details": extra.metadata}
+            log(env, extra.message, meta, loc=query)
+
+
 def _send_request(
-    model: md.LLM, req: md.LLMRequest, env: PolicyEnv
+    env: PolicyEnv,
+    *,
+    model: md.LLM,
+    query: dp.AttachedQuery[Any],
+    request: md.LLMRequest,
+    verbose: bool,
 ) -> dp.StreamContext[md.LLMResponse | SpendingDeclined]:
-    res = yield from spend_on(
-        lambda: (
-            resp := model.send_request(req, env.cache),
-            resp.budget,
-        ),
-        estimate=model.estimate_budget(req),
+    _log_request(env, query=query, request=request, verbose=verbose)
+    response = yield from spend_on(
+        lambda: (resp := model.send_request(request, env.cache), resp.budget),
+        estimate=model.estimate_budget(request),
     )
-    return res
+    if not isinstance(response, SpendingDeclined):
+        _log_response(
+            env,
+            query=query,
+            request=request,
+            response=response,
+            verbose=verbose,
+        )
+    return response
 
 
 @prompting_policy
@@ -1342,10 +1388,11 @@ def classify[T](
         num_completions=1,
         options=options,
     )
-    resp = yield from _send_request(model, req, env)
+    resp = yield from _send_request(
+        env, model=model, request=req, query=query, verbose=enable_logging
+    )
     if isinstance(resp, SpendingDeclined):
         return
-    log_oracle_response(env, query, req, resp, verbose=enable_logging)
     if not resp.outputs:
         return
     output = resp.outputs[0]
@@ -1508,10 +1555,11 @@ def few_shot[T](
             tools=tuple(tools),
             structured_output=structured_output,
         )
-        resp = yield from _send_request(model, req, env)
+        resp = yield from _send_request(
+            env, model=model, request=req, query=query, verbose=enable_logging
+        )
         if isinstance(resp, SpendingDeclined):
             return
-        log_oracle_response(env, query, req, resp, verbose=enable_logging)
         if not resp.outputs:
             log(env, "llm_no_output", loc=query)
             continue

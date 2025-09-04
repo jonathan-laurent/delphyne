@@ -530,9 +530,11 @@ class Tracer:
         lock: A reentrant lock protecting access to the trace and log.
             The lock is publicly exposed so that threads can log several
             successive messages without other threads interleaving new
-            messages in between (TODO: there are cleaner ways to achieve
-            this).
+            messages in between.
     """
+
+    # TODO: there are cleaner ways to achieve good message order beyong
+    # exposing the lock.
 
     def __init__(self):
         self.trace = Trace()
