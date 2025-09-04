@@ -10,6 +10,7 @@ import threading
 from collections import defaultdict
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Any
 
 from delphyne.core import pprint, refs
@@ -489,6 +490,7 @@ class LogMessage:
 
     Attributes:
         message: The message to log.
+        time: Time at which the message was produced
         metadata: Optional metadata associated with the message, as a
             dictionary mapping string keys to JSON values.
         location: An optional location in the strategy tree where the
@@ -496,6 +498,7 @@ class LogMessage:
     """
 
     message: str
+    time: datetime
     metadata: dict[str, Any] | None = None
     location: ShortLocation | None = None
 
@@ -508,6 +511,7 @@ class ExportableLogMessage:
     """
 
     message: str
+    time: datetime
     node: int | None
     space: str | None
     metadata: dict[str, Any] | None = None
@@ -576,11 +580,14 @@ class Tracer:
         Log a message, with optional metadata and location information.
         The metadata must be a dictionary of JSON values.
         """
+        time = datetime.now()
         with self.lock:
             short_location = None
             if location is not None:
                 short_location = self.trace.convert_location(location)
-            self.messages.append(LogMessage(message, metadata, short_location))
+            self.messages.append(
+                LogMessage(message, time, metadata, short_location)
+            )
 
     def export_log(self) -> Iterable[ExportableLogMessage]:
         """
@@ -594,7 +601,9 @@ class Tracer:
                     node = loc.node.id
                     if loc.space is not None:
                         space = pprint.space_ref(loc.space)
-                yield ExportableLogMessage(m.message, node, space, m.metadata)
+                yield ExportableLogMessage(
+                    m.message, m.time, node, space, m.metadata
+                )
 
     def export_trace(self) -> ExportableTrace:
         """
