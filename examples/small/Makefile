@@ -1,8 +1,8 @@
-.PHONY: full-test execute-commands FORCE
+.PHONY: full-test execute-commands FORCE delete-full-test-cache
+
+full-test: execute-commands
 
 CMD_FILES := $(wildcard *.exec.yaml)
-
-FORCE:
 
 # Execute all command files in the directory.
 execute-commands: $(CMD_FILES)
@@ -11,4 +11,7 @@ execute-commands: $(CMD_FILES)
 	delphyne run $@ --cache --filter=[values] --no-header --ensure-no-error
 	@echo "\n"
 
-full-test: execute-commands
+FORCE:
+
+delete-full-test-cache:
+	rm -rf cache

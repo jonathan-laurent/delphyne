@@ -1,4 +1,10 @@
-.PHONY: pyright clean clean-ignored test full-test full-clean schemas stubs install doc-logo cloc count-doc-words deploy-doc-release deploy-doc-dev prepare-release release readme repomix
+.PHONY: install pyright test full-test
+.PHONY: clean-ignored clean full-clean
+.PHONY: delete-test-cache delete-full-test-cache
+.PHONY: schemas stubs doc-logo readme repomix
+.PHONY: deploy-doc-release deploy-doc-dev prepare-release release
+.PHONY: cloc count-doc-words
+
 
 RELEASE_SCRIPT := python scripts/prepare_release.py
 
@@ -68,6 +74,20 @@ full-clean: clean
 	make -C examples/libraries/why3py full-clean
 
 
+# Delete the request cache of the test suite. Using `make test` will regenerate
+# the cache, although doing so can take time and require API keys for a number
+# of LLM providers.
+delete-test-cache:
+	rm -rf tests/cache
+	rm -rf tests/output
+
+
+delete-full-test-cache:
+	make -C examples/find_invariants/ delete-full-test-cache
+	make -C examples/mini_eqns/ delete-full-test-cache
+	make -C examples/small/ delete-full-test-cache
+
+
 # Generate the demo file schema.
 # This should only be executed after a change was made to the `Demo` type.
 schemas:
@@ -86,13 +106,6 @@ stubs:
 	python -m delphyne.server.generate_stubs feedback > $(STUBS_FOLDER)/feedback.ts
 
 
-# Clean the request cache of the test suite. Using `make test` will regenerate
-# the cache, although doing so can take time and require API keys for a number
-# of LLM providers.
-clean-cache:
-	rm -rf tests/cache
-
-
 # Generate white logos from the black logos (for dark mode themes).
 LOGOS_DIR := docs/assets/logos
 BLACK_LOGOS := $(wildcard $(LOGOS_DIR)/black/*.png)
@@ -104,6 +117,28 @@ $(LOGOS_DIR)/gray/%.png: $(LOGOS_DIR)/black/%.png
 	convert $< -fill '#666d77' -colorize 100% $@
 doc-logo: $(WHITE_LOGOS) $(GRAY_LOGOS)
 	cp $(LOGOS_DIR)/gray/mini.png vscode-ui/media/logo/delphyne.png
+
+
+# Generate README.md from docs/index.md
+readme:
+	python scripts/generate_readme.py > README.md
+
+
+# Folders and files to ignore by repomix.
+# Use commas after each item except the last.
+REPOMIX_IGNORE = \
+	examples/find_invariants/experiments/analysis/,\
+	examples/find_invariants/experiments/test-output/,\
+	examples/find_invariants/benchmarks/,\
+	examples/libraries/,\
+	scripts/prepare_release.py
+#
+# Not excluded so far:
+# tests/cache/
+#
+# Generate a single file summarizing the repo, to be passed to LLMs for context.
+repomix:
+	repomix --ignore "$(REPOMIX_IGNORE)"
 
 
 # Build and deploy the documentation for the latest stable release.
@@ -153,25 +188,3 @@ count-doc-words:
 	find docs -name '*.md' -exec cat {} + | wc -w
 	@echo "Number of words in Python docstrings:"
 	rg --multiline --multiline-dotall '"""(.*?)"""' -o src | wc -w
-
-
-# Generate README.md from docs/index.md
-readme:
-	python scripts/generate_readme.py > README.md
-
-
-# Folders and files to ignore by repomix.
-# Use commas after each item except the last.
-REPOMIX_IGNORE = \
-	examples/find_invariants/experiments/analysis/,\
-	examples/find_invariants/experiments/test-output/,\
-	examples/find_invariants/benchmarks/,\
-	examples/libraries/,\
-	scripts/prepare_release.py
-
-# Not excluded so far:
-# tests/cache/
-
-# Generate a single file summarizing the repo, to be passed to LLMs for context.
-repomix:
-	repomix --ignore "$(REPOMIX_IGNORE)"
