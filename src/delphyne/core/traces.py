@@ -528,8 +528,8 @@ class ExportableLogMessage:
     message: str
     level: LogLevel
     time: datetime
-    node: int | None
-    space: str | None
+    node: int | None = None
+    space: str | None = None
     metadata: dict[str, Any] | None = None
 
 
