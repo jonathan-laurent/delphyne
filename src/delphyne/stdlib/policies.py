@@ -380,38 +380,6 @@ def contextual_tree_transformer[A: Node, B: Node, **C](
 
 
 #####
-##### Logging
-#####
-
-
-def log(
-    env: PolicyEnv,
-    message: str,
-    metadata: dict[str, Any] | None = None,
-    loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
-) -> None:
-    """
-    Log a message.
-
-    Arguments:
-        env: The global policy environment.
-        message: The message to log.
-        metadata: Additional metadata to log, as a dictionary of JSON
-            values.
-        loc: Tree or attached query that the message is about, if
-            relevant.
-    """
-    match loc:
-        case None:
-            location = None
-        case dp.Tree():
-            location = dp.Location(loc.ref, None)
-        case dp.AttachedQuery(_, ref):
-            location = dp.Location(ref[0], ref[1])
-    env.tracer.log(message, metadata, location)
-
-
-#####
 ##### Checking consistency of strategies and policies
 #####
 

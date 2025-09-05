@@ -15,11 +15,9 @@ from typing import Any, Literal, cast, override
 import jinja2
 import yaml
 
-import delphyne.core.queries as qu
+import delphyne.core as dp
+import delphyne.core.demos as dm
 import delphyne.stdlib.models as md
-from delphyne.core.demos import Demo, QueryDemo, StrategyDemo, translate_answer
-from delphyne.core.refs import Answer
-from delphyne.core.traces import Tracer
 from delphyne.utils.typing import pydantic_load
 from delphyne.utils.yaml import dump_yaml_object
 
@@ -65,7 +63,7 @@ class Example:
     """
 
     args: QuerySerializedArgs
-    answer: Answer
+    answer: dp.Answer
     tags: Sequence[str]
 
 
@@ -92,7 +90,7 @@ class ExampleDatabase:
         default_factory=lambda: defaultdict(list)
     )
 
-    def add_query_demonstration(self, demo: QueryDemo):
+    def add_query_demonstration(self, demo: dp.QueryDemo):
         """
         Add all examples from a standalone query demonstration to the
         database.
@@ -105,18 +103,18 @@ class ExampleDatabase:
             # Right now, we only allow the first one to be added.
             return
         demo_answer = demo.answers[0]
-        answer = translate_answer(demo_answer)
+        answer = dm.translate_answer(demo_answer)
         example = Example(demo.args, answer, demo_answer.tags)
         self._examples[demo.query].append(example)
 
-    def add_demonstration(self, demo: Demo):
+    def add_demonstration(self, demo: dp.Demo):
         """
         Add all examples from a demonstration to the database.
         """
-        if isinstance(demo, QueryDemo):
+        if isinstance(demo, dp.QueryDemo):
             self.add_query_demonstration(demo)
         else:
-            assert isinstance(demo, StrategyDemo)
+            assert isinstance(demo, dp.StrategyDemo)
             for q in demo.queries:
                 self.add_query_demonstration(q)
 
@@ -184,7 +182,7 @@ def _fail_from_template(msg: str):
     raise jinja2.TemplateError(msg)
 
 
-class TemplatesManager(qu.AbstractTemplatesManager):
+class TemplatesManager(dp.AbstractTemplatesManager):
     """
     A class for managing Jinja prompt templates.
 
@@ -255,17 +253,17 @@ class TemplatesManager(qu.AbstractTemplatesManager):
             if default_template is not None:
                 template = self.env.from_string(default_template)
             else:
-                raise qu.TemplateFileMissing(template_name)
+                raise dp.TemplateFileMissing(template_name)
         try:
             assert "data" not in template_args
             template_args |= {"data": self.data}
             return template.render(template_args)
         except jinja2.TemplateNotFound as e:
-            raise qu.TemplateError(template_name, e)
+            raise dp.TemplateError(template_name, e)
         except jinja2.UndefinedError as e:
-            raise qu.TemplateError(template_name, e)
+            raise dp.TemplateError(template_name, e)
         except jinja2.TemplateSyntaxError as e:
-            raise qu.TemplateError(template_name, e)
+            raise dp.TemplateError(template_name, e)
 
 
 def _dump_json_object(
@@ -349,7 +347,7 @@ class PolicyEnv:
         """
         self.templates = TemplatesManager(prompt_dirs, data_dirs)
         self.examples = ExampleDatabase(do_not_match_identical_queries)
-        self.tracer = Tracer()
+        self.tracer = dp.Tracer()
         self.cache = cache
         for path in demonstration_files:
             if not path.suffix.endswith(DEMO_FILE_EXT):
@@ -357,8 +355,107 @@ class PolicyEnv:
             try:
                 with path.open() as f:
                     content = yaml.safe_load(f)
-                    demos = pydantic_load(list[Demo], content)
+                    demos = pydantic_load(list[dp.Demo], content)
                     for demo in demos:
                         self.examples.add_demonstration(demo)
             except Exception as e:
                 raise InvalidDemoFile(path, e)
+
+    def log(
+        self,
+        level: dp.LogLevel,
+        message: str,
+        metadata: dict[str, Any] | None = None,
+        *,
+        loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
+    ) -> None:
+        """
+        Log a message.
+
+        Arguments:
+            level: The severity level of the message.
+            message: The message to log.
+            metadata: Additional metadata to log, as a dictionary of JSON
+                values.
+            loc: Tree or attached query that the message is about, if
+                relevant.
+        """
+
+        match loc:
+            case None:
+                location = None
+            case dp.Tree():
+                location = dp.Location(loc.ref, None)
+            case dp.AttachedQuery(_, ref):
+                location = dp.Location(ref[0], ref[1])
+        self.tracer.log(level, message, metadata, location)
+
+    def trace(
+        self,
+        message: str,
+        metadata: dict[str, Any] | None = None,
+        *,
+        loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
+    ) -> None:
+        """
+        Log a message with "trace" severity level.
+
+        See `log` method.
+        """
+        self.log("trace", message, metadata, loc=loc)
+
+    def debug(
+        self,
+        message: str,
+        metadata: dict[str, Any] | None = None,
+        *,
+        loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
+    ) -> None:
+        """
+        Log a message with "debug" severity level.
+
+        See `log` method.
+        """
+        self.log("debug", message, metadata, loc=loc)
+
+    def info(
+        self,
+        message: str,
+        metadata: dict[str, Any] | None = None,
+        *,
+        loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
+    ) -> None:
+        """
+        Log a message with "info" severity level.
+
+        See `log` method.
+        """
+        self.log("info", message, metadata, loc=loc)
+
+    def warn(
+        self,
+        message: str,
+        metadata: dict[str, Any] | None = None,
+        *,
+        loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
+    ) -> None:
+        """
+        Log a message with "warn" severity level.
+
+        See `log` method.
+        """
+        self.log("warn", message, metadata, loc=loc)
+
+    def error(
+        self,
+        message: str,
+        metadata: dict[str, Any] | None = None,
+        *,
+        loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
+    ) -> None:
+        """
+        Log a message with "error" severity level.
+
+        See `log` method.
+        """
+        self.log("error", message, metadata, loc=loc)

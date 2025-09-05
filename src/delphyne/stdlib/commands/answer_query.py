@@ -82,9 +82,7 @@ def answer_query_with_cache(
     model = stdm.standard_model(model_name)
     if cmd.prompt_only:
         model = mo.DummyModel()
-    policy = qu.few_shot(
-        model=model, enable_logging=True, iterative_mode=cmd.iterative_mode
-    )
+    policy = qu.few_shot(model=model, iterative_mode=cmd.iterative_mode)
     stream = policy(attached, env).gen()
     if cmd.budget is not None:
         stream = st.stream_with_budget(stream, dp.BudgetLimit(cmd.budget))

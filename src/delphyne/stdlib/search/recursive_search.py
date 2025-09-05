@@ -14,7 +14,7 @@ import delphyne.core as dp
 from delphyne.core.streams import StreamGen
 from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.nodes import Branch, Fail, Join, NodeMeta
-from delphyne.stdlib.policies import log, search_policy, unsupported_node
+from delphyne.stdlib.policies import search_policy, unsupported_node
 from delphyne.stdlib.queries import ProbInfo
 from delphyne.stdlib.streams import Stream, StreamCombinator
 
@@ -94,7 +94,7 @@ def recursive_search[P, T](
             elif isinstance(meta, CombineStreamDistr):
                 res = yield from cands.stream(env, policy).first()
                 if res is None:
-                    log(env, "classifier_failure", loc=tree)
+                    env.info("classifier_failure", loc=tree)
                     return
                 pinfo = res.meta
                 assert isinstance(pinfo, ProbInfo), "Missing logprobs."

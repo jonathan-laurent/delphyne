@@ -73,7 +73,6 @@ from delphyne.stdlib.policies import (
     SearchPolicy,
     contextual_tree_transformer,
     ensure_compatible,
-    log,
     prompting_policy,
     query_dependent,
     search_policy,

@@ -62,11 +62,11 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 161.0
-        output_tokens: 17.0
-        cached_input_tokens: 0.0
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 161
+        output_tokens: 17
+        cached_input_tokens: 0
         price: 0.0001322
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
@@ -153,28 +153,28 @@
     outputs:
       - content:
           structured:
-            title: 'The Evolution of Soccer: From Ancient Origins to Modern Global Phenomenon'
+            title: The Evolution and Global Impact of Soccer
             authors:
-              - Alex Morgan
-              - David Beckham
+              - John D. Smith
+              - Maria Gonzalez
         tool_calls: []
         finish_reason: stop
         logprobs: null
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 190.0
-        output_tokens: 31.0
-        cached_input_tokens: 0.0
-        price: 0.00015819999999999997
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 190
+        output_tokens: 26
+        cached_input_tokens: 0
+        price: 0.00015719999999999997
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
-      completion_tokens: 31
+      completion_tokens: 26
       prompt_tokens: 190
-      total_tokens: 221
+      total_tokens: 216
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0

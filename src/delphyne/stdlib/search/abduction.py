@@ -12,7 +12,7 @@ from delphyne.core.refs import drop_refs
 from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.nodes import spawn_node
 from delphyne.stdlib.opaque import Opaque, OpaqueSpace
-from delphyne.stdlib.policies import log, search_policy
+from delphyne.stdlib.policies import search_policy
 
 # For readability of the `Abduction` node definition
 type _Fact = Any
@@ -202,7 +202,7 @@ def abduct_and_saturate[P, Proof](
     policy: P,
     max_rollout_depth: int = 3,
     scoring_function: ScoringFunction = _default_scoring_function,
-    verbose: bool = False,
+    log_steps: dp.LogLevel | None = None,
 ) -> dp.StreamGen[Proof]:
     """
     A standard, sequential policy to process abduction nodes.
@@ -240,8 +240,8 @@ def abduct_and_saturate[P, Proof](
     node = tree.node
 
     def dbg(msg: str):
-        if verbose:
-            log(env, msg)
+        if log_steps:
+            env.log(log_steps, msg)
 
     def all_canonical() -> Sequence[_EFact]:
         return [*candidates, *proved, *disproved, *redundant]
@@ -335,7 +335,7 @@ def abduct_and_saturate[P, Proof](
             equivalent[f] = res.value
             return res.value
         else:
-            log(env, "invalid_equivalent_call")
+            env.error("invalid_equivalent_call")
             return f
 
     def get_raw_suggestions(c: _EFact) -> dp.StreamContext[Sequence[_EFact]]:

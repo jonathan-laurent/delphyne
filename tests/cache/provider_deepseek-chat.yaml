@@ -40,11 +40,11 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 123.0
-        output_tokens: 6.0
-        cached_input_tokens: 0.0
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 123
+        output_tokens: 6
+        cached_input_tokens: 0
         price: 3.363e-05
     log_items: []
     model_name: deepseek-chat

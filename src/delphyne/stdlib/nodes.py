@@ -216,6 +216,7 @@ class Message(dp.Node):
 
     msg: str
     data: object | None
+    level: dp.LogLevel | None
 
     @override
     def navigate(self) -> dp.Navigation:
@@ -228,7 +229,7 @@ class Message(dp.Node):
 
 
 def message(
-    msg: str, data: object | None = None
+    msg: str, data: object | None = None, level: dp.LogLevel | None = None
 ) -> dp.Strategy[Message, object, None]:
     """
     Log a debugging message. See `Message` for more details.
@@ -236,6 +237,7 @@ def message(
     Arguments:
         msg: The message to log.
         data: Optional data to attach to the message.
+        level: Optional severity level of the message.
 
     !!! warning
         Like all effect triggering functions, this function must be
@@ -246,7 +248,7 @@ def message(
         Forgetting `yield from` may not result in a type error but will
         result in a no-op at runtime.
     """
-    yield spawn_node(Message, msg=msg, data=data)
+    yield spawn_node(Message, msg=msg, data=data, level=level)
 
 
 @pol.contextual_tree_transformer
@@ -254,6 +256,7 @@ def elim_messages(
     env: PolicyEnv,
     policy: Any,
     show_in_log: bool = True,
+    default_log_level: dp.LogLevel = "info",
 ) -> pol.PureTreeTransformerFn[Message, Never]:
     """
     Eliminate the `Message` effect.
@@ -261,6 +264,8 @@ def elim_messages(
     Arguments:
         show_in_log: Whether to log the associated content whenever a
             message node is encountered.
+        default_log_level: The default severity level to use when no
+            severity level is specified in the message node.
     """
 
     def transform[N: dp.Node, P, T](
@@ -269,7 +274,8 @@ def elim_messages(
         if isinstance(tree.node, Message):
             if show_in_log:
                 metadata = {"attached": tree.node.data}
-                env.tracer.log(tree.node.msg, metadata=metadata)
+                level = tree.node.level or default_log_level
+                env.log(level, tree.node.msg, metadata=metadata, loc=tree)
             return transform(tree.child(None))
         return tree.transform(tree.node, transform)
 

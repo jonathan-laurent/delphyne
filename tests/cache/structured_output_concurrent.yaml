@@ -32,7 +32,7 @@
     outputs:
       - content:
           structured:
-            title: Understanding the Complexities of Love
+            title: The Many Facets of Love
             authors:
               - Jane Doe
               - John Smith
@@ -42,7 +42,7 @@
         reasoning_content: null
       - content:
           structured:
-            title: The Multifaceted Nature of Love
+            title: 'The Many Faces of Love: Exploring Its Depths and Dimensions'
             authors:
               - Jane Doe
               - John Smith
@@ -52,18 +52,18 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 2.0
-        input_tokens: 89.0
-        output_tokens: 38.0
-        cached_input_tokens: 0.0
-        price: 7.879999999999999e-05
+        num_requests: 1
+        num_completions: 2
+        input_tokens: 89
+        output_tokens: 44
+        cached_input_tokens: 0
+        price: 7.999999999999999e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
-      completion_tokens: 38
+      completion_tokens: 44
       prompt_tokens: 89
-      total_tokens: 127
+      total_tokens: 133
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
@@ -116,28 +116,28 @@
         reasoning_content: null
       - content:
           structured:
-            title: 'Exploring the Spectrum of Love: Understanding Its Depth and Impact'
+            title: Exploring the Multifaceted Nature of Love
             authors:
-              - Alexandra Reynolds
-              - Michael Chen
+              - Jane Doe
+              - John Smith
         tool_calls: []
         finish_reason: stop
         logprobs: null
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 2.0
-        input_tokens: 89.0
-        output_tokens: 45.0
-        cached_input_tokens: 0.0
-        price: 8.02e-05
+        num_requests: 1
+        num_completions: 2
+        input_tokens: 89
+        output_tokens: 40
+        cached_input_tokens: 0
+        price: 7.92e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
-      completion_tokens: 45
+      completion_tokens: 40
       prompt_tokens: 89
-      total_tokens: 134
+      total_tokens: 129
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
@@ -180,7 +180,7 @@
     outputs:
       - content:
           structured:
-            title: 'The Essence of Love: Understanding Its Impact and Significance'
+            title: Exploring the Many Facets of Love
             authors:
               - Jane Doe
               - John Smith
@@ -190,27 +190,28 @@
         reasoning_content: null
       - content:
           structured:
-            title: Love
+            title: 'Understanding Love: A Multifaceted Emotion'
             authors:
-              - OpenAI Assistant
+              - Alex Morgan
+              - Jamie Lee
         tool_calls: []
         finish_reason: stop
         logprobs: null
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 2.0
-        input_tokens: 89.0
-        output_tokens: 36.0
-        cached_input_tokens: 0.0
-        price: 7.84e-05
+        num_requests: 1
+        num_completions: 2
+        input_tokens: 89
+        output_tokens: 41
+        cached_input_tokens: 0
+        price: 7.939999999999999e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
-      completion_tokens: 36
+      completion_tokens: 41
       prompt_tokens: 89
-      total_tokens: 125
+      total_tokens: 130
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
@@ -253,36 +254,37 @@
     outputs:
       - content:
           structured:
-            title: The Many Facets of Love
+            title: The Many Dimensions of Love
             authors:
-              - Alex Morgan
+              - Alex Johnson
         tool_calls: []
         finish_reason: stop
         logprobs: null
         reasoning_content: null
       - content:
           structured:
-            title: 'Love: The Universal Language of Connection'
+            title: The Many Dimensions of Love
             authors:
-              - Alexandra Smith
+              - Jane Doe
+              - John Smith
         tool_calls: []
         finish_reason: stop
         logprobs: null
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 2.0
-        input_tokens: 89.0
-        output_tokens: 34.0
-        cached_input_tokens: 0.0
-        price: 7.8e-05
+        num_requests: 1
+        num_completions: 2
+        input_tokens: 89
+        output_tokens: 33
+        cached_input_tokens: 0
+        price: 7.78e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
-      completion_tokens: 34
+      completion_tokens: 33
       prompt_tokens: 89
-      total_tokens: 123
+      total_tokens: 122
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0

@@ -9,11 +9,11 @@ import itertools
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-import why3_utils as why3
-from why3_utils import File, Formula
-
 import delphyne as dp
 from delphyne import Branch, Compute, Fail, Strategy, strategy
+
+import why3_utils as why3
+from why3_utils import File, Formula
 
 # fmt: off
 
@@ -173,6 +173,6 @@ def prove_program_by_saturation(
     
     per_attempt = dp.BudgetLimit({dp.NUM_REQUESTS: max_requests_per_attempt})
     sp = dp.with_budget(per_attempt) @ dp.abduct_and_saturate(
-        verbose=True, max_rollout_depth=max_rollout_depth)
+        log_steps="info", max_rollout_depth=max_rollout_depth)
     
     return dp.sequence(sp & pp(m) for m in itertools.cycle(mcycle))

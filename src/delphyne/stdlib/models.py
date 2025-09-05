@@ -16,6 +16,7 @@ from typing import Any, Literal, cast, final, override
 import pydantic
 
 import delphyne.core.inspect as dpi
+from delphyne.core import LogLevel
 from delphyne.core.refs import Answer, Structured, ToolCall
 from delphyne.core.streams import Budget
 from delphyne.utils.caching import Cache, CacheMode, load_cache
@@ -367,7 +368,7 @@ class StreamingNotImplemented(Exception):
 
 @dataclass
 class LLMResponseLogItem:
-    severity: Literal["info", "warning", "error"]
+    level: LogLevel
     message: str
     metadata: Any = None
 

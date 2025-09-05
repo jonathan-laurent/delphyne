@@ -10,9 +10,9 @@
       num_completions: 1
       options:
         model: gpt-4.1-mini
-        temperature: 0.0
         logprobs: true
         top_logprobs: 20
+        temperature: 0.0
       tools: []
       structured_output: null
     iter: 1
@@ -43,7 +43,7 @@
                     - 114
                     - 97
                     - 114
-                - -18.875
+                - -18.375
               - - token: ' rare'
                   bytes:
                     - 32
@@ -51,14 +51,19 @@
                     - 97
                     - 114
                     - 101
-                - -19.625
+                - -19.5
               - - token: Rare
                   bytes:
                     - 82
                     - 97
                     - 114
                     - 101
-                - -21.0
+                - -20.875
+              - - token: ra
+                  bytes:
+                    - 114
+                    - 97
+                - -22.5
               - - token: common
                   bytes:
                     - 99
@@ -67,12 +72,11 @@
                     - 109
                     - 111
                     - 110
-                - -22.25
-              - - token: ra
+                - -22.625
+              - - token: '-'
                   bytes:
-                    - 114
-                    - 97
-                - -22.5
+                    - 45
+                - -23.5
               - - token: unique
                   bytes:
                     - 117
@@ -81,75 +85,78 @@
                     - 113
                     - 117
                     - 101
-                - -23.625
-              - - token: r
-                  bytes:
-                    - 114
-                - -24.375
-              - - token: '-'
-                  bytes:
-                    - 45
-                - -24.875
+                - -24.5
               - - token: '"'
                   bytes:
                     - 34
-                - -25.875
+                - -24.625
+              - - token: '**'
+                  bytes:
+                    - 42
+                    - 42
+                - -24.625
+              - - token: r
+                  bytes:
+                    - 114
+                - -24.75
               - - token: raz
                   bytes:
                     - 114
                     - 97
                     - 122
-                - -26.0
-              - - token: '**'
-                  bytes:
-                    - 42
-                    - 42
-                - -26.375
-              - - token: RA
-                  bytes:
-                    - 82
-                    - 65
-                - -28.125
-              - - token: R
-                  bytes:
-                    - 82
-                - -28.375
+                - -25.875
               - - token: ''''
                   bytes:
                     - 39
-                - -28.5
-              - - token: '1'
-                  bytes:
-                    - 49
-                - -28.625
-              - - token: '*'
-                  bytes:
-                    - 42
-                - -28.875
+                - -27.25
               - - token: '```'
                   bytes:
                     - 96
                     - 96
                     - 96
-                - -28.875
+                - -27.5
               - - token: '#'
                   bytes:
                     - 35
-                - -29.0
-              - - token: raw
+                - -28.25
+              - - token: ' raro'
+                  bytes:
+                    - 32
+                    - 114
+                    - 97
+                    - 114
+                    - 111
+                - -28.25
+              - - token: '``'
+                  bytes:
+                    - 96
+                    - 96
+                - -28.375
+              - - token: '*'
+                  bytes:
+                    - 42
+                - -28.5
+              - - token: '   '
+                  bytes:
+                    - 32
+                    - 32
+                    - 32
+                - -28.5
+              - - token: rate
                   bytes:
                     - 114
                     - 97
-                    - 119
-                - -29.0
+                    - 116
+                    - 101
+                - -28.625
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 46.0
-        output_tokens: 1.0
-        cached_input_tokens: 0.0
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 46
+        output_tokens: 1
+        cached_input_tokens: 0
         price: 3.7e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14

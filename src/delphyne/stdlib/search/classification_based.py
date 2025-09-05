@@ -7,7 +7,7 @@ import numpy as np
 import delphyne as dp
 from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.nodes import Branch
-from delphyne.stdlib.policies import SearchPolicy, log, search_policy
+from delphyne.stdlib.policies import SearchPolicy, search_policy
 from delphyne.stdlib.queries import ProbInfo
 
 
@@ -32,7 +32,7 @@ def sample_and_proceed[N: dp.Node, P, T](
         case dp.Branch(cands):
             res = yield from cands.stream(env, policy).first()
             if res is None:
-                log(env, "classifier_failure", loc=tree)
+                env.info("classifier_failure", loc=tree)
                 return
             meta = res.meta
             assert isinstance(meta, ProbInfo), "Missing logprobs."

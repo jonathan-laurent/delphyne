@@ -65,6 +65,7 @@ from delphyne.core.traces import (
     ExportableLogMessage,
     ExportableTrace,
     Location,
+    LogLevel,
     LogMessage,
     QueryOrigin,
     Trace,

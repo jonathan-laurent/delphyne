@@ -11,7 +11,7 @@ from collections import defaultdict
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
 
 from delphyne.core import pprint, refs
 from delphyne.core.trees import Tree
@@ -483,6 +483,9 @@ class TraceReverseMap:
 #####
 
 
+type LogLevel = Literal["trace", "debug", "info", "warn", "error"]
+
+
 @dataclass(frozen=True)
 class LogMessage:
     """
@@ -498,6 +501,7 @@ class LogMessage:
     """
 
     message: str
+    level: LogLevel
     time: datetime
     metadata: dict[str, Any] | None = None
     location: ShortLocation | None = None
@@ -511,6 +515,7 @@ class ExportableLogMessage:
     """
 
     message: str
+    level: LogLevel
     time: datetime
     node: int | None
     space: str | None
@@ -574,6 +579,7 @@ class Tracer:
 
     def log(
         self,
+        level: LogLevel,
         message: str,
         metadata: dict[str, Any] | None = None,
         location: Location | None = None,
@@ -588,7 +594,7 @@ class Tracer:
             if location is not None:
                 short_location = self.trace.convert_location(location)
             self.messages.append(
-                LogMessage(message, time, metadata, short_location)
+                LogMessage(message, level, time, metadata, short_location)
             )
 
     def export_log(self) -> Iterable[ExportableLogMessage]:
@@ -604,7 +610,7 @@ class Tracer:
                     if loc.space is not None:
                         space = pprint.space_ref(loc.space)
                 yield ExportableLogMessage(
-                    m.message, m.time, node, space, m.metadata
+                    m.message, m.level, m.time, node, space, m.metadata
                 )
 
     def export_trace(self) -> ExportableTrace:

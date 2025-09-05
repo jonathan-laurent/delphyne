@@ -17,7 +17,7 @@
     iter: 1
   output:
     outputs:
-      - content: '28'
+      - content: '23'
         tool_calls: []
         finish_reason: stop
         logprobs: null
@@ -63,7 +63,7 @@
     iter: 1
   output:
     outputs:
-      - content: '87'
+      - content: '84'
         tool_calls: []
         finish_reason: stop
         logprobs: null

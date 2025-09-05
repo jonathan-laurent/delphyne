@@ -42,14 +42,14 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 138.0
-        output_tokens: 7.0
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 138
+        output_tokens: 7
         price: 4.1924999999999996e-05
     log_items: []
     model_name: gemini-2.5-flash
     usage_info:
       completion_tokens: 7
       prompt_tokens: 138
-      total_tokens: 293
+      total_tokens: 448
