@@ -90,7 +90,9 @@ def first_parameter_of_base_class(cls: type[Any]) -> Any:
         import sys
 
         globalns = sys.modules[cls.__module__].__dict__
-        return typing._eval_type(annot, globalns=globalns, localns=None)  # type: ignore
+        return typing._eval_type(  # type: ignore
+            annot, globalns=globalns, localns=None, type_params=()
+        )
     return annot
 
 
