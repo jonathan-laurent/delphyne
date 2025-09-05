@@ -4447,7 +4447,7 @@ trying to prove and accumulating redundant facts.</p>
     <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.search.abduction.abduct_and_saturate[P]">P</span></span><span class="p">,</span>
     <span class="n">max_rollout_depth</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
     <span class="n">scoring_function</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.search.abduction.ScoringFunction">ScoringFunction</span></span> <span class="o">=</span> <span class="n"><span title="delphyne.stdlib.search.abduction._default_scoring_function">_default_scoring_function</span></span><span class="p">,</span>
-    <span class="n">verbose</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">log_steps</span><span class="p">:</span> <span class="n"><span title="delphyne.core.LogLevel">LogLevel</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="StreamGen (delphyne.core.StreamGen)" href="../../policies/streams/#delphyne.StreamGen">StreamGen</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.abduction.abduct_and_saturate[Proof]">Proof</span></span><span class="p">]</span>
 </code></pre></div>
 
@@ -4676,7 +4676,7 @@ trying to prove and accumulating redundant facts.</p>
     <span class="n">policy</span><span class="p">:</span> <span class="n">P</span><span class="p">,</span>
     <span class="n">max_rollout_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
     <span class="n">scoring_function</span><span class="p">:</span> <span class="n">ScoringFunction</span> <span class="o">=</span> <span class="n">_default_scoring_function</span><span class="p">,</span>
-    <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">log_steps</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">LogLevel</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">Proof</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A standard, sequential policy to process abduction nodes.</span>
@@ -4714,8 +4714,8 @@ trying to prove and accumulating redundant facts.</p>
     <span class="n">node</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">dbg</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="n">log</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">log_steps</span><span class="p">:</span>
+            <span class="n">env</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">log_steps</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">all_canonical</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">_EFact</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span><span class="o">*</span><span class="n">candidates</span><span class="p">,</span> <span class="o">*</span><span class="n">proved</span><span class="p">,</span> <span class="o">*</span><span class="n">disproved</span><span class="p">,</span> <span class="o">*</span><span class="n">redundant</span><span class="p">]</span>
@@ -4809,7 +4809,7 @@ trying to prove and accumulating redundant facts.</p>
             <span class="n">equivalent</span><span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">value</span>
             <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">value</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">log</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="s2">&quot;invalid_equivalent_call&quot;</span><span class="p">)</span>
+            <span class="n">env</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;invalid_equivalent_call&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">f</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">get_raw_suggestions</span><span class="p">(</span><span class="n">c</span><span class="p">:</span> <span class="n">_EFact</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamContext</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">_EFact</span><span class="p">]]:</span>
