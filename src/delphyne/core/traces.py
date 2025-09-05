@@ -11,7 +11,7 @@ from collections import defaultdict
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Literal
+from typing import Any, Literal, TypeGuard
 
 from delphyne.core import pprint, refs
 from delphyne.core.trees import Tree
@@ -486,6 +486,17 @@ class TraceReverseMap:
 type LogLevel = Literal["trace", "debug", "info", "warn", "error"]
 
 
+def log_level_greater_or_equal(lhs: LogLevel, rhs: LogLevel) -> bool:
+    levels = ["trace", "debug", "info", "warn", "error"]
+    return levels.index(lhs) >= levels.index(rhs)
+
+
+def valid_log_level(level: str) -> TypeGuard[LogLevel]:
+    if level in ["trace", "debug", "info", "warn", "error"]:
+        return True
+    return False
+
+
 @dataclass(frozen=True)
 class LogMessage:
     """
@@ -541,9 +552,14 @@ class Tracer:
     # TODO: there are cleaner ways to achieve good message order beyong
     # exposing the lock.
 
-    def __init__(self):
+    def __init__(self, log_level: LogLevel = "info"):
+        """
+        Parameters:
+            log_level: The minimum severity level of messages to log.
+        """
         self.trace = Trace()
         self.messages: list[LogMessage] = []
+        self.log_level: LogLevel = log_level
 
         # Different threads may be logging information or appending to
         # the trace in parallel.
@@ -588,6 +604,8 @@ class Tracer:
         Log a message, with optional metadata and location information.
         The metadata must be a dictionary of JSON values.
         """
+        if not log_level_greater_or_equal(level, self.log_level):
+            return
         time = datetime.now()
         with self.lock:
             short_location = None

@@ -66,11 +66,11 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1
-        num_completions: 1
-        input_tokens: 159
-        output_tokens: 17
-        cached_input_tokens: 0
+        num_requests: 1.0
+        num_completions: 1.0
+        input_tokens: 159.0
+        output_tokens: 17.0
+        cached_input_tokens: 0.0
         price: 0.0001306
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14

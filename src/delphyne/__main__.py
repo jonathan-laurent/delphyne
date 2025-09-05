@@ -11,6 +11,7 @@ from typing import Any
 import fire  # type: ignore
 import yaml
 
+import delphyne.core as dp
 import delphyne.stdlib as std
 import delphyne.utils.typing as ty
 from delphyne.scripts.command_utils import command_file_header
@@ -114,6 +115,7 @@ class DelphyneCLI:
         no_header: bool = False,
         no_status: bool = False,
         filter: list[str] | None = None,
+        log_level: dp.LogLevel | None = None,
         clear: bool = False,
     ):
         """
@@ -131,6 +133,8 @@ class DelphyneCLI:
             no_status: Do not show the progress bar.
             filter: Only show the provided subset of fields for the
                 `outcome.result` section.
+            log_level: If provided and if the command supports it,
+                overrides the command's `log_level` argument.
             clear: When this option is passed, all other options are
                 ignored and the `clear` method is called.
         """
@@ -159,6 +163,15 @@ class DelphyneCLI:
             )
             if not args.cache_file:
                 args.cache_file = file_path.stem + ".yaml"
+        if log_level:
+            if not hasattr(args, "log_level"):
+                raise ValueError(
+                    "Command does not have a `log_level` argument."
+                )
+            assert dp.valid_log_level(log_level), (
+                f"Invalid log level: {log_level}"
+            )
+            args.log_level = log_level
         progress = StatusIndicator(sys.stderr, show=not no_status)
         res = std.run_command(cmd, args, config, on_status=progress.on_status)
         progress.done()

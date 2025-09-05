@@ -41,6 +41,8 @@ class AnswerQueryArgs:
         cache_file: File within the global cache directory to use for
             request caching, or `None` to disable caching.
         cache_mode: Cache mode to use.
+        log_level: Minimum log level to record. Messages with a lower
+            level will be ignored.
     """
 
     query: str
@@ -52,6 +54,7 @@ class AnswerQueryArgs:
     budget: dict[str, float] | None = None
     cache_file: str | None = None
     cache_mode: ca.CacheMode = "read_write"
+    log_level: dp.LogLevel = "info"
 
 
 @dataclass
@@ -66,8 +69,7 @@ def answer_query_with_cache(
     cmd: AnswerQueryArgs,
     cache_spec: md.LLMCache | None,
 ):
-    # TODO: no examples for now. Also, we have to externalize this
-    # anyway.
+    # TODO: support adding examples?
     loader = analysis.ObjectLoader(exe.base, extra_objects=stdlib_globals())
     query = loader.load_query(cmd.query, cmd.args)
     env = en.PolicyEnv(
@@ -76,6 +78,7 @@ def answer_query_with_cache(
         demonstration_files=exe.demo_files,
         do_not_match_identical_queries=True,
         cache=cache_spec,
+        log_level=cmd.log_level,
     )
     attached = dp.spawn_standalone_query(query)
     model_name = cmd.model or DEFAULT_MODEL_NAME

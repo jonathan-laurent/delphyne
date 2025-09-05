@@ -72,6 +72,7 @@ from delphyne.core.traces import (
     Tracer,
     TraceReverseMap,
     tracer_hook,
+    valid_log_level,
 )
 from delphyne.core.trees import (
     AbstractTreeTransformer,

@@ -68,22 +68,22 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 499.0
-        output_tokens: 654.0
-        cached_input_tokens: 0.0
-        price: 0.0001411
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 499
+        output_tokens: 334
+        cached_input_tokens: 0
+        price: 0.00013309999999999998
     log_items: []
     model_name: gpt-5-mini-2025-08-07
     usage_info:
-      completion_tokens: 654
+      completion_tokens: 334
       prompt_tokens: 499
-      total_tokens: 1153
+      total_tokens: 833
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
-        reasoning_tokens: 640
+        reasoning_tokens: 320
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0
@@ -158,22 +158,22 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 501.0
-        output_tokens: 405.0
-        cached_input_tokens: 0.0
-        price: 0.00013537499999999997
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 501
+        output_tokens: 469
+        cached_input_tokens: 0
+        price: 0.00013697499999999998
     log_items: []
     model_name: gpt-5-mini-2025-08-07
     usage_info:
-      completion_tokens: 405
+      completion_tokens: 469
       prompt_tokens: 501
-      total_tokens: 906
+      total_tokens: 970
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
-        reasoning_tokens: 384
+        reasoning_tokens: 448
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0

@@ -43,16 +43,16 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1
-        num_completions: 1
-        num_requests__minimal_reasoning: 1
-        num_completions__minimal_reasoning: 1
-        input_tokens: 129
-        input_tokens__minimal_reasoning: 129
-        output_tokens: 16
-        output_tokens__minimal_reasoning: 16
-        cached_input_tokens: 0
-        cached_input_tokens__minimal_reasoning: 0
+        num_requests: 1.0
+        num_completions: 1.0
+        num_requests__minimal_reasoning: 1.0
+        num_completions__minimal_reasoning: 1.0
+        input_tokens: 129.0
+        input_tokens__minimal_reasoning: 129.0
+        output_tokens: 16.0
+        output_tokens__minimal_reasoning: 16.0
+        cached_input_tokens: 0.0
+        cached_input_tokens__minimal_reasoning: 0.0
         price: 3.265e-05
         price__minimal_reasoning: 3.265e-05
     log_items: []

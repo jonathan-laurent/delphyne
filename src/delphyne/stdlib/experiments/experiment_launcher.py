@@ -14,6 +14,7 @@ import fire  # type: ignore
 import pandas as pd  # type: ignore
 import yaml
 
+import delphyne.core as dp
 import delphyne.stdlib.commands as cmd
 from delphyne.stdlib.tasks import CommandExecutionContext, run_command
 from delphyne.utils.typing import NoTypeInfo, pydantic_dump, pydantic_load
@@ -124,6 +125,8 @@ class Experiment[Config]:
             and expensive computations (see `Compute`). When this is
             done, the experiment can be reliably replicated, without
             issuing LLM calls.
+        log_level: If provided, overrides the `log_level` argument of
+            the command returned by the `experiment` function.
         export_raw_trace: Whether to export the raw trace for all
             configuration runs.
         export_log: Whether to export the log messages for all
@@ -149,6 +152,7 @@ class Experiment[Config]:
     description: str | None = None
     config_naming: Callable[[Config, uuid.UUID], str] | None = None
     cache_requests: bool = True
+    log_level: dp.LogLevel | None = None
     export_raw_trace: bool = True
     export_log: bool = True
     export_browsable_trace: bool = True
@@ -269,6 +273,7 @@ class Experiment[Config]:
                     config_dir=self._config_dir(name),
                     config=info.params,
                     cache_requests=self.cache_requests,
+                    log_level=self.log_level,
                     export_raw_trace=self.export_raw_trace,
                     export_log=self.export_log,
                     export_browsable_trace=self.export_browsable_trace,
@@ -512,6 +517,7 @@ def _run_config[Config](
     config_dir: Path,
     config: Config,
     cache_requests: bool,
+    log_level: dp.LogLevel | None,
     export_raw_trace: bool,
     export_log: bool,
     export_browsable_trace: bool,
@@ -580,6 +586,7 @@ class ExperimentCLI:
         retry_errors: bool = False,
         cache: bool = True,
         verbose_output: bool = False,
+        log_level: str | None = None,
     ):
         """
         Start or resume the experiment.
@@ -592,11 +599,18 @@ class ExperimentCLI:
             verbose_output: Export raw traces and browsable traces in
                 result files, enabling inspection by the Delphyne VSCode
                 extension's tree view.
+            log_level: If provided, overrides the `log_level` argument of
+                the command returned by the `experiment` function.
         """
         self.experiment.cache_requests = cache
         self.experiment.export_raw_trace = verbose_output
         self.experiment.export_browsable_trace = verbose_output
         self.experiment.export_log = True
+        if log_level is not None:
+            assert dp.valid_log_level(log_level), (
+                f"Invalid log level: {log_level}"
+            )
+            self.experiment.log_level = log_level
 
         self.experiment.load()
         if retry_errors:

@@ -10,9 +10,9 @@
       num_completions: 1
       options:
         model: gpt-4.1-mini
+        temperature: 0.0
         logprobs: true
         top_logprobs: 20
-        temperature: 0.0
       tools: []
       structured_output: null
     iter: 1
@@ -205,11 +205,11 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1
-        num_completions: 1
-        input_tokens: 40
-        output_tokens: 1
-        cached_input_tokens: 0
+        num_requests: 1.0
+        num_completions: 1.0
+        input_tokens: 40.0
+        output_tokens: 1.0
+        cached_input_tokens: 0.0
         price: 3.22e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14

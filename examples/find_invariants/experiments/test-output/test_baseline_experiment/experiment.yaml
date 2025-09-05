@@ -1,7 +1,7 @@
 name: test_baseline_experiment
 description: null
 configs:
-  95ad02f7-d368-4dad-be9c-e4dacfeed1b2:
+  9250471d-861c-4c6a-933f-5bad3a232f61:
     params:
       bench_name: '1'
       model_name: mistral-small-2503

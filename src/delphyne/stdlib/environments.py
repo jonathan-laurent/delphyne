@@ -331,6 +331,7 @@ class PolicyEnv:
         demonstration_files: Sequence[Path] = (),
         data_dirs: Sequence[Path] = (),
         cache: md.LLMCache | None = None,
+        log_level: dp.LogLevel = "info",
         do_not_match_identical_queries: bool = False,
     ):
         """
@@ -343,11 +344,13 @@ class PolicyEnv:
             data_dirs: A sequence of directories where data files can be
                 found.
             cache: A request cache, or `None` to disable caching.
+            log_evel: The minimum log level to record. Messages with a
+                lower level will be ignored.
             do_not_match_identical_queries: See `ExampleDatabase`.
         """
         self.templates = TemplatesManager(prompt_dirs, data_dirs)
         self.examples = ExampleDatabase(do_not_match_identical_queries)
-        self.tracer = dp.Tracer()
+        self.tracer = dp.Tracer(log_level=log_level)
         self.cache = cache
         for path in demonstration_files:
             if not path.suffix.endswith(DEMO_FILE_EXT):

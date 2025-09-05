@@ -24,11 +24,11 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1
-        num_completions: 1
-        input_tokens: 44
-        output_tokens: 1
-        cached_input_tokens: 0
+        num_requests: 1.0
+        num_completions: 1.0
+        input_tokens: 44.0
+        output_tokens: 1.0
+        cached_input_tokens: 0.0
         price: 3.54e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
@@ -70,11 +70,11 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1
-        num_completions: 1
-        input_tokens: 44
-        output_tokens: 1
-        cached_input_tokens: 0
+        num_requests: 1.0
+        num_completions: 1.0
+        input_tokens: 44.0
+        output_tokens: 1.0
+        cached_input_tokens: 0.0
         price: 3.54e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
@@ -116,11 +116,11 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1
-        num_completions: 1
-        input_tokens: 44
-        output_tokens: 1
-        cached_input_tokens: 0
+        num_requests: 1.0
+        num_completions: 1.0
+        input_tokens: 44.0
+        output_tokens: 1.0
+        cached_input_tokens: 0.0
         price: 3.54e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
@@ -162,11 +162,11 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1
-        num_completions: 1
-        input_tokens: 44
-        output_tokens: 1
-        cached_input_tokens: 0
+        num_requests: 1.0
+        num_completions: 1.0
+        input_tokens: 44.0
+        output_tokens: 1.0
+        cached_input_tokens: 0.0
         price: 3.54e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
@@ -208,11 +208,11 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1
-        num_completions: 1
-        input_tokens: 44
-        output_tokens: 1
-        cached_input_tokens: 0
+        num_requests: 1.0
+        num_completions: 1.0
+        input_tokens: 44.0
+        output_tokens: 1.0
+        cached_input_tokens: 0.0
         price: 3.54e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
@@ -254,11 +254,11 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1
-        num_completions: 1
-        input_tokens: 44
-        output_tokens: 1
-        cached_input_tokens: 0
+        num_requests: 1.0
+        num_completions: 1.0
+        input_tokens: 44.0
+        output_tokens: 1.0
+        cached_input_tokens: 0.0
         price: 3.54e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14

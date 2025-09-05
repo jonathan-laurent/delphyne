@@ -471,10 +471,10 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 4.0
-        input_tokens: 3090.0
-        output_tokens: 144.0
+        num_requests: 1
+        num_completions: 4
+        input_tokens: 3090
+        output_tokens: 144
         price: 0.0003234
     log_items: []
     model_name: mistral-small-2503
