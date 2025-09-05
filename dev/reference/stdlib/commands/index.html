@@ -2579,12 +2579,7 @@ specification.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/commands/run_strategy.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">236</span>
 <span class="normal">237</span>
 <span class="normal">238</span>
 <span class="normal">239</span>
@@ -2607,7 +2602,13 @@ specification.</p>
 <span class="normal">256</span>
 <span class="normal">257</span>
 <span class="normal">258</span>
-<span class="normal">259</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_strategy</span><span class="p">(</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_strategy</span><span class="p">(</span>
     <span class="n">task</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">TaskContext</span><span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">CommandResult</span><span class="p">[</span><span class="n">RunStrategyResponse</span><span class="p">]],</span>
     <span class="n">exe</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">CommandExecutionContext</span><span class="p">,</span>
     <span class="n">args</span><span class="p">:</span> <span class="n">RunStrategyArgs</span><span class="p">,</span>
@@ -2631,6 +2632,7 @@ specification.</p>
             <span class="n">budget</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">budget</span><span class="p">,</span>
             <span class="n">cache_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cache_file</span><span class="p">,</span>
             <span class="n">cache_mode</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cache_mode</span><span class="p">,</span>
+            <span class="n">log_level</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">log_level</span><span class="p">,</span>
             <span class="n">export_raw_trace</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">export_raw_trace</span><span class="p">,</span>
             <span class="n">export_log</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">export_log</span><span class="p">,</span>
             <span class="n">export_browsable_trace</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">export_browsable_trace</span><span class="p">,</span>
@@ -2764,6 +2766,18 @@ request caching, or <code>None</code> to disable caching.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><span title="delphyne.stdlib.commands.run_strategy.RunStrategyArgs.log_level">log_level</span></code></td>
+            <td>
+                  <code><span title="delphyne.core.LogLevel">LogLevel</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Minimum log level to record. Messages with a lower
+level will be ignored.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><span title="delphyne.stdlib.commands.run_strategy.RunStrategyArgs.export_raw_trace">export_raw_trace</span></code></td>
             <td>
                   <code><span title="bool">bool</span></code>
@@ -2815,9 +2829,7 @@ which can be visualized in the VSCode extension (see
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/commands/run_strategy.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">197</span>
 <span class="normal">198</span>
 <span class="normal">199</span>
 <span class="normal">200</span>
@@ -2848,7 +2860,12 @@ which can be visualized in the VSCode extension (see
 <span class="normal">225</span>
 <span class="normal">226</span>
 <span class="normal">227</span>
-<span class="normal">228</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">RunStrategyArgs</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments for the `run_strategy` command that runs an oracular</span>
@@ -2864,6 +2881,8 @@ which can be visualized in the VSCode extension (see
 <span class="sd">        cache_file: File within the global cache directory to use for</span>
 <span class="sd">            request caching, or `None` to disable caching.</span>
 <span class="sd">        cache_mode: Cache mode to use.</span>
+<span class="sd">        log_level: Minimum log level to record. Messages with a lower</span>
+<span class="sd">            level will be ignored.</span>
 <span class="sd">        export_raw_trace: Whether to export the raw execution trace.</span>
 <span class="sd">        export_log: Whether to export the log messages.</span>
 <span class="sd">        export_browsable_trace: Whether to export a browsable trace,</span>
@@ -2879,6 +2898,7 @@ which can be visualized in the VSCode extension (see
     <span class="n">num_generated</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">cache_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">cache_mode</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">CacheMode</span> <span class="o">=</span> <span class="s2">&quot;read_write&quot;</span>
+    <span class="n">log_level</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">LogLevel</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span>
     <span class="n">export_raw_trace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">export_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">export_browsable_trace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
@@ -2938,10 +2958,7 @@ which can be visualized in the VSCode extension (see
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/commands/answer_query.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">123</span>
 <span class="normal">124</span>
 <span class="normal">125</span>
 <span class="normal">126</span>
@@ -2951,7 +2968,10 @@ which can be visualized in the VSCode extension (see
 <span class="normal">130</span>
 <span class="normal">131</span>
 <span class="normal">132</span>
-<span class="normal">133</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">answer_query</span><span class="p">(</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">answer_query</span><span class="p">(</span>
     <span class="n">task</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">TaskContext</span><span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">CommandResult</span><span class="p">[</span><span class="n">AnswerQueryResponse</span><span class="p">]],</span>
     <span class="n">exe</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">CommandExecutionContext</span><span class="p">,</span>
     <span class="n">cmd</span><span class="p">:</span> <span class="n">AnswerQueryArgs</span><span class="p">,</span>
@@ -3104,6 +3124,18 @@ request caching, or <code>None</code> to disable caching.</p>
               </div>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.stdlib.commands.answer_query.AnswerQueryArgs.log_level">log_level</span></code></td>
+            <td>
+                  <code><span title="delphyne.core.LogLevel">LogLevel</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Minimum log level to record. Messages with a lower
+level will be ignored.</p>
+              </div>
+            </td>
+          </tr>
       </tbody>
     </table>
 
@@ -3144,7 +3176,10 @@ request caching, or <code>None</code> to disable caching.</p>
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
-<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AnswerQueryArgs</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments for the `answer_query` command.</span>
@@ -3162,6 +3197,8 @@ request caching, or <code>None</code> to disable caching.</p>
 <span class="sd">        cache_file: File within the global cache directory to use for</span>
 <span class="sd">            request caching, or `None` to disable caching.</span>
 <span class="sd">        cache_mode: Cache mode to use.</span>
+<span class="sd">        log_level: Minimum log level to record. Messages with a lower</span>
+<span class="sd">            level will be ignored.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">query</span><span class="p">:</span> <span class="nb">str</span>
@@ -3173,6 +3210,7 @@ request caching, or <code>None</code> to disable caching.</p>
     <span class="n">budget</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">cache_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">cache_mode</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">CacheMode</span> <span class="o">=</span> <span class="s2">&quot;read_write&quot;</span>
+    <span class="n">log_level</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">LogLevel</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 

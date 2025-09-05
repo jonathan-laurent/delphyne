@@ -1380,8 +1380,7 @@ server.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/__main__.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 26</span>
-<span class="normal"> 27</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 27</span>
 <span class="normal"> 28</span>
 <span class="normal"> 29</span>
 <span class="normal"> 30</span>
@@ -1563,7 +1562,20 @@ server.</p>
 <span class="normal">206</span>
 <span class="normal">207</span>
 <span class="normal">208</span>
-<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DelphyneCLI</span><span class="p">:</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DelphyneCLI</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The Delphyne Command Line Interface.</span>
 
@@ -1654,6 +1666,7 @@ server.</p>
         <span class="n">no_header</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">no_status</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="nb">filter</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log_level</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">LogLevel</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">clear</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1671,6 +1684,8 @@ server.</p>
 <span class="sd">            no_status: Do not show the progress bar.</span>
 <span class="sd">            filter: Only show the provided subset of fields for the</span>
 <span class="sd">                `outcome.result` section.</span>
+<span class="sd">            log_level: If provided and if the command supports it,</span>
+<span class="sd">                overrides the command&#39;s `log_level` argument.</span>
 <span class="sd">            clear: When this option is passed, all other options are</span>
 <span class="sd">                ignored and the `clear` method is called.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1699,6 +1714,15 @@ server.</p>
             <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">cache_file</span><span class="p">:</span>
                 <span class="n">args</span><span class="o">.</span><span class="n">cache_file</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">stem</span> <span class="o">+</span> <span class="s2">&quot;.yaml&quot;</span>
+        <span class="k">if</span> <span class="n">log_level</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">&quot;log_level&quot;</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Command does not have a `log_level` argument.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">assert</span> <span class="n">dp</span><span class="o">.</span><span class="n">valid_log_level</span><span class="p">(</span><span class="n">log_level</span><span class="p">),</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid log level: </span><span class="si">{</span><span class="n">log_level</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">log_level</span> <span class="o">=</span> <span class="n">log_level</span>
         <span class="n">progress</span> <span class="o">=</span> <span class="n">StatusIndicator</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="ow">not</span> <span class="n">no_status</span><span class="p">)</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">std</span><span class="o">.</span><span class="n">run_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">on_status</span><span class="o">=</span><span class="n">progress</span><span class="o">.</span><span class="n">on_status</span><span class="p">)</span>
         <span class="n">progress</span><span class="o">.</span><span class="n">done</span><span class="p">()</span>
@@ -1854,8 +1878,7 @@ produced.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/__main__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">38</span>
-<span class="normal">39</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">39</span>
 <span class="normal">40</span>
 <span class="normal">41</span>
 <span class="normal">42</span>
@@ -1875,7 +1898,8 @@ produced.</p>
 <span class="normal">56</span>
 <span class="normal">57</span>
 <span class="normal">58</span>
-<span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">59</span>
+<span class="normal">60</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">workspace_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1921,8 +1945,7 @@ produced.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/__main__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 95</span>
-<span class="normal"> 96</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 96</span>
 <span class="normal"> 97</span>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
@@ -1931,7 +1954,8 @@ produced.</p>
 <span class="normal">102</span>
 <span class="normal">103</span>
 <span class="normal">104</span>
-<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="normal">105</span>
+<span class="normal">106</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check a demonstration file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1965,6 +1989,7 @@ produced.</p>
     <span class="n">no_header</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">no_status</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="nb">filter</span><span class="p">:</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">log_level</span><span class="p">:</span> <span class="n"><span title="delphyne.core.LogLevel">LogLevel</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">clear</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
@@ -2102,6 +2127,23 @@ stdout. Print other information on stderr.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
+                <code>log_level</code>
+            </td>
+            <td>
+                  <code><span title="delphyne.core.LogLevel">LogLevel</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If provided and if the command supports it,
+overrides the command's <code>log_level</code> argument.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
                 <code>clear</code>
             </td>
             <td>
@@ -2123,8 +2165,7 @@ ignored and the <code>clear</code> method is called.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/__main__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
-<span class="normal">108</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">108</span>
 <span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
@@ -2206,7 +2247,20 @@ ignored and the <code>clear</code> method is called.</p>
 <span class="normal">187</span>
 <span class="normal">188</span>
 <span class="normal">189</span>
-<span class="normal">190</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
@@ -2216,6 +2270,7 @@ ignored and the <code>clear</code> method is called.</p>
     <span class="n">no_header</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">no_status</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="nb">filter</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">log_level</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">LogLevel</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">clear</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2233,6 +2288,8 @@ ignored and the <code>clear</code> method is called.</p>
 <span class="sd">        no_status: Do not show the progress bar.</span>
 <span class="sd">        filter: Only show the provided subset of fields for the</span>
 <span class="sd">            `outcome.result` section.</span>
+<span class="sd">        log_level: If provided and if the command supports it,</span>
+<span class="sd">            overrides the command&#39;s `log_level` argument.</span>
 <span class="sd">        clear: When this option is passed, all other options are</span>
 <span class="sd">            ignored and the `clear` method is called.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2261,6 +2318,15 @@ ignored and the <code>clear</code> method is called.</p>
         <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">cache_file</span><span class="p">:</span>
             <span class="n">args</span><span class="o">.</span><span class="n">cache_file</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">stem</span> <span class="o">+</span> <span class="s2">&quot;.yaml&quot;</span>
+    <span class="k">if</span> <span class="n">log_level</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="s2">&quot;log_level&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Command does not have a `log_level` argument.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">dp</span><span class="o">.</span><span class="n">valid_log_level</span><span class="p">(</span><span class="n">log_level</span><span class="p">),</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Invalid log level: </span><span class="si">{</span><span class="n">log_level</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">log_level</span> <span class="o">=</span> <span class="n">log_level</span>
     <span class="n">progress</span> <span class="o">=</span> <span class="n">StatusIndicator</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="ow">not</span> <span class="n">no_status</span><span class="p">)</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">std</span><span class="o">.</span><span class="n">run_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">on_status</span><span class="o">=</span><span class="n">progress</span><span class="o">.</span><span class="n">on_status</span><span class="p">)</span>
     <span class="n">progress</span><span class="o">.</span><span class="n">done</span><span class="p">()</span>
@@ -2314,16 +2380,16 @@ ignored and the <code>clear</code> method is called.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/__main__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Clear the outcome of a command file by updating it in place.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2357,13 +2423,13 @@ ignored and the <code>clear</code> method is called.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/__main__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">serve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3008</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">serve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3008</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Launch an instance of the Delphyne language server.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
