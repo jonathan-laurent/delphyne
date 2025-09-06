@@ -36,6 +36,12 @@ class TaskContext[T](typing.Protocol):
     """
     Context object accessible to all tasks for reporting progress and
     intermediate results.
+
+    Most tasks operate by _pushing_ status messages and intermediate (or
+    final) results using `set_status` and `set_result` respectively.
+    Optionally, tasks can also register functions that can be used for
+    _pulling_ status messages and results from the outside
+    (`set_pull_status` and `set_pull_result`).
     """
 
     # To be called externally
@@ -47,6 +53,14 @@ class TaskContext[T](typing.Protocol):
     def set_status(self, message: str) -> None: ...
     def set_result(self, result: T) -> None: ...
     def raise_internal_error(self, message: str) -> None: ...
+    def set_pull_status(self, pull: "_PullStatusFn") -> None: ...
+    def set_pull_result(self, pull: "_PullResultFn[T]") -> None: ...
+
+
+type _PullResultFn[T] = Callable[[], T | None]
+
+
+type _PullStatusFn = Callable[[], str | None]
 
 
 type StreamingTask[**P, T] = Callable[Concatenate[TaskContext[T], P], None]
@@ -256,6 +270,9 @@ def run_command[A, T](
     dump_result: Path | None = None,
     dump_log: Path | None = None,
     on_status: Callable[[str], None] | None = None,
+    on_set_pull_status: Callable[[_PullStatusFn], None] | None = None,
+    on_set_pull_result: Callable[[_PullResultFn[CommandResult[T]]], None]
+    | None = None,
     add_header: bool = True,
     handle_sigint: bool = False,
 ) -> CommandResult[T | None]:
@@ -273,6 +290,10 @@ def run_command[A, T](
         dump_log: A file in which to dump log messages.
         on_status: A function to call every time a status message is
             issued.
+        on_set_pull_status: A function to call if and when the task
+            registers a pull function for status messages.
+        on_set_pull_result: A function to call if and when the task
+            registers a pull function for results.
         add_header: If `True`, the dumped result is prefixed with a
             header containing the command name and arguments.
         handle_sigint: If `True`, pressing `Ctrl+C` sends the command
@@ -324,6 +345,16 @@ def run_command[A, T](
                 with open(dump_result, "w") as f:
                     ret_yaml = pretty_yaml(ret)
                     f.write("# delphyne-command\n\n" + ret_yaml)
+
+        def set_pull_status(self, pull: _PullStatusFn) -> None:
+            if on_set_pull_status is not None:
+                on_set_pull_status(pull)
+
+        def set_pull_result(
+            self, pull: _PullResultFn[CommandResult[T]]
+        ) -> None:
+            if on_set_pull_result is not None:
+                on_set_pull_result(pull)
 
         def raise_internal_error(self, message: str) -> None:
             error = ("error", f"Internal error: {message}")
