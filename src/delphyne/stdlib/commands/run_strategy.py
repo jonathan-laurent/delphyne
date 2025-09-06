@@ -2,6 +2,7 @@
 Standard commands for running strategies.
 """
 
+import threading
 import time
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
@@ -77,6 +78,7 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
         log_level=args.log_level,
         do_not_match_identical_queries=True,
     )
+    lock = threading.Lock()  # to protect state that can be pulled
     cache: dp.TreeCache = {}
     monitor = dp.TreeMonitor(cache, hooks=[dp.tracer_hook(env.tracer)])
     tree = dp.reify(args.strategy, monitor)
@@ -131,19 +133,31 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
 
         return ", ".join(ret)
 
+    def pull_status() -> str:
+        with lock:
+            return compute_status()
+
+    def pull_result() -> ta.CommandResult[RunStrategyResponse]:
+        with lock:
+            return compute_result()
+
+    task.set_pull_status(pull_status)
+    task.set_pull_result(pull_result)
+
     last_refreshed_result = time.time()
     last_refreshed_status = time.time()
     # TODO: generating each element is blocking here. Should we spawn a
     # thread for every new element?
     for msg in stream.gen():
-        match msg:
-            case Solution():
-                success = True
-                results.append(msg.tracked.value)
-            case Spent(b):
-                total_budget += b
-            case Barrier():
-                pass
+        with lock:
+            match msg:
+                case Solution():
+                    success = True
+                    results.append(msg.tracked.value)
+                case Spent(b):
+                    total_budget += b
+                case Barrier():
+                    pass
         interrupted = task.interruption_requested()
         if interrupted or (
             exe.result_refresh_period is not None
