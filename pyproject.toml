@@ -60,7 +60,7 @@ where = ["src"]
 [tool.ruff]
 line-length = 79
 
-# Currently tested with pyright==1.1.403
+# Currently tested with pyright==1.1.405
 [tool.pyright]
 typeCheckingMode = "strict"
 include = ["src/**", "tests/**"]

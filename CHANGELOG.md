@@ -1,5 +1,11 @@
 # Changelog
 
+## DEV
+
+- **Breaking**: improve logging system, by supporting log levels and filtering. The `dp.log` function is removed. Methods of `dp.PolicyEnv` must be used instead.
+- Automatically add time information in logs.
+- Fix a deprecation warning on Python 3.13.
+
 ## Version 0.9.2 (2025-09-03)
 
 - Various improvements on `standard_model`:
