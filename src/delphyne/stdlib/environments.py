@@ -368,7 +368,7 @@ class PolicyEnv:
         self,
         level: dp.LogLevel,
         message: str,
-        metadata: dict[str, Any] | None = None,
+        metadata: object | None = None,
         *,
         loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
     ) -> None:
@@ -396,7 +396,7 @@ class PolicyEnv:
     def trace(
         self,
         message: str,
-        metadata: dict[str, Any] | None = None,
+        metadata: object | None = None,
         *,
         loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
     ) -> None:
@@ -410,7 +410,7 @@ class PolicyEnv:
     def debug(
         self,
         message: str,
-        metadata: dict[str, Any] | None = None,
+        metadata: object | None = None,
         *,
         loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
     ) -> None:
@@ -424,7 +424,7 @@ class PolicyEnv:
     def info(
         self,
         message: str,
-        metadata: dict[str, Any] | None = None,
+        metadata: object | None = None,
         *,
         loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
     ) -> None:
@@ -438,7 +438,7 @@ class PolicyEnv:
     def warn(
         self,
         message: str,
-        metadata: dict[str, Any] | None = None,
+        metadata: object | None = None,
         *,
         loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
     ) -> None:
@@ -452,7 +452,7 @@ class PolicyEnv:
     def error(
         self,
         message: str,
-        metadata: dict[str, Any] | None = None,
+        metadata: object | None = None,
         *,
         loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
     ) -> None:

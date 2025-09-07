@@ -259,7 +259,7 @@ def abduct_and_saturate[P, Proof](
             env.log(log_steps, msg)
 
     def log_tool_stats():
-        env.info("abduct_and_saturate_tool_stats", tool_stats.__dict__)
+        env.info("abduct_and_saturate_tool_stats", tool_stats)
 
     def all_canonical() -> Sequence[_EFact]:
         return [*candidates, *proved, *disproved, *redundant]
