@@ -1,12 +1,13 @@
 # Changelog
 
-## DEV
+## Version 0.10.0 (2025-09-07)
 
 - **Breaking**: improve logging system, by supporting log levels and filtering. The `dp.log` function is removed: `dp.PolicyEnv` must be used instead.
 - Add `interactive` option to experiment launcher, allowing to obtain a snapshot of ongoing tasks at any time by pressing Enter.
 - Automatically add time information in logs.
 - Logging now supports arbitrary serializable metadata.
 - Fix a deprecation warning on Python 3.13.
+- Fix a bug in `delphyne check`.
 
 ## Version 0.9.2 (2025-09-03)
 
