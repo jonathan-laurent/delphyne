@@ -2719,18 +2719,7 @@ specification.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/commands/run_strategy.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">261</span>
 <span class="normal">262</span>
 <span class="normal">263</span>
 <span class="normal">264</span>
@@ -2748,7 +2737,19 @@ specification.</p>
 <span class="normal">276</span>
 <span class="normal">277</span>
 <span class="normal">278</span>
-<span class="normal">279</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_strategy</span><span class="p">(</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_strategy</span><span class="p">(</span>
     <span class="n">task</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">TaskContext</span><span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">CommandResult</span><span class="p">[</span><span class="n">RunStrategyResponse</span><span class="p">]],</span>
     <span class="n">exe</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">CommandExecutionContext</span><span class="p">,</span>
     <span class="n">args</span><span class="p">:</span> <span class="n">RunStrategyArgs</span><span class="p">,</span>
@@ -2776,6 +2777,7 @@ specification.</p>
             <span class="n">export_raw_trace</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">export_raw_trace</span><span class="p">,</span>
             <span class="n">export_log</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">export_log</span><span class="p">,</span>
             <span class="n">export_browsable_trace</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">export_browsable_trace</span><span class="p">,</span>
+            <span class="n">export_all_on_pull</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">export_all_on_pull</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2957,6 +2959,19 @@ which can be visualized in the VSCode extension (see
               </div>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.stdlib.commands.run_strategy.RunStrategyArgs.export_all_on_pull">export_all_on_pull</span></code></td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to export all
+information (raw trace, log, browsable trace) when an
+intermediate result is pulled.</p>
+              </div>
+            </td>
+          </tr>
       </tbody>
     </table>
 
@@ -2969,14 +2984,7 @@ which can be visualized in the VSCode extension (see
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/commands/run_strategy.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">218</span>
 <span class="normal">219</span>
 <span class="normal">220</span>
 <span class="normal">221</span>
@@ -3005,7 +3013,18 @@ which can be visualized in the VSCode extension (see
 <span class="normal">244</span>
 <span class="normal">245</span>
 <span class="normal">246</span>
-<span class="normal">247</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">RunStrategyArgs</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments for the `run_strategy` command that runs an oracular</span>
@@ -3028,6 +3047,9 @@ which can be visualized in the VSCode extension (see
 <span class="sd">        export_browsable_trace: Whether to export a browsable trace,</span>
 <span class="sd">            which can be visualized in the VSCode extension (see</span>
 <span class="sd">            [delphyne.analysis.feedback.Trace][]).</span>
+<span class="sd">        export_all_on_pull: Whether to export all</span>
+<span class="sd">            information (raw trace, log, browsable trace) when an</span>
+<span class="sd">            intermediate result is pulled.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">strategy</span><span class="p">:</span> <span class="nb">str</span>
@@ -3042,6 +3064,7 @@ which can be visualized in the VSCode extension (see
     <span class="n">export_raw_trace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">export_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">export_browsable_trace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">export_all_on_pull</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
