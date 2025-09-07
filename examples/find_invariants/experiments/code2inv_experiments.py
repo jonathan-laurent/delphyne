@@ -56,7 +56,7 @@ class AbductionConfig:
 
 
 def abduction_experiment(config: AbductionConfig):
-    return cmd.RunStrategyArgs(  # type: ignore
+    return cmd.RunStrategyArgs(
         strategy="prove_program_by_recursive_abduction",
         args={"prog": BENCHS[config.bench_name]},
         policy="prove_program_by_saturation",
@@ -68,6 +68,7 @@ def abduction_experiment(config: AbductionConfig):
         },
         num_generated=1,
         budget={dp.DOLLAR_PRICE: config.max_dollar_budget},
+        log_long_computations=("info", 1.0),
     )
 
 
@@ -91,7 +92,7 @@ def baseline_experiment(config: BaselineConfig):
     budget: dict[str, float] = {}
     if config.max_dollar_budget is not None:
         budget[dp.DOLLAR_PRICE] = config.max_dollar_budget
-    return cmd.RunStrategyArgs(  # type: ignore
+    return cmd.RunStrategyArgs(
         strategy="prove_program_interactive",
         args={"prog": BENCHS[config.bench_name]},
         policy="prove_program_interactive_policy",
