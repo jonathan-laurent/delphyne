@@ -35,15 +35,18 @@ class DemoFileFeedback:
             for i, d in enumerate(f.answer_diagnostics):
                 self.add_diagnostic(demo_name, str(i), d[1])
         else:
-            for i, d in enumerate(f.global_diagnostics):
-                self.add_diagnostic(demo_name, str(i), d)
-            for i, d in enumerate(f.query_diagnostics):
-                self.add_diagnostic(demo_name, str(i), d[1])
-            for i, d in enumerate(f.answer_diagnostics):
-                self.add_diagnostic(demo_name, str(i), d[1])
-            for i, d in enumerate(f.implicit_answers):
+            for i, t in enumerate(f.test_feedback):
+                for d in t.diagnostics:
+                    self.add_diagnostic(demo_name, f"test_{i}", d)
+            for d in f.global_diagnostics:
+                self.add_diagnostic(demo_name, "global", d)
+            for i, d in f.query_diagnostics:
+                self.add_diagnostic(demo_name, f"query_{i}", d)
+            for (qi, ai), d in f.answer_diagnostics:
+                self.add_diagnostic(demo_name, f"query_{qi}:answer_{ai}", d)
+            for d in f.implicit_answers:
                 msg = f"Implicit answer for {d.query_name}({d.query_args})"
-                self.add_diagnostic(demo_name, str(i), ("warning", msg))
+                self.add_diagnostic(demo_name, "implicit", ("warning", msg))
 
 
 def check_demo_file(
