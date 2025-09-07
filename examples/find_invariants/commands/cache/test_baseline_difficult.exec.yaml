@@ -174,62 +174,40 @@
       - content: |-
           Let's analyze the program:
 
-          - Initially, `sn = 0`, and `i = 1`.
-          - The loop condition is `i <= n`.
-          - Within the loop:
-            - `i` increments by 1.
-            - `sn` increments by 1.
-          - After the loop, if `sn <> n`, we must prove `sn = 0`.
-
-          To reason about the final assertion, let's understand the relationship between `sn`, `i`, and `n`.
-
-          At each iteration:
-          - `i` goes from 1 up to `n+1` (because the loop stops when `i <= n` is false).
-          - `sn` is incremented by 1 per iteration.
-
-          Since `i` starts at 1 and is incremented at each loop, after the loop, `i = n + 1`.
-
-          Similarly, the increments of `sn` mirror the increments of `i`, so `sn = n` after the loop assuming the loop condition.
-
-          If `sn <> n` after the loop, it means the loop was never entered (or equivalently, `i` was initially greater than `n`), thus `sn = 0` in that case.
-
-          Therefore, we want to maintain an invariant that relates `sn` and `i` so that we can derive `sn = i - 1`. Initially, `sn = 0`, `i = 1`, satisfying this invariant.
-
-          The loop increments `i` and `sn` by 1 simultaneously, so `sn = i - 1` holds at every iteration.
-
-          Hence, the key invariant is:
-
-          `sn = i - 1`
-
-          ---
-
-          Now we must also ensure `i <= n + 1` at every loop invariant, since `i` increments from 1 upwards until it exceeds `n`.
-
-          - Initially, `i = 1 <= n + 1` (since `n` is arbitrary).
+          - Initially, `sn = 0` and `i = 1`.
+          - The loop continues as long as `i <= n`.
           - At each iteration:
             - `i` is incremented by 1.
+            - `sn` is incremented by 1.
 
-          Thus, the invariant `i <= n + 1` is suitable.
+          We want to prove that if at the end `sn <> n` then `sn = 0`.
 
-          ---
+          Since `i` starts at 1 and increases by 1 until it becomes `n+1`, the loop runs `(n - 1 + 1) = n` times if `n >= 1`.
 
-          Together these invariants imply after the loop termination (`i > n`), we have `i = n + 1` and thus `sn = i - 1 = n`.
+          Thus after the loop:
 
-          If the assertion is reached with `sn <> n`, it means the loop was never entered, so `sn = 0`.
+          - `i = n + 1`
+          - `sn = n` if the loop ran normally.
 
-          ---
+          But if `n < 1`, the loop doesn't run, and `sn` remains `0`.
 
-          Therefore, the invariants to propose are:
+          So, the invariant should capture the relation between `i` and `sn`:
+
+          - Since `sn` counts the number of iterations, and `i` starts at 1 and is incremented by 1 each iteration,  `sn = i - 1` should hold.
+
+          Also, since the loop stops when `i` becomes `n + 1` or greater, we have `i >= 1` always and `i <= n + 1` during the loop.
+
+          So, the candidate invariants are:
 
           - `sn = i - 1`
-          - `i <= n + 1`
+          - `1 <= i <= n + 1`
 
-          ---
+          Let me represent that as invariant formulas.
 
           Answer:
-
-          ```yaml
+          ```
           - "sn = i - 1"
+          - "1 <= i"
           - "i <= n + 1"
           ```
         tool_calls: []
@@ -241,15 +219,15 @@
         num_requests: 1
         num_completions: 1
         input_tokens: 2183
-        output_tokens: 542
+        output_tokens: 339
         cached_input_tokens: 0
-        price: 0.0018548
+        price: 0.0018142
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
-      completion_tokens: 542
+      completion_tokens: 339
       prompt_tokens: 2183
-      total_tokens: 2725
+      total_tokens: 2522
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
@@ -291,6 +269,7 @@
                   i <- 1;
                   while i <= n do
                     invariant { sn = i - 1 }
+                    invariant { 1 <= i }
                     invariant { i <= n + 1 }
                     i <- i + 1;
                     sn <- sn + 1
@@ -327,6 +306,7 @@
                   i <- 1;
                   while i <= n do
                     invariant { sn = i - 1 }
+                    invariant { 1 <= i }
                     invariant { i <= n + 1 }
                     i <- i + 1;
                     sn <- sn + 1
@@ -356,6 +336,7 @@
                   i <- 1;  (* premise *)
                   while i <= n do
                     invariant { sn = i - 1 }  (* GOAL *)
+                    invariant { 1 <= i }
                     invariant { i <= n + 1 }
                     i <- i + 1;
                     sn <- sn + 1
@@ -363,6 +344,27 @@
                   if sn <> n then
                     assert { sn = 0 }
               goal_formula: 0 = (1 - 1)
+            - name: VC for main (loop invariant init)
+              proved: true
+              relevance_hints: |-
+                use int.Int
+
+                let main () diverges =  (* GOAL *)
+                  let ref i = any int in
+                  let ref n = any int in
+                  let ref sn = any int in
+                  sn <- 0;  (* premise *)
+                  i <- 1;  (* premise *)
+                  while i <= n do
+                    invariant { sn = i - 1 }  (* premise *)
+                    invariant { 1 <= i }  (* GOAL *)
+                    invariant { i <= n + 1 }
+                    i <- i + 1;
+                    sn <- sn + 1
+                  done;
+                  if sn <> n then
+                    assert { sn = 0 }
+              goal_formula: 1 <= 1
             - name: VC for main (loop invariant init)
               proved: false
               relevance_hints: |-
@@ -376,6 +378,7 @@
                   i <- 1;  (* premise *)
                   while i <= n do
                     invariant { sn = i - 1 }  (* premise *)
+                    invariant { 1 <= i }  (* premise *)
                     invariant { i <= n + 1 }  (* GOAL *)
                     i <- i + 1;
                     sn <- sn + 1
@@ -396,6 +399,7 @@
                   i <- 1;  (* premise *)
                   while i <= n do  (* premise *)
                     invariant { sn = i - 1 }  (* GOAL, premise *)
+                    invariant { 1 <= i }  (* premise *)
                     invariant { i <= n + 1 }  (* premise *)
                     i <- i + 1;  (* premise *)
                     sn <- sn + 1  (* premise *)
@@ -410,12 +414,34 @@
 
                 let main () diverges =  (* GOAL *)
                   let ref i = any int in
+                  let ref n = any int in  (* premise *)
+                  let ref sn = any int in
+                  sn <- 0;  (* premise *)
+                  i <- 1;  (* premise *)
+                  while i <= n do  (* premise *)
+                    invariant { sn = i - 1 }  (* premise *)
+                    invariant { 1 <= i }  (* GOAL, premise *)
+                    invariant { i <= n + 1 }  (* premise *)
+                    i <- i + 1;  (* premise *)
+                    sn <- sn + 1  (* premise *)
+                  done;
+                  if sn <> n then
+                    assert { sn = 0 }
+              goal_formula: 1 <= (i + 1)
+            - name: VC for main (loop invariant preservation)
+              proved: true
+              relevance_hints: |-
+                use int.Int
+
+                let main () diverges =  (* GOAL *)
+                  let ref i = any int in
                   let ref n = any int in  (* GOAL, premise *)
                   let ref sn = any int in
                   sn <- 0;  (* premise *)
                   i <- 1;  (* premise *)
                   while i <= n do  (* premise *)
                     invariant { sn = i - 1 }  (* premise *)
+                    invariant { 1 <= i }  (* premise *)
                     invariant { i <= n + 1 }  (* GOAL, premise *)
                     i <- i + 1;  (* premise *)
                     sn <- sn + 1  (* premise *)
@@ -436,6 +462,7 @@
                   i <- 1;  (* premise *)
                   while i <= n do  (* premise *)
                     invariant { sn = i - 1 }  (* premise *)
+                    invariant { 1 <= i }  (* premise *)
                     invariant { i <= n + 1 }  (* premise *)
                     i <- i + 1;
                     sn <- sn + 1
@@ -623,62 +650,40 @@
             content: |-
               Let's analyze the program:
 
-              - Initially, `sn = 0`, and `i = 1`.
-              - The loop condition is `i <= n`.
-              - Within the loop:
-                - `i` increments by 1.
-                - `sn` increments by 1.
-              - After the loop, if `sn <> n`, we must prove `sn = 0`.
-
-              To reason about the final assertion, let's understand the relationship between `sn`, `i`, and `n`.
-
-              At each iteration:
-              - `i` goes from 1 up to `n+1` (because the loop stops when `i <= n` is false).
-              - `sn` is incremented by 1 per iteration.
-
-              Since `i` starts at 1 and is incremented at each loop, after the loop, `i = n + 1`.
-
-              Similarly, the increments of `sn` mirror the increments of `i`, so `sn = n` after the loop assuming the loop condition.
-
-              If `sn <> n` after the loop, it means the loop was never entered (or equivalently, `i` was initially greater than `n`), thus `sn = 0` in that case.
-
-              Therefore, we want to maintain an invariant that relates `sn` and `i` so that we can derive `sn = i - 1`. Initially, `sn = 0`, `i = 1`, satisfying this invariant.
-
-              The loop increments `i` and `sn` by 1 simultaneously, so `sn = i - 1` holds at every iteration.
-
-              Hence, the key invariant is:
-
-              `sn = i - 1`
-
-              ---
-
-              Now we must also ensure `i <= n + 1` at every loop invariant, since `i` increments from 1 upwards until it exceeds `n`.
-
-              - Initially, `i = 1 <= n + 1` (since `n` is arbitrary).
+              - Initially, `sn = 0` and `i = 1`.
+              - The loop continues as long as `i <= n`.
               - At each iteration:
                 - `i` is incremented by 1.
+                - `sn` is incremented by 1.
 
-              Thus, the invariant `i <= n + 1` is suitable.
+              We want to prove that if at the end `sn <> n` then `sn = 0`.
 
-              ---
+              Since `i` starts at 1 and increases by 1 until it becomes `n+1`, the loop runs `(n - 1 + 1) = n` times if `n >= 1`.
 
-              Together these invariants imply after the loop termination (`i > n`), we have `i = n + 1` and thus `sn = i - 1 = n`.
+              Thus after the loop:
 
-              If the assertion is reached with `sn <> n`, it means the loop was never entered, so `sn = 0`.
+              - `i = n + 1`
+              - `sn = n` if the loop ran normally.
 
-              ---
+              But if `n < 1`, the loop doesn't run, and `sn` remains `0`.
 
-              Therefore, the invariants to propose are:
+              So, the invariant should capture the relation between `i` and `sn`:
+
+              - Since `sn` counts the number of iterations, and `i` starts at 1 and is incremented by 1 each iteration,  `sn = i - 1` should hold.
+
+              Also, since the loop stops when `i` becomes `n + 1` or greater, we have `i >= 1` always and `i <= n + 1` during the loop.
+
+              So, the candidate invariants are:
 
               - `sn = i - 1`
-              - `i <= n + 1`
+              - `1 <= i <= n + 1`
 
-              ---
+              Let me represent that as invariant formulas.
 
               Answer:
-
-              ```yaml
+              ```
               - "sn = i - 1"
+              - "1 <= i"
               - "i <= n + 1"
               ```
             tool_calls: []
@@ -700,6 +705,7 @@
               i <- 1;  (* premise *)
               while i <= n do
                 invariant { sn = i - 1 }  (* premise *)
+                invariant { 1 <= i }  (* premise *)
                 invariant { i <= n + 1 }  (* GOAL *)
                 i <- i + 1;
                 sn <- sn + 1
@@ -716,25 +722,57 @@
   output:
     outputs:
       - content: |-
-          Let's revisit the failing obligation: proving the invariant `i <= n + 1` holds initially.
+          The failed obligation is about proving that the invariant `i <= n + 1` holds initially, right after `i <- 1` and `n` arbitrary.
 
-          At the start, `i` is assigned the value 1. For the invariant to hold initially, we must have `1 <= n + 1`, which simplifies to `n >= 0`.
+          Initially, there is no assumption about the relation between `i` and `n`. Since `i = 1` initially and `n` is arbitrary (could be any integer), `i <= n + 1` means `1 <= n + 1`, which is `n >= 0`. But no such assumption exists, so `i <= n + 1` may not hold initially.
 
-          But `n` is arbitrary and can be any integer, so this holds only if `n >= 0`.
+          Hence, invariant `i <= n + 1` is too strong.
 
-          Therefore, `i <= n + 1` is not an invariant in general; it requires `n >= 0` to hold initially.
+          We can fix this by relaxing `i <= n + 1` to:
 
-          To fix this, we can weaken `i <= n + 1` by considering the disjunction `i <= n + 1 || n < 0`.
+          `i <= n + 1 || i <= 1` which is logically weaker and holds initially since `i = 1`.
 
-          This expresses that either `n` is negative, and thus the loop will not run (as `i=1 > n`), or `i <= n +1` holds.
+          But this is a disjunction; instead, following the advice, an invariant of the form:
 
-          This weakened invariant holds initially and should be preserved by the loop.
+          `i <= n + 1 || i <= 1`
+
+          is acceptable only if we allow disjunction.
+
+          Alternatively, since `i` starts at 1 and is increased by 1 each time, and the loop guard is `i <= n`, maybe a simpler invariant is:
+
+          `i <= n + 1 || n < 0`
+
+          Because if `n < 0`, the loop never starts (since `i=1`), else `i <= n + 1`.
+
+          However, for proof obligations, using `i <= n + 1 || n < 0` is lengthy. Instead, I propose to keep `1 <= i` (which is easy), and for the upper bound:
+
+          `i <= n + 1 || n < 0`
+
+          But easier is to remove the `i <= n + 1` invariant and keep:
+
+          - `sn = i - 1`
+          - `1 <= i`
+
+          Since the loop guard is `i <= n`, the variable `i` will be incremented until `i = n + 1`, so `i <= n + 1` will hold after loop body. But for the invariant, since `n` arbitrary, we can skip this bound.
+
+          From the postcondition, if `sn <> n` then `sn = 0`. This holds because:
+
+          - If `n < 1`, the loop doesn't execute so `sn = 0`.
+
+          - If `n >= 1`, the loop runs exactly `n` times, so `sn = n`.
+
+          So the invariant `sn = i - 1` together with `1 <= i` is sufficient.
+
+          I'll propose the following invariants:
+
+          - `sn = i - 1`
+
+          - `1 <= i`
 
           Answer:
-
-          ```yaml
+          ```
           - "sn = i - 1"
-          - "i <= n + 1 || n < 0"
+          - "1 <= i"
           ```
         tool_calls: []
         finish_reason: stop
@@ -744,16 +782,16 @@
       values:
         num_requests: 1
         num_completions: 1
-        input_tokens: 2898
-        output_tokens: 225
-        cached_input_tokens: 0
-        price: 0.0023634
+        input_tokens: 2707
+        output_tokens: 570
+        cached_input_tokens: 2432
+        price: 0.0081164
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
-      completion_tokens: 225
-      prompt_tokens: 2898
-      total_tokens: 3123
+      completion_tokens: 570
+      prompt_tokens: 2707
+      total_tokens: 3277
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
@@ -761,7 +799,7 @@
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0
-        cached_tokens: 0
+        cached_tokens: 2432
 - input:
     request:
       chat:
@@ -795,7 +833,7 @@
                   i <- 1;
                   while i <= n do
                     invariant { sn = i - 1 }
-                    invariant { i <= n + 1 || n < 0 }
+                    invariant { 1 <= i }
                     i <- i + 1;
                     sn <- sn + 1
                   done;
@@ -831,7 +869,7 @@
                   i <- 1;
                   while i <= n do
                     invariant { sn = i - 1 }
-                    invariant { i <= n + 1 || n < 0 }
+                    invariant { 1 <= i }
                     i <- i + 1;
                     sn <- sn + 1
                   done;
@@ -860,7 +898,7 @@
                   i <- 1;  (* premise *)
                   while i <= n do
                     invariant { sn = i - 1 }  (* GOAL *)
-                    invariant { i <= n + 1 || n < 0 }
+                    invariant { 1 <= i }
                     i <- i + 1;
                     sn <- sn + 1
                   done;
@@ -874,19 +912,19 @@
 
                 let main () diverges =  (* GOAL *)
                   let ref i = any int in
-                  let ref n = any int in  (* GOAL *)
+                  let ref n = any int in
                   let ref sn = any int in
                   sn <- 0;  (* premise *)
                   i <- 1;  (* premise *)
                   while i <= n do
                     invariant { sn = i - 1 }  (* premise *)
-                    invariant { i <= n + 1 || n < 0 }  (* GOAL *)
+                    invariant { 1 <= i }  (* GOAL *)
                     i <- i + 1;
                     sn <- sn + 1
                   done;
                   if sn <> n then
                     assert { sn = 0 }
-              goal_formula: 1 <= (o2 + 1) || o2 < 0
+              goal_formula: 1 <= 1
             - name: VC for main (loop invariant preservation)
               proved: true
               relevance_hints: |-
@@ -900,7 +938,7 @@
                   i <- 1;  (* premise *)
                   while i <= n do  (* premise *)
                     invariant { sn = i - 1 }  (* GOAL, premise *)
-                    invariant { i <= n + 1 || n < 0 }  (* premise *)
+                    invariant { 1 <= i }  (* premise *)
                     i <- i + 1;  (* premise *)
                     sn <- sn + 1  (* premise *)
                   done;
@@ -914,19 +952,19 @@
 
                 let main () diverges =  (* GOAL *)
                   let ref i = any int in
-                  let ref n = any int in  (* GOAL, premise *)
+                  let ref n = any int in  (* premise *)
                   let ref sn = any int in
                   sn <- 0;  (* premise *)
                   i <- 1;  (* premise *)
                   while i <= n do  (* premise *)
                     invariant { sn = i - 1 }  (* premise *)
-                    invariant { i <= n + 1 || n < 0 }  (* GOAL, premise *)
+                    invariant { 1 <= i }  (* GOAL, premise *)
                     i <- i + 1;  (* premise *)
                     sn <- sn + 1  (* premise *)
                   done;
                   if sn <> n then
                     assert { sn = 0 }
-              goal_formula: (i + 1) <= (o2 + 1) || o2 < 0
+              goal_formula: 1 <= (i + 1)
             - name: VC for main (assertion)
               proved: false
               relevance_hints: |-
@@ -940,7 +978,7 @@
                   i <- 1;  (* premise *)
                   while i <= n do  (* premise *)
                     invariant { sn = i - 1 }  (* premise *)
-                    invariant { i <= n + 1 || n < 0 }  (* premise *)
+                    invariant { 1 <= i }  (* premise *)
                     i <- i + 1;
                     sn <- sn + 1
                   done;
@@ -1127,62 +1165,40 @@
             content: |-
               Let's analyze the program:
 
-              - Initially, `sn = 0`, and `i = 1`.
-              - The loop condition is `i <= n`.
-              - Within the loop:
-                - `i` increments by 1.
-                - `sn` increments by 1.
-              - After the loop, if `sn <> n`, we must prove `sn = 0`.
-
-              To reason about the final assertion, let's understand the relationship between `sn`, `i`, and `n`.
-
-              At each iteration:
-              - `i` goes from 1 up to `n+1` (because the loop stops when `i <= n` is false).
-              - `sn` is incremented by 1 per iteration.
-
-              Since `i` starts at 1 and is incremented at each loop, after the loop, `i = n + 1`.
-
-              Similarly, the increments of `sn` mirror the increments of `i`, so `sn = n` after the loop assuming the loop condition.
-
-              If `sn <> n` after the loop, it means the loop was never entered (or equivalently, `i` was initially greater than `n`), thus `sn = 0` in that case.
-
-              Therefore, we want to maintain an invariant that relates `sn` and `i` so that we can derive `sn = i - 1`. Initially, `sn = 0`, `i = 1`, satisfying this invariant.
-
-              The loop increments `i` and `sn` by 1 simultaneously, so `sn = i - 1` holds at every iteration.
-
-              Hence, the key invariant is:
-
-              `sn = i - 1`
-
-              ---
-
-              Now we must also ensure `i <= n + 1` at every loop invariant, since `i` increments from 1 upwards until it exceeds `n`.
-
-              - Initially, `i = 1 <= n + 1` (since `n` is arbitrary).
+              - Initially, `sn = 0` and `i = 1`.
+              - The loop continues as long as `i <= n`.
               - At each iteration:
                 - `i` is incremented by 1.
+                - `sn` is incremented by 1.
 
-              Thus, the invariant `i <= n + 1` is suitable.
+              We want to prove that if at the end `sn <> n` then `sn = 0`.
 
-              ---
+              Since `i` starts at 1 and increases by 1 until it becomes `n+1`, the loop runs `(n - 1 + 1) = n` times if `n >= 1`.
 
-              Together these invariants imply after the loop termination (`i > n`), we have `i = n + 1` and thus `sn = i - 1 = n`.
+              Thus after the loop:
 
-              If the assertion is reached with `sn <> n`, it means the loop was never entered, so `sn = 0`.
+              - `i = n + 1`
+              - `sn = n` if the loop ran normally.
 
-              ---
+              But if `n < 1`, the loop doesn't run, and `sn` remains `0`.
 
-              Therefore, the invariants to propose are:
+              So, the invariant should capture the relation between `i` and `sn`:
+
+              - Since `sn` counts the number of iterations, and `i` starts at 1 and is incremented by 1 each iteration,  `sn = i - 1` should hold.
+
+              Also, since the loop stops when `i` becomes `n + 1` or greater, we have `i >= 1` always and `i <= n + 1` during the loop.
+
+              So, the candidate invariants are:
 
               - `sn = i - 1`
-              - `i <= n + 1`
+              - `1 <= i <= n + 1`
 
-              ---
+              Let me represent that as invariant formulas.
 
               Answer:
-
-              ```yaml
+              ```
               - "sn = i - 1"
+              - "1 <= i"
               - "i <= n + 1"
               ```
             tool_calls: []
@@ -1204,6 +1220,7 @@
               i <- 1;  (* premise *)
               while i <= n do
                 invariant { sn = i - 1 }  (* premise *)
+                invariant { 1 <= i }  (* premise *)
                 invariant { i <= n + 1 }  (* GOAL *)
                 i <- i + 1;
                 sn <- sn + 1
@@ -1215,25 +1232,57 @@
           answer:
             mode: null
             content: |-
-              Let's revisit the failing obligation: proving the invariant `i <= n + 1` holds initially.
+              The failed obligation is about proving that the invariant `i <= n + 1` holds initially, right after `i <- 1` and `n` arbitrary.
 
-              At the start, `i` is assigned the value 1. For the invariant to hold initially, we must have `1 <= n + 1`, which simplifies to `n >= 0`.
+              Initially, there is no assumption about the relation between `i` and `n`. Since `i = 1` initially and `n` is arbitrary (could be any integer), `i <= n + 1` means `1 <= n + 1`, which is `n >= 0`. But no such assumption exists, so `i <= n + 1` may not hold initially.
 
-              But `n` is arbitrary and can be any integer, so this holds only if `n >= 0`.
+              Hence, invariant `i <= n + 1` is too strong.
 
-              Therefore, `i <= n + 1` is not an invariant in general; it requires `n >= 0` to hold initially.
+              We can fix this by relaxing `i <= n + 1` to:
 
-              To fix this, we can weaken `i <= n + 1` by considering the disjunction `i <= n + 1 || n < 0`.
+              `i <= n + 1 || i <= 1` which is logically weaker and holds initially since `i = 1`.
 
-              This expresses that either `n` is negative, and thus the loop will not run (as `i=1 > n`), or `i <= n +1` holds.
+              But this is a disjunction; instead, following the advice, an invariant of the form:
 
-              This weakened invariant holds initially and should be preserved by the loop.
+              `i <= n + 1 || i <= 1`
+
+              is acceptable only if we allow disjunction.
+
+              Alternatively, since `i` starts at 1 and is increased by 1 each time, and the loop guard is `i <= n`, maybe a simpler invariant is:
+
+              `i <= n + 1 || n < 0`
+
+              Because if `n < 0`, the loop never starts (since `i=1`), else `i <= n + 1`.
+
+              However, for proof obligations, using `i <= n + 1 || n < 0` is lengthy. Instead, I propose to keep `1 <= i` (which is easy), and for the upper bound:
+
+              `i <= n + 1 || n < 0`
+
+              But easier is to remove the `i <= n + 1` invariant and keep:
+
+              - `sn = i - 1`
+              - `1 <= i`
+
+              Since the loop guard is `i <= n`, the variable `i` will be incremented until `i = n + 1`, so `i <= n + 1` will hold after loop body. But for the invariant, since `n` arbitrary, we can skip this bound.
+
+              From the postcondition, if `sn <> n` then `sn = 0`. This holds because:
+
+              - If `n < 1`, the loop doesn't execute so `sn = 0`.
+
+              - If `n >= 1`, the loop runs exactly `n` times, so `sn = n`.
+
+              So the invariant `sn = i - 1` together with `1 <= i` is sufficient.
+
+              I'll propose the following invariants:
+
+              - `sn = i - 1`
+
+              - `1 <= i`
 
               Answer:
-
-              ```yaml
+              ```
               - "sn = i - 1"
-              - "i <= n + 1 || n < 0"
+              - "1 <= i"
               ```
             tool_calls: []
             justification: null
@@ -1254,7 +1303,7 @@
               i <- 1;  (* premise *)
               while i <= n do  (* premise *)
                 invariant { sn = i - 1 }  (* premise *)
-                invariant { i <= n + 1 || n < 0 }  (* premise *)
+                invariant { 1 <= i }  (* premise *)
                 i <- i + 1;
                 sn <- sn + 1
               done;
@@ -1270,67 +1319,73 @@
   output:
     outputs:
       - content: |-
-          Let's analyze the assertion `sn = 0` under the condition `sn <> n`.
+          Let's analyze why this assertion `if sn <> n then assert { sn = 0 }` fails the proof.
 
-          From the invariant `sn = i - 1` and the loop guard `i <= n`, the loop continues, incrementing `i` and `sn` simultaneously.
+          From the invariants we have:
 
-          After the loop terminates, the guard `i <= n` is false, so `i > n`, thus `i >= n + 1`.
+          - `sn = i - 1`
+          - `1 <= i`
 
-          Using the loop invariant `i <= n + 1 || n < 0`, after termination, two cases:
+          When the loop ends, the guard `i <= n` is false, so `i > n`.
 
-          1. **Case `n < 0`**:
-             - The loop guard `i <= n` is false initially, because `i = 1`, and without loss of generality, `1 <= n` is false.
-             - No iterations executed, `sn` remains 0.
-             - Since `n < 0`, `sn` may not equal `n` (as `n` is negative), so `sn <> n` holds.
-             - The assertion `sn = 0` must hold, which it does.
+          Therefore, when the loop is done:
 
-          2. **Case `i <= n + 1`**:
-             - After the loop, `i > n`, so `i >= n + 1`.
-             - Combining with invariant: `i <= n + 1`, thus `i = n + 1`.
-             - Then, `sn = i - 1 = n + 1 - 1 = n`.
-             - Therefore, `sn = n`.
-             - So `sn <> n` is false, i.e., the `if` condition is false, so the assertion is not triggered.
+          - `i >= n + 1` (since integers)
+          - `sn = i - 1 >= n`
 
-          Hence, in all cases, the assertion `sn = 0` holds when `sn <> n`.
+          Now, consider the value of `sn` and `n`:
 
-          Therefore, the assertion is implied by the negation of the loop guard and the loop invariants.
+          - If `n < 1`, the loop is never entered (`i = 1`, `i <= n` is false), so `sn = 0` (initialized) and `sn <> n` could be true (if `n < 0` or `n = 0`), and `sn = 0` holds, so assertion is true.
 
-          ---
+          - If `n >= 1`, the loop executes, increasing `i` until `i = n + 1`, and `sn = i - 1 = n`.
 
-          However, Why3 is not able to prove this automatically because it may lack a useful invariant connecting `n < 0` and the loop guard `i <= n`.
+          Therefore, at loop end, we have `sn = n`.
 
-          Specifically, we might add an invariant reflecting that if the loop condition is true, then `n >= 1` (since `i` starts at `1`).
+          So `sn <> n` is false, thus the condition of the if statement is false and the assertion is vacuously true.
 
-          Adding the invariant:
+          Hence, the assertion is true.
 
-          - `n < i -> sn = 0`
+          Why then does Why3 fail to prove it?
 
-          Reflects the fact that if `i > n` (which means loop ends), and if `n < 1`, then no iteration is done and `sn = 0`.
+          Because our invariant does not guarantee `i <= n + 1`. With only `1 <= i` and `sn = i - 1`, the following could happen:
 
-          But this might be complex.
+          - For a negative n (say, `n = -5`), we have `i = 1 > n = -5`, so loop not entered, `sn = 0`. So, `if sn <> n` is `if 0 <> -5` true, and assertion expects `sn = 0`, which holds.
 
-          Alternatively, express:
+          - For `n >= 1`, `i` grows up to `n+1`, so `sn = n` and `sn <> n` is false.
 
-          - `n < 1 -> sn = 0`
+          But because we don't have an upper bound on `i`, we might not be able to conclude formally.
 
-          Because if `n < 1`, the loop is never executed (`i=1`), so `sn = 0` remains.
+          So we need to express the inequality `i <= n + 1` but only when the loop can run.
 
-          This is consistent with initial values.
+          The problem addressed in the earlier feedback was to prove the invariant `i <= n + 1` initially.
 
-          Adding this as an invariant:
+          Our analysis in the first feedback was that `i <= n + 1` initially does not hold if `n` is negative since `1 <= n + 1` means `n >= 0`.
 
-          - `n < 1 -> sn = 0`
+          But wait, the loop guard is `i <= n`; if `n < 1`, the loop is not entered and `sn = 0`.
 
-          This helps Why3 to link the assumption `n < 1` to `sn = 0` in the assertion.
+          Therefore, we can modify the invariant `i <= n + 1` and make it conditional:
 
-          ---
+          `i <= n + 1 || n < 1`
+
+          This disjunction holds initially because if `n < 1`, then this is true, else `i = 1 <= n + 1` if `n >= 1`.
+
+          This also helps with the loop.
+
+          Thus, let's propose the invariants:
+
+          - `sn = i - 1`
+
+          - `1 <= i`
+
+          - `i <= n + 1 || n < 1`
+
+          This last invariant is a disjunction but allowed as it is a logical combination of linear inequalities.
 
           Answer:
-
-          ```yaml
+          ```
           - "sn = i - 1"
-          - "i <= n + 1 || n < 0"
-          - "n < 1 -> sn = 0"
+          - "1 <= i"
+          - "i <= n + 1 || n < 1"
           ```
         tool_calls: []
         finish_reason: stop
@@ -1340,16 +1395,16 @@
       values:
         num_requests: 1
         num_completions: 1
-        input_tokens: 3309
-        output_tokens: 641
-        cached_input_tokens: 3072
-        price: 0.0101482
+        input_tokens: 3456
+        output_tokens: 726
+        cached_input_tokens: 3200
+        price: 0.010589999999999999
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
-      completion_tokens: 641
-      prompt_tokens: 3309
-      total_tokens: 3950
+      completion_tokens: 726
+      prompt_tokens: 3456
+      total_tokens: 4182
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
@@ -1357,7 +1412,7 @@
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0
-        cached_tokens: 3072
+        cached_tokens: 3200
 - input:
     request:
       chat:
@@ -1391,8 +1446,8 @@
                   i <- 1;
                   while i <= n do
                     invariant { sn = i - 1 }
-                    invariant { i <= n + 1 || n < 0 }
-                    invariant { n < 1 -> sn = 0 }
+                    invariant { 1 <= i }
+                    invariant { i <= n + 1 || n < 1 }
                     i <- i + 1;
                     sn <- sn + 1
                   done;
@@ -1428,8 +1483,8 @@
                   i <- 1;
                   while i <= n do
                     invariant { sn = i - 1 }
-                    invariant { i <= n + 1 || n < 0 }
-                    invariant { n < 1 -> sn = 0 }
+                    invariant { 1 <= i }
+                    invariant { i <= n + 1 || n < 1 }
                     i <- i + 1;
                     sn <- sn + 1
                   done;
@@ -1458,8 +1513,8 @@
                   i <- 1;  (* premise *)
                   while i <= n do
                     invariant { sn = i - 1 }  (* GOAL *)
-                    invariant { i <= n + 1 || n < 0 }
-                    invariant { n < 1 -> sn = 0 }
+                    invariant { 1 <= i }
+                    invariant { i <= n + 1 || n < 1 }
                     i <- i + 1;
                     sn <- sn + 1
                   done;
@@ -1473,20 +1528,20 @@
 
                 let main () diverges =  (* GOAL *)
                   let ref i = any int in
-                  let ref n = any int in  (* GOAL *)
+                  let ref n = any int in
                   let ref sn = any int in
                   sn <- 0;  (* premise *)
                   i <- 1;  (* premise *)
                   while i <= n do
                     invariant { sn = i - 1 }  (* premise *)
-                    invariant { i <= n + 1 || n < 0 }  (* GOAL *)
-                    invariant { n < 1 -> sn = 0 }
+                    invariant { 1 <= i }  (* GOAL *)
+                    invariant { i <= n + 1 || n < 1 }
                     i <- i + 1;
                     sn <- sn + 1
                   done;
                   if sn <> n then
                     assert { sn = 0 }
-              goal_formula: 1 <= (o2 + 1) || o2 < 0
+              goal_formula: 1 <= 1
             - name: VC for main (loop invariant init)
               proved: true
               relevance_hints: |-
@@ -1494,20 +1549,20 @@
 
                 let main () diverges =  (* GOAL *)
                   let ref i = any int in
-                  let ref n = any int in  (* premise *)
+                  let ref n = any int in  (* GOAL *)
                   let ref sn = any int in
                   sn <- 0;  (* premise *)
                   i <- 1;  (* premise *)
                   while i <= n do
                     invariant { sn = i - 1 }  (* premise *)
-                    invariant { i <= n + 1 || n < 0 }  (* premise *)
-                    invariant { n < 1 -> sn = 0 }  (* GOAL, premise *)
+                    invariant { 1 <= i }  (* premise *)
+                    invariant { i <= n + 1 || n < 1 }  (* GOAL *)
                     i <- i + 1;
                     sn <- sn + 1
                   done;
                   if sn <> n then
                     assert { sn = 0 }
-              goal_formula: 'true'
+              goal_formula: 1 <= (o2 + 1) || o2 < 1
             - name: VC for main (loop invariant preservation)
               proved: true
               relevance_hints: |-
@@ -1521,8 +1576,8 @@
                   i <- 1;  (* premise *)
                   while i <= n do  (* premise *)
                     invariant { sn = i - 1 }  (* GOAL, premise *)
-                    invariant { i <= n + 1 || n < 0 }  (* premise *)
-                    invariant { n < 1 -> sn = 0 }  (* premise *)
+                    invariant { 1 <= i }  (* premise *)
+                    invariant { i <= n + 1 || n < 1 }  (* premise *)
                     i <- i + 1;  (* premise *)
                     sn <- sn + 1  (* premise *)
                   done;
@@ -1536,20 +1591,819 @@
 
                 let main () diverges =  (* GOAL *)
                   let ref i = any int in
+                  let ref n = any int in  (* premise *)
+                  let ref sn = any int in
+                  sn <- 0;  (* premise *)
+                  i <- 1;  (* premise *)
+                  while i <= n do  (* premise *)
+                    invariant { sn = i - 1 }  (* premise *)
+                    invariant { 1 <= i }  (* GOAL, premise *)
+                    invariant { i <= n + 1 || n < 1 }  (* premise *)
+                    i <- i + 1;  (* premise *)
+                    sn <- sn + 1  (* premise *)
+                  done;
+                  if sn <> n then
+                    assert { sn = 0 }
+              goal_formula: 1 <= (i + 1)
+            - name: VC for main (loop invariant preservation)
+              proved: true
+              relevance_hints: |-
+                use int.Int
+
+                let main () diverges =  (* GOAL *)
+                  let ref i = any int in
                   let ref n = any int in  (* GOAL, premise *)
                   let ref sn = any int in
                   sn <- 0;  (* premise *)
                   i <- 1;  (* premise *)
                   while i <= n do  (* premise *)
                     invariant { sn = i - 1 }  (* premise *)
-                    invariant { i <= n + 1 || n < 0 }  (* GOAL, premise *)
-                    invariant { n < 1 -> sn = 0 }  (* premise *)
+                    invariant { 1 <= i }  (* premise *)
+                    invariant { i <= n + 1 || n < 1 }  (* GOAL, premise *)
                     i <- i + 1;  (* premise *)
                     sn <- sn + 1  (* premise *)
                   done;
                   if sn <> n then
                     assert { sn = 0 }
-              goal_formula: (i + 1) <= (o2 + 1) || o2 < 0
+              goal_formula: (i + 1) <= (o2 + 1) || o2 < 1
+            - name: VC for main (assertion)
+              proved: false
+              relevance_hints: |-
+                use int.Int
+
+                let main () diverges =  (* GOAL *)
+                  let ref i = any int in
+                  let ref n = any int in  (* premise *)
+                  let ref sn = any int in
+                  sn <- 0;  (* premise *)
+                  i <- 1;  (* premise *)
+                  while i <= n do  (* premise *)
+                    invariant { sn = i - 1 }  (* premise *)
+                    invariant { 1 <= i }  (* premise *)
+                    invariant { i <= n + 1 || n < 1 }  (* premise *)
+                    i <- i + 1;
+                    sn <- sn + 1
+                  done;
+                  if sn <> n then  (* premise *)
+                    assert { sn = 0 }  (* GOAL *)
+              goal_formula: (i - 1) = 0
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values: {}
+    log_items: []
+    model_name: null
+    usage_info: null
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            Your goal is to prove the correctness of WhyML programs using the Why3 theorem prover. To do so, you must annotate programs with loop invariants in such a way that all assertions in the program can be proved automatically via the weakest-precondition calculus.
+
+            We only allow invariants that feature logical combinations of **linear** arithmetic expressions. In particular, we only accept multiplication by constant numerical literals. Thus, we accept invariants such as `x + y > 0` or `a > 0 || 2*x + y < n` but not `x * y > 0` or `x >= y * (y + 1) / 2`. I insist, and this is **VERY IMPORTANT**, you must **NOT** propose invariants involving complex arithmetic such as `2 * x >= y * (y + 1)`.
+
+            I will show you a Why3 program with a single loop and a final assertion. The goal is to prove this assertion by providing a sequence of loop invariants. As a reminder, an invariant is a formula that holds initially and that is preserved by the loop body (it is true at the end of an iteration if it is true at the start). Your job is to find a list of invariants that together imply the final assertion.
+
+            Please reason carefully and then finish your answer with a YAML object surrounded by triple quotes that denotes a list of invariants. If you make a mistake (your suggested invariants do not imply the postcondition, an invariant does not hold initially or could not be proved to be preserved), I will show you the failing proof obligations and you'll have a chance to answer again. If there
+
+            ## Why3 Feedback
+
+            If there is a syntax error in your answer, I'll give you Why3's error message and let you fix your answer. If some obligations failed to be proved, we'll show them to you as feedback. Each obligation name provides a hint about the nature of a problem, which is either:
+
+            - `assertion`: the final assertion is not implied by the invariants
+            - `loop invariant init`: an invariant does not hold initially
+            - `loop invariant preservation`: an invariant cannot be proved to be preserved by the loop body (it may not be preserved or an additional invariant may be needed to complete the proof)
+
+            In addition, for each obligation, I provide an annotated version of the program indicating what assertion or invariant failed to be proved (`GOAL`) and what parts of the program provide relevant assumptions (`premise`).
+
+            ## Advice
+
+            Here is some advice for finding invariants:
+
+            - To find invariant candidates, look for formulas that imply the final assertion when assuming the negation of the loop guard.
+            - If an invariant cannot be proved to hold initially, it must be discarded.
+            - If an invariant cannot be proved to be preserved by the loop body, it might be wrong (in the sense that there exists an execution that serves as a counterexample), but it might also be true and other invariants are needed to provide additional assumptions for proving preservation.
+            - Whenever a variable `x` is only incremented (resp. decremented), an invariant of the form `x >= c` (resp. `x <= c`) is likely to hold, for `c` a constant.
+            - If a property `P` always holds after the loop but cannot be proved as an invariant because `P` does not hold initially, consider proposing `P || loop_guard` as an invariant instead.
+            - If proving an invariant `inv` requires assuming a global assumption `assum` that is only made _after_ the loop, consider proposing `assum -> inv` as an invariant instead.
+            - If proving the preservation of an invariant candidate requires proving that a specific branch in the code cannot be taken (or is always taken), consider proposing an invariant that establishes this fact.
+            - Suppose the loop guard is an inequality such as `expr < c` with `expr` an expression and `c` a constant. Then, if quantity `expr` cannot increase more than a constant amount `d` at each iteration, consider proposing `expr < c + d` as an invariant (and similarly for <=, > and >=).
+        - role: user
+          content: |-
+            Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
+
+            ```mlw
+            use int.Int
+
+            let example () diverges =
+              let ref x = any int in
+              let ref y = 3 in
+              let ref z = 0 in
+              assume { x < 0 };
+              while x < 10 do
+                x <- x + 1;
+                z <- z - 1;
+                if z < 0 then y <- y + 1
+              done;
+              assert { x <> y }
+            ```
+
+            Please reason carefully and then finish your answer with a YAML object surrounded by triple quotes that denotes a list of invariants. If you make a mistake, I'll give you feedback and you'll have another chance to answer (using the same format).
+        - role: assistant
+          answer:
+            mode: null
+            content: |
+              Why is `x <> y` always true at the end of the program? It is true initially since `y = 3` and `x < 0`. What happens in the loop body then? `x` is incremented and `y` is incremented if and only if the conditional guard `z < 0` evaluates to true. When does this happen? `z` is 0 initially and is only decremented afterwards. Thus, `z <= 0` is an invariant and the conditional statement always executes (since it does if and only if `z - 1 < 0` at the start of the loop iteration). Thus, `x` and `y` are always incremented by 1 at each iteration and so `x <> y` is preserved.
+
+              Answer:
+              ```
+              - "x <> y"
+              - "z <= 0"
+              ```
+            tool_calls: []
+            justification: null
+        - role: user
+          content: |-
+            Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
+
+            ```mlw
+            use int.Int
+
+            let example () diverges =
+              let ref x = any int in
+              let ref y = any int in
+              assume { x < 5 };
+              assume { x >= 2 };
+              assume { y <= 0 };
+              while x < 10 do
+                x <- x + 2;
+                y <- y - 3;
+              done;
+              assert { y <= 14 }
+            ```
+
+            Please reason carefully and then finish your answer with a YAML object surrounded by triple quotes that denotes a list of invariants. If you make a mistake, I'll give you feedback and you'll have another chance to answer (using the same format).
+        - role: assistant
+          answer:
+            mode: null
+            content: |
+              Since `y` is decremented by 3 every time `x` in incremented by `2`, the quantity `3*x - 2*y` is constant throughout the program. Since it at least `3*2 - 2*0 = 6` initially, the inequality "3*x - 2*y >= 6" is an invariant.
+
+              We want to prove `y <= 14` at the end of the program. Given that the previous invariant established an upper bound for `y` as a function of `x`, establishing an upper bound for `x` would be useful too.
+
+              We can do this! Indeed, `x` is only incremented by `2` at each loop iteration. Thus, given the loop guard `x < 10`, we have `x < 12` at the end of any loop iteration. `x < 12` also holds initially because of assumption `x < 5` so we propose `x < 12` as an invariant.
+
+              Answer:
+              ```
+              - "3*x - 2*y >= 6"
+              - "x < 12"
+              ```
+            tool_calls: []
+            justification: null
+        - role: user
+          content: |-
+            Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
+
+            ```mlw
+            use int.Int
+
+            let example () diverges =
+              let ref n = any int in
+              let ref x = 0 in
+              let ref g = any int in
+              while x < n do
+                g <- 4;
+                x <- x + 1;
+              done;
+              if n > 0 then
+                assert { g >= 1 }
+            ```
+
+            Please reason carefully and then finish your answer with a YAML object surrounded by triple quotes that denotes a list of invariants. If you make a mistake, I'll give you feedback and you'll have another chance to answer (using the same format).
+        - role: assistant
+          answer:
+            mode: null
+            content: |-
+              The final assertion is guarded by assumption `n > 0`. However, `n` never changes during the program, so we can treat this as a global assumption for now.
+
+              Why is `g >= 1` true at the end of the program? This is not necessarily true initially. However, executing any loop iteration makes it true (`g` is assigned 4). Thus, `g >= 1 || x < n` is an invariant since `x < n` is true initially (treating `n > 0` as a global assumption) and at each iteration, either `g >= 1` is true already or the guard `x < n` is true, in which case the loop body executes and makes `g >= 1` true.
+
+              However, `g >= 1 || x < n` is only an invariant assuming `n > 0` globally. But this assumption is only made AFTER the loop. Thus, we propose `n > 0 -> (g >= 1 || x < n)` as an invariant instead.
+
+              Answer:
+              ```
+              - "n > 0 -> (g >= 1 || x < n)"
+              ```
+            tool_calls: []
+            justification: null
+        - role: user
+          content: |-
+            Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
+
+            ```mlw
+            use int.Int
+
+            let main () diverges =
+              let ref i = any int in
+              let ref n = any int in
+              let ref sn = any int in
+              sn <- 0;
+              i <- 1;
+              while i <= n do
+                i <- i + 1;
+                sn <- sn + 1
+              done;
+              if sn <> n then
+                assert { sn = 0 }
+            ```
+
+            Please reason carefully and then finish your answer with a YAML object surrounded by triple quotes that denotes a list of invariants. If you make a mistake, I'll give you feedback and you'll have another chance to answer (using the same format).
+        - role: assistant
+          answer:
+            mode: null
+            content: |-
+              Let's analyze the program:
+
+              - Initially, `sn = 0` and `i = 1`.
+              - The loop continues as long as `i <= n`.
+              - At each iteration:
+                - `i` is incremented by 1.
+                - `sn` is incremented by 1.
+
+              We want to prove that if at the end `sn <> n` then `sn = 0`.
+
+              Since `i` starts at 1 and increases by 1 until it becomes `n+1`, the loop runs `(n - 1 + 1) = n` times if `n >= 1`.
+
+              Thus after the loop:
+
+              - `i = n + 1`
+              - `sn = n` if the loop ran normally.
+
+              But if `n < 1`, the loop doesn't run, and `sn` remains `0`.
+
+              So, the invariant should capture the relation between `i` and `sn`:
+
+              - Since `sn` counts the number of iterations, and `i` starts at 1 and is incremented by 1 each iteration,  `sn = i - 1` should hold.
+
+              Also, since the loop stops when `i` becomes `n + 1` or greater, we have `i >= 1` always and `i <= n + 1` during the loop.
+
+              So, the candidate invariants are:
+
+              - `sn = i - 1`
+              - `1 <= i <= n + 1`
+
+              Let me represent that as invariant formulas.
+
+              Answer:
+              ```
+              - "sn = i - 1"
+              - "1 <= i"
+              - "i <= n + 1"
+              ```
+            tool_calls: []
+            justification: null
+        - role: user
+          content: |
+            Some obligations failed to be proved. Here is a list of them:
+
+            ## VC for main (loop invariant init)
+
+            ```mlw
+            use int.Int
+
+            let main () diverges =  (* GOAL *)
+              let ref i = any int in
+              let ref n = any int in  (* GOAL *)
+              let ref sn = any int in
+              sn <- 0;  (* premise *)
+              i <- 1;  (* premise *)
+              while i <= n do
+                invariant { sn = i - 1 }  (* premise *)
+                invariant { 1 <= i }  (* premise *)
+                invariant { i <= n + 1 }  (* GOAL *)
+                i <- i + 1;
+                sn <- sn + 1
+              done;
+              if sn <> n then
+                assert { sn = 0 }
+            ```
+        - role: assistant
+          answer:
+            mode: null
+            content: |-
+              The failed obligation is about proving that the invariant `i <= n + 1` holds initially, right after `i <- 1` and `n` arbitrary.
+
+              Initially, there is no assumption about the relation between `i` and `n`. Since `i = 1` initially and `n` is arbitrary (could be any integer), `i <= n + 1` means `1 <= n + 1`, which is `n >= 0`. But no such assumption exists, so `i <= n + 1` may not hold initially.
+
+              Hence, invariant `i <= n + 1` is too strong.
+
+              We can fix this by relaxing `i <= n + 1` to:
+
+              `i <= n + 1 || i <= 1` which is logically weaker and holds initially since `i = 1`.
+
+              But this is a disjunction; instead, following the advice, an invariant of the form:
+
+              `i <= n + 1 || i <= 1`
+
+              is acceptable only if we allow disjunction.
+
+              Alternatively, since `i` starts at 1 and is increased by 1 each time, and the loop guard is `i <= n`, maybe a simpler invariant is:
+
+              `i <= n + 1 || n < 0`
+
+              Because if `n < 0`, the loop never starts (since `i=1`), else `i <= n + 1`.
+
+              However, for proof obligations, using `i <= n + 1 || n < 0` is lengthy. Instead, I propose to keep `1 <= i` (which is easy), and for the upper bound:
+
+              `i <= n + 1 || n < 0`
+
+              But easier is to remove the `i <= n + 1` invariant and keep:
+
+              - `sn = i - 1`
+              - `1 <= i`
+
+              Since the loop guard is `i <= n`, the variable `i` will be incremented until `i = n + 1`, so `i <= n + 1` will hold after loop body. But for the invariant, since `n` arbitrary, we can skip this bound.
+
+              From the postcondition, if `sn <> n` then `sn = 0`. This holds because:
+
+              - If `n < 1`, the loop doesn't execute so `sn = 0`.
+
+              - If `n >= 1`, the loop runs exactly `n` times, so `sn = n`.
+
+              So the invariant `sn = i - 1` together with `1 <= i` is sufficient.
+
+              I'll propose the following invariants:
+
+              - `sn = i - 1`
+
+              - `1 <= i`
+
+              Answer:
+              ```
+              - "sn = i - 1"
+              - "1 <= i"
+              ```
+            tool_calls: []
+            justification: null
+        - role: user
+          content: |
+            Some obligations failed to be proved. Here is a list of them:
+
+            ## VC for main (assertion)
+
+            ```mlw
+            use int.Int
+
+            let main () diverges =  (* GOAL *)
+              let ref i = any int in
+              let ref n = any int in  (* premise *)
+              let ref sn = any int in
+              sn <- 0;  (* premise *)
+              i <- 1;  (* premise *)
+              while i <= n do  (* premise *)
+                invariant { sn = i - 1 }  (* premise *)
+                invariant { 1 <= i }  (* premise *)
+                i <- i + 1;
+                sn <- sn + 1
+              done;
+              if sn <> n then  (* premise *)
+                assert { sn = 0 }  (* GOAL *)
+            ```
+        - role: assistant
+          answer:
+            mode: null
+            content: |-
+              Let's analyze why this assertion `if sn <> n then assert { sn = 0 }` fails the proof.
+
+              From the invariants we have:
+
+              - `sn = i - 1`
+              - `1 <= i`
+
+              When the loop ends, the guard `i <= n` is false, so `i > n`.
+
+              Therefore, when the loop is done:
+
+              - `i >= n + 1` (since integers)
+              - `sn = i - 1 >= n`
+
+              Now, consider the value of `sn` and `n`:
+
+              - If `n < 1`, the loop is never entered (`i = 1`, `i <= n` is false), so `sn = 0` (initialized) and `sn <> n` could be true (if `n < 0` or `n = 0`), and `sn = 0` holds, so assertion is true.
+
+              - If `n >= 1`, the loop executes, increasing `i` until `i = n + 1`, and `sn = i - 1 = n`.
+
+              Therefore, at loop end, we have `sn = n`.
+
+              So `sn <> n` is false, thus the condition of the if statement is false and the assertion is vacuously true.
+
+              Hence, the assertion is true.
+
+              Why then does Why3 fail to prove it?
+
+              Because our invariant does not guarantee `i <= n + 1`. With only `1 <= i` and `sn = i - 1`, the following could happen:
+
+              - For a negative n (say, `n = -5`), we have `i = 1 > n = -5`, so loop not entered, `sn = 0`. So, `if sn <> n` is `if 0 <> -5` true, and assertion expects `sn = 0`, which holds.
+
+              - For `n >= 1`, `i` grows up to `n+1`, so `sn = n` and `sn <> n` is false.
+
+              But because we don't have an upper bound on `i`, we might not be able to conclude formally.
+
+              So we need to express the inequality `i <= n + 1` but only when the loop can run.
+
+              The problem addressed in the earlier feedback was to prove the invariant `i <= n + 1` initially.
+
+              Our analysis in the first feedback was that `i <= n + 1` initially does not hold if `n` is negative since `1 <= n + 1` means `n >= 0`.
+
+              But wait, the loop guard is `i <= n`; if `n < 1`, the loop is not entered and `sn = 0`.
+
+              Therefore, we can modify the invariant `i <= n + 1` and make it conditional:
+
+              `i <= n + 1 || n < 1`
+
+              This disjunction holds initially because if `n < 1`, then this is true, else `i = 1 <= n + 1` if `n >= 1`.
+
+              This also helps with the loop.
+
+              Thus, let's propose the invariants:
+
+              - `sn = i - 1`
+
+              - `1 <= i`
+
+              - `i <= n + 1 || n < 1`
+
+              This last invariant is a disjunction but allowed as it is a logical combination of linear inequalities.
+
+              Answer:
+              ```
+              - "sn = i - 1"
+              - "1 <= i"
+              - "i <= n + 1 || n < 1"
+              ```
+            tool_calls: []
+            justification: null
+        - role: user
+          content: |
+            Some obligations failed to be proved. Here is a list of them:
+
+            ## VC for main (assertion)
+
+            ```mlw
+            use int.Int
+
+            let main () diverges =  (* GOAL *)
+              let ref i = any int in
+              let ref n = any int in  (* premise *)
+              let ref sn = any int in
+              sn <- 0;  (* premise *)
+              i <- 1;  (* premise *)
+              while i <= n do  (* premise *)
+                invariant { sn = i - 1 }  (* premise *)
+                invariant { 1 <= i }  (* premise *)
+                invariant { i <= n + 1 || n < 1 }  (* premise *)
+                i <- i + 1;
+                sn <- sn + 1
+              done;
+              if sn <> n then  (* premise *)
+                assert { sn = 0 }  (* GOAL *)
+            ```
+      num_completions: 1
+      options:
+        model: gpt-4.1-mini
+      tools: []
+      structured_output: null
+    iter: 1
+  output:
+    outputs:
+      - content: |-
+          Let's analyze the situation carefully:
+
+          We are asked to prove: if `sn <> n` then `sn = 0`.
+
+          From the invariants:
+
+          - `sn = i - 1`
+          - `1 <= i`
+          - `i <= n + 1 || n < 1`
+
+          At loop exit, loop condition `i <= n` is false, so `i > n`.
+
+          Thus:
+
+          - `i >= n + 1`.
+
+          Because `i` is integer and `i > n`.
+
+          Hence:
+
+          - `i = n + 1` or possibly greater.
+
+          Using the invariant `i <= n + 1 || n < 1`:
+
+          - If `n >= 1`, then `i <= n + 1` must hold.
+
+          - If `n < 1`, then the invariant holds regardless of `i`.
+
+          Therefore, at loop exit:
+
+          - If `n >= 1`, then `i` satisfies `1 <= i <= n + 1`.
+
+          - And also, `i > n` since loop ended.
+
+          Thus, `i = n + 1`.
+
+          Using `sn = i - 1`, then `sn = n`.
+
+          Hence, `sn = n` at loop exit if `n >= 1`.
+
+          Else, if `n < 1`, the loop does not execute and `sn = 0`.
+
+          Therefore, at loop exit:
+
+          - If `n < 1`, then `sn = 0`.
+
+          - If `n >= 1`, then `sn = n`.
+
+          Hence, if `sn <> n`, then `n < 1` and `sn = 0`.
+
+          Therefore, assertion `if sn <> n then sn = 0` holds.
+
+          Why then does Why3 fail?
+
+          Presumably because it cannot prove that the loop exit implies `i >= n + 1` and that `sn = i - 1`.
+
+          But from the loop condition and invariants, this should be provable.
+
+          Therefore, to help Why3, let's propose an explicit invariant stating `i > n` after the loop.
+
+          But since the loop guard is `i <= n`, the negation is `i > n` at loop exit.
+
+          We can express as an invariant that the loop guard or its negation relates to `i` and `n`.
+
+          Since the invariant requires to hold before and after an iteration, let's propose the idea that:
+
+          - Before an iteration: `i <= n`
+
+          - After an iteration: `i` is incremented, so `i <= n + 1`
+
+          Let's note:
+
+          - The loop starts with `i <= n` (guard true)
+
+          - Inside the loop body: `i` increments by 1
+
+          So after loop body, `i` increases by 1, so `i <= n + 1`
+
+          Also, at loop exit `i > n`.
+
+          So we can add invariant:
+
+          - `i - 1 <= n`
+
+          Which is equivalent to:
+
+          - `sn = i - 1` (from previous invariant)
+
+          - So `sn <= n`
+
+          This is safe because `sn` counts the iterations which can't surpass `n`.
+
+          Therefore, let's try invariants:
+
+          - `sn = i - 1`
+
+          - `1 <= i`
+
+          - `sn <= n`
+
+          This is simpler than previously and should imply the postcondition.
+
+          Let's check initial conditions:
+
+          - Initially, `sn = 0`, `i = 1`, so `sn = i - 1` holds.
+
+          - Also, `sn <= n` is then `0 <= n`, which holds if `n >= 0`, but if `n` can be negative, not necessarily.
+
+          To handle this, we can weaken `sn <= n || n < 0`.
+
+          Thus, proposing:
+
+          - `sn = i - 1`
+
+          - `1 <= i`
+
+          - `(sn <= n) || (n < 0)`
+
+          Again, this is a linear disjunction allowed by the problem.
+
+          Therefore, answer:
+
+          ```
+          - "sn = i - 1"
+          - "1 <= i"
+          - "sn <= n || n < 0"
+          ```
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 4380
+        output_tokens: 841
+        cached_input_tokens: 4096
+        price: 0.0135026
+    log_items: []
+    model_name: gpt-4.1-mini-2025-04-14
+    usage_info:
+      completion_tokens: 841
+      prompt_tokens: 4380
+      total_tokens: 5221
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 0
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 4096
+- input:
+    request:
+      chat:
+        - role: system
+          content: |
+            fun: check
+            args:
+              prog: |
+                use int.Int
+
+                let main () diverges =
+                  let ref i = any int in
+                  let ref n = any int in
+                  let ref sn = any int in
+                  sn <- 0;
+                  i <- 1;
+                  while i <= n do
+                    i <- i + 1;
+                    sn <- sn + 1
+                  done;
+                  if sn <> n then
+                    assert { sn = 0 }
+              annotated: |-
+                use int.Int
+
+                let main () diverges =
+                  let ref i = any int in
+                  let ref n = any int in
+                  let ref sn = any int in
+                  sn <- 0;
+                  i <- 1;
+                  while i <= n do
+                    invariant { sn = i - 1 }
+                    invariant { 1 <= i }
+                    invariant { sn <= n || n < 0 }
+                    i <- i + 1;
+                    sn <- sn + 1
+                  done;
+                  if sn <> n then
+                    assert { sn = 0 }
+        - role: user
+          content: |
+            fun: check
+            args:
+              prog: |
+                use int.Int
+
+                let main () diverges =
+                  let ref i = any int in
+                  let ref n = any int in
+                  let ref sn = any int in
+                  sn <- 0;
+                  i <- 1;
+                  while i <= n do
+                    i <- i + 1;
+                    sn <- sn + 1
+                  done;
+                  if sn <> n then
+                    assert { sn = 0 }
+              annotated: |-
+                use int.Int
+
+                let main () diverges =
+                  let ref i = any int in
+                  let ref n = any int in
+                  let ref sn = any int in
+                  sn <- 0;
+                  i <- 1;
+                  while i <= n do
+                    invariant { sn = i - 1 }
+                    invariant { 1 <= i }
+                    invariant { sn <= n || n < 0 }
+                    i <- i + 1;
+                    sn <- sn + 1
+                  done;
+                  if sn <> n then
+                    assert { sn = 0 }
+      num_completions: 1
+      options: {}
+      tools: []
+      structured_output: null
+    iter: 1
+  output:
+    outputs:
+      - content: |
+          error: null
+          obligations:
+            - name: VC for main (loop invariant init)
+              proved: true
+              relevance_hints: |-
+                use int.Int
+
+                let main () diverges =  (* GOAL *)
+                  let ref i = any int in
+                  let ref n = any int in
+                  let ref sn = any int in
+                  sn <- 0;  (* premise *)
+                  i <- 1;  (* premise *)
+                  while i <= n do
+                    invariant { sn = i - 1 }  (* GOAL *)
+                    invariant { 1 <= i }
+                    invariant { sn <= n || n < 0 }
+                    i <- i + 1;
+                    sn <- sn + 1
+                  done;
+                  if sn <> n then
+                    assert { sn = 0 }
+              goal_formula: 0 = (1 - 1)
+            - name: VC for main (loop invariant init)
+              proved: true
+              relevance_hints: |-
+                use int.Int
+
+                let main () diverges =  (* GOAL *)
+                  let ref i = any int in
+                  let ref n = any int in
+                  let ref sn = any int in
+                  sn <- 0;  (* premise *)
+                  i <- 1;  (* premise *)
+                  while i <= n do
+                    invariant { sn = i - 1 }  (* premise *)
+                    invariant { 1 <= i }  (* GOAL *)
+                    invariant { sn <= n || n < 0 }
+                    i <- i + 1;
+                    sn <- sn + 1
+                  done;
+                  if sn <> n then
+                    assert { sn = 0 }
+              goal_formula: 1 <= 1
+            - name: VC for main (loop invariant init)
+              proved: true
+              relevance_hints: |-
+                use int.Int
+
+                let main () diverges =  (* GOAL *)
+                  let ref i = any int in
+                  let ref n = any int in  (* GOAL *)
+                  let ref sn = any int in
+                  sn <- 0;  (* premise *)
+                  i <- 1;  (* premise *)
+                  while i <= n do
+                    invariant { sn = i - 1 }  (* premise *)
+                    invariant { 1 <= i }  (* premise *)
+                    invariant { sn <= n || n < 0 }  (* GOAL *)
+                    i <- i + 1;
+                    sn <- sn + 1
+                  done;
+                  if sn <> n then
+                    assert { sn = 0 }
+              goal_formula: 0 <= o2 || o2 < 0
+            - name: VC for main (loop invariant preservation)
+              proved: true
+              relevance_hints: |-
+                use int.Int
+
+                let main () diverges =  (* GOAL *)
+                  let ref i = any int in
+                  let ref n = any int in  (* premise *)
+                  let ref sn = any int in
+                  sn <- 0;  (* premise *)
+                  i <- 1;  (* premise *)
+                  while i <= n do  (* premise *)
+                    invariant { sn = i - 1 }  (* GOAL, premise *)
+                    invariant { 1 <= i }  (* premise *)
+                    invariant { sn <= n || n < 0 }  (* premise *)
+                    i <- i + 1;  (* premise *)
+                    sn <- sn + 1  (* premise *)
+                  done;
+                  if sn <> n then
+                    assert { sn = 0 }
+              goal_formula: ((i - 1) + 1) = ((i + 1) - 1)
             - name: VC for main (loop invariant preservation)
               proved: true
               relevance_hints: |-
@@ -1563,16 +2417,37 @@
                   i <- 1;  (* premise *)
                   while i <= n do  (* premise *)
                     invariant { sn = i - 1 }  (* premise *)
-                    invariant { i <= n + 1 || n < 0 }  (* premise *)
-                    invariant { n < 1 -> sn = 0 }  (* GOAL, premise *)
+                    invariant { 1 <= i }  (* GOAL, premise *)
+                    invariant { sn <= n || n < 0 }  (* premise *)
                     i <- i + 1;  (* premise *)
                     sn <- sn + 1  (* premise *)
                   done;
                   if sn <> n then
                     assert { sn = 0 }
-              goal_formula: ((i - 1) + 1) = 0
-            - name: VC for main (assertion)
+              goal_formula: 1 <= (i + 1)
+            - name: VC for main (loop invariant preservation)
               proved: true
+              relevance_hints: |-
+                use int.Int
+
+                let main () diverges =  (* GOAL *)
+                  let ref i = any int in
+                  let ref n = any int in  (* GOAL, premise *)
+                  let ref sn = any int in
+                  sn <- 0;  (* premise *)
+                  i <- 1;  (* premise *)
+                  while i <= n do  (* premise *)
+                    invariant { sn = i - 1 }  (* premise *)
+                    invariant { 1 <= i }  (* premise *)
+                    invariant { sn <= n || n < 0 }  (* GOAL, premise *)
+                    i <- i + 1;  (* premise *)
+                    sn <- sn + 1  (* premise *)
+                  done;
+                  if sn <> n then
+                    assert { sn = 0 }
+              goal_formula: ((i - 1) + 1) <= o2 || o2 < 0
+            - name: VC for main (assertion)
+              proved: false
               relevance_hints: |-
                 use int.Int
 
@@ -1584,8 +2459,8 @@
                   i <- 1;  (* premise *)
                   while i <= n do  (* premise *)
                     invariant { sn = i - 1 }  (* premise *)
-                    invariant { i <= n + 1 || n < 0 }  (* premise *)
-                    invariant { n < 1 -> sn = 0 }  (* premise *)
+                    invariant { 1 <= i }  (* premise *)
+                    invariant { sn <= n || n < 0 }  (* premise *)
                     i <- i + 1;
                     sn <- sn + 1
                   done;

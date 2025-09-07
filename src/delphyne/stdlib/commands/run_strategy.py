@@ -109,12 +109,10 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
 
         trace = env.tracer.trace
         raw_trace = trace.export() if export_raw_trace else None
-        assert cache is not None
-        browsable_trace = (
-            analysis.compute_browsable_trace(trace, cache)
-            if export_browsable_trace
-            else None
-        )
+        browsable_trace: fb.Trace | None = None
+        if export_browsable_trace:
+            assert cache is not None
+            browsable_trace = analysis.compute_browsable_trace(trace, cache)
         log = list(env.tracer.export_log()) if export_log else None
         values = [serialize_result(r) for r in results]
         response = RunStrategyResponse(
