@@ -273,6 +273,7 @@ def run_command[A, T](
     on_set_pull_status: Callable[[_PullStatusFn], None] | None = None,
     on_set_pull_result: Callable[[_PullResultFn[CommandResult[T]]], None]
     | None = None,
+    on_set_pull_result_str: Callable[[Callable[[], str]], None] | None = None,
     add_header: bool = True,
     handle_sigint: bool = False,
 ) -> CommandResult[T | None]:
@@ -294,6 +295,8 @@ def run_command[A, T](
             registers a pull function for status messages.
         on_set_pull_result: A function to call if and when the task
             registers a pull function for results.
+        on_set_pull_result_str: Similar to `on_set_pull_result`, but
+            produces strings instead of `CommandResult` objects.
         add_header: If `True`, the dumped result is prefixed with a
             header containing the command name and arguments.
         handle_sigint: If `True`, pressing `Ctrl+C` sends the command
@@ -303,6 +306,18 @@ def run_command[A, T](
 
     Non-existing directories are created automatically.
     """
+
+    def _result_to_string(result: CommandResult[T | None]) -> str:
+        ret_ty = command_optional_result_wrapper_type(command)
+        ret: Any = ty.pydantic_dump(ret_ty, result)
+        if add_header:
+            args_type = command_args_type(command)
+            ret = {
+                "command": command_name(command),
+                "args": ty.pydantic_dump(args_type, args),
+                "outcome": ret,
+            }
+        return "# delphyne-command\n\n" + pretty_yaml(ret)
 
     class Handler:
         def __init__(self):
@@ -332,19 +347,10 @@ def run_command[A, T](
         def set_result(self, result: CommandResult[T]) -> None:
             self.result = result
             if dump_result is not None:
-                ret_ty = command_optional_result_wrapper_type(command)
-                ret: Any = ty.pydantic_dump(ret_ty, result)
-                if add_header:
-                    args_type = command_args_type(command)
-                    ret = {
-                        "command": command_name(command),
-                        "args": ty.pydantic_dump(args_type, args),
-                        "outcome": ret,
-                    }
+                ret = _result_to_string(result)
                 os.makedirs(dump_result.parent, exist_ok=True)
                 with open(dump_result, "w") as f:
-                    ret_yaml = pretty_yaml(ret)
-                    f.write("# delphyne-command\n\n" + ret_yaml)
+                    f.write(ret)
 
         def set_pull_status(self, pull: _PullStatusFn) -> None:
             if on_set_pull_status is not None:
@@ -355,6 +361,15 @@ def run_command[A, T](
         ) -> None:
             if on_set_pull_result is not None:
                 on_set_pull_result(pull)
+            if on_set_pull_result_str is not None:
+
+                def pull_str() -> str:
+                    ret = pull()
+                    if ret is None:
+                        ret = CommandResult([], None)
+                    return _result_to_string(ret)
+
+                on_set_pull_result_str(pull_str)
 
         def raise_internal_error(self, message: str) -> None:
             error = ("error", f"Internal error: {message}")
