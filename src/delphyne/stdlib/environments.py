@@ -346,7 +346,7 @@ class PolicyEnv:
             data_dirs: A sequence of directories where data files can be
                 found.
             cache: A request cache, or `None` to disable caching.
-            log_evel: The minimum log level to record. Messages with a
+            log_level: The minimum log level to record. Messages with a
                 lower level will be ignored.
             log_long_computations: if set, log computations taking more
                 than the given number of seconds at the given severity
