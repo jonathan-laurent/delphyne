@@ -53,14 +53,14 @@ class TaskContext[T](typing.Protocol):
     def set_status(self, message: str) -> None: ...
     def set_result(self, result: T) -> None: ...
     def raise_internal_error(self, message: str) -> None: ...
-    def set_pull_status(self, pull: "_PullStatusFn") -> None: ...
-    def set_pull_result(self, pull: "_PullResultFn[T]") -> None: ...
+    def set_pull_status(self, pull: "PullStatusFn") -> None: ...
+    def set_pull_result(self, pull: "PullResultFn[T]") -> None: ...
 
 
-type _PullResultFn[T] = Callable[[], T | None]
+type PullResultFn[T] = Callable[[], T | None]
 
 
-type _PullStatusFn = Callable[[], str | None]
+type PullStatusFn = Callable[[], str | None]
 
 
 type StreamingTask[**P, T] = Callable[Concatenate[TaskContext[T], P], None]
@@ -270,8 +270,8 @@ def run_command[A, T](
     dump_result: Path | None = None,
     dump_log: Path | None = None,
     on_status: Callable[[str], None] | None = None,
-    on_set_pull_status: Callable[[_PullStatusFn], None] | None = None,
-    on_set_pull_result: Callable[[_PullResultFn[CommandResult[T]]], None]
+    on_set_pull_status: Callable[[PullStatusFn], None] | None = None,
+    on_set_pull_result: Callable[[PullResultFn[CommandResult[T]]], None]
     | None = None,
     on_set_pull_result_str: Callable[[Callable[[], str]], None] | None = None,
     add_header: bool = True,
@@ -352,12 +352,12 @@ def run_command[A, T](
                 with open(dump_result, "w") as f:
                     f.write(ret)
 
-        def set_pull_status(self, pull: _PullStatusFn) -> None:
+        def set_pull_status(self, pull: PullStatusFn) -> None:
             if on_set_pull_status is not None:
                 on_set_pull_status(pull)
 
         def set_pull_result(
-            self, pull: _PullResultFn[CommandResult[T]]
+            self, pull: PullResultFn[CommandResult[T]]
         ) -> None:
             if on_set_pull_result is not None:
                 on_set_pull_result(pull)

@@ -45,6 +45,12 @@ class _BasicTaskContext[T](tasks.TaskContext[T]):
     def raise_internal_error(self, message: str) -> None:
         self.messages_queue.put_nowait(("internal_error", message))
 
+    def set_pull_status(self, pull: tasks.PullStatusFn) -> None:
+        pass
+
+    def set_pull_result(self, pull: tasks.PullResultFn[T]) -> None:
+        pass
+
 
 class BasicLauncher(TaskLauncher):
     async def __call__[**P, T](
