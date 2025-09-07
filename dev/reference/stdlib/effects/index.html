@@ -4310,7 +4310,10 @@ level. When set to <code>None</code>, this setting can be overriden by
 <span class="normal">251</span>
 <span class="normal">252</span>
 <span class="normal">253</span>
-<span class="normal">254</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dp</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dp</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">elim_compute</span><span class="p">(</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
@@ -4353,6 +4356,7 @@ level. When set to <code>None</code>, this setting can be overriden by
                     <span class="n">log_computations</span><span class="p">,</span>
                     <span class="s2">&quot;computation_started&quot;</span><span class="p">,</span>
                     <span class="p">{</span><span class="s2">&quot;hash&quot;</span><span class="p">:</span> <span class="n">digest</span><span class="p">,</span> <span class="s2">&quot;details&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">},</span>
+                    <span class="n">loc</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
             <span class="n">answer</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">run_computation_with_cache</span><span class="p">(</span><span class="n">cache</span><span class="p">)</span>
@@ -4362,6 +4366,7 @@ level. When set to <code>None</code>, this setting can be overriden by
                     <span class="n">log_computations</span><span class="p">,</span>
                     <span class="s2">&quot;computation_finished&quot;</span><span class="p">,</span>
                     <span class="p">{</span><span class="s2">&quot;hash&quot;</span><span class="p">:</span> <span class="n">digest</span><span class="p">,</span> <span class="s2">&quot;elapsed&quot;</span><span class="p">:</span> <span class="n">_elapsed</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">answer</span><span class="p">},</span>
+                    <span class="n">loc</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">log_long_computations</span> <span class="ow">and</span> <span class="n">_elapsed</span> <span class="o">&gt;</span> <span class="n">log_long_computations</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
                 <span class="n">env</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
@@ -4373,6 +4378,7 @@ level. When set to <code>None</code>, this setting can be overriden by
                         <span class="s2">&quot;elapsed&quot;</span><span class="p">:</span> <span class="n">_elapsed</span><span class="p">,</span>
                         <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">answer</span><span class="p">,</span>
                     <span class="p">},</span>
+                    <span class="n">loc</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="n">tracked</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">attached</span><span class="o">.</span><span class="n">parse_answer</span><span class="p">(</span>
                 <span class="n">dp</span><span class="o">.</span><span class="n">Answer</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">answer</span><span class="p">)</span>
