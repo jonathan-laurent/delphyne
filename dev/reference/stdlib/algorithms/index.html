@@ -4744,7 +4744,7 @@ trying to prove and accumulating redundant facts.</p>
             <span class="n">env</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">log_steps</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">log_tool_stats</span><span class="p">():</span>
-        <span class="n">env</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;abduct_and_saturate_tool_stats&quot;</span><span class="p">,</span> <span class="n">tool_stats</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;abduct_and_saturate_tool_stats&quot;</span><span class="p">,</span> <span class="n">tool_stats</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">all_canonical</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">_EFact</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span><span class="o">*</span><span class="n">candidates</span><span class="p">,</span> <span class="o">*</span><span class="n">proved</span><span class="p">,</span> <span class="o">*</span><span class="n">disproved</span><span class="p">,</span> <span class="o">*</span><span class="n">redundant</span><span class="p">]</span>
