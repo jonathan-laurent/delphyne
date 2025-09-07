@@ -222,6 +222,7 @@ def elim_compute(
                     log_computations,
                     "computation_started",
                     {"hash": digest, "details": query},
+                    loc=tree,
                 )
             start = time.time()
             answer = tree.node.run_computation_with_cache(cache)
@@ -231,6 +232,7 @@ def elim_compute(
                     log_computations,
                     "computation_finished",
                     {"hash": digest, "elapsed": _elapsed, "result": answer},
+                    loc=tree,
                 )
             if log_long_computations and _elapsed > log_long_computations[1]:
                 env.log(
@@ -242,6 +244,7 @@ def elim_compute(
                         "elapsed": _elapsed,
                         "result": answer,
                     },
+                    loc=tree,
                 )
             tracked = tree.node.query.attached.parse_answer(
                 dp.Answer(None, answer)
