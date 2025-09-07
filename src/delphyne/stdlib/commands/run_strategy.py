@@ -80,7 +80,11 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
         do_not_match_identical_queries=True,
     )
     lock = threading.Lock()  # to protect state that can be pulled
-    cache: dp.TreeCache = {}
+    # We do not need to cache all tree nodes (which can cost a lot of
+    # memory) unless a browsable trace may be computed.
+    cache: dp.TreeCache | None = None
+    if args.export_browsable_trace or args.export_all_on_pull:
+        cache = {}
     monitor = dp.TreeMonitor(cache, hooks=[dp.tracer_hook(env.tracer)])
     tree = dp.reify(args.strategy, monitor)
     policy = args.policy
@@ -105,6 +109,7 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
 
         trace = env.tracer.trace
         raw_trace = trace.export() if export_raw_trace else None
+        assert cache is not None
         browsable_trace = (
             analysis.compute_browsable_trace(trace, cache)
             if export_browsable_trace
