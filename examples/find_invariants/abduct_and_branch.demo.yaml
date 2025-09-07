@@ -217,6 +217,19 @@
             no
             ```
           example: true
+    - query: IsProposalNovel
+      args:
+        proposal: [z <= 0]
+        blacklist:
+          - [x <> y]
+      answers:
+        - answer: |
+            The new formula `z <= 0` is not equivalent to the only blacklisted formula `x <> y` so it is novel.
+
+            ```
+            yes
+            ```
+          example: true
     - query: __Computation__
       args:
         fun: check
