@@ -322,6 +322,7 @@ class PolicyEnv:
         templates: The prompt templates manager.
         tracer: The tracer, which can also be used for logging.
         examples: The example database.
+        log_long_computations: see constructor.
     """
 
     def __init__(
@@ -332,6 +333,7 @@ class PolicyEnv:
         data_dirs: Sequence[Path] = (),
         cache: md.LLMCache | None = None,
         log_level: dp.LogLevel = "info",
+        log_long_computations: tuple[dp.LogLevel, float] | None = None,
         do_not_match_identical_queries: bool = False,
     ):
         """
@@ -346,11 +348,16 @@ class PolicyEnv:
             cache: A request cache, or `None` to disable caching.
             log_evel: The minimum log level to record. Messages with a
                 lower level will be ignored.
+            log_long_computations: if set, log computations taking more
+                than the given number of seconds at the given severity
+                level. This settings can be locally overriden by
+                `elim_compute`.
             do_not_match_identical_queries: See `ExampleDatabase`.
         """
         self.templates = TemplatesManager(prompt_dirs, data_dirs)
         self.examples = ExampleDatabase(do_not_match_identical_queries)
         self.tracer = dp.Tracer(log_level=log_level)
+        self.log_long_computations = log_long_computations
         self.cache = cache
         for path in demonstration_files:
             if not path.suffix.endswith(DEMO_FILE_EXT):

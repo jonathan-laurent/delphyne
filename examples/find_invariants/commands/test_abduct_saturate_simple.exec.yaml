@@ -17,3 +17,4 @@ args:
   num_generated: 1
   budget:
     num_requests: 5
+  log_long_computations: [info, 0.1]  # log computations taking more than 0.1s

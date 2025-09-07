@@ -2,6 +2,7 @@
 The `Compute` Effect
 """
 
+import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from functools import partial
@@ -14,7 +15,7 @@ import delphyne.core.inspect as insp
 import delphyne.core_and_base as dp
 import delphyne.utils.typing as ty
 from delphyne.core_and_base import PolicyEnv, spawn_node
-from delphyne.stdlib.queries import create_prompt
+from delphyne.stdlib.queries import create_prompt, json_object_digest
 from delphyne.utils.yaml import dump_yaml
 
 
@@ -183,6 +184,8 @@ def elim_compute(
     env: PolicyEnv,
     policy: Any,
     force_bypass_cache: bool = False,
+    log_computations: dp.LogLevel | None = None,
+    log_long_computations: tuple[dp.LogLevel, float] | None = None,
 ) -> dp.PureTreeTransformerFn[Compute, Never]:
     """
     Eliminate the `Compute` effect by performing the computation when
@@ -193,7 +196,16 @@ def elim_compute(
         force_bypass_cache: if set to `True`, do not cache computation
             results, even if a cache is available in the global policy
             environment.
+        log_computations: if set, log every performed computation at the
+            given severity level.
+        log_long_computations: if set, log every computation taking more
+            than the given number of seconds at the given severity
+            level. When set to `None`, this setting can be overriden by
+            `PolicyEnv.log_long_computations`.
     """
+
+    if log_long_computations is None:
+        log_long_computations = env.log_long_computations
 
     def transform[N: dp.Node, P, T](
         tree: dp.Tree[Compute | N, P, T],
@@ -202,7 +214,35 @@ def elim_compute(
             cache = None
             if not force_bypass_cache:
                 cache = env.cache
+            query = tree.node.query.attached.query
+            assert isinstance(query, __Computation__), str(type(query))
+            digest = json_object_digest(ty.pydantic_dump(Any, query))
+            if log_computations:
+                env.log(
+                    log_computations,
+                    "computation_started",
+                    {"hash": digest, "details": query},
+                )
+            start = time.time()
             answer = tree.node.run_computation_with_cache(cache)
+            _elapsed = time.time() - start
+            if log_computations:
+                env.log(
+                    log_computations,
+                    "computation_finished",
+                    {"hash": digest, "elapsed": _elapsed, "result": answer},
+                )
+            if log_long_computations and _elapsed > log_long_computations[1]:
+                env.log(
+                    log_long_computations[0],
+                    "long_computation",
+                    {
+                        "hash": digest,
+                        "details": query,
+                        "elapsed": _elapsed,
+                        "result": answer,
+                    },
+                )
             tracked = tree.node.query.attached.parse_answer(
                 dp.Answer(None, answer)
             )

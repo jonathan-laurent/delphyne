@@ -1248,7 +1248,7 @@ def _parse_or_log_and_raise[T](
 type _RequestDigest = str
 
 
-def _json_digest(obj: Any) -> str:
+def json_object_digest(obj: Any) -> str:
     import hashlib
     import json
 
@@ -1263,7 +1263,7 @@ def _log_request(
     request: md.LLMRequest,
 ):
     req_json = ty.pydantic_dump(md.LLMRequest, request)
-    req_digest = _json_digest(req_json)
+    req_digest = json_object_digest(req_json)
     info = {
         "hash": req_digest,
         "query": query.query.query_name(),
@@ -1281,7 +1281,7 @@ def _log_response(
     response: md.LLMResponse,
 ):
     req_json = ty.pydantic_dump(md.LLMRequest, request)
-    req_digest = _json_digest(req_json)
+    req_digest = json_object_digest(req_json)
     info = {
         "request": req_digest,
         "response": ty.pydantic_dump(md.LLMResponse, response),

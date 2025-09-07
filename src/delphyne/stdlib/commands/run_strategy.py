@@ -59,6 +59,7 @@ class RunLoadedStrategyArgs[N: dp.Node, P, T]:
     cache_file: str | None = None
     cache_mode: ca.CacheMode = "read_write"
     log_level: dp.LogLevel = "info"
+    log_long_computations: tuple[dp.LogLevel, float] | None = None
     export_raw_trace: bool = True
     export_log: bool = True
     export_browsable_trace: bool = True
@@ -77,6 +78,7 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
         demonstration_files=exe.demo_files,
         cache=request_cache,
         log_level=args.log_level,
+        log_long_computations=args.log_long_computations,
         do_not_match_identical_queries=True,
     )
     lock = threading.Lock()  # to protect state that can be pulled
@@ -236,6 +238,9 @@ class RunStrategyArgs:
         cache_mode: Cache mode to use.
         log_level: Minimum log level to record. Messages with a lower
             level will be ignored.
+        log_long_computations: If set, log every computation taking
+            more than the given number of seconds at the given severity
+            level.
         export_raw_trace: Whether to export the raw execution trace.
         export_log: Whether to export the log messages.
         export_browsable_trace: Whether to export a browsable trace,
@@ -255,6 +260,7 @@ class RunStrategyArgs:
     cache_file: str | None = None
     cache_mode: ca.CacheMode = "read_write"
     log_level: dp.LogLevel = "info"
+    log_long_computations: tuple[dp.LogLevel, float] | None = None
     export_raw_trace: bool = True
     export_log: bool = True
     export_browsable_trace: bool = True
@@ -286,6 +292,7 @@ def run_strategy(
             cache_file=args.cache_file,
             cache_mode=args.cache_mode,
             log_level=args.log_level,
+            log_long_computations=args.log_long_computations,
             export_raw_trace=args.export_raw_trace,
             export_log=args.export_log,
             export_browsable_trace=args.export_browsable_trace,
