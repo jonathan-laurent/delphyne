@@ -195,6 +195,16 @@ def _argmax(seq: Iterable[float]) -> int:
     return max(enumerate(seq), key=lambda x: x[1])[0]
 
 
+@dataclass
+class _ToolStats:
+    prove_calls: int = 0
+    prove_time_in_seconds: float = 0.0
+    is_redundant_calls: int = 0
+    is_redundant_time_in_seconds: float = 0.0
+    search_equivalent_calls: int = 0
+    search_equivalent_time_in_seconds: float = 0.0
+
+
 @search_policy
 def abduct_and_saturate[P, Proof](
     tree: dp.Tree[Abduction, P, Proof],
@@ -214,6 +224,11 @@ def abduct_and_saturate[P, Proof](
     # we never clean up `proved`. For example, if `x > 0` is established
     # before the stronger `x >= 0`, the former won't be deleted from
     # `proved`.
+
+    # Initialize tool statistics tracking
+    import time
+
+    tool_stats = _ToolStats()
 
     # Invariant: `candidates`, `proved`, `disproved` and `redundant` are
     # disjoint. Together, they form the set of "canonical facts".
@@ -243,14 +258,20 @@ def abduct_and_saturate[P, Proof](
         if log_steps:
             env.log(log_steps, msg)
 
+    def log_tool_stats():
+        env.info("abduct_and_saturate_tool_stats", tool_stats.__dict__)
+
     def all_canonical() -> Sequence[_EFact]:
         return [*candidates, *proved, *disproved, *redundant]
 
     def is_redundant(f: _EFact) -> dp.StreamContext[bool]:
         if f is None:
             return False
+        tool_stats.is_redundant_calls += 1
+        start_time = time.time()
         respace = node.redundant([tracked[o] for o in proved], tracked[f])
         res = yield from respace.stream(env, policy).first()
+        tool_stats.is_redundant_time_in_seconds += time.time() - start_time
         if res is None:
             raise _Abort()
         return res.tracked.value
@@ -267,9 +288,12 @@ def abduct_and_saturate[P, Proof](
             redundant.add(c)
             return
         # If not redundant, we try and prove it
+        tool_stats.prove_calls += 1
+        start_time = time.time()
         facts_list = [(tracked[f], p) for f, p in proved.items()]
         pstream = node.prove(facts_list, tracked[c]).stream(env, policy)
         res = yield from pstream.first()
+        tool_stats.prove_time_in_seconds += time.time() - start_time
         if res is None:
             raise _Abort()
         status, payload = res.tracked[0], res.tracked[1]
@@ -324,8 +348,13 @@ def abduct_and_saturate[P, Proof](
         if not prev:
             # First fact: no need to make equivalence call
             return f
+        tool_stats.search_equivalent_calls += 1
+        start_time = time.time()
         eqspace = node.search_equivalent(prev, tracked[f])
         res = yield from eqspace.stream(env, policy).first()
+        tool_stats.search_equivalent_time_in_seconds += (
+            time.time() - start_time
+        )
         if res is None:
             raise _Abort()
         res = res.tracked
@@ -399,8 +428,10 @@ def abduct_and_saturate[P, Proof](
                 cur = list(suggs.keys())[best]
                 candidates[cur].num_visited += 1
     except _Abort:
+        log_tool_stats()
         return
     except _ProofFound:
+        log_tool_stats()
         action = proved[None]
         child = tree.child(action)
         assert isinstance(child.node, dp.Success)
