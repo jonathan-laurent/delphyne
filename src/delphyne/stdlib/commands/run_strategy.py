@@ -62,6 +62,7 @@ class RunLoadedStrategyArgs[N: dp.Node, P, T]:
     export_raw_trace: bool = True
     export_log: bool = True
     export_browsable_trace: bool = True
+    export_all_on_pull: bool = False
 
 
 def run_loaded_strategy_with_cache[N: dp.Node, P, T](
@@ -95,15 +96,21 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
         ret_type = args.strategy.return_type()
         return pydantic_dump(ret_type, res)
 
-    def compute_result():
+    def compute_result(
+        export_all: bool = False,
+    ) -> ta.CommandResult[RunStrategyResponse]:
+        export_raw_trace = args.export_raw_trace or export_all
+        export_browsable_trace = args.export_browsable_trace or export_all
+        export_log = args.export_log or export_all
+
         trace = env.tracer.trace
-        raw_trace = trace.export() if args.export_raw_trace else None
+        raw_trace = trace.export() if export_raw_trace else None
         browsable_trace = (
             analysis.compute_browsable_trace(trace, cache)
-            if args.export_browsable_trace
+            if export_browsable_trace
             else None
         )
-        log = list(env.tracer.export_log()) if args.export_log else None
+        log = list(env.tracer.export_log()) if export_log else None
         values = [serialize_result(r) for r in results]
         response = RunStrategyResponse(
             success=success,
@@ -139,7 +146,7 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
 
     def pull_result() -> ta.CommandResult[RunStrategyResponse]:
         with lock:
-            return compute_result()
+            return compute_result(args.export_all_on_pull)
 
     task.set_pull_status(pull_status)
     task.set_pull_result(pull_result)
@@ -231,6 +238,9 @@ class RunStrategyArgs:
         export_browsable_trace: Whether to export a browsable trace,
             which can be visualized in the VSCode extension (see
             [delphyne.analysis.feedback.Trace][]).
+        export_all_on_pull: Whether to export all
+            information (raw trace, log, browsable trace) when an
+            intermediate result is pulled.
     """
 
     strategy: str
@@ -245,6 +255,7 @@ class RunStrategyArgs:
     export_raw_trace: bool = True
     export_log: bool = True
     export_browsable_trace: bool = True
+    export_all_on_pull: bool = False
 
 
 def run_strategy(
@@ -275,5 +286,6 @@ def run_strategy(
             export_raw_trace=args.export_raw_trace,
             export_log=args.export_log,
             export_browsable_trace=args.export_browsable_trace,
+            export_all_on_pull=args.export_all_on_pull,
         ),
     )

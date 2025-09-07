@@ -152,6 +152,9 @@ class Experiment[Config]:
             all configuration runs, which can be visualized in the VSCode
             extension (see `delphyne.analysis.feedback.Trace`). However,
             such traces can be large.
+        verbose_snapshots: If `True`, when a snapshot is requested, all
+            result information (raw trace, log, browsable trace) is
+            dumped, regardless of other settings.
 
     ## Tips
 
@@ -173,6 +176,7 @@ class Experiment[Config]:
     export_raw_trace: bool = True
     export_log: bool = True
     export_browsable_trace: bool = True
+    verbose_snapshots: bool = False
 
     def __post_init__(self):
         # We override the cache root directory.
@@ -353,9 +357,10 @@ class Experiment[Config]:
             # Generate snapshot index
             index: list[str] = []
             for name, dt in durations:
-                index.append(f"- **{name}** (running for {dt})")
+                index.append(f"- {name}:")
                 status_file = name + SNAPSHOT_STATUS_SUFFIX
                 result_file = name + SNAPSHOT_RESULT_SUFFIX
+                index.append(f"  - Running for: {dt}")
                 index.append(f"  - [Status](./{status_file})")
                 index.append(f"  - [Result](./{result_file})")
             index_file = snapshot_dir / SNAPSHOT_INDEX_FILE
@@ -423,6 +428,7 @@ class Experiment[Config]:
                     export_raw_trace=self.export_raw_trace,
                     export_log=self.export_log,
                     export_browsable_trace=self.export_browsable_trace,
+                    verbose_snapshots=self.verbose_snapshots,
                 )
                 for name, info in state.configs.items()
                 if info.status == "todo"
@@ -699,6 +705,7 @@ def _run_config[Config](
     export_raw_trace: bool,
     export_log: bool,
     export_browsable_trace: bool,
+    verbose_snapshots: bool,
 ) -> tuple[str, bool]:
     # Setup a monitor
     started = _ConfigStarted(config_name, worker_receive, datetime.now())
@@ -753,6 +760,7 @@ def _run_config[Config](
     cmdargs.export_browsable_trace = export_browsable_trace
     cmdargs.export_log = export_log
     cmdargs.export_raw_trace = export_raw_trace
+    cmdargs.export_all_on_pull = verbose_snapshots
     if log_level is not None:
         cmdargs.log_level = log_level
     try:
@@ -807,6 +815,7 @@ class ExperimentCLI:
         verbose_output: bool = False,
         log_level: str | None = None,
         interactive: bool = False,
+        verbose_snapshots: bool = False,
     ):
         """
         Start or resume the experiment.
@@ -824,11 +833,14 @@ class ExperimentCLI:
             interactive: If `True`, pressing `Enter` at any point during
                 execution prints the current status of all workers and
                 dumps a snapshot of ongoing tasks on disk.
+            verbose_snapshots: If `True`, snapshots are verbose regardless
+                of the `verbose_output` setting.
         """
         self.experiment.cache_requests = cache
         self.experiment.export_raw_trace = verbose_output
         self.experiment.export_browsable_trace = verbose_output
         self.experiment.export_log = True
+        self.experiment.verbose_snapshots = verbose_snapshots
         if log_level is not None:
             assert dp.valid_log_level(log_level), (
                 f"Invalid log level: {log_level}"
