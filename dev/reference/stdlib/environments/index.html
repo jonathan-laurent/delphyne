@@ -1981,7 +1981,7 @@
 <span class="sd">            data_dirs: A sequence of directories where data files can be</span>
 <span class="sd">                found.</span>
 <span class="sd">            cache: A request cache, or `None` to disable caching.</span>
-<span class="sd">            log_evel: The minimum log level to record. Messages with a</span>
+<span class="sd">            log_level: The minimum log level to record. Messages with a</span>
 <span class="sd">                lower level will be ignored.</span>
 <span class="sd">            log_long_computations: if set, log computations taking more</span>
 <span class="sd">                than the given number of seconds at the given severity</span>
@@ -2235,9 +2235,10 @@ found.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>log_evel</code>
+                <code>log_level</code>
             </td>
             <td>
+                  <code><span title="delphyne.core.LogLevel">LogLevel</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2246,7 +2247,7 @@ lower level will be ignored.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>&#39;info&#39;</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -2360,7 +2361,7 @@ level. This settings can be locally overriden by
 <span class="sd">        data_dirs: A sequence of directories where data files can be</span>
 <span class="sd">            found.</span>
 <span class="sd">        cache: A request cache, or `None` to disable caching.</span>
-<span class="sd">        log_evel: The minimum log level to record. Messages with a</span>
+<span class="sd">        log_level: The minimum log level to record. Messages with a</span>
 <span class="sd">            lower level will be ignored.</span>
 <span class="sd">        log_long_computations: if set, log computations taking more</span>
 <span class="sd">            than the given number of seconds at the given severity</span>

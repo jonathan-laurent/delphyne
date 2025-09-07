@@ -1206,6 +1206,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#delphyne.CommandResult" class="md-nav__link">
+    <span class="md-ellipsis">
+      CommandResult
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1441,6 +1450,15 @@
   <a href="#delphyne.run_command" class="md-nav__link">
     <span class="md-ellipsis">
       run_command
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.CommandResult" class="md-nav__link">
+    <span class="md-ellipsis">
+      CommandResult
     </span>
   </a>
   
@@ -2198,11 +2216,21 @@ Optionally, tasks can also register functions that can be used for
     <span class="n">dump_log</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">on_status</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="str">str</span></span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">on_set_pull_status</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.tasks.PullStatusFn">PullStatusFn</span></span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">on_set_pull_result</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.tasks.PullResultFn">PullResultFn</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.tasks.CommandResult">CommandResult</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.tasks.run_command[T]">T</span></span><span class="p">]]],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">on_set_pull_result</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.tasks.PullResultFn">PullResultFn</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="CommandResult
+
+
+  
+      dataclass
+   (delphyne.stdlib.tasks.CommandResult)" href="#delphyne.CommandResult">CommandResult</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.tasks.run_command[T]">T</span></span><span class="p">]]],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">on_set_pull_result_str</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[],</span> <span class="n"><span title="str">str</span></span><span class="p">]],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">add_header</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">handle_sigint</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.tasks.CommandResult">CommandResult</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.tasks.run_command[T]">T</span></span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="CommandResult
+
+
+  
+      dataclass
+   (delphyne.stdlib.tasks.CommandResult)" href="#delphyne.CommandResult">CommandResult</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.tasks.run_command[T]">T</span></span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -2363,7 +2391,12 @@ registers a pull function for status messages.</p>
                 <code>on_set_pull_result</code>
             </td>
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.tasks.PullResultFn">PullResultFn</span>[<span title="delphyne.stdlib.tasks.CommandResult">CommandResult</span>[<span title="delphyne.stdlib.tasks.run_command[T]">T</span>]]], None] | None</code>
+                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.tasks.PullResultFn">PullResultFn</span>[<a class="autorefs autorefs-internal" title="CommandResult
+
+
+  
+      dataclass
+   (delphyne.stdlib.tasks.CommandResult)" href="#delphyne.CommandResult">CommandResult</a>[<span title="delphyne.stdlib.tasks.run_command[T]">T</span>]]], None] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2385,7 +2418,12 @@ registers a pull function for results.</p>
             <td>
               <div class="doc-md-description">
                 <p>Similar to <code>on_set_pull_result</code>, but
-produces strings instead of [<code>CommandResult</code>][delphyne.CommandResult] objects.</p>
+produces strings instead of <a class="autorefs autorefs-internal" title="CommandResult
+
+
+  
+      dataclass
+  " href="#delphyne.CommandResult"><code>CommandResult</code></a> objects.</p>
               </div>
             </td>
             <td>
@@ -2682,6 +2720,76 @@ instead of abruptly interrupting it.</p>
             </details>
     </div>
 
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="delphyne.CommandResult" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">CommandResult</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="typing.Generic">Generic</span>[<span title="delphyne.stdlib.tasks.T">T</span>]</code></p>
+
+
+        <p>Outcome of executing a command.</p>
+
+
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/delphyne/stdlib/tasks.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CommandResult</span><span class="p">(</span><span class="n">typing</span><span class="o">.</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Outcome of executing a command.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">diagnostics</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">fb</span><span class="o">.</span><span class="n">Diagnostic</span><span class="p">]</span>
+    <span class="n">result</span><span class="p">:</span> <span class="n">T</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
 </div><h2 id="standard-commands">Standard Commands</h2>
 
 
@@ -2694,7 +2802,12 @@ instead of abruptly interrupting it.</p>
 
 </h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">run_strategy</span><span class="p">(</span>
-    <span class="n">task</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="TaskContext (delphyne.stdlib.tasks.TaskContext)" href="#delphyne.TaskContext">TaskContext</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.tasks.CommandResult">CommandResult</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.commands.run_strategy.RunStrategyResponse">RunStrategyResponse</span></span><span class="p">]],</span>
+    <span class="n">task</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="TaskContext (delphyne.stdlib.tasks.TaskContext)" href="#delphyne.TaskContext">TaskContext</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="CommandResult
+
+
+  
+      dataclass
+   (delphyne.stdlib.tasks.CommandResult)" href="#delphyne.CommandResult">CommandResult</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.commands.run_strategy.RunStrategyResponse">RunStrategyResponse</span></span><span class="p">]],</span>
     <span class="n">exe</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="CommandExecutionContext
 
 
@@ -3120,7 +3233,12 @@ intermediate result is pulled.</p>
 
 </h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">answer_query</span><span class="p">(</span>
-    <span class="n">task</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="TaskContext (delphyne.stdlib.tasks.TaskContext)" href="#delphyne.TaskContext">TaskContext</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.tasks.CommandResult">CommandResult</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.commands.answer_query.AnswerQueryResponse">AnswerQueryResponse</span></span><span class="p">]],</span>
+    <span class="n">task</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="TaskContext (delphyne.stdlib.tasks.TaskContext)" href="#delphyne.TaskContext">TaskContext</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="CommandResult
+
+
+  
+      dataclass
+   (delphyne.stdlib.tasks.CommandResult)" href="#delphyne.CommandResult">CommandResult</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.commands.answer_query.AnswerQueryResponse">AnswerQueryResponse</span></span><span class="p">]],</span>
     <span class="n">exe</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="CommandExecutionContext
 
 
