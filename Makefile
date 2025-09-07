@@ -36,6 +36,8 @@ pyright:
 	pyright examples/find_invariants
 	@echo "\n\nChecking mini_eqns"
 	pyright examples/mini_eqns
+	@echo "\n\nChecking small"
+	pyright examples/small
 
 
 # Run a quick, minimal test suite. These tests should not require additional

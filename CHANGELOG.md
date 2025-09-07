@@ -2,7 +2,8 @@
 
 ## DEV
 
-- **Breaking**: improve logging system, by supporting log levels and filtering. The `dp.log` function is removed. Methods of `dp.PolicyEnv` must be used instead.
+- **Breaking**: improve logging system, by supporting log levels and filtering. The `dp.log` function is removed: `dp.PolicyEnv` must be used instead.
+- Add `interactive` option to experiment launcher, allowing to obtain a snapshot of ongoing tasks at any time by pressing Enter.
 - Automatically add time information in logs.
 - Fix a deprecation warning on Python 3.13.
 

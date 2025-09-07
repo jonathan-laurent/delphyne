@@ -8,7 +8,7 @@ Version that uses universal queries.
 
 from typing import assert_never
 
-import sympy as sp
+import sympy as sp  # type: ignore
 
 import delphyne as dp
 from delphyne import Branch, Fail, IPDict, Strategy, strategy

@@ -288,7 +288,8 @@ class Experiment[Config]:
             log_progress: Whether to show a progress bar in the console.
             interactive: If `True`, pressing `Enter` at any point during
                 execution prints the current status of all workers and
-                dumps a snapshot of ongoing tasks on disk.
+                dumps a snapshot of ongoing tasks on disk. This is
+                useful to investigate seemingly stuck tasks.
         """
         with mp.Manager() as manager:
             self._resume_with_manager(

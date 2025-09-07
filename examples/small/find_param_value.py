@@ -8,7 +8,7 @@ Using Delphyne and sympy to solve a simple symbolic math task.
 from dataclasses import dataclass
 from typing import assert_never
 
-import sympy as sp
+import sympy as sp  # type: ignore
 
 import delphyne as dp
 from delphyne import Branch, Fail, Strategy, strategy
