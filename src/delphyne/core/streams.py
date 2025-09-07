@@ -59,11 +59,17 @@ class Budget:
     Attributes:
         values: a mapping from metrics to spent budget. Metrics outside
             of this field are associated a spending of 0.
+
+    !!! note
+        We explicitly use type `float | int` for metrics, despite `int`
+        being treated as a subtype of `float` by most Python type
+        checkers. This is to avoid pydantic mistakenly converting
+        integers into floats when parsing serialized budget data.
     """
 
-    values: Mapping[str, float]
+    values: Mapping[str, float | int]
 
-    def __getitem__(self, key: str) -> float:
+    def __getitem__(self, key: str) -> float | int:
         return self.values.get(key, 0)
 
     def __add__(self, other: "Budget") -> "Budget":
@@ -109,9 +115,9 @@ class BudgetLimit:
     `BudgetLimit`.
     """
 
-    values: Mapping[str, float]
+    values: Mapping[str, float | int]
 
-    def __getitem__(self, key: str) -> float:
+    def __getitem__(self, key: str) -> float | int:
         return self.values.get(key, math.inf)
 
 
