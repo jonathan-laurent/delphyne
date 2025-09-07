@@ -2200,6 +2200,7 @@ Optionally, tasks can also register functions that can be used for
     <span class="n">on_set_pull_status</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.tasks._PullStatusFn">_PullStatusFn</span></span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">on_set_pull_result</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.tasks._PullResultFn">_PullResultFn</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.tasks.CommandResult">CommandResult</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.tasks.run_command[T]">T</span></span><span class="p">]]],</span> <span class="kc">None</span><span class="p">]</span>
     <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">on_set_pull_result_str</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[],</span> <span class="n"><span title="str">str</span></span><span class="p">]],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">add_header</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">handle_sigint</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.tasks.CommandResult">CommandResult</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.tasks.run_command[T]">T</span></span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
@@ -2377,6 +2378,23 @@ registers a pull function for results.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
+                <code>on_set_pull_result_str</code>
+            </td>
+            <td>
+                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="collections.abc.Callable">Callable</span>[[], <span title="str">str</span>]], None] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Similar to <code>on_set_pull_result</code>, but
+produces strings instead of [<code>CommandResult</code>][delphyne.CommandResult] objects.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
                 <code>add_header</code>
             </td>
             <td>
@@ -2524,7 +2542,22 @@ instead of abruptly interrupting it.</p>
 <span class="normal">368</span>
 <span class="normal">369</span>
 <span class="normal">370</span>
-<span class="normal">371</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_command</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_command</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="n">command</span><span class="p">:</span> <span class="n">Command</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
     <span class="n">args</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span>
     <span class="n">ctx</span><span class="p">:</span> <span class="n">CommandExecutionContext</span><span class="p">,</span>
@@ -2535,6 +2568,7 @@ instead of abruptly interrupting it.</p>
     <span class="n">on_set_pull_status</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">_PullStatusFn</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">on_set_pull_result</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">_PullResultFn</span><span class="p">[</span><span class="n">CommandResult</span><span class="p">[</span><span class="n">T</span><span class="p">]]],</span> <span class="kc">None</span><span class="p">]</span>
     <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">on_set_pull_result_str</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Callable</span><span class="p">[[],</span> <span class="nb">str</span><span class="p">]],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">add_header</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">handle_sigint</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CommandResult</span><span class="p">[</span><span class="n">T</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
@@ -2556,6 +2590,8 @@ instead of abruptly interrupting it.</p>
 <span class="sd">            registers a pull function for status messages.</span>
 <span class="sd">        on_set_pull_result: A function to call if and when the task</span>
 <span class="sd">            registers a pull function for results.</span>
+<span class="sd">        on_set_pull_result_str: Similar to `on_set_pull_result`, but</span>
+<span class="sd">            produces strings instead of `CommandResult` objects.</span>
 <span class="sd">        add_header: If `True`, the dumped result is prefixed with a</span>
 <span class="sd">            header containing the command name and arguments.</span>
 <span class="sd">        handle_sigint: If `True`, pressing `Ctrl+C` sends the command</span>
@@ -2565,6 +2601,18 @@ instead of abruptly interrupting it.</p>
 
 <span class="sd">    Non-existing directories are created automatically.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_result_to_string</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">CommandResult</span><span class="p">[</span><span class="n">T</span> <span class="o">|</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">ret_ty</span> <span class="o">=</span> <span class="n">command_optional_result_wrapper_type</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">ret</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">ty</span><span class="o">.</span><span class="n">pydantic_dump</span><span class="p">(</span><span class="n">ret_ty</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">add_header</span><span class="p">:</span>
+            <span class="n">args_type</span> <span class="o">=</span> <span class="n">command_args_type</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="n">command_name</span><span class="p">(</span><span class="n">command</span><span class="p">),</span>
+                <span class="s2">&quot;args&quot;</span><span class="p">:</span> <span class="n">ty</span><span class="o">.</span><span class="n">pydantic_dump</span><span class="p">(</span><span class="n">args_type</span><span class="p">,</span> <span class="n">args</span><span class="p">),</span>
+                <span class="s2">&quot;outcome&quot;</span><span class="p">:</span> <span class="n">ret</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">return</span> <span class="s2">&quot;# delphyne-command</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">pretty_yaml</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
 
     <span class="k">class</span><span class="w"> </span><span class="nc">Handler</span><span class="p">:</span>
         <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2594,19 +2642,10 @@ instead of abruptly interrupting it.</p>
         <span class="k">def</span><span class="w"> </span><span class="nf">set_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">CommandResult</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
             <span class="k">if</span> <span class="n">dump_result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">ret_ty</span> <span class="o">=</span> <span class="n">command_optional_result_wrapper_type</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
-                <span class="n">ret</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">ty</span><span class="o">.</span><span class="n">pydantic_dump</span><span class="p">(</span><span class="n">ret_ty</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">add_header</span><span class="p">:</span>
-                    <span class="n">args_type</span> <span class="o">=</span> <span class="n">command_args_type</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
-                    <span class="n">ret</span> <span class="o">=</span> <span class="p">{</span>
-                        <span class="s2">&quot;command&quot;</span><span class="p">:</span> <span class="n">command_name</span><span class="p">(</span><span class="n">command</span><span class="p">),</span>
-                        <span class="s2">&quot;args&quot;</span><span class="p">:</span> <span class="n">ty</span><span class="o">.</span><span class="n">pydantic_dump</span><span class="p">(</span><span class="n">args_type</span><span class="p">,</span> <span class="n">args</span><span class="p">),</span>
-                        <span class="s2">&quot;outcome&quot;</span><span class="p">:</span> <span class="n">ret</span><span class="p">,</span>
-                    <span class="p">}</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="n">_result_to_string</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dump_result</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dump_result</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                    <span class="n">ret_yaml</span> <span class="o">=</span> <span class="n">pretty_yaml</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
-                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;# delphyne-command</span><span class="se">\n\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">ret_yaml</span><span class="p">)</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">set_pull_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pull</span><span class="p">:</span> <span class="n">_PullStatusFn</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">on_set_pull_status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -2617,6 +2656,15 @@ instead of abruptly interrupting it.</p>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">on_set_pull_result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">on_set_pull_result</span><span class="p">(</span><span class="n">pull</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">on_set_pull_result_str</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+                <span class="k">def</span><span class="w"> </span><span class="nf">pull_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+                    <span class="n">ret</span> <span class="o">=</span> <span class="n">pull</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">ret</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">ret</span> <span class="o">=</span> <span class="n">CommandResult</span><span class="p">([],</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">_result_to_string</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+
+                <span class="n">on_set_pull_result_str</span><span class="p">(</span><span class="n">pull_str</span><span class="p">)</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">raise_internal_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">error</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Internal error: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
