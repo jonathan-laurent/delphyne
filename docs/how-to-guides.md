@@ -21,7 +21,7 @@ To start a new Delphyne project, we recommend taking the following steps:
 There are mainly two ways to run oracular programs:
 
 - **Using [`StrategyInstance.run_toplevel`][delphyne.StrategyInstance.run_toplevel]**: As demonstrated in the [Overview](./manual/overview.md#writing-a-policy), one can manually create a [policy environment][delphyne.PolicyEnv] and extract a [search stream][delphyne.Stream] from a pair of a strategy instance and of a policy. This can be done within any Python script, but by default offers no support for exporting logs and traces, displaying progress, caching LLM requests, handling interruption, etc... Enabling all these features requires substantial additional setup.
-- **Running a command**: Instead, a [command file](./manual/extension.md#commands) can be created that specifies a strategy instance, a policy, some search budget along with [extra information][delphyne.stdlib.commands.run_strategy.RunStrategyArgs]. The specified command can be launched from [within VSCode](./manual/extension.md#commands) or from the shell, using the [Delphyne CLI][delphyne.__main__.DelphyneCLI.run] (e.g. `run my_command.exec.yaml --cache --update`).
+- **Running a command**: Instead, a [command file](./manual/extension.md#commands) can be created that specifies a strategy instance, a policy, some search budget along with [extra information][delphyne.stdlib.commands.run_strategy.RunStrategyArgs]. The specified command can be launched from [within VSCode](./manual/extension.md#commands) or from the shell, using the [Delphyne CLI][delphyne.__main__.DelphyneCLI.run] (e.g. `delphyne run my_command.exec.yaml --cache --update`).
 
 
 ## Debugging an Oracular Program {#debugging}
