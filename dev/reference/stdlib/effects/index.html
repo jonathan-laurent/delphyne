@@ -3844,8 +3844,7 @@ Answers</code> code action from Delphyne's VSCode extension).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 65</span>
-<span class="normal"> 66</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 66</span>
 <span class="normal"> 67</span>
 <span class="normal"> 68</span>
 <span class="normal"> 69</span>
@@ -3901,7 +3900,8 @@ Answers</code> code action from Delphyne's VSCode extension).</p>
 <span class="normal">119</span>
 <span class="normal">120</span>
 <span class="normal">121</span>
-<span class="normal">122</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">122</span>
+<span class="normal">123</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Compute</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">ComputationNode</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The standard `Compute` effect.</span>
@@ -4078,8 +4078,7 @@ JSON-serializable. It does not need to be deterministic.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">125</span>
-<span class="normal">126</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">126</span>
 <span class="normal">127</span>
 <span class="normal">128</span>
 <span class="normal">129</span>
@@ -4102,7 +4101,8 @@ JSON-serializable. It does not need to be deterministic.</p>
 <span class="normal">146</span>
 <span class="normal">147</span>
 <span class="normal">148</span>
-<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">[</span><span class="o">**</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+<span class="normal">149</span>
+<span class="normal">150</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">[</span><span class="o">**</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Compute</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4142,7 +4142,11 @@ JSON-serializable. It does not need to be deterministic.</p>
 
 </h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">elim_compute</span><span class="p">(</span>
-    <span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.core_and_base.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="n">force_bypass_cache</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.core_and_base.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span>
+    <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span>
+    <span class="n">force_bypass_cache</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">log_computations</span><span class="p">:</span> <span class="n"><span title="delphyne.core_and_base.LogLevel">LogLevel</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">log_long_computations</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="delphyne.core_and_base.LogLevel">LogLevel</span></span><span class="p">,</span> <span class="n"><span title="float">float</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="PureTreeTransformerFn (delphyne.core_and_base.PureTreeTransformerFn)" href="../basic/#delphyne.stdlib.policies.PureTreeTransformerFn">PureTreeTransformerFn</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Compute
 
 
@@ -4192,14 +4196,49 @@ environment.</p>
                   <code>False</code>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>log_computations</code>
+            </td>
+            <td>
+                  <code><span title="delphyne.core_and_base.LogLevel">LogLevel</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if set, log every performed computation at the
+given severity level.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>log_long_computations</code>
+            </td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="delphyne.core_and_base.LogLevel">LogLevel</span>, <span title="float">float</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if set, log every computation taking more
+than the given number of seconds at the given severity
+level. When set to <code>None</code>, this setting can be overriden by
+<code>PolicyEnv.log_long_computations</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
       </tbody>
     </table>
 
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">181</span>
-<span class="normal">182</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">182</span>
 <span class="normal">183</span>
 <span class="normal">184</span>
 <span class="normal">185</span>
@@ -4231,11 +4270,53 @@ environment.</p>
 <span class="normal">211</span>
 <span class="normal">212</span>
 <span class="normal">213</span>
-<span class="normal">214</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dp</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dp</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">elim_compute</span><span class="p">(</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="n">force_bypass_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">log_computations</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">LogLevel</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">log_long_computations</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">LogLevel</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">PureTreeTransformerFn</span><span class="p">[</span><span class="n">Compute</span><span class="p">,</span> <span class="n">Never</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Eliminate the `Compute` effect by performing the computation when</span>
@@ -4246,7 +4327,16 @@ environment.</p>
 <span class="sd">        force_bypass_cache: if set to `True`, do not cache computation</span>
 <span class="sd">            results, even if a cache is available in the global policy</span>
 <span class="sd">            environment.</span>
+<span class="sd">        log_computations: if set, log every performed computation at the</span>
+<span class="sd">            given severity level.</span>
+<span class="sd">        log_long_computations: if set, log every computation taking more</span>
+<span class="sd">            than the given number of seconds at the given severity</span>
+<span class="sd">            level. When set to `None`, this setting can be overriden by</span>
+<span class="sd">            `PolicyEnv.log_long_computations`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">log_long_computations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">log_long_computations</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">log_long_computations</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
         <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">Compute</span> <span class="o">|</span> <span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
@@ -4255,7 +4345,35 @@ environment.</p>
             <span class="n">cache</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">force_bypass_cache</span><span class="p">:</span>
                 <span class="n">cache</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">cache</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">attached</span><span class="o">.</span><span class="n">query</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">__Computation__</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
+            <span class="n">digest</span> <span class="o">=</span> <span class="n">json_object_digest</span><span class="p">(</span><span class="n">ty</span><span class="o">.</span><span class="n">pydantic_dump</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">query</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">log_computations</span><span class="p">:</span>
+                <span class="n">env</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+                    <span class="n">log_computations</span><span class="p">,</span>
+                    <span class="s2">&quot;computation_started&quot;</span><span class="p">,</span>
+                    <span class="p">{</span><span class="s2">&quot;hash&quot;</span><span class="p">:</span> <span class="n">digest</span><span class="p">,</span> <span class="s2">&quot;details&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">},</span>
+                <span class="p">)</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
             <span class="n">answer</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">run_computation_with_cache</span><span class="p">(</span><span class="n">cache</span><span class="p">)</span>
+            <span class="n">_elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+            <span class="k">if</span> <span class="n">log_computations</span><span class="p">:</span>
+                <span class="n">env</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+                    <span class="n">log_computations</span><span class="p">,</span>
+                    <span class="s2">&quot;computation_finished&quot;</span><span class="p">,</span>
+                    <span class="p">{</span><span class="s2">&quot;hash&quot;</span><span class="p">:</span> <span class="n">digest</span><span class="p">,</span> <span class="s2">&quot;elapsed&quot;</span><span class="p">:</span> <span class="n">_elapsed</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">answer</span><span class="p">},</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">log_long_computations</span> <span class="ow">and</span> <span class="n">_elapsed</span> <span class="o">&gt;</span> <span class="n">log_long_computations</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">env</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+                    <span class="n">log_long_computations</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="s2">&quot;long_computation&quot;</span><span class="p">,</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;hash&quot;</span><span class="p">:</span> <span class="n">digest</span><span class="p">,</span>
+                        <span class="s2">&quot;details&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span>
+                        <span class="s2">&quot;elapsed&quot;</span><span class="p">:</span> <span class="n">_elapsed</span><span class="p">,</span>
+                        <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">answer</span><span class="p">,</span>
+                    <span class="p">},</span>
+                <span class="p">)</span>
             <span class="n">tracked</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">attached</span><span class="o">.</span><span class="n">parse_answer</span><span class="p">(</span>
                 <span class="n">dp</span><span class="o">.</span><span class="n">Answer</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">answer</span><span class="p">)</span>
             <span class="p">)</span>
@@ -4339,8 +4457,7 @@ environment.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">21</span>
-<span class="normal">22</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
@@ -4380,7 +4497,8 @@ environment.</p>
 <span class="normal">59</span>
 <span class="normal">60</span>
 <span class="normal">61</span>
-<span class="normal">62</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">62</span>
+<span class="normal">63</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">__Computation__</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="nb">object</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A special query that represents a computation.</span>

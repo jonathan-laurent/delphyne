@@ -2718,13 +2718,7 @@ specification.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/commands/run_strategy.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">270</span>
 <span class="normal">271</span>
 <span class="normal">272</span>
 <span class="normal">273</span>
@@ -2748,7 +2742,14 @@ specification.</p>
 <span class="normal">291</span>
 <span class="normal">292</span>
 <span class="normal">293</span>
-<span class="normal">294</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_strategy</span><span class="p">(</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_strategy</span><span class="p">(</span>
     <span class="n">task</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">TaskContext</span><span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">CommandResult</span><span class="p">[</span><span class="n">RunStrategyResponse</span><span class="p">]],</span>
     <span class="n">exe</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">CommandExecutionContext</span><span class="p">,</span>
     <span class="n">args</span><span class="p">:</span> <span class="n">RunStrategyArgs</span><span class="p">,</span>
@@ -2773,6 +2774,7 @@ specification.</p>
             <span class="n">cache_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cache_file</span><span class="p">,</span>
             <span class="n">cache_mode</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cache_mode</span><span class="p">,</span>
             <span class="n">log_level</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">log_level</span><span class="p">,</span>
+            <span class="n">log_long_computations</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">log_long_computations</span><span class="p">,</span>
             <span class="n">export_raw_trace</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">export_raw_trace</span><span class="p">,</span>
             <span class="n">export_log</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">export_log</span><span class="p">,</span>
             <span class="n">export_browsable_trace</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">export_browsable_trace</span><span class="p">,</span>
@@ -2919,6 +2921,19 @@ level will be ignored.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><span title="delphyne.stdlib.commands.run_strategy.RunStrategyArgs.log_long_computations">log_long_computations</span></code></td>
+            <td>
+                  <code><span title="tuple">tuple</span>[<span title="delphyne.core.LogLevel">LogLevel</span>, <span title="float">float</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If set, log every computation taking
+more than the given number of seconds at the given severity
+level.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><span title="delphyne.stdlib.commands.run_strategy.RunStrategyArgs.export_raw_trace">export_raw_trace</span></code></td>
             <td>
                   <code><span title="bool">bool</span></code>
@@ -2983,9 +2998,7 @@ intermediate result is pulled.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/commands/run_strategy.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">223</span>
 <span class="normal">224</span>
 <span class="normal">225</span>
 <span class="normal">226</span>
@@ -3023,7 +3036,13 @@ intermediate result is pulled.</p>
 <span class="normal">258</span>
 <span class="normal">259</span>
 <span class="normal">260</span>
-<span class="normal">261</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">RunStrategyArgs</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments for the `run_strategy` command that runs an oracular</span>
@@ -3041,6 +3060,9 @@ intermediate result is pulled.</p>
 <span class="sd">        cache_mode: Cache mode to use.</span>
 <span class="sd">        log_level: Minimum log level to record. Messages with a lower</span>
 <span class="sd">            level will be ignored.</span>
+<span class="sd">        log_long_computations: If set, log every computation taking</span>
+<span class="sd">            more than the given number of seconds at the given severity</span>
+<span class="sd">            level.</span>
 <span class="sd">        export_raw_trace: Whether to export the raw execution trace.</span>
 <span class="sd">        export_log: Whether to export the log messages.</span>
 <span class="sd">        export_browsable_trace: Whether to export a browsable trace,</span>
@@ -3060,6 +3082,7 @@ intermediate result is pulled.</p>
     <span class="n">cache_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">cache_mode</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">CacheMode</span> <span class="o">=</span> <span class="s2">&quot;read_write&quot;</span>
     <span class="n">log_level</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">LogLevel</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span>
+    <span class="n">log_long_computations</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">LogLevel</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">export_raw_trace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">export_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">export_browsable_trace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
