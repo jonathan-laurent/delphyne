@@ -4459,17 +4459,7 @@ trying to prove and accumulating redundant facts.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/search/abduction.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">208</span>
 <span class="normal">209</span>
 <span class="normal">210</span>
 <span class="normal">211</span>
@@ -4669,7 +4659,38 @@ trying to prove and accumulating redundant facts.</p>
 <span class="normal">405</span>
 <span class="normal">406</span>
 <span class="normal">407</span>
-<span class="normal">408</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span>
+<span class="normal">439</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">abduct_and_saturate</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Proof</span><span class="p">](</span>
     <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">Abduction</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Proof</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
@@ -4688,6 +4709,11 @@ trying to prove and accumulating redundant facts.</p>
     <span class="c1"># we never clean up `proved`. For example, if `x &gt; 0` is established</span>
     <span class="c1"># before the stronger `x &gt;= 0`, the former won&#39;t be deleted from</span>
     <span class="c1"># `proved`.</span>
+
+    <span class="c1"># Initialize tool statistics tracking</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+    <span class="n">tool_stats</span> <span class="o">=</span> <span class="n">_ToolStats</span><span class="p">()</span>
 
     <span class="c1"># Invariant: `candidates`, `proved`, `disproved` and `redundant` are</span>
     <span class="c1"># disjoint. Together, they form the set of &quot;canonical facts&quot;.</span>
@@ -4717,14 +4743,20 @@ trying to prove and accumulating redundant facts.</p>
         <span class="k">if</span> <span class="n">log_steps</span><span class="p">:</span>
             <span class="n">env</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">log_steps</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_tool_stats</span><span class="p">():</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;abduct_and_saturate_tool_stats&quot;</span><span class="p">,</span> <span class="n">tool_stats</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">all_canonical</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">_EFact</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span><span class="o">*</span><span class="n">candidates</span><span class="p">,</span> <span class="o">*</span><span class="n">proved</span><span class="p">,</span> <span class="o">*</span><span class="n">disproved</span><span class="p">,</span> <span class="o">*</span><span class="n">redundant</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">is_redundant</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">_EFact</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamContext</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">tool_stats</span><span class="o">.</span><span class="n">is_redundant_calls</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="n">respace</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">redundant</span><span class="p">([</span><span class="n">tracked</span><span class="p">[</span><span class="n">o</span><span class="p">]</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">proved</span><span class="p">],</span> <span class="n">tracked</span><span class="p">[</span><span class="n">f</span><span class="p">])</span>
         <span class="n">res</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">respace</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="n">tool_stats</span><span class="o">.</span><span class="n">is_redundant_time_in_seconds</span> <span class="o">+=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
         <span class="k">if</span> <span class="n">res</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">_Abort</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">tracked</span><span class="o">.</span><span class="n">value</span>
@@ -4741,9 +4773,12 @@ trying to prove and accumulating redundant facts.</p>
             <span class="n">redundant</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="c1"># If not redundant, we try and prove it</span>
+        <span class="n">tool_stats</span><span class="o">.</span><span class="n">prove_calls</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="n">facts_list</span> <span class="o">=</span> <span class="p">[(</span><span class="n">tracked</span><span class="p">[</span><span class="n">f</span><span class="p">],</span> <span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">proved</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
         <span class="n">pstream</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">prove</span><span class="p">(</span><span class="n">facts_list</span><span class="p">,</span> <span class="n">tracked</span><span class="p">[</span><span class="n">c</span><span class="p">])</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span>
         <span class="n">res</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">pstream</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="n">tool_stats</span><span class="o">.</span><span class="n">prove_time_in_seconds</span> <span class="o">+=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
         <span class="k">if</span> <span class="n">res</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">_Abort</span><span class="p">()</span>
         <span class="n">status</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">tracked</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">res</span><span class="o">.</span><span class="n">tracked</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -4798,8 +4833,13 @@ trying to prove and accumulating redundant facts.</p>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">prev</span><span class="p">:</span>
             <span class="c1"># First fact: no need to make equivalence call</span>
             <span class="k">return</span> <span class="n">f</span>
+        <span class="n">tool_stats</span><span class="o">.</span><span class="n">search_equivalent_calls</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="n">eqspace</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">search_equivalent</span><span class="p">(</span><span class="n">prev</span><span class="p">,</span> <span class="n">tracked</span><span class="p">[</span><span class="n">f</span><span class="p">])</span>
         <span class="n">res</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">eqspace</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="n">tool_stats</span><span class="o">.</span><span class="n">search_equivalent_time_in_seconds</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">res</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">_Abort</span><span class="p">()</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">tracked</span>
@@ -4873,8 +4913,10 @@ trying to prove and accumulating redundant facts.</p>
                 <span class="n">cur</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">suggs</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">best</span><span class="p">]</span>
                 <span class="n">candidates</span><span class="p">[</span><span class="n">cur</span><span class="p">]</span><span class="o">.</span><span class="n">num_visited</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">except</span> <span class="n">_Abort</span><span class="p">:</span>
+        <span class="n">log_tool_stats</span><span class="p">()</span>
         <span class="k">return</span>
     <span class="k">except</span> <span class="n">_ProofFound</span><span class="p">:</span>
+        <span class="n">log_tool_stats</span><span class="p">()</span>
         <span class="n">action</span> <span class="o">=</span> <span class="n">proved</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span>
         <span class="n">child</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">node</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">Success</span><span class="p">)</span>
