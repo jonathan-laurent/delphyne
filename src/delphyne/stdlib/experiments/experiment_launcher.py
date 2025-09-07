@@ -31,6 +31,10 @@ LOG_FILE = "log.txt"
 EXCEPTION_FILE = "exception.txt"
 CACHE_FILE = "cache.yaml"
 RESULTS_SUMMARY = "results_summary.csv"
+SNAPSHOTS_DIR = "snapshots"
+SNAPSHOT_STATUS_SUFFIX = ".status.txt"
+SNAPSHOT_RESULT_SUFFIX = ".result.yaml"
+SNAPSHOT_INDEX_FILE = "index.md"
 
 
 @dataclass
@@ -316,20 +320,6 @@ class Experiment[Config]:
         # and `ongoing`.
         lock: threading.Lock = threading.Lock()
 
-        def process_worker_messages():
-            while True:
-                msg = worker_send.get()
-                match msg:
-                    case _ConfigStarted():
-                        with lock:
-                            start_times[msg.config_name] = msg.time
-                            ongoing.append(msg.config_name)
-                            worker_receive[msg.config_name] = msg.respond
-                    case _ConfigSnapshot():
-                        pass
-                    case "done":
-                        break
-
         def save_state():
             now = datetime.now()
             with lock:
@@ -346,21 +336,69 @@ class Experiment[Config]:
                         config.interruption_time = now
             self._save_state(state)
 
+        def make_snapshot():
+            # Print elapsed time for all ongoing tasks
+            print(f"Ongoing tasks: {len(ongoing)}.")
+            now = datetime.now()
+            durations = [(t, now - start_times[t]) for t in ongoing]
+            durations.sort(key=lambda x: x[1], reverse=True)
+            for name, dt in durations:
+                print(f"    {name}: {dt}")
+            # Generate snapshot directory
+            snapshot_name = str(datetime.now()).replace(" ", "_")
+            snapshot_name = snapshot_name.replace(":", "-")
+            snapshot_name = snapshot_name.replace(".", "_")
+            snapshot_dir = self.output_dir / SNAPSHOTS_DIR / snapshot_name
+            snapshot_dir.mkdir(parents=True, exist_ok=True)
+            # Generate snapshot index
+            index: list[str] = []
+            for name, dt in durations:
+                index.append(f"- **{name}** (running for {dt})")
+                status_file = name + SNAPSHOT_STATUS_SUFFIX
+                result_file = name + SNAPSHOT_RESULT_SUFFIX
+                index.append(f"  - [Status](./{status_file})")
+                index.append(f"  - [Result](./{result_file})")
+            index_file = snapshot_dir / SNAPSHOT_INDEX_FILE
+            print(f"Creating snapshot: {index_file}")
+            with open(index_file, "w") as f:
+                f.write("# Snapshot\n\n")
+                f.write(f"Taken at {datetime.now()}\n\n")
+                f.write("\n".join(index) + "\n")
+            # Send snapshot queries
+            for name in ongoing:
+                ask = worker_receive.get(name, None)
+                if ask is None:
+                    continue
+                ask.put(_AskSnapshot(snapshot_dir))
+
+        def process_worker_messages():
+            while True:
+                msg = worker_send.get()
+                match msg:
+                    case _ConfigStarted():
+                        with lock:
+                            start_times[msg.config_name] = msg.time
+                            ongoing.append(msg.config_name)
+                            worker_receive[msg.config_name] = msg.respond
+                    case _ConfigSnapshot():
+                        status_file = msg.snapshot_dir / (
+                            msg.config_name + SNAPSHOT_STATUS_SUFFIX
+                        )
+                        result_file = msg.snapshot_dir / (
+                            msg.config_name + SNAPSHOT_RESULT_SUFFIX
+                        )
+                        with open(status_file, "w") as f:
+                            f.write(msg.status_messge or "")
+                        with open(result_file, "w") as f:
+                            f.write(msg.result or "")
+                    case "done":
+                        break
+
         def monitor_input():
             while True:
                 input()
                 with lock:
-                    print(f"Ongoing tasks: {len(ongoing)}.")
-                    now = datetime.now()
-                    durations = [(t, now - start_times[t]) for t in ongoing]
-                    durations.sort(key=lambda x: x[1], reverse=True)
-                    for name, dt in durations:
-                        print(f"    {name}: {dt}")
-                    for name in ongoing:
-                        ask = worker_receive.get(name, None)
-                        if ask is None:
-                            continue
-                        ask.put("snapshot")
+                    make_snapshot()
 
         threading.Thread(target=process_worker_messages).start()
         if interactive:
@@ -622,10 +660,15 @@ def _print_progress(state: ExperimentState[Any]) -> None:
     print(msg + 40 * " ", end="")
 
 
-type _WorkerReceived = Literal["snapshot", "done"]
+type _WorkerReceived = _AskSnapshot | Literal["done"]
 
 
 type _WorkerSent = _ConfigStarted | _ConfigSnapshot | Literal["done"]
+
+
+@dataclass
+class _AskSnapshot:
+    snapshot_dir: Path
 
 
 @dataclass
@@ -637,6 +680,7 @@ class _ConfigStarted:
 
 @dataclass
 class _ConfigSnapshot:
+    snapshot_dir: Path
     config_name: str
     status_messge: str | None
     result: str | None
@@ -673,12 +717,17 @@ def _run_config[Config](
     def monitor():
         while True:
             msg = worker_receive.get()
-            if msg == "snapshot":
+            if isinstance(msg, _AskSnapshot):
                 status_message = None
                 if pull_status is not None:
                     status_message = pull_status()
                 result = pull_results() if pull_results is not None else None
-                snapshot = _ConfigSnapshot(config_name, status_message, result)
+                snapshot = _ConfigSnapshot(
+                    msg.snapshot_dir,
+                    config_name,
+                    status_message,
+                    result,
+                )
                 worker_send.put(snapshot)
             else:
                 assert msg == "done"
