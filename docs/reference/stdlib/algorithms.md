@@ -49,3 +49,7 @@
 ::: delphyne.abduction
 
 ::: delphyne.abduct_and_saturate
+
+::: delphyne.stdlib.search.abduction.ScoringFunction
+
+::: delphyne.stdlib.search.abduction._default_scoring_function

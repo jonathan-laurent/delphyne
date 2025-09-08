@@ -3,6 +3,7 @@ Strategies and Policies for Recursive Abduction.
 """
 
 import math
+import time
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from typing import Any, Literal, Protocol, cast
@@ -182,12 +183,32 @@ type _Tracked_EFact = dp.Tracked[_Fact] | None
 
 
 class ScoringFunction(Protocol):
-    def __call__(self, num_proposed: float, num_visited: float) -> float: ...
+    """
+    A function for assigning a score to candidate facts to prove, so
+    that the fact with the highest score is chosen next.
+    """
+
+    def __call__(self, num_proposed: float, num_visited: float) -> float:
+        """
+        Arguments:
+            num_proposed: Normalized number of times the fact was
+                proposed by the `suggest` function. When the latter
+                returns `n` suggestions, each suggestion's count is
+                increased by `1/n`.
+            num_visited: Number of times the fact was chosen as target
+                in one step of a rollout.
+        """
+        ...
 
 
 def _default_scoring_function(
     num_proposed: float, num_visited: float
 ) -> float:
+    """
+    The default scoring function for fact candidates.
+
+    See `ScoringFunction` for details.
+    """
     return -(num_visited / max(1, math.sqrt(num_proposed)))
 
 
@@ -205,6 +226,14 @@ class _ToolStats:
     search_equivalent_time_in_seconds: float = 0.0
 
 
+@dataclass
+class _FactStats:
+    num_candidates: int
+    num_proved: int
+    num_disproved: int
+    num_redundant: int
+
+
 @search_policy
 def abduct_and_saturate[P, Proof](
     tree: dp.Tree[Abduction, P, Proof],
@@ -215,19 +244,71 @@ def abduct_and_saturate[P, Proof](
     log_steps: dp.LogLevel | None = None,
 ) -> dp.StreamGen[Proof]:
     """
-    A standard, sequential policy to process abduction nodes.
+    A saturation-based, sequential policy for abduction trees.
 
-    Note: facts must be hashable.
+    This policy proceeds by saturation: it repeatedly grows a set of
+    proved facts until the main goal is proved or some limit is reached.
+
+    It does so by repeatedly performing _rollouts_. Each rollout starts
+    with the toplevel goal as a target, and attempts to prove this target
+    assuming all facts in `proved`. If the target cannot be proved,
+    suggestions for auxilliary facts to prove first are requested before
+    another attempt is made. If still unsuccessful, one of the unproved
+    suggestions is set as the new target and the rollout proceeds (up to
+    some depth specified by `max_rollout_depth`).
+
+    The algorithm maintains four, disjoint global sets of facts:
+
+    - `proved`: facts that have been successfully proved
+    - `disproved`: facts that have been disproved
+    - `redundant`: facts that are implied by the conjunction of all
+      facts from `proved`.
+    - `candidates`: facts that have been suggested but do not belong to
+      any of the three sets above.
+
+    Each step of a rollout proceeds as follows:
+
+    - The current target is assumed to be a fact from the `candidates`
+      set. Suggestions for new rollout targets are determined as follows
+      (`get_suggestions`):
+        - The `suggest` node function returns a list of candidates.
+        - All suggestions are normalized using the `search_equivalent`
+          node function (one call per suggestion).
+        - Each normalized suggestion is added (`add_candidate`) to one
+          of the `proved`, `disproved`, `redundant`, or `candidates`
+          sets. At most one call to the `prove` and `is_redundant` node
+          functions is made per suggestion.
+        - Assuming the previous step results in at least one new fact
+          being proved, all candidates from the `candidates` set are
+          re-examined until saturation (`saturate`).
+        - Remaining suggestions that are in `candidates` are potential
+          taregts for the next rollout step.
+    - Assuming the current target is still not proved, the next rollout
+      target is picked using the `scoring_function` parameter.
+
+    Arguments:
+        max_rollout_depth: The maximum depth of a rollout, as the
+            maximal number of consecutive target goals that can be set
+            (the first goal being the toplevel goal).
+        scoring_function: Scoring function for choosing the next target
+            goal at the end of each rollout step.
+        log_steps: If not `None`, log main steps of the algorithm at the
+            provided severity level.
+
+    !!! warning
+        Facts must be hashable.
+
+    !!! note
+        No fact is attempted to be proved if it is redundant with
+        already-proved facts. However, in the current implementation,
+        the set of proved facts can still contain redundancy. For
+        example, if `x > 0` is established before the stronger `x >= 0`
+        is, the former won't be deleted.
     """
 
-    # TODO: we are currently allowing redundant facts in `proved` since
-    # we never clean up `proved`. For example, if `x > 0` is established
-    # before the stronger `x >= 0`, the former won't be deleted from
-    # `proved`.
+    # TODO: stop the rollout if the current goal is proved.
 
     # Initialize tool statistics tracking
-    import time
-
     tool_stats = _ToolStats()
 
     # Invariant: `candidates`, `proved`, `disproved` and `redundant` are
@@ -251,12 +332,25 @@ def abduct_and_saturate[P, Proof](
     # Can a new fact make a candidate redundant? YES. So we should also
     # do this in `propagate`
 
+    assert max_rollout_depth >= 1
     assert isinstance(tree.node, Abduction)
     node = tree.node
 
+    def compute_fact_stats() -> _FactStats:
+        return _FactStats(
+            num_candidates=len(candidates),
+            num_proved=len(proved),
+            num_disproved=len(disproved),
+            num_redundant=len(redundant),
+        )
+
     def dbg(msg: str):
         if log_steps:
-            env.log(log_steps, msg)
+            stats = {
+                "facts_stats": compute_fact_stats(),
+                "call_stats": tool_stats,
+            }
+            env.log(log_steps, msg, stats)
 
     def log_tool_stats():
         env.info("abduct_and_saturate_tool_stats", tool_stats)
@@ -313,6 +407,7 @@ def abduct_and_saturate[P, Proof](
     def propagate() -> dp.StreamContext[Literal["updated", "not_updated"]]:
         # Go through each candidate and see if it is now provable
         # assuming all established facts.
+        dbg("Propagating...")
         old_candidates = candidates.copy()
         candidates.clear()
         for c, i in old_candidates.items():
