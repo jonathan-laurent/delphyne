@@ -554,7 +554,7 @@ def abduct_and_saturate[P, Proof](
             for _ in range(max_rollout_depth):
                 dbg(f"Explore fact: {cur}")
                 suggs = yield from get_suggestions(cur)
-                if not suggs:
+                if not suggs or cur in proved:
                     break
                 n = sum(suggs.values())
                 for s, k in suggs.items():
