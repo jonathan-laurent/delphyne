@@ -5372,7 +5372,7 @@ is, the former won't be deleted.</p>
             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_rollout_depth</span><span class="p">):</span>
                 <span class="n">dbg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Explore fact: </span><span class="si">{</span><span class="n">cur</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">suggs</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">get_suggestions</span><span class="p">(</span><span class="n">cur</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">suggs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">suggs</span> <span class="ow">or</span> <span class="n">cur</span> <span class="ow">in</span> <span class="n">proved</span><span class="p">:</span>
                     <span class="k">break</span>
                 <span class="n">n</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">suggs</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
                 <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">suggs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
