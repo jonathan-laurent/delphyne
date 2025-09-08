@@ -8,6 +8,8 @@ configs = [
         num_completions=4,
         max_requests_per_attempt=4,
         max_dollar_budget=0.1,
+        max_retries_per_step=6,
+        max_propagation_steps=2,
         seed=0,
     )
     for bench in ["1", "7"]

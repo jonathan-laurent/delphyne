@@ -1,7 +1,7 @@
 name: test_baseline_experiment
 description: null
 configs:
-  6abd8fa9-ef55-47b7-bfb9-aa8f644c6b14:
+  117c31df-c3d4-4bc4-a3f6-8966f5e3c959:
     params:
       bench_name: '1'
       model_name: mistral-small-2503
@@ -9,5 +9,5 @@ configs:
       max_feedback_cycles: 3
       seed: 0
     status: done
-    start_time: 2025-09-07 15:08:29.885152
-    end_time: 2025-09-07 15:08:36.512066
+    start_time: 2025-09-08 20:37:08.866371
+    end_time: 2025-09-08 20:37:56.143401

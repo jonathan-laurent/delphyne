@@ -152,9 +152,11 @@ class SuggestInvariants(dp.Query[InvariantSuggestions]):
 def prove_program_by_saturation(
     model_name: str | None = None,
     model_cycle: Sequence[tuple[str, int]] | None = None,
-    num_completions: int = 4,
+    num_completions: int = 8,
     max_rollout_depth: int = 3,
     max_requests_per_attempt: int = 4,
+    max_retries_per_step: int = 16,
+    max_propagation_steps: int = 4,
     temperature: float | None = None,
 ):
     if model_name:
@@ -173,6 +175,10 @@ def prove_program_by_saturation(
     
     per_attempt = dp.BudgetLimit({dp.NUM_REQUESTS: max_requests_per_attempt})
     sp = dp.with_budget(per_attempt) @ dp.abduct_and_saturate(
-        log_steps="info", max_rollout_depth=max_rollout_depth)
-    
+        log_steps="info",
+        max_rollout_depth=max_rollout_depth,
+        max_raw_suggestions_per_step=3*num_completions,
+        max_reattempted_candidates_per_propagation_step=max_retries_per_step,
+        max_consecutive_propagation_steps=max_propagation_steps,
+    )
     return dp.sequence(sp & pp(m) for m in itertools.cycle(mcycle))

@@ -396,7 +396,7 @@
             Can you fix this by suggesting new invariant candidates?
 
             Just answer with a JSON object denoting a list of `(trick_name, invariant_candidate)` pairs and nothing else.
-      num_completions: 4
+      num_completions: 8
       options:
         model: mistral-small-2503
       tools: []
@@ -469,19 +469,55 @@
         finish_reason: stop
         logprobs: null
         reasoning_content: null
+      - content:
+          structured:
+            suggestions:
+              - trick: monotone
+                invariant: x >= 1
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+      - content:
+          structured:
+            suggestions:
+              - trick: monotone
+                invariant: x >= 1
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+      - content:
+          structured:
+            suggestions:
+              - trick: monotone
+                invariant: x >= 1
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+      - content:
+          structured:
+            suggestions:
+              - trick: monotone
+                invariant: x >= 1
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
     budget:
       values:
         num_requests: 1
-        num_completions: 4
+        num_completions: 8
         input_tokens: 3090
-        output_tokens: 144
-        price: 0.0003234
+        output_tokens: 288
+        price: 0.00033779999999999997
     log_items: []
     model_name: mistral-small-2503
     usage_info:
-      completion_tokens: 144
+      completion_tokens: 288
       prompt_tokens: 3090
-      total_tokens: 3234
+      total_tokens: 3378
 - input:
     request:
       chat:
