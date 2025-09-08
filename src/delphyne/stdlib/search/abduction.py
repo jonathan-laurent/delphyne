@@ -4,6 +4,7 @@ Strategies and Policies for Recursive Abduction.
 
 import math
 import time
+from collections import defaultdict
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from typing import Any, Literal, Protocol, cast
@@ -217,7 +218,7 @@ def _argmax(seq: Iterable[float]) -> int:
 
 
 @dataclass
-class _ToolStats:
+class _CallStats:
     prove_calls: int = 0
     prove_time_in_seconds: float = 0.0
     is_redundant_calls: int = 0
@@ -242,6 +243,9 @@ def abduct_and_saturate[P, Proof](
     max_rollout_depth: int = 3,
     scoring_function: ScoringFunction = _default_scoring_function,
     log_steps: dp.LogLevel | None = None,
+    max_raw_suggestions_per_step: int | None = None,
+    max_reattempted_candidates_per_propagation_step: int | None = None,
+    max_consecutive_propagation_steps: int | None = None,
 ) -> dp.StreamGen[Proof]:
     """
     A saturation-based, sequential policy for abduction trees.
@@ -294,9 +298,30 @@ def abduct_and_saturate[P, Proof](
             goal at the end of each rollout step.
         log_steps: If not `None`, log main steps of the algorithm at the
             provided severity level.
+        max_raw_suggestions_per_step: Maximum number of suggestions from
+            the `suggest` node function to consider at each rollout
+            step. If more suggestions are available, the most frequent
+            (for naive, syntacic equality) ones are chosen.
+        max_reattempted_candidates_per_propagation_step: Maximum number
+            of candidates that are reattempted at each propagation step.
+            Candidates that have been proposed more frequently are
+            selected in priority.
+        max_consecutive_propagation_steps: Maximum number of propagation
+            steps that are performed during a rollout step, or `None` if
+            there is no limit.
 
     !!! warning
         Facts must be hashable.
+
+    !!! warning
+        By design, this policy tries and makes as few calls to `suggest`
+        as possible, since those typically involve LLM calls. However,
+        by default, it can make a very large number of calls to `prove`,
+        `is_redundant` and `search_equivalent`. This number can explode
+        as the number of candidates increases (in particular, it can be
+        quadratic in the number of candidates at each rollout step, due
+        to saturation). Thus, we recommend setting proper limits using
+        the hyperparameters whose name start with `max_`.
 
     !!! note
         No fact is attempted to be proved if it is redundant with
@@ -309,7 +334,7 @@ def abduct_and_saturate[P, Proof](
     # TODO: stop the rollout if the current goal is proved.
 
     # Initialize tool statistics tracking
-    tool_stats = _ToolStats()
+    call_stats = _CallStats()
 
     # Invariant: `candidates`, `proved`, `disproved` and `redundant` are
     # disjoint. Together, they form the set of "canonical facts".
@@ -348,12 +373,12 @@ def abduct_and_saturate[P, Proof](
         if log_steps:
             stats = {
                 "facts_stats": compute_fact_stats(),
-                "call_stats": tool_stats,
+                "call_stats": call_stats,
             }
             env.log(log_steps, msg, stats)
 
-    def log_tool_stats():
-        env.info("abduct_and_saturate_tool_stats", tool_stats)
+    def log_call_stats():
+        env.info("abduct_and_saturate_call_stats", call_stats)
 
     def all_canonical() -> Sequence[_EFact]:
         return [*candidates, *proved, *disproved, *redundant]
@@ -361,11 +386,11 @@ def abduct_and_saturate[P, Proof](
     def is_redundant(f: _EFact) -> dp.StreamContext[bool]:
         if f is None:
             return False
-        tool_stats.is_redundant_calls += 1
+        call_stats.is_redundant_calls += 1
         start_time = time.time()
         respace = node.redundant([tracked[o] for o in proved], tracked[f])
         res = yield from respace.stream(env, policy).first()
-        tool_stats.is_redundant_time_in_seconds += time.time() - start_time
+        call_stats.is_redundant_time_in_seconds += time.time() - start_time
         if res is None:
             raise _Abort()
         return res.tracked.value
@@ -382,12 +407,12 @@ def abduct_and_saturate[P, Proof](
             redundant.add(c)
             return
         # If not redundant, we try and prove it
-        tool_stats.prove_calls += 1
+        call_stats.prove_calls += 1
         start_time = time.time()
         facts_list = [(tracked[f], p) for f, p in proved.items()]
         pstream = node.prove(facts_list, tracked[c]).stream(env, policy)
         res = yield from pstream.first()
-        tool_stats.prove_time_in_seconds += time.time() - start_time
+        call_stats.prove_time_in_seconds += time.time() - start_time
         if res is None:
             raise _Abort()
         status, payload = res.tracked[0], res.tracked[1]
@@ -409,8 +434,18 @@ def abduct_and_saturate[P, Proof](
         # assuming all established facts.
         dbg("Propagating...")
         old_candidates = candidates.copy()
-        candidates.clear()
-        for c, i in old_candidates.items():
+        # Determining which candidates to reattempt
+        M = max_reattempted_candidates_per_propagation_step
+        if M is None:
+            to_reattempt = old_candidates
+            candidates.clear()
+        else:
+            to_reattempt_list = list(old_candidates.items())
+            to_reattempt_list.sort(key=lambda x: -x[1].num_proposed)
+            to_reattempt = dict(to_reattempt_list[:M])
+            for c in to_reattempt:
+                del candidates[c]
+        for c, i in to_reattempt.items():
             yield from add_candidate(c)
             if c in candidates:
                 # Restore the counters if `c` is still a candidate
@@ -424,8 +459,10 @@ def abduct_and_saturate[P, Proof](
 
     def saturate() -> dp.StreamContext[None]:
         # Propagate facts until saturation
-        while (yield from propagate()) == "updated":
-            pass
+        i = 0
+        m = max_consecutive_propagation_steps
+        while (m is None or i < m) and (yield from propagate()) == "updated":
+            i += 1
 
     def get_canonical(f: _EFact) -> dp.StreamContext[_EFact]:
         # The result is guaranteed to be in `tracked`
@@ -443,11 +480,11 @@ def abduct_and_saturate[P, Proof](
         if not prev:
             # First fact: no need to make equivalence call
             return f
-        tool_stats.search_equivalent_calls += 1
+        call_stats.search_equivalent_calls += 1
         start_time = time.time()
         eqspace = node.search_equivalent(prev, tracked[f])
         res = yield from eqspace.stream(env, policy).first()
-        tool_stats.search_equivalent_time_in_seconds += (
+        call_stats.search_equivalent_time_in_seconds += (
             time.time() - start_time
         )
         if res is None:
@@ -471,6 +508,13 @@ def abduct_and_saturate[P, Proof](
             # abort so as to not call this again in a loop.
             raise _Abort()
         tracked_suggs = [s for r in res for s in r.tracked]
+        M = max_raw_suggestions_per_step
+        if M is not None and len(tracked_suggs) > M:
+            counts: dict[_Fact, int] = defaultdict(int)
+            for s in tracked_suggs:
+                counts[s.value] += 1
+            tracked_suggs.sort(key=lambda x: counts[x.value], reverse=True)
+            tracked_suggs = tracked_suggs[:M]
         # Populate the `tracked` cache (this is the only place where new
         # facts can be created and so the only place where `tracked`
         # must be updated).
@@ -523,10 +567,10 @@ def abduct_and_saturate[P, Proof](
                 cur = list(suggs.keys())[best]
                 candidates[cur].num_visited += 1
     except _Abort:
-        log_tool_stats()
+        log_call_stats()
         return
     except _ProofFound:
-        log_tool_stats()
+        log_call_stats()
         action = proved[None]
         child = tree.child(action)
         assert isinstance(child.node, dp.Success)
