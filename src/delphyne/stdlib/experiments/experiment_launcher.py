@@ -507,7 +507,9 @@ class Experiment[Config]:
             print(f"Replaying configuration: {config_name}...")
             self.replay_config_by_name(config_name)
 
-    def save_summary(self, ignore_missing: bool = False):
+    def save_summary(
+        self, ignore_missing: bool = False, add_timing: bool = False
+    ):
         """
         Save a summary of the results in a CSV file.
 
@@ -515,9 +517,16 @@ class Experiment[Config]:
             ignore_missing: If `True`, configurations whose status is
                 "failed" or "todo" are ignored. Otherwise, an error is
                 raised.
+            add_timing: If `True`, adds a `duration` column to the
+                summary, which indicates the wall-clock time spent on
+                each configuration.
         """
 
-        data = _results_summary(self.output_dir, ignore_missing)
+        data = _results_summary(
+            self.output_dir,
+            ignore_missing=ignore_missing,
+            add_timing=add_timing,
+        )
         frame = pd.DataFrame(data)
         summary_file = self.output_dir / RESULTS_SUMMARY
         frame.to_csv(summary_file, index=False)  # type: ignore
@@ -620,7 +629,7 @@ EXPORTED_BUDGET_FIELDS = [
 
 
 def _results_summary(
-    exp_dir: Path, ignore_missing: bool = False
+    exp_dir: Path, *, ignore_missing: bool = False, add_timing: bool = False
 ) -> Sequence[dict[str, Any]]:
     # Load the experiment state as a python dict
     state_file = exp_dir / EXPERIMENT_STATE_FILE
@@ -655,6 +664,12 @@ def _results_summary(
         entry = params | {"success": success}
         for field in EXPORTED_BUDGET_FIELDS:
             entry[field] = spent.get(field, 0)
+        if add_timing:
+            start = info.get("start_time", None)
+            end = info.get("end_time", None)
+            assert isinstance(start, datetime)
+            assert isinstance(end, datetime)
+            entry["duration"] = (end - start).total_seconds()
         res.append(entry)
     return res
 
@@ -888,9 +903,11 @@ class ExperimentCLI:
         """
         self.experiment.load().clean_index()
 
-    def force_summary(self):
+    def force_summary(self, add_timing: bool = False):
         """
         Force the generation of a summary file, even if not all
         configurations were successfully run.
         """
-        self.experiment.load().save_summary(ignore_missing=True)
+        self.experiment.load().save_summary(
+            ignore_missing=True, add_timing=add_timing
+        )

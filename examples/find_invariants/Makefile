@@ -32,6 +32,8 @@ test-exp:
 	@echo "\n"
 	python experiments/test_baseline_experiment.py replay
 	@echo "\n"
+	python experiments/test_abduction_experiment.py force-summary --add-timing
+	@echo "\n"
 
 
 # delphyne run commands/test_abduct_branch.exec.yaml --cache --no-output --ensure-no-erro
