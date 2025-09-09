@@ -31,10 +31,15 @@ LOG_FILE = "log.txt"
 EXCEPTION_FILE = "exception.txt"
 CACHE_FILE = "cache.yaml"
 RESULTS_SUMMARY = "results_summary.csv"
+CONFIGS_SUBDIR = "configs"
 SNAPSHOTS_DIR = "snapshots"
 SNAPSHOT_STATUS_SUFFIX = ".status.txt"
 SNAPSHOT_RESULT_SUFFIX = ".result.yaml"
 SNAPSHOT_INDEX_FILE = "index.md"
+
+
+def _config_dir_path(output_dir: Path, config_name: str) -> Path:
+    return output_dir / CONFIGS_SUBDIR / config_name
 
 
 @dataclass
@@ -478,7 +483,7 @@ class Experiment[Config]:
         info = state.configs[config_name]
         assert info.status == "done"
         cmdargs = self.experiment(info.params)
-        cmdargs.cache_file = config_name + "/" + CACHE_FILE
+        cmdargs.cache_file = str(self._config_dir(config_name) / CACHE_FILE)
         cmdargs.cache_mode = "replay"
         run_command(
             command=cmd.run_strategy,
@@ -567,7 +572,7 @@ class Experiment[Config]:
         fire.Fire(ExperimentCLI(self))  # type: ignore
 
     def _config_dir(self, config_name: str) -> Path:
-        return self.output_dir / config_name
+        return _config_dir_path(self.output_dir, config_name)
 
     def _add_configs_if_needed(self, configs: Sequence[Config]) -> None:
         state = self._load_state()
@@ -642,7 +647,7 @@ def _results_summary(
             assert ignore_missing, f"Missing result for {name}."
             continue
         # Open the result file and parse it in yaml
-        result_file = exp_dir / name / RESULT_FILE
+        result_file = _config_dir_path(exp_dir, name) / RESULT_FILE
         with open(result_file, "r") as f:
             # Read the prefix of the file until a line is encountered
             # starting with `raw_trace` preceded by four spaces. Indeed,
