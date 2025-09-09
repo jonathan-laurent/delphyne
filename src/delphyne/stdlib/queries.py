@@ -703,11 +703,15 @@ class QueryTemplateArgs(typing.TypedDict):
 
     Attributes:
         query: The query instance.
-        mode: The requested answer mode.
+        mode: The requested answer mode. In a multi-message chat with
+            few-shot examples, this variable can have different values
+            across examples. Also, it has the same value for the system
+            prompt and the final instance prompt.
         available_modes: The sequence of all available answer modes for
             the query type.
         params: The query hyperparameters (e.g., as passed to `few_shot`)
-        format: Formatting metadata.
+        format: Formatting metadata, as derived from `mode` (and whose
+            value may therefore differ across examples).
     """
 
     # TODO: in future Python versions, use `extra_items=Any` (PEP 728)
@@ -1159,8 +1163,10 @@ def _instance_prompt(
     prompt, priming = _priming_split(prompt)
     msgs.append(md.UserMessage(prompt))
     if priming is not None:
-        # What mode we pick does not really matter here.
-        msgs.append(md.AssistantMessage(Answer(None, priming)))
+        # What mode we pick does not really matter here since it does
+        # not influence hot the assistant message is rendered for LLMs,
+        # but we still provide the right mode.
+        msgs.append(md.AssistantMessage(Answer(mode, priming)))
     # Add prefix if needed
     if (prefix := query.query_prefix()) is not None:
         for elt in prefix:
@@ -1196,7 +1202,6 @@ def create_prompt(
     for q, ans in examples:
         msgs.extend(_instance_prompt(q, env, params, ans.mode))
         msgs.append(md.AssistantMessage(ans))
-    # TODO: handle different modes
     msgs.extend(_instance_prompt(query, env, params, mode))
     return tuple(msgs)
 
