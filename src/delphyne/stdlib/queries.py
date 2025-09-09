@@ -712,6 +712,16 @@ class QueryTemplateArgs(typing.TypedDict):
         params: The query hyperparameters (e.g., as passed to `few_shot`)
         format: Formatting metadata, as derived from `mode` (and whose
             value may therefore differ across examples).
+        example_id: If the message is part of an example, indicate the
+            example number (examples are numbered starting from 1).
+            Otherwise, indicate `None`. For example, this can be used to
+            prefix each example with a `# Example {i}` header.
+        example: Whether or not the message is part of an example
+            (redundant with `example_id`, provided for readability). For
+            example, when using a hyperparameter from `params` to
+            provide specific answer instructions, one may want to
+            include the specific instructions only in the final instance
+            prompt and not in examples.
     """
 
     # TODO: in future Python versions, use `extra_items=Any` (PEP 728)
@@ -721,6 +731,8 @@ class QueryTemplateArgs(typing.TypedDict):
     available_modes: Sequence[dp.AnswerMode]
     params: dict[str, Any]
     format: FormattingMetadata
+    example_id: int | None
+    example: bool
 
 
 #####
@@ -912,12 +924,17 @@ class Query[T](dp.AbstractQuery[T]):
         env: dp.AbstractTemplatesManager | None = None,
     ) -> str:
         assert env is not None, _no_prompt_manager_error()
+        example_id = extra_args.get("example_id") if extra_args else None
+        assert example_id is None or isinstance(example_id, int)
+        assert not extra_args or "example" not in extra_args
         args_min: QueryTemplateArgs = {
             "query": self,
             "mode": mode,
             "available_modes": self.query_modes(),
             "params": params,
             "format": self._instantiated_parser_for(mode).formatting,
+            "example_id": example_id,
+            "example": example_id is not None,
         }
         args: dict[str, object] = {**args_min}
         if extra_args:
@@ -1154,10 +1171,15 @@ def _instance_prompt(
     env: dp.AbstractTemplatesManager | None,
     params: dict[str, object],
     mode: dp.AnswerMode,
+    example_id: int | None,
 ):
     msgs: list[md.ChatMessage] = []
     prompt = query.generate_prompt(
-        kind="instance", mode=mode, params=params, env=env
+        kind="instance",
+        mode=mode,
+        params=params,
+        env=env,
+        extra_args={"example_id": example_id},
     )
     # Handle assistant priming
     prompt, priming = _priming_split(prompt)
@@ -1199,10 +1221,10 @@ def create_prompt(
         kind="system", mode=mode, params=params, env=env
     )
     msgs.append(md.SystemMessage(sys))
-    for q, ans in examples:
-        msgs.extend(_instance_prompt(q, env, params, ans.mode))
+    for i, (q, ans) in enumerate(examples):
+        msgs.extend(_instance_prompt(q, env, params, ans.mode, i + 1))
         msgs.append(md.AssistantMessage(ans))
-    msgs.extend(_instance_prompt(query, env, params, mode))
+    msgs.extend(_instance_prompt(query, env, params, mode, None))
     return tuple(msgs)
 
 
