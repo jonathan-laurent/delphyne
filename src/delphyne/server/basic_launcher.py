@@ -74,7 +74,7 @@ class BasicLauncher(TaskLauncher):
                     break
                 if not context.messages_queue.empty():
                     message = context.messages_queue.get_nowait()
-                    yield json.dumps(adapter.dump_python(message)) + "\n\n"
+                    yield adapter.dump_json(message).decode() + "\n\n"
                 else:
                     await asyncio.sleep(_CONNECTION_POLLING_TIME)
         finally:
