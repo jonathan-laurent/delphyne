@@ -98,7 +98,7 @@ First, download the Delphyne repository and enter it:
 ```sh
 git clone git@github.com:jonathan-laurent/delphyne.git
 cd delphyne
-git checkout v0.10.0  # latest stable version
+git checkout v0.11.0  # latest stable version
 ```
 
 Then, to install the Delphyne library and CLI in your current Python environment:

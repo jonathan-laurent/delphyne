@@ -1,6 +1,6 @@
 [project]
 name = "delphyne"
-version = "0.10.0"
+version = "0.11.0"
 description = ""
 authors = [{name="Jonathan Laurent", email="jonathan.laurent@cs.cmu.edu"}]
 readme = "README.md"

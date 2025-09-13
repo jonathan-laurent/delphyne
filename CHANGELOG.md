@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.11.0 (2025-09-13)
+
+- **Breaking**: `Experiment` puts all config folders in a `configs` subdirectory of the output directory.
+- Fix JSON serialization bug when using `Execute Command` from the extension.
+
 ## Version 0.10.0 (2025-09-07)
 
 - **Breaking**: improve logging system, by supporting log levels and filtering. The `dp.log` function is removed: `dp.PolicyEnv` must be used instead.
