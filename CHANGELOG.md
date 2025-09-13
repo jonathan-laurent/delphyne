@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 0.11.0 (2025-09-13)
+## Version 0.11.1 (2025-09-13)
 
 - **Breaking**: `Experiment` puts all config folders in a `configs` subdirectory of the output directory.
 - Fix JSON serialization bug when using `Execute Command` from the extension.
