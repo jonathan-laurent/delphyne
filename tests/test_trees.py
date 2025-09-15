@@ -25,6 +25,8 @@ def test_make_sum():
     assert isinstance(root.node, dp.Branch)
     root_space = root.node.cands.source()
     assert isinstance(root_space, dp.AttachedQuery)
+    # To add serialized queries to the trace, we can register them manually.
+    # tracer.trace_query(root_space)
     # Testing `nested_space`
     cands_space = root.node.nested_space(refs.SpaceName("cands", ()), ())
     assert isinstance(cands_space, dp.OpaqueSpace)

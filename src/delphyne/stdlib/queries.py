@@ -1376,7 +1376,7 @@ def classify[T](
 
     See `few_shot` for details on some of the arguments above.
     """
-    env.tracer.trace_query(query.ref)
+    env.tracer.trace_query(query)
     examples = fetch_examples(env.examples, query.query, select_examples)
     mngr = env.templates
     if params is None:
@@ -1535,7 +1535,7 @@ def few_shot[T](
     """
     assert not iterative_mode or num_completions == 1
     assert max_requests is None or max_requests > 0
-    env.tracer.trace_query(query.ref)
+    env.tracer.trace_query(query)
     examples = fetch_examples(env.examples, query.query, select_examples)
     mngr = env.templates
     if params is None:

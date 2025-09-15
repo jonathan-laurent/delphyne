@@ -14,7 +14,7 @@ from datetime import datetime
 from typing import Any, Literal, TypeGuard
 
 from delphyne.core import pprint, refs
-from delphyne.core.trees import Tree
+from delphyne.core.trees import AttachedQuery, Tree
 from delphyne.utils.typing import pydantic_dump
 
 
@@ -57,7 +57,7 @@ A concise, serialized representation for `NodeOrigin`.
 """
 
 
-@dataclass
+@dataclass(kw_only=True)
 class ExportableQueryInfo:
     """
     Information about a query encountered in an exportable trace.
@@ -69,11 +69,15 @@ class ExportableQueryInfo:
         answers: Mapping from answer identifiers to actual answers.
             Answer identifiers are unique across a whole exportable
             trace (and not only across an `ExportableQueryInfo` value).
+        query: The query name, if available.
+        args: The query arguments, if available.
     """
 
     node: int
     space: str
     answers: dict[int, refs.Answer]
+    query: str | None = None
+    args: dict[str, Any] | None = None
 
 
 @dataclass
@@ -103,6 +107,13 @@ class QueryOrigin:
 
     node: refs.NodeId
     ref: refs.SpaceRef
+
+
+type _SerializedQuery = tuple[str, dict[str, Any]]
+"""
+A serialized representation of a query, as a pair of a query name and of
+JSON-serialized arguments.
+"""
 
 
 class Trace:
@@ -137,6 +148,7 @@ class Trace:
         self.answer_ids: dict[
             QueryOrigin, dict[refs.Answer, refs.AnswerId]
         ] = {}
+        self.serialized_queries: dict[QueryOrigin, _SerializedQuery] = {}
         self._last_node_id: int = 0
         self._last_answer_id: int = 0
 
@@ -173,20 +185,25 @@ class Trace:
             self.answer_ids[origin][answer] = id
             return id
 
-    def register_query(self, origin: QueryOrigin) -> None:
+    def register_query(
+        self, ref: refs.GlobalSpacePath, query: _SerializedQuery
+    ) -> None:
         """
         Ensure that a query appears in the trace, even if not answers
-        are associated with it yet.
+        are associated with it yet. Optionally, attach a serialized
+        query representation to the trace.
 
         This is particularly useful for the demonstration interpreter.
         Indeed, when a test gets stuck on an unanswered query, it is
         desirable for this query to be part of the returned trace so
         that the user can visualize it.
         """
+        origin = self._convert_query_origin(ref)
         if origin not in self.answer_ids:
             self.answer_ids[origin] = {}
+        self.serialized_queries[origin] = query
 
-    def export(self) -> ExportableTrace:
+    def export(self, add_serialized_queries: bool = True) -> ExportableTrace:
         """
         Export a trace into a lightweight, serializable format.
         """
@@ -196,9 +213,21 @@ class Trace:
         }
         queries: list[ExportableQueryInfo] = []
         for q, a in self.answer_ids.items():
+            if add_serialized_queries:
+                serialized = self.serialized_queries.get(q, (None, None))
+            else:
+                serialized = (None, None)
             ref = pprint.space_ref(q.ref)
             answers = {id.id: value for value, id in a.items()}
-            queries.append(ExportableQueryInfo(q.node.id, ref, answers))
+            queries.append(
+                ExportableQueryInfo(
+                    node=q.node.id,
+                    space=ref,
+                    answers=answers,
+                    query=serialized[0],
+                    args=serialized[1],
+                )
+            )
         return ExportableTrace(nodes, queries)
 
     def check_consistency(self) -> None:
@@ -225,7 +254,7 @@ class Trace:
             space = self._convert_space_ref(id, location.space)
         return ShortLocation(id, space)
 
-    def convert_query_origin(self, ref: refs.GlobalSpacePath) -> QueryOrigin:
+    def _convert_query_origin(self, ref: refs.GlobalSpacePath) -> QueryOrigin:
         """
         Convert a full, global space reference denoting a quey origin
         into an id-based reference.
@@ -233,7 +262,6 @@ class Trace:
         id = self.convert_global_node_path(ref[0])
         space = self._convert_space_ref(id, ref[1])
         origin = QueryOrigin(id, space)
-        self.register_query(origin)
         return origin
 
     def convert_answer_ref(
@@ -576,13 +604,14 @@ class Tracer:
         with self.lock:
             self.trace.convert_location(Location(node, None))
 
-    def trace_query(self, ref: refs.GlobalSpacePath) -> None:
+    def trace_query(self, query: AttachedQuery[Any]) -> None:
         """
         Ensure that a query at a given reference is present in the
         trace, even if no answer is provided for it.
         """
+        serialized = (query.query.query_name(), query.query.serialize_args())
         with self.lock:
-            self.trace.convert_query_origin(ref)
+            self.trace.register_query(query.ref, serialized)
 
     def trace_answer(
         self, space: refs.GlobalSpacePath, answer: refs.Answer
