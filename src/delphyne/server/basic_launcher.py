@@ -2,7 +2,6 @@
 A single-threaded task launcher for debugging purposes.
 """
 
-import json
 import queue
 import threading
 from collections.abc import AsyncGenerator
