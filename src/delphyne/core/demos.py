@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from typing import Any, Literal
 
 from delphyne.core import refs
-from delphyne.core.refs import Hint, SpaceRef
+from delphyne.core.refs import Hint, SpaceRef, ValueRef
 
 type TestCommandString = str
 """
@@ -242,6 +242,19 @@ class SelectSpace:
 
 
 @dataclass
+class GoToChild:
+    """
+    Go to a child of the current node, as specified by a hint-based
+    value reference.
+
+    Attributes:
+        action: Hint-based reference of the action to take.
+    """
+
+    action: ValueRef
+
+
+@dataclass
 class IsSuccess:
     """
     Do not move but fail if the current node is *not* a success leaf.
@@ -278,7 +291,9 @@ class Load:
     name: str
 
 
-type TestStep = Run | IsSuccess | IsFailure | SelectSpace | Save | Load
+type TestStep = (
+    Run | IsSuccess | IsFailure | SelectSpace | GoToChild | Save | Load
+)
 """
 A test instruction.
 

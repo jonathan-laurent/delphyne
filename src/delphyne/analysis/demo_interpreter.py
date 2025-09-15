@@ -360,6 +360,12 @@ class DemoHintResolver(nv.HintResolver):
 #####
 
 
+type SavedNodes = dict[str, dp.AnyTree]
+"""
+Nodes saved using the `save` test instruction.
+"""
+
+
 def _unused_hints(diagnostics: list[fb.Diagnostic], rem: Sequence[refs.Hint]):
     if rem:
         msg = f"Unused hints: {dp.pprint.hints(rem)}."
@@ -372,20 +378,41 @@ def _strategy_exn(diagnostics: list[fb.Diagnostic], exn: dp.StrategyException):
     diagnostics.append(("error", msg))
 
 
-def _stuck_warning(diagnostics: list[fb.Diagnostic], exn: nv.Stuck):
-    msg = "Test is stuck."
-    diagnostics.append(("warning", msg))
-
-
-def _navigation_error(
-    diagnostics: list[fb.Diagnostic], exn: dp.NavigationError
-):
-    details = f"{repr(exn.message)}\n\n{traceback.format_exc()}"
-    msg = f"Navigation error:\n\n{details}"
-    diagnostics.append(("error", msg))
-
-
-type SavedNodes = dict[str, dp.AnyTree]
+def _handle_navigation_error_or_reraise(
+    exn: Exception, diagnostics: list[fb.Diagnostic], test_step: dm.TestStep
+) -> dp.AnyTree | None:
+    """
+    Handle navigation errors or warnings that require stopping
+    navigation. Reraise if the exception is not known. Return the node
+    at which the error arose if relevant.
+    """
+    if isinstance(exn, nv.Stuck):
+        msg = "Test is stuck."
+        diagnostics.append(("warning", msg))
+        return exn.tree
+    elif isinstance(exn, dp.StrategyException):
+        _strategy_exn(diagnostics, exn)
+        return None
+    elif isinstance(exn, dp.NavigationError):
+        details = f"{repr(exn.message)}\n\n{traceback.format_exc()}"
+        msg = f"Navigation error:\n\n{details}"
+        diagnostics.append(("error", msg))
+        return None
+    elif isinstance(exn, nv.ReachedFailureNode):
+        step_str = dp.pprint.test_step(test_step)
+        msg = f"Reached failure node while executing: {step_str}."
+        diagnostics.append(("error", msg))
+        return exn.tree
+    elif isinstance(exn, nv.InvalidSpace):
+        name = dp.pprint.space_name(exn.space_name)
+        msg = f"Invalid reference to space: {name}."
+        diagnostics.append(("error", msg))
+        return exn.tree
+    elif isinstance(exn, nv.NoPrimarySpace):
+        msg = f"Node {exn.tree.node.effect_name()} has no primary space."
+        diagnostics.append(("error", msg))
+        return exn.tree
+    raise exn
 
 
 def _interpret_test_run_step(
@@ -421,16 +448,9 @@ def _interpret_test_run_step(
         tree = intr.tree
         _unused_hints(diagnostics, intr.remaining_hints)
         return tree, "continue"
-    except nv.Stuck as stuck:
-        tree = stuck.tree
-        _stuck_warning(diagnostics, stuck)
-        return tree, "stop"
-    except dp.StrategyException as e:
-        _strategy_exn(diagnostics, e)
-        return tree, "stop"
-    except dp.NavigationError as e:
-        _navigation_error(diagnostics, e)
-        return tree, "stop"
+    except Exception as e:
+        error_tree = _handle_navigation_error_or_reraise(e, diagnostics, step)
+        return error_tree or tree, "stop"
 
 
 def _interpret_test_select_step(
@@ -445,10 +465,9 @@ def _interpret_test_select_step(
     nav_info = nv.NavigationInfo(hint_rev)
     navigator.info = nav_info
     navigator.tracer = tracer
-    space_ref = step.space
-    space_ref_pretty = dp.pprint.space_ref(space_ref)
+    space_ref_pretty = dp.pprint.space_ref(step.space)
     try:
-        space = navigator.resolve_space_ref(tree, space_ref)
+        space = navigator.resolve_space_ref(tree, step.space)
         source = space.source()
         _unused_hints(diagnostics, nav_info.unused_hints)
         if step.expects_query:
@@ -472,32 +491,29 @@ def _interpret_test_select_step(
                 return tree, "stop"
             tree = source.spawn_tree()
             return tree, "continue"
-    except nv.ReachedFailureNode as e:
-        tree = e.tree
-        msg = f"Failed to reach: {space_ref_pretty}"
-        diagnostics.append(("error", msg))
-        return tree, "stop"
-    except nv.Stuck as stuck:
-        tree = stuck.tree
-        _stuck_warning(diagnostics, stuck)
-        return tree, "stop"
-    except dp.StrategyException as e:
-        _strategy_exn(diagnostics, e)
-        return tree, "stop"
-    except dp.NavigationError as e:
-        _navigation_error(diagnostics, e)
-        return tree, "stop"
-    except nv.InvalidSpace as e:
-        tree = e.tree
-        name = dp.pprint.space_name(e.space_name)
-        msg = f"Invalid reference to space '{name}'."
-        diagnostics.append(("error", msg))
-        return tree, "stop"
-    except nv.NoPrimarySpace as e:
-        tree = e.tree
-        msg = f"Node {tree.node.effect_name()} has no primary space"
-        diagnostics.append(("error", msg))
-        return tree, "stop"
+    except Exception as e:
+        error_tree = _handle_navigation_error_or_reraise(e, diagnostics, step)
+        return error_tree or tree, "stop"
+
+
+def _interpret_test_goto_child_step(
+    hint_resolver: DemoHintResolver,
+    hint_rev: nv.HintReverseMap,
+    diagnostics: list[fb.Diagnostic],
+    tree: dp.AnyTree,
+    tracer: dp.Tracer,
+    step: dm.GoToChild,
+) -> tuple[dp.AnyTree, Literal["stop", "continue"]]:
+    navigator = hint_resolver.navigator()
+    nav_info = nv.NavigationInfo(hint_rev)
+    navigator.info = nav_info
+    navigator.tracer = tracer
+    action_ref = step.action
+    _action_ref_pretty = dp.pprint.value_ref(action_ref)
+    try:
+        assert False
+    except Exception:
+        assert False
 
 
 def _interpret_test_step(
@@ -516,6 +532,10 @@ def _interpret_test_step(
             )
         case dm.SelectSpace():
             return _interpret_test_select_step(
+                hint_resolver, hint_rev, diagnostics, tree, tracer, step
+            )
+        case dm.GoToChild():
+            return _interpret_test_goto_child_step(
                 hint_resolver, hint_rev, diagnostics, tree, tracer, step
             )
         case dm.IsSuccess():
