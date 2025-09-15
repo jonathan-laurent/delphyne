@@ -43,6 +43,10 @@
       {
         "key": "cmd+d cmd+k",
         "command": "delphyne.autoFold"
+      },
+      {
+        "key": "cmd+d cmd+j",
+        "command": "delphyne.jumpToNodeWithId"
       }
     ],
     "viewsContainers": {
@@ -102,6 +106,10 @@
           "command": "delphyne.closeTreeView",
           "when": "view == delphyne.tree.path && delphyne.isDisplayingTree",
           "group": "navigation@2"
+        },
+        {
+          "command": "delphyne.jumpToNodeWithId",
+          "when": "view == delphyne.tree.path && delphyne.isDisplayingTree"
         }
       ],
       "view/item/context": [
@@ -220,6 +228,10 @@
         "command": "delphyne.undoTreeNavigationAction",
         "title": "Undo Navigation Action",
         "icon": "$(discard)"
+      },
+      {
+        "command": "delphyne.jumpToNodeWithId",
+        "title": "Jump To Node"
       },
       {
         "command": "delphyne.openDocumentation",

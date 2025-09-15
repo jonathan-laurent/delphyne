@@ -501,6 +501,17 @@ export class TreeView {
           this.undoNavigationAction();
         },
       ),
+      vscode.commands.registerCommand("delphyne.jumpToNodeWithId", async () => {
+        const value = await vscode.window.showInputBox({
+          title: "Jump to node",
+          prompt: "Enter a node identifier",
+        });
+        if (value === undefined) {
+          return;
+        }
+        const node_id = Number(value);
+        this.setSelectedNode(node_id, true);
+      }),
     );
   }
 

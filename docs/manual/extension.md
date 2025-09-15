@@ -140,7 +140,7 @@ The progress of commands can be supervised while they are running through the `T
 
 Whether they originate from evaluating demonstrations or running commands, [traces][delphyne.Trace] can be inspected using the `Tree`, `Node` and `Actions` views (see screenshot at the top of this page). These views are synchronized together and display information about a single node at a time. The `Tree` view indicates a path from the root to the current node and allows jumping to every intermediate node on this path. The `Node` view shows the node type and all associated spaces. For each space, it shows the underlying query or allows jumping to the underlying tree. Finally, the `Actions` view lists all children of the current node that belong to the trace. Actions leading to subtrees containing success nodes are indicated by small checkmarks.
 
-Navigation operations can be undone by clicking on the `Undo` icon on the header of the tree view or by using shortcut ++cmd+d++ followed by ++cmd+z++. 
+Navigation operations can be undone by clicking on the `Undo` icon on the header of the tree view or by using shortcut ++cmd+d++ followed by ++cmd+z++. In addition, to jump to a node with a given identifier (node identifier numbers are shown in the title of the "Node" view and in references in some command outputs), you can use shortcut ++cmd+d+cmd+j++.
 
 
 ## Tips and Shortcuts
