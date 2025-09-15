@@ -149,3 +149,9 @@ More interestingly, suppose the demonstration already explores two paths within 
 In general, any element of a local space can be referenced via a (possibly empty) sequence of hints. For spaces defined by queries, at most one hint is expected that indicates which answer to use. For spaces defined by trees, a sequence of hints is expected that leads to a success leaf by calling `run` recursively.
 
 The `answer` instruction is similar to `go`. It takes a space selector as an argument but expects to find a query instead of a tree when entering this space. It succeeds if the corresponding query is answered in the demonstration and fails otherwise.
+
+#### Entering a child
+
+The `take` instruction can be used to move to a child of a current node. It takes as an argument a hint-based value reference denoting an action.
+
+For example, at a branching node, `take 'foo'` (a synonym for `take cands{'foo'}` since `cands` is the primary space of `Branch` nodes) goes to the child corresponding to the candidate associated with hint `foo`. At a `Join` node with two subgoals, `take [subs[0]{''}, subs[1]{''}]` goes to the default child (the same one that would be visited using `run`).

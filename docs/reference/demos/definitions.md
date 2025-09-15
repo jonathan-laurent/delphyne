@@ -37,6 +37,8 @@
 
 ::: delphyne.core.demos.SelectSpace
 
+::: delphyne.core.demos.GoToChild
+
 ::: delphyne.core.demos.Save
 
 ::: delphyne.core.demos.Load
