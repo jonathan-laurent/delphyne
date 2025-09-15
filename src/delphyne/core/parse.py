@@ -120,13 +120,16 @@ _until = _until.combine(lambda u, hs: demos.Run(hs, u))
 _until = _s(CmdNames.RUN_UNTIL) >> _space >> _until
 _gosub = _s(CmdNames.SELECT) >> _space >> _sref
 _gosub = _gosub.map(lambda ref: demos.SelectSpace(ref, expects_query=False))
+_go_child = _s(CmdNames.GO_TO_CHILD) >> _space >> _vref
+_go_child = _go_child.map(demos.GoToChild)
 _answer = _s(CmdNames.ANSWER) >> _space >> _sref
 _answer = _answer.map(lambda ref: demos.SelectSpace(ref, expects_query=True))
 _success = _s(CmdNames.IS_SUCCESS).map(lambda _: demos.IsSuccess())
 _failure = _s(CmdNames.IS_FAILURE).map(lambda _: demos.IsFailure())
 _save = _s(CmdNames.SAVE) >> _space >> _ident.map(demos.Save)
 _load = _s(CmdNames.LOAD) >> _space >> _ident.map(demos.Load)
-_tstep = _run | _until | _gosub | _answer | _success | _failure | _save | _load
+_tstep = _run | _until | _gosub | _go_child | _answer | _success | _failure
+_tstep = _tstep | _save | _load
 _test = _spopt >> _tstep.sep_by(_spopt >> _s("|") << _spopt) << _spopt
 
 

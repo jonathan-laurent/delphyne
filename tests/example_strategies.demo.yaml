@@ -47,9 +47,11 @@
     goal: 11
   tests:
     - run | success
+    - take '' | success  # same result as above but more fragile
     - run 'wrong_sum' | success  # error
     - run 'alt_order'
-    - failure | run
+    - take cands{'alt_order'} | success
+    - failure | run  # error
   queries:
     - query: MakeSum
       args:
@@ -71,9 +73,13 @@
     test_feedback:
       - node_id: 2
         diagnostics: __empty__
+      - node_id: 2
+        diagnostics: __empty__
       - node_id: 3
         diagnostics:
           - ["error", "Success check failed."]
+      - node_id: 4
+        diagnostics: __empty__
       - node_id: 4
         diagnostics: __empty__
       - node_id: 1

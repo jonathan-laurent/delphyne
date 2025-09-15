@@ -508,12 +508,14 @@ def _interpret_test_goto_child_step(
     nav_info = nv.NavigationInfo(hint_rev)
     navigator.info = nav_info
     navigator.tracer = tracer
-    action_ref = step.action
-    _action_ref_pretty = dp.pprint.value_ref(action_ref)
     try:
-        assert False
-    except Exception:
-        assert False
+        action = navigator.resolve_value_ref(tree, step.action)
+        _unused_hints(diagnostics, nav_info.unused_hints)
+        tree = tree.child(action)
+        return tree, "continue"
+    except Exception as e:
+        error_tree = _handle_navigation_error_or_reraise(e, diagnostics, step)
+        return error_tree or tree, "stop"
 
 
 def _interpret_test_step(

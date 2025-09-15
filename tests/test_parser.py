@@ -41,6 +41,9 @@ def test_node_origin_roundabout(s: str):
         ("go aggr(['', 'foo bar'])", None),
         ("at find_inv | go sub[1]", None),
         ("at find_inv | answer aggr(['', 'alt'])", None),
+        ("at EvalProg | take nil", None),
+        ("at join_node | take ['', 'foo']", None),
+        ("at my_branch | take cands{'foo'}", None),
         (" run  \n | run", "run | run"),
         ("save x | load x", None),
         # Advanced node selectors

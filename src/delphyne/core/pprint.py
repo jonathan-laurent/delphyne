@@ -124,6 +124,7 @@ class CmdNames:
     RUN = "run"
     RUN_UNTIL = "at"
     SELECT = "go"
+    GO_TO_CHILD = "take"
     ANSWER = "answer"
     IS_SUCCESS = "success"
     IS_FAILURE = "failure"
@@ -171,6 +172,8 @@ def test_step(ts: demos.TestStep) -> str:
                 return f"{CmdNames.ANSWER} {space_ref(ref)}"
             else:
                 return f"{CmdNames.SELECT} {space_ref(ref)}"
+        case demos.GoToChild(action):
+            return f"{CmdNames.GO_TO_CHILD} {value_ref(action)}"
         case demos.IsSuccess():
             return CmdNames.IS_SUCCESS
         case demos.IsFailure():
