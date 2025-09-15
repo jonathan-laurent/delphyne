@@ -7352,7 +7352,7 @@ the standard <a class="autorefs autorefs-internal" title="interact" href="../alg
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="ow">not</span> <span class="n">iterative_mode</span> <span class="ow">or</span> <span class="n">num_completions</span> <span class="o">==</span> <span class="mi">1</span>
     <span class="k">assert</span> <span class="n">max_requests</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">max_requests</span> <span class="o">&gt;</span> <span class="mi">0</span>
-    <span class="n">env</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">trace_query</span><span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">ref</span><span class="p">)</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">trace_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
     <span class="n">examples</span> <span class="o">=</span> <span class="n">fetch_examples</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">examples</span><span class="p">,</span> <span class="n">query</span><span class="o">.</span><span class="n">query</span><span class="p">,</span> <span class="n">select_examples</span><span class="p">)</span>
     <span class="n">mngr</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">templates</span>
     <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -7762,7 +7762,7 @@ distribution <code>D</code> is transformed into <code>(1-p)*D + p*dirac(e)</code
 
 <span class="sd">    See `few_shot` for details on some of the arguments above.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">env</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">trace_query</span><span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">ref</span><span class="p">)</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">trace_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
     <span class="n">examples</span> <span class="o">=</span> <span class="n">fetch_examples</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">examples</span><span class="p">,</span> <span class="n">query</span><span class="o">.</span><span class="n">query</span><span class="p">,</span> <span class="n">select_examples</span><span class="p">)</span>
     <span class="n">mngr</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">templates</span>
     <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
