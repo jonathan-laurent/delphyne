@@ -493,6 +493,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#entering-a-child" class="md-nav__link">
+    <span class="md-ellipsis">
+      Entering a child
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1352,6 +1361,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#entering-a-child" class="md-nav__link">
+    <span class="md-ellipsis">
+      Entering a child
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2085,6 +2103,9 @@
 <p>More interestingly, suppose the demonstration already explores two paths within <code>cands</code> that reach different success leaves and thus correspond to two different candidates. Each of these paths can be described through a sequence of <em>hints</em>: the first candidate is identified by <code>''</code> (i.e. default path) and the second by <code>'foo'</code> (i.e. use answer <code>'foo'</code> when appropriate). Then, instruction <code>go aggregate([cands{''}, cands{'foo'}])</code> can be used to enter the strategy tree comparing those two candidates. It can be shortened to <code>go aggregate(['', 'foo'])</code> since <code>cands</code> is a primary space.</p>
 <p>In general, any element of a local space can be referenced via a (possibly empty) sequence of hints. For spaces defined by queries, at most one hint is expected that indicates which answer to use. For spaces defined by trees, a sequence of hints is expected that leads to a success leaf by calling <code>run</code> recursively.</p>
 <p>The <code>answer</code> instruction is similar to <code>go</code>. It takes a space selector as an argument but expects to find a query instead of a tree when entering this space. It succeeds if the corresponding query is answered in the demonstration and fails otherwise.</p>
+<h4 id="entering-a-child">Entering a child</h4>
+<p>The <code>take</code> instruction can be used to move to a child of a current node. It takes as an argument a hint-based value reference denoting an action.</p>
+<p>For example, at a branching node, <code>take 'foo'</code> (a synonym for <code>take cands{'foo'}</code> since <code>cands</code> is the primary space of <code>Branch</code> nodes) goes to the child corresponding to the candidate associated with hint <code>foo</code>. At a <code>Join</code> node with two subgoals, <code>take [subs[0]{''}, subs[1]{''}]</code> goes to the default child (the same one that would be visited using <code>run</code>).</p>
 <div class="footnote">
 <hr />
 <ol>

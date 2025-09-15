@@ -1022,6 +1022,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#delphyne.core.demos.GoToChild" class="md-nav__link">
+    <span class="md-ellipsis">
+      GoToChild
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#delphyne.core.demos.Save" class="md-nav__link">
     <span class="md-ellipsis">
       Save
@@ -1585,6 +1594,15 @@
   <a href="#delphyne.core.demos.SelectSpace" class="md-nav__link">
     <span class="md-ellipsis">
       SelectSpace
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.core.demos.GoToChild" class="md-nav__link">
+    <span class="md-ellipsis">
+      GoToChild
     </span>
   </a>
   
@@ -2536,7 +2554,12 @@ warnings (i.e., a hint was not used).</p>
 
   
       dataclass
-   (delphyne.core.demos.SelectSpace)" href="#delphyne.core.demos.SelectSpace">SelectSpace</a></span> <span class="o">|</span> <span class="n"><span title="delphyne.core.demos.GoToChild">GoToChild</span></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="Save
+   (delphyne.core.demos.SelectSpace)" href="#delphyne.core.demos.SelectSpace">SelectSpace</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="GoToChild
+
+
+  
+      dataclass
+   (delphyne.core.demos.GoToChild)" href="#delphyne.core.demos.GoToChild">GoToChild</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="Save
 
 
   
@@ -2932,6 +2955,106 @@ instruction fails if this space is induced by a query).</p>
 
     <span class="n">space</span><span class="p">:</span> <span class="n">SpaceRef</span>
     <span class="n">expects_query</span><span class="p">:</span> <span class="nb">bool</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="delphyne.core.demos.GoToChild" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">GoToChild</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+
+
+        <p>Go to a child of the current node, as specified by a hint-based
+value reference.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.core.demos.GoToChild.action">action</span></code></td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="ValueRef (delphyne.core.refs.ValueRef)" href="../../strategies/traces/#delphyne.core.refs.ValueRef">ValueRef</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Hint-based reference of the action to take.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/delphyne/core/demos.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GoToChild</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Go to a child of the current node, as specified by a hint-based</span>
+<span class="sd">    value reference.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        action: Hint-based reference of the action to take.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">action</span><span class="p">:</span> <span class="n">ValueRef</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
