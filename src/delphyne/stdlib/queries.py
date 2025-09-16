@@ -1141,10 +1141,10 @@ def fetch_examples(
     query: dp.AbstractQuery[Any],
     selectors: Sequence[ExampleSelector],
 ) -> Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]]:
-    raw = list(database.examples(query.query_name(), query.serialize_args()))
+    raw = list(database.examples(dp.SerializedQuery.make(query)))
     for sel in selectors:
         raw = sel(raw)
-    return [(query.parse_instance(ex.args), ex.answer) for ex in raw]
+    return [(ex.query.parse(type(query)), ex.answer) for ex in raw]
 
 
 def _priming_split(prompt: str) -> tuple[str, str | None]:

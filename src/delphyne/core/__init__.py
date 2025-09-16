@@ -9,6 +9,15 @@ from delphyne.core import (
     parse,
     pprint,
 )
+from delphyne.core.answer_databases import (
+    AnswerDatabase,
+    FromCommandResult,
+    FromStandaloneQueryDemo,
+    FromStrategyDemo,
+    LocatedAnswer,
+    LocatedAnswerSource,
+    SerializedQuery,
+)
 from delphyne.core.chats import (
     AnswerPrefix,
     AnswerPrefixElement,
@@ -17,7 +26,10 @@ from delphyne.core.chats import (
     ToolResult,
 )
 from delphyne.core.demos import (
+    AnswerSource,
+    CommandResultAnswerSource,
     Demo,
+    DemoAnswerSource,
     QueryDemo,
     StrategyDemo,
 )

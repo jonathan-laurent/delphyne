@@ -3,7 +3,6 @@ Demonstration Interpreter.
 """
 
 import importlib
-import json
 import sys
 import traceback
 from collections import defaultdict
@@ -245,29 +244,14 @@ def _append_path(paths: Sequence[Path]):
 #####
 
 
-@dataclass(frozen=True)
-class SerializedQuery:
-    """
-    A representation of a query used as an index for the example cache.
-    """
-
-    name: str
-    args: str
-
-    @staticmethod
-    def make(query: dp.AbstractQuery[Any]) -> "SerializedQuery":
-        args = json.dumps(query.serialize_args(), sort_keys=True)
-        return SerializedQuery(query.query_name(), args)
-
-
 class DemoHintResolver(nv.HintResolver):
     def __init__(self, loader: ObjectLoader, demo: dm.StrategyDemo):
         self.demo = demo
-        self.queries: list[SerializedQuery] = []
+        self.queries: list[dp.SerializedQuery] = []
         for i, q in enumerate(demo.queries):
             try:
                 query = loader.load_query(q.query, q.args)
-                self.queries.append(SerializedQuery.make(query))
+                self.queries.append(dp.SerializedQuery.make(query))
             except Exception as e:
                 raise DemoHintResolver.InvalidQuery(i, e)
             # We try to parse all answers in anticipation, to avoid
@@ -282,7 +266,7 @@ class DemoHintResolver(nv.HintResolver):
         # To keep track of what queries are reachable
         self.query_used: list[bool] = [False] * len(self.queries)
         # Keeping track of implicit answers
-        self.implicit: list[tuple[SerializedQuery, fb.ImplicitAnswer]] = []
+        self.implicit: list[tuple[dp.SerializedQuery, fb.ImplicitAnswer]] = []
 
     def __call__(
         self,
@@ -290,7 +274,7 @@ class DemoHintResolver(nv.HintResolver):
         hint: refs.HintValue | None,
         implicit_answer: Callable[[], str] | None,
     ) -> refs.Answer | None:
-        serialized = SerializedQuery.make(query.query)
+        serialized = dp.SerializedQuery.make(query.query)
         # Look at the query demonstrations included in the demo
         for i, q in enumerate(self.queries):
             if q == serialized:

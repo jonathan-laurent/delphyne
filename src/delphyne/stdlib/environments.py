@@ -5,7 +5,6 @@ Policies have access to a global environment for fetching prompts, data,
 examples, caching LLM requests, and logging information.
 """
 
-import json
 from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
@@ -32,37 +31,19 @@ DEMO_FILE_EXT = ".demo.yaml"
 type _QueryName = str
 
 
-type QuerySerializedArgs = dict[str, Any]
-"""
-Serialized query arguments, as a dictionary mapping attributed to JSON
-values (assemblies of integers, strings, dictionnaries, list, tuples...).
-"""
-
-
-def _equal_query_args(
-    args1: QuerySerializedArgs, args2: QuerySerializedArgs
-) -> bool:
-    # Comparing the dictionaries directly would not work because the
-    # same object where a tuple is used instead of a list would be
-    # considered different.
-    return json.dumps(args1, sort_keys=True) == json.dumps(
-        args2, sort_keys=True
-    )
-
-
-@dataclass
+@dataclass(kw_only=True)
 class Example:
     """
     An example, usable for few-shot prompting.
 
     Attributes:
-        args: The serialized query arguments.
+        query: The corresponding serialized query.
         answer: The answer to the query.
         tags: A sequence of tags associated with the example, which
             policies can use to select appropriate examples.
     """
 
-    args: QuerySerializedArgs
+    query: dp.SerializedQuery
     answer: dp.Answer
     tags: Sequence[str]
 
@@ -104,7 +85,10 @@ class ExampleDatabase:
             return
         demo_answer = demo.answers[0]
         answer = dm.translate_answer(demo_answer)
-        example = Example(demo.args, answer, demo_answer.tags)
+        serialized = dp.SerializedQuery.from_json(demo.query, demo.args)
+        example = Example(
+            query=serialized, answer=answer, tags=demo_answer.tags
+        )
         self._examples[demo.query].append(example)
 
     def add_demonstration(self, demo: dp.Demo):
@@ -118,16 +102,14 @@ class ExampleDatabase:
             for q in demo.queries:
                 self.add_query_demonstration(q)
 
-    def examples(
-        self, query_name: str, query_args: QuerySerializedArgs
-    ) -> Iterable[Example]:
+    def examples(self, query: dp.SerializedQuery) -> Iterable[Example]:
         """
         Obtain all potential examples that can be used for few-shot
         prompting with a given query.
         """
-        for ex in self._examples[query_name]:
+        for ex in self._examples[query.name]:
             if self.do_not_match_identical_queries:
-                if _equal_query_args(ex.args, query_args):
+                if ex.query == query:
                     continue
             yield ex
 
