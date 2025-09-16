@@ -68,7 +68,7 @@ class AmbiguousObjectIdentifier(Exception):
     modules: Sequence[str]
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class DemoExecutionContext:
     """
     Demonstration Execution Context.
@@ -79,15 +79,20 @@ class DemoExecutionContext:
         modules: A list of modules in which python object identifiers
             should be resolved. Modules can be part of packages and so
             their name may feature `.`.
+        workspace_root: The root directory of the workspace. This value
+            is useful for interpreting relative paths in `using`
+            statements.
     """
 
     strategy_dirs: Sequence[Path]
     modules: Sequence[str]
+    workspace_root: Path | None
 
     def with_root(self, root: Path) -> "DemoExecutionContext":
         return DemoExecutionContext(
             strategy_dirs=[root / p for p in self.strategy_dirs],
             modules=self.modules,
+            workspace_root=root,
         )
 
 

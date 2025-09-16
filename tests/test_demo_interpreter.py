@@ -18,7 +18,11 @@ from delphyne.utils.yaml import dump_yaml
 
 STRATEGY_MODULE = "example_strategies"
 TESTS_FOLDER = Path(__file__).parent
-CONTEXT = analysis.DemoExecutionContext([TESTS_FOLDER], [STRATEGY_MODULE])
+CONTEXT = analysis.DemoExecutionContext(
+    strategy_dirs=[TESTS_FOLDER],
+    modules=[STRATEGY_MODULE],
+    workspace_root=TESTS_FOLDER,
+)
 
 
 def check_object_included(small: object, big: object, path: str = "expect"):

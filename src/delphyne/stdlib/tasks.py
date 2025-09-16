@@ -142,6 +142,11 @@ class CommandExecutionContext:
             current status message is communicated to the UI. If `None`,
             the status is never refreshed (until the command
             terminates).
+        workspace_root: The root directory of the workspace. This value
+            is not meant to be provided in configuration files. Rather,
+            it is set when using the `with_root` method. This setting is
+            useful for interpreting some relative paths in demonstration
+            and command files (e.g. `using` directives).
 
     !!! info "Local conguration blocks"
         Demonstration and command files can override some configuration
@@ -167,13 +172,18 @@ class CommandExecutionContext:
     cache_root: Path | None = None
     result_refresh_period: float | None = None
     status_refresh_period: float | None = None
+    workspace_root: Path | None = None
 
     @property
     def base(self) -> analysis.DemoExecutionContext:
         """
         Obtain a demonstration execution context.
         """
-        return analysis.DemoExecutionContext(self.strategy_dirs, self.modules)
+        return analysis.DemoExecutionContext(
+            strategy_dirs=self.strategy_dirs,
+            modules=self.modules,
+            workspace_root=self.workspace_root,
+        )
 
     def with_root(self, root: Path) -> "CommandExecutionContext":
         """
@@ -188,6 +198,7 @@ class CommandExecutionContext:
             cache_root=None if self.cache_root is None else self.cache_root,
             result_refresh_period=self.result_refresh_period,
             status_refresh_period=self.status_refresh_period,
+            workspace_root=root,
         )
 
 

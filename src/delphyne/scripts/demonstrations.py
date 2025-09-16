@@ -2,7 +2,6 @@
 Scripts for manipulating demonstrations
 """
 
-from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -50,12 +49,9 @@ class DemoFileFeedback:
 
 
 def check_demo_file(
-    file: Path, strategy_dirs: Sequence[Path], modules: Sequence[str]
+    file: Path, context: analysis.DemoExecutionContext
 ) -> DemoFileFeedback:
-    """
-    TODO: we should better report line numbers.
-    """
-    context = analysis.DemoExecutionContext(strategy_dirs, modules)
+    # TODO: we should better report line numbers.
     demos_json = yaml.safe_load(open(file, "r").read())
     demos = ty.pydantic_load(list[dp.Demo], demos_json)
     extra = stdlib.stdlib_globals()
