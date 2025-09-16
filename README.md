@@ -18,7 +18,7 @@ Let us illustrate Delphyne with a complete example. Consider the task of  findin
 ```py
 import sympy as sp
 import delphyne as dp 
-from delphyne import Branch, Fail, Strategy, strategy
+from delphyne import Branch, Fail, IPDict, Strategy, strategy
 
 @strategy
 def find_param_value(expr: str) -> Strategy[Branch | Fail, IPDict, int]:
@@ -65,7 +65,7 @@ def parallel_policy():
 Given an associated policy and a _budget limit_, our strategy can now be executed:
 
 ```py
-budget = dp.BudgetLimit({dp.NUM_REQUESTS: 8, dp.DOLLAR_PRICE: 1e-3})
+budget = dp.BudgetLimit({dp.NUM_REQUESTS: 8, dp.DOLLAR_PRICE: 1e-4})
 res, _ = (find_param_value("2*x**2 - 4*x + n")
           .run_toplevel(dp.PolicyEnv(), serial_policy())
           .collect(budget=budget, num_generated=1))
