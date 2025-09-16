@@ -117,4 +117,3 @@ export interface QueryDemoFeedback {
 }
 
 export type DemoFeedback = StrategyDemoFeedback | QueryDemoFeedback;
-

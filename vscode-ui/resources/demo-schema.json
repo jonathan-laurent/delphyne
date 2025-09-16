@@ -90,6 +90,59 @@
       "title": "Answer",
       "type": "object"
     },
+    "AnswerSource": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CommandResultAnswerSource"
+        },
+        {
+          "$ref": "#/$defs/DemoAnswerSource"
+        }
+      ]
+    },
+    "CommandResultAnswerSource": {
+      "properties": {
+        "command": {
+          "title": "Command",
+          "type": "string"
+        },
+        "node_ids": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Node Ids"
+        },
+        "queries": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Queries"
+        }
+      },
+      "required": [
+        "command"
+      ],
+      "title": "CommandResultAnswerSource",
+      "type": "object"
+    },
     "Demo": {
       "anyOf": [
         {
@@ -100,6 +153,34 @@
         }
       ]
     },
+    "DemoAnswerSource": {
+      "properties": {
+        "demo": {
+          "title": "Demo",
+          "type": "string"
+        },
+        "queries": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Queries"
+        }
+      },
+      "required": [
+        "demo"
+      ],
+      "title": "DemoAnswerSource",
+      "type": "object"
+    },
     "QueryDemo": {
       "properties": {
         "query": {
@@ -107,6 +188,7 @@
           "type": "string"
         },
         "args": {
+          "additionalProperties": true,
           "title": "Args",
           "type": "object"
         },
@@ -145,6 +227,7 @@
           "type": "string"
         },
         "args": {
+          "additionalProperties": true,
           "title": "Args",
           "type": "object"
         },
@@ -160,6 +243,14 @@
             "$ref": "#/$defs/QueryDemo"
           },
           "title": "Queries",
+          "type": "array"
+        },
+        "using": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/AnswerSource"
+          },
+          "title": "Using",
           "type": "array"
         },
         "demonstration": {
@@ -194,6 +285,7 @@
           "type": "string"
         },
         "args": {
+          "additionalProperties": true,
           "title": "Args",
           "type": "object"
         }

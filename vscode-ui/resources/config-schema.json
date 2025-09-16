@@ -1,5 +1,16 @@
 {
   "properties": {
+    "strategy_dirs": {
+      "default": [
+        "."
+      ],
+      "items": {
+        "format": "path",
+        "type": "string"
+      },
+      "title": "Strategy Dirs",
+      "type": "array"
+    },
     "modules": {
       "default": [],
       "items": {
@@ -15,17 +26,6 @@
         "type": "string"
       },
       "title": "Demo Files",
-      "type": "array"
-    },
-    "strategy_dirs": {
-      "default": [
-        "."
-      ],
-      "items": {
-        "format": "path",
-        "type": "string"
-      },
-      "title": "Strategy Dirs",
       "type": "array"
     },
     "prompt_dirs": {

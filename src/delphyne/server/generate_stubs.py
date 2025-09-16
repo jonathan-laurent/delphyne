@@ -9,7 +9,6 @@ committing the changes.
 Usage: python -m delphyne.server.generate_stubs <demos|feedback>
 """
 
-import re
 import sys
 import textwrap
 from pathlib import Path
@@ -19,11 +18,6 @@ from openai import OpenAI
 
 def text(s: str) -> str:
     return textwrap.dedent(s).replace("\n", " ").strip()
-
-
-def extract_final_block(s: str) -> str | None:
-    code_blocks = re.findall(r"```typescript\n(.*?)```", s, re.DOTALL)
-    return code_blocks[-1] if code_blocks else None
 
 
 def convert_python_to_typescript(
@@ -37,18 +31,29 @@ def convert_python_to_typescript(
         I am going to give you the content of a Python file. You must
         identify all type and dataclass definitions in this file and
         convert them to Typescript. Please answer with the Typescript
-        code and nothing else. Do not include comments in the result.
+        code and nothing else. Do not put your answer inside a
+        triple-backquoted block. Do not include comments in the result.
         Use Typescript interfaces and not classes. Export every
         definition. Convert `Path` to `string`. Convert `object` to
-        `unknown`. Use two spaces for indentation and one blank line
-        between each definition. Add a semicolon at the end of each type
-        definition.`
+        `unknown`. Convert `None` to `null`. Use two spaces for
+        indentation and one blank line between each definition. Add a
+        semicolon at the end of each type definition.` Represent python
+        dictionaries using `Record`. For example, the type `dict[str,
+        int]` should be converted to `Record<string, int>`. Fields for
+        which a default value is provided must be labelled as optional
+        (using `?`).
+
+        Examples:
+        - `foo: str | None` becomes `foo: string | null;` (important:
+           not an optional field since no default value is provided)
+        - `bar: str | None = None` becomes `bar?: string | null;`
+        - `quux: dict[str, int] = {}` becomes `quux?: Record<string, int>;`
         """
     )
     system_prompt = "\n\n".join([system_prompt] + instructions)
 
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4.1",
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": python_code},
@@ -59,12 +64,7 @@ def convert_python_to_typescript(
 
     answer = response.choices[0].message.content
     assert answer is not None
-    code = extract_final_block(answer)
-    if code is None:
-        print("Failed to extract the code block:")
-        print(answer)
-        assert False
-    return code
+    return answer
 
 
 def convert_stub(file: Path, instructions: list[str]):
@@ -91,7 +91,8 @@ if __name__ == "__main__":
                     type `vscode.Range`. Also, for each field `foo`, add
                     a field `__loc__foo`. In addition, for each field
                     `bar` that is an array, add a field
-                    `__loc_items__bar` of type `vscode.Range[]`. All
+                    `__loc_items__bar` of type `vscode.Range[]` right
+                    after `__loc__bar`. All
                     these special location fields should be at the end
                     of the translated interface definition.
                     """

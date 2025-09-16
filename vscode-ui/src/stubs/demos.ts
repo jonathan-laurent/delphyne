@@ -12,13 +12,13 @@ export interface ToolCall {
 
 export interface Answer {
   answer: string | unknown;
-  call: ToolCall[];
-  structured: "auto" | true;
-  mode: string | null;
-  label: string | null;
-  example: boolean | null;
-  tags: string[];
-  justification: string | null;
+  call?: ToolCall[];
+  structured?: "auto" | true;
+  mode?: string | null;
+  label?: string | null;
+  example?: boolean | null;
+  tags?: string[];
+  justification?: string | null;
   __loc: vscode.Range;
   __loc__answer: vscode.Range;
   __loc__call: vscode.Range;
@@ -32,11 +32,34 @@ export interface Answer {
   __loc__justification: vscode.Range;
 }
 
+export type AnswerSource = CommandResultAnswerSource | DemoAnswerSource;
+
+export interface CommandResultAnswerSource {
+  command: string;
+  node_ids?: number[] | null;
+  queries?: string[] | null;
+  __loc: vscode.Range;
+  __loc__command: vscode.Range;
+  __loc__node_ids: vscode.Range;
+  __loc_items__node_ids: vscode.Range[];
+  __loc__queries: vscode.Range;
+  __loc_items__queries: vscode.Range[];
+}
+
+export interface DemoAnswerSource {
+  demo: string;
+  queries?: string[] | null;
+  __loc: vscode.Range;
+  __loc__demo: vscode.Range;
+  __loc__queries: vscode.Range;
+  __loc_items__queries: vscode.Range[];
+}
+
 export interface QueryDemo {
   query: string;
   args: Record<string, unknown>;
   answers: Answer[];
-  demonstration: string | null;
+  demonstration?: string | null;
   __loc: vscode.Range;
   __loc__query: vscode.Range;
   __loc__args: vscode.Range;
@@ -50,7 +73,8 @@ export interface StrategyDemo {
   args: Record<string, unknown>;
   tests: TestCommandString[];
   queries: QueryDemo[];
-  demonstration: string | null;
+  using?: AnswerSource[];
+  demonstration?: string | null;
   __loc: vscode.Range;
   __loc__strategy: vscode.Range;
   __loc__args: vscode.Range;
@@ -58,6 +82,8 @@ export interface StrategyDemo {
   __loc_items__tests: vscode.Range[];
   __loc__queries: vscode.Range;
   __loc_items__queries: vscode.Range[];
+  __loc__using: vscode.Range;
+  __loc_items__using: vscode.Range[];
   __loc__demonstration: vscode.Range;
 }
 

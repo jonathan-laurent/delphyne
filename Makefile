@@ -1,7 +1,7 @@
 .PHONY: install pyright test full-test
 .PHONY: clean-ignored clean full-clean
 .PHONY: delete-test-cache delete-full-test-cache
-.PHONY: schemas stubs doc-logo readme repomix
+.PHONY: schemas demos-stub feedback-stub stubs doc-logo readme repomix
 .PHONY: deploy-doc-release deploy-doc-dev prepare-release release
 .PHONY: cloc count-doc-words
 
@@ -103,8 +103,12 @@ schemas:
 # Generate stubs by using GPT-4 to translate Python types into TypeScript.
 # This should only be executed after a change is made to
 # the `Demo` or `DemoFeedback` types
-stubs:
+stubs: demos-stub feedback-stub
+
+demos-stub:
 	python -m delphyne.server.generate_stubs demos > $(STUBS_FOLDER)/demos.ts
+
+feedback-stub:
 	python -m delphyne.server.generate_stubs feedback > $(STUBS_FOLDER)/feedback.ts
 
 

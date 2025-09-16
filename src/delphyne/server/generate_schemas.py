@@ -22,6 +22,8 @@ def demo_file_schema():
 def config_file_schema():
     schema = pydantic.TypeAdapter(CommandExecutionContext).json_schema()
     schema["title"] = "Delphyne Configuration File"
+    assert "workspace_root" in schema["properties"]
+    del schema["properties"]["workspace_root"]
     return schema
 
 
