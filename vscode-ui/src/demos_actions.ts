@@ -47,7 +47,7 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
         viewTestDestination,
         viewTreeRoot,
         evaluateDemo,
-        addImplicitAnswers,
+        ...addImplicitAnswers,
       ];
       return all.filter((a): a is vscode.CodeAction => a !== null);
     }
@@ -147,10 +147,10 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
     return null;
   }
 
-  private addImplicitAnswers(element: DemoElement): vscode.CodeAction | null {
+  private addImplicitAnswers(element: DemoElement): vscode.CodeAction[] {
     const editor = vscode.window.activeTextEditor;
     if (!editor || element.kind !== "strategy_demo") {
-      return null;
+      return [];
     }
     const feedback = this.demosManager.getFeedback(
       element.uri,
@@ -160,28 +160,33 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
       element.uri,
       element.demo,
     ) as StrategyDemo | null;
-    if (!demo || !feedback || feedback.implicit_answers.length === 0) {
-      return null;
+    if (!demo || !feedback) {
+      return [];
     }
-    const action = new vscode.CodeAction(
-      "Add Implicit Answers",
-      vscode.CodeActionKind.Empty,
-    );
-    action.command = {
-      command: "delphyne.anonDemoCmd",
-      title: "Add Implicit Answers",
-      arguments: [
-        () => {
-          const queries = feedback.implicit_answers.map((ia) => ({
-            name: ia.query_name,
-            args: ia.query_args,
-            answer: ia.answer,
-          }));
-          addQueries(queries, demo, editor);
-        },
-      ],
-    };
-    return action;
+    const implicit = Object.entries(feedback.implicit_answers);
+    const actions: vscode.CodeAction[] = [];
+    for (const [category, answers] of implicit) {
+      const action = new vscode.CodeAction(
+        `Add Implicit Answers (${category})`,
+        vscode.CodeActionKind.Empty,
+      );
+      action.command = {
+        command: "delphyne.anonDemoCmd",
+        title: "Add Implicit Answers",
+        arguments: [
+          () => {
+            const queries = answers.map((ia) => ({
+              name: ia.query_name,
+              args: ia.query_args,
+              answer: ia.answer,
+            }));
+            addQueries(queries, demo, editor);
+          },
+        ],
+      };
+      actions.push(action);
+    }
+    return actions;
   }
 
   private answerQuery(

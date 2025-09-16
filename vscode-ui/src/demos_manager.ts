@@ -220,12 +220,10 @@ function computeStrategyDemoDiagnostics(
       diagnostics.push(makeDiagnostic(["info", "Test passed."], loc));
     }
   }
-  if (feedback.implicit_answers.length !== 0) {
+  for (const [category, answers] of Object.entries(feedback.implicit_answers)) {
+    const msg = `Implicit answers were used: ${category} (${answers.length}).`;
     diagnostics.push(
-      makeDiagnostic(
-        ["warning", "Implicit answers were used."],
-        demonstration.__loc__strategy,
-      ),
+      makeDiagnostic(["warning", msg], demonstration.__loc__strategy),
     );
   }
   return diagnostics;

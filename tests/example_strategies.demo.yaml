@@ -450,10 +450,11 @@
     test_feedback:
       - diagnostics: __empty__
     implicit_answers:
-      - query_name: __Computation__
-        query_args: {fun: expensive_computation}
-      - query_name: __Computation__
-        query_args: {fun: expensive_computation}
+      computations:
+        - query_name: __Computation__
+          query_args: {fun: expensive_computation}
+        - query_name: __Computation__
+          query_args: {fun: expensive_computation}
 
 
 - demonstration: structured_output

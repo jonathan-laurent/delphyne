@@ -44,8 +44,8 @@ class DemoFileFeedback:
                 self.add_diagnostic(demo_name, f"query_{i}", d)
             for (qi, ai), d in f.answer_diagnostics:
                 self.add_diagnostic(demo_name, f"query_{qi}:answer_{ai}", d)
-            for d in f.implicit_answers:
-                msg = f"Implicit answer for {d.query_name}({d.query_args})"
+            for cat, d in f.implicit_answers.items():
+                msg = f"Implicit answers: {cat} ({len(d)} answer(s))"
                 self.add_diagnostic(demo_name, "implicit", ("warning", msg))
 
 

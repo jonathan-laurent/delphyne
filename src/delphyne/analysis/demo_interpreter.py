@@ -331,8 +331,12 @@ class DemoHintResolver(nv.HintResolver):
     def get_answer_refs(self) -> dict[nv.AnswerRef, fb.DemoAnswerId]:
         return self.answer_refs
 
-    def get_implicit_answers(self) -> list[fb.ImplicitAnswer]:
-        return [a for _, a in self.implicit]
+    def get_implicit_answers(
+        self,
+    ) -> dict[fb.ImplicitAnswerCategory, list[fb.ImplicitAnswer]]:
+        if not self.implicit:
+            return {}
+        return {"computations": [a for _, a in self.implicit]}
 
     def set_reachability_diagnostics(self, feedback: fb.StrategyDemoFeedback):
         for i, used in enumerate(self.query_used):
@@ -610,7 +614,7 @@ def evaluate_strategy_demo_and_return_trace(
         global_diagnostics=[],
         query_diagnostics=[],
         answer_diagnostics=[],
-        implicit_answers=[],
+        implicit_answers=defaultdict(list),
     )
     try:
         loader = ObjectLoader(context, extra_objects)

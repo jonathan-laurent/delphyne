@@ -341,6 +341,18 @@ class ImplicitAnswer:
     answer: str
 
 
+type ImplicitAnswerCategory = Literal["computations", "fetched"] | str
+"""
+Category of implicit answers.
+
+The UI allows adding all answers within a given category to the
+demonstration. The `computations` category is used for answers of
+computation nodes (see `Compute`), while the `fetched` category is
+used for answers that were fetched from external example sources (see
+`using` attribute for demonstrations).
+"""
+
+
 @dataclass(kw_only=True)
 class StrategyDemoFeedback:
     """
@@ -363,7 +375,10 @@ class StrategyDemoFeedback:
         query_diagnostics: Diagnostics attached to specific queries.
         answer_diagnostics: Diagnostics attached to specific answers.
         implicit_answers: Implicit answers that were generated on the fly
-            and that can be explicitly added to the demonstration.
+            and that can be explicitly added to the demonstration,
+            grouped by category. The dictionary should have no empty
+            value: each mentioned catefory should have at least one
+            implicit answer.
     """
 
     kind: Literal["strategy"]
@@ -374,7 +389,7 @@ class StrategyDemoFeedback:
     global_diagnostics: list[Diagnostic]
     query_diagnostics: list[tuple[DemoQueryId, Diagnostic]]
     answer_diagnostics: list[tuple[DemoAnswerId, Diagnostic]]
-    implicit_answers: list[ImplicitAnswer]
+    implicit_answers: dict[ImplicitAnswerCategory, list[ImplicitAnswer]]
 
 
 @dataclass(kw_only=True)

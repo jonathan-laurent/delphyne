@@ -96,6 +96,8 @@ export interface ImplicitAnswer {
   answer: string;
 }
 
+export type ImplicitAnswerCategory = "computations" | "fetched" | string;
+
 export interface StrategyDemoFeedback {
   kind: "strategy";
   trace: Trace;
@@ -105,7 +107,7 @@ export interface StrategyDemoFeedback {
   global_diagnostics: Diagnostic[];
   query_diagnostics: [DemoQueryId, Diagnostic][];
   answer_diagnostics: [DemoAnswerId, Diagnostic][];
-  implicit_answers: ImplicitAnswer[];
+  implicit_answers: Record<ImplicitAnswerCategory, ImplicitAnswer[]>;
 }
 
 export interface QueryDemoFeedback {
