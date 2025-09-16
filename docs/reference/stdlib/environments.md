@@ -12,9 +12,9 @@
 
 ::: delphyne.Example
 
-::: delphyne.stdlib.environments.QuerySerializedArgs
-
 ::: delphyne.ExampleDatabase
+
+::: delphyne.SerializedQuery
 
 ## Tracer
 
