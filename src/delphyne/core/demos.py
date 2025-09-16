@@ -68,6 +68,57 @@ class Answer:
     justification: str | None = None
 
 
+type AnswerSource = CommandResultAnswerSource | DemoAnswerSource
+"""
+An answer source from which implicit answers can be fetched.
+
+Answer sources can be provided for strategy demonstrations via the
+`using` attribute.
+"""
+
+
+@dataclass
+class CommandResultAnswerSource:
+    """
+    Fetch answers from the result of a command, assuming a trace was
+    exported (see `Trace`).
+
+    Attributes:
+        command: Path to the command file containing the trace, relative
+            to the workspace root.
+        node_ids: Identifiers of the nodes whose full references
+            features answers to be fetched. If `None`, the success node
+            for the first generated result is used.
+        queries: Query types to be fetched. If `None`, queries are
+            fetched regardless of their type.
+    """
+
+    command: str
+    node_ids: Sequence[int] | None = None
+    queries: Sequence[str] | None = None
+
+
+@dataclass
+class DemoAnswerSource:
+    """
+    Fetch answers from a demonstration.
+
+    Fetch the first answer for each query in the demonstration (either a
+    strategy demonstration or a standalone query demonstration).
+
+    Attributes:
+        demo: A string of the form `<path>:<demo_name>` where `<path>`
+            is a path to a demo file, relative to the workspace root,
+            and `<demo_name>` is the name of a demonstration in this
+            file.
+        queries: Query types to be fetched. If `None`, queries are
+            fetched regardless of their type.
+    """
+
+    demo: str
+    queries: Sequence[str] | None = None
+
+
 @dataclass
 class QueryDemo:
     """
@@ -109,13 +160,16 @@ class StrategyDemo:
         queries: A sequence of query demonstrations. Featured answers
             are used when executing the tests.
         demonstration: An optional label for the demonstration (usually
-            specified first in YAML syntax)
+            specified first in YAML syntax).
+        using: A sequence of answer source from which implicit answers
+            can be fetched.
     """
 
     strategy: str
     args: dict[str, Any]
     tests: list[TestCommandString]
     queries: list[QueryDemo]
+    using: Sequence[AnswerSource] = ()
     demonstration: str | None = None  # optional label
 
 
