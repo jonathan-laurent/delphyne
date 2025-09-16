@@ -11,12 +11,14 @@ from delphyne.core import (
 )
 from delphyne.core.answer_databases import (
     AnswerDatabase,
+    AnswerDatabaseLoader,
     FromCommandResult,
     FromStandaloneQueryDemo,
     FromStrategyDemo,
     LocatedAnswer,
     LocatedAnswerSource,
     SerializedQuery,
+    SeveralAnswerMatches,
 )
 from delphyne.core.chats import (
     AnswerPrefix,

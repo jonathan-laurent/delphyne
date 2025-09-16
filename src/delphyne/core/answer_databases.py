@@ -4,9 +4,12 @@ and to override oracles in policies.
 """
 
 import json
+from collections import defaultdict
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from typing import Any, Literal
 
+from delphyne.core.demos import AnswerSource
 from delphyne.core.queries import AbstractQuery
 from delphyne.core.refs import Answer
 
@@ -72,6 +75,19 @@ Provenance information for answers in databases.
 """
 
 
+def pp_located_answer_source(src: LocatedAnswerSource) -> str:
+    match src:
+        case FromStandaloneQueryDemo():
+            return f"{src.demo_file}:{src.demo_name}"
+        case FromStrategyDemo():
+            return (
+                f"{src.demo_file}:{src.demo_name}:"
+                f"{src.query_id}:{src.answer_id}"
+            )
+        case FromCommandResult():
+            return f"{src.command_file}:{src.answer_id}"
+
+
 @dataclass
 class LocatedAnswer:
     """
@@ -119,10 +135,41 @@ class SerializedQuery:
         return type.parse_instance(self.args_dict)
 
 
-type QueryName = str
+@dataclass
+class SeveralAnswerMatches(Exception):
+    query: SerializedQuery
+    answers: Sequence[LocatedAnswer]
+
+    def __str__(self):
+        lines: list[str] = []
+        lines.append(f"Several answers match query of type {self.query.name}:")
+        for a in self.answers:
+            lines.append(f"  - {pp_located_answer_source(a.source)}")
+        # TODO: also print query arguments at the end of the message?
+        return "\n".join(lines)
+
+
+type AnswerDatabaseLoader = Callable[
+    [AnswerSource], Iterable[tuple[SerializedQuery, LocatedAnswer]]
+]
 
 
 @dataclass
 class AnswerDatabase:
-    answers: dict[str, int]
-    pass
+    answers: dict[SerializedQuery, list[LocatedAnswer]]
+
+    def __init__(
+        self, sources: Sequence[AnswerSource], *, loader: AnswerDatabaseLoader
+    ):
+        self.answers = defaultdict(list)
+        for s in sources:
+            for q, a in loader(s):
+                self.answers[q].append(a)
+
+    def fetch(self, query: SerializedQuery) -> LocatedAnswer | None:
+        cands = self.answers[query]
+        if not cands:
+            return None
+        if len(cands) == 1:
+            return cands[0]
+        raise SeveralAnswerMatches(query, cands)
