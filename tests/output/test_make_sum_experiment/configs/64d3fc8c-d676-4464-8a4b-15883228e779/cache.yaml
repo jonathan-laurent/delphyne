@@ -43,11 +43,11 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 133.0
-        output_tokens: 11.0
-        cached_input_tokens: 0.0
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 133
+        output_tokens: 11
+        cached_input_tokens: 0
         price: 2.0775e-05
     log_items: []
     model_name: gpt-4o-mini-2024-07-18
@@ -108,11 +108,11 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 133.0
-        output_tokens: 11.0
-        cached_input_tokens: 0.0
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 133
+        output_tokens: 11
+        cached_input_tokens: 0
         price: 2.0775e-05
     log_items: []
     model_name: gpt-4o-mini-2024-07-18
@@ -173,11 +173,11 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 133.0
-        output_tokens: 11.0
-        cached_input_tokens: 0.0
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 133
+        output_tokens: 11
+        cached_input_tokens: 0
         price: 2.0775e-05
     log_items: []
     model_name: gpt-4o-mini-2024-07-18
@@ -238,11 +238,11 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 133.0
-        output_tokens: 11.0
-        cached_input_tokens: 0.0
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 133
+        output_tokens: 11
+        cached_input_tokens: 0
         price: 2.0775e-05
     log_items: []
     model_name: gpt-4o-mini-2024-07-18
@@ -303,11 +303,11 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 133.0
-        output_tokens: 11.0
-        cached_input_tokens: 0.0
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 133
+        output_tokens: 11
+        cached_input_tokens: 0
         price: 2.0775e-05
     log_items: []
     model_name: gpt-4o-mini-2024-07-18
@@ -368,11 +368,11 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 133.0
-        output_tokens: 11.0
-        cached_input_tokens: 0.0
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 133
+        output_tokens: 11
+        cached_input_tokens: 0
         price: 2.0775e-05
     log_items: []
     model_name: gpt-4o-mini-2024-07-18
@@ -433,11 +433,11 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 133.0
-        output_tokens: 11.0
-        cached_input_tokens: 0.0
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 133
+        output_tokens: 11
+        cached_input_tokens: 0
         price: 2.0775e-05
     log_items: []
     model_name: gpt-4o-mini-2024-07-18
@@ -498,11 +498,11 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 133.0
-        output_tokens: 11.0
-        cached_input_tokens: 0.0
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 133
+        output_tokens: 11
+        cached_input_tokens: 0
         price: 2.0775e-05
     log_items: []
     model_name: gpt-4o-mini-2024-07-18
@@ -554,6 +554,266 @@
   output:
     outputs:
       - content: |-
+          list:
+            - 2
+            - 3
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 133
+        output_tokens: 11
+        cached_input_tokens: 0
+        price: 2.0775e-05
+    log_items: []
+    model_name: gpt-4o-mini-2024-07-18
+    usage_info:
+      completion_tokens: 11
+      prompt_tokens: 133
+      total_tokens: 144
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 0
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+- input:
+    request:
+      chat:
+        - role: system
+          content: |
+            Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+            Answer with the following and nothing else (no need for quotes or a code block):
+            A YAML object that matches the following JSON schema.
+
+            Schema:
+            ```
+            {
+              "name": "list[int]",
+              "description": null,
+              "schema": {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              }
+            }
+            ```
+        - role: user
+          content: |-
+            List: [1, 2, 3, 4, 5]
+            Target: 5
+      num_completions: 1
+      options:
+        model: gpt-4o-mini
+      tools: []
+      structured_output: null
+    iter: 10
+  output:
+    outputs:
+      - content: |-
+          list:
+            - 2
+            - 3
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 133
+        output_tokens: 11
+        cached_input_tokens: 0
+        price: 2.0775e-05
+    log_items: []
+    model_name: gpt-4o-mini-2024-07-18
+    usage_info:
+      completion_tokens: 11
+      prompt_tokens: 133
+      total_tokens: 144
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 0
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+- input:
+    request:
+      chat:
+        - role: system
+          content: |
+            Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+            Answer with the following and nothing else (no need for quotes or a code block):
+            A YAML object that matches the following JSON schema.
+
+            Schema:
+            ```
+            {
+              "name": "list[int]",
+              "description": null,
+              "schema": {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              }
+            }
+            ```
+        - role: user
+          content: |-
+            List: [1, 2, 3, 4, 5]
+            Target: 5
+      num_completions: 1
+      options:
+        model: gpt-4o-mini
+      tools: []
+      structured_output: null
+    iter: 11
+  output:
+    outputs:
+      - content: |-
+          list:
+            - 2
+            - 3
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 133
+        output_tokens: 11
+        cached_input_tokens: 0
+        price: 2.0775e-05
+    log_items: []
+    model_name: gpt-4o-mini-2024-07-18
+    usage_info:
+      completion_tokens: 11
+      prompt_tokens: 133
+      total_tokens: 144
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 0
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+- input:
+    request:
+      chat:
+        - role: system
+          content: |
+            Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+            Answer with the following and nothing else (no need for quotes or a code block):
+            A YAML object that matches the following JSON schema.
+
+            Schema:
+            ```
+            {
+              "name": "list[int]",
+              "description": null,
+              "schema": {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              }
+            }
+            ```
+        - role: user
+          content: |-
+            List: [1, 2, 3, 4, 5]
+            Target: 5
+      num_completions: 1
+      options:
+        model: gpt-4o-mini
+      tools: []
+      structured_output: null
+    iter: 12
+  output:
+    outputs:
+      - content: |-
+          list:
+            - 2
+            - 3
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 133
+        output_tokens: 11
+        cached_input_tokens: 0
+        price: 2.0775e-05
+    log_items: []
+    model_name: gpt-4o-mini-2024-07-18
+    usage_info:
+      completion_tokens: 11
+      prompt_tokens: 133
+      total_tokens: 144
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 0
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+- input:
+    request:
+      chat:
+        - role: system
+          content: |
+            Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+            Answer with the following and nothing else (no need for quotes or a code block):
+            A YAML object that matches the following JSON schema.
+
+            Schema:
+            ```
+            {
+              "name": "list[int]",
+              "description": null,
+              "schema": {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              }
+            }
+            ```
+        - role: user
+          content: |-
+            List: [1, 2, 3, 4, 5]
+            Target: 5
+      num_completions: 1
+      options:
+        model: gpt-4o-mini
+      tools: []
+      structured_output: null
+    iter: 13
+  output:
+    outputs:
+      - content: |-
           - 2
           - 3
         tool_calls: []
@@ -562,11 +822,11 @@
         reasoning_content: null
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 133.0
-        output_tokens: 7.0
-        cached_input_tokens: 0.0
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 133
+        output_tokens: 7
+        cached_input_tokens: 0
         price: 2.0475e-05
     log_items: []
     model_name: gpt-4o-mini-2024-07-18

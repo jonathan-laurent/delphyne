@@ -9,7 +9,7 @@ args:
   policy_args: {}
   budget:
     price: 0
-  cache_file: cfd486f3-9905-416e-abe4-78bb1892091a/cache.yaml
+  cache_file: configs/a96a8a26-8f5a-4ae9-ba59-00f8cbe9e9b9/cache.yaml
   cache_mode: create
 outcome:
   diagnostics: []
@@ -18,6 +18,8 @@ outcome:
     values:
       - 44
     spent_budget: {}
+    success_nodes:
+      - 4
     raw_trace:
       nodes:
         1: nested(0, $main)

@@ -1,0 +1,334 @@
+# delphyne-command
+
+command: run_strategy
+args:
+  strategy: make_sum
+  args:
+    allowed:
+      - 9
+      - 6
+      - 2
+    goal: 11
+  policy: make_sum_policy
+  policy_args: {}
+  budget:
+    price: 0.05
+  cache_file: configs/a4512309-f0aa-4c5d-8502-74323135bf60/cache.yaml
+  cache_mode: create
+outcome:
+  diagnostics: []
+  result:
+    success: true
+    values:
+      - - 9
+        - 2
+    spent_budget:
+      num_requests: 2
+      num_completions: 2
+      input_tokens: 254
+      output_tokens: 18
+      cached_input_tokens: 0
+      price: 3.945e-05
+    success_nodes:
+      - 2
+    raw_trace:
+      nodes:
+        1: nested(0, $main)
+        2: child(1, cands{@2})
+      queries:
+        - node: 1
+          space: cands
+          answers:
+            1:
+              mode: null
+              content: |-
+                list:
+                  - 9
+                  - 2
+            2:
+              mode: null
+              content: |-
+                - 9
+                - 2
+          query: MakeSum
+          args:
+            allowed:
+              - 9
+              - 6
+              - 2
+            goal: 11
+    log:
+      - message: llm_request
+        level: info
+        time: 2025-09-17 10:25:49.608899
+        node: 1
+        space: cands
+        metadata:
+          hash: 66f40312
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [9, 6, 2]
+                  Target: 11
+            num_completions: 1
+            options: {}
+      - message: llm_response
+        level: info
+        time: 2025-09-17 10:25:51.166785
+        node: 1
+        space: cands
+        metadata:
+          request: 66f40312
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 9
+                    - 2
+                tool_calls: []
+                finish_reason: stop
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 127
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 1.9875e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 127
+              total_tokens: 138
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 127
+              total_tokens: 138
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        time: 2025-09-17 10:25:51.168060
+        node: 1
+        space: cands
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [9, 2]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        time: 2025-09-17 10:25:51.171101
+        node: 1
+        space: cands
+        metadata:
+          hash: 66f40312
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [9, 6, 2]
+                  Target: 11
+            num_completions: 1
+            options: {}
+      - message: llm_response
+        level: info
+        time: 2025-09-17 10:25:52.619029
+        node: 1
+        space: cands
+        metadata:
+          request: 66f40312
+          response:
+            outputs:
+              - content: |-
+                  - 9
+                  - 2
+                tool_calls: []
+                finish_reason: stop
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 127
+                output_tokens: 7
+                cached_input_tokens: 0
+                price: 1.9574999999999998e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 7
+              prompt_tokens: 127
+              total_tokens: 134
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 7
+              prompt_tokens: 127
+              total_tokens: 134
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+    browsable_trace:
+      nodes:
+        1:
+          kind: Branch
+          success_value: null
+          summary_message: null
+          leaf_node: false
+          label: MakeSum
+          tags:
+            - MakeSum
+          properties:
+            - - with_ids: cands
+                with_hints: null
+              - kind: query
+                name: MakeSum
+                args:
+                  allowed:
+                    - 9
+                    - 6
+                    - 2
+                  goal: 11
+                tags:
+                  - MakeSum
+                answers:
+                  - id: 1
+                    hint: null
+                    value:
+                      short: |-
+                        parse_error
+
+                        1 validation error for list[int]
+                          Input should be a valid list [type=list_type, input_value={'list': [9, 2]}, input_type=dict]
+                            For further information visit https://errors.pydantic.dev/2.11/v/list_type
+                      long: |-
+                        ParseError(label='parse_error',
+                                   description='1 validation error for list[int]\n'
+                                               '  Input should be a valid list [type=list_type, '
+                                               "input_value={'list': [9, 2]}, input_type=dict]\n"
+                                               '    For further information visit '
+                                               'https://errors.pydantic.dev/2.11/v/list_type',
+                                   meta=None)
+                      json_provided: false
+                      json: null
+                  - id: 2
+                    hint: null
+                    value:
+                      short: '[9, 2]'
+                      long: '[9, 2]'
+                      json_provided: true
+                      json:
+                        - 9
+                        - 2
+          actions:
+            - ref:
+                with_ids: cands{@2}
+                with_hints: null
+              hints: null
+              related_success_nodes: []
+              related_answers:
+                - 2
+              value:
+                short: '[9, 2]'
+                long: '[9, 2]'
+                json_provided: true
+                json:
+                  - 9
+                  - 2
+              destination: 2
+          origin: root
+        2:
+          kind: Success
+          success_value:
+            short: '[9, 2]'
+            long: '[9, 2]'
+            json_provided: true
+            json:
+              - 9
+              - 2
+          summary_message: null
+          leaf_node: true
+          label: null
+          tags: []
+          properties: []
+          actions: []
+          origin:
+            - child
+            - 1
+            - 0

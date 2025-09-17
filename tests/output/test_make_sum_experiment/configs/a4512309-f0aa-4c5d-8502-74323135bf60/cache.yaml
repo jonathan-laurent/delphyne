@@ -1,0 +1,129 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: |
+            Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+            Answer with the following and nothing else (no need for quotes or a code block):
+            A YAML object that matches the following JSON schema.
+
+            Schema:
+            ```
+            {
+              "name": "list[int]",
+              "description": null,
+              "schema": {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              }
+            }
+            ```
+        - role: user
+          content: |-
+            List: [9, 6, 2]
+            Target: 11
+      num_completions: 1
+      options:
+        model: gpt-4o-mini
+      tools: []
+      structured_output: null
+    iter: 1
+  output:
+    outputs:
+      - content: |-
+          list:
+            - 9
+            - 2
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 127
+        output_tokens: 11
+        cached_input_tokens: 0
+        price: 1.9875e-05
+    log_items: []
+    model_name: gpt-4o-mini-2024-07-18
+    usage_info:
+      completion_tokens: 11
+      prompt_tokens: 127
+      total_tokens: 138
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 0
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+- input:
+    request:
+      chat:
+        - role: system
+          content: |
+            Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+            Answer with the following and nothing else (no need for quotes or a code block):
+            A YAML object that matches the following JSON schema.
+
+            Schema:
+            ```
+            {
+              "name": "list[int]",
+              "description": null,
+              "schema": {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              }
+            }
+            ```
+        - role: user
+          content: |-
+            List: [9, 6, 2]
+            Target: 11
+      num_completions: 1
+      options:
+        model: gpt-4o-mini
+      tools: []
+      structured_output: null
+    iter: 2
+  output:
+    outputs:
+      - content: |-
+          - 9
+          - 2
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 127
+        output_tokens: 7
+        cached_input_tokens: 0
+        price: 1.9574999999999998e-05
+    log_items: []
+    model_name: gpt-4o-mini-2024-07-18
+    usage_info:
+      completion_tokens: 7
+      prompt_tokens: 127
+      total_tokens: 134
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 0
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
