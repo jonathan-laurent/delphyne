@@ -42,6 +42,10 @@ def _config_dir_path(output_dir: Path, config_name: str) -> Path:
     return output_dir / CONFIGS_SUBDIR / config_name
 
 
+def _relative_cache_path(config_name: str) -> str:
+    return str(_config_dir_path(Path("."), config_name) / CACHE_FILE)
+
+
 @dataclass
 class ConfigInfo[Config]:
     """
@@ -483,7 +487,7 @@ class Experiment[Config]:
         info = state.configs[config_name]
         assert info.status == "done"
         cmdargs = self.experiment(info.params)
-        cmdargs.cache_file = str(self._config_dir(config_name) / CACHE_FILE)
+        cmdargs.cache_file = _relative_cache_path(config_name)
         cmdargs.cache_mode = "replay"
         run_command(
             command=cmd.run_strategy,
@@ -776,7 +780,7 @@ def _run_config[Config](
     cmdargs = experiment(config)
     if cache_requests:
         # A relative path is expected!
-        cmdargs.cache_file = config_name + "/" + CACHE_FILE
+        cmdargs.cache_file = _relative_cache_path(config_name)
     cmdargs.cache_mode = "create"
     cmdargs.export_browsable_trace = export_browsable_trace
     cmdargs.export_log = export_log
