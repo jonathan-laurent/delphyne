@@ -16,16 +16,13 @@ import yaml
 
 import delphyne.core as dp
 import delphyne.core.demos as dm
+import delphyne.stdlib.answer_loaders as loaders
 import delphyne.stdlib.models as md
-from delphyne.utils.typing import pydantic_load
 from delphyne.utils.yaml import dump_yaml_object
 
 ####
 #### Example Database
 ####
-
-
-DEMO_FILE_EXT = ".demo.yaml"
 
 
 type _QueryName = str
@@ -279,16 +276,6 @@ def _dump_json_object(
 ####
 
 
-@dataclass
-class InvalidDemoFile(Exception):
-    """
-    Exception raised when a demonstration file could not be parsed.
-    """
-
-    file: Path
-    exn: Exception
-
-
 class PolicyEnv:
     """
     The global environment accessible to policies.
@@ -342,16 +329,8 @@ class PolicyEnv:
         self.log_long_computations = log_long_computations
         self.cache = cache
         for path in demonstration_files:
-            if not path.suffix.endswith(DEMO_FILE_EXT):
-                path = path.with_suffix(DEMO_FILE_EXT)
-            try:
-                with path.open() as f:
-                    content = yaml.safe_load(f)
-                    demos = pydantic_load(list[dp.Demo], content)
-                    for demo in demos:
-                        self.examples.add_demonstration(demo)
-            except Exception as e:
-                raise InvalidDemoFile(path, e)
+            for demo in loaders.load_demo_file(path):
+                self.examples.add_demonstration(demo)
 
     def log(
         self,

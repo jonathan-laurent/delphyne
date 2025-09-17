@@ -5,10 +5,15 @@ Most essential and central definitions from the standard library.
 # ruff: noqa: F401
 # pyright: reportUnusedImport=false
 
+from delphyne.stdlib.answer_loaders import (
+    InvalidDemoFile,
+    demo_with_name,
+    load_demo_file,
+    standard_answer_loader,
+)
 from delphyne.stdlib.environments import (
     Example,
     ExampleDatabase,
-    InvalidDemoFile,
     PolicyEnv,
     TemplatesManager,
 )

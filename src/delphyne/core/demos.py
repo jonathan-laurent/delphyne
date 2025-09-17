@@ -118,6 +118,16 @@ class DemoAnswerSource:
     demo: str
     queries: Sequence[str] | None = None
 
+    @property
+    def file_and_demo_name(self) -> tuple[str, str]:
+        parts = self.demo.split(":")
+        if len(parts) != 2:
+            raise ValueError(
+                f"Invalid demo answer source '{self.demo}': "
+                "must be of the form '<path>:<demo_name>'"
+            )
+        return parts[0], parts[1]
+
 
 @dataclass
 class QueryDemo:
