@@ -10,7 +10,7 @@ from collections.abc import Callable, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal, cast
+from typing import Any, Literal, cast, override
 
 import delphyne.core as dp
 from delphyne.analysis import browsable_traces as br
@@ -268,16 +268,14 @@ class DemoHintResolver(nv.HintResolver):
         # Keeping track of implicit answers
         self.implicit: list[tuple[dp.SerializedQuery, fb.ImplicitAnswer]] = []
 
-    def __call__(
+    def _answer_with_demo_examples(
         self,
-        query: dp.AttachedQuery[Any],
+        query: dp.SerializedQuery,
+        ref: refs.GlobalSpacePath,
         hint: refs.HintValue | None,
-        implicit_answer: Callable[[], str] | None,
     ) -> refs.Answer | None:
-        serialized = dp.SerializedQuery.make(query.query)
-        # Look at the query demonstrations included in the demo
         for i, q in enumerate(self.queries):
-            if q == serialized:
+            if q == query:
                 self.query_used[i] = True
                 answers = self.demo.queries[i].answers
                 if not answers:
@@ -293,12 +291,34 @@ class DemoHintResolver(nv.HintResolver):
                         return None
                 demo_answer = answers[answer_id]
                 answer = dm.translate_answer(demo_answer)
-                self.answer_refs[(query.ref, answer)] = (i, answer_id)
+                self.answer_refs[(ref, answer)] = (i, answer_id)
                 return answer
-        # We only look at implicit answers if no hint is provided.
-        if hint is not None:
-            return None
+        return None
+
+    @override
+    def answer_with_hint(
+        self, query: dp.AttachedQuery[Any], hint: refs.HintValue
+    ) -> refs.Answer | None:
+        serialized = dp.SerializedQuery.make(query.query)
+        return self._answer_with_demo_examples(
+            query=serialized, ref=query.ref, hint=hint
+        )
+
+    @override
+    def answer_without_hint(
+        self,
+        query: dp.AttachedQuery[Any],
+        implicit_answer: Callable[[], str] | None,
+    ) -> refs.Answer | None:
+        serialized = dp.SerializedQuery.make(query.query)
+        # First, we look at answers within the `queries` section.
+        internal_answer = self._answer_with_demo_examples(
+            query=serialized, ref=query.ref, hint=None
+        )
+        if internal_answer is not None:
+            return internal_answer
         # Look at previous implicit answers
+        # This way, implicit answers are cached
         for serialized_key, a in self.implicit:
             if serialized == serialized_key:
                 return refs.Answer(None, a.answer)
@@ -469,7 +489,7 @@ def _interpret_test_select_step(
                 diagnostics.append(("error", msg))
                 return tree, "stop"
             tracer.trace_query(source)
-            answer = hint_resolver(source, None, None)
+            answer = hint_resolver.answer_without_hint(source, None)
             if answer is None:
                 msg = f"Query not answered: {space_ref_pretty}."
                 diagnostics.append(("error", msg))

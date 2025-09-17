@@ -2,10 +2,11 @@
 Resolving references within a trace.
 """
 
+from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
-from typing import Any, Protocol, cast
+from typing import Any, cast
 
 import delphyne.core as dp
 import delphyne.core.demos as dm
@@ -53,26 +54,47 @@ class NavigationInfo:
     unused_hints: list[refs.Hint] = field(default_factory=list[refs.Hint])
 
 
-class HintResolver(Protocol):
-    def __call__(
+class HintResolver(ABC):
+    """
+    An oracle for answering queries, with or without hints.
+    """
+
+    @abstractmethod
+    def answer_with_hint(
+        self, query: dp.AttachedQuery[Any], hint: refs.HintValue
+    ) -> refs.Answer | None:
+        """
+        Try and answer a query using a hint.
+
+        If the hint is not applicable, return None.
+        """
+        pass
+
+    @abstractmethod
+    def answer_without_hint(
         self,
         query: dp.AttachedQuery[Any],
-        hint: refs.HintValue | None,
         implicit_answer: Callable[[], str] | None,
     ) -> refs.Answer | None:
         """
-        Take a query and a hint and return a suitable answer. If no hint
-        is provided, the default answer is expected. If the hint cannot
-        be resolved (e.g. the query is not in the demo or the hint is
-        not included as an answer label), `None` should be returned.
+        Try and answer a query without a hint.
+
+        Arguments:
+            query: The query to answer.
+            implicit_answer: A function to call to try and generate
+                implicit answers in case no default is available.
         """
-        ...
+        pass
 
 
-class IdentifierResolver(Protocol):
-    def resolve_node(self, id: refs.NodeId) -> dp.AnyTree: ...
+class IdentifierResolver(ABC):
+    @abstractmethod
+    def resolve_node(self, id: refs.NodeId) -> dp.AnyTree:
+        pass
 
-    def resolve_answer(self, id: refs.AnswerId) -> dp.Answer: ...
+    @abstractmethod
+    def resolve_answer(self, id: refs.AnswerId) -> dp.Answer:
+        pass
 
 
 @dataclass
@@ -334,13 +356,15 @@ class Navigator:
             else:
                 # We don't send the implicit answer the first time since
                 # we don't want to consume the hint.
-                answer = self.hint_resolver(query, hints[0].hint, None)
+                answer = self.hint_resolver.answer_with_hint(
+                    query, hints[0].hint
+                )
             if answer is not None:
                 used_hint = hints[0]
                 hints = hints[1:]
         # If we could not use a hint, we try with the default answer
         if answer is None:
-            answer = self.hint_resolver(query, None, implicit)
+            answer = self.hint_resolver.answer_without_hint(query, implicit)
         # If we still cannot, resolve, maybe the query has a default answer
         if answer is None:
             if (defa := query.query.default_answer()) is not None:

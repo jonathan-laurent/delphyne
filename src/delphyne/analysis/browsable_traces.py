@@ -12,7 +12,7 @@ import pprint
 from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, override
 
 import delphyne.core as dp
 from delphyne.analysis import feedback as fb
@@ -247,7 +247,7 @@ def _space_elements_in_space_ref(
 #####
 
 
-class IdentifierResolverFromCache:
+class IdentifierResolverFromCache(nv.IdentifierResolver):
     def __init__(self, trace: dp.Trace, cache: dp.TreeCache) -> None:
         self.trace = trace
         # Index cached nodes by ids instead of full paths.
@@ -255,9 +255,11 @@ class IdentifierResolverFromCache:
         for id in trace.nodes:
             self.cache[id] = cache[trace.expand_node_id(id)]
 
+    @override
     def resolve_node(self, id: refs.NodeId) -> dp.AnyTree:
         return self.cache[id]
 
+    @override
     def resolve_answer(self, id: refs.AnswerId) -> dp.Answer:
         return self.trace.answers[id][1]
 
