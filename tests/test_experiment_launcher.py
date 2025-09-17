@@ -101,3 +101,4 @@ def test_experiment_launcher(
         print("Experiment completed successfully.")
     experiment.get_status()
     assert experiment.is_done()
+    experiment.replay_all_configs()

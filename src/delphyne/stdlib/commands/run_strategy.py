@@ -8,11 +8,12 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, assert_type, cast
 
 import delphyne.analysis as analysis
 import delphyne.analysis.feedback as fb
 import delphyne.core as dp
+import delphyne.core.refs as refs
 import delphyne.stdlib.environments as en
 import delphyne.stdlib.models as md
 import delphyne.stdlib.policies as pol
@@ -30,7 +31,10 @@ class RunStrategyResponse:
     Attributes:
         success: Whether at least one success value was generated.
         values: Generated success values.
-        spent_budegt: Spent budget.
+        spent_budget: Spent budget.
+        success_nodes: Identifiers of success nodes in the trace. Only
+            available when the trace is exported, in which case it has
+            the same length as `values`.
         raw_trace: Raw trace of the strategy execution, if requested.
         log: Log messages generated during the strategy execution.
         browsable_trace: A browsable trace, if requested.
@@ -39,9 +43,10 @@ class RunStrategyResponse:
     success: bool
     values: Sequence[Any | None]
     spent_budget: Mapping[str, float]
-    raw_trace: dp.ExportableTrace | None
-    log: Sequence[dp.ExportableLogMessage] | None
-    browsable_trace: fb.Trace | None
+    success_nodes: Sequence[int] | None = None
+    raw_trace: dp.ExportableTrace | None = None
+    log: Sequence[dp.ExportableLogMessage] | None = None
+    browsable_trace: fb.Trace | None = None
 
 
 @dataclass(kw_only=True)
@@ -94,7 +99,7 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
     if args.budget is not None:
         stream = stream.with_budget(dp.BudgetLimit(args.budget))
     stream = stream.take(args.num_generated)
-    results: list[T] = []
+    results: list[dp.Tracked[T]] = []
     success = False
     total_budget = dp.Budget.zero()
 
@@ -112,16 +117,22 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
         trace = env.tracer.trace
         raw_trace = trace.export() if export_raw_trace else None
         browsable_trace: fb.Trace | None = None
+        success_nodes = None
+        if raw_trace is not None:
+            success_nodes = [
+                _node_id_of_tracked_value(r, trace).id for r in results
+            ]
         if export_browsable_trace:
             assert cache is not None
             browsable_trace = analysis.compute_browsable_trace(trace, cache)
         log = list(env.tracer.export_log()) if export_log else None
-        values = [serialize_result(r) for r in results]
+        values = [serialize_result(r.value) for r in results]
         response = RunStrategyResponse(
             success=success,
             values=values,
             spent_budget=total_budget.values,
             raw_trace=raw_trace,
+            success_nodes=success_nodes,
             log=log,
             browsable_trace=browsable_trace,
         )
@@ -165,7 +176,7 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
             match msg:
                 case Solution():
                     success = True
-                    results.append(msg.tracked.value)
+                    results.append(msg.tracked)
                 case Spent(b):
                     total_budget += b
                 case Barrier():
@@ -299,3 +310,18 @@ def run_strategy(
             export_all_on_pull=args.export_all_on_pull,
         ),
     )
+
+
+def _node_id_of_tracked_value(
+    value: dp.Tracked[object], trace: dp.Trace
+) -> refs.NodeId:
+    ref = value.ref
+    while isinstance(ref, refs.IndexedRef):
+        ref = ref.ref
+    eref = ref.element
+    assert not isinstance(
+        eref, (refs.HintsRef, refs.Answer, refs.AnswerId, refs.NodeId)
+    )
+    assert_type(eref, refs.NodePath)
+    gref: refs.GlobalNodePath = ((refs.MAIN_SPACE, eref),)
+    return trace.convert_global_node_path(gref)

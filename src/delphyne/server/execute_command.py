@@ -8,8 +8,7 @@ from pathlib import Path
 from typing import Any
 
 import delphyne.analysis as analysis
-import delphyne.core as dp
-import delphyne.stdlib.environments as en
+import delphyne.core_and_base as dp
 import delphyne.stdlib.tasks as ta
 import delphyne.utils.typing as ty
 from delphyne.stdlib.commands import STD_COMMANDS
@@ -43,7 +42,7 @@ def execute_command(
     except analysis.ObjectNotFound as e:
         error = ("error", f"Not found: {e}")
         task.set_result(ta.CommandResult([error], None))
-    except en.InvalidDemoFile as e:
+    except dp.InvalidDemoFile as e:
         error = ("error", f"Invalid demonstration file: {e.file}")
         task.set_result(ta.CommandResult([error], None))
     except dp.TemplateError as e:
