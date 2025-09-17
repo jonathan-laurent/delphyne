@@ -19,6 +19,7 @@ from delphyne.core.answer_databases import (
     LocatedAnswerSource,
     SerializedQuery,
     SeveralAnswerMatches,
+    SourceLoadingError,
 )
 from delphyne.core.chats import (
     AnswerPrefix,

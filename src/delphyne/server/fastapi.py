@@ -11,7 +11,7 @@ from fastapi.responses import StreamingResponse
 
 import delphyne.analysis as analysis
 import delphyne.analysis.feedback as fb
-import delphyne.core as dp
+import delphyne.core_and_base as dp
 import delphyne.server.execute_command as cm
 import delphyne.stdlib as std
 import delphyne.stdlib.tasks as ta
@@ -37,7 +37,15 @@ def make_server(launcher: TaskLauncher):
         extra = std.stdlib_globals()
         context = context.with_root(Path(workspace_root))
         stream = launcher(
-            request, fb.DemoFeedback, stream_eval, demo, context, extra
+            request,
+            fb.DemoFeedback,
+            stream_eval,
+            demo,
+            context,
+            extra_objects=extra,
+            answer_database_loader=dp.standard_answer_loader(
+                Path(workspace_root)
+            ),
         )
         return StreamingResponse(stream, media_type="text/event-stream")
 

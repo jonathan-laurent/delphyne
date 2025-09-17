@@ -21,7 +21,6 @@ TESTS_FOLDER = Path(__file__).parent
 CONTEXT = analysis.DemoExecutionContext(
     strategy_dirs=[TESTS_FOLDER],
     modules=[STRATEGY_MODULE],
-    workspace_root=TESTS_FOLDER,
 )
 
 
@@ -58,7 +57,10 @@ class DemoExpectTest(dp.StrategyDemo):
 
     def check(self, ctx: analysis.DemoExecutionContext):
         feedback, trace = analysis.evaluate_strategy_demo_and_return_trace(
-            self, ctx, dp.stdlib_globals()
+            self,
+            ctx,
+            extra_objects=dp.stdlib_globals(),
+            answer_database_loader=dp.standard_answer_loader(TESTS_FOLDER),
         )
         if trace is not None:
             print(dump_yaml(dp.ExportableTrace, trace.export()))
@@ -126,7 +128,9 @@ def test_query_demo(name: str, valid: bool):
     demo = load_demo(name)
     assert isinstance(demo, dp.QueryDemo)
     extra = dp.stdlib_globals()
-    ret = analysis.evaluate_standalone_query_demo(demo, CONTEXT, extra)
+    ret = analysis.evaluate_standalone_query_demo(
+        demo, CONTEXT, extra_objects=extra
+    )
     has_errors = ret.diagnostics or ret.answer_diagnostics
     if valid:
         assert not has_errors

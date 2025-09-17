@@ -101,7 +101,7 @@ class DelphyneCLI:
         workspace_dir = self._workspace_dir_for(file_path)
         config = load_config(workspace_dir, local_config_from=file_path)
         context = config.base
-        feedback = check_demo_file(file_path, context)
+        feedback = check_demo_file(file_path, context, workspace_dir)
         self._process_diagnostics(feedback.warnings, feedback.errors)
 
     def run(

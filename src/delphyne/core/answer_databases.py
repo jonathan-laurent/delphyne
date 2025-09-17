@@ -160,6 +160,15 @@ Duplicates are allowed and are removed by `AnswerDatabase`.
 
 
 @dataclass
+class SourceLoadingError(Exception):
+    source: AnswerSource
+    exn: Exception
+
+    def __str__(self):
+        return f"Failed to load answers from source {self.source}:\n{self.exn}"
+
+
+@dataclass
 class AnswerDatabase:
     """
     A database of answers, to be fetched as implicit answers in a
@@ -171,9 +180,20 @@ class AnswerDatabase:
     def __init__(
         self, sources: Sequence[AnswerSource], *, loader: AnswerDatabaseLoader
     ):
+        """
+        Initialize the database by loading answers from a number of
+        sources.
+
+        Raises:
+            SourceLoadingError: A source failed to be loaded.
+        """
         self.answers = defaultdict(list)
         for s in sources:
-            for q, a in loader(s):
+            try:
+                answers = loader(s)
+            except Exception as e:
+                raise SourceLoadingError(s, e)
+            for q, a in answers:
                 self.answers[q].append(a)
         self._remove_duplicates()
 

@@ -8,7 +8,7 @@ from pathlib import Path
 import yaml
 
 from delphyne import analysis, stdlib
-from delphyne import core as dp
+from delphyne import core_and_base as dp
 from delphyne.utils import typing as ty
 
 
@@ -49,7 +49,7 @@ class DemoFileFeedback:
 
 
 def check_demo_file(
-    file: Path, context: analysis.DemoExecutionContext
+    file: Path, context: analysis.DemoExecutionContext, workspace_root: Path
 ) -> DemoFileFeedback:
     # TODO: we should better report line numbers.
     demos_json = yaml.safe_load(open(file, "r").read())
@@ -57,7 +57,12 @@ def check_demo_file(
     extra = stdlib.stdlib_globals()
     ret = DemoFileFeedback([], [])
     for i, d in enumerate(demos):
-        feedback = analysis.evaluate_demo(d, context, extra)
+        feedback = analysis.evaluate_demo(
+            d,
+            context,
+            extra_objects=extra,
+            answer_database_loader=dp.standard_answer_loader(workspace_root),
+        )
         name = d.demonstration if d.demonstration else f"#{i}"
         ret.add_diagnostics(name, feedback)
     return ret

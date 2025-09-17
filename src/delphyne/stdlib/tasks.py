@@ -182,7 +182,6 @@ class CommandExecutionContext:
         return analysis.DemoExecutionContext(
             strategy_dirs=self.strategy_dirs,
             modules=self.modules,
-            workspace_root=self.workspace_root,
         )
 
     def with_root(self, root: Path) -> "CommandExecutionContext":

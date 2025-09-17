@@ -16,6 +16,7 @@ import delphyne.core as dp
 from delphyne.analysis import browsable_traces as br
 from delphyne.analysis import feedback as fb
 from delphyne.analysis import navigation as nv
+from delphyne.core import answer_databases as da
 from delphyne.core import demos as dm
 from delphyne.core import refs
 from delphyne.utils import typing as tp
@@ -78,20 +79,15 @@ class DemoExecutionContext:
         modules: A list of modules in which python object identifiers
             should be resolved. Modules can be part of packages and so
             their name may feature `.`.
-        workspace_root: The root directory of the workspace. This value
-            is useful for interpreting relative paths in `using`
-            statements.
     """
 
     strategy_dirs: Sequence[Path]
     modules: Sequence[str]
-    workspace_root: Path | None = None
 
     def with_root(self, root: Path) -> "DemoExecutionContext":
         return DemoExecutionContext(
             strategy_dirs=[root / p for p in self.strategy_dirs],
             modules=self.modules,
-            workspace_root=root,
         )
 
 
@@ -252,8 +248,14 @@ class _CachedImplicitAnswer:
 
 
 class DemoHintResolver(nv.HintResolver):
-    def __init__(self, loader: ObjectLoader, demo: dm.StrategyDemo):
+    def __init__(
+        self,
+        loader: ObjectLoader,
+        demo: dm.StrategyDemo,
+        external_answers: dp.AnswerDatabase,
+    ):
         self.demo = demo
+        self.external_answers = external_answers
         self.queries: list[dp.SerializedQuery] = []
         for i, q in enumerate(demo.queries):
             try:
@@ -335,6 +337,17 @@ class DemoHintResolver(nv.HintResolver):
         # If cached as an implicit answer...
         if serialized in self.implicit:
             return self.implicit[serialized].answer
+        # We first try to look at external answers
+        if (fetched := self.external_answers.fetch(serialized)) is not None:
+            source_str = da.pp_located_answer_source(fetched.source)
+            implicit = _build_implicit_answer(
+                query.query,
+                fetched.answer,
+                comment=f"fetched from {source_str}",
+            )
+            cached = _CachedImplicitAnswer("fetched", fetched.answer, implicit)
+            self.implicit[serialized] = cached
+            return fetched.answer
         # Maybe we try adding an implicit answer
         if implicit_answer and (icand := implicit_answer()) is not None:
             cat, ans = icand
@@ -462,6 +475,10 @@ def _handle_navigation_error_or_reraise(
         msg = f"Node {exn.tree.node.effect_name()} has no primary space."
         diagnostics.append(("error", msg))
         return exn.tree
+    elif isinstance(exn, da.SeveralAnswerMatches):
+        msg = str(exn)
+        diagnostics.append(("error", msg))
+        return None
     raise exn
 
 
@@ -649,7 +666,9 @@ def _evaluate_test(
 def evaluate_strategy_demo_and_return_trace(
     demo: dm.StrategyDemo,
     context: DemoExecutionContext,
+    *,
     extra_objects: dict[str, object],
+    answer_database_loader: dp.AnswerDatabaseLoader,
 ) -> tuple[fb.StrategyDemoFeedback, dp.Trace | None]:
     feedback = fb.StrategyDemoFeedback(
         kind="strategy",
@@ -679,7 +698,14 @@ def evaluate_strategy_demo_and_return_trace(
         _strategy_exn(feedback.global_diagnostics, e)
         return feedback, None
     try:
-        hresolver = DemoHintResolver(loader, demo)
+        answer_database = dp.AnswerDatabase(
+            demo.using, loader=answer_database_loader
+        )
+    except dp.SourceLoadingError as e:
+        feedback.global_diagnostics.append(("error", str(e)))
+        return feedback, trace
+    try:
+        hresolver = DemoHintResolver(loader, demo, answer_database)
     except DemoHintResolver.InvalidQuery as e:
         msg = f"Failed to load query:\n{e.exn}"
         feedback.query_diagnostics.append((e.id, ("error", msg)))
@@ -720,6 +746,7 @@ def evaluate_strategy_demo_and_return_trace(
 def evaluate_standalone_query_demo(
     demo: dm.QueryDemo,
     context: DemoExecutionContext,
+    *,
     extra_objects: dict[str, object],
 ) -> fb.QueryDemoFeedback:
     feedback = fb.QueryDemoFeedback(
@@ -753,7 +780,9 @@ def evaluate_standalone_query_demo(
 def evaluate_demo(
     demo: dm.Demo,
     context: DemoExecutionContext,
+    *,
     extra_objects: dict[str, object],
+    answer_database_loader: dp.AnswerDatabaseLoader,
 ) -> fb.DemoFeedback:
     """
     Evaluate a query or strategy demonstration.
@@ -776,8 +805,13 @@ def evaluate_demo(
     """
     if isinstance(demo, dm.StrategyDemo):
         feedback, _ = evaluate_strategy_demo_and_return_trace(
-            demo, context, extra_objects
+            demo,
+            context,
+            extra_objects=extra_objects,
+            answer_database_loader=answer_database_loader,
         )
         return feedback
     else:
-        return evaluate_standalone_query_demo(demo, context, extra_objects)
+        return evaluate_standalone_query_demo(
+            demo, context, extra_objects=extra_objects
+        )
