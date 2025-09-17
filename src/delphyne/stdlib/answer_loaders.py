@@ -5,6 +5,7 @@ A concrete implementation of `AnswerDatabaseLoader`.
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 import yaml
 
@@ -63,7 +64,26 @@ def standard_answer_loader(workspace_root: Path) -> dp.AnswerDatabaseLoader:
     def command_result_loader(
         source: dp.CommandResultAnswerSource,
     ) -> _AnswerIterable:
-        assert False
+        trace, success_nodes = load_trace_and_success_nodes_from_command_file(
+            workspace_root / source.command
+        )
+        node_ids = source.node_ids
+        if node_ids is None:
+            if success_nodes:
+                node_ids = [success_nodes[0]]
+            else:
+                node_ids = []
+        for node_id in node_ids:
+            for query, answer_id, answer in relevant_answers(trace, node_id):
+                located = dp.LocatedAnswer(
+                    answer=answer,
+                    source=dp.FromCommandResult(
+                        "command_result",
+                        source.command,
+                        answer_id,
+                    ),
+                )
+                yield (query, located)
 
     def unfiltered_loader(source: dp.AnswerSource) -> _AnswerIterable:
         match source:
@@ -139,8 +159,28 @@ def demo_with_name(demos: Sequence[dm.Demo], name: str) -> dm.Demo:
     raise ValueError(f"No demonstration named '{name}' found")
 
 
+def load_trace_and_success_nodes_from_command_file(
+    path: Path,
+) -> tuple[dp.ExportableTrace, Sequence[int]]:
+    """
+    Load a trace from a command file.
+    """
+
+    if not path.suffix.endswith(COMMAND_FILE_EXT):
+        path = path.with_suffix(COMMAND_FILE_EXT)
+    with open(path, "r") as f:
+        content: Any = yaml.safe_load(f)
+    for key in COMMAND_RESULT_PATH:
+        content = content[key]
+    trace_raw = content[COMMAND_RESULT_TRACE_FIELD]
+    success_value = content.get(COMMAND_RESULT_SUCCESS_NODES_FIELD, [])
+    trace = ty.pydantic_load(dp.ExportableTrace, trace_raw)
+    success_nodes = ty.pydantic_load(Sequence[int], success_value)
+    return trace, success_nodes
+
+
 #####
-##### Extract answers from commands
+##### Extract answers from traces
 #####
 
 
@@ -176,7 +216,7 @@ def node_and_answer_ids_in_node_origin_string(
 
 def relevant_answers(
     trace: dp.ExportableTrace, node_id: int
-) -> Iterable[tuple[dp.SerializedQuery, dp.Answer]]:
+) -> Iterable[tuple[dp.SerializedQuery, int, dp.Answer]]:
     """
     Take a trace and a node identifier and return an iterable of all
     answers needed to reach this node in the trace.
@@ -189,7 +229,9 @@ def relevant_answers(
         for ans_id in query.answers:
             answer_info[ans_id] = query
 
-    def aux(node_id: int) -> Iterable[tuple[dp.SerializedQuery, dp.Answer]]:
+    def aux(
+        node_id: int,
+    ) -> Iterable[tuple[dp.SerializedQuery, int, dp.Answer]]:
         if node_id == 0:
             return
         origin = trace.nodes[node_id]
@@ -200,7 +242,7 @@ def relevant_answers(
                 f"Missing query information for answer {aid}."
             )
             query = dp.SerializedQuery.from_json(info.query, info.args)
-            yield (query, info.answers[aid])
+            yield (query, aid, info.answers[aid])
         for n in nids:
             yield from aux(n)
 
