@@ -11,17 +11,19 @@ import yaml
 import delphyne.core as dp
 import delphyne.core.demos as dm
 import delphyne.utils.typing as ty
+from delphyne.core.traces import ExportableQueryInfo, NodeOriginStr
 
 type _AnswerIterable = Iterable[tuple[dp.SerializedQuery, dp.LocatedAnswer]]
 
 
 DEMO_FILE_EXT = ".demo.yaml"
 COMMAND_FILE_EXT = ".exec.yaml"
+COMMAND_RESULT_PATH = ("outcome", "result")
+COMMAND_RESULT_TRACE_FIELD = "raw_trace"
+COMMAND_RESULT_SUCCESS_NODES_FIELD = "success_nodes"
 
 
-def standard_answer_loader(
-    workspace_root: Path,
-) -> dp.AnswerDatabaseLoader:
+def standard_answer_loader(workspace_root: Path) -> dp.AnswerDatabaseLoader:
     """
     Standard answer loader.
     """
@@ -63,12 +65,21 @@ def standard_answer_loader(
     ) -> _AnswerIterable:
         assert False
 
-    def loader(source: dp.AnswerSource) -> _AnswerIterable:
+    def unfiltered_loader(source: dp.AnswerSource) -> _AnswerIterable:
         match source:
             case dp.CommandResultAnswerSource():
                 return command_result_loader(source)
             case dp.DemoAnswerSource():
                 return demo_loader(source)
+
+    def loader(source: dp.AnswerSource) -> _AnswerIterable:
+        filter = source.queries
+        if filter is None:
+            yield from unfiltered_loader(source)
+        else:
+            for query, answer in unfiltered_loader(source):
+                if query.name in filter:
+                    yield (query, answer)
 
     return loader
 
@@ -126,3 +137,71 @@ def demo_with_name(demos: Sequence[dm.Demo], name: str) -> dm.Demo:
     if len(cands) == 1:
         return cands[0]
     raise ValueError(f"No demonstration named '{name}' found")
+
+
+#####
+##### Extract answers from commands
+#####
+
+
+def node_and_answer_ids_in_node_origin_string(
+    origin: NodeOriginStr,
+) -> tuple[set[int], set[int]]:
+    """
+    Return all node ids and answer ids mentioned in a pretty printed
+    node origin reference.
+
+    This is implemented using regexes. Node ids are of the form `%<int>`
+    and answer ids are of the form `@<int>`. In addition, `origin` is of
+    the form `nested(id, ...)` or `child(id, ...)` and `id` must also be
+    added to the sequence of recognized node ids.
+    """
+    import re
+
+    # Find all %<int> (node ids)
+    node_id_matches = re.findall(r"%(\d+)", origin)
+    node_ids = set(int(n) for n in node_id_matches)
+
+    # Find all @<int> (answer ids)
+    answer_id_matches = re.findall(r"@(\d+)", origin)
+    answer_ids = set(int(a) for a in answer_id_matches)
+
+    # Find nested(id, ...) and child(id, ...)
+    nested_child_matches = re.findall(r"(?:nested|child)\((\d+)", origin)
+    assert len(nested_child_matches) == 1
+    node_ids.update(int(n) for n in nested_child_matches)
+
+    return node_ids, answer_ids
+
+
+def relevant_answers(
+    trace: dp.ExportableTrace, node_id: int
+) -> Iterable[tuple[dp.SerializedQuery, dp.Answer]]:
+    """
+    Take a trace and a node identifier and return an iterable of all
+    answers needed to reach this node in the trace.
+
+    The output can include duplicates.
+    """
+
+    answer_info: dict[int, ExportableQueryInfo] = {}
+    for query in trace.queries:
+        for ans_id in query.answers:
+            answer_info[ans_id] = query
+
+    def aux(node_id: int) -> Iterable[tuple[dp.SerializedQuery, dp.Answer]]:
+        if node_id == 0:
+            return
+        origin = trace.nodes[node_id]
+        nids, aids = node_and_answer_ids_in_node_origin_string(origin)
+        for aid in aids:
+            info = answer_info[aid]
+            assert info.query is not None and info.args is not None, (
+                f"Missing query information for answer {aid}."
+            )
+            query = dp.SerializedQuery.from_json(info.query, info.args)
+            yield (query, info.answers[aid])
+        for n in nids:
+            yield from aux(n)
+
+    yield from aux(node_id)

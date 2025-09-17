@@ -82,3 +82,29 @@ def test_standard_model_with_suffix():
     # We explicitly choose not to infer pricing
     model = dp.openai_model("unknown_openai_model", pricing=None)
     assert model.pricing is None
+
+
+#####
+##### Testing loaders
+#####
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    [
+        (
+            "nested(23, compare([cands{%2}, cands{%11}]))",
+            (set([23, 2, 11]), set[int]()),
+        ),
+        (
+            "child(2, cands{@3})",
+            (set([2]), set([3])),
+        ),
+    ],
+)
+def test_node_and_answer_ids_in_node_origin_string(
+    input: str, expected: tuple[set[int], set[int]]
+):
+    import delphyne.stdlib.answer_loaders as al
+
+    assert al.node_and_answer_ids_in_node_origin_string(input) == expected

@@ -54,6 +54,8 @@ class ShortLocation:
 type NodeOriginStr = str
 """
 A concise, serialized representation for `NodeOrigin`.
+
+Can be parsed back using `parse.node_origin`.
 """
 
 

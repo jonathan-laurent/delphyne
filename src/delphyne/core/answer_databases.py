@@ -152,10 +152,20 @@ class SeveralAnswerMatches(Exception):
 type AnswerDatabaseLoader = Callable[
     [AnswerSource], Iterable[tuple[SerializedQuery, LocatedAnswer]]
 ]
+"""
+Map an answer source to an iterable of query/answer pairs
+
+Duplicates are allowed and are removed by `AnswerDatabase`.
+"""
 
 
 @dataclass
 class AnswerDatabase:
+    """
+    A database of answers, to be fetched as implicit answers in a
+    demonstration or to override oracles in policies.
+    """
+
     answers: dict[SerializedQuery, list[LocatedAnswer]]
 
     def __init__(
@@ -165,6 +175,18 @@ class AnswerDatabase:
         for s in sources:
             for q, a in loader(s):
                 self.answers[q].append(a)
+        self._remove_duplicates()
+
+    def _remove_duplicates(self):
+        for query, answers in self.answers.items():
+            seen_sources: set[LocatedAnswerSource] = set()
+            unique_answers: list[LocatedAnswer] = []
+            for ans in answers:
+                src = ans.source
+                if src not in seen_sources:
+                    seen_sources.add(src)
+                    unique_answers.append(ans)
+            self.answers[query] = unique_answers
 
     def fetch(self, query: SerializedQuery) -> LocatedAnswer | None:
         cands = self.answers[query]
