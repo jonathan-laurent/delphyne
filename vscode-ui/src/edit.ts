@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { StrategyDemo } from "./stubs/demos";
+import { Answer, StrategyDemo } from "./stubs/demos";
 import { prettyYaml } from "./yaml_utils";
 import { insertYamlListElements } from "./edit_utils";
 
@@ -7,7 +7,7 @@ export function addQueries(
   queries: {
     name: string;
     args: Record<string, unknown>;
-    answer: string | null;
+    answer: Answer | null; // the __loc fields of Answer must not be set.
   }[],
   demo: StrategyDemo,
   editor: vscode.TextEditor,
@@ -16,7 +16,7 @@ export function addQueries(
   const listRange = demo.__loc__queries;
   const originalListEmpty = demo.queries.length === 0;
   const newYamlElements: string[] = queries.map((query) => {
-    const answers = query.answer ? [{ answer: query.answer }] : [];
+    const answers = query.answer ? [query.answer] : [];
     const item = { query: query.name, args: query.args, answers };
     return prettyYaml(item);
   });

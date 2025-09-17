@@ -2,8 +2,9 @@
 Type definitions for the feedback that results from evaluating a demo.
 """
 
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal
 
 #####
 ##### Diagnostic types
@@ -317,6 +318,20 @@ class TestFeedback:
 
 
 @dataclass
+class ImplicitAnswerToolCall:
+    """
+    A tool call, as a part of an implicit query answer.
+
+    Attributes:
+        tool: The name of the tool to call.
+        args: The arguments to pass to the tool.
+    """
+
+    tool: str
+    args: Mapping[str, Any]
+
+
+@dataclass(kw_only=True)
 class ImplicitAnswer:
     """
     An implicit answer that is not part of the demonstration but was
@@ -329,16 +344,24 @@ class ImplicitAnswer:
     Attributes:
         query_name: Query name.
         query_args: Arguments passed to the query.
-        answer: The implicit answer value, as a raw string (mode `None`
-            is implicitly used for parsing).
+        answer_mode: Answer mode.
+        answer_content: Answer content, as raw text or as a JSON value
+            for structured output.
+        answer_structured: Whether the answer is structured.
+        answer_tool_calls: Associated tool calls.
+        answer_justification: Justification for the answer.
+        comment: An optional comment that can be added to provide
+            context, to be logged in the extension's output channel.
     """
-
-    # TODO: generalize implicit answers to accept full answers instead
-    # of just a string? In particular, other modes could be used.
 
     query_name: str
     query_args: dict[str, object]
-    answer: str
+    answer_mode: str | None
+    answer_content: str | object
+    answer_structured: bool
+    answer_tool_calls: Sequence[ImplicitAnswerToolCall]
+    answer_justification: str | None
+    comment: str | None
 
 
 type ImplicitAnswerCategory = Literal["computations", "fetched"] | str

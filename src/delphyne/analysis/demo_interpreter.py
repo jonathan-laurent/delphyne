@@ -6,7 +6,7 @@ import importlib
 import sys
 import traceback
 from collections import defaultdict
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -85,7 +85,7 @@ class DemoExecutionContext:
 
     strategy_dirs: Sequence[Path]
     modules: Sequence[str]
-    workspace_root: Path | None
+    workspace_root: Path | None = None
 
     def with_root(self, root: Path) -> "DemoExecutionContext":
         return DemoExecutionContext(
@@ -244,6 +244,13 @@ def _append_path(paths: Sequence[Path]):
 #####
 
 
+@dataclass(frozen=True)
+class _CachedImplicitAnswer:
+    category: fb.ImplicitAnswerCategory
+    answer: dp.Answer
+    implicit: fb.ImplicitAnswer
+
+
 class DemoHintResolver(nv.HintResolver):
     def __init__(self, loader: ObjectLoader, demo: dm.StrategyDemo):
         self.demo = demo
@@ -266,20 +273,23 @@ class DemoHintResolver(nv.HintResolver):
         # To keep track of what queries are reachable
         self.query_used: list[bool] = [False] * len(self.queries)
         # Keeping track of implicit answers
-        self.implicit: list[tuple[dp.SerializedQuery, fb.ImplicitAnswer]] = []
+        self.implicit: dict[dp.SerializedQuery, _CachedImplicitAnswer] = {}
 
     def _answer_with_demo_examples(
         self,
         query: dp.SerializedQuery,
         ref: refs.GlobalSpacePath,
         hint: refs.HintValue | None,
-    ) -> refs.Answer | None:
+    ) -> (
+        refs.Answer
+        | Literal["no_answers", "query_not_found", "label_not_found"]
+    ):
         for i, q in enumerate(self.queries):
             if q == query:
                 self.query_used[i] = True
                 answers = self.demo.queries[i].answers
                 if not answers:
-                    return None
+                    return "no_answers"
                 if hint is None:
                     answer_id = 0
                 else:
@@ -288,53 +298,50 @@ class DemoHintResolver(nv.HintResolver):
                             answer_id = j
                             break
                     else:
-                        return None
+                        return "label_not_found"
                 demo_answer = answers[answer_id]
                 answer = dm.translate_answer(demo_answer)
                 self.answer_refs[(ref, answer)] = (i, answer_id)
                 return answer
-        return None
+        return "query_not_found"
 
     @override
     def answer_with_hint(
         self, query: dp.AttachedQuery[Any], hint: refs.HintValue
     ) -> refs.Answer | None:
         serialized = dp.SerializedQuery.make(query.query)
-        return self._answer_with_demo_examples(
+        res = self._answer_with_demo_examples(
             query=serialized, ref=query.ref, hint=hint
         )
+        return res if isinstance(res, dp.Answer) else None
 
     @override
     def answer_without_hint(
         self,
         query: dp.AttachedQuery[Any],
-        implicit_answer: Callable[[], str] | None,
+        implicit_answer: nv.ImplicitAnswerResolver | None,
     ) -> refs.Answer | None:
         serialized = dp.SerializedQuery.make(query.query)
         # First, we look at answers within the `queries` section.
         internal_answer = self._answer_with_demo_examples(
             query=serialized, ref=query.ref, hint=None
         )
-        if internal_answer is not None:
+        if isinstance(internal_answer, dp.Answer):
             return internal_answer
-        # Look at previous implicit answers
-        # This way, implicit answers are cached
-        for serialized_key, a in self.implicit:
-            if serialized == serialized_key:
-                return refs.Answer(None, a.answer)
+        if internal_answer != "query_not_found":
+            # Implicit answers are only considered for queries that are
+            # not explicitly listed in the `queries` section.
+            return None
+        # If cached as an implicit answer...
+        if serialized in self.implicit:
+            return self.implicit[serialized].answer
         # Maybe we try adding an implicit answer
-        if implicit_answer:
-            try:
-                ans_text = implicit_answer()
-            except Exception as e:
-                raise dp.StrategyException(e)
-            implicit = fb.ImplicitAnswer(
-                query.query.query_name(),
-                query.query.serialize_args(),
-                ans_text,
-            )
-            self.implicit.append((serialized, implicit))
-            return refs.Answer(None, ans_text)
+        if implicit_answer and (icand := implicit_answer()) is not None:
+            cat, ans = icand
+            implicit = _build_implicit_answer(query.query, ans)
+            cached = _CachedImplicitAnswer(cat, ans, implicit)
+            self.implicit[serialized] = cached
+            return ans
         return None
 
     def get_answer_refs(self) -> dict[nv.AnswerRef, fb.DemoAnswerId]:
@@ -343,9 +350,13 @@ class DemoHintResolver(nv.HintResolver):
     def get_implicit_answers(
         self,
     ) -> dict[fb.ImplicitAnswerCategory, list[fb.ImplicitAnswer]]:
-        if not self.implicit:
-            return {}
-        return {"computations": [a for _, a in self.implicit]}
+        ret: dict[fb.ImplicitAnswerCategory, list[fb.ImplicitAnswer]] = {}
+        for implicit in self.implicit.values():
+            cat = implicit.category
+            if cat not in ret:
+                ret[cat] = []
+            ret[cat].append(implicit.implicit)
+        return ret
 
     def set_reachability_diagnostics(self, feedback: fb.StrategyDemoFeedback):
         for i, used in enumerate(self.query_used):
@@ -366,6 +377,32 @@ class DemoHintResolver(nv.HintResolver):
         query_id: int
         answer_id: int
         parse_error: dp.ParseError
+
+
+def _build_implicit_answer(
+    query: dp.AbstractQuery[Any],
+    answer: dp.Answer,
+    comment: str | None = None,
+) -> fb.ImplicitAnswer:
+    if isinstance(answer.content, dp.Structured):
+        structured = True
+        content = answer.content.structured
+    else:
+        structured = False
+        content = answer.content
+    tool_calls = [
+        fb.ImplicitAnswerToolCall(tc.name, tc.args) for tc in answer.tool_calls
+    ]
+    return fb.ImplicitAnswer(
+        query_name=query.query_name(),
+        query_args=query.serialize_args(),
+        answer_mode=answer.mode,
+        answer_content=content,
+        answer_structured=structured,
+        answer_tool_calls=tool_calls,
+        answer_justification=answer.justification,
+        comment=comment,
+    )
 
 
 #####

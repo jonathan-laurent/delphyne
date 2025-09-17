@@ -8,6 +8,7 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from typing import Any, cast
 
+import delphyne.analysis.feedback as fb
 import delphyne.core as dp
 import delphyne.core.demos as dm
 from delphyne.core import AnyTree, refs
@@ -54,6 +55,11 @@ class NavigationInfo:
     unused_hints: list[refs.Hint] = field(default_factory=list[refs.Hint])
 
 
+type ImplicitAnswerResolver = Callable[
+    [], tuple[fb.ImplicitAnswerCategory, refs.Answer] | None
+]
+
+
 class HintResolver(ABC):
     """
     An oracle for answering queries, with or without hints.
@@ -74,7 +80,7 @@ class HintResolver(ABC):
     def answer_without_hint(
         self,
         query: dp.AttachedQuery[Any],
-        implicit_answer: Callable[[], str] | None,
+        implicit_answer: ImplicitAnswerResolver | None,
     ) -> refs.Answer | None:
         """
         Try and answer a query without a hint.
@@ -258,7 +264,7 @@ class Navigator:
             case dp.AttachedQuery():
                 implicit = None
                 if isinstance(tree.node, dp.ComputationNode):
-                    implicit = tree.node.run_computation
+                    implicit = _implicit_answer_with_compute(tree.node)
                 return self.answer_from_hints(tree, source, hints, implicit)
             case dp.NestedTree():
                 tree = source.spawn_tree()
@@ -334,7 +340,7 @@ class Navigator:
         tree: AnyTree,
         query: dp.AttachedQuery[Any],
         hints: Sequence[refs.Hint],
-        implicit: Callable[[], str] | None,
+        implicit: ImplicitAnswerResolver | None,
     ) -> tuple[dp.Tracked[Any], Sequence[refs.Hint]]:
         assert self.hint_resolver is not None
         if self.tracer is not None:
@@ -391,3 +397,16 @@ def _find_answer_in_finite_set(
         if isinstance(a.content, str) and a.content == content:
             return a
     return None
+
+
+def _implicit_answer_with_compute(
+    node: dp.ComputationNode,
+) -> ImplicitAnswerResolver:
+    def run():
+        try:
+            answer = node.run_computation()
+        except Exception as e:
+            raise dp.StrategyException(e)
+        return ("computations", dp.Answer(None, answer))
+
+    return run

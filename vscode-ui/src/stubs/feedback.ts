@@ -90,10 +90,20 @@ export interface TestFeedback {
   node_id: TraceNodeId | null;
 }
 
+export interface ImplicitAnswerToolCall {
+  tool: string;
+  args: Record<string, unknown>;
+}
+
 export interface ImplicitAnswer {
   query_name: string;
   query_args: Record<string, unknown>;
-  answer: string;
+  answer_mode: string | null;
+  answer_content: string | unknown;
+  answer_structured: boolean;
+  answer_tool_calls: ImplicitAnswerToolCall[];
+  answer_justification: string | null;
+  comment: string | null;
 }
 
 export type ImplicitAnswerCategory = "computations" | "fetched" | string;
@@ -117,3 +127,4 @@ export interface QueryDemoFeedback {
 }
 
 export type DemoFeedback = StrategyDemoFeedback | QueryDemoFeedback;
+

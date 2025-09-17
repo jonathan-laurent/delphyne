@@ -6,16 +6,21 @@ import * as vscode from "vscode";
 import { DemosManager } from "./demos_manager";
 import { DelphyneServer } from "./server";
 import { DemoElement, queryOfDemoElement } from "./elements";
-import { DemoFeedback, StrategyDemoFeedback } from "./stubs/feedback";
+import {
+  DemoFeedback,
+  ImplicitAnswer,
+  StrategyDemoFeedback,
+} from "./stubs/feedback";
 import {
   ExecutionContext,
   getLocalExecutionContext,
   getWorkspaceRoot,
 } from "./config";
-import { StrategyDemo } from "./stubs/demos";
+import { Answer, StrategyDemo, ToolCall } from "./stubs/demos";
 import { PointedTree, TreeInfo, TreeView } from "./tree_view";
 import { ROOT_ID } from "./common";
 import { addQueries } from "./edit";
+import { log } from "./logging";
 
 export class DemosActionsProvider implements vscode.CodeActionProvider {
   /////
@@ -175,11 +180,16 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
         title: "Add Implicit Answers",
         arguments: [
           () => {
-            const queries = answers.map((ia) => ({
-              name: ia.query_name,
-              args: ia.query_args,
-              answer: ia.answer,
-            }));
+            const queries = answers.map((ia) => {
+              if (ia.comment) {
+                log.info(`Adding implicit answer: ${ia.comment}`);
+              }
+              return {
+                name: ia.query_name,
+                args: ia.query_args,
+                answer: answerFromImplicitAnswer(ia),
+              };
+            });
             addQueries(queries, demo, editor);
           },
         ],
@@ -217,6 +227,24 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
     };
     return action;
   }
+}
+
+function answerFromImplicitAnswer(ia: ImplicitAnswer): Answer {
+  const answer: Answer = {} as Answer;
+  answer.answer = ia.answer_content;
+  if (ia.answer_mode !== undefined && ia.answer_mode !== null) {
+    answer.mode = ia.answer_mode;
+  }
+  if (ia.answer_tool_calls && ia.answer_tool_calls.length > 0) {
+    answer.call = ia.answer_tool_calls as ToolCall[];
+  }
+  if (typeof ia.answer_content === "string" && ia.answer_structured) {
+    answer.structured = true;
+  }
+  if (ia.answer_justification) {
+    answer.justification = ia.answer_justification;
+  }
+  return answer;
 }
 
 //////
