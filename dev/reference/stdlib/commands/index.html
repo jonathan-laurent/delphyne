@@ -2873,20 +2873,7 @@ specification.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/commands/run_strategy.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span>
-<span class="normal">290</span>
-<span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">294</span>
 <span class="normal">295</span>
 <span class="normal">296</span>
 <span class="normal">297</span>
@@ -2904,7 +2891,21 @@ specification.</p>
 <span class="normal">309</span>
 <span class="normal">310</span>
 <span class="normal">311</span>
-<span class="normal">312</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_strategy</span><span class="p">(</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_strategy</span><span class="p">(</span>
     <span class="n">task</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">TaskContext</span><span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">CommandResult</span><span class="p">[</span><span class="n">RunStrategyResponse</span><span class="p">]],</span>
     <span class="n">exe</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">CommandExecutionContext</span><span class="p">,</span>
     <span class="n">args</span><span class="p">:</span> <span class="n">RunStrategyArgs</span><span class="p">,</span>
@@ -2926,6 +2927,7 @@ specification.</p>
             <span class="n">policy</span><span class="o">=</span><span class="n">policy</span><span class="p">,</span>
             <span class="n">num_generated</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_generated</span><span class="p">,</span>
             <span class="n">budget</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">budget</span><span class="p">,</span>
+            <span class="n">using</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">using</span><span class="p">,</span>
             <span class="n">cache_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cache_file</span><span class="p">,</span>
             <span class="n">cache_mode</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cache_mode</span><span class="p">,</span>
             <span class="n">log_level</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">log_level</span><span class="p">,</span>
@@ -3041,6 +3043,19 @@ program.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><span title="delphyne.stdlib.commands.run_strategy.RunStrategyArgs.using">using</span></code></td>
+            <td>
+                  <code><span title="collections.abc.Sequence">Sequence</span>[<span title="delphyne.core_and_base.AnswerSource">AnswerSource</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Answer sources to use for overriding LLM oracles (see
+<a class="autorefs autorefs-internal" title="PolicyEnv" href="../environments/#delphyne.PolicyEnv"><code>PolicyEnv</code></a>). This is particularly useful for
+auto-completing demonstrations.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><span title="delphyne.stdlib.commands.run_strategy.RunStrategyArgs.cache_file">cache_file</span></code></td>
             <td>
                   <code><span title="str">str</span> | None</code>
@@ -3066,7 +3081,7 @@ request caching, or <code>None</code> to disable caching.</p>
           <tr class="doc-section-item">
             <td><code><span title="delphyne.stdlib.commands.run_strategy.RunStrategyArgs.log_level">log_level</span></code></td>
             <td>
-                  <code><span title="delphyne.core.LogLevel">LogLevel</span></code>
+                  <code><span title="delphyne.core_and_base.LogLevel">LogLevel</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3078,7 +3093,7 @@ level will be ignored.</p>
           <tr class="doc-section-item">
             <td><code><span title="delphyne.stdlib.commands.run_strategy.RunStrategyArgs.log_long_computations">log_long_computations</span></code></td>
             <td>
-                  <code><span title="tuple">tuple</span>[<span title="delphyne.core.LogLevel">LogLevel</span>, <span title="float">float</span>] | None</code>
+                  <code><span title="tuple">tuple</span>[<span title="delphyne.core_and_base.LogLevel">LogLevel</span>, <span title="float">float</span>] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3153,16 +3168,7 @@ intermediate result is pulled.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/commands/run_strategy.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">243</span>
 <span class="normal">244</span>
 <span class="normal">245</span>
 <span class="normal">246</span>
@@ -3197,7 +3203,20 @@ intermediate result is pulled.</p>
 <span class="normal">275</span>
 <span class="normal">276</span>
 <span class="normal">277</span>
-<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">RunStrategyArgs</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments for the `run_strategy` command that runs an oracular</span>
@@ -3210,6 +3229,9 @@ intermediate result is pulled.</p>
 <span class="sd">        policy_args: Arguments to pass to the policy constructor.</span>
 <span class="sd">        num_generated: Number of success values to generate.</span>
 <span class="sd">        budget: Budget limit (infinite for unspecified metrics).</span>
+<span class="sd">        using: Answer sources to use for overriding LLM oracles (see</span>
+<span class="sd">            `PolicyEnv`). This is particularly useful for</span>
+<span class="sd">            auto-completing demonstrations.</span>
 <span class="sd">        cache_file: File within the global cache directory to use for</span>
 <span class="sd">            request caching, or `None` to disable caching.</span>
 <span class="sd">        cache_mode: Cache mode to use.</span>
@@ -3233,6 +3255,7 @@ intermediate result is pulled.</p>
     <span class="n">policy</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">policy_args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span>
     <span class="n">budget</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
+    <span class="n">using</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">AnswerSource</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">num_generated</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">cache_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">cache_mode</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">CacheMode</span> <span class="o">=</span> <span class="s2">&quot;read_write&quot;</span>
