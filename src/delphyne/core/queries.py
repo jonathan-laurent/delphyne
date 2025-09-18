@@ -292,3 +292,9 @@ class AbstractQuery[T](ABC):
         applicable hint is available.
         """
         return None
+
+    def hindsight_answer(self, parsed: T) -> Answer | None:
+        """
+        Return a hindsight answer that parses back to the given value.
+        """
+        return None

@@ -491,7 +491,7 @@ def dict_subpolicy(ip: IPDict, tags: Sequence[dp.Tag]) -> Any:
 
 
 def query_dependent(
-    f: Callable[[dp.AbstractQuery[object]], PromptingPolicy],
+    f: Callable[[dp.AbstractQuery[Any]], PromptingPolicy],
 ) -> PromptingPolicy:
     """
     Create a prompting policy that is dependent on the exact query being

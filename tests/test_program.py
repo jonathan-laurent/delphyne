@@ -33,7 +33,7 @@ def test_query_properties():
 
 
 def _eval_query(
-    query: dp.Query[object],
+    query: dp.Query[Any],
     cache_name: str,
     budget: int = 1,
     num_completions: int = 1,
@@ -174,7 +174,7 @@ def test_flags_static():
 
 
 def _eval_classifier_query(
-    query: dp.Query[object],
+    query: dp.Query[Any],
     cache_name: str,
     temperature: float = 1.0,
     bias: tuple[str, float] | None = None,

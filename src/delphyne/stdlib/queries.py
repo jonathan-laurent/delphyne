@@ -1004,6 +1004,14 @@ class Query[T](dp.AbstractQuery[T]):
             return self.__modes__
         return [None]
 
+    ### Hindsight Feedback
+
+    def hindsight_answer(self, parsed: T) -> Answer | None:
+        """
+        Return a hindsight answer that parses back to the given value.
+        """
+        return None
+
     ### Generating Opaque Spaces
 
     @overload

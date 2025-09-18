@@ -312,9 +312,9 @@ class NoFailFlag(FlagQuery[NoFailFlagValue]):
 
 
 @strategy(name="nofail")
-def nofail_strategy[P, T](
-    space: Opaque[P, T], *, default: T
-) -> dp.Strategy[Flag[NoFailFlag] | Branch, P, T]:
+def nofail_strategy[P, A, B](
+    space: Opaque[P, A], *, default: B
+) -> dp.Strategy[Flag[NoFailFlag] | Branch, P, A | B]:
     """
     Strategy underlying the `nofail` space transformer.
     """

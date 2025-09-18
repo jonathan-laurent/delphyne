@@ -341,7 +341,7 @@ class PolicyEnv:
                 self.examples.add_demonstration(demo)
 
     def overriden_answer(
-        self, query: dp.AbstractQuery[object]
+        self, query: dp.AbstractQuery[Any]
     ) -> dp.Answer | None:
         """
         Attempt to fetch an answer from the override database and return
