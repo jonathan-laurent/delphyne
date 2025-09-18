@@ -8,7 +8,7 @@ A more featureful subclass is provided in the standard library
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Literal, Self, cast, final
+from typing import Any, Generic, Literal, Self, TypeVar, cast, final
 
 import delphyne.utils.typing as ty
 from delphyne.core.chats import AnswerPrefix
@@ -159,7 +159,14 @@ class TemplateFileMissing(Exception):
 #####
 
 
-class AbstractQuery[T](ABC):
+# Type parameter `T` of `AbstractQuery` is inferred as covariant.
+# However, we do not want such behaviour and want it to be invariant
+# instead. In particular, this is useful to type the `hindsight`
+# function from the standard library.
+T = TypeVar("T", contravariant=False, covariant=False)
+
+
+class AbstractQuery(Generic[T], ABC):
     """
     Abstract Class for Delphyne Queries.
 

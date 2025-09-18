@@ -29,6 +29,8 @@ class Hindsight(dp.Node):
         yield
 
 
+# Note: this overloaded type is meaningful because we force
+# `AbstractQuery[T]` to be invariant in `T`.
 @overload
 def hindsight[T](
     query: dp.AbstractQuery[T],

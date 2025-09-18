@@ -51,8 +51,8 @@ def make_sum(
 
 
 @dp.ensure_compatible(make_sum)
-def make_sum_policy():
-    model = dp.openai_model("gpt-4o-mini")
+def make_sum_policy(model_name: str = "gpt-4o-mini"):
+    model = dp.openai_model(model_name)
     return dp.dfs() & MakeSumIP(dp.few_shot(model))
 
 
@@ -892,7 +892,7 @@ class GetFavoriteDish(dp.Query[Dish]):
 
 
 #####
-##### Error Wrapping
+##### Error Wrapping and Hindsight Feedback
 #####
 
 
@@ -914,21 +914,36 @@ class AskNumber(dp.Query[dp.Response[int | dp.WrappedParseError, Never]]):
 
     __parser__ = dp.get_text.map(parse_83).wrap_errors.response
 
+    @override
+    def hindsight_answer(self, feedback: object):
+        assert isinstance(feedback, int)
+        return dp.Answer(None, str(feedback))
+
 
 @strategy
-def get_magic_number() -> Strategy[Branch, dp.PromptingPolicy, int]:
+def get_magic_number() -> Strategy[
+    Branch | dp.Hindsight, dp.PromptingPolicy, int
+]:
     ret = yield from dp.interact(
         step=lambda pre, _: AskNumber(pre).using(dp.ambient_pp),
         process=lambda x, _: dp.const_space(x),
+    )
+    yield from dp.hindsight(
+        AskNumber(()), feedback=ret, as_parsed_answer=False
     )
     return ret
 
 
 @dp.ensure_compatible(get_magic_number)
 def get_magic_number_policy(model: dp.LLM, no_wrap: bool):
-    sp = dp.dfs()
+    sp = dp.dfs() @ dp.elim_hindsight()
     pp = dp.few_shot(model, no_wrap_parse_errors=no_wrap)
     return sp & pp
+
+
+@dp.ensure_compatible(get_magic_number)
+def get_magic_number_default_policy(model: str = "gpt-5-nano"):
+    return get_magic_number_policy(dp.standard_model(model), no_wrap=False)
 
 
 #####
