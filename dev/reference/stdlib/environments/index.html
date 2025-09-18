@@ -2045,7 +2045,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">add_demonstration</span><span class="p">(</span><span class="n">demo</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">overriden_answer</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Answer</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Attempt to fetch an answer from the override database and return</span>
@@ -2478,7 +2478,7 @@ level. This settings can be locally overriden by
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">overriden_answer</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AbstractQuery (delphyne.core.AbstractQuery)" href="../../strategies/queries/#delphyne.AbstractQuery">AbstractQuery</a></span><span class="p">[</span><span class="n"><span title="object">object</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Answer
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">overriden_answer</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AbstractQuery (delphyne.core.AbstractQuery)" href="../../strategies/queries/#delphyne.AbstractQuery">AbstractQuery</a></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Answer
 
 
   
@@ -2515,7 +2515,7 @@ it if it exists, while logging the event.</p>
 <span class="normal">361</span>
 <span class="normal">362</span>
 <span class="normal">363</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">overriden_answer</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Answer</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attempt to fetch an answer from the override database and return</span>

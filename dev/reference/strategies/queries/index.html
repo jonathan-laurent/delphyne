@@ -779,6 +779,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#delphyne.AbstractQuery.hindsight_answer" class="md-nav__link">
+    <span class="md-ellipsis">
+      hindsight_answer
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1618,6 +1627,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#delphyne.AbstractQuery.hindsight_answer" class="md-nav__link">
+    <span class="md-ellipsis">
+      hindsight_answer
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1956,7 +1974,13 @@ different settings and with a different parser.</p>
 <span class="normal">291</span>
 <span class="normal">292</span>
 <span class="normal">293</span>
-<span class="normal">294</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractQuery</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">ABC</span><span class="p">):</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractQuery</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract Class for Delphyne Queries.</span>
 
@@ -2087,6 +2111,12 @@ different settings and with a different parser.</p>
 <span class="sd">        Default answers are used to answer queries in demonstration</span>
 <span class="sd">        tests when no answer is provided in the `queries` section and no</span>
 <span class="sd">        applicable hint is available.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">hindsight_answer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Answer</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a hindsight answer that parses back to the given value.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
@@ -2760,6 +2790,44 @@ applicable hint is available.</p>
 <span class="sd">    Default answers are used to answer queries in demonstration</span>
 <span class="sd">    tests when no answer is provided in the `queries` section and no</span>
 <span class="sd">    applicable hint is available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="kc">None</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.AbstractQuery.hindsight_answer" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">hindsight_answer</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">hindsight_answer</span><span class="p">(</span><span class="n">parsed</span><span class="p">:</span> <span class="n"><span title="delphyne.core.queries.AbstractQuery[T]">T</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Answer
+
+
+  
+      dataclass
+   (delphyne.core.refs.Answer)" href="../traces/#delphyne.Answer">Answer</a></span> <span class="o">|</span> <span class="kc">None</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Return a hindsight answer that parses back to the given value.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/core/queries.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">hindsight_answer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parsed</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Answer</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a hindsight answer that parses back to the given value.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
