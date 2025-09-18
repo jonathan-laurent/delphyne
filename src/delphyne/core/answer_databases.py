@@ -67,8 +67,28 @@ class FromCommandResult:
     answer_id: int
 
 
+@dataclass(frozen=True)
+class FromCommandResultHindsightFeedback:
+    """
+    Source of an answer located in the hindsight feedback collected
+    during the execution of a command.
+
+    Attributes:
+        command_file: Path to the command file, relative to the
+            workspace root.
+        node_id: Index of the associated hindsight feedback node.
+    """
+
+    source: Literal["command_result_hindsight"]
+    command_file: str
+    node_id: int
+
+
 type LocatedAnswerSource = (
-    FromStandaloneQueryDemo | FromStrategyDemo | FromCommandResult
+    FromStandaloneQueryDemo
+    | FromStrategyDemo
+    | FromCommandResult
+    | FromCommandResultHindsightFeedback
 )
 """
 Provenance information for answers in databases.
@@ -88,7 +108,9 @@ def pp_located_answer_source(src: LocatedAnswerSource) -> str:
                 f"{src.query_id}:{src.answer_id}"
             )
         case FromCommandResult():
-            return f"{src.command_file}:{src.answer_id}"
+            return f"{src.command_file}:trace:{src.answer_id}"
+        case FromCommandResultHindsightFeedback():
+            return f"{src.command_file}:hindsight_feedback:{src.node_id}"
 
 
 @dataclass
@@ -99,7 +121,9 @@ class LocatedAnswer:
 
     answer: Answer
     source: LocatedAnswerSource
-    # TODO: add `hindsight` flag here.
+
+    def is_from_hindsight_feedback(self) -> bool:
+        return isinstance(self.source, FromCommandResultHindsightFeedback)
 
 
 @dataclass(frozen=True)
@@ -212,9 +236,20 @@ class AnswerDatabase:
             self.answers[query] = unique_answers
 
     def fetch(self, query: SerializedQuery) -> LocatedAnswer | None:
+        """
+        Fetch an answer for a query in the database.
+
+        Return `None` if there is no match and the matching answer if
+        there is a unique match. Raise `SeveralAnswerMatches` if there
+        are multiple matches. If one match comes from hindsight
+        feedback, it is preferred over other matches.
+        """
         cands = self.answers[query]
         if not cands:
             return None
+        # If a candidate uses hindsight feedback, prefer it.
+        if any(c.is_from_hindsight_feedback() for c in cands):
+            cands = [c for c in cands if c.is_from_hindsight_feedback()]
         if len(cands) == 1:
             return cands[0]
         raise SeveralAnswerMatches(query, cands)

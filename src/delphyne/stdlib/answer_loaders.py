@@ -5,7 +5,7 @@ A concrete implementation of `AnswerDatabaseLoader`.
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import yaml
 
@@ -13,6 +13,7 @@ import delphyne.core as dp
 import delphyne.core.demos as dm
 import delphyne.utils.typing as ty
 from delphyne.core.traces import ExportableQueryInfo, NodeOriginStr
+from delphyne.stdlib.environments import HindsightFeedbackDict
 
 type _AnswerIterable = Iterable[tuple[dp.SerializedQuery, dp.LocatedAnswer]]
 
@@ -22,6 +23,7 @@ COMMAND_FILE_EXT = ".exec.yaml"
 COMMAND_RESULT_PATH = ("outcome", "result")
 COMMAND_RESULT_TRACE_FIELD = "raw_trace"
 COMMAND_RESULT_SUCCESS_NODES_FIELD = "success_nodes"
+COMMAND_RESULT_HINDSIGHT_FEEDBACK_FIELD = "hindsight_feedback"
 
 
 def standard_answer_loader(workspace_root: Path) -> dp.AnswerDatabaseLoader:
@@ -64,26 +66,33 @@ def standard_answer_loader(workspace_root: Path) -> dp.AnswerDatabaseLoader:
     def command_result_loader(
         source: dp.CommandResultAnswerSource,
     ) -> _AnswerIterable:
-        trace, success_nodes = load_trace_and_success_nodes_from_command_file(
-            workspace_root / source.command
-        )
+        command_file = workspace_root / source.command
+        trace_data = load_trace_data_from_command_file(command_file)
         node_ids = source.node_ids
         if node_ids is None:
-            if success_nodes:
-                node_ids = [success_nodes[0]]
+            if trace_data.success_nodes:
+                node_ids = [trace_data.success_nodes[0]]
             else:
                 node_ids = []
         for node_id in node_ids:
-            for query, answer_id, answer in relevant_answers(trace, node_id):
-                located = dp.LocatedAnswer(
-                    answer=answer,
-                    source=dp.FromCommandResult(
+            all_relevant = relevant_answers(
+                trace_data.trace, node_id, trace_data.hindsight_feedback
+            )
+            for relevant in all_relevant:
+                if relevant.hindsight:
+                    answer_source = dp.FromCommandResultHindsightFeedback(
+                        "command_result_hindsight",
+                        command_file=source.command,
+                        node_id=relevant.id,
+                    )
+                else:
+                    answer_source = dp.FromCommandResult(
                         "command_result",
-                        source.command,
-                        answer_id,
-                    ),
-                )
-                yield (query, located)
+                        command_file=source.command,
+                        answer_id=relevant.id,
+                    )
+                located = dp.LocatedAnswer(relevant.answer, answer_source)
+                yield (relevant.query, located)
 
     def unfiltered_loader(source: dp.AnswerSource) -> _AnswerIterable:
         match source:
@@ -159,11 +168,16 @@ def demo_with_name(demos: Sequence[dm.Demo], name: str) -> dm.Demo:
     raise ValueError(f"No demonstration named '{name}' found")
 
 
-def load_trace_and_success_nodes_from_command_file(
-    path: Path,
-) -> tuple[dp.ExportableTrace, Sequence[int]]:
+@dataclass
+class _TraceData:
+    trace: dp.ExportableTrace
+    success_nodes: Sequence[int]
+    hindsight_feedback: HindsightFeedbackDict | None
+
+
+def load_trace_data_from_command_file(path: Path) -> _TraceData:
     """
-    Load a trace from a command file.
+    Load trace-related data from a command file.
     """
 
     if not path.suffix:
@@ -176,7 +190,9 @@ def load_trace_and_success_nodes_from_command_file(
     success_value = content.get(COMMAND_RESULT_SUCCESS_NODES_FIELD, [])
     trace = ty.pydantic_load(dp.ExportableTrace, trace_raw)
     success_nodes = ty.pydantic_load(Sequence[int], success_value)
-    return trace, success_nodes
+    hf_raw = content.get(COMMAND_RESULT_HINDSIGHT_FEEDBACK_FIELD, None)
+    hf = cast(Any, ty.pydantic_load(HindsightFeedbackDict | None, hf_raw))
+    return _TraceData(trace, success_nodes, hf)
 
 
 #####
@@ -214,12 +230,23 @@ def node_and_answer_ids_in_node_origin_string(
     return node_ids, answer_ids
 
 
+@dataclass
+class _RelevantAnswer:
+    query: dp.SerializedQuery
+    answer: dp.Answer
+    id: int  # answer id if `hindsight=False`, else node if
+    hindsight: bool  # whether this answer comes from hindsight feedback
+
+
 def relevant_answers(
-    trace: dp.ExportableTrace, node_id: int
-) -> Iterable[tuple[dp.SerializedQuery, int, dp.Answer]]:
+    trace: dp.ExportableTrace,
+    node_id: int,
+    hindsight_feedback: HindsightFeedbackDict | None,
+) -> Iterable[_RelevantAnswer]:
     """
     Take a trace and a node identifier and return an iterable of all
-    answers needed to reach this node in the trace.
+    answers needed to reach this node in the trace, along with answers
+    coming from relevant hindsight feedback.
 
     The output can include duplicates.
     """
@@ -231,9 +258,13 @@ def relevant_answers(
 
     def aux(
         node_id: int,
-    ) -> Iterable[tuple[dp.SerializedQuery, int, dp.Answer]]:
+    ) -> Iterable[_RelevantAnswer]:
         if node_id == 0:
             return
+        if hindsight_feedback and node_id in hindsight_feedback:
+            feedback = hindsight_feedback[node_id]
+            query = dp.SerializedQuery.from_json(feedback.query, feedback.args)
+            yield _RelevantAnswer(query, feedback.answer, node_id, True)
         origin = trace.nodes[node_id]
         nids, aids = node_and_answer_ids_in_node_origin_string(origin)
         for aid in aids:
@@ -242,7 +273,7 @@ def relevant_answers(
                 f"Missing query information for answer {aid}."
             )
             query = dp.SerializedQuery.from_json(info.query, info.args)
-            yield (query, aid, info.answers[aid])
+            yield _RelevantAnswer(query, info.answers[aid], aid, False)
         for n in nids:
             yield from aux(n)
 
