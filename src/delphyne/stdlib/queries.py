@@ -1006,11 +1006,29 @@ class Query[T](dp.AbstractQuery[T]):
 
     ### Hindsight Feedback
 
-    def hindsight_answer(self, parsed: T) -> Answer | None:
+    @override
+    def hindsight_answer(self, feedback: Any) -> Answer | None:
         """
         Return a hindsight answer that parses back to the given value.
+
+        By default, this method checks whether there is a single mode
+        that uses structured output, and handles this case. This method
+        can be overriden to handle more advanced cases.
         """
-        return None
+
+        modes = self.query_modes()
+        if len(modes) != 1:
+            return None
+        mode = modes[0]
+        parser = self._instantiated_parser_for(mode)
+        if parser.settings.structured_output is None:
+            return None
+        output_type = parser.settings.structured_output.type
+        if isinstance(output_type, ty.NoTypeInfo):
+            return None
+        structured = ty.pydantic_dump(output_type, feedback)
+        answer = dp.Answer(mode, dp.Structured(structured))
+        return answer
 
     ### Generating Opaque Spaces
 
