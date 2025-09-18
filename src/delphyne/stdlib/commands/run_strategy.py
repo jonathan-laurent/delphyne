@@ -12,8 +12,8 @@ from typing import Any, assert_type, cast
 
 import delphyne.analysis as analysis
 import delphyne.analysis.feedback as fb
-import delphyne.core as dp
 import delphyne.core.refs as refs
+import delphyne.core_and_base as dp
 import delphyne.stdlib.environments as en
 import delphyne.stdlib.models as md
 import delphyne.stdlib.policies as pol
@@ -61,6 +61,7 @@ class RunLoadedStrategyArgs[N: dp.Node, P, T]:
     policy: pol.Policy[N, P]
     num_generated: int = 1
     budget: dict[str, float] | None = None
+    using: Sequence[dp.AnswerSource] | None = None
     cache_file: str | None = None
     cache_mode: ca.CacheMode = "read_write"
     log_level: dp.LogLevel = "info"
@@ -77,11 +78,19 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
     args: RunLoadedStrategyArgs[N, P, T],
     request_cache: md.LLMCache | None,
 ):
+    answer_database = None
+    if args.using is not None:
+        assert exe.workspace_root is not None, (
+            "No workspace root is specified."
+        )
+        loader = dp.standard_answer_loader(exe.workspace_root)
+        answer_database = dp.AnswerDatabase(args.using, loader=loader)
     env = en.PolicyEnv(
         prompt_dirs=exe.prompt_dirs,
         data_dirs=exe.data_dirs,
         demonstration_files=exe.demo_files,
         cache=request_cache,
+        override_answers=answer_database,
         log_level=args.log_level,
         log_long_computations=args.log_long_computations,
         do_not_match_identical_queries=True,
@@ -244,6 +253,9 @@ class RunStrategyArgs:
         policy_args: Arguments to pass to the policy constructor.
         num_generated: Number of success values to generate.
         budget: Budget limit (infinite for unspecified metrics).
+        using: Answer sources to use for overriding LLM oracles (see
+            `PolicyEnv`). This is particularly useful for
+            auto-completing demonstrations.
         cache_file: File within the global cache directory to use for
             request caching, or `None` to disable caching.
         cache_mode: Cache mode to use.
@@ -267,6 +279,7 @@ class RunStrategyArgs:
     policy: str
     policy_args: dict[str, object]
     budget: dict[str, float]
+    using: Sequence[dp.AnswerSource] | None = None
     num_generated: int = 1
     cache_file: str | None = None
     cache_mode: ca.CacheMode = "read_write"
@@ -300,6 +313,7 @@ def run_strategy(
             policy=policy,
             num_generated=args.num_generated,
             budget=args.budget,
+            using=args.using,
             cache_file=args.cache_file,
             cache_mode=args.cache_mode,
             log_level=args.log_level,
