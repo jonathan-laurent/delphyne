@@ -6789,7 +6789,9 @@ messages in between.</p>
 <span class="normal">688</span>
 <span class="normal">689</span>
 <span class="normal">690</span>
-<span class="normal">691</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Tracer</span><span class="p">:</span>
+<span class="normal">691</span>
+<span class="normal">692</span>
+<span class="normal">693</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Tracer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A mutable trace along with a mutable list of log messages.</span>
 
@@ -6887,7 +6889,9 @@ messages in between.</p>
                 <span class="p">)</span>
             <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">export_log</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ExportableLogMessage</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">export_log</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">remove_timing_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ExportableLogMessage</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Export the log into an easily serializable format.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -6902,7 +6906,7 @@ messages in between.</p>
                 <span class="k">yield</span> <span class="n">ExportableLogMessage</span><span class="p">(</span>
                     <span class="n">message</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
                     <span class="n">level</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">level</span><span class="p">,</span>
-                    <span class="n">time</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+                    <span class="n">time</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">time</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">remove_timing_info</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span>
                     <span class="n">space</span><span class="o">=</span><span class="n">space</span><span class="p">,</span>
                     <span class="n">metadata</span><span class="o">=</span><span class="n">pydantic_dump</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">metadata</span><span class="p">),</span>
@@ -7284,7 +7288,7 @@ The metadata must be exportable to JSON using Pydantic.</p>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">export_log</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Iterable">Iterable</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="ExportableLogMessage
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">export_log</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">remove_timing_info</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Iterable">Iterable</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="ExportableLogMessage
 
 
   
@@ -7318,7 +7322,11 @@ The metadata must be exportable to JSON using Pydantic.</p>
 <span class="normal">681</span>
 <span class="normal">682</span>
 <span class="normal">683</span>
-<span class="normal">684</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">export_log</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ExportableLogMessage</span><span class="p">]:</span>
+<span class="normal">684</span>
+<span class="normal">685</span>
+<span class="normal">686</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">export_log</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">remove_timing_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ExportableLogMessage</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Export the log into an easily serializable format.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -7333,7 +7341,7 @@ The metadata must be exportable to JSON using Pydantic.</p>
             <span class="k">yield</span> <span class="n">ExportableLogMessage</span><span class="p">(</span>
                 <span class="n">message</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
                 <span class="n">level</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">level</span><span class="p">,</span>
-                <span class="n">time</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+                <span class="n">time</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">time</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">remove_timing_info</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span>
                 <span class="n">space</span><span class="o">=</span><span class="n">space</span><span class="p">,</span>
                 <span class="n">metadata</span><span class="o">=</span><span class="n">pydantic_dump</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">metadata</span><span class="p">),</span>
@@ -7367,12 +7375,12 @@ The metadata must be exportable to JSON using Pydantic.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">686</span>
-<span class="normal">687</span>
-<span class="normal">688</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">688</span>
 <span class="normal">689</span>
 <span class="normal">690</span>
-<span class="normal">691</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">export_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExportableTrace</span><span class="p">:</span>
+<span class="normal">691</span>
+<span class="normal">692</span>
+<span class="normal">693</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">export_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExportableTrace</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Export the trace into an easily serializable format.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -7603,7 +7611,7 @@ values (as opposed to <a class="autorefs autorefs-internal" title="LogMessage
 
     <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">level</span><span class="p">:</span> <span class="n">LogLevel</span>
-    <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span>
+    <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">node</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">space</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># JSON value</span>
@@ -7660,12 +7668,12 @@ visited nodes into a trace.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">694</span>
-<span class="normal">695</span>
-<span class="normal">696</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">696</span>
 <span class="normal">697</span>
 <span class="normal">698</span>
-<span class="normal">699</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">tracer_hook</span><span class="p">(</span><span class="n">tracer</span><span class="p">:</span> <span class="n">Tracer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Tree</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="normal">699</span>
+<span class="normal">700</span>
+<span class="normal">701</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">tracer_hook</span><span class="p">(</span><span class="n">tracer</span><span class="p">:</span> <span class="n">Tracer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Tree</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Standard hook to be passed to `TreeMonitor` to automatically log</span>
 <span class="sd">    visited nodes into a trace.</span>
