@@ -7289,7 +7289,21 @@ the standard <a class="autorefs autorefs-internal" title="interact" href="../alg
 <span class="normal">1617</span>
 <span class="normal">1618</span>
 <span class="normal">1619</span>
-<span class="normal">1620</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
+<span class="normal">1620</span>
+<span class="normal">1621</span>
+<span class="normal">1622</span>
+<span class="normal">1623</span>
+<span class="normal">1624</span>
+<span class="normal">1625</span>
+<span class="normal">1626</span>
+<span class="normal">1627</span>
+<span class="normal">1628</span>
+<span class="normal">1629</span>
+<span class="normal">1630</span>
+<span class="normal">1631</span>
+<span class="normal">1632</span>
+<span class="normal">1633</span>
+<span class="normal">1634</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">few_shot</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
     <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
@@ -7352,7 +7366,23 @@ the standard <a class="autorefs autorefs-internal" title="interact" href="../alg
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">assert</span> <span class="ow">not</span> <span class="n">iterative_mode</span> <span class="ow">or</span> <span class="n">num_completions</span> <span class="o">==</span> <span class="mi">1</span>
     <span class="k">assert</span> <span class="n">max_requests</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">max_requests</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Answer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tracked</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">dp</span><span class="o">.</span><span class="n">ParseError</span><span class="p">:</span>
+        <span class="n">parsed</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">parse_answer</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">no_wrap_parse_errors</span><span class="p">:</span>
+            <span class="n">parsed</span> <span class="o">=</span> <span class="n">_unwrap_parse_error</span><span class="p">(</span><span class="n">parsed</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">parsed</span>
+
     <span class="n">env</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">trace_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">overriden</span> <span class="o">:=</span> <span class="n">env</span><span class="o">.</span><span class="n">overriden_answer</span><span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">query</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">overriden_parsed</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">overriden</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">overriden_parsed</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">ParseError</span><span class="p">),</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unexpected parse error: </span><span class="si">{</span><span class="n">overriden_parsed</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">Solution</span><span class="p">(</span><span class="n">overriden_parsed</span><span class="p">)</span>
+        <span class="k">return</span>
+
     <span class="n">examples</span> <span class="o">=</span> <span class="n">fetch_examples</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">examples</span><span class="p">,</span> <span class="n">query</span><span class="o">.</span><span class="n">query</span><span class="p">,</span> <span class="n">select_examples</span><span class="p">)</span>
     <span class="n">mngr</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">templates</span>
     <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -7394,9 +7424,7 @@ the standard <a class="autorefs autorefs-internal" title="interact" href="../alg
         <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">outputs</span><span class="p">:</span>
             <span class="n">answer</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">Answer</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">tool_calls</span><span class="p">))</span>
             <span class="n">answers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
-            <span class="n">element</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">parse_answer</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">no_wrap_parse_errors</span><span class="p">:</span>
-                <span class="n">element</span> <span class="o">=</span> <span class="n">_unwrap_parse_error</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+            <span class="n">element</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
             <span class="n">env</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">trace_answer</span><span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">ref</span><span class="p">,</span> <span class="n">answer</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">ParseError</span><span class="p">):</span>
                 <span class="n">env</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;parse_error&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="n">element</span><span class="p">},</span> <span class="n">loc</span><span class="o">=</span><span class="n">query</span><span class="p">)</span>
