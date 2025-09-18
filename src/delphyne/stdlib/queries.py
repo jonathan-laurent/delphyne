@@ -977,10 +977,6 @@ class Query[T](dp.AbstractQuery[T]):
 
     ### Other Simple Overrides
 
-    @override
-    def serialize_args(self) -> dict[str, object]:
-        return cast(dict[str, object], ty.pydantic_dump(type(self), self))
-
     @classmethod
     def _answer_type(cls) -> TypeAnnot[T]:
         return dpi.first_parameter_of_base_class(cls)
