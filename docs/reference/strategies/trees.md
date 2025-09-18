@@ -12,6 +12,8 @@
 
 ::: delphyne.Navigation
 
+::: delphyne.NavigationContext
+
 ::: delphyne.NavigationError
 
 ## Node Fields

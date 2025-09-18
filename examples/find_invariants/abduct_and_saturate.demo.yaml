@@ -17,6 +17,7 @@
         assert { x <> y }
   tests:
     - run | success
+    - run 'indirect' | success
   queries: 
     - query: SuggestInvariants
       args:
@@ -50,6 +51,12 @@
             Explanations:
               - Since `z` is only decremented and starts at `0`, invariant `z <= 0` clearly holds. It is also likely to be useful since it shows that the conditional statement within the loop body always executes.
               - The post-condition `x <> y` is true initially. It is also preserved by the loop body since the conditional statement is always executed (and so both `x` and `y` are incremented at each iteration). Thus, proposing it as an invariant is reasonable.
+        - example: false
+          label: indirect
+          answer:
+            suggestions:
+              - trick: propose_post
+                invariant: "x <> y"
     - query: SuggestInvariants
       args:
         unproved:

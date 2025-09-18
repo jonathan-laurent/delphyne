@@ -56,56 +56,45 @@ class Abduction(dp.Node):
     ]
 
     def navigate(self) -> dp.Navigation:
-        def aux(fact: dp.Tracked[_Fact] | None) -> dp.Navigation:
-            # Take a fact as an argument and return a list of
-            # (proved_fact, proof) pairs.
-            res = yield self.prove([], fact)
+        proved: list[tuple[_TrackedEFact, _TrackedProof]] = []
+
+        def aux(fact: _TrackedEFact) -> dp.NavigationContext[None]:
+            # If `fact` is already proved, do nothing
+            if any(drop_refs(fact) == drop_refs(p) for p, _ in proved):
+                return
+            # We use `cast` because we know `proved` does not contain `None`.
+            res = yield self.prove(cast(Any, proved), fact)
             status, payload = res[0], res[1]
             if status.value == "proved":
-                return [(fact, payload)]
-            elif status.value == "disproved":
-                return []
-            else:
-                assert status.value == "feedback"
-                feedback = payload
-                suggestions = yield self.suggest(feedback)
-                proved: list[Any] = []
-                for s in suggestions:
-                    extra: Any = yield from aux(s)
-                    proved.extend(extra)
-                res = yield self.prove(proved, fact)
-                status, payload = res[0], res[1]
-                if status.value == "proved":
-                    proved.append((fact, payload))
-                return _remove_duplicates(proved, by=lambda x: drop_refs(x[0]))
+                proved.append((fact, payload))
+                return
+            if status.value == "disproved":
+                # It is ok if a subgoal is disproved, as long as the
+                # main goal is proved in the end.
+                return
+            assert status.value == "feedback"
+            # Obtain suggestions and try to prove them all recursively
+            feedback = payload
+            suggestions = yield self.suggest(feedback)
+            for s in suggestions:
+                yield from aux(s)
+            # Check again if `fact` is now proved
+            if any(drop_refs(fact) == drop_refs(p) for p, _ in proved):
+                return
+            # If not, try and prove it again with the suggestions
+            res = yield self.prove(cast(Any, proved), fact)
+            status, payload = res[0], res[1]
+            if status.value != "proved":
+                # It is ok if a subgoal is not proved, as long as the
+                # main goal is proved in the end. Indeed, suggestions
+                # can be repair proposals instead of auxiliary facts.
+                return
+            proved.append((fact, payload))
 
-        proved: Any = yield from aux(None)
-        main_proof = _find_assoc(proved, None)
-        if main_proof is None:
-            raise dp.NavigationError(
-                "No proof for the main goal was produced."
-            )
-        return main_proof
-
-
-def _find_assoc[A, B](assoc: Sequence[tuple[A, B]], elt: A) -> B | None:
-    for a, b in assoc:
-        if a == elt:
-            return b
-    return None
-
-
-def _remove_duplicates[T](
-    xs: Sequence[T], by: Callable[[T], object]
-) -> Sequence[T]:
-    seen: set[object] = set()
-    result: list[T] = []
-    for x in xs:
-        key = by(x)
-        if key not in seen:
-            seen.add(key)
-            result.append(x)
-    return result
+        yield from aux(None)
+        if not proved or proved[-1][0] is not None:
+            raise dp.NavigationError("Main goal was not proved")
+        return proved[-1][1]
 
 
 type AbductionStatus[Feedback, Proof] = (
@@ -258,7 +247,7 @@ def abduct_and_saturate[P, Proof](
     It does so by repeatedly performing _rollouts_. Each rollout starts
     with the toplevel goal as a target, and attempts to prove this target
     assuming all facts in `proved`. If the target cannot be proved,
-    suggestions for auxilliary facts to prove first are requested before
+    suggestions for auxiliary facts to prove first are requested before
     another attempt is made. If still unsuccessful, one of the unproved
     suggestions is set as the new target and the rollout proceeds (up to
     some depth specified by `max_rollout_depth`).
@@ -325,6 +314,12 @@ def abduct_and_saturate[P, Proof](
         to saturation). Thus, we recommend setting proper limits using
         the hyperparameters whose name start with `max_`.
 
+    !!! tip
+        Possible suggestions are auxiliary facts, but also repair
+        suggestions. For example, suppose the goal is to prove `x > 0`,
+        which is false. Then, one might suggest a repair such as `n > 0
+        -> x > 0`.
+
     !!! note
         No fact is attempted to be proved if it is redundant with
         already-proved facts. However, in the current implementation,
@@ -355,9 +350,6 @@ def abduct_and_saturate[P, Proof](
     # representative that is somewhere in `candidates`, `proved`,
     # `disproved` or `redundant`.
     equivalent: dict[_EFact, _EFact] = {}
-
-    # Can a new fact make a candidate redundant? YES. So we should also
-    # do this in `propagate`
 
     assert max_rollout_depth >= 1
     assert isinstance(tree.node, Abduction)

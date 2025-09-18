@@ -422,7 +422,12 @@ class Node(ABC):
         return type(self)(**args_new)
 
 
-type Navigation = Generator[Space[Any], Tracked[Any], Value]
+type NavigationContext[T] = Generator[Space[Any], Tracked[Any], T]
+"""
+Monadic context within which navigation is performed.
+"""
+
+type Navigation = NavigationContext[Value]
 """
 A navigation generator.
 

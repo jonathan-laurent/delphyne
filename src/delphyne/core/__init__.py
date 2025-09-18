@@ -97,6 +97,7 @@ from delphyne.core.trees import (
     ComputationNode,
     EmbeddedTree,
     Navigation,
+    NavigationContext,
     NavigationError,
     NestedTree,
     Node,
