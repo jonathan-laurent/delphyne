@@ -120,13 +120,13 @@ def load_demo_file(path: Path) -> Sequence[dm.Demo]:
 
     Arguments:
         path: The path to the demonstration file. The suffix
-            `.demo.yaml` will be added if not already present.
+            `.demo.yaml` will be added if no extension is given.
 
     Raises:
         InvalidDemoFile: If the file could not be found or parsed.
     """
 
-    if not path.suffix.endswith(DEMO_FILE_EXT):
+    if not path.suffix:
         path = path.with_suffix(DEMO_FILE_EXT)
     try:
         with path.open() as f:
