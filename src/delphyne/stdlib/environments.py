@@ -273,6 +273,28 @@ def _dump_json_object(
 
 
 ####
+#### Hindsight Feedback Data
+####
+
+
+@dataclass(frozen=True)
+class HindsightFeedback:
+    """
+    Feedback about what the answer to a query *should have been*.
+    """
+
+    query: str
+    args: dict[str, object]
+    answer: dp.Answer
+
+
+type HindsightFeedbackDict = dict[int, HindsightFeedback]
+"""
+A mapping from node IDs to the attached hindsight feedback.
+"""
+
+
+####
 #### Policy Environment
 ####
 
@@ -292,6 +314,7 @@ class PolicyEnv:
         templates: The prompt templates manager.
         tracer: The tracer, which can also be used for logging.
         examples: The example database.
+        hindsight_feedback: Accumulated hindsight feedback.
         log_long_computations: see constructor.
     """
 
@@ -339,6 +362,7 @@ class PolicyEnv:
         for path in demonstration_files:
             for demo in loaders.load_demo_file(path):
                 self.examples.add_demonstration(demo)
+        self.hindsight_feedback: HindsightFeedbackDict = {}
 
     def overriden_answer(
         self, query: dp.AbstractQuery[Any]

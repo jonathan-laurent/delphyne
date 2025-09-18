@@ -14,8 +14,15 @@ from delphyne.stdlib.answer_loaders import (
 from delphyne.stdlib.environments import (
     Example,
     ExampleDatabase,
+    HindsightFeedback,
+    HindsightFeedbackDict,
     PolicyEnv,
     TemplatesManager,
+)
+from delphyne.stdlib.hindsight_feedback import (
+    Hindsight,
+    elim_hindsight,
+    hindsight,
 )
 from delphyne.stdlib.models import (
     DOLLAR_PRICE,

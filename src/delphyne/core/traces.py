@@ -596,15 +596,24 @@ class Tracer:
         # the trace in parallel.
         self.lock = threading.RLock()
 
+    def global_node_id(self, node: refs.GlobalNodePath) -> refs.NodeId:
+        """
+        Ensure that a node at a given reference is present in the trace
+        and return the corresponding node identififier.
+        """
+        with self.lock:
+            return self.trace.convert_global_node_path(node)
+
     def trace_node(self, node: refs.GlobalNodePath) -> None:
         """
         Ensure that a node at a given reference is present in the trace.
 
+        Returns the associated node identifier.
+
         See `tracer_hook` for registering a hook that automatically
         calls this method on all encountered nodes.
         """
-        with self.lock:
-            self.trace.convert_location(Location(node, None))
+        self.global_node_id(node)
 
     def trace_query(self, query: AttachedQuery[Any]) -> None:
         """
