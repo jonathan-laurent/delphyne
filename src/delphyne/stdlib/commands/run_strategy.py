@@ -35,6 +35,7 @@ class RunStrategyResponse:
         success_nodes: Identifiers of success nodes in the trace. Only
             available when the trace is exported, in which case it has
             the same length as `values`.
+        hindsight_feedback: Hindsight feedback dictionary.
         raw_trace: Raw trace of the strategy execution, if requested.
         log: Log messages generated during the strategy execution.
         browsable_trace: A browsable trace, if requested.
@@ -44,6 +45,7 @@ class RunStrategyResponse:
     values: Sequence[Any | None]
     spent_budget: Mapping[str, float]
     success_nodes: Sequence[int] | None = None
+    hindsight_feedback: dp.HindsightFeedbackDict | None = None
     raw_trace: dp.ExportableTrace | None = None
     log: Sequence[dp.ExportableLogMessage] | None = None
     browsable_trace: fb.Trace | None = None
@@ -128,10 +130,14 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
         raw_trace = trace.export() if export_raw_trace else None
         browsable_trace: fb.Trace | None = None
         success_nodes = None
+        hindsight_feedback = None
         if raw_trace is not None:
             success_nodes = [
                 _node_id_of_tracked_value(r, trace).id for r in results
             ]
+            hindsight_feedback = env.get_hindsight_feedback()
+            if not hindsight_feedback:
+                hindsight_feedback = None
         if export_browsable_trace:
             assert cache is not None
             browsable_trace = analysis.compute_browsable_trace(trace, cache)
@@ -149,6 +155,7 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
             spent_budget=total_budget.values,
             raw_trace=raw_trace,
             success_nodes=success_nodes,
+            hindsight_feedback=hindsight_feedback,
             log=log,
             browsable_trace=browsable_trace,
         )

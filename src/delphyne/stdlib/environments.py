@@ -314,7 +314,6 @@ class PolicyEnv:
         templates: The prompt templates manager.
         tracer: The tracer, which can also be used for logging.
         examples: The example database.
-        hindsight_feedback: Accumulated hindsight feedback.
         log_long_computations: see constructor.
     """
 
@@ -362,7 +361,17 @@ class PolicyEnv:
         for path in demonstration_files:
             for demo in loaders.load_demo_file(path):
                 self.examples.add_demonstration(demo)
-        self.hindsight_feedback: HindsightFeedbackDict = {}
+        self._hindsight_feedback: HindsightFeedbackDict = {}
+
+    def add_hindsight_feedback(
+        self, node_id: int, feedback: HindsightFeedback
+    ) -> None:
+        with self.tracer.lock:
+            self._hindsight_feedback[node_id] = feedback
+
+    def get_hindsight_feedback(self) -> HindsightFeedbackDict:
+        with self.tracer.lock:
+            return self._hindsight_feedback.copy()
 
     def overriden_answer(
         self, query: dp.AbstractQuery[Any]

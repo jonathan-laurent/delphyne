@@ -107,11 +107,12 @@ def elim_hindsight(
     ) -> dp.Tree[N, P, T]:
         if isinstance(tree.node, Hindsight):
             node_id = env.tracer.global_node_id(tree.ref).id
-            env.hindsight_feedback[node_id] = HindsightFeedback(
+            feedback = HindsightFeedback(
                 query=tree.node.query_name,
                 args=tree.node.query_args,
                 answer=tree.node.hindsight_answer,
             )
+            env.add_hindsight_feedback(node_id, feedback)
             return transform(tree.child(None))
         return tree.transform(tree.node, transform)
 
