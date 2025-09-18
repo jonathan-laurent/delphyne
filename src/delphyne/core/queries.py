@@ -204,7 +204,14 @@ class AbstractQuery[T](ABC):
         """
         Serialize the query arguments as a dictionary of JSON values.
         """
-        return cast(dict[str, object], ty.pydantic_dump(type(self), self))
+
+        # It is important to serialize all fields, including those with
+        # a default value. Otherwise, a query may not have a unique
+        # serialized representation.
+        return cast(
+            dict[str, object],
+            ty.pydantic_dump(type(self), self, exclude_defaults=False),
+        )
 
     @classmethod
     def parse_instance(cls, args: dict[str, object]) -> Self:
