@@ -45,7 +45,7 @@ pyright:
 test:
 	pytest tests
 	make -C examples/find_invariants test
-	delphyne run tests/commands/run_make_sum_using_demo.yaml --update
+	delphyne run tests/commands/run_make_sum_using_demo.exec.yaml --update
 
 
 # Run a longer test suite. This might require additional dependencies, as

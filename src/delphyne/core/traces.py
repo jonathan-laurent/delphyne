@@ -558,7 +558,7 @@ class ExportableLogMessage:
 
     message: str
     level: LogLevel
-    time: datetime
+    time: datetime | None = None
     node: int | None = None
     space: str | None = None
     metadata: object | None = None  # JSON value
@@ -662,7 +662,9 @@ class Tracer:
                 )
             )
 
-    def export_log(self) -> Iterable[ExportableLogMessage]:
+    def export_log(
+        self, *, remove_timing_info: bool = False
+    ) -> Iterable[ExportableLogMessage]:
         """
         Export the log into an easily serializable format.
         """
@@ -677,7 +679,7 @@ class Tracer:
                 yield ExportableLogMessage(
                     message=m.message,
                     level=m.level,
-                    time=m.time,
+                    time=m.time if not remove_timing_info else None,
                     node=node,
                     space=space,
                     metadata=pydantic_dump(object, m.metadata),

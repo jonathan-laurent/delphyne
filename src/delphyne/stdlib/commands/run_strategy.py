@@ -70,6 +70,7 @@ class RunLoadedStrategyArgs[N: dp.Node, P, T]:
     export_log: bool = True
     export_browsable_trace: bool = True
     export_all_on_pull: bool = False
+    remove_timing_info: bool = False
 
 
 def run_loaded_strategy_with_cache[N: dp.Node, P, T](
@@ -134,7 +135,13 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
         if export_browsable_trace:
             assert cache is not None
             browsable_trace = analysis.compute_browsable_trace(trace, cache)
-        log = list(env.tracer.export_log()) if export_log else None
+        log = None
+        if export_log:
+            log = list(
+                env.tracer.export_log(
+                    remove_timing_info=args.remove_timing_info
+                )
+            )
         values = [serialize_result(r.value) for r in results]
         response = RunStrategyResponse(
             success=success,
@@ -272,6 +279,9 @@ class RunStrategyArgs:
         export_all_on_pull: Whether to export all
             information (raw trace, log, browsable trace) when an
             intermediate result is pulled.
+        remove_timing_info: Remove all timing information from the
+            result file (e.g. timestamp for each log message). This is
+            particularly useful for making commands deterministic.
     """
 
     strategy: str
@@ -289,6 +299,7 @@ class RunStrategyArgs:
     export_log: bool = True
     export_browsable_trace: bool = True
     export_all_on_pull: bool = False
+    remove_timing_info: bool = False
 
 
 def run_strategy(
@@ -322,6 +333,7 @@ def run_strategy(
             export_log=args.export_log,
             export_browsable_trace=args.export_browsable_trace,
             export_all_on_pull=args.export_all_on_pull,
+            remove_timing_info=args.remove_timing_info,
         ),
     )
 
