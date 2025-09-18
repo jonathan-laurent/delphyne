@@ -31,7 +31,8 @@ outcome:
     hindsight_feedback:
       5:
         query: AskNumber
-        args: {}
+        args:
+          prefix: []
         answer:
           mode: null
           content: '83'
@@ -66,9 +67,12 @@ outcome:
                 answer:
                   mode: null
                   content: '0'
+                  tool_calls: []
+                  justification: null
               - kind: feedback
                 label: parse_error
                 description: Expected '83'. Please answer with 83 instead.
+                meta: null
     log:
       - message: llm_request
         level: info

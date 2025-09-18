@@ -68,6 +68,8 @@ def standard_answer_loader(workspace_root: Path) -> dp.AnswerDatabaseLoader:
     ) -> _AnswerIterable:
         command_file = workspace_root / source.command
         trace_data = load_trace_data_from_command_file(command_file)
+        if not source.hindsight:
+            trace_data.hindsight_feedback = None
         node_ids = source.node_ids
         if node_ids is None:
             if trace_data.success_nodes:

@@ -594,3 +594,41 @@
   expect:
     test_feedback:
       - diagnostics: __empty__
+
+
+# In this demonstration, we use the hindsight feedback from a command 
+# to reach a success node using only one answer.
+- demonstration: using_hindsight_feedback
+  strategy: get_magic_number
+  args: {}
+  tests:
+    - run | success
+  using:
+    - command: "commands/run_get_magic_number"
+  queries: []
+  expect:
+    test_feedback:
+      - diagnostics: __empty__
+    implicit_answers:
+      fetched:
+        - answer_content: "83"
+
+
+# This is a variant of `using_hindsight_feedback`, where this time
+# hindsight feedback is explicitly excluded.
+- demonstration: without_hindsight_feedback
+  strategy: get_magic_number
+  args: {}
+  tests:
+    - run | success
+  using:
+    - command: "commands/run_get_magic_number"
+      hindsight: false  # /!\
+  queries: []
+  expect:  # two implicit answers are used this time
+    test_feedback:
+      - diagnostics: __empty__
+    implicit_answers:
+      fetched:
+        - query_name: AskNumber
+        - query_name: AskNumber
