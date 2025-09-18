@@ -85,7 +85,8 @@ class CommandResultAnswerSource:
 
     Attributes:
         command: Path to the command file containing the trace, relative
-            to the workspace root.
+            to the workspace root. If no extension is specified,
+            `.exec.yaml` is added.
         node_ids: Identifiers of the nodes whose full references
             features answers to be fetched. If `None`, the success node
             for the first generated result is used.

@@ -14,7 +14,7 @@ from delphyne.core.queries import AbstractQuery
 from delphyne.core.refs import Answer
 
 
-@dataclass
+@dataclass(frozen=True)
 class FromStandaloneQueryDemo:
     """
     Source of an answer located in a standalone query demo.
@@ -30,7 +30,7 @@ class FromStandaloneQueryDemo:
     demo_name: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class FromStrategyDemo:
     """
     Source of an answer located in a strategy demo.
@@ -50,7 +50,7 @@ class FromStrategyDemo:
     answer_id: int
 
 
-@dataclass
+@dataclass(frozen=True)
 class FromCommandResult:
     """
     Source of an answer located the result section of a command file.
@@ -72,6 +72,9 @@ type LocatedAnswerSource = (
 )
 """
 Provenance information for answers in databases.
+
+Objects of this type must be hashable, so that duplicate answers can be
+eliminated in `AnswerDatabase`.
 """
 
 

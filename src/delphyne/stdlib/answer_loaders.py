@@ -166,7 +166,7 @@ def load_trace_and_success_nodes_from_command_file(
     Load a trace from a command file.
     """
 
-    if not path.suffix.endswith(COMMAND_FILE_EXT):
+    if not path.suffix:
         path = path.with_suffix(COMMAND_FILE_EXT)
     with open(path, "r") as f:
         content: Any = yaml.safe_load(f)
