@@ -102,29 +102,3 @@ def test_experiment_launcher(
     experiment.get_status()
     assert experiment.is_done()
     experiment.replay_all_configs()
-
-
-def test_copy_make_sum_experiment_result():
-    """
-    Copy the first `result.yaml` file from the `make_sum` experiment
-    into `tests/output/make_sum_trace.yaml`, so that it can be used by
-    other tests.
-    """
-    import shutil
-
-    import yaml
-
-    root = Path(__file__).parent
-    experiment_dir = root / "output" / "test_make_sum_experiment"
-    experiment_yaml_path = experiment_dir / "experiment.yaml"
-    with open(experiment_yaml_path, "r") as f:
-        experiment_data = yaml.safe_load(f)
-
-    first_config_uid = next(iter(experiment_data["configs"].keys()))
-
-    source_result_path = (
-        experiment_dir / "configs" / first_config_uid / "result.yaml"
-    )
-
-    dest_path = root / "output" / "make_sum_trace.yaml"
-    shutil.copy2(source_result_path, dest_path)

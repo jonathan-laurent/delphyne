@@ -1,0 +1,97 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: Answer with a number and nothing else.
+        - role: user
+          content: '{}'
+      num_completions: 1
+      options:
+        model: gpt-5-nano
+      tools: []
+      structured_output: null
+    iter: 1
+  output:
+    outputs:
+      - content: '0'
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 19
+        output_tokens: 202
+        cached_input_tokens: 0
+        price: 1.96e-06
+    log_items: []
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      completion_tokens: 202
+      prompt_tokens: 19
+      total_tokens: 221
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 192
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+- input:
+    request:
+      chat:
+        - role: system
+          content: Answer with a number and nothing else.
+        - role: user
+          content: '{}'
+        - role: assistant
+          answer:
+            mode: null
+            content: '0'
+            tool_calls: []
+            justification: null
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Expected '83'. Please answer with 83 instead.
+            """
+      num_completions: 1
+      options:
+        model: gpt-5-nano
+      tools: []
+      structured_output: null
+    iter: 1
+  output:
+    outputs:
+      - content: '83'
+        tool_calls: []
+        finish_reason: stop
+        logprobs: null
+        reasoning_content: null
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 49
+        output_tokens: 74
+        cached_input_tokens: 0
+        price: 2.8199999999999997e-06
+    log_items: []
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      completion_tokens: 74
+      prompt_tokens: 49
+      total_tokens: 123
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 64
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0

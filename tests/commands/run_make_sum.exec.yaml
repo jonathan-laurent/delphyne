@@ -1,15 +1,138 @@
 # Run the `make_sum` strategy, for testing purposes. 
 
-# delphyne-command
-
 command: run_strategy
 args:
   strategy: make_sum
   args:
-    allowed: [1, 2, 3, 4, 5]
-    goal: 9
+    allowed: [9, 6, 2]
+    goal: 11
   policy: make_sum_policy
-  policy_args: {}
+  policy_args:
+    model_name: gpt-5-mini
   num_generated: 1
   budget:
-    num_requests: 10
+    num_requests: 1
+  export_browsable_trace: false
+  export_raw_trace: true
+  remove_timing_info: true
+outcome:
+  diagnostics: []
+  result:
+    success: true
+    values:
+      - - 9
+        - 2
+    spent_budget:
+      num_requests: 1
+      num_completions: 1
+      input_tokens: 126
+      output_tokens: 336
+      cached_input_tokens: 0
+      price: 3.99e-05
+    success_nodes:
+      - 2
+    raw_trace:
+      nodes:
+        1: nested(0, $main)
+        2: child(1, cands{@1})
+      queries:
+        - node: 1
+          space: cands
+          answers:
+            1:
+              mode: null
+              content: |-
+                - 9
+                - 2
+          query: MakeSum
+          args:
+            allowed:
+              - 9
+              - 6
+              - 2
+            goal: 11
+    log:
+      - message: llm_request
+        level: info
+        node: 1
+        space: cands
+        metadata:
+          hash: 66f40312
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [9, 6, 2]
+                  Target: 11
+            num_completions: 1
+            options: {}
+      - message: llm_response
+        level: info
+        node: 1
+        space: cands
+        metadata:
+          request: 66f40312
+          response:
+            outputs:
+              - content: |-
+                  - 9
+                  - 2
+                tool_calls: []
+                finish_reason: stop
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 126
+                output_tokens: 336
+                cached_input_tokens: 0
+                price: 3.99e-05
+            log_items: []
+            model_name: gpt-5-mini-2025-08-07
+            usage_info:
+              completion_tokens: 336
+              prompt_tokens: 126
+              total_tokens: 462
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 320
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-5-mini-2025-08-07
+            usage:
+              completion_tokens: 336
+              prompt_tokens: 126
+              total_tokens: 462
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 320
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0

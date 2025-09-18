@@ -584,12 +584,12 @@
 - demonstration: make_sum_fetched_answers
   strategy: make_sum
   args:
-    allowed: [1, 2, 3, 4, 5]
-    goal: 5
+    allowed: [9, 6, 2]
+    goal: 11
   tests:
     - run | success
   using:
-    - command: "output/make_sum_trace.yaml"
+    - command: "commands/run_make_sum"
   queries: []
   expect:
     test_feedback:

@@ -1,9 +1,11 @@
 .PHONY: install pyright test full-test
+.PHONY: test-commands FORCE
 .PHONY: clean-ignored clean full-clean
 .PHONY: delete-test-cache delete-full-test-cache
 .PHONY: schemas demos-stub feedback-stub stubs doc-logo readme repomix
 .PHONY: deploy-doc-release deploy-doc-dev prepare-release release
 .PHONY: cloc count-doc-words
+.PHONY: FORCE
 
 
 RELEASE_SCRIPT := python scripts/prepare_release.py
@@ -41,11 +43,12 @@ pyright:
 
 
 # Run a quick, minimal test suite. These tests should not require additional
-# dependencies on top of those specified in Delphyne's pyproject.toml.
-test:
+# dependencies on top of those specified in Delphyne's pyproject.toml. We run
+# some commands BEFORE pytest because their output might be needed for the tests
+# to succeed.
+test: test-commands
 	pytest tests
 	make -C examples/find_invariants test
-	delphyne run tests/commands/run_make_sum_using_demo.exec.yaml --update
 
 
 # Run a longer test suite. This might require additional dependencies, as
@@ -54,6 +57,14 @@ full-test: test
 	make -C examples/find_invariants full-test
 	make -C examples/mini_eqns full-test
 	make -C examples/small full-test
+
+
+# Run all commands in test/commands
+CMD_FILES := $(wildcard tests/commands/*.exec.yaml)
+test-commands: $(CMD_FILES)
+tests/commands/%.exec.yaml: FORCE
+	delphyne run $@ --cache --update
+FORCE: 
 
 
 # Clean files ignored by git.
@@ -83,6 +94,7 @@ full-clean: clean
 delete-test-cache:
 	rm -rf tests/cache
 	rm -rf tests/output
+	rm -rf tests/commands/cache
 
 
 delete-full-test-cache:
