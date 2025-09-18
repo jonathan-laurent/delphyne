@@ -15,6 +15,7 @@ import jinja2
 import yaml
 
 import delphyne.core as dp
+import delphyne.core.answer_databases as ad
 import delphyne.core.demos as dm
 import delphyne.stdlib.answer_loaders as loaders
 import delphyne.stdlib.models as md
@@ -301,6 +302,7 @@ class PolicyEnv:
         demonstration_files: Sequence[Path] = (),
         data_dirs: Sequence[Path] = (),
         cache: md.LLMCache | None = None,
+        override_answers: dp.AnswerDatabase | None = None,
         log_level: dp.LogLevel = "info",
         log_long_computations: tuple[dp.LogLevel, float] | None = None,
         do_not_match_identical_queries: bool = False,
@@ -315,6 +317,11 @@ class PolicyEnv:
             data_dirs: A sequence of directories where data files can be
                 found.
             cache: A request cache, or `None` to disable caching.
+            override_answers: If provided, a database of answers that
+                must be used to override LLM calls whenever possible.
+                Individual prompting policies such as `few_shot` are
+                responsible for consulting this global database using
+                the `overriden_answer` method.
             log_level: The minimum log level to record. Messages with a
                 lower level will be ignored.
             log_long_computations: if set, log computations taking more
@@ -328,9 +335,32 @@ class PolicyEnv:
         self.tracer = dp.Tracer(log_level=log_level)
         self.log_long_computations = log_long_computations
         self.cache = cache
+        self.override_answers = override_answers
         for path in demonstration_files:
             for demo in loaders.load_demo_file(path):
                 self.examples.add_demonstration(demo)
+
+    def overriden_answer(
+        self, query: dp.AbstractQuery[object]
+    ) -> dp.Answer | None:
+        """
+        Attempt to fetch an answer from the override database and return
+        it if it exists, while logging the event.
+        """
+
+        if self.override_answers is None:
+            return None
+        serialized_query = dp.SerializedQuery.make(query)
+        ret = self.override_answers.fetch(serialized_query)
+        if ret is not None:
+            meta = {
+                "source": ad.pp_located_answer_source(ret.source),
+                "query_name": query.query_name(),
+                "query_args": query.serialize_args(),
+                "answer": ret.answer,
+            }
+            self.info("llm_override", meta)
+            return ret.answer
 
     def log(
         self,

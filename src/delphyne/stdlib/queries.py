@@ -1535,7 +1535,23 @@ def few_shot[T](
     """
     assert not iterative_mode or num_completions == 1
     assert max_requests is None or max_requests > 0
+
+    def parse(answer: dp.Answer) -> dp.Tracked[T] | dp.ParseError:
+        parsed = query.parse_answer(answer)
+        if no_wrap_parse_errors:
+            parsed = _unwrap_parse_error(parsed)
+        return parsed
+
     env.tracer.trace_query(query)
+
+    if (overriden := env.overriden_answer(query.query)) is not None:
+        overriden_parsed = parse(overriden)
+        assert not isinstance(overriden_parsed, dp.ParseError), (
+            f"Unexpected parse error: {overriden_parsed}"
+        )
+        yield dp.Solution(overriden_parsed)
+        return
+
     examples = fetch_examples(env.examples, query.query, select_examples)
     mngr = env.templates
     if params is None:
@@ -1577,9 +1593,7 @@ def few_shot[T](
         for output in resp.outputs:
             answer = dp.Answer(mode, output.content, tuple(output.tool_calls))
             answers.append(answer)
-            element = query.parse_answer(answer)
-            if no_wrap_parse_errors:
-                element = _unwrap_parse_error(element)
+            element = parse(answer)
             env.tracer.trace_answer(query.ref, answer)
             if isinstance(element, dp.ParseError):
                 env.info("parse_error", {"error": element}, loc=query)
