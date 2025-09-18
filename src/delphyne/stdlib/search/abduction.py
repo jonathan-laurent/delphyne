@@ -16,11 +16,17 @@ from delphyne.stdlib.nodes import spawn_node
 from delphyne.stdlib.opaque import Opaque, OpaqueSpace
 from delphyne.stdlib.policies import search_policy
 
-# For readability of the `Abduction` node definition
+# The `Abduction` node definition cannot be precisely typed because of a
+# lack of higher-kinded types in Python, but we define aliases for readability.
 type _Fact = Any
+type _EFact = _Fact | None  # an "extended" fact
 type _Proof = Any
 type _Feedback = Any
 type _Status = Any
+type _TrackedProof = dp.Tracked[_Proof]
+type _TrackedFeedback = dp.Tracked[_Feedback]
+type _TrackedFact = dp.Tracked[_Fact]
+type _TrackedEFact = dp.Tracked[_Fact] | None
 
 
 @dataclass
@@ -33,19 +39,19 @@ class Abduction(dp.Node):
     """
 
     prove: Callable[
-        [Sequence[tuple[_Fact, _Proof]], _Fact | None],
+        [Sequence[tuple[_TrackedFact, _TrackedProof]], _TrackedEFact],
         OpaqueSpace[Any, _Status],
     ]
     suggest: Callable[
-        [_Feedback],
+        [_TrackedFeedback],
         OpaqueSpace[Any, Sequence[_Fact]],
     ]
     search_equivalent: Callable[
-        [Sequence[_Fact], _Fact],
+        [Sequence[_TrackedFact], _TrackedFact],
         OpaqueSpace[Any, _Fact | None],
     ]
     redundant: Callable[
-        [Sequence[_Fact], _Fact],
+        [Sequence[_TrackedFact], _TrackedFact],
         OpaqueSpace[Any, bool],
     ]
 
@@ -177,10 +183,6 @@ class _Abort(Exception): ...
 
 
 class _ProofFound(Exception): ...
-
-
-type _EFact = _Fact | None  # an extended fact
-type _Tracked_EFact = dp.Tracked[_Fact] | None
 
 
 class ScoringFunction(Protocol):
@@ -339,7 +341,7 @@ def abduct_and_saturate[P, Proof](
     # Invariant: `candidates`, `proved`, `disproved` and `redundant` are
     # disjoint. Together, they form the set of "canonical facts".
     candidates: dict[_EFact, _CandInfo] = {}
-    proved: dict[_EFact, _Proof] = {}
+    proved: dict[_EFact, _TrackedProof] = {}
     disproved: set[_EFact] = set()
     # Facts that are implied by the conjunction of all proved facts.
     redundant: set[_EFact] = set()
@@ -347,7 +349,7 @@ def abduct_and_saturate[P, Proof](
     # It is easier to manipulate untracked facts and so we keep the
     # correspondence with tracked facts here.
     # Invariant: all canonical facts are included in `tracked`.
-    tracked: dict[_EFact, _Tracked_EFact] = {None: None}
+    tracked: dict[_EFact, _TrackedEFact] = {None: None}
 
     # The `equivalent` dict maps a fact to its canonical equivalent
     # representative that is somewhere in `candidates`, `proved`,
@@ -360,6 +362,12 @@ def abduct_and_saturate[P, Proof](
     assert max_rollout_depth >= 1
     assert isinstance(tree.node, Abduction)
     node = tree.node
+
+    def tracked_f(fact: _Fact) -> _TrackedFact:
+        # Access `tracked` but ensure that `None` is not returned
+        res = tracked[fact]
+        assert res is not None
+        return res
 
     def compute_fact_stats() -> _FactStats:
         return _FactStats(
@@ -388,7 +396,7 @@ def abduct_and_saturate[P, Proof](
             return False
         call_stats.is_redundant_calls += 1
         start_time = time.time()
-        respace = node.redundant([tracked[o] for o in proved], tracked[f])
+        respace = node.redundant([tracked_f(o) for o in proved], tracked_f(f))
         res = yield from respace.stream(env, policy).first()
         call_stats.is_redundant_time_in_seconds += time.time() - start_time
         if res is None:
@@ -409,7 +417,7 @@ def abduct_and_saturate[P, Proof](
         # If not redundant, we try and prove it
         call_stats.prove_calls += 1
         start_time = time.time()
-        facts_list = [(tracked[f], p) for f, p in proved.items()]
+        facts_list = [(tracked_f(f), p) for f, p in proved.items()]
         pstream = node.prove(facts_list, tracked[c]).stream(env, policy)
         res = yield from pstream.first()
         call_stats.prove_time_in_seconds += time.time() - start_time
@@ -476,13 +484,13 @@ def abduct_and_saturate[P, Proof](
             assert nf in all_canonical()
             return equivalent[f]
         # New fact whose equivalence must be tested
-        prev = [tracked[o] for o in all_canonical() if o is not None]
+        prev = [tracked_f(o) for o in all_canonical() if o is not None]
         if not prev:
             # First fact: no need to make equivalence call
             return f
         call_stats.search_equivalent_calls += 1
         start_time = time.time()
-        eqspace = node.search_equivalent(prev, tracked[f])
+        eqspace = node.search_equivalent(prev, tracked_f(f))
         res = yield from eqspace.stream(env, policy).first()
         call_stats.search_equivalent_time_in_seconds += (
             time.time() - start_time
