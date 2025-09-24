@@ -71,3 +71,8 @@ from delphyne.stdlib.tasks import (
     run_command,
 )
 from delphyne.stdlib.universal_queries import UniversalQuery, guess
+
+from delphyne.stdlib.experiments.experiment_launcher import (
+    Experiment,
+    WorkersSetup,
+)
