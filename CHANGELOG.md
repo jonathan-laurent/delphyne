@@ -3,6 +3,7 @@
 ## DEV
 
 - **Breaking**: Change signature of `dp.compute` to allow passing additional keyword arguments. You must now write `dp.compute(fun)(*args, **kwargs)` instead of `dp.compute(fun, *args, **kwargs)`.
+- Add `override_args` argument to `dp.compute` and `dp.elim_compute`. This allows policies to override timeout arguments for tool calls.
 
 ## Version 0.12.0 (2025-09-24)
 

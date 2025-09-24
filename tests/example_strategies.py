@@ -406,7 +406,11 @@ def generate_pairs_policy(pp: dp.PromptingPolicy):
 #####
 
 
-def expensive_computation(n: int) -> tuple[int, int]:
+def expensive_computation(
+    n: int, timeout: float | None = None
+) -> tuple[int, int]:
+    if timeout is not None:
+        print(f"Timeout set: {timeout}")
     return (n, n + 1)
 
 
@@ -757,7 +761,7 @@ def recursive_joins_policy():
     sp = (
         dprs.recursive_search()
         @ dp.elim_messages()
-        @ dp.elim_compute()
+        @ dp.elim_compute(override_args={"timeout": 1.0})
         @ dp.elim_flag(MethodFlag, "def")
     )
     return sp & dprs.OneOfEachSequentially()
