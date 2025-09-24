@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.12.0 (2025-09-24)
+
+- Add a `take` test instruction to the demonstration language for manually specifying an action to take at a given node. This ensures that the demonstration language is complete (any success node can be reached via a demonstration).
+- **Breaking**: improve navigation function for `Abduction` nodes to make it (conditionally) invertible.
+- Add `workers_setup` argument to `Experiment`.
+- **Experimental**: add support for external answer sources in demonstrations and in the `run_strategy` command, and for hindsight feedback.
+- Fix path bug in experiment launcher.
+
 ## Version 0.11.1 (2025-09-13)
 
 - **Breaking**: `Experiment` puts all config folders in a `configs` subdirectory of the output directory.
