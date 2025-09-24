@@ -3991,14 +3991,12 @@ Answers</code> code action from Delphyne's VSCode extension).</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span>
-    <span class="n">f</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.computations.compute[**P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.computations.compute[T]">T</span></span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.computations.compute[**P]">P</span></span><span class="o">.</span><span class="n"><span title="delphyne.stdlib.computations.compute[**P].args">args</span></span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.computations.compute[**P]">P</span></span><span class="o">.</span><span class="n"><span title="delphyne.stdlib.computations.compute[**P].kwargs">kwargs</span></span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core_and_base.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Compute
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">compute</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.computations.compute[**P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.computations.compute[T]">T</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.computations.compute[**P]">P</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core_and_base.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Compute
 
 
   
       dataclass
-   (delphyne.stdlib.computations.Compute)" href="#delphyne.stdlib.computations.Compute">Compute</a></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.computations.compute[T]">T</span></span><span class="p">]</span>
+   (delphyne.stdlib.computations.Compute)" href="#delphyne.stdlib.computations.Compute">Compute</a></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.computations.compute[T]">T</span></span><span class="p">]]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -4040,38 +4038,6 @@ JSON-serializable. It does not need to be deterministic.</p>
                 <em>required</em>
             </td>
           </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>*args</code>
-            </td>
-            <td>
-                  <code><span title="delphyne.stdlib.computations.compute[**P]">P</span>.<span title="delphyne.stdlib.computations.compute[**P].args">args</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Positional arguments to pass to <code>f</code>.</p>
-              </div>
-            </td>
-            <td>
-                  <code>()</code>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>**kwargs</code>
-            </td>
-            <td>
-                  <code><span title="delphyne.stdlib.computations.compute[**P]">P</span>.<span title="delphyne.stdlib.computations.compute[**P].kwargs">kwargs</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Keyword arguments to pass to <code>f</code>.</p>
-              </div>
-            </td>
-            <td>
-                  <code>{}</code>
-            </td>
-          </tr>
       </tbody>
     </table>
 
@@ -4102,9 +4068,13 @@ JSON-serializable. It does not need to be deterministic.</p>
 <span class="normal">147</span>
 <span class="normal">148</span>
 <span class="normal">149</span>
-<span class="normal">150</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">[</span><span class="o">**</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
-    <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">kwargs</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Compute</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">[</span><span class="o">**</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+    <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Compute</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">T</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Triggering function for the `Compute` effect.</span>
 
@@ -4112,21 +4082,25 @@ JSON-serializable. It does not need to be deterministic.</p>
 <span class="sd">        f: Function performing an expensive computation. It must feature</span>
 <span class="sd">            type annotations and its arguments must be</span>
 <span class="sd">            JSON-serializable. It does not need to be deterministic.</span>
-<span class="sd">        *args: Positional arguments to pass to `f`.</span>
-<span class="sd">        **kwargs: Keyword arguments to pass to `f`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">comp</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="n">ret_type</span> <span class="o">=</span> <span class="n">insp</span><span class="o">.</span><span class="n">function_return_type</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret_type</span><span class="p">,</span> <span class="n">ty</span><span class="o">.</span><span class="n">NoTypeInfo</span><span class="p">)</span>
-    <span class="n">fun_args</span> <span class="o">=</span> <span class="n">insp</span><span class="o">.</span><span class="n">function_args_dict</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
-    <span class="n">fun</span> <span class="o">=</span> <span class="n">insp</span><span class="o">.</span><span class="n">function_name</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">fun</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-    <span class="n">query</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">TransparentQuery</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">__Computation__</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">fun_args</span><span class="p">))</span>
-    <span class="n">unparsed</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">spawn_node</span><span class="p">(</span>
-        <span class="n">Compute</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">_comp</span><span class="o">=</span><span class="n">comp</span><span class="p">,</span> <span class="n">_ret_type</span><span class="o">=</span><span class="n">ret_type</span>
-    <span class="p">)</span>
-    <span class="n">ret</span> <span class="o">=</span> <span class="n">ty</span><span class="o">.</span><span class="n">pydantic_load</span><span class="p">(</span><span class="n">ret_type</span><span class="p">,</span> <span class="n">unparsed</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">ret</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">wrapped</span><span class="p">(</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Compute</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+        <span class="n">comp</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">ret_type</span> <span class="o">=</span> <span class="n">insp</span><span class="o">.</span><span class="n">function_return_type</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret_type</span><span class="p">,</span> <span class="n">ty</span><span class="o">.</span><span class="n">NoTypeInfo</span><span class="p">)</span>
+        <span class="n">fun_args</span> <span class="o">=</span> <span class="n">insp</span><span class="o">.</span><span class="n">function_args_dict</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">fun</span> <span class="o">=</span> <span class="n">insp</span><span class="o">.</span><span class="n">function_name</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">fun</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">TransparentQuery</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">__Computation__</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">fun_args</span><span class="p">))</span>
+        <span class="n">unparsed</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">spawn_node</span><span class="p">(</span>
+            <span class="n">Compute</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span> <span class="n">_comp</span><span class="o">=</span><span class="n">comp</span><span class="p">,</span> <span class="n">_ret_type</span><span class="o">=</span><span class="n">ret_type</span>
+        <span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">ty</span><span class="o">.</span><span class="n">pydantic_load</span><span class="p">(</span><span class="n">ret_type</span><span class="p">,</span> <span class="n">unparsed</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">ret</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wrapped</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4238,11 +4212,7 @@ level. When set to <code>None</code>, this setting can be overriden by
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">186</span>
 <span class="normal">187</span>
 <span class="normal">188</span>
 <span class="normal">189</span>
@@ -4313,7 +4283,11 @@ level. When set to <code>None</code>, this setting can be overriden by
 <span class="normal">254</span>
 <span class="normal">255</span>
 <span class="normal">256</span>
-<span class="normal">257</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dp</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dp</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">elim_compute</span><span class="p">(</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
