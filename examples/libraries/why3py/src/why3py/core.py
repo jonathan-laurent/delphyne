@@ -405,8 +405,10 @@ Diff: TypeAlias = Union[
 ]
 
 
-def prove(src: str) -> Result[list[Obligation]]:
-    return _core_internals.prove(src)
+def prove(
+    src: str, max_steps: int, max_time_in_secs: float
+) -> Result[list[Obligation]]:
+    return _core_internals.prove(src, max_steps, max_time_in_secs)
 
 
 def diff(original: str, modified: str) -> Result[Diff]:

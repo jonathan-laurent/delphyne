@@ -29,7 +29,7 @@ let loop ()
 def test_prove_obligations(monkeypatch):
     utils.force_atty(monkeypatch)
     t0 = timeit.default_timer()
-    res = prove(TEST_MLW)
+    res = prove(TEST_MLW, max_steps=5000, max_time_in_secs=5.0)
     t1 = timeit.default_timer()
     print(f"Time to return: {t1 - t0:.2f} s", end="\n\n")
     match res:
@@ -61,4 +61,4 @@ let main () diverges =
 
 @pytest.mark.skip("Too long")
 def test_prove_timeout():
-    print(prove(TEST_TIMEOUT))
+    print(prove(TEST_TIMEOUT, max_steps=5000, max_time_in_secs=5.0))

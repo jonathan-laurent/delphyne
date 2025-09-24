@@ -37,7 +37,7 @@ TYPE_ERROR_TWO_LINES = """
 
 @pytest.mark.parametrize("src", [TYPE_ERROR_ONE_LINE, TYPE_ERROR_TWO_LINES])
 def test_split_error_location(src):
-    match why3py.prove(src):
+    match why3py.prove(src, max_steps=5000, max_time_in_secs=5.0):
         case ("Error", (err,)):
             assert split_error_location(err) is not None
         case _:

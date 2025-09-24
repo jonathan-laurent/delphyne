@@ -6,14 +6,22 @@ from dataclasses import dataclass
 
 from why3py import core
 
+DEFAULT_MAX_STEPS = 5000
+DEFAULT_MAX_TIME_IN_SECONDS = 5.0
 
-def check_valid(src: str) -> str | None:
+
+def check_valid(
+    src: str,
+    *,
+    max_steps: int = DEFAULT_MAX_STEPS,
+    max_time_in_seconds: float = DEFAULT_MAX_TIME_IN_SECONDS,
+) -> str | None:
     """
     Take an annotated WhyML program and try to prove it automatically.
     Return `None` if and only if all obligations can be discharged and
     an error message otherwise.
     """
-    match core.prove(src):
+    match core.prove(src, max_steps, max_time_in_seconds):
         case ("Answer", (obligations,)):
             for obl in obligations:
                 if not obl["proved"]:

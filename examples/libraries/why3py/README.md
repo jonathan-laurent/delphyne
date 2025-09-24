@@ -52,7 +52,3 @@ You can also see all the generated obligations for an example by running:
 ```
 pytest -k "prove" -rP --color=yes
 ```
-
-## TODO
-
-- We currently use a 5 seconds timeout for checking files, which should be exposed as a parameter (see `Prove.prove`).

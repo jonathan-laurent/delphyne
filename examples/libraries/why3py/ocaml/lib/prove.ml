@@ -54,7 +54,7 @@ let compute_tasks ast =
   in
   List.rev tasks
 
-let prove_task ?(max_steps = 0) ?(max_time_in_secs: float = 5.0) t =
+let prove_task ~max_steps ~max_time_in_secs t =
   let open Call_provers in
   let limits = {empty_limits with limit_steps= max_steps; limit_time = max_time_in_secs} in
   let res =
@@ -150,7 +150,7 @@ let get_locations (task : Task.task) =
 
 (* Main function *)
 
-let prove ?(max_steps = 5000) src =
+let prove ~max_steps ~max_time_in_secs src =
   let ast = Ptree_utils.parse_mlw src in
   let tasks = compute_tasks ast in
   let process task =
@@ -165,7 +165,7 @@ let prove ?(max_steps = 5000) src =
            let sub = subst_all sub in
            let task = Fmt.str "%a" Pretty.print_sequent sub in
            let proved, prover_answer, prover_steps =
-             prove_task ~max_steps sub
+             prove_task ~max_steps sub ~max_time_in_secs
            in
            {name; task; goal_loc; locs; proved; prover_answer; prover_steps} )
   in
