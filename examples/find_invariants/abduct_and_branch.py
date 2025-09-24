@@ -59,7 +59,7 @@ def prove_program_via_abduction_and_branching(
 ) -> Strategy[Branch | Value | Fail | Compute, ProveProgIP, why3.File]:
     annotated: why3.File = prog
     while True:
-        feedback = yield from dp.compute(why3.check, prog, annotated)
+        feedback = yield from dp.compute(why3.check)(prog, annotated)
         yield from dp.ensure(feedback.error is None, "invalid program")
         if feedback.success:
             return annotated

@@ -1,5 +1,9 @@
 # Changelog
 
+## DEV
+
+- **Breaking**: Change signature of `dp.compute` to allow passing additional keyword arguments. You must now write `dp.compute(fun)(*args, **kwargs)` instead of `dp.compute(fun, *args, **kwargs)`.
+
 ## Version 0.12.0 (2025-09-24)
 
 - Add a `take` test instruction to the demonstration language for manually specifying an action to take at a given node. This ensures that the demonstration language is complete (any success node can be reached via a demonstration).

@@ -59,7 +59,7 @@ def _prove_goal(
 ) -> Strategy[Compute, object, dp.AbductionStatus[_Feedback, _Proof]]:
     invs = [p[0] for p in proved]
     aux_prog = _modified_program(prog, invs, goal)
-    feedback = yield from dp.compute(why3.check, aux_prog, aux_prog)
+    feedback = yield from dp.compute(why3.check)(aux_prog, aux_prog)
     if feedback.success:
         return ("proved", invs)
     if feedback.error:
@@ -85,8 +85,8 @@ def _search_equivalent(
     proved: Sequence[Formula], fml: Formula
 ) -> Strategy[Compute, object, Formula | None]:
     for p in proved:
-        limpl = yield from dp.compute(why3.is_valid_implication, [p], fml)
-        rimpl = yield from dp.compute(why3.is_valid_implication, [fml], p)
+        limpl = yield from dp.compute(why3.is_valid_implication)([p], fml)
+        rimpl = yield from dp.compute(why3.is_valid_implication)([fml], p)
         if limpl and rimpl:
             return p
     return None
@@ -96,7 +96,7 @@ def _search_equivalent(
 def _is_redundant(
     proved: Sequence[Formula], fml: Formula
 ) -> Strategy[Compute, object, bool]:
-    red = yield from dp.compute(why3.is_valid_implication, proved, fml)
+    red = yield from dp.compute(why3.is_valid_implication)(proved, fml)
     return red
 
 

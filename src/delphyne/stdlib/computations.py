@@ -124,8 +124,8 @@ class Compute(dp.ComputationNode):
 
 
 def compute[**P, T](
-    f: Callable[P, T], *args: P.args, **kwargs: P.kwargs
-) -> dp.Strategy[Compute, object, T]:
+    f: Callable[P, T],
+) -> Callable[P, dp.Strategy[Compute, object, T]]:
     """
     Triggering function for the `Compute` effect.
 
@@ -133,21 +133,25 @@ def compute[**P, T](
         f: Function performing an expensive computation. It must feature
             type annotations and its arguments must be
             JSON-serializable. It does not need to be deterministic.
-        *args: Positional arguments to pass to `f`.
-        **kwargs: Keyword arguments to pass to `f`.
     """
-    comp = partial(f, *args, **kwargs)
-    ret_type = insp.function_return_type(f)
-    assert not isinstance(ret_type, ty.NoTypeInfo)
-    fun_args = insp.function_args_dict(f, args, kwargs)
-    fun = insp.function_name(f)
-    assert fun is not None
-    query = dp.TransparentQuery.build(__Computation__(fun, fun_args))
-    unparsed = yield spawn_node(
-        Compute, query=query, _comp=comp, _ret_type=ret_type
-    )
-    ret = ty.pydantic_load(ret_type, unparsed)
-    return cast(T, ret)
+
+    def wrapped(
+        *args: P.args, **kwargs: P.kwargs
+    ) -> dp.Strategy[Compute, object, T]:
+        comp = partial(f, *args, **kwargs)
+        ret_type = insp.function_return_type(f)
+        assert not isinstance(ret_type, ty.NoTypeInfo)
+        fun_args = insp.function_args_dict(f, args, kwargs)
+        fun = insp.function_name(f)
+        assert fun is not None
+        query = dp.TransparentQuery.build(__Computation__(fun, fun_args))
+        unparsed = yield spawn_node(
+            Compute, query=query, _comp=comp, _ret_type=ret_type
+        )
+        ret = ty.pydantic_load(ret_type, unparsed)
+        return cast(T, ret)
+
+    return wrapped
 
 
 @dataclass

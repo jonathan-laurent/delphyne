@@ -61,6 +61,7 @@ from delphyne.stdlib.nodes import (
     Branch,
     Factor,
     Fail,
+    FromPolicy,
     Join,
     Message,
     NodeMeta,

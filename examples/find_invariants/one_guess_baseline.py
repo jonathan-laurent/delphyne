@@ -16,7 +16,7 @@ from abduct_and_branch import ProposeInvariants
 def prove_program_one_guess(
     prog: why3.File,
 ) -> Strategy[Branch | Fail | Compute, dp.PromptingPolicy, why3.File]:
-    feedback = yield from dp.compute(why3.check, prog, prog)
+    feedback = yield from dp.compute(why3.check)(prog, prog)
     yield from dp.ensure(feedback.error is None, label="invalid_program")
     if feedback.success:
         return prog
@@ -27,7 +27,7 @@ def prove_program_one_guess(
         ProposeInvariants(unproved, []).using(lambda p: p, dp.PromptingPolicy),
     )
     annotated = why3.add_invariants(prog, invariants)
-    feedback = yield from dp.compute(why3.check, prog, annotated)
+    feedback = yield from dp.compute(why3.check)(prog, annotated)
     yield from dp.ensure(feedback.success)
     return annotated
 

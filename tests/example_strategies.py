@@ -414,9 +414,9 @@ def expensive_computation(n: int) -> tuple[int, int]:
 def test_cached_computations(
     n: int,
 ) -> Strategy[dp.Compute, object, int]:
-    a, b = yield from dp.compute(expensive_computation, n)
-    c, d = yield from dp.compute(expensive_computation, n)
-    e, f = yield from dp.compute(expensive_computation, n + 1)
+    a, b = yield from dp.compute(expensive_computation)(n)
+    c, d = yield from dp.compute(expensive_computation)(n)
+    e, f = yield from dp.compute(expensive_computation)(n + 1)
     return a * b + c * d + e * f
 
 
@@ -741,7 +741,7 @@ def recursive_joins(
 ]:
     if depth == 0:
         flag = yield from dp.get_flag(MethodFlag)
-        v, _ = yield from dp.compute(expensive_computation, 1)
+        v, _ = yield from dp.compute(expensive_computation)(1)
         return v if flag == "def" else 0
     else:
         yield from dp.message(f"Recursing at depth {depth}")
