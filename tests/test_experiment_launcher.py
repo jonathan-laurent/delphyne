@@ -11,7 +11,6 @@ import pytest
 
 import delphyne as dp
 import delphyne.stdlib.commands as cmd
-from delphyne.stdlib.experiments.experiment_launcher import Experiment
 
 #####
 ##### Experiment Examples
@@ -56,6 +55,12 @@ def cached_computations_experiment(config: object):
 #####
 
 
+def _init_worker(msg: str):
+    import os
+
+    print(f"Initialized worker ({os.getpid()}): {msg}")
+
+
 @pytest.mark.parametrize(
     "name,exp_fun,configs",
     [
@@ -83,12 +88,15 @@ def test_experiment_launcher(
     context = dp.CommandExecutionContext(
         modules=["example_strategies"],
     ).with_root(root)
-    experiment = Experiment(
+    experiment = dp.Experiment(
         experiment=exp_fun,
         context=context,
         configs=configs,
         name=name,
         output_dir=root / "output" / name,
+        workers_setup=dp.WorkersSetup(
+            common=lambda: "Hello World", per_worker=_init_worker
+        ),
     )
     experiment.load()
     experiment.get_status()

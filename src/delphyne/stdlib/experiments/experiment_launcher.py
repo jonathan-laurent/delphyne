@@ -105,6 +105,31 @@ class ExperimentFun[Config](Protocol):
     def __call__(self, config: Config, /) -> cmd.RunStrategyArgs: ...
 
 
+@dataclass
+class WorkersSetup[T]:
+    """
+    Specification for the setup work that must be performed on all
+    processes.
+
+    Attributes:
+        common: A function that is called one on the **main process**.
+            It must return a picklable object.
+        per_worker: A function that is called on **each worker** and
+            passed the result of `common` as an argument. This function
+            must be a top-level function since it is pickled and sent to
+            a remote process.
+
+    !!! tip "Example"
+        Suppose one wants to spawn a single proving server that is used
+        by all workers. One can setup the server in `common`, return
+        some access information (e.g. a port number), and then have
+        `per_worker` configure each worker to connect to the server.
+    """
+
+    common: Callable[[], T]
+    per_worker: Callable[[T], None]
+
+
 @dataclass(kw_only=True)
 class Experiment[Config]:
     """
@@ -151,6 +176,8 @@ class Experiment[Config]:
             and expensive computations (see `Compute`). When this is
             done, the experiment can be reliably replicated, without
             issuing LLM calls.
+        workers_setup: If provided, specifies the setup work to be
+            performed on all processes (see `WorkersSetup`).
         log_level: If provided, overrides the `log_level` argument of
             the command returned by the `experiment` function.
         export_raw_trace: Whether to export the raw trace for all
@@ -181,6 +208,7 @@ class Experiment[Config]:
     description: str | None = None
     config_naming: Callable[[Config, uuid.UUID], str] | None = None
     cache_requests: bool = True
+    workers_setup: WorkersSetup[Any] | None = None
     log_level: dp.LogLevel | None = None
     export_raw_trace: bool = True
     export_log: bool = True
@@ -421,8 +449,16 @@ class Experiment[Config]:
             # is interrupted when the main program exits.
             threading.Thread(target=monitor_input, daemon=True).start()
 
+        pool_args: dict[str, Any] = {}
+        if self.workers_setup is not None:
+            setup_arg = self.workers_setup.common()
+            pool_args["initializer"] = self.workers_setup.per_worker
+            pool_args["initargs"] = (setup_arg,)
+
         # Launching and completing all tasks
-        with ProcessPoolExecutor(max_workers=max_workers) as executor:
+        with ProcessPoolExecutor(
+            max_workers=max_workers, **pool_args
+        ) as executor:
             futures = [
                 executor.submit(
                     _run_config,
