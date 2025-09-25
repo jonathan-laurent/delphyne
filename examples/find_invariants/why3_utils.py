@@ -38,7 +38,9 @@ class Feedback:
         )
 
 
-def check(prog: File, annotated: File) -> Feedback:
+def check(
+    prog: File, annotated: File, timeout: float | None = None
+) -> Feedback:
     """
     Verify the correctness of a WhyML program.
 
@@ -62,7 +64,7 @@ def check(prog: File, annotated: File) -> Feedback:
     """
     import why3py.simple as why3py
 
-    outcome = why3py.check_file(annotated, prog)
+    outcome = why3py.check_file(annotated, prog, max_time_in_seconds=timeout)
     if outcome.kind == "error" or outcome.kind == "mismatch":
         return Feedback(error=why3py.summary(outcome), obligations=[])
     obligations = [
@@ -177,7 +179,9 @@ def _get_variable_names(f: Formula) -> Sequence[str]:
 
 
 def is_valid_implication(
-    assumptions: Sequence[Formula], conclusion: Formula
+    assumptions: Sequence[Formula],
+    conclusion: Formula,
+    timeout: float | None = None,
 ) -> bool:
     """
     Check if the assumptions imply the conclusion.
@@ -213,5 +217,5 @@ def is_valid_implication(
 
     prog = "\n".join(lines)
 
-    feedback = check(prog, prog)
+    feedback = check(prog, prog, timeout=timeout)
     return feedback.success

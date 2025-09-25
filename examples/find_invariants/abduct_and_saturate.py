@@ -38,17 +38,20 @@ A sequence of unproved obligations
 @strategy
 def prove_program_by_recursive_abduction(
     prog: why3.File,
-) -> Strategy[dp.Abduction, dp.PromptingPolicy, why3.File]:
+) -> Strategy[dp.Abduction, "ProveProgIP", why3.File]:
     invs = yield from dp.abduction(
         prove=lambda proved, goal:
-            _prove_goal(prog, proved, goal).using(dp.just_compute),
+            _prove_goal(prog, proved, goal)
+                .using(lambda p: p.prove, ProveProgIP),
         suggest=lambda feedback:
-            _suggest_invariants(feedback).using(dp.just_dfs),
+            _suggest_invariants(feedback)
+                .using(lambda p: p.suggest, ProveProgIP),
         search_equivalent=lambda proved, fml:
-            _search_equivalent(proved, fml).using(dp.just_compute),
+            _search_equivalent(proved, fml)
+                .using(lambda p: p.search_equivalent, ProveProgIP),
         redundant=lambda proved, fml:
-          _is_redundant(proved, fml).using(dp.just_compute),
-        inner_policy_type=dp.PromptingPolicy
+            _is_redundant(proved, fml)
+                .using(lambda p: p.is_redundant, ProveProgIP),
     )
     return why3.add_invariants(prog, invs)
 
@@ -56,7 +59,7 @@ def prove_program_by_recursive_abduction(
 @strategy
 def _prove_goal(
     prog: File, proved: Sequence[tuple[Formula, _Proof]], goal: Formula | None
-) -> Strategy[Compute, object, dp.AbductionStatus[_Feedback, _Proof]]:
+) -> Strategy[Compute, None, dp.AbductionStatus[_Feedback, _Proof]]:
     invs = [p[0] for p in proved]
     aux_prog = _modified_program(prog, invs, goal)
     feedback = yield from dp.compute(why3.check)(aux_prog, aux_prog)
@@ -83,7 +86,7 @@ def _suggest_invariants(
 @strategy
 def _search_equivalent(
     proved: Sequence[Formula], fml: Formula
-) -> Strategy[Compute, object, Formula | None]:
+) -> Strategy[Compute, None, Formula | None]:
     for p in proved:
         limpl = yield from dp.compute(why3.is_valid_implication)([p], fml)
         rimpl = yield from dp.compute(why3.is_valid_implication)([fml], p)
@@ -95,7 +98,7 @@ def _search_equivalent(
 @strategy
 def _is_redundant(
     proved: Sequence[Formula], fml: Formula
-) -> Strategy[Compute, object, bool]:
+) -> Strategy[Compute, None, bool]:
     red = yield from dp.compute(why3.is_valid_implication)(proved, fml)
     return red
 
@@ -149,14 +152,25 @@ class SuggestInvariants(dp.Query[InvariantSuggestions]):
 #####
 
 
+@dataclass
+class ProveProgIP:
+    prove: dp.Policy[Compute, None]
+    suggest: dp.Policy[Branch | Fail, dp.PromptingPolicy]
+    is_redundant: dp.Policy[Compute, None]
+    search_equivalent: dp.Policy[Compute, None]
+
+
+@dp.ensure_compatible(prove_program_by_recursive_abduction)
 def prove_program_by_saturation(
     model_name: str | None = None,
     model_cycle: Sequence[tuple[str, int]] | None = None,
     num_completions: int = 8,
     max_rollout_depth: int = 3,
     max_requests_per_attempt: int = 4,
-    max_retries_per_step: int = 16,
+    max_retries_per_step: int = 8,
     max_propagation_steps: int = 4,
+    max_candidates: int = 12,
+    max_proved: int = 8,
     temperature: float | None = None,
 ):
     if model_name:
@@ -165,12 +179,21 @@ def prove_program_by_saturation(
     assert model_cycle
     mcycle = [dp.standard_model(m) for (m, k) in model_cycle for _ in range(k)]
 
-    def pp(model: dp.LLM):
-        return dp.few_shot(
+    def ip(model: dp.LLM):
+        pp = dp.few_shot(
             model,
             temperature=temperature,
             num_completions=num_completions,
             max_requests=1
+        )
+        def compute(timeout: float | None = None):
+            sp = dp.dfs() @ dp.elim_compute(override_args={"timeout": timeout})
+            return sp & None
+        return ProveProgIP(
+            prove= compute(timeout=5.0),
+            suggest=dp.dfs() & pp,
+            search_equivalent=compute(timeout=0.3),
+            is_redundant=compute(timeout=1.0),
         )
     
     per_attempt = dp.BudgetLimit({dp.NUM_REQUESTS: max_requests_per_attempt})
@@ -180,5 +203,8 @@ def prove_program_by_saturation(
         max_raw_suggestions_per_step=3*num_completions,
         max_reattempted_candidates_per_propagation_step=max_retries_per_step,
         max_consecutive_propagation_steps=max_propagation_steps,
+        remember_disproved=False,
+        max_proved=max_proved,
+        max_candidates=max_candidates,
     )
-    return dp.sequence(sp & pp(m) for m in itertools.cycle(mcycle))
+    return dp.sequence(sp & ip(m) for m in itertools.cycle(mcycle))

@@ -8,7 +8,7 @@ configs = [
         num_completions=num_completions,
         max_requests_per_attempt=max_requests_per_attempt,
         max_dollar_budget=0.2,
-        max_retries_per_step=16,
+        max_retries_per_step=8,
         max_propagation_steps=4,
         seed=seed,
     )
