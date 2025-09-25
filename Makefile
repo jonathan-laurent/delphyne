@@ -3,7 +3,7 @@
 .PHONY: clean-ignored clean full-clean
 .PHONY: delete-test-cache delete-full-test-cache
 .PHONY: schemas demos-stub feedback-stub stubs doc-logo readme repomix
-.PHONY: deploy-doc-release deploy-doc-dev prepare-release release
+.PHONY: doc serve-doc deploy-doc-release deploy-doc-dev prepare-release release
 .PHONY: cloc count-doc-words
 .PHONY: FORCE
 
@@ -158,6 +158,14 @@ REPOMIX_IGNORE = \
 # Generate a single file summarizing the repo, to be passed to LLMs for context.
 repomix:
 	repomix --ignore "$(REPOMIX_IGNORE)"
+
+
+doc:
+	mkdocs build
+
+
+serve-doc:
+	mkdocs serve
 
 
 # Build and deploy the documentation for the latest stable release.
