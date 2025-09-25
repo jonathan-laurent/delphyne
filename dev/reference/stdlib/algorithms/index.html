@@ -1181,6 +1181,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#delphyne.parallel" class="md-nav__link">
+    <span class="md-ellipsis">
+      parallel
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#delphyne.or_else" class="md-nav__link">
     <span class="md-ellipsis">
       or_else
@@ -1618,6 +1627,15 @@
   <a href="#delphyne.sequence" class="md-nav__link">
     <span class="md-ellipsis">
       sequence
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.parallel" class="md-nav__link">
+    <span class="md-ellipsis">
+      parallel
     </span>
   </a>
   
@@ -2662,14 +2680,57 @@ parallel.</p>
 
         <p>Try a list of policies, search policies, or prompting policies in
 sequence.</p>
-        <ul>
-<li>policies: An iterable of policies, search policies, or prompting
-      policies to try in sequence.</li>
-<li>stop_on_reject: If True, stop the sequence as soon as one policy
-      sees all its resource requests denied. Note that this is
-      necessary for termination when <code>policies</code> is an infinite
-      iterator.</li>
-</ul>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>policies</code>
+            </td>
+            <td>
+                  <code><span title="typing.Iterable">Iterable</span>[<span title="delphyne.stdlib.misc._AnyPolicy">_AnyPolicy</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An iterable of policies, search policies, or prompting
+policies to try in sequence.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>stop_on_reject</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If True, stop the sequence as soon as one policy
+sees all its resource requests denied. Note that this is
+necessary for termination when <code>policies</code> is an infinite
+iterator.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
             <details class="quote">
@@ -2718,13 +2779,13 @@ sequence.</p>
 <span class="sd">    Try a list of policies, search policies, or prompting policies in</span>
 <span class="sd">    sequence.</span>
 
-<span class="sd">    Attributes:</span>
-<span class="sd">    - policies: An iterable of policies, search policies, or prompting</span>
-<span class="sd">          policies to try in sequence.</span>
-<span class="sd">    - stop_on_reject: If True, stop the sequence as soon as one policy</span>
-<span class="sd">          sees all its resource requests denied. Note that this is</span>
-<span class="sd">          necessary for termination when `policies` is an infinite</span>
-<span class="sd">          iterator.</span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        policies: An iterable of policies, search policies, or prompting</span>
+<span class="sd">            policies to try in sequence.</span>
+<span class="sd">        stop_on_reject: If True, stop the sequence as soon as one policy</span>
+<span class="sd">            sees all its resource requests denied. Note that this is</span>
+<span class="sd">            necessary for termination when `policies` is an infinite</span>
+<span class="sd">            iterator.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">it</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">policies</span><span class="p">)</span>
@@ -2745,6 +2806,148 @@ sequence.</p>
             <span class="n">cast</span><span class="p">(</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Policy</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">policies</span><span class="p">),</span>
             <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span><span class="p">,</span>
         <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="delphyne.parallel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">parallel</span>
+
+
+</h3>
+          <div class="doc-overloads">
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">parallel</span><span class="p">(</span><span class="n">policies</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="PromptingPolicy
+
+
+  
+      dataclass
+   (delphyne.stdlib.policies.PromptingPolicy)" href="../basic/#delphyne.PromptingPolicy">PromptingPolicy</a></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="PromptingPolicy
+
+
+  
+      dataclass
+   (delphyne.stdlib.policies.PromptingPolicy)" href="../basic/#delphyne.PromptingPolicy">PromptingPolicy</a></span>
+</code></pre></div><div class="doc-signature highlight"><pre><span></span><code><span class="nf">parallel</span><span class="p">(</span><span class="n">policies</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="SearchPolicy
+
+
+  
+      dataclass
+   (delphyne.stdlib.policies.SearchPolicy)" href="../basic/#delphyne.SearchPolicy">SearchPolicy</a></span><span class="p">[</span><span class="n"><span title="N">N</span></span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="SearchPolicy
+
+
+  
+      dataclass
+   (delphyne.stdlib.policies.SearchPolicy)" href="../basic/#delphyne.SearchPolicy">SearchPolicy</a></span><span class="p">[</span><span class="n"><span title="N">N</span></span><span class="p">]</span>
+</code></pre></div><div class="doc-signature highlight"><pre><span></span><code><span class="nf">parallel</span><span class="p">(</span><span class="n">policies</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Policy
+
+
+  
+      dataclass
+   (delphyne.stdlib.policies.Policy)" href="../basic/#delphyne.Policy">Policy</a></span><span class="p">[</span><span class="n"><span title="N">N</span></span><span class="p">,</span> <span class="n"><span title="P">P</span></span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Policy
+
+
+  
+      dataclass
+   (delphyne.stdlib.policies.Policy)" href="../basic/#delphyne.Policy">Policy</a></span><span class="p">[</span><span class="n"><span title="N">N</span></span><span class="p">,</span> <span class="n"><span title="P">P</span></span><span class="p">]</span>
+</code></pre></div>          </div>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">parallel</span><span class="p">(</span><span class="n">policies</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.misc._AnyPolicy">_AnyPolicy</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.stdlib.misc._AnyPolicy">_AnyPolicy</span></span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Try a sequence of policies in parallel.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>policies</code>
+            </td>
+            <td>
+                  <code><span title="collections.abc.Sequence">Sequence</span>[<span title="delphyne.stdlib.misc._AnyPolicy">_AnyPolicy</span>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A sequence of policies, search policies, or prompting
+policies to try in parallel.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/misc.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parallel</span><span class="p">(</span>
+    <span class="n">policies</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">_AnyPolicy</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_AnyPolicy</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Try a sequence of policies in parallel.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        policies: A sequence of policies, search policies, or prompting</span>
+<span class="sd">            policies to try in parallel.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">policies</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot parallelize an empty sequence of policies&quot;</span><span class="p">)</span>
+
+    <span class="n">first</span> <span class="o">=</span> <span class="n">policies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">PromptingPolicy</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">parallel_prompting_policies</span><span class="p">(</span>
+            <span class="n">cast</span><span class="p">(</span><span class="n">Sequence</span><span class="p">[</span><span class="n">PromptingPolicy</span><span class="p">],</span> <span class="n">policies</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">SearchPolicy</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">parallel_search_policies</span><span class="p">(</span>
+            <span class="n">cast</span><span class="p">(</span><span class="n">Sequence</span><span class="p">[</span><span class="n">SearchPolicy</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">policies</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">Policy</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">parallel_policies</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Policy</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="n">policies</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2821,20 +3024,20 @@ fails (i.e., it does not produce any solution).</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/misc.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span>
-<span class="normal">290</span>
-<span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">or_else</span><span class="p">(</span><span class="n">main</span><span class="p">:</span> <span class="n">_AnyPolicy</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">_AnyPolicy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_AnyPolicy</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">or_else</span><span class="p">(</span><span class="n">main</span><span class="p">:</span> <span class="n">_AnyPolicy</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">_AnyPolicy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_AnyPolicy</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take two policies, search policies, or prompting policies as</span>
 <span class="sd">    arguments. Try the first one, and then the second one only if it</span>
@@ -2876,22 +3079,22 @@ solution is produced, the provided default value is used.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/misc.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span>
-<span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
-<span class="normal">337</span>
-<span class="normal">338</span>
-<span class="normal">339</span>
-<span class="normal">340</span>
-<span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span>
-<span class="normal">344</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">nofail</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">](</span><span class="n">space</span><span class="p">:</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">B</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span> <span class="o">|</span> <span class="n">B</span><span class="p">]:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">nofail</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">](</span><span class="n">space</span><span class="p">:</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">B</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span> <span class="o">|</span> <span class="n">B</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Modify an opaque space to that branching over it can never fail.</span>
 
