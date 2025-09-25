@@ -1573,8 +1573,7 @@ server.</p>
 <span class="normal">217</span>
 <span class="normal">218</span>
 <span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DelphyneCLI</span><span class="p">:</span>
+<span class="normal">220</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DelphyneCLI</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The Delphyne Command Line Interface.</span>
 
@@ -1650,8 +1649,7 @@ server.</p>
         <span class="n">file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
         <span class="n">workspace_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace_dir_for</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
         <span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="n">workspace_dir</span><span class="p">,</span> <span class="n">local_config_from</span><span class="o">=</span><span class="n">file_path</span><span class="p">)</span>
-        <span class="n">context</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">base</span>
-        <span class="n">feedback</span> <span class="o">=</span> <span class="n">check_demo_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">workspace_dir</span><span class="p">)</span>
+        <span class="n">feedback</span> <span class="o">=</span> <span class="n">check_demo_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">workspace_dir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_process_diagnostics</span><span class="p">(</span><span class="n">feedback</span><span class="o">.</span><span class="n">warnings</span><span class="p">,</span> <span class="n">feedback</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
@@ -1951,16 +1949,14 @@ produced.</p>
 <span class="normal">101</span>
 <span class="normal">102</span>
 <span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check a demonstration file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
     <span class="n">workspace_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_workspace_dir_for</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="n">workspace_dir</span><span class="p">,</span> <span class="n">local_config_from</span><span class="o">=</span><span class="n">file_path</span><span class="p">)</span>
-    <span class="n">context</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">base</span>
-    <span class="n">feedback</span> <span class="o">=</span> <span class="n">check_demo_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">workspace_dir</span><span class="p">)</span>
+    <span class="n">feedback</span> <span class="o">=</span> <span class="n">check_demo_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">workspace_dir</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_process_diagnostics</span><span class="p">(</span><span class="n">feedback</span><span class="o">.</span><span class="n">warnings</span><span class="p">,</span> <span class="n">feedback</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -2161,7 +2157,8 @@ ignored and the <code>clear</code> method is called.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/__main__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">106</span>
+<span class="normal">107</span>
 <span class="normal">108</span>
 <span class="normal">109</span>
 <span class="normal">110</span>
@@ -2255,8 +2252,7 @@ ignored and the <code>clear</code> method is called.</p>
 <span class="normal">198</span>
 <span class="normal">199</span>
 <span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
+<span class="normal">201</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
@@ -2376,7 +2372,8 @@ ignored and the <code>clear</code> method is called.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/__main__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">204</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">203</span>
+<span class="normal">204</span>
 <span class="normal">205</span>
 <span class="normal">206</span>
 <span class="normal">207</span>
@@ -2384,8 +2381,7 @@ ignored and the <code>clear</code> method is called.</p>
 <span class="normal">209</span>
 <span class="normal">210</span>
 <span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="normal">212</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Clear the outcome of a command file by updating it in place.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2419,13 +2415,13 @@ ignored and the <code>clear</code> method is called.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/__main__.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">215</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">214</span>
+<span class="normal">215</span>
 <span class="normal">216</span>
 <span class="normal">217</span>
 <span class="normal">218</span>
 <span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">serve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3008</span><span class="p">):</span>
+<span class="normal">220</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">serve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3008</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Launch an instance of the Delphyne language server.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
