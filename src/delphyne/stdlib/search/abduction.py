@@ -172,6 +172,7 @@ def abduct_recursively[P, Proof](
     policy: P,
     *,
     max_depth: int = 1,
+    max_suggestions: int | None = None,
 ) -> dp.StreamGen[Proof]:
     """
     A simple policy for `Abduction` nodes that mimics the behavior of
@@ -185,6 +186,7 @@ def abduct_recursively[P, Proof](
             the policy succeeds only if the top-level goal can be
             proved straight away. If equal to 1, suggestions can be made
             but they must all be provable straight away.
+        max_suggestions: The maximum of suggestions to consider.
     """
 
     proved: list[tuple[_TrackedEFact, _TrackedProof]] = []
@@ -227,7 +229,10 @@ def abduct_recursively[P, Proof](
         assert status.value == "feedback"
         # Obtain suggestions and try to prove them all recursively
         feedback = payload
-        for s in (yield from suggest(feedback)):
+        suggestions = [*(yield from suggest(feedback))]
+        if max_suggestions is not None:
+            suggestions = suggestions[:max_suggestions]
+        for s in suggestions:
             yield from aux(s, depth + 1)
         # Check again if `fact` is now proved
         if any(drop_refs(fact) == drop_refs(p) for p, _ in proved):
