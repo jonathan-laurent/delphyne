@@ -972,3 +972,36 @@ def make_sum_using_guess(
 @dp.ensure_compatible(make_sum_using_guess)
 def make_sum_using_guess_policy(model: dp.LLM):
     return dp.dfs() & {"sub": dp.few_shot(model)}
+
+
+#####
+##### Binarize Values, Iterative Mode for `few_shot`
+#####
+
+
+@dataclass
+class NumberOutput:
+    number: int
+
+
+@dataclass
+class GuessZeroAndThenOne(dp.Query[NumberOutput]):
+    __system_prompt__: ClassVar[str] = "Answer with a number."
+    __instance_prompt__: ClassVar[str] = "Start trying to answer `0`."
+    __more_prompt__: ClassVar[str] = "Now try to answer `1`."
+
+
+@dp.strategy
+def guess_zero_and_then_one() -> Strategy[
+    dp.Value | Branch, dp.PromptingPolicy, int
+]:
+    res = yield from dp.branch(GuessZeroAndThenOne().using(dp.ambient_pp))
+    num = res.number
+    yield from dp.value(dp.const_space(float(num == 1)), lambda _: lambda x: x)
+    return num
+
+
+@dp.ensure_compatible(guess_zero_and_then_one)
+def guess_zero_and_then_one_policy(model: dp.LLM):
+    sp = dp.dfs() @ dp.binarize_values(threshold=0.5)
+    return sp & dp.few_shot(model, iterative_mode=True)

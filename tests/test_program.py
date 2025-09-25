@@ -482,3 +482,22 @@ def test_make_sum_using_guess():
         model_name="gpt-5-mini",
     )
     assert res
+
+
+#####
+##### Binarize Values, Iterative Mode for `few_shot`
+#####
+
+
+def test_guess_zero_and_then_one():
+    strategy = ex.guess_zero_and_then_one()
+    res, _log = _eval_strategy(
+        strategy,
+        ex.guess_zero_and_then_one_policy,
+        cache_name="guess_zero_and_then_one",
+        max_requests=2,
+        max_res=1,
+        model_name="gpt-5-nano",
+    )
+    print(_log)
+    assert res and res[0].tracked.value == 1
