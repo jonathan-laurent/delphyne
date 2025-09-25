@@ -397,7 +397,7 @@ def generate_pairs_policy(pp: dp.PromptingPolicy):
             return 1e-15 if num_prev >= 2 else 1e-2 if num_prev >= 1 else 1e-1
         assert False
 
-    bestfs = dp.best_first_search(child_prior)
+    bestfs = dp.best_first_search(child_confidence_prior=child_prior)
     return bestfs & pp
 
 

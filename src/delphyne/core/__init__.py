@@ -60,6 +60,7 @@ from delphyne.core.refs import (
     ToolCall,
     Tracked,
     Value,
+    drop_refs,
 )
 from delphyne.core.reification import (
     TreeCache,

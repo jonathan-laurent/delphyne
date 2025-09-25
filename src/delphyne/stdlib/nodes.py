@@ -397,6 +397,78 @@ def value[E, P](
     yield spawn_node(Value, eval=eval, value=value)
 
 
+@pol.contextual_tree_transformer
+def elim_values(
+    env: PolicyEnv,
+    policy: Any,
+) -> pol.PureTreeTransformerFn[Value, Never]:
+    """
+    Eliminate the `Value` effect.
+    """
+
+    def transform[N: dp.Node, P, T](
+        tree: dp.Tree[Value | N, P, T],
+    ) -> dp.Tree[N, P, T]:
+        if isinstance(tree.node, Value):
+            return transform(tree.child(None))
+        return tree.transform(tree.node, transform)
+
+    return transform
+
+
+@pol.contextual_tree_transformer
+def binarize_values(
+    env: PolicyEnv,
+    policy: Any,
+    *,
+    threshold: float = 0.5,
+) -> pol.PureTreeTransformerFn[Value, Branch | Fail]:
+    """
+    Turn value nodes into assertions based on a threshold.
+
+    Attributes:
+        threshold: The threshold above which a value is considered
+            acceptable.
+
+    !!! warning:
+        `Value` nodes are transformed into `Branch` nodes and so it is
+        important that the associated opaque spaces for computing
+        strategies only generate one candidate so that no actual
+        branching can happen on value estimation.
+    """
+
+    def transform[N: dp.Node, P, T](
+        tree: dp.Tree[Value | N, P, T],
+    ) -> dp.Tree[Branch | Fail | N, P, T]:
+        if isinstance(tree.node, Value):
+            node = tree.node
+
+            def branch_child(
+                eval: dp.Value,
+            ) -> dp.Tree[Branch | Fail | N, P, T]:
+                value_comp = node.value(policy)
+                if (
+                    value_comp is None
+                    or value_comp(dp.drop_refs(eval)) >= threshold
+                ):
+                    return transform(tree.child(None))
+                else:
+                    return dp.Tree[Branch | Fail | N, P, T](
+                        Fail(dp.Error()),
+                        # What we pass for `child` does not matter since
+                        # it will never be accessed.
+                        child=(lambda v: transform(tree.child(None))),
+                        ref=tree.ref,
+                    )
+
+            return dp.Tree[Branch | Fail | N, P, T](
+                Branch(node.eval, meta=None), branch_child, tree.ref
+            )
+        return tree.transform(tree.node, transform)
+
+    return transform
+
+
 #####
 ##### Join Node
 #####

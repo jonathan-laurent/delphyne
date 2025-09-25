@@ -49,6 +49,7 @@ def best_first_search[P, T](
     tree: dp.Tree[Branch | Factor | Value | Fail, P, T],
     env: PolicyEnv,
     policy: P,
+    *,
     child_confidence_prior: Callable[[int, int], float],
     max_depth: int | None = None,
 ) -> dp.StreamGen[T]:
