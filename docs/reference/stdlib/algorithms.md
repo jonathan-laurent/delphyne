@@ -48,6 +48,8 @@
 
 ::: delphyne.abduction
 
+::: delphyne.abduct_recursively
+
 ::: delphyne.abduct_and_saturate
 
 ::: delphyne.stdlib.search.abduction.ScoringFunction

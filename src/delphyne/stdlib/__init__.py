@@ -39,6 +39,7 @@ from delphyne.stdlib.openai_api import (
 from delphyne.stdlib.search.abduction import (
     Abduction,
     AbductionStatus,
+    abduct_recursively,
     abduct_and_saturate,
     abduction,
 )
