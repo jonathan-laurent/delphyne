@@ -4405,7 +4405,7 @@ nested tree or some data.</p>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">extra_objects</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">],</span>
     <span class="n">answer_database_loader</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerDatabaseLoader">AnswerDatabaseLoader</span></span><span class="p">,</span>
-    <span class="n">implicit_answer_generators</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="ImplicitAnswerGenerator (delphyne.analysis.demo_interpreter.ImplicitAnswerGenerator)" href="#delphyne.ImplicitAnswerGenerator">ImplicitAnswerGenerator</a></span><span class="p">],</span>
+    <span class="n">load_implicit_answer_generators</span><span class="p">:</span> <span class="n"><span title="delphyne.analysis.demo_interpreter.ImplicitAnswerGeneratorsLoader">ImplicitAnswerGeneratorsLoader</span></span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="DemoFeedback (delphyne.analysis.feedback.DemoFeedback)" href="#delphyne.analysis.feedback.DemoFeedback">DemoFeedback</a></span>
 </code></pre></div>
 
@@ -4458,19 +4458,20 @@ identifiers.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><span title="delphyne.analysis.demo_interpreter.evaluate_demo.implicit_answer_generators">implicit_answer_generators</span></code></td>
+            <td><code><span title="delphyne.analysis.demo_interpreter.evaluate_demo.load_implicit_answer_generators">load_implicit_answer_generators</span></code></td>
             <td>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>A sequence of functions for
-generating implicit answers for particular node types (e.g.
-<a class="autorefs autorefs-internal" title="Compute
+                <p>Load the implicit answer
+generators (e.g. including the one handling <a class="autorefs autorefs-internal" title="Compute
 
 
   
       dataclass
-  " href="../../stdlib/effects/#delphyne.stdlib.computations.Compute"><code>Compute</code></a>). Functions are tried in order until one succeeds.</p>
+  " href="../../stdlib/effects/#delphyne.stdlib.computations.Compute"><code>Compute</code></a>
+nodes). This function is allowed to raise exceptions, which
+are then reported as errors.</p>
               </div>
             </td>
           </tr>
@@ -4508,22 +4509,7 @@ therefore not thread-safe.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/analysis/demo_interpreter.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">799</span>
-<span class="normal">800</span>
-<span class="normal">801</span>
-<span class="normal">802</span>
-<span class="normal">803</span>
-<span class="normal">804</span>
-<span class="normal">805</span>
-<span class="normal">806</span>
-<span class="normal">807</span>
-<span class="normal">808</span>
-<span class="normal">809</span>
-<span class="normal">810</span>
-<span class="normal">811</span>
-<span class="normal">812</span>
-<span class="normal">813</span>
-<span class="normal">814</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">814</span>
 <span class="normal">815</span>
 <span class="normal">816</span>
 <span class="normal">817</span>
@@ -4550,13 +4536,29 @@ therefore not thread-safe.</p>
 <span class="normal">838</span>
 <span class="normal">839</span>
 <span class="normal">840</span>
-<span class="normal">841</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate_demo</span><span class="p">(</span>
+<span class="normal">841</span>
+<span class="normal">842</span>
+<span class="normal">843</span>
+<span class="normal">844</span>
+<span class="normal">845</span>
+<span class="normal">846</span>
+<span class="normal">847</span>
+<span class="normal">848</span>
+<span class="normal">849</span>
+<span class="normal">850</span>
+<span class="normal">851</span>
+<span class="normal">852</span>
+<span class="normal">853</span>
+<span class="normal">854</span>
+<span class="normal">855</span>
+<span class="normal">856</span>
+<span class="normal">857</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate_demo</span><span class="p">(</span>
     <span class="n">demo</span><span class="p">:</span> <span class="n">dm</span><span class="o">.</span><span class="n">Demo</span><span class="p">,</span>
     <span class="n">context</span><span class="p">:</span> <span class="n">DemoExecutionContext</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">extra_objects</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">],</span>
     <span class="n">answer_database_loader</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerDatabaseLoader</span><span class="p">,</span>
-    <span class="n">implicit_answer_generators</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">ImplicitAnswerGenerator</span><span class="p">],</span>
+    <span class="n">load_implicit_answer_generators</span><span class="p">:</span> <span class="n">ImplicitAnswerGeneratorsLoader</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">fb</span><span class="o">.</span><span class="n">DemoFeedback</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluate a query or strategy demonstration.</span>
@@ -4569,9 +4571,10 @@ therefore not thread-safe.</p>
 <span class="sd">            identifiers.</span>
 <span class="sd">        extra_objects: Additional objects that can be resolved by name</span>
 <span class="sd">            (with higher precedence).</span>
-<span class="sd">        implicit_answer_generators: A sequence of functions for</span>
-<span class="sd">            generating implicit answers for particular node types (e.g.</span>
-<span class="sd">            `Compute`). Functions are tried in order until one succeeds.</span>
+<span class="sd">        load_implicit_answer_generators: Load the implicit answer</span>
+<span class="sd">            generators (e.g. including the one handling `Compute`</span>
+<span class="sd">            nodes). This function is allowed to raise exceptions, which</span>
+<span class="sd">            are then reported as errors.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A feedback object containing the results of the evaluation.</span>
@@ -4586,7 +4589,7 @@ therefore not thread-safe.</p>
             <span class="n">context</span><span class="p">,</span>
             <span class="n">extra_objects</span><span class="o">=</span><span class="n">extra_objects</span><span class="p">,</span>
             <span class="n">answer_database_loader</span><span class="o">=</span><span class="n">answer_database_loader</span><span class="p">,</span>
-            <span class="n">implicit_answer_generators</span><span class="o">=</span><span class="n">implicit_answer_generators</span><span class="p">,</span>
+            <span class="n">load_implicit_answer_generators</span><span class="o">=</span><span class="n">load_implicit_answer_generators</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">feedback</span>
     <span class="k">else</span><span class="p">:</span>
