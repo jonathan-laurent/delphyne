@@ -3799,6 +3799,7 @@ when <code>TypeExpr</code> is released with Python 3.14.</p>
    (delphyne.stdlib.nodes.Fail)" href="../effects/#delphyne.stdlib.nodes.Fail">Fail</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.bestfs.best_first_search[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.bestfs.best_first_search[T]">T</span></span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.search.bestfs.best_first_search[P]">P</span></span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
     <span class="n">child_confidence_prior</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="int">int</span></span><span class="p">,</span> <span class="n"><span title="int">int</span></span><span class="p">],</span> <span class="n"><span title="float">float</span></span><span class="p">],</span>
     <span class="n">max_depth</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="StreamGen (delphyne.core.StreamGen)" href="../../policies/streams/#delphyne.StreamGen">StreamGen</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.bestfs.best_first_search[T]">T</span></span><span class="p">]</span>
@@ -3943,11 +3944,13 @@ towards increasing the depth.</p>
 <span class="normal">156</span>
 <span class="normal">157</span>
 <span class="normal">158</span>
-<span class="normal">159</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
+<span class="normal">159</span>
+<span class="normal">160</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">best_first_search</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Factor</span> <span class="o">|</span> <span class="n">Value</span> <span class="o">|</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">P</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
     <span class="n">child_confidence_prior</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">],</span>
     <span class="n">max_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
