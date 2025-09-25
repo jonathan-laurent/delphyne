@@ -16,8 +16,14 @@
 
 ::: delphyne.SerializedQuery
 
-## Tracer
+## Data and Templates Managers
+
+::: delphyne.DataManager
 
 ::: delphyne.TemplatesManager
 
 ::: delphyne.TemplateFileMissing
+
+## Tracer
+
+::: delphyne.Tracer

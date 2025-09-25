@@ -12,6 +12,7 @@ from delphyne.stdlib.answer_loaders import (
     standard_answer_loader,
 )
 from delphyne.stdlib.environments import (
+    DataManager,
     Example,
     ExampleDatabase,
     HindsightFeedback,
