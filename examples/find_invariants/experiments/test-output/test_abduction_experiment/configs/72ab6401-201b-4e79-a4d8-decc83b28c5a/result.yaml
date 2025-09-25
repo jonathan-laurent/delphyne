@@ -32,7 +32,7 @@ args:
     max_requests_per_attempt: 4
   budget:
     price: 0.1
-  cache_file: 5e2b1e5c-10ee-4f25-8c8b-edf1960fe625/cache.yaml
+  cache_file: configs/72ab6401-201b-4e79-a4d8-decc83b28c5a/cache.yaml
   cache_mode: create
   log_long_computations:
     - info
@@ -66,15 +66,14 @@ outcome:
     spent_budget:
       num_requests: 5
       num_completions: 20
-      input_tokens: 16708
-      output_tokens: 1212
-      cached_input_tokens: 12288
-      price: 0.0183281
-    raw_trace: null
+      input_tokens: 16685
+      output_tokens: 1049
+      cached_input_tokens: 9216
+      price: 0.01094615
     log:
       - message: 'Explore fact: None'
         level: info
-        time: 2025-09-08 20:36:50.099917
+        time: 2025-09-25 13:17:30.693351
         metadata:
           facts_stats:
             num_candidates: 1
@@ -82,15 +81,15 @@ outcome:
             num_disproved: 0
             num_redundant: 0
           call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
       - message: llm_request
         level: info
-        time: 2025-09-08 20:36:50.112378
+        time: 2025-09-25 13:17:30.705641
         node: 4
         space: cands
         metadata:
@@ -451,7 +450,7 @@ outcome:
                 type: object
       - message: llm_response
         level: info
-        time: 2025-09-08 20:36:51.504808
+        time: 2025-09-25 13:17:33.081091
         node: 4
         space: cands
         metadata:
@@ -461,33 +460,31 @@ outcome:
               - content:
                   structured:
                     suggestions:
-                      - trick: true_or_continue
-                        invariant: x >= 0 && y >=0 && x <= 20 && y <= 40
-                tool_calls: []
-                finish_reason: stop
-              - content:
-                  structured:
-                    suggestions:
                       - trick: linear
                         invariant: 0 <= y
-                      - trick: linear
-                        invariant: y <= 20
-                tool_calls: []
-                finish_reason: stop
-              - content:
-                  structured:
-                    suggestions:
-                      - trick: true_or_continue
-                        invariant: 0 <= y <= 20
-                      - trick: monotone
-                        invariant: y >= 0
                 tool_calls: []
                 finish_reason: stop
               - content:
                   structured:
                     suggestions:
                       - trick: propose_post
-                        invariant: y <> 0
+                        invariant: x >= 0 && x <= 10 && y >= 0 && y <= 10
+                tool_calls: []
+                finish_reason: stop
+              - content:
+                  structured:
+                    suggestions:
+                      - trick: propose_post
+                        invariant: '{ y <= 10 + 10 * k | 0 <= k }'
+                      - trick: linear
+                        invariant: y >= 0
+                tool_calls: []
+                finish_reason: stop
+              - content:
+                  structured:
+                    suggestions:
+                      - trick: true_or_continue
+                        invariant: y <> 0 || unknown_bool
                 tool_calls: []
                 finish_reason: stop
             budget:
@@ -495,15 +492,15 @@ outcome:
                 num_requests: 1
                 num_completions: 4
                 input_tokens: 3322
-                output_tokens: 208
+                output_tokens: 197
                 cached_input_tokens: 0
-                price: 0.0006748
+                price: 0.00067425
             log_items: []
             model_name: gpt-4.1-nano-2025-04-14
             usage_info:
-              completion_tokens: 208
+              completion_tokens: 197
               prompt_tokens: 3322
-              total_tokens: 3530
+              total_tokens: 3519
               completion_tokens_details:
                 accepted_prediction_tokens: 0
                 audio_tokens: 0
@@ -515,9 +512,9 @@ outcome:
           usage:
             model: gpt-4.1-nano-2025-04-14
             usage:
-              completion_tokens: 208
+              completion_tokens: 197
               prompt_tokens: 3322
-              total_tokens: 3530
+              total_tokens: 3519
               completion_tokens_details:
                 accepted_prediction_tokens: 0
                 audio_tokens: 0
@@ -526,10 +523,10 @@ outcome:
               prompt_tokens_details:
                 audio_tokens: 0
                 cached_tokens: 0
-      - message: 'Suggestions: [''x >= 0 && y >=0 && x <= 20 && y <= 40'', ''0 <= y'', ''y <= 20'', ''0
-          <= y <= 20'', ''y >= 0'', ''y <> 0'']'
+      - message: 'Suggestions: [''0 <= y'', ''x >= 0 && x <= 10 && y >= 0 && y <= 10'', ''{ y <= 10 +
+          10 * k | 0 <= k }'', ''y >= 0'', ''y <> 0 || unknown_bool'']'
         level: info
-        time: 2025-09-08 20:36:51.508430
+        time: 2025-09-25 13:17:33.087909
         metadata:
           facts_stats:
             num_candidates: 1
@@ -537,15 +534,31 @@ outcome:
             num_disproved: 0
             num_redundant: 0
           call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
       - message: 'Proved: 0 <= y'
         level: info
-        time: 2025-09-08 20:36:51.625834
+        time: 2025-09-25 13:17:33.153953
+        metadata:
+          facts_stats:
+            num_candidates: 1
+            num_proved: 1
+            num_disproved: 0
+            num_redundant: 0
+          call_stats:
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
+      - message: 'Disproved: { y <= 10 + 10 * k | 0 <= k }'
+        level: info
+        time: 2025-09-25 13:17:33.239575
         metadata:
           facts_stats:
             num_candidates: 2
@@ -553,84 +566,99 @@ outcome:
             num_disproved: 0
             num_redundant: 0
           call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
       - message: 'Redundant: y >= 0'
         level: info
-        time: 2025-09-08 20:36:51.805408
+        time: 2025-09-25 13:17:33.252815
         metadata:
           facts_stats:
-            num_candidates: 4
+            num_candidates: 2
             num_proved: 1
             num_disproved: 0
             num_redundant: 0
           call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
+      - message: 'Disproved: y <> 0 || unknown_bool'
+        level: info
+        time: 2025-09-25 13:17:33.256686
+        metadata:
+          facts_stats:
+            num_candidates: 2
+            num_proved: 1
+            num_disproved: 0
+            num_redundant: 1
+          call_stats:
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
       - message: Propagating...
         level: info
-        time: 2025-09-08 20:36:51.886448
+        time: 2025-09-25 13:17:33.256703
         metadata:
           facts_stats:
-            num_candidates: 5
+            num_candidates: 2
             num_proved: 1
             num_disproved: 0
             num_redundant: 1
           call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
-      - message: 'Filtered: {''x >= 0 && y >=0 && x <= 20 && y <= 40'': 1, ''y <= 20'': 1, ''0 <= y <=
-          20'': 1, ''y <> 0'': 1}'
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
+      - message: 'Filtered: {''x >= 0 && x <= 10 && y >= 0 && y <= 10'': 1}'
         level: info
-        time: 2025-09-08 20:36:52.240671
+        time: 2025-09-25 13:17:33.387003
         metadata:
           facts_stats:
-            num_candidates: 5
+            num_candidates: 2
             num_proved: 1
             num_disproved: 0
             num_redundant: 1
           call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
-      - message: 'Explore fact: x >= 0 && y >=0 && x <= 20 && y <= 40'
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
+      - message: 'Explore fact: x >= 0 && x <= 10 && y >= 0 && y <= 10'
         level: info
-        time: 2025-09-08 20:36:52.240701
+        time: 2025-09-25 13:17:33.387027
         metadata:
           facts_stats:
-            num_candidates: 5
+            num_candidates: 2
             num_proved: 1
             num_disproved: 0
             num_redundant: 1
           call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
       - message: llm_request
         level: info
-        time: 2025-09-08 20:36:52.249261
-        node: 37
+        time: 2025-09-25 13:17:33.396077
+        node: 29
         space: cands
         metadata:
-          hash: 742a47b8
+          hash: 1bf7c5ca
           query: SuggestInvariants
           request:
             chat:
@@ -941,7 +969,7 @@ outcome:
                     assume { y >= 0 };  (* premise *)
                     while any bool do
                       invariant { 0 <= y }  (* premise *)
-                      invariant { x >= 0 && y >=0 && x <= 20 && y <= 40 }  (* GOAL, premise *)
+                      invariant { x >= 0 && x <= 10 && y >= 0 && y <= 10 }  (* GOAL, premise *)
                       x <- x + 10;  (* premise *)
                       y <- y + 10  (* premise *)
                     done;
@@ -989,31 +1017,20 @@ outcome:
                 type: object
       - message: llm_response
         level: info
-        time: 2025-09-08 20:36:53.703397
-        node: 37
+        time: 2025-09-25 13:17:34.561414
+        node: 29
         space: cands
         metadata:
-          request: 742a47b8
+          request: 1bf7c5ca
           response:
             outputs:
               - content:
                   structured:
                     suggestions:
-                      - trick: linear
-                        invariant: x >= 0
-                      - trick: linear
+                      - trick: relax_loop_guard
                         invariant: x <= 20
-                      - trick: linear
-                        invariant: y >= 0
-                      - trick: linear
-                        invariant: y <= 40
-                tool_calls: []
-                finish_reason: stop
-              - content:
-                  structured:
-                    suggestions:
-                      - trick: rupts_recycling
-                        invariant: x >= 0 && y >= 0 && x <= 20 && y <= 40
+                      - trick: relax_loop_guard
+                        invariant: y <= 20
                 tool_calls: []
                 finish_reason: stop
               - content:
@@ -1021,33 +1038,36 @@ outcome:
                     suggestions:
                       - trick: relax_loop_guard
                         invariant: x <= 20
-                      - trick: true_or_continue
-                        invariant: x <= 20 || pseudoguard_value
                 tool_calls: []
                 finish_reason: stop
               - content:
                   structured:
                     suggestions:
-                      - trick: relax_loop_guard
-                        invariant: x <= 20
-                      - trick: relax_loop_guard
-                        invariant: y <= 40
+                      - trick: cond_guard
+                        invariant: x >= 0 && x <= 10 && y >= 0 && y <= 10
+                tool_calls: []
+                finish_reason: stop
+              - content:
+                  structured:
+                    suggestions:
+                      - trick: strengthen_inv
+                        invariant: 0 <= y && y <= 20
                 tool_calls: []
                 finish_reason: stop
             budget:
               values:
                 num_requests: 1
                 num_completions: 4
-                input_tokens: 3360
-                output_tokens: 288
+                input_tokens: 3361
+                output_tokens: 189
                 cached_input_tokens: 3072
-                price: 0.0025296
+                price: 0.00252485
             log_items: []
             model_name: gpt-4.1-nano-2025-04-14
             usage_info:
-              completion_tokens: 288
-              prompt_tokens: 3360
-              total_tokens: 3648
+              completion_tokens: 189
+              prompt_tokens: 3361
+              total_tokens: 3550
               completion_tokens_details:
                 accepted_prediction_tokens: 0
                 audio_tokens: 0
@@ -1059,9 +1079,9 @@ outcome:
           usage:
             model: gpt-4.1-nano-2025-04-14
             usage:
-              completion_tokens: 288
-              prompt_tokens: 3360
-              total_tokens: 3648
+              completion_tokens: 189
+              prompt_tokens: 3361
+              total_tokens: 3550
               completion_tokens_details:
                 accepted_prediction_tokens: 0
                 audio_tokens: 0
@@ -1070,10 +1090,27 @@ outcome:
               prompt_tokens_details:
                 audio_tokens: 0
                 cached_tokens: 3072
-      - message: 'Suggestions: [''x >= 0'', ''x <= 20'', ''y >= 0'', ''y <= 40'', ''x >= 0 && y >= 0 &&
-          x <= 20 && y <= 40'', ''x <= 20'', ''x <= 20 || pseudoguard_value'', ''x <= 20'', ''y <= 40'']'
+      - message: 'Suggestions: [''x <= 20'', ''y <= 20'', ''x <= 20'', ''x >= 0 && x <= 10 && y >= 0 &&
+          y <= 10'', ''0 <= y && y <= 20'']'
         level: info
-        time: 2025-09-08 20:36:53.712629
+        time: 2025-09-25 13:17:34.570285
+        metadata:
+          facts_stats:
+            num_candidates: 2
+            num_proved: 1
+            num_disproved: 0
+            num_redundant: 1
+          call_stats:
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
+      - message: 'Filtered: {''x <= 20'': 2, ''y <= 20'': 1, ''x >= 0 && x <= 10 && y >= 0 && y <= 10'':
+          1, ''0 <= y && y <= 20'': 1}'
+        level: info
+        time: 2025-09-25 13:17:35.104903
         metadata:
           facts_stats:
             num_candidates: 5
@@ -1081,100 +1118,35 @@ outcome:
             num_disproved: 0
             num_redundant: 1
           call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
-      - message: 'Proved: x >= 0'
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
+      - message: 'Explore fact: x <= 20'
         level: info
-        time: 2025-09-08 20:36:54.932671
+        time: 2025-09-25 13:17:35.104924
         metadata:
           facts_stats:
             num_candidates: 5
-            num_proved: 2
+            num_proved: 1
             num_disproved: 0
             num_redundant: 1
           call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
-      - message: 'Disproved: x <= 20 || pseudoguard_value'
-        level: info
-        time: 2025-09-08 20:36:55.150286
-        metadata:
-          facts_stats:
-            num_candidates: 7
-            num_proved: 2
-            num_disproved: 1
-            num_redundant: 1
-          call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
-      - message: Propagating...
-        level: info
-        time: 2025-09-08 20:36:55.150301
-        metadata:
-          facts_stats:
-            num_candidates: 7
-            num_proved: 2
-            num_disproved: 1
-            num_redundant: 1
-          call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
-      - message: 'Filtered: {''x <= 20'': 3, ''y <= 40'': 2, ''x >= 0 && y >=0 && x <= 20 && y <= 40'':
-          1}'
-        level: info
-        time: 2025-09-08 20:36:55.855570
-        metadata:
-          facts_stats:
-            num_candidates: 7
-            num_proved: 2
-            num_disproved: 1
-            num_redundant: 1
-          call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
-      - message: 'Explore fact: x <= 20'
-        level: info
-        time: 2025-09-08 20:36:55.855596
-        metadata:
-          facts_stats:
-            num_candidates: 7
-            num_proved: 2
-            num_disproved: 1
-            num_redundant: 1
-          call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
       - message: llm_request
         level: info
-        time: 2025-09-08 20:36:55.864870
-        node: 142
+        time: 2025-09-25 13:17:35.113442
+        node: 67
         space: cands
         metadata:
-          hash: a526f347
+          hash: bfcfeaa9
           query: SuggestInvariants
           request:
             chat:
@@ -1485,7 +1457,6 @@ outcome:
                     assume { y >= 0 };  (* premise *)
                     while any bool do
                       invariant { 0 <= y }  (* premise *)
-                      invariant { x >= 0 }  (* premise *)
                       invariant { x <= 20 }  (* GOAL, premise *)
                       x <- x + 10;  (* premise *)
                       y <- y + 10  (* premise *)
@@ -1534,44 +1505,42 @@ outcome:
                 type: object
       - message: llm_response
         level: info
-        time: 2025-09-08 20:36:57.586671
-        node: 142
+        time: 2025-09-25 13:17:36.919855
+        node: 67
         space: cands
         metadata:
-          request: a526f347
+          request: bfcfeaa9
           response:
             outputs:
               - content:
                   structured:
                     suggestions:
-                      - trick: linear
-                        invariant: x >= 0
-                      - trick: linear
+                      - trick: relax_loop_guard
                         invariant: x <= 20
-                      - trick: linear
-                        invariant: y <= 20
                 tool_calls: []
                 finish_reason: stop
               - content:
                   structured:
                     suggestions:
-                      - trick: true_or_continue
-                        invariant: x <= 20 || not (any bool)
-                tool_calls: []
-                finish_reason: stop
-              - content:
-                  structured:
-                    suggestions:
-                      - trick: relax_loop_guard
-                        invariant: x <= 30
-                      - trick: acknowledgment
-                        invariant: x - y >= 0
+                      - trick: prepost
+                        invariant: x <= 20
                 tool_calls: []
                 finish_reason: stop
               - content:
                   structured:
                     suggestions:
                       - trick: relax_loop_guard
+                        invariant: x < 21
+                      - trick: relax_loop_guard
+                        invariant: y < 21
+                tool_calls: []
+                finish_reason: stop
+              - content:
+                  structured:
+                    suggestions:
+                      - trick: relax_loop_guard
+                        invariant: x <= 20
+                      - trick: propose_post
                         invariant: x <= 20
                 tool_calls: []
                 finish_reason: stop
@@ -1579,16 +1548,16 @@ outcome:
               values:
                 num_requests: 1
                 num_completions: 4
-                input_tokens: 3358
-                output_tokens: 233
+                input_tokens: 3346
+                output_tokens: 212
                 cached_input_tokens: 3072
-                price: 0.00252645
+                price: 0.0025229999999999996
             log_items: []
             model_name: gpt-4.1-nano-2025-04-14
             usage_info:
-              completion_tokens: 233
-              prompt_tokens: 3358
-              total_tokens: 3591
+              completion_tokens: 212
+              prompt_tokens: 3346
+              total_tokens: 3558
               completion_tokens_details:
                 accepted_prediction_tokens: 0
                 audio_tokens: 0
@@ -1600,9 +1569,9 @@ outcome:
           usage:
             model: gpt-4.1-nano-2025-04-14
             usage:
-              completion_tokens: 233
-              prompt_tokens: 3358
-              total_tokens: 3591
+              completion_tokens: 212
+              prompt_tokens: 3346
+              total_tokens: 3558
               completion_tokens_details:
                 accepted_prediction_tokens: 0
                 audio_tokens: 0
@@ -1611,78 +1580,62 @@ outcome:
               prompt_tokens_details:
                 audio_tokens: 0
                 cached_tokens: 3072
-      - message: 'Suggestions: [''x >= 0'', ''x <= 20'', ''y <= 20'', ''x <= 20 || not (any bool)'', ''x
-          <= 30'', ''x - y >= 0'', ''x <= 20'']'
+      - message: 'Suggestions: [''x <= 20'', ''x <= 20'', ''x < 21'', ''y < 21'', ''x <= 20'', ''x <=
+          20'']'
         level: info
-        time: 2025-09-08 20:36:57.605432
+        time: 2025-09-25 13:17:36.924917
         metadata:
           facts_stats:
-            num_candidates: 7
-            num_proved: 2
-            num_disproved: 1
+            num_candidates: 5
+            num_proved: 1
+            num_disproved: 0
             num_redundant: 1
           call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
-      - message: 'Disproved: x <= 20 || not (any bool)'
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
+      - message: 'Filtered: {''x <= 20'': 5, ''y <= 20'': 1}'
         level: info
-        time: 2025-09-08 20:36:58.286115
+        time: 2025-09-25 13:17:37.069912
         metadata:
           facts_stats:
-            num_candidates: 7
-            num_proved: 2
-            num_disproved: 2
+            num_candidates: 5
+            num_proved: 1
+            num_disproved: 0
             num_redundant: 1
           call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
-      - message: 'Filtered: {''x <= 20'': 2, ''y <= 20'': 1, ''x <= 30'': 1, ''x - y >= 0'': 1}'
-        level: info
-        time: 2025-09-08 20:36:58.520032
-        metadata:
-          facts_stats:
-            num_candidates: 9
-            num_proved: 2
-            num_disproved: 2
-            num_redundant: 1
-          call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
       - message: 'Explore fact: None'
         level: info
-        time: 2025-09-08 20:36:58.520054
+        time: 2025-09-25 13:17:37.069931
         metadata:
           facts_stats:
-            num_candidates: 9
-            num_proved: 2
-            num_disproved: 2
+            num_candidates: 5
+            num_proved: 1
+            num_disproved: 0
             num_redundant: 1
           call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
       - message: llm_request
         level: info
-        time: 2025-09-08 20:36:58.529574
-        node: 222
+        time: 2025-09-25 13:17:37.078918
+        node: 84
         space: cands
         metadata:
-          hash: 04d3f26d
+          hash: 14bf82f3
           query: SuggestInvariants
           request:
             chat:
@@ -1993,7 +1946,6 @@ outcome:
                     assume { y >= 0 };  (* premise *)
                     while any bool do
                       invariant { 0 <= y }  (* premise *)
-                      invariant { x >= 0 }  (* premise *)
                       x <- x + 10;
                       y <- y + 10
                     done;
@@ -2041,65 +1993,61 @@ outcome:
                 type: object
       - message: llm_response
         level: info
-        time: 2025-09-08 20:37:00.844396
-        node: 222
+        time: 2025-09-25 13:17:38.595713
+        node: 84
         space: cands
         metadata:
-          request: 04d3f26d
+          request: 14bf82f3
           response:
             outputs:
               - content:
                   structured:
                     suggestions:
                       - trick: linear
-                        invariant: x >= 0 && y >= 0
-                      - trick: assuminverse
-                        invariant: x >= 0 && y >= 0
-                tool_calls: []
-                finish_reason: stop
-              - content:
-                  structured:
-                    suggestions:
-                      - trick: linear
-                        invariant: x >= 0 && y >= 0
-                      - trick: linear
-                        invariant: x <= y <= 20
+                        invariant: 0 <= y && y <= 20
                       - trick: true_or_continue
-                        invariant: x <= y || (x = 20 && y <> 0)
+                        invariant: y <> 0 || any bool
                 tool_calls: []
                 finish_reason: stop
               - content:
                   structured:
                     suggestions:
-                      - trick: abstract_invariant
-                        invariant: 'true'
-                tool_calls: []
-                finish_reason: stop
-              - content:
-                  structured:
-                    suggestions:
-                      - trick: linear
-                        invariant: x >= 0
-                      - trick: linear
-                        invariant: y >= 0
                       - trick: propose_post
                         invariant: y <> 0
+                tool_calls: []
+                finish_reason: stop
+              - content:
+                  structured:
+                    suggestions:
+                      - trick: linear
+                        invariant: y >= 0
+                      - trick: true_or_continue
+                        invariant: y >= 0 || x <> 20
+                tool_calls: []
+                finish_reason: stop
+              - content:
+                  structured:
+                    suggestions:
+                      - trick: cond_guard
+                        invariant: 0 <= y
+                      - trick: linear
+                        invariant: y = x
                 tool_calls: []
                 finish_reason: stop
             budget:
               values:
                 num_requests: 1
                 num_completions: 4
-                input_tokens: 3346
-                output_tokens: 281
+                input_tokens: 3334
+                output_tokens: 225
                 cached_input_tokens: 3072
-                price: 0.0025264499999999995
+                price: 0.00252125
             log_items: []
             model_name: gpt-4.1-nano-2025-04-14
             usage_info:
-              completion_tokens: 281
-              prompt_tokens: 3346
-              total_tokens: 3627
+              completion_tokens: 225
+              prompt_tokens: 3334
+              total_tokens: 3559
               completion_tokens_details:
                 accepted_prediction_tokens: 0
                 audio_tokens: 0
@@ -2111,9 +2059,9 @@ outcome:
           usage:
             model: gpt-4.1-nano-2025-04-14
             usage:
-              completion_tokens: 281
-              prompt_tokens: 3346
-              total_tokens: 3627
+              completion_tokens: 225
+              prompt_tokens: 3334
+              total_tokens: 3559
               completion_tokens_details:
                 accepted_prediction_tokens: 0
                 audio_tokens: 0
@@ -2122,110 +2070,94 @@ outcome:
               prompt_tokens_details:
                 audio_tokens: 0
                 cached_tokens: 3072
-      - message: 'Suggestions: [''x >= 0 && y >= 0'', ''x >= 0 && y >= 0'', ''x >= 0 && y >= 0'', ''x
-          <= y <= 20'', ''x <= y || (x = 20 && y <> 0)'', ''true'', ''x >= 0'', ''y >= 0'', ''y <> 0'']'
+      - message: 'Suggestions: [''0 <= y && y <= 20'', ''y <> 0 || any bool'', ''y <> 0'', ''y >= 0'',
+          ''y >= 0 || x <> 20'', ''0 <= y'', ''y = x'']'
         level: info
-        time: 2025-09-08 20:37:00.858906
+        time: 2025-09-25 13:17:38.600234
         metadata:
           facts_stats:
-            num_candidates: 9
-            num_proved: 2
-            num_disproved: 2
+            num_candidates: 5
+            num_proved: 1
+            num_disproved: 0
             num_redundant: 1
           call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
-      - message: 'Redundant: x >= 0 && y >= 0'
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
+      - message: 'Disproved: y <> 0 || any bool'
         level: info
-        time: 2025-09-08 20:37:02.892061
+        time: 2025-09-25 13:17:39.235438
         metadata:
           facts_stats:
-            num_candidates: 9
-            num_proved: 2
-            num_disproved: 2
+            num_candidates: 5
+            num_proved: 1
+            num_disproved: 0
             num_redundant: 1
           call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
-      - message: 'Proved: true'
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
+      - message: 'Redundant: y >= 0 || x <> 20'
         level: info
-        time: 2025-09-08 20:37:03.207009
+        time: 2025-09-25 13:17:39.324625
         metadata:
           facts_stats:
-            num_candidates: 11
-            num_proved: 3
-            num_disproved: 2
-            num_redundant: 2
+            num_candidates: 6
+            num_proved: 1
+            num_disproved: 0
+            num_redundant: 1
           call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
-      - message: Propagating...
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
+      - message: 'Filtered: {''0 <= y && y <= 20'': 1, ''y <> 0'': 1, ''y = x'': 1}'
         level: info
-        time: 2025-09-08 20:37:03.207027
+        time: 2025-09-25 13:17:39.400330
         metadata:
           facts_stats:
-            num_candidates: 11
-            num_proved: 3
-            num_disproved: 2
+            num_candidates: 7
+            num_proved: 1
+            num_disproved: 0
             num_redundant: 2
           call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
-      - message: 'Filtered: {''x <= y <= 20'': 1, ''x <= y || (x = 20 && y <> 0)'': 1, ''y <> 0'': 1}'
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
+      - message: 'Explore fact: 0 <= y && y <= 20'
         level: info
-        time: 2025-09-08 20:37:04.550394
+        time: 2025-09-25 13:17:39.400351
         metadata:
           facts_stats:
-            num_candidates: 11
-            num_proved: 3
-            num_disproved: 2
+            num_candidates: 7
+            num_proved: 1
+            num_disproved: 0
             num_redundant: 2
           call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
-      - message: 'Explore fact: x <= y <= 20'
-        level: info
-        time: 2025-09-08 20:37:04.550417
-        metadata:
-          facts_stats:
-            num_candidates: 11
-            num_proved: 3
-            num_disproved: 2
-            num_redundant: 2
-          call_stats:
-            prove_calls: 39
-            prove_time_in_seconds: 3.5195813179016113
-            is_redundant_calls: 37
-            is_redundant_time_in_seconds: 0.37357282638549805
-            search_equivalent_calls: 18
-            search_equivalent_time_in_seconds: 3.832749605178833
+            prove_calls: 13
+            prove_time_in_seconds: 0.9926369190216064
+            is_redundant_calls: 13
+            is_redundant_time_in_seconds: 0.14113807678222656
+            search_equivalent_calls: 11
+            search_equivalent_time_in_seconds: 1.0873098373413086
       - message: llm_request
         level: info
-        time: 2025-09-08 20:37:04.563743
-        node: 391
+        time: 2025-09-25 13:17:39.434560
+        node: 166
         space: cands
         metadata:
-          hash: 1ecb7d8a
+          hash: bfb50990
           query: SuggestInvariants
           request:
             chat:
@@ -2528,25 +2460,23 @@ outcome:
                   use int.Int
 
                   let main () diverges =  (* GOAL *)
-                    let ref x = any int in  (* GOAL, premise *)
-                    let ref y = any int in  (* GOAL, premise *)
+                    let ref x = any int in  (* premise *)
+                    let ref y = any int in  (* premise *)
                     assume { x >= 0 };  (* premise *)
                     assume { x <= 10 };  (* premise *)
                     assume { y <= 10 };  (* premise *)
                     assume { y >= 0 };  (* premise *)
                     while any bool do
                       invariant { 0 <= y }  (* premise *)
-                      invariant { x >= 0 }  (* premise *)
-                      invariant { true }  (* premise *)
-                      invariant { x <= y <= 20 }  (* GOAL *)
+                      invariant { 0 <= y && y <= 20 }  (* GOAL, premise *)
                       x <- x + 10;
-                      y <- y + 10
+                      y <- y + 10  (* premise *)
                     done;
                     if x = 20 then
                       assert { true }
                   ```
 
-                  The name of the proof obligation that failed is: `VC for main (loop invariant init)`.
+                  The name of the proof obligation that failed is: `VC for main (loop invariant preservation)`.
 
                   Can you fix this by suggesting new invariant candidates?
 
@@ -2586,17 +2516,17 @@ outcome:
                 type: object
       - message: abduct_and_saturate_call_stats
         level: info
-        time: 2025-09-08 20:37:04.566351
+        time: 2025-09-25 13:17:39.434827
         metadata:
-          prove_calls: 39
-          prove_time_in_seconds: 3.5195813179016113
-          is_redundant_calls: 37
-          is_redundant_time_in_seconds: 0.37357282638549805
-          search_equivalent_calls: 18
-          search_equivalent_time_in_seconds: 3.832749605178833
+          prove_calls: 13
+          prove_time_in_seconds: 0.9926369190216064
+          is_redundant_calls: 13
+          is_redundant_time_in_seconds: 0.14113807678222656
+          search_equivalent_calls: 11
+          search_equivalent_time_in_seconds: 1.0873098373413086
       - message: 'Explore fact: None'
         level: info
-        time: 2025-09-08 20:37:04.583165
+        time: 2025-09-25 13:17:39.451886
         metadata:
           facts_stats:
             num_candidates: 1
@@ -2604,15 +2534,15 @@ outcome:
             num_disproved: 0
             num_redundant: 0
           call_stats:
-            prove_calls: 8
-            prove_time_in_seconds: 0.4393341541290283
-            is_redundant_calls: 6
-            is_redundant_time_in_seconds: 0.09079647064208984
+            prove_calls: 12
+            prove_time_in_seconds: 0.7925736904144287
+            is_redundant_calls: 9
+            is_redundant_time_in_seconds: 0.13163232803344727
             search_equivalent_calls: 0
             search_equivalent_time_in_seconds: 0.0
       - message: llm_request
         level: info
-        time: 2025-09-08 20:37:04.591536
+        time: 2025-09-25 13:17:39.459929
         node: 4
         space: cands
         metadata:
@@ -2973,7 +2903,7 @@ outcome:
                 type: object
       - message: llm_response
         level: info
-        time: 2025-09-08 20:37:06.186686
+        time: 2025-09-25 13:17:42.186719
         node: 4
         space: cands
         metadata:
@@ -2983,15 +2913,10 @@ outcome:
               - content:
                   structured:
                     suggestions:
-                      - trick: abduct_post
-                        invariant: x = 20 -> y <> 0
-                tool_calls: []
-                finish_reason: stop
-              - content:
-                  structured:
-                    suggestions:
                       - trick: linear
-                        invariant: x - y = vx - vy
+                        invariant: x - y = x_initial - y_initial
+                      - trick: guard_inv
+                        invariant: x = 20 -> y <> 0
                 tool_calls: []
                 finish_reason: stop
               - content:
@@ -3007,9 +2932,16 @@ outcome:
                   structured:
                     suggestions:
                       - trick: linear
-                        invariant: x - y = x - y
+                        invariant: x = y
                       - trick: abduct_post
                         invariant: x = 20 -> y <> 0
+                tool_calls: []
+                finish_reason: stop
+              - content:
+                  structured:
+                    suggestions:
+                      - trick: linear
+                        invariant: 10 * x = 10 * y
                 tool_calls: []
                 finish_reason: stop
             budget:
@@ -3017,15 +2949,15 @@ outcome:
                 num_requests: 1
                 num_completions: 4
                 input_tokens: 3322
-                output_tokens: 202
-                cached_input_tokens: 3072
-                price: 0.0100708
+                output_tokens: 226
+                cached_input_tokens: 0
+                price: 0.0027028
             log_items: []
             model_name: gpt-4.1-mini-2025-04-14
             usage_info:
-              completion_tokens: 202
+              completion_tokens: 226
               prompt_tokens: 3322
-              total_tokens: 3524
+              total_tokens: 3548
               completion_tokens_details:
                 accepted_prediction_tokens: 0
                 audio_tokens: 0
@@ -3033,13 +2965,13 @@ outcome:
                 rejected_prediction_tokens: 0
               prompt_tokens_details:
                 audio_tokens: 0
-                cached_tokens: 3072
+                cached_tokens: 0
           usage:
             model: gpt-4.1-mini-2025-04-14
             usage:
-              completion_tokens: 202
+              completion_tokens: 226
               prompt_tokens: 3322
-              total_tokens: 3524
+              total_tokens: 3548
               completion_tokens_details:
                 accepted_prediction_tokens: 0
                 audio_tokens: 0
@@ -3047,11 +2979,11 @@ outcome:
                 rejected_prediction_tokens: 0
               prompt_tokens_details:
                 audio_tokens: 0
-                cached_tokens: 3072
-      - message: 'Suggestions: [''x = 20 -> y <> 0'', ''x - y = vx - vy'', ''x >= 0'', ''y >= 0'', ''x
-          - y = x - y'', ''x = 20 -> y <> 0'']'
+                cached_tokens: 0
+      - message: 'Suggestions: [''x - y = x_initial - y_initial'', ''x = 20 -> y <> 0'', ''x >= 0'', ''y
+          >= 0'', ''x = y'', ''x = 20 -> y <> 0'', ''10 * x = 10 * y'']'
         level: info
-        time: 2025-09-08 20:37:06.195897
+        time: 2025-09-25 13:17:42.194573
         metadata:
           facts_stats:
             num_candidates: 1
@@ -3059,148 +2991,131 @@ outcome:
             num_disproved: 0
             num_redundant: 0
           call_stats:
-            prove_calls: 8
-            prove_time_in_seconds: 0.4393341541290283
-            is_redundant_calls: 6
-            is_redundant_time_in_seconds: 0.09079647064208984
+            prove_calls: 12
+            prove_time_in_seconds: 0.7925736904144287
+            is_redundant_calls: 9
+            is_redundant_time_in_seconds: 0.13163232803344727
             search_equivalent_calls: 0
             search_equivalent_time_in_seconds: 0.0
-      - message: 'Disproved: x - y = vx - vy'
+      - message: 'Disproved: x - y = x_initial - y_initial'
         level: info
-        time: 2025-09-08 20:37:06.284536
+        time: 2025-09-25 13:17:42.223886
         metadata:
           facts_stats:
-            num_candidates: 2
+            num_candidates: 1
             num_proved: 0
-            num_disproved: 1
+            num_disproved: 0
             num_redundant: 0
           call_stats:
-            prove_calls: 8
-            prove_time_in_seconds: 0.4393341541290283
-            is_redundant_calls: 6
-            is_redundant_time_in_seconds: 0.09079647064208984
+            prove_calls: 12
+            prove_time_in_seconds: 0.7925736904144287
+            is_redundant_calls: 9
+            is_redundant_time_in_seconds: 0.13163232803344727
             search_equivalent_calls: 0
             search_equivalent_time_in_seconds: 0.0
       - message: 'Proved: x >= 0'
         level: info
-        time: 2025-09-08 20:37:06.336686
+        time: 2025-09-25 13:17:42.333547
         metadata:
           facts_stats:
             num_candidates: 2
             num_proved: 1
-            num_disproved: 1
+            num_disproved: 0
             num_redundant: 0
           call_stats:
-            prove_calls: 8
-            prove_time_in_seconds: 0.4393341541290283
-            is_redundant_calls: 6
-            is_redundant_time_in_seconds: 0.09079647064208984
+            prove_calls: 12
+            prove_time_in_seconds: 0.7925736904144287
+            is_redundant_calls: 9
+            is_redundant_time_in_seconds: 0.13163232803344727
             search_equivalent_calls: 0
             search_equivalent_time_in_seconds: 0.0
       - message: 'Proved: y >= 0'
         level: info
-        time: 2025-09-08 20:37:06.420052
+        time: 2025-09-25 13:17:42.408931
         metadata:
           facts_stats:
             num_candidates: 2
             num_proved: 2
-            num_disproved: 1
+            num_disproved: 0
             num_redundant: 0
           call_stats:
-            prove_calls: 8
-            prove_time_in_seconds: 0.4393341541290283
-            is_redundant_calls: 6
-            is_redundant_time_in_seconds: 0.09079647064208984
-            search_equivalent_calls: 0
-            search_equivalent_time_in_seconds: 0.0
-      - message: 'Redundant: x - y = x - y'
-        level: info
-        time: 2025-09-08 20:37:06.433451
-        metadata:
-          facts_stats:
-            num_candidates: 2
-            num_proved: 2
-            num_disproved: 1
-            num_redundant: 0
-          call_stats:
-            prove_calls: 8
-            prove_time_in_seconds: 0.4393341541290283
-            is_redundant_calls: 6
-            is_redundant_time_in_seconds: 0.09079647064208984
+            prove_calls: 12
+            prove_time_in_seconds: 0.7925736904144287
+            is_redundant_calls: 9
+            is_redundant_time_in_seconds: 0.13163232803344727
             search_equivalent_calls: 0
             search_equivalent_time_in_seconds: 0.0
       - message: Propagating...
         level: info
-        time: 2025-09-08 20:37:06.433462
+        time: 2025-09-25 13:17:42.611012
         metadata:
           facts_stats:
-            num_candidates: 2
+            num_candidates: 4
             num_proved: 2
-            num_disproved: 1
-            num_redundant: 1
+            num_disproved: 0
+            num_redundant: 0
           call_stats:
-            prove_calls: 8
-            prove_time_in_seconds: 0.4393341541290283
-            is_redundant_calls: 6
-            is_redundant_time_in_seconds: 0.09079647064208984
+            prove_calls: 12
+            prove_time_in_seconds: 0.7925736904144287
+            is_redundant_calls: 9
+            is_redundant_time_in_seconds: 0.13163232803344727
             search_equivalent_calls: 0
             search_equivalent_time_in_seconds: 0.0
       - message: 'Proved: x = 20 -> y <> 0'
         level: info
-        time: 2025-09-08 20:37:06.618203
+        time: 2025-09-25 13:17:42.771677
         metadata:
           facts_stats:
             num_candidates: 1
             num_proved: 3
-            num_disproved: 1
-            num_redundant: 1
+            num_disproved: 0
+            num_redundant: 0
           call_stats:
-            prove_calls: 8
-            prove_time_in_seconds: 0.4393341541290283
-            is_redundant_calls: 6
-            is_redundant_time_in_seconds: 0.09079647064208984
+            prove_calls: 12
+            prove_time_in_seconds: 0.7925736904144287
+            is_redundant_calls: 9
+            is_redundant_time_in_seconds: 0.13163232803344727
             search_equivalent_calls: 0
             search_equivalent_time_in_seconds: 0.0
       - message: Propagating...
         level: info
-        time: 2025-09-08 20:37:06.618223
+        time: 2025-09-25 13:17:43.018110
         metadata:
           facts_stats:
-            num_candidates: 1
+            num_candidates: 3
             num_proved: 3
-            num_disproved: 1
-            num_redundant: 1
+            num_disproved: 0
+            num_redundant: 0
           call_stats:
-            prove_calls: 8
-            prove_time_in_seconds: 0.4393341541290283
-            is_redundant_calls: 6
-            is_redundant_time_in_seconds: 0.09079647064208984
+            prove_calls: 12
+            prove_time_in_seconds: 0.7925736904144287
+            is_redundant_calls: 9
+            is_redundant_time_in_seconds: 0.13163232803344727
             search_equivalent_calls: 0
             search_equivalent_time_in_seconds: 0.0
       - message: 'Proved: None'
         level: info
-        time: 2025-09-08 20:37:06.709542
+        time: 2025-09-25 13:17:43.102154
         metadata:
           facts_stats:
             num_candidates: 0
             num_proved: 4
-            num_disproved: 1
-            num_redundant: 1
+            num_disproved: 0
+            num_redundant: 0
           call_stats:
-            prove_calls: 8
-            prove_time_in_seconds: 0.4393341541290283
-            is_redundant_calls: 6
-            is_redundant_time_in_seconds: 0.09079647064208984
+            prove_calls: 12
+            prove_time_in_seconds: 0.7925736904144287
+            is_redundant_calls: 9
+            is_redundant_time_in_seconds: 0.13163232803344727
             search_equivalent_calls: 0
             search_equivalent_time_in_seconds: 0.0
       - message: abduct_and_saturate_call_stats
         level: info
-        time: 2025-09-08 20:37:06.709557
+        time: 2025-09-25 13:17:43.102168
         metadata:
-          prove_calls: 8
-          prove_time_in_seconds: 0.4393341541290283
-          is_redundant_calls: 6
-          is_redundant_time_in_seconds: 0.09079647064208984
+          prove_calls: 12
+          prove_time_in_seconds: 0.7925736904144287
+          is_redundant_calls: 9
+          is_redundant_time_in_seconds: 0.13163232803344727
           search_equivalent_calls: 0
           search_equivalent_time_in_seconds: 0.0
-    browsable_trace: null

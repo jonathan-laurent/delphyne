@@ -86,9 +86,13 @@ def check_file(
     file: File,
     original: File | None,
     *,
-    max_steps: int = why3py.DEFAULT_MAX_STEPS,
-    max_time_in_seconds: float = why3py.DEFAULT_MAX_TIME_IN_SECONDS,
+    max_steps: int | None = None,
+    max_time_in_seconds: float | None = None,
 ) -> Outcome:
+    if max_steps is None:
+        max_steps = why3py.DEFAULT_MAX_STEPS
+    if max_time_in_seconds is None:
+        max_time_in_seconds = why3py.DEFAULT_MAX_TIME_IN_SECONDS
     try:
         if original is not None:
             diff = why3py.answer(why3py.diff(original, file))
