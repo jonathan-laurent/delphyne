@@ -1277,6 +1277,24 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.nodes.elim_values" class="md-nav__link">
+    <span class="md-ellipsis">
+      elim_values
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.nodes.binarize_values" class="md-nav__link">
+    <span class="md-ellipsis">
+      binarize_values
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1759,6 +1777,24 @@
   <a href="#delphyne.stdlib.nodes.value" class="md-nav__link">
     <span class="md-ellipsis">
       value
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.nodes.elim_values" class="md-nav__link">
+    <span class="md-ellipsis">
+      elim_values
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.nodes.binarize_values" class="md-nav__link">
+    <span class="md-ellipsis">
+      binarize_values
     </span>
   </a>
   
@@ -3529,6 +3565,255 @@ result in a no-op at runtime.</p>
 <span class="sd">        result in a no-op at runtime.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">yield</span> <span class="n">spawn_node</span><span class="p">(</span><span class="n">Value</span><span class="p">,</span> <span class="nb">eval</span><span class="o">=</span><span class="nb">eval</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="delphyne.stdlib.nodes.elim_values" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">elim_values</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">elim_values</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="PureTreeTransformerFn (delphyne.stdlib.policies.PureTreeTransformerFn)" href="../basic/#delphyne.stdlib.policies.PureTreeTransformerFn">PureTreeTransformerFn</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Value
+
+
+  
+      dataclass
+   (delphyne.stdlib.nodes.Value)" href="#delphyne.stdlib.nodes.Value">Value</a></span><span class="p">,</span> <span class="n"><span title="typing.Never">Never</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Eliminate the <a class="autorefs autorefs-internal" title="Value
+
+
+  
+      dataclass
+  " href="#delphyne.stdlib.nodes.Value"><code>Value</code></a> effect.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@pol</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">elim_values</span><span class="p">(</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
+    <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pol</span><span class="o">.</span><span class="n">PureTreeTransformerFn</span><span class="p">[</span><span class="n">Value</span><span class="p">,</span> <span class="n">Never</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Eliminate the `Value` effect.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+        <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">Value</span> <span class="o">|</span> <span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="p">,</span> <span class="n">Value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">transform</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">tree</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="p">,</span> <span class="n">transform</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">transform</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="delphyne.stdlib.nodes.binarize_values" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">binarize_values</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">binarize_values</span><span class="p">(</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="n"><span title="float">float</span></span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="PureTreeTransformerFn (delphyne.stdlib.policies.PureTreeTransformerFn)" href="../basic/#delphyne.stdlib.policies.PureTreeTransformerFn">PureTreeTransformerFn</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Value
+
+
+  
+      dataclass
+   (delphyne.stdlib.nodes.Value)" href="#delphyne.stdlib.nodes.Value">Value</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="Branch
+
+
+  
+      dataclass
+   (delphyne.stdlib.nodes.Branch)" href="#delphyne.stdlib.nodes.Branch">Branch</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="Fail
+
+
+  
+      dataclass
+   (delphyne.stdlib.nodes.Fail)" href="#delphyne.stdlib.nodes.Fail">Fail</a></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Turn value nodes into assertions based on a threshold.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="delphyne.stdlib.nodes.binarize_values.threshold">threshold</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The threshold above which a value is considered
+acceptable.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+        <p>!!! warning:
+    <a class="autorefs autorefs-internal" title="Value
+
+
+  
+      dataclass
+  " href="#delphyne.stdlib.nodes.Value"><code>Value</code></a> nodes are transformed into <a class="autorefs autorefs-internal" title="Branch
+
+
+  
+      dataclass
+  " href="#delphyne.stdlib.nodes.Branch"><code>Branch</code></a> nodes and so it is
+    important that the associated opaque spaces for computing
+    strategies only generate one candidate so that no actual
+    branching can happen on value estimation.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span>
+<span class="normal">439</span>
+<span class="normal">440</span>
+<span class="normal">441</span>
+<span class="normal">442</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span>
+<span class="normal">447</span>
+<span class="normal">448</span>
+<span class="normal">449</span>
+<span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span>
+<span class="normal">453</span>
+<span class="normal">454</span>
+<span class="normal">455</span>
+<span class="normal">456</span>
+<span class="normal">457</span>
+<span class="normal">458</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span>
+<span class="normal">469</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@pol</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">binarize_values</span><span class="p">(</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
+    <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pol</span><span class="o">.</span><span class="n">PureTreeTransformerFn</span><span class="p">[</span><span class="n">Value</span><span class="p">,</span> <span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Turn value nodes into assertions based on a threshold.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        threshold: The threshold above which a value is considered</span>
+<span class="sd">            acceptable.</span>
+
+<span class="sd">    !!! warning:</span>
+<span class="sd">        `Value` nodes are transformed into `Branch` nodes and so it is</span>
+<span class="sd">        important that the associated opaque spaces for computing</span>
+<span class="sd">        strategies only generate one candidate so that no actual</span>
+<span class="sd">        branching can happen on value estimation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+        <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">Value</span> <span class="o">|</span> <span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span> <span class="o">|</span> <span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="p">,</span> <span class="n">Value</span><span class="p">):</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">branch_child</span><span class="p">(</span>
+                <span class="nb">eval</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Value</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span> <span class="o">|</span> <span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+                <span class="n">value_comp</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">value_comp</span> <span class="ow">is</span> <span class="kc">None</span>
+                    <span class="ow">or</span> <span class="n">value_comp</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">drop_refs</span><span class="p">(</span><span class="nb">eval</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="n">threshold</span>
+                <span class="p">):</span>
+                    <span class="k">return</span> <span class="n">transform</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span> <span class="o">|</span> <span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+                        <span class="n">Fail</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Error</span><span class="p">()),</span>
+                        <span class="c1"># What we pass for `child` does not matter since</span>
+                        <span class="c1"># it will never be accessed.</span>
+                        <span class="n">child</span><span class="o">=</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">transform</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="kc">None</span><span class="p">))),</span>
+                        <span class="n">ref</span><span class="o">=</span><span class="n">tree</span><span class="o">.</span><span class="n">ref</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span> <span class="o">|</span> <span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+                <span class="n">Branch</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">eval</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">branch_child</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">ref</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">tree</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="p">,</span> <span class="n">transform</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">transform</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
