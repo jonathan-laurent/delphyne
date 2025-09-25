@@ -62,8 +62,8 @@ class DemoExpectTest(dp.StrategyDemo):
             ctx,
             extra_objects=dp.stdlib_globals(),
             answer_database_loader=dp.standard_answer_loader(TESTS_FOLDER),
-            implicit_answer_generators=dp.stdlib_implicit_answer_generators(
-                (DATA_FOLDER,)
+            load_implicit_answer_generators=(
+                dp.stdlib_implicit_answer_generators_loader((DATA_FOLDER,))
             ),
         )
         if trace is not None:

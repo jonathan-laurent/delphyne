@@ -258,6 +258,15 @@ for supporting `Compute` nodes in demonstrations.
 """
 
 
+type ImplicitAnswerGeneratorsLoader = Callable[
+    [], Sequence[ImplicitAnswerGenerator]
+]
+"""
+A zero-arry function that loads a sequence of implicit answer
+generators, to be tried in sequence.
+"""
+
+
 class DemoHintResolver(nv.HintResolver):
     def __init__(
         self,
@@ -682,7 +691,7 @@ def evaluate_strategy_demo_and_return_trace(
     *,
     extra_objects: dict[str, object],
     answer_database_loader: dp.AnswerDatabaseLoader,
-    implicit_answer_generators: Sequence[ImplicitAnswerGenerator],
+    load_implicit_answer_generators: ImplicitAnswerGeneratorsLoader,
 ) -> tuple[fb.StrategyDemoFeedback, dp.Trace | None]:
     feedback = fb.StrategyDemoFeedback(
         kind="strategy",
@@ -717,6 +726,12 @@ def evaluate_strategy_demo_and_return_trace(
         )
     except dp.SourceLoadingError as e:
         feedback.global_diagnostics.append(("error", str(e)))
+        return feedback, trace
+    try:
+        implicit_answer_generators = load_implicit_answer_generators()
+    except Exception as e:
+        msg = f"Failed to load implicit answer generators:\n{e}"
+        feedback.global_diagnostics.append(("error", msg))
         return feedback, trace
     try:
         hresolver = DemoHintResolver(
@@ -802,7 +817,7 @@ def evaluate_demo(
     *,
     extra_objects: dict[str, object],
     answer_database_loader: dp.AnswerDatabaseLoader,
-    implicit_answer_generators: Sequence[ImplicitAnswerGenerator],
+    load_implicit_answer_generators: ImplicitAnswerGeneratorsLoader,
 ) -> fb.DemoFeedback:
     """
     Evaluate a query or strategy demonstration.
@@ -815,9 +830,10 @@ def evaluate_demo(
             identifiers.
         extra_objects: Additional objects that can be resolved by name
             (with higher precedence).
-        implicit_answer_generators: A sequence of functions for
-            generating implicit answers for particular node types (e.g.
-            `Compute`). Functions are tried in order until one succeeds.
+        load_implicit_answer_generators: Load the implicit answer
+            generators (e.g. including the one handling `Compute`
+            nodes). This function is allowed to raise exceptions, which
+            are then reported as errors.
 
     Returns:
         A feedback object containing the results of the evaluation.
@@ -832,7 +848,7 @@ def evaluate_demo(
             context,
             extra_objects=extra_objects,
             answer_database_loader=answer_database_loader,
-            implicit_answer_generators=implicit_answer_generators,
+            load_implicit_answer_generators=load_implicit_answer_generators,
         )
         return feedback
     else:

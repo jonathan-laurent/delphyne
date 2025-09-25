@@ -23,9 +23,12 @@ def stdlib_globals() -> dict[str, object]:
     }
 
 
-def stdlib_implicit_answer_generators(
+def stdlib_implicit_answer_generators_loader(
     data_dirs: Sequence[Path],
-) -> Sequence[dp.ImplicitAnswerGenerator]:
-    from delphyne.stdlib.computations import implicit_answer_for_compute
+) -> dp.ImplicitAnswerGeneratorsLoader:
+    def loader():
+        from delphyne.stdlib.computations import implicit_answer_for_compute
 
-    return [implicit_answer_for_compute]
+        return [implicit_answer_for_compute]
+
+    return loader

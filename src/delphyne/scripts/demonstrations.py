@@ -62,8 +62,10 @@ def check_demo_file(
             context.base,
             extra_objects=extra,
             answer_database_loader=dp.standard_answer_loader(workspace_root),
-            implicit_answer_generators=stdlib.stdlib_implicit_answer_generators(
-                context.data_dirs
+            load_implicit_answer_generators=(
+                stdlib.stdlib_implicit_answer_generators_loader(
+                    context.data_dirs
+                )
             ),
         )
         name = d.demonstration if d.demonstration else f"#{i}"
