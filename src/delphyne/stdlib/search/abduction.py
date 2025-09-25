@@ -231,12 +231,16 @@ def abduct_and_saturate[P, Proof](
     tree: dp.Tree[Abduction, P, Proof],
     env: PolicyEnv,
     policy: P,
+    *,
     max_rollout_depth: int = 3,
     scoring_function: ScoringFunction = _default_scoring_function,
     log_steps: dp.LogLevel | None = None,
     max_raw_suggestions_per_step: int | None = None,
     max_reattempted_candidates_per_propagation_step: int | None = None,
     max_consecutive_propagation_steps: int | None = None,
+    max_proved: int | None = None,
+    max_candidates: int | None = None,
+    remember_disproved: bool = True,
 ) -> dp.StreamGen[Proof]:
     """
     A saturation-based, sequential policy for abduction trees.
@@ -300,6 +304,20 @@ def abduct_and_saturate[P, Proof](
         max_consecutive_propagation_steps: Maximum number of propagation
             steps that are performed during a rollout step, or `None` if
             there is no limit.
+        max_proved: The maximum number of proved facts that can be
+            accumulated. Search fails if this number is exceeded without
+            the top-level goal being proved. In particular, setting such
+            a limit is useful for bounding the complexity of `prove`,
+            `search_equivalent` and `is_redundant`.
+        max_candidates: The maximum number of unproved fact candidates
+            that can be memorized. Once this number is met, new
+            suggestions are not memorized if they cannot be proved
+            straight away. In particular, setting such a limit is useful
+            for bounding the complexity of `search_equivalent`.
+        remember_disproved: Whether or not to remember disproved facts
+            so that one does not attempt to prove them again. In
+            particular, not remembering disproved facts is useful for
+            bounding the complexity of `search_equivalent`.
 
     !!! warning
         Facts must be hashable.
@@ -417,7 +435,8 @@ def abduct_and_saturate[P, Proof](
             raise _Abort()
         status, payload = res.tracked[0], res.tracked[1]
         if status.value == "disproved":
-            disproved.add(c)
+            if remember_disproved:
+                disproved.add(c)
             dbg(f"Disproved: {c}")
             if c is None:
                 raise _Abort()
@@ -426,7 +445,9 @@ def abduct_and_saturate[P, Proof](
             dbg(f"Proved: {c}")
             if c is None:
                 raise _ProofFound()
-        else:
+            if max_proved is not None and len(proved) > max_proved:
+                raise _Abort()
+        elif max_candidates is None or len(candidates) + 1 <= max_candidates:
             candidates[c] = _CandInfo(payload, 0, 0)
 
     def propagate() -> dp.StreamContext[Literal["updated", "not_updated"]]:
