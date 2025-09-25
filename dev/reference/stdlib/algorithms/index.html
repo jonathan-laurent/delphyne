@@ -4529,12 +4529,16 @@ trying to prove and accumulating redundant facts.</p>
    (delphyne.stdlib.search.abduction.Abduction)" href="#delphyne.Abduction">Abduction</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.abduction.abduct_and_saturate[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.abduction.abduct_and_saturate[Proof]">Proof</span></span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.search.abduction.abduct_and_saturate[P]">P</span></span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
     <span class="n">max_rollout_depth</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
     <span class="n">scoring_function</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="ScoringFunction (delphyne.stdlib.search.abduction.ScoringFunction)" href="#delphyne.stdlib.search.abduction.ScoringFunction">ScoringFunction</a></span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-internal" title="_default_scoring_function (delphyne.stdlib.search.abduction._default_scoring_function)" href="#delphyne.stdlib.search.abduction._default_scoring_function">_default_scoring_function</a></span><span class="p">,</span>
     <span class="n">log_steps</span><span class="p">:</span> <span class="n"><span title="delphyne.core.LogLevel">LogLevel</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">max_raw_suggestions_per_step</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">max_reattempted_candidates_per_propagation_step</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">max_consecutive_propagation_steps</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">max_proved</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">max_candidates</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">remember_disproved</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="StreamGen (delphyne.core.StreamGen)" href="../../policies/streams/#delphyne.StreamGen">StreamGen</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.abduction.abduct_and_saturate[Proof]">Proof</span></span><span class="p">]</span>
 </code></pre></div>
 
@@ -4700,6 +4704,65 @@ there is no limit.</p>
             </td>
             <td>
                   <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>max_proved</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The maximum number of proved facts that can be
+accumulated. Search fails if this number is exceeded without
+the top-level goal being proved. In particular, setting such
+a limit is useful for bounding the complexity of <code>prove</code>,
+<code>search_equivalent</code> and <code>is_redundant</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>max_candidates</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The maximum number of unproved fact candidates
+that can be memorized. Once this number is met, new
+suggestions are not memorized if they cannot be proved
+straight away. In particular, setting such a limit is useful
+for bounding the complexity of <code>search_equivalent</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>remember_disproved</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether or not to remember disproved facts
+so that one does not attempt to prove them again. In
+particular, not remembering disproved facts is useful for
+bounding the complexity of <code>search_equivalent</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>True</code>
             </td>
           </tr>
       </tbody>
@@ -5087,17 +5150,42 @@ is, the former won't be deleted.</p>
 <span class="normal">575</span>
 <span class="normal">576</span>
 <span class="normal">577</span>
-<span class="normal">578</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
+<span class="normal">578</span>
+<span class="normal">579</span>
+<span class="normal">580</span>
+<span class="normal">581</span>
+<span class="normal">582</span>
+<span class="normal">583</span>
+<span class="normal">584</span>
+<span class="normal">585</span>
+<span class="normal">586</span>
+<span class="normal">587</span>
+<span class="normal">588</span>
+<span class="normal">589</span>
+<span class="normal">590</span>
+<span class="normal">591</span>
+<span class="normal">592</span>
+<span class="normal">593</span>
+<span class="normal">594</span>
+<span class="normal">595</span>
+<span class="normal">596</span>
+<span class="normal">597</span>
+<span class="normal">598</span>
+<span class="normal">599</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">abduct_and_saturate</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Proof</span><span class="p">](</span>
     <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">Abduction</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Proof</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">P</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
     <span class="n">max_rollout_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
     <span class="n">scoring_function</span><span class="p">:</span> <span class="n">ScoringFunction</span> <span class="o">=</span> <span class="n">_default_scoring_function</span><span class="p">,</span>
     <span class="n">log_steps</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">LogLevel</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">max_raw_suggestions_per_step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">max_reattempted_candidates_per_propagation_step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">max_consecutive_propagation_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">max_proved</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">max_candidates</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">remember_disproved</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">Proof</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A saturation-based, sequential policy for abduction trees.</span>
@@ -5161,6 +5249,20 @@ is, the former won't be deleted.</p>
 <span class="sd">        max_consecutive_propagation_steps: Maximum number of propagation</span>
 <span class="sd">            steps that are performed during a rollout step, or `None` if</span>
 <span class="sd">            there is no limit.</span>
+<span class="sd">        max_proved: The maximum number of proved facts that can be</span>
+<span class="sd">            accumulated. Search fails if this number is exceeded without</span>
+<span class="sd">            the top-level goal being proved. In particular, setting such</span>
+<span class="sd">            a limit is useful for bounding the complexity of `prove`,</span>
+<span class="sd">            `search_equivalent` and `is_redundant`.</span>
+<span class="sd">        max_candidates: The maximum number of unproved fact candidates</span>
+<span class="sd">            that can be memorized. Once this number is met, new</span>
+<span class="sd">            suggestions are not memorized if they cannot be proved</span>
+<span class="sd">            straight away. In particular, setting such a limit is useful</span>
+<span class="sd">            for bounding the complexity of `search_equivalent`.</span>
+<span class="sd">        remember_disproved: Whether or not to remember disproved facts</span>
+<span class="sd">            so that one does not attempt to prove them again. In</span>
+<span class="sd">            particular, not remembering disproved facts is useful for</span>
+<span class="sd">            bounding the complexity of `search_equivalent`.</span>
 
 <span class="sd">    !!! warning</span>
 <span class="sd">        Facts must be hashable.</span>
@@ -5278,7 +5380,8 @@ is, the former won't be deleted.</p>
             <span class="k">raise</span> <span class="n">_Abort</span><span class="p">()</span>
         <span class="n">status</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">tracked</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">res</span><span class="o">.</span><span class="n">tracked</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;disproved&quot;</span><span class="p">:</span>
-            <span class="n">disproved</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">remember_disproved</span><span class="p">:</span>
+                <span class="n">disproved</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
             <span class="n">dbg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Disproved: </span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">_Abort</span><span class="p">()</span>
@@ -5287,7 +5390,9 @@ is, the former won't be deleted.</p>
             <span class="n">dbg</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Proved: </span><span class="si">{</span><span class="n">c</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">_ProofFound</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">max_proved</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">proved</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_proved</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">_Abort</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">max_candidates</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">max_candidates</span><span class="p">:</span>
             <span class="n">candidates</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">_CandInfo</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">propagate</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamContext</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;updated&quot;</span><span class="p">,</span> <span class="s2">&quot;not_updated&quot;</span><span class="p">]]:</span>
