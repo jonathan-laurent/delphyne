@@ -1,0 +1,20 @@
+command: run_strategy
+args:
+  strategy: prove_program_by_recursive_abduction
+  args:
+    prog: |
+      use int.Int
+
+      let main () diverges =
+        let ref x = 1 in
+        while (any bool) do
+          x <- x + 1;
+        done;
+        assert { x >= 0 }
+  policy: prove_program_by_repeated_recursive_abduction
+  policy_args:
+    model_name: mistral-small-2503
+    max_suggestions: 2
+    max_depth: 1
+  budget:
+    num_requests: 5

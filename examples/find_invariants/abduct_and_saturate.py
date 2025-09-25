@@ -159,9 +159,33 @@ class ProveProgIP:
     is_redundant: dp.Policy[Compute, None]
     search_equivalent: dp.Policy[Compute, None]
 
+    @staticmethod
+    def make(
+        pp: dp.PromptingPolicy,
+        *,
+        prove_timeout: float = 5.0,
+        is_redundant_timeout: float = 1.0,
+        search_equivalent_timeout: float = 0.3,
+    ):
+        """
+        A convenience constructor that allows configuring timeouts for
+        different operations.
+        """
+
+        def compute(timeout: float | None = None):
+            sp = dp.dfs() @ dp.elim_compute(override_args={"timeout": timeout})
+            return sp & None
+        return ProveProgIP(
+            prove= compute(timeout=prove_timeout),
+            suggest=dp.dfs() & pp,
+            search_equivalent=compute(timeout=search_equivalent_timeout),
+            is_redundant=compute(timeout=is_redundant_timeout),
+        )
+
 
 @dp.ensure_compatible(prove_program_by_recursive_abduction)
 def prove_program_by_saturation(
+    *,
     model_name: str | None = None,
     model_cycle: Sequence[tuple[str, int]] | None = None,
     num_completions: int = 8,
@@ -173,6 +197,11 @@ def prove_program_by_saturation(
     max_proved: int = 8,
     temperature: float | None = None,
 ):
+    """
+    A policy that uses advanced saturation-based search, as featured and
+    benchmarked the "Oracular Programming" paper.
+    """
+
     if model_name:
         assert model_cycle is None
         model_cycle = [(model_name, 1)]
@@ -180,21 +209,12 @@ def prove_program_by_saturation(
     mcycle = [dp.standard_model(m) for (m, k) in model_cycle for _ in range(k)]
 
     def ip(model: dp.LLM):
-        pp = dp.few_shot(
-            model,
-            temperature=temperature,
-            num_completions=num_completions,
-            max_requests=1
-        )
-        def compute(timeout: float | None = None):
-            sp = dp.dfs() @ dp.elim_compute(override_args={"timeout": timeout})
-            return sp & None
-        return ProveProgIP(
-            prove= compute(timeout=5.0),
-            suggest=dp.dfs() & pp,
-            search_equivalent=compute(timeout=0.3),
-            is_redundant=compute(timeout=1.0),
-        )
+        return ProveProgIP.make(
+            dp.few_shot(
+                model,
+                temperature=temperature,
+                num_completions=num_completions,
+                max_requests=1))
     
     per_attempt = dp.BudgetLimit({dp.NUM_REQUESTS: max_requests_per_attempt})
     sp = dp.with_budget(per_attempt) @ dp.abduct_and_saturate(
@@ -208,3 +228,25 @@ def prove_program_by_saturation(
         max_candidates=max_candidates,
     )
     return dp.sequence(sp & ip(m) for m in itertools.cycle(mcycle))
+
+
+@dp.ensure_compatible(prove_program_by_recursive_abduction)
+def prove_program_by_repeated_recursive_abduction(
+    model_name: str,
+    *,
+    max_suggestions: int | None = 2,
+    max_depth: int = 2,
+    num_parallel: int = 1,
+    temperature: float | None = None,
+):
+    """
+    A simpler policy that can leverage parallelism.
+    """
+    ip = ProveProgIP.make(
+        dp.few_shot(
+            dp.standard_model(model_name),
+            temperature=temperature,
+            max_requests=1))
+    sp = dp.abduct_recursively(
+        max_suggestions=max_suggestions, max_depth=max_depth)
+    return dp.loop() @ dp.parallel([sp for _ in range(num_parallel)]) & ip
