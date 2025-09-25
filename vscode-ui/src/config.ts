@@ -138,31 +138,6 @@ export function getLocalCommandExecutionContext(
 }
 
 //////
-/// Demonstration Execution Contexts
-//////
-
-export interface ExecutionContext {
-  strategy_dirs?: string[];
-  modules?: string[];
-}
-
-function executionContextOfConfig(config: Config): ExecutionContext {
-  return {
-    // By default, look for strategies in the workspace root directory. This is
-    // consistent with the defaults of `CommandExecutionContext`.
-    strategy_dirs: config.strategy_dirs ?? ["."],
-    modules: config.modules ?? [],
-  };
-}
-
-export function getLocalExecutionContext(
-  doc: vscode.TextDocument,
-): ExecutionContext {
-  const config = loadLocalConfig(doc);
-  return executionContextOfConfig(config);
-}
-
-//////
 // Local Config Updates
 //////
 

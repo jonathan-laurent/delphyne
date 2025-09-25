@@ -61,6 +61,4 @@
 
 ## Miscellaneous
 
-::: delphyne.ComputationNode
-
 ::: delphyne.AbstractTreeTransformer

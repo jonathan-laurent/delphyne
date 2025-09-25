@@ -94,7 +94,6 @@ from delphyne.core.trees import (
     AbstractTreeTransformer,
     AnyTree,
     AttachedQuery,
-    ComputationNode,
     EmbeddedTree,
     Navigation,
     NavigationContext,

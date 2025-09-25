@@ -6,7 +6,7 @@ import importlib
 import sys
 import traceback
 from collections import defaultdict
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -247,15 +247,29 @@ class _CachedImplicitAnswer:
     implicit: fb.ImplicitAnswer
 
 
+type ImplicitAnswerGenerator = Callable[
+    [dp.AnyTree, dp.AttachedQuery[Any]],
+    tuple[fb.ImplicitAnswerCategory, dp.Answer] | None,
+]
+"""
+A function that optionally maps a tree node along with a query within this
+node to an implicit answer for the query. This is useful in particular
+for supporting `Compute` nodes in demonstrations.
+"""
+
+
 class DemoHintResolver(nv.HintResolver):
     def __init__(
         self,
-        loader: ObjectLoader,
         demo: dm.StrategyDemo,
+        *,
+        loader: ObjectLoader,
         external_answers: dp.AnswerDatabase,
+        implicit_answer_generators: Sequence[ImplicitAnswerGenerator],
     ):
         self.demo = demo
         self.external_answers = external_answers
+        self.implicit_answer_generators = implicit_answer_generators
         self.queries: list[dp.SerializedQuery] = []
         for i, q in enumerate(demo.queries):
             try:
@@ -319,9 +333,7 @@ class DemoHintResolver(nv.HintResolver):
 
     @override
     def answer_without_hint(
-        self,
-        query: dp.AttachedQuery[Any],
-        implicit_answer: nv.ImplicitAnswerResolver | None,
+        self, query: dp.AttachedQuery[Any], tree: dp.AnyTree
     ) -> refs.Answer | None:
         serialized = dp.SerializedQuery.make(query.query)
         # First, we look at answers within the `queries` section.
@@ -348,13 +360,14 @@ class DemoHintResolver(nv.HintResolver):
             cached = _CachedImplicitAnswer("fetched", fetched.answer, implicit)
             self.implicit[serialized] = cached
             return fetched.answer
-        # Maybe we try adding an implicit answer
-        if implicit_answer and (icand := implicit_answer()) is not None:
-            cat, ans = icand
-            implicit = _build_implicit_answer(query.query, ans)
-            cached = _CachedImplicitAnswer(cat, ans, implicit)
-            self.implicit[serialized] = cached
-            return ans
+        # We look for implicit answers
+        for gen_implicit in self.implicit_answer_generators:
+            if (icand := gen_implicit(tree, query)) is not None:
+                cat, ans = icand
+                implicit = _build_implicit_answer(query.query, ans)
+                cached = _CachedImplicitAnswer(cat, ans, implicit)
+                self.implicit[serialized] = cached
+                return ans
         return None
 
     def get_answer_refs(self) -> dict[nv.AnswerRef, fb.DemoAnswerId]:
@@ -543,7 +556,7 @@ def _interpret_test_select_step(
                 diagnostics.append(("error", msg))
                 return tree, "stop"
             tracer.trace_query(source)
-            answer = hint_resolver.answer_without_hint(source, None)
+            answer = hint_resolver.answer_without_hint(source, tree)
             if answer is None:
                 msg = f"Query not answered: {space_ref_pretty}."
                 diagnostics.append(("error", msg))
@@ -669,6 +682,7 @@ def evaluate_strategy_demo_and_return_trace(
     *,
     extra_objects: dict[str, object],
     answer_database_loader: dp.AnswerDatabaseLoader,
+    implicit_answer_generators: Sequence[ImplicitAnswerGenerator],
 ) -> tuple[fb.StrategyDemoFeedback, dp.Trace | None]:
     feedback = fb.StrategyDemoFeedback(
         kind="strategy",
@@ -705,7 +719,12 @@ def evaluate_strategy_demo_and_return_trace(
         feedback.global_diagnostics.append(("error", str(e)))
         return feedback, trace
     try:
-        hresolver = DemoHintResolver(loader, demo, answer_database)
+        hresolver = DemoHintResolver(
+            demo,
+            loader=loader,
+            external_answers=answer_database,
+            implicit_answer_generators=implicit_answer_generators,
+        )
     except DemoHintResolver.InvalidQuery as e:
         msg = f"Failed to load query:\n{e.exn}"
         feedback.query_diagnostics.append((e.id, ("error", msg)))
@@ -783,6 +802,7 @@ def evaluate_demo(
     *,
     extra_objects: dict[str, object],
     answer_database_loader: dp.AnswerDatabaseLoader,
+    implicit_answer_generators: Sequence[ImplicitAnswerGenerator],
 ) -> fb.DemoFeedback:
     """
     Evaluate a query or strategy demonstration.
@@ -795,6 +815,9 @@ def evaluate_demo(
             identifiers.
         extra_objects: Additional objects that can be resolved by name
             (with higher precedence).
+        implicit_answer_generators: A sequence of functions for
+            generating implicit answers for particular node types (e.g.
+            `Compute`). Functions are tried in order until one succeeds.
 
     Returns:
         A feedback object containing the results of the evaluation.
@@ -809,6 +832,7 @@ def evaluate_demo(
             context,
             extra_objects=extra_objects,
             answer_database_loader=answer_database_loader,
+            implicit_answer_generators=implicit_answer_generators,
         )
         return feedback
     else:

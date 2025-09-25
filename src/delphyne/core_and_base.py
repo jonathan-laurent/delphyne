@@ -9,4 +9,5 @@ such as `SearchPolicy` or `LLM`.
 # ruff: noqa
 
 from delphyne.core import *
+from delphyne.analysis import *
 from delphyne.stdlib.base import *

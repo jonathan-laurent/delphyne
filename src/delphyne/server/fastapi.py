@@ -30,7 +30,7 @@ def make_server(launcher: TaskLauncher):
         request: Request,
         # Strangely: `demo: dp.Demo` does not work with fastapi...
         demo: dp.QueryDemo | dp.StrategyDemo,
-        context: analysis.DemoExecutionContext,
+        context: ta.CommandExecutionContext,
         workspace_root: Annotated[str, Body(embed=True)],
     ):
         stream_eval = ta.stream_of_fun(analysis.evaluate_demo)
@@ -41,10 +41,13 @@ def make_server(launcher: TaskLauncher):
             fb.DemoFeedback,
             stream_eval,
             demo,
-            context,
+            context.base,
             extra_objects=extra,
             answer_database_loader=dp.standard_answer_loader(
                 Path(workspace_root)
+            ),
+            implicit_answer_generators=std.stdlib_implicit_answer_generators(
+                context.data_dirs
             ),
         )
         return StreamingResponse(stream, media_type="text/event-stream")

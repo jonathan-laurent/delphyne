@@ -49,7 +49,7 @@ class DemoFileFeedback:
 
 
 def check_demo_file(
-    file: Path, context: analysis.DemoExecutionContext, workspace_root: Path
+    file: Path, context: stdlib.CommandExecutionContext, workspace_root: Path
 ) -> DemoFileFeedback:
     # TODO: we should better report line numbers.
     demos_json = yaml.safe_load(open(file, "r").read())
@@ -59,9 +59,12 @@ def check_demo_file(
     for i, d in enumerate(demos):
         feedback = analysis.evaluate_demo(
             d,
-            context,
+            context.base,
             extra_objects=extra,
             answer_database_loader=dp.standard_answer_loader(workspace_root),
+            implicit_answer_generators=stdlib.stdlib_implicit_answer_generators(
+                context.data_dirs
+            ),
         )
         name = d.demonstration if d.demonstration else f"#{i}"
         ret.add_diagnostics(name, feedback)

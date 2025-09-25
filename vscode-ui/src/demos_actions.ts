@@ -12,8 +12,8 @@ import {
   StrategyDemoFeedback,
 } from "./stubs/feedback";
 import {
-  ExecutionContext,
-  getLocalExecutionContext,
+  CommandExecutionContext,
+  getLocalCommandExecutionContext,
   getWorkspaceRoot,
 } from "./config";
 import { Answer, StrategyDemo, ToolCall } from "./stubs/demos";
@@ -39,7 +39,7 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
   ): vscode.CodeAction[] | undefined {
     const element = this.demosManager.getElementAt(document.uri, range.start);
     if (element) {
-      const exe = getLocalExecutionContext(document);
+      const exe = getLocalCommandExecutionContext(document);
       const evaluateDemo = this.evaluateDemoAction(element, exe);
       const viewTreeRoot = this.viewTreeRoot(element);
       const viewTestDestination = this.viewTestDestination(element);
@@ -76,7 +76,7 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
 
   private evaluateDemoAction(
     element: DemoElement,
-    exeContext: ExecutionContext,
+    exeContext: CommandExecutionContext,
   ): vscode.CodeAction {
     const action = new vscode.CodeAction(
       "Evaluate Demonstration",
@@ -253,7 +253,7 @@ function answerFromImplicitAnswer(ia: ImplicitAnswer): Answer {
 
 async function evaluateDemo(
   element: DemoElement,
-  executionContext: ExecutionContext,
+  executionContext: CommandExecutionContext,
   server: DelphyneServer,
   demosManager: DemosManager,
 ) {
@@ -286,7 +286,7 @@ async function evaluateAllDemos(
   if (!editor) {
     return;
   }
-  const exe = getLocalExecutionContext(editor.document);
+  const exe = getLocalCommandExecutionContext(editor.document);
   const elements = demosManager.getAllDemoElements(editor.document.uri);
   if (!elements) {
     return;

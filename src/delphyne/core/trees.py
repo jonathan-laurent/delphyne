@@ -896,25 +896,3 @@ class AbstractTreeTransformer[N: Node, M: Node](Protocol):
     """
 
     def __call__[T, P](self, tree: "Tree[N, P, T]") -> "Tree[M, P, T]": ...
-
-
-#####
-##### Special Nodes
-#####
-
-
-class ComputationNode(Node):
-    """
-    Abstract type for computation nodes.
-
-    A computation node has an additional method that can be called to
-    compute an _answer_. The demonstration interpreter uses this
-    information to navigate computation nodes while accumulating
-    implicit answers.
-
-    The standard `Compute` node inherits this class.
-    """
-
-    @abstractmethod
-    def run_computation(self) -> str:
-        pass

@@ -64,7 +64,7 @@ class __Computation__(dp.AbstractQuery[object]):
 
 
 @dataclass
-class Compute(dp.ComputationNode):
+class Compute(dp.Node):
     """
     The standard `Compute` effect.
 
@@ -302,3 +302,14 @@ def elim_compute(
         return tree.transform(tree.node, transform)
 
     return transform
+
+
+def implicit_answer_for_compute(
+    tree: dp.AnyTree, query: dp.AttachedQuery[Any]
+) -> tuple[dp.ImplicitAnswerCategory, dp.Answer] | None:
+    if isinstance(tree.node, Compute):
+        try:
+            answer = tree.node.run_computation()
+        except Exception as e:
+            raise dp.StrategyException(e)
+        return ("computations", dp.Answer(None, answer))
