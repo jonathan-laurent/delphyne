@@ -223,7 +223,7 @@ function computeStrategyDemoDiagnostics(
   for (const [category, answers] of Object.entries(feedback.implicit_answers)) {
     const msg = `Implicit answers were used: ${category} (${answers.length}).`;
     diagnostics.push(
-      makeDiagnostic(["warning", msg], demonstration.__loc__strategy),
+      makeDiagnostic(["info", msg], demonstration.__loc__strategy),
     );
   }
   return diagnostics;
