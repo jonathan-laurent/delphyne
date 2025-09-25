@@ -32,6 +32,7 @@ from delphyne.stdlib.misc import (
     nofail,
     or_else,
     sequence,
+    parallel,
 )
 from delphyne.stdlib.openai_api import (
     OpenAICompatibleModel,

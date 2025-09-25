@@ -2,7 +2,7 @@
 Miscellaneous utilities for Delphyne's standard library.
 """
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Any, Iterable, Literal, Never, cast, overload
 
@@ -180,13 +180,13 @@ def sequence(
     Try a list of policies, search policies, or prompting policies in
     sequence.
 
-    Attributes:
-    - policies: An iterable of policies, search policies, or prompting
-          policies to try in sequence.
-    - stop_on_reject: If True, stop the sequence as soon as one policy
-          sees all its resource requests denied. Note that this is
-          necessary for termination when `policies` is an infinite
-          iterator.
+    Arguments:
+        policies: An iterable of policies, search policies, or prompting
+            policies to try in sequence.
+        stop_on_reject: If True, stop the sequence as soon as one policy
+            sees all its resource requests denied. Note that this is
+            necessary for termination when `policies` is an infinite
+            iterator.
     """
 
     it = iter(policies)
@@ -207,6 +207,99 @@ def sequence(
             cast(Iterable[Policy[Any, Any]], policies),
             stop_on_reject=stop_on_reject,
         )
+
+
+#####
+##### Parallel combination
+#####
+
+
+def parallel_prompting_policies(
+    policies: Sequence[PromptingPolicy],
+) -> PromptingPolicy:
+    def policy[T](
+        query: dp.AttachedQuery[T], env: PolicyEnv
+    ) -> dp.StreamGen[T]:
+        yield from Stream.parallel([pp(query, env) for pp in policies]).gen()
+
+    return PromptingPolicy(policy)
+
+
+def parallel_search_policies[N: dp.Node](
+    policies: Sequence[SearchPolicy[N]],
+) -> SearchPolicy[N]:
+    def policy[T](
+        tree: dp.Tree[N, Any, T], env: PolicyEnv, policy: Any
+    ) -> dp.StreamGen[T]:
+        yield from Stream.parallel(
+            [sp(tree, env, policy) for sp in policies]
+        ).gen()
+
+    return SearchPolicy(policy)
+
+
+def parallel_policies[N: dp.Node, P](
+    policies: Sequence[Policy[N, P]],
+) -> Policy[N, P]:
+    @dp.search_policy
+    def search[T](
+        tree: dp.Tree[N, Any, T], env: PolicyEnv, policy: Any
+    ) -> dp.StreamGen[T]:
+        assert policy is None
+        yield from Stream.parallel(
+            [p.search(tree, env, p.inner) for p in policies]
+        ).gen()
+
+    return search() & cast(P, None)
+
+
+@overload
+def parallel(
+    policies: Sequence[PromptingPolicy],
+) -> PromptingPolicy:
+    pass
+
+
+@overload
+def parallel[N: dp.Node](
+    policies: Sequence[SearchPolicy[N]],
+) -> SearchPolicy[N]:
+    pass
+
+
+@overload
+def parallel[N: dp.Node, P](
+    policies: Sequence[Policy[N, P]],
+) -> Policy[N, P]:
+    pass
+
+
+def parallel(
+    policies: Sequence[_AnyPolicy],
+) -> _AnyPolicy:
+    """
+    Try a sequence of policies in parallel.
+
+    Arguments:
+        policies: A sequence of policies, search policies, or prompting
+            policies to try in parallel.
+    """
+
+    if not policies:
+        raise ValueError("Cannot parallelize an empty sequence of policies")
+
+    first = policies[0]
+    if isinstance(first, PromptingPolicy):
+        return parallel_prompting_policies(
+            cast(Sequence[PromptingPolicy], policies)
+        )
+    elif isinstance(first, SearchPolicy):
+        return parallel_search_policies(
+            cast(Sequence[SearchPolicy[Any]], policies)
+        )
+    else:
+        assert isinstance(first, Policy)
+        return parallel_policies(cast(Sequence[Policy[Any, Any]], policies))
 
 
 #####

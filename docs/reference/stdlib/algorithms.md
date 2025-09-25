@@ -16,6 +16,8 @@
 
 ::: delphyne.sequence
 
+::: delphyne.parallel
+
 ::: delphyne.or_else
 
 ::: delphyne.nofail
