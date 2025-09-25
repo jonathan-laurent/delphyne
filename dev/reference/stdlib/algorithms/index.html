@@ -4752,7 +4752,12 @@ trying to prove and accumulating redundant facts.</p>
 
   
       dataclass
-   (delphyne.stdlib.search.abduction.Abduction)" href="#delphyne.Abduction">Abduction</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.abduction.abduct_recursively[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.abduction.abduct_recursively[Proof]">Proof</span></span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.search.abduction.abduct_recursively[P]">P</span></span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">max_depth</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span>
+   (delphyne.stdlib.search.abduction.Abduction)" href="#delphyne.Abduction">Abduction</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.abduction.abduct_recursively[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.abduction.abduct_recursively[Proof]">Proof</span></span><span class="p">],</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span>
+    <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.search.abduction.abduct_recursively[P]">P</span></span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">max_depth</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">max_suggestions</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="StreamGen (delphyne.core.StreamGen)" href="../../policies/streams/#delphyne.StreamGen">StreamGen</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.abduction.abduct_recursively[Proof]">Proof</span></span><span class="p">]</span>
 </code></pre></div>
 
@@ -4797,6 +4802,22 @@ but they must all be provable straight away.</p>
             </td>
             <td>
                   <code>1</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>max_suggestions</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The maximum of suggestions to consider.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
@@ -4887,13 +4908,19 @@ but they must all be provable straight away.</p>
 <span class="normal">247</span>
 <span class="normal">248</span>
 <span class="normal">249</span>
-<span class="normal">250</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">abduct_recursively</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Proof</span><span class="p">](</span>
     <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">Abduction</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Proof</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">P</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">max_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">max_suggestions</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">Proof</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A simple policy for `Abduction` nodes that mimics the behavior of</span>
@@ -4907,6 +4934,7 @@ but they must all be provable straight away.</p>
 <span class="sd">            the policy succeeds only if the top-level goal can be</span>
 <span class="sd">            proved straight away. If equal to 1, suggestions can be made</span>
 <span class="sd">            but they must all be provable straight away.</span>
+<span class="sd">        max_suggestions: The maximum of suggestions to consider.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">proved</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">_TrackedEFact</span><span class="p">,</span> <span class="n">_TrackedProof</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -4949,7 +4977,10 @@ but they must all be provable straight away.</p>
         <span class="k">assert</span> <span class="n">status</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;feedback&quot;</span>
         <span class="c1"># Obtain suggestions and try to prove them all recursively</span>
         <span class="n">feedback</span> <span class="o">=</span> <span class="n">payload</span>
-        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">(</span><span class="k">yield from</span> <span class="n">suggest</span><span class="p">(</span><span class="n">feedback</span><span class="p">)):</span>
+        <span class="n">suggestions</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="p">(</span><span class="k">yield from</span> <span class="n">suggest</span><span class="p">(</span><span class="n">feedback</span><span class="p">))]</span>
+        <span class="k">if</span> <span class="n">max_suggestions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">suggestions</span> <span class="o">=</span> <span class="n">suggestions</span><span class="p">[:</span><span class="n">max_suggestions</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">suggestions</span><span class="p">:</span>
             <span class="k">yield from</span> <span class="n">aux</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
         <span class="c1"># Check again if `fact` is now proved</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">drop_refs</span><span class="p">(</span><span class="n">fact</span><span class="p">)</span> <span class="o">==</span> <span class="n">drop_refs</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">proved</span><span class="p">):</span>
@@ -5270,12 +5301,7 @@ is, the former won't be deleted.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/search/abduction.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span>
-<span class="normal">323</span>
-<span class="normal">324</span>
-<span class="normal">325</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">325</span>
 <span class="normal">326</span>
 <span class="normal">327</span>
 <span class="normal">328</span>
@@ -5640,7 +5666,12 @@ is, the former won't be deleted.</p>
 <span class="normal">687</span>
 <span class="normal">688</span>
 <span class="normal">689</span>
-<span class="normal">690</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
+<span class="normal">690</span>
+<span class="normal">691</span>
+<span class="normal">692</span>
+<span class="normal">693</span>
+<span class="normal">694</span>
+<span class="normal">695</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">abduct_and_saturate</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Proof</span><span class="p">](</span>
     <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">Abduction</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Proof</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
@@ -6045,12 +6076,7 @@ that the fact with the highest score is chosen next.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/search/abduction.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">273</span>
 <span class="normal">274</span>
 <span class="normal">275</span>
 <span class="normal">276</span>
@@ -6061,7 +6087,12 @@ that the fact with the highest score is chosen next.</p>
 <span class="normal">281</span>
 <span class="normal">282</span>
 <span class="normal">283</span>
-<span class="normal">284</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ScoringFunction</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ScoringFunction</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A function for assigning a score to candidate facts to prove, so</span>
 <span class="sd">    that the fact with the highest score is chosen next.</span>
@@ -6162,17 +6193,17 @@ in one step of a rollout.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/search/abduction.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">279</span>
 <span class="normal">280</span>
 <span class="normal">281</span>
 <span class="normal">282</span>
 <span class="normal">283</span>
-<span class="normal">284</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_proposed</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">num_visited</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_proposed</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">num_visited</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        num_proposed: Normalized number of times the fact was</span>
@@ -6216,15 +6247,15 @@ in one step of a rollout.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/search/abduction.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span>
-<span class="normal">290</span>
-<span class="normal">291</span>
-<span class="normal">292</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">292</span>
 <span class="normal">293</span>
 <span class="normal">294</span>
-<span class="normal">295</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_default_scoring_function</span><span class="p">(</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_default_scoring_function</span><span class="p">(</span>
     <span class="n">num_proposed</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">num_visited</span><span class="p">:</span> <span class="nb">float</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
