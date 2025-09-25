@@ -689,16 +689,13 @@ def _results_summary(
         # Open the result file and parse it in yaml
         result_file = _config_dir_path(exp_dir, name) / RESULT_FILE
         with open(result_file, "r") as f:
-            # Read the prefix of the file until a line is encountered
-            # starting with `raw_trace` preceded by four spaces. Indeed,
-            # the whole YAML file might be huge!
+            # Only read the result file until the `raw_trace` field, if
+            # present. Indeed, result files can be very large.
             prefix = ""
             while line := f.readline():
                 if line.startswith("    raw_trace"):
                     break
                 prefix += line
-            else:
-                assert False
             result = yaml.safe_load(prefix)
         result = result["outcome"]["result"]
         success = result["success"]
