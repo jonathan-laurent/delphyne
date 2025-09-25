@@ -673,6 +673,13 @@ def stream_parallel[T](streams: Sequence[dp.StreamGen[T]]) -> dp.StreamGen[T]:
     See `Stream.parallel` for documentation.
     """
 
+    # Handling the trivial cases where there are less than two streams.
+    if not streams:
+        return
+    if len(streams) == 1:
+        yield from streams[0]
+        return
+
     import threading
     from queue import Queue
     from threading import Event
