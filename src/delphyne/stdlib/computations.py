@@ -9,7 +9,6 @@ from functools import partial
 from typing import Any, Never, cast, override
 
 import yaml
-import yaml.parser
 
 import delphyne.core.inspect as insp
 import delphyne.core_and_base as dp
@@ -24,7 +23,7 @@ class __Computation__(dp.AbstractQuery[object]):
     """
     A special query that represents a computation.
 
-    Returns a parsed JSON result.
+    Returns a parsed JSON value.
 
     Attributes:
         fun: Name of the function to call.
@@ -43,7 +42,10 @@ class __Computation__(dp.AbstractQuery[object]):
         params: dict[str, object],
         extra_args: dict[str, object] | None = None,
         env: dp.AbstractTemplatesManager | None = None,
-    ):
+    ) -> str:
+        # The prompt is never sent to LLMs but it is important that it
+        # uniquely identifies the query instance since it is used for
+        # caching.
         return dump_yaml(Any, self.__dict__)
 
     @override
@@ -55,12 +57,14 @@ class __Computation__(dp.AbstractQuery[object]):
         return object
 
     @override
-    def parse_answer(self, answer: dp.Answer) -> object | dp.ParseError:
-        try:
-            assert isinstance(answer.content, str)
-            return yaml.safe_load(answer.content)
-        except yaml.parser.ParserError as e:
-            return dp.ParseError(description=str(e))
+    def parse_answer(self, answer: dp.Answer) -> object:
+        # We expect answers to feature a YAML serialization of the
+        # computation result, as a string. Also, we do not return
+        # `ParseError` when parsing fails since this is definitely a
+        # user error and not an LLM error.
+        # TODO: transition to using structured answers?
+        assert isinstance(answer.content, str)
+        return yaml.safe_load(answer.content)
 
 
 @dataclass
