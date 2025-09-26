@@ -4,7 +4,8 @@ The `Data` effect.
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Literal, cast, override
+from pathlib import Path
+from typing import Any, Literal, Never, cast, overload, override
 
 import delphyne.core_and_base as dp
 from delphyne.utils.typing import NoTypeInfo, pydantic_load
@@ -21,7 +22,7 @@ Reference to some data, which either consists in:
 """
 
 
-def pp_data_ref(ref: DataRef) -> str:
+def _pp_data_ref(ref: DataRef) -> str:
     if isinstance(ref, str):
         return ref
     else:
@@ -30,10 +31,14 @@ def pp_data_ref(ref: DataRef) -> str:
 
 @dataclass
 class DataNotFound(Exception):
+    """
+    Exception raised when some data is not found.
+    """
+
     ref: DataRef
 
     def __str__(self):
-        return f"Data not found: {pp_data_ref(self.ref)}"
+        return f"Data not found: {_pp_data_ref(self.ref)}"
 
 
 type _RawAnswer = (
@@ -46,14 +51,14 @@ type `_RawAnswer`.
 """
 
 
-def produce_raw_answer(answer: Sequence[Any] | DataNotFound) -> _RawAnswer:
+def _produce_raw_answer(answer: Sequence[Any] | DataNotFound) -> _RawAnswer:
     if isinstance(answer, DataNotFound):
         return ("not_found", answer.ref)
     else:
         return ("found", answer)
 
 
-def parse_raw_answer(raw: _RawAnswer) -> Sequence[Any] | DataNotFound:
+def _parse_raw_answer(raw: _RawAnswer) -> Sequence[Any] | DataNotFound:
     tag, payload = raw
     if tag == "not_found":
         assert isinstance(payload, str) or (
@@ -104,7 +109,7 @@ class __LoadData__(dp.AbstractQuery[Sequence[Any] | DataNotFound]):
     @override
     def parse_answer(self, answer: dp.Answer) -> Sequence[Any] | DataNotFound:
         assert isinstance(answer.content, dp.Structured)
-        return parse_raw_answer(answer.content.structured)
+        return _parse_raw_answer(answer.content.structured)
 
 
 @dataclass
@@ -125,11 +130,27 @@ class Data(dp.Node):
         return (yield self.query)
 
 
+@overload
+def load_data[T](
+    refs: Sequence[DataRef], type: type[T]
+) -> dp.Strategy[Data, object, Sequence[T]]: ...
+
+
+@overload
+def load_data(
+    refs: Sequence[DataRef], type: Any = NoTypeInfo
+) -> dp.Strategy[Data, object, Sequence[Any]]: ...
+
+
 def load_data(
     refs: Sequence[DataRef], type: Any = NoTypeInfo
 ) -> dp.Strategy[Data, object, Sequence[Any]]:
     """
     Load external data.
+
+    An exception is raised if any piece of data is not found, thus
+    enforcing monotonicity (assuming this exception is never caught in
+    strategy code).
 
     Arguments:
         refs: References to the data to load. A list of identical length
@@ -153,3 +174,56 @@ def load_data(
         return result
     else:
         return [pydantic_load(type, item) for item in result]
+
+
+def _load_data_ref(manager: dp.DataManager, ref: DataRef) -> Any:
+    try:
+        if isinstance(ref, str):
+            return manager.data[ref]
+        else:
+            file, key = ref
+            return manager.data[file][key]
+    except Exception:
+        raise DataNotFound(ref)
+
+
+def _produce_answer(manager: dp.DataManager, query: __LoadData__) -> dp.Answer:
+    try:
+        res = [_load_data_ref(manager, r) for r in query.refs]
+    except DataNotFound as e:
+        res = e
+    return dp.Answer(None, dp.Structured(_produce_raw_answer(res)))
+
+
+@dp.contextual_tree_transformer
+def elim_data(
+    env: dp.PolicyEnv,
+    policy: Any,
+) -> dp.PureTreeTransformerFn[Data, Never]:
+    def transform[N: dp.Node, P, T](
+        tree: dp.Tree[Data | N, P, T],
+    ) -> dp.Tree[N, P, T]:
+        if isinstance(tree.node, Data):
+            query = tree.node.query.attached.query
+            assert isinstance(query, __LoadData__)
+            answer = _produce_answer(env.data_manager, query)
+            tracked = tree.node.query.attached.parse_answer(answer)
+            assert not isinstance(tracked, dp.ParseError)
+            return transform(tree.child(tracked))
+        return tree.transform(tree.node, transform)
+
+    return transform
+
+
+def load_implicit_answer_generator(data_dirs: Sequence[Path]):
+    manager = dp.DataManager(data_dirs)
+
+    def generator(
+        tree: dp.AnyTree, query: dp.AttachedQuery[Any]
+    ) -> tuple[dp.ImplicitAnswerCategory, dp.Answer] | None:
+        if isinstance(tree.node, Data):
+            assert isinstance(query.query, __LoadData__)
+            answer = _produce_answer(manager, query.query)
+            return ("data", answer)
+
+    return generator

@@ -62,6 +62,18 @@
 
 ::: delphyne.stdlib.computations.__Computation__
 
+## Data
+
+::: delphyne.Data
+
+::: delphyne.load_data
+
+::: delphyne.DataRef
+
+::: delphyne.DataNotFound
+
+::: delphyne.elim_data
+
 ## Flag
 
 ::: delphyne.Flag

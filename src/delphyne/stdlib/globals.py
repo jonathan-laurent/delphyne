@@ -6,7 +6,7 @@ from collections.abc import Sequence
 from pathlib import Path
 
 import delphyne.core_and_base as dp
-from delphyne.stdlib.computations import __Computation__
+from delphyne.stdlib import computations, data
 from delphyne.stdlib.universal_queries import UniversalQuery
 
 
@@ -17,18 +17,17 @@ def stdlib_globals() -> dict[str, object]:
     command files (to be passed to `ObjectLoader` via the
     `extra_objects` option).
     """
-    return {
-        __Computation__.__name__: __Computation__,
-        UniversalQuery.__name__: UniversalQuery,
-    }
+    queries = [computations.__Computation__, data.__LoadData__, UniversalQuery]
+    return {q.__name__: q for q in queries}
 
 
 def stdlib_implicit_answer_generators_loader(
     data_dirs: Sequence[Path],
 ) -> dp.ImplicitAnswerGeneratorsLoader:
     def loader():
-        from delphyne.stdlib import computations
-
-        return [computations.generate_implicit_answer]
+        return [
+            computations.generate_implicit_answer,
+            data.load_implicit_answer_generator(data_dirs),
+        ]
 
     return loader
