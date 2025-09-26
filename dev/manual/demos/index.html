@@ -2036,6 +2036,33 @@
 <span class="w">      </span><span class="nt">fetched</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AskNumber</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">query_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AskNumber</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">loading_data</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">strategy_loading_data</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;yang25&quot;</span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run | success</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span><span class="w">  </span><span class="c1"># two implicit answers are used this time</span>
+<span class="w">    </span><span class="nt">test_feedback</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">__empty__</span>
+<span class="w">    </span><span class="nt">implicit_answers</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">data</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+
+
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">demonstration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">loading_bad_data</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">strategy_loading_data</span>
+<span class="w">  </span><span class="nt">args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;bazin23&quot;</span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">tests</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">run | success</span>
+<span class="w">  </span><span class="nt">queries</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="w">  </span><span class="nt">expect</span><span class="p">:</span><span class="w">  </span><span class="c1"># two implicit answers are used this time</span>
+<span class="w">    </span><span class="nt">test_feedback</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">diagnostics</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;error&quot;</span>
+<span class="w">    </span><span class="nt">implicit_answers</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">data</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
 </code></pre></div>
 </details>
 <div class="admonition tip">

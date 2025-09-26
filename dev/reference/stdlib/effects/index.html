@@ -5379,7 +5379,7 @@ list. If provided, Pydantic is used to load the data.</p>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">refs</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[]</span>
 
-    <span class="n">query</span> <span class="o">=</span> <span class="n">__LoadData__</span><span class="p">(</span><span class="n">refs</span><span class="p">)</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">TransparentQuery</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">__LoadData__</span><span class="p">(</span><span class="n">refs</span><span class="p">))</span>
     <span class="n">result</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">spawn_node</span><span class="p">(</span><span class="n">Data</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">DataNotFound</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">DataNotFound</span><span class="p">):</span>
