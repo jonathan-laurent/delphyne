@@ -632,3 +632,30 @@
       fetched:
         - query_name: AskNumber
         - query_name: AskNumber
+
+
+- demonstration: loading_data
+  strategy: strategy_loading_data
+  args: {key: "yang25"}
+  tests:
+    - run | success
+  queries: []
+  expect:  # two implicit answers are used this time
+    test_feedback:
+      - diagnostics: __empty__
+    implicit_answers:
+      data: []
+
+
+- demonstration: loading_bad_data
+  strategy: strategy_loading_data
+  args: {key: "bazin23"}
+  tests:
+    - run | success
+  queries: []
+  expect:  # two implicit answers are used this time
+    test_feedback:
+      - diagnostics:
+        - - "error"
+    implicit_answers:
+      data: []

@@ -13,7 +13,16 @@ import pytest
 import delphyne as dp
 
 PROMPT_DIR = Path(__file__).parent / "prompts"
+DATA_DIR = Path(__file__).parent / "data"
 CACHE_DIR = Path(__file__).parent / "cache"
+
+
+def _make_policy_env():
+    return dp.PolicyEnv(
+        demonstration_files=(),
+        prompt_dirs=(PROMPT_DIR,),
+        data_dirs=(DATA_DIR,),
+    )
 
 
 def _load_cache(name: str):
@@ -42,9 +51,7 @@ def _eval_query(
     model_class: str | None = None,
     mode: dp.AnswerMode = None,
 ):
-    env = dp.PolicyEnv(
-        demonstration_files=(), prompt_dirs=(PROMPT_DIR,), data_dirs=()
-    )
+    env = _make_policy_env()
     with _load_cache(cache_name) as cache:
         base_model = dp.standard_model(
             model_name, options=model_options, model_class=model_class
@@ -69,9 +76,7 @@ def _eval_strategy[N: dp.Node, P, T](
     max_res: int = 1,
     model_name: dp.StandardModelName | str = "gpt-4.1-mini",
 ) -> tuple[Sequence[dp.Solution[T]], str]:
-    env = dp.PolicyEnv(
-        prompt_dirs=[PROMPT_DIR], demonstration_files=(), data_dirs=()
-    )
+    env = _make_policy_env()
     with _load_cache(cache_name) as cache:
         model = dp.CachedModel(dp.standard_model(model_name), cache)
         stream = strategy.run_toplevel(env, policy(model))
@@ -93,9 +98,7 @@ def test_concurrent():
 
 
 def test_basic_llm_call():
-    env = dp.PolicyEnv(
-        demonstration_files=(), prompt_dirs=(PROMPT_DIR,), data_dirs=()
-    )
+    env = _make_policy_env()
     with _load_cache("basic_llm_call") as cache:
         model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
         pp = dp.few_shot(model)
@@ -132,9 +135,7 @@ def test_assistant_priming():
 
 
 def test_interact():
-    env = dp.PolicyEnv(
-        demonstration_files=(), prompt_dirs=(PROMPT_DIR,), data_dirs=()
-    )
+    env = _make_policy_env()
     with _load_cache("interact") as cache:
         model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
         pp = dp.few_shot(model)
@@ -179,9 +180,7 @@ def _eval_classifier_query(
     temperature: float = 1.0,
     bias: tuple[str, float] | None = None,
 ):
-    env = dp.PolicyEnv(
-        demonstration_files=(), prompt_dirs=(PROMPT_DIR,), data_dirs=()
-    )
+    env = _make_policy_env()
     with _load_cache(cache_name) as cache:
         model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
         bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
@@ -490,10 +489,9 @@ def test_make_sum_using_guess():
 
 
 def test_guess_zero_and_then_one():
-    strategy = ex.guess_zero_and_then_one()
     res, _log = _eval_strategy(
-        strategy,
-        ex.guess_zero_and_then_one_policy,
+        strategy=ex.guess_zero_and_then_one(),
+        policy=ex.guess_zero_and_then_one_policy,
         cache_name="guess_zero_and_then_one",
         max_requests=2,
         max_res=1,
@@ -501,3 +499,19 @@ def test_guess_zero_and_then_one():
     )
     print(_log)
     assert res and res[0].tracked.value == 1
+
+
+#####
+##### Data
+#####
+
+
+def test_strategy_loading_data():
+    res, _log = _eval_strategy(
+        strategy=ex.strategy_loading_data("yang25"),
+        policy=lambda _: ex.strategy_loading_data_policy(),
+        cache_name="strategy_loading_data",
+        max_requests=0,
+    )
+    assert res
+    print(res[0].tracked.value)

@@ -1005,3 +1005,19 @@ def guess_zero_and_then_one() -> Strategy[
 def guess_zero_and_then_one_policy(model: dp.LLM):
     sp = dp.dfs() @ dp.binarize_values(threshold=0.5)
     return sp & dp.few_shot(model, iterative_mode=True)
+
+
+#####
+##### Data
+#####
+
+
+@dp.strategy
+def strategy_loading_data(key: str) -> dp.Strategy[dp.Data, None, str]:
+    articles = yield from dp.load_data([("articles", key)], type=Article)
+    return articles[0].title
+
+
+@dp.ensure_compatible(strategy_loading_data)
+def strategy_loading_data_policy():
+    return dp.dfs() @ dp.elim_data() & None
