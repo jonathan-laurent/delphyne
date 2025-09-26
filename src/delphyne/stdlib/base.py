@@ -79,7 +79,10 @@ from delphyne.stdlib.nodes import (
     spawn_node,
     value,
 )
-from delphyne.stdlib.opaque import Opaque, OpaqueSpace
+from delphyne.stdlib.opaque import (
+    Opaque,
+    OpaqueSpace,
+)
 from delphyne.stdlib.policies import (
     ContextualTreeTransformer,
     IPDict,

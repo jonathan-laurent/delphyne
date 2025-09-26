@@ -54,9 +54,17 @@ from delphyne.stdlib.search.abduction import (
 from delphyne.stdlib.search.bestfs import (
     best_first_search,
 )
-from delphyne.stdlib.search.classification_based import sample_and_proceed
-from delphyne.stdlib.search.dfs import dfs, par_dfs
-from delphyne.stdlib.search.interactive import InteractStats, interact
+from delphyne.stdlib.search.classification_based import (
+    sample_and_proceed,
+)
+from delphyne.stdlib.search.dfs import (
+    dfs,
+    par_dfs,
+)
+from delphyne.stdlib.search.interactive import (
+    InteractStats,
+    interact,
+)
 from delphyne.stdlib.search.iteration import (
     iterate,
 )
@@ -80,7 +88,10 @@ from delphyne.stdlib.tasks import (
     command_result_type,
     run_command,
 )
-from delphyne.stdlib.universal_queries import UniversalQuery, guess
+from delphyne.stdlib.universal_queries import (
+    UniversalQuery,
+    guess,
+)
 
 from delphyne.stdlib.experiments.experiment_launcher import (
     Experiment,

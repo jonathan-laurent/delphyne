@@ -37,7 +37,9 @@ from delphyne.core.demos import (
     QueryDemo,
     StrategyDemo,
 )
-from delphyne.core.errors import Error
+from delphyne.core.errors import (
+    Error,
+)
 from delphyne.core.policies import (
     AbstractPolicy,
     AbstractPromptingPolicy,
