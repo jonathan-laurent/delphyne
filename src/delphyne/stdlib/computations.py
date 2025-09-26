@@ -308,7 +308,7 @@ def elim_compute(
     return transform
 
 
-def implicit_answer_for_compute(
+def generate_implicit_answer(
     tree: dp.AnyTree, query: dp.AttachedQuery[Any]
 ) -> tuple[dp.ImplicitAnswerCategory, dp.Answer] | None:
     if isinstance(tree.node, Compute):

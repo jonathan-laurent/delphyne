@@ -27,8 +27,8 @@ def stdlib_implicit_answer_generators_loader(
     data_dirs: Sequence[Path],
 ) -> dp.ImplicitAnswerGeneratorsLoader:
     def loader():
-        from delphyne.stdlib.computations import implicit_answer_for_compute
+        from delphyne.stdlib import computations
 
-        return [implicit_answer_for_compute]
+        return [computations.generate_implicit_answer]
 
     return loader
