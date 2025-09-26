@@ -1385,6 +1385,66 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.Data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.load_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      load_data
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.DataRef" class="md-nav__link">
+    <span class="md-ellipsis">
+      DataRef
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.DataNotFound" class="md-nav__link">
+    <span class="md-ellipsis">
+      DataNotFound
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.elim_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      elim_data
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#flag" class="md-nav__link">
     <span class="md-ellipsis">
       Flag
@@ -1879,6 +1939,66 @@
   <a href="#delphyne.stdlib.computations.__Computation__" class="md-nav__link">
     <span class="md-ellipsis">
       __Computation__
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.Data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.load_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      load_data
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.DataRef" class="md-nav__link">
+    <span class="md-ellipsis">
+      DataRef
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.DataNotFound" class="md-nav__link">
+    <span class="md-ellipsis">
+      DataNotFound
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.elim_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      elim_data
     </span>
   </a>
   
@@ -4986,6 +5106,451 @@ than those specified with the <code>override_args</code> argument of
 
   </div>
 
+    </div>
+
+</div><h2 id="data">Data</h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="delphyne.Data" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Data</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Node (delphyne.core_and_base.Node)" href="../../strategies/trees/#delphyne.Node">Node</a></code></p>
+
+
+        <p>The standard "Data" effect.</p>
+<p>This effect allows loading external data. Strategies must be
+monotonic with respect to data, meaning that adding a new data file
+or adding a new key into a data dictionary must not break an
+oracular program. Thus, a form of learning can be implemented by
+growing a database of learned facts.</p>
+
+
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/delphyne/stdlib/data.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Data</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The standard &quot;Data&quot; effect.</span>
+
+<span class="sd">    This effect allows loading external data. Strategies must be</span>
+<span class="sd">    monotonic with respect to data, meaning that adding a new data file</span>
+<span class="sd">    or adding a new key into a data dictionary must not break an</span>
+<span class="sd">    oracular program. Thus, a form of learning can be implemented by</span>
+<span class="sd">    growing a database of learned facts.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">TransparentQuery</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">navigate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Navigation</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="delphyne.load_data" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">load_data</span>
+
+
+</h3>
+          <div class="doc-overloads">
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">load_data</span><span class="p">(</span>
+    <span class="n">refs</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="DataRef (delphyne.stdlib.data.DataRef)" href="#delphyne.DataRef">DataRef</a></span><span class="p">],</span> <span class="nb">type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="T">T</span></span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core_and_base.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Data
+
+
+  
+      dataclass
+   (delphyne.stdlib.data.Data)" href="#delphyne.Data">Data</a></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="T">T</span></span><span class="p">]]</span>
+</code></pre></div><div class="doc-signature highlight"><pre><span></span><code><span class="nf">load_data</span><span class="p">(</span>
+    <span class="n">refs</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="DataRef (delphyne.stdlib.data.DataRef)" href="#delphyne.DataRef">DataRef</a></span><span class="p">],</span> <span class="nb">type</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span> <span class="o">=</span> <span class="n"><span title="delphyne.utils.typing.NoTypeInfo">NoTypeInfo</span></span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core_and_base.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Data
+
+
+  
+      dataclass
+   (delphyne.stdlib.data.Data)" href="#delphyne.Data">Data</a></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">]]</span>
+</code></pre></div>          </div>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">load_data</span><span class="p">(</span>
+    <span class="n">refs</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="DataRef (delphyne.stdlib.data.DataRef)" href="#delphyne.DataRef">DataRef</a></span><span class="p">],</span> <span class="nb">type</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span> <span class="o">=</span> <span class="n"><span title="delphyne.utils.typing.NoTypeInfo">NoTypeInfo</span></span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core_and_base.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Data
+
+
+  
+      dataclass
+   (delphyne.stdlib.data.Data)" href="#delphyne.Data">Data</a></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">]]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Load external data.</p>
+<p>An exception is raised if any piece of data is not found, thus
+enforcing monotonicity (assuming this exception is never caught in
+strategy code).</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>refs</code>
+            </td>
+            <td>
+                  <code><span title="collections.abc.Sequence">Sequence</span>[<a class="autorefs autorefs-internal" title="DataRef (delphyne.stdlib.data.DataRef)" href="#delphyne.DataRef">DataRef</a>]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>References to the data to load. A list of identical length
+is returned.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>type</code>
+            </td>
+            <td>
+                  <code><span title="typing.Any">Any</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Optional type information for the elements of the returned
+list. If provided, Pydantic is used to load the data.</p>
+              </div>
+            </td>
+            <td>
+                  <code><span title="delphyne.utils.typing.NoTypeInfo">NoTypeInfo</span></code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="DataNotFound
+
+
+  
+      dataclass
+   (delphyne.stdlib.data.DataNotFound)" href="#delphyne.DataNotFound">DataNotFound</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If any of the data references could not be found.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/data.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">(</span>
+    <span class="n">refs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">DataRef</span><span class="p">],</span> <span class="nb">type</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">NoTypeInfo</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Data</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load external data.</span>
+
+<span class="sd">    An exception is raised if any piece of data is not found, thus</span>
+<span class="sd">    enforcing monotonicity (assuming this exception is never caught in</span>
+<span class="sd">    strategy code).</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        refs: References to the data to load. A list of identical length</span>
+<span class="sd">            is returned.</span>
+<span class="sd">        type: Optional type information for the elements of the returned</span>
+<span class="sd">            list. If provided, Pydantic is used to load the data.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        DataNotFound: If any of the data references could not be found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">refs</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="n">query</span> <span class="o">=</span> <span class="n">__LoadData__</span><span class="p">(</span><span class="n">refs</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">spawn_node</span><span class="p">(</span><span class="n">Data</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">DataNotFound</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">DataNotFound</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">result</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">NoTypeInfo</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">result</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">pydantic_load</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">result</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-type_alias">
+
+
+
+<h3 id="delphyne.DataRef" class="doc doc-heading">
+            <span class="doc doc-object-name doc-type_alias-name">DataRef</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">DataRef</span> <span class="o">=</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="str">str</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+        <p>Reference to some data, which either consists in:</p>
+<ul>
+<li>A file name (string), in which case the reference refers to the whole
+  file's content.</li>
+<li>A (file name, key) pair, in which case the reference refers to the
+  value associated with <code>key</code> in the dictionary contained in the file.</li>
+</ul>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="delphyne.DataNotFound" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">DataNotFound</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="Exception">Exception</span></code></p>
+
+
+        <p>Exception raised when some data is not found.</p>
+
+
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/delphyne/stdlib/data.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataNotFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Exception raised when some data is not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ref</span><span class="p">:</span> <span class="n">DataRef</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Data not found: </span><span class="si">{</span><span class="n">_pp_data_ref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="delphyne.elim_data" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">elim_data</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">elim_data</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.core_and_base.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="PureTreeTransformerFn (delphyne.core_and_base.PureTreeTransformerFn)" href="../basic/#delphyne.stdlib.policies.PureTreeTransformerFn">PureTreeTransformerFn</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Data
+
+
+  
+      dataclass
+   (delphyne.stdlib.data.Data)" href="#delphyne.Data">Data</a></span><span class="p">,</span> <span class="n"><span title="typing.Never">Never</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/data.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dp</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">elim_data</span><span class="p">(</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PolicyEnv</span><span class="p">,</span>
+    <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">PureTreeTransformerFn</span><span class="p">[</span><span class="n">Data</span><span class="p">,</span> <span class="n">Never</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+        <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">Data</span> <span class="o">|</span> <span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="p">,</span> <span class="n">Data</span><span class="p">):</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">attached</span><span class="o">.</span><span class="n">query</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">__LoadData__</span><span class="p">)</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="n">_produce_answer</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">data_manager</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
+            <span class="n">tracked</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">attached</span><span class="o">.</span><span class="n">parse_answer</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tracked</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">ParseError</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">transform</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">tracked</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">tree</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="p">,</span> <span class="n">transform</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">transform</span>
+</code></pre></div></td></tr></table></div>
+            </details>
     </div>
 
 </div><h2 id="flag">Flag</h2>
