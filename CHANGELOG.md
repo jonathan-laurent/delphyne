@@ -1,11 +1,12 @@
 # Changelog
 
-## DEV
+## Version 0.13.0 (2025-09-27)
 
 - **Breaking**: Change signature of `dp.compute` to allow passing additional keyword arguments. You must now write `dp.compute(fun)(*args, **kwargs)` instead of `dp.compute(fun, *args, **kwargs)`.
 - Add `override_args` argument to `dp.compute` and `dp.elim_compute`. This allows policies to override timeout arguments for tool calls.
 - Add `elim_values` and `binarize_values` tree transformers.
 - Add new policy for handling `Abduction` nodes: `abduct_recursively`.
+- Add a `Data` effect for loading evolving external data.
 - Fix summary generation bug in experiment launcher.
 
 ## Version 0.12.0 (2025-09-24)
