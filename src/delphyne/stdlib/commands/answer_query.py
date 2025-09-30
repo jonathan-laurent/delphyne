@@ -6,7 +6,6 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from functools import partial
 
-import delphyne.analysis as analysis
 import delphyne.core as dp
 import delphyne.stdlib.environments as en
 import delphyne.stdlib.models as md
@@ -70,11 +69,7 @@ def answer_query_with_cache(
     cache_spec: md.LLMCache | None,
 ):
     # TODO: support adding examples?
-    loader = analysis.ObjectLoader(
-        strategy_dirs=exe.strategy_dirs,
-        modules=exe.modules,
-        extra_objects=stdlib_globals(),
-    )
+    loader = exe.object_loader(extra_objects=stdlib_globals())
     query = loader.load_query(cmd.query, cmd.args)
     env = en.PolicyEnv(
         prompt_dirs=exe.prompt_dirs,

@@ -121,6 +121,11 @@
           "default": null,
           "title": "Node Ids"
         },
+        "hindsight": {
+          "default": true,
+          "title": "Hindsight",
+          "type": "boolean"
+        },
         "queries": {
           "anyOf": [
             {

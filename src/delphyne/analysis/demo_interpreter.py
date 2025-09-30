@@ -87,6 +87,7 @@ class ObjectLoader:
         modules: Sequence[str],
         extra_objects: dict[str, object] | None = None,
         reload: bool = True,
+        initializers: Sequence[str | tuple[str, dict[str, Any]]] = (),
     ):
         """
         Attributes:
@@ -102,6 +103,13 @@ class ObjectLoader:
                 value to `True` makes `ObjectLoader` not thread-safe
                 (also, multiple instances must not be used in an
                 overlappaping way within a single thread).
+            initializers: A sequence of initialization functions to call
+                before any object is loaded. Each element specifies a
+                qualified function name, or a pair of a qualified
+                function name and of a dictionary of arguments to pass.
+                An initialization function must be **idempotent**:
+                calling it several times should have the same effect as
+                calling it once.
 
         Raises:
             ModuleNotFound: a module could not be found.
@@ -117,6 +125,16 @@ class ObjectLoader:
                     self.modules.append(module)
                 except AttributeError:
                     raise ModuleNotFound(module_name)
+        for initializer in initializers:
+            match initializer:
+                case str() as name:
+                    f = self.find_object(name)
+                    args = {}
+                case (str() as name, dict() as args):
+                    f = self.find_object(name)
+            if not callable(f):
+                raise TypeError(f"Initializer {name} is not callable.")
+            f(**args)
 
     def find_object(self, name: str) -> Any:
         """

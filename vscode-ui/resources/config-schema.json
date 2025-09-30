@@ -63,6 +63,32 @@
       "default": null,
       "title": "Cache Root"
     },
+    "init": {
+      "default": [],
+      "items": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "string"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              }
+            ],
+            "type": "array"
+          }
+        ]
+      },
+      "title": "Init",
+      "type": "array"
+    },
     "result_refresh_period": {
       "anyOf": [
         {

@@ -318,9 +318,7 @@ def run_strategy(
     Command for running an oracular program from a serialized
     specification.
     """
-    loader = analysis.ObjectLoader(
-        strategy_dirs=exe.strategy_dirs, modules=exe.modules
-    )
+    loader = exe.object_loader()
     strategy = loader.load_strategy_instance(args.strategy, args.args)
     policy = loader.load_and_call_function(args.policy, args.policy_args)
     assert isinstance(policy, dp.AbstractPolicy)

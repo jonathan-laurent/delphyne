@@ -1,5 +1,9 @@
 # Changelog
 
+## DEV
+
+- Add `init` key to `delphyne.yaml` to register custom initializers.
+
 ## Version 0.13.0 (2025-09-27)
 
 - **Breaking**: Change signature of `dp.compute` to allow passing additional keyword arguments. You must now write `dp.compute(fun)(*args, **kwargs)` instead of `dp.compute(fun, *args, **kwargs)`.

@@ -14,7 +14,6 @@ import yaml
 import delphyne.core as dp
 import delphyne.stdlib as std
 import delphyne.utils.typing as ty
-from delphyne.analysis import ObjectLoader
 from delphyne.scripts.command_utils import command_file_header
 from delphyne.scripts.demonstrations import check_demo_file
 from delphyne.scripts.load_configs import find_workspace_dir, load_config
@@ -156,11 +155,7 @@ class DelphyneCLI:
             config = replace(config, cache_root=file_path.parent / "cache")
         with open(file, "r") as f:
             spec = ty.pydantic_load(CommandSpec, yaml.safe_load(f))
-        loader = ObjectLoader(
-            strategy_dirs=config.strategy_dirs,
-            modules=config.modules,
-            extra_objects=STD_COMMANDS,
-        )
+        loader = config.object_loader(extra_objects=STD_COMMANDS)
         cmd, args = spec.load(loader)
         if cache:
             assert hasattr(args, "cache_file"), (

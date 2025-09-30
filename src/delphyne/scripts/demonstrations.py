@@ -55,11 +55,7 @@ def check_demo_file(
     demos_json = yaml.safe_load(open(file, "r").read())
     demos = ty.pydantic_load(list[dp.Demo], demos_json)
     ret = DemoFileFeedback([], [])
-    loader = dp.ObjectLoader(
-        strategy_dirs=context.strategy_dirs,
-        modules=context.modules,
-        extra_objects=stdlib.stdlib_globals(),
-    )
+    loader = context.object_loader(extra_objects=stdlib.stdlib_globals())
     for i, d in enumerate(demos):
         feedback = analysis.evaluate_demo(
             d,

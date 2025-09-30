@@ -57,12 +57,13 @@ export function getWorkspaceRoot(filePath: string | null): string {
 /////
 
 export interface CommandExecutionContext {
+  strategy_dirs?: string[];
   modules?: string[];
   demo_files?: string[];
-  strategy_dirs?: string[];
   prompt_dirs?: string[];
   data_dirs?: string[];
   cache_root?: string;
+  init?: (string | [string, Record<string, any>])[];
   result_refresh_period?: number | null;
   status_refresh_period?: number | null;
 }

@@ -36,11 +36,7 @@ def execute_command(
 ):
     try:
         exe = exe.with_root(workspace_root)
-        loader = dp.ObjectLoader(
-            strategy_dirs=exe.strategy_dirs,
-            modules=exe.modules,
-            extra_objects=STD_COMMANDS,
-        )
+        loader = exe.object_loader(extra_objects=STD_COMMANDS)
         command, args = cmd.load(loader)
         command(task, exe, args)
     except analysis.ObjectNotFound as e:
