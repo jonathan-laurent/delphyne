@@ -3,6 +3,7 @@
 ## DEV
 
 - Add `init` key to `delphyne.yaml` to register custom initializers.
+- Allow configuring `auto_reload` in `delphyne.yaml`.
 
 ## Version 0.13.0 (2025-09-27)
 

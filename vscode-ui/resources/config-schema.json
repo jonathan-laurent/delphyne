@@ -89,6 +89,11 @@
       "title": "Init",
       "type": "array"
     },
+    "auto_reload": {
+      "default": true,
+      "title": "Auto Reload",
+      "type": "boolean"
+    },
     "result_refresh_period": {
       "anyOf": [
         {

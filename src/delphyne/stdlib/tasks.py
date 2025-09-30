@@ -140,6 +140,11 @@ class CommandExecutionContext:
             initialization function must be **idempotent**: calling it
             several times should have the same effect as calling it
             once.
+        auto_reload: Whether to automatically reload all modules in
+            `modules` between each command or demonstration evaluation.
+            Modules are reloaded using `importlib.reload`, **in the
+            specified order** (thus, dependencies should be reloaded
+            before modules using them).
         result_refresh_period: The period in seconds at which the
             current result is computed and communicated to the UI (e.g.,
             the period at which the current trace is exported when
@@ -178,6 +183,7 @@ class CommandExecutionContext:
     data_dirs: Sequence[Path] = DEFAULT_DATA_DIRS
     cache_root: Path | None = None
     init: Sequence[str | tuple[str, dict[str, Any]]] = ()
+    auto_reload: bool = True
     result_refresh_period: float | None = None
     status_refresh_period: float | None = None
     workspace_root: Path | None = None
@@ -194,19 +200,20 @@ class CommandExecutionContext:
             data_dirs=[root / d for d in self.data_dirs],
             cache_root=None if self.cache_root is None else self.cache_root,
             init=self.init,
+            auto_reload=self.auto_reload,
             result_refresh_period=self.result_refresh_period,
             status_refresh_period=self.status_refresh_period,
             workspace_root=root,
         )
 
     def object_loader(
-        self, reload: bool = True, extra_objects: dict[str, Any] | None = None
+        self, extra_objects: dict[str, Any] | None = None
     ) -> ObjectLoader:
         return ObjectLoader(
             strategy_dirs=self.strategy_dirs,
             modules=self.modules,
             extra_objects=extra_objects,
-            reload=reload,
+            reload=self.auto_reload,
             initializers=self.init,
         )
 
