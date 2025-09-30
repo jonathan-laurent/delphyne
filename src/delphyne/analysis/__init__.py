@@ -9,7 +9,6 @@ from delphyne.analysis.browsable_traces import (
     compute_browsable_trace,
 )
 from delphyne.analysis.demo_interpreter import (
-    DemoExecutionContext,
     ImplicitAnswerGenerator,
     ImplicitAnswerGeneratorsLoader,
     ObjectLoader,

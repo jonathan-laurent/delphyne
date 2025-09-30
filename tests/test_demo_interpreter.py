@@ -19,9 +19,10 @@ from delphyne.utils.yaml import dump_yaml
 STRATEGY_MODULE = "example_strategies"
 TESTS_FOLDER = Path(__file__).parent
 DATA_FOLDER = TESTS_FOLDER / "data"
-CONTEXT = analysis.DemoExecutionContext(
+LOADER = dp.ObjectLoader(
     strategy_dirs=[TESTS_FOLDER],
     modules=[STRATEGY_MODULE],
+    extra_objects=dp.stdlib_globals(),
 )
 
 
@@ -56,11 +57,10 @@ def check_object_included(small: object, big: object, path: str = "expect"):
 class DemoExpectTest(dp.StrategyDemo):
     expect: object = None
 
-    def check(self, ctx: analysis.DemoExecutionContext):
+    def check(self, loader: dp.ObjectLoader):
         feedback, trace = analysis.evaluate_strategy_demo_and_return_trace(
             self,
-            ctx,
-            extra_objects=dp.stdlib_globals(),
+            object_loader=loader,
             answer_database_loader=dp.standard_answer_loader(TESTS_FOLDER),
             load_implicit_answer_generators=(
                 dp.stdlib_implicit_answer_generators_loader((DATA_FOLDER,))
@@ -119,7 +119,7 @@ def test_interpreter(demo_label: str):
     demo = load_demo(demo_label)
     print("\n")
     assert isinstance(demo, DemoExpectTest)
-    demo.check(CONTEXT)
+    demo.check(LOADER)
 
 
 @pytest.mark.parametrize(
@@ -133,10 +133,7 @@ def test_interpreter(demo_label: str):
 def test_query_demo(name: str, valid: bool):
     demo = load_demo(name)
     assert isinstance(demo, dp.QueryDemo)
-    extra = dp.stdlib_globals()
-    ret = analysis.evaluate_standalone_query_demo(
-        demo, CONTEXT, extra_objects=extra
-    )
+    ret = analysis.evaluate_standalone_query_demo(demo, object_loader=LOADER)
     has_errors = ret.diagnostics or ret.answer_diagnostics
     if valid:
         assert not has_errors

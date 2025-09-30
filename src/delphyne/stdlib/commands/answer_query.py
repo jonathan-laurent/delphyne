@@ -70,7 +70,11 @@ def answer_query_with_cache(
     cache_spec: md.LLMCache | None,
 ):
     # TODO: support adding examples?
-    loader = analysis.ObjectLoader(exe.base, extra_objects=stdlib_globals())
+    loader = analysis.ObjectLoader(
+        strategy_dirs=exe.strategy_dirs,
+        modules=exe.modules,
+        extra_objects=stdlib_globals(),
+    )
     query = loader.load_query(cmd.query, cmd.args)
     env = en.PolicyEnv(
         prompt_dirs=exe.prompt_dirs,

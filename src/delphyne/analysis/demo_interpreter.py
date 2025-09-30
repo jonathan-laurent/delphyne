@@ -68,37 +68,13 @@ class AmbiguousObjectIdentifier(Exception):
     modules: Sequence[str]
 
 
-@dataclass(frozen=True, kw_only=True)
-class DemoExecutionContext:
-    """
-    Demonstration Execution Context.
-
-    Attributes:
-        strategy_dirs: A list of directories in which strategy modules
-            can be found, to be added to `sys.path`.
-        modules: A list of modules in which python object identifiers
-            should be resolved. Modules can be part of packages and so
-            their name may feature `.`.
-    """
-
-    strategy_dirs: Sequence[Path]
-    modules: Sequence[str]
-
-    def with_root(self, root: Path) -> "DemoExecutionContext":
-        return DemoExecutionContext(
-            strategy_dirs=[root / p for p in self.strategy_dirs],
-            modules=self.modules,
-        )
-
-
 class ObjectLoader:
     """
     Utility class for loading Python objects.
 
     Demonstration and command files may refer to Python identifiers that
-    need to be resolved. This is done relative to an execution context
-    (`DemoExecutionContext`) that specifies a list of directories to be
-    added to `sys.path`, along with a list of modules.
+    need to be resolved. This is done relative to a list of directories
+    to be added to `sys.path`, along with a list of modules.
 
     An exception is raised if an object with the requested identifier
     can be found in several modules.
@@ -106,14 +82,19 @@ class ObjectLoader:
 
     def __init__(
         self,
-        ctx: DemoExecutionContext,
+        *,
+        strategy_dirs: Sequence[Path],
+        modules: Sequence[str],
         extra_objects: dict[str, object] | None = None,
         reload: bool = True,
     ):
         """
         Attributes:
-            ctx: The execution context in which to resolve Python
-                identifiers.
+            strategy_dirs: A list of directories in which strategy
+                modules can be found, to be added to `sys.path`.
+            modules: A list of modules in which python object
+                identifiers should be resolved. Modules can be part of
+                packages and so their name may feature `.`.
             extra_objects: Additional objects that can be resolved by
                 name (with higher precedence).
             reload: Whether to reload all modules specified in the
@@ -125,11 +106,10 @@ class ObjectLoader:
         Raises:
             ModuleNotFound: a module could not be found.
         """
-        self.ctx = ctx
         self.extra_objects = extra_objects if extra_objects is not None else {}
         self.modules: list[Any] = []
-        with _append_path(self.ctx.strategy_dirs):
-            for module_name in ctx.modules:
+        with _append_path(strategy_dirs):
+            for module_name in modules:
                 try:
                     module = __import__(module_name)
                     if reload:
@@ -687,9 +667,8 @@ def _evaluate_test(
 
 def evaluate_strategy_demo_and_return_trace(
     demo: dm.StrategyDemo,
-    context: DemoExecutionContext,
     *,
-    extra_objects: dict[str, object],
+    object_loader: ObjectLoader,
     answer_database_loader: dp.AnswerDatabaseLoader,
     load_implicit_answer_generators: ImplicitAnswerGeneratorsLoader,
 ) -> tuple[fb.StrategyDemoFeedback, dp.Trace | None]:
@@ -705,8 +684,9 @@ def evaluate_strategy_demo_and_return_trace(
         implicit_answers=defaultdict(list),
     )
     try:
-        loader = ObjectLoader(context, extra_objects)
-        strategy = loader.load_strategy_instance(demo.strategy, demo.args)
+        strategy = object_loader.load_strategy_instance(
+            demo.strategy, demo.args
+        )
     except Exception as e:
         msg = f"Failed to instantiate strategy:\n{e}"
         feedback.global_diagnostics.append(("error", msg))
@@ -736,7 +716,7 @@ def evaluate_strategy_demo_and_return_trace(
     try:
         hresolver = DemoHintResolver(
             demo,
-            loader=loader,
+            loader=object_loader,
             external_answers=answer_database,
             implicit_answer_generators=implicit_answer_generators,
         )
@@ -779,16 +759,14 @@ def evaluate_strategy_demo_and_return_trace(
 
 def evaluate_standalone_query_demo(
     demo: dm.QueryDemo,
-    context: DemoExecutionContext,
     *,
-    extra_objects: dict[str, object],
+    object_loader: ObjectLoader,
 ) -> fb.QueryDemoFeedback:
     feedback = fb.QueryDemoFeedback(
         kind="query", diagnostics=[], answer_diagnostics=[]
     )
     try:
-        loader = ObjectLoader(context, extra_objects)
-        query = loader.load_query(demo.query, demo.args)
+        query = object_loader.load_query(demo.query, demo.args)
     except Exception as e:
         msg = f"Failed to instantiate query:\n{e}"
         feedback.diagnostics.append(("error", msg))
@@ -813,9 +791,8 @@ def evaluate_standalone_query_demo(
 
 def evaluate_demo(
     demo: dm.Demo,
-    context: DemoExecutionContext,
     *,
-    extra_objects: dict[str, object],
+    object_loader: ObjectLoader,
     answer_database_loader: dp.AnswerDatabaseLoader,
     load_implicit_answer_generators: ImplicitAnswerGeneratorsLoader,
 ) -> fb.DemoFeedback:
@@ -826,8 +803,8 @@ def evaluate_demo(
 
     Attributes:
         demo: The demonstration to evaluate.
-        context: The execution context in which to resolve Python
-            identifiers.
+        object_loader: An object loader that can be used to resolve
+            query and strategy names.
         extra_objects: Additional objects that can be resolved by name
             (with higher precedence).
         load_implicit_answer_generators: Load the implicit answer
@@ -845,13 +822,12 @@ def evaluate_demo(
     if isinstance(demo, dm.StrategyDemo):
         feedback, _ = evaluate_strategy_demo_and_return_trace(
             demo,
-            context,
-            extra_objects=extra_objects,
+            object_loader=object_loader,
             answer_database_loader=answer_database_loader,
             load_implicit_answer_generators=load_implicit_answer_generators,
         )
         return feedback
     else:
         return evaluate_standalone_query_demo(
-            demo, context, extra_objects=extra_objects
+            demo, object_loader=object_loader
         )

@@ -14,10 +14,12 @@ import yaml
 import delphyne.core as dp
 import delphyne.stdlib as std
 import delphyne.utils.typing as ty
+from delphyne.analysis import ObjectLoader
 from delphyne.scripts.command_utils import command_file_header
 from delphyne.scripts.demonstrations import check_demo_file
 from delphyne.scripts.load_configs import find_workspace_dir, load_config
 from delphyne.server.execute_command import CommandSpec
+from delphyne.stdlib.commands import STD_COMMANDS
 from delphyne.utils.misc import StatusIndicator
 from delphyne.utils.yaml import pretty_yaml
 
@@ -154,7 +156,12 @@ class DelphyneCLI:
             config = replace(config, cache_root=file_path.parent / "cache")
         with open(file, "r") as f:
             spec = ty.pydantic_load(CommandSpec, yaml.safe_load(f))
-        cmd, args = spec.load(config.base)
+        loader = ObjectLoader(
+            strategy_dirs=config.strategy_dirs,
+            modules=config.modules,
+            extra_objects=STD_COMMANDS,
+        )
+        cmd, args = spec.load(loader)
         if cache:
             assert hasattr(args, "cache_file"), (
                 "Command does not have a `cache_file` argument."

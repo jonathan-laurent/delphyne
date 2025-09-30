@@ -20,10 +20,9 @@ class CommandSpec:
     args: dict[str, object]
 
     def load(
-        self, ctx: analysis.DemoExecutionContext
+        self, object_loader: dp.ObjectLoader
     ) -> tuple[ta.Command[Any, Any], Any]:
-        loader = analysis.ObjectLoader(ctx, extra_objects=STD_COMMANDS)
-        command = loader.find_object(self.command)
+        command = object_loader.find_object(self.command)
         args_type = ta.command_args_type(command)
         args = ty.pydantic_load(args_type, self.args)
         return (command, args)
@@ -37,7 +36,12 @@ def execute_command(
 ):
     try:
         exe = exe.with_root(workspace_root)
-        command, args = cmd.load(exe.base)
+        loader = dp.ObjectLoader(
+            strategy_dirs=exe.strategy_dirs,
+            modules=exe.modules,
+            extra_objects=STD_COMMANDS,
+        )
+        command, args = cmd.load(loader)
         command(task, exe, args)
     except analysis.ObjectNotFound as e:
         error = ("error", f"Not found: {e}")

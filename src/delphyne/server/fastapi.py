@@ -34,15 +34,18 @@ def make_server(launcher: TaskLauncher):
         workspace_root: Annotated[str, Body(embed=True)],
     ):
         stream_eval = ta.stream_of_fun(analysis.evaluate_demo)
-        extra = std.stdlib_globals()
         context = context.with_root(Path(workspace_root))
+        loader = dp.ObjectLoader(
+            strategy_dirs=context.strategy_dirs,
+            modules=context.modules,
+            extra_objects=std.stdlib_globals(),
+        )
         stream = launcher(
             request,
             fb.DemoFeedback,
             stream_eval,
             demo,
-            context.base,
-            extra_objects=extra,
+            object_loader=loader,
             answer_database_loader=dp.standard_answer_loader(
                 Path(workspace_root)
             ),

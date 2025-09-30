@@ -16,7 +16,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Concatenate, Literal, Never, Protocol
 
-import delphyne.analysis as analysis
 import delphyne.analysis.feedback as fb
 import delphyne.stdlib.tasks as ta
 import delphyne.utils.typing as ty
@@ -173,16 +172,6 @@ class CommandExecutionContext:
     result_refresh_period: float | None = None
     status_refresh_period: float | None = None
     workspace_root: Path | None = None
-
-    @property
-    def base(self) -> analysis.DemoExecutionContext:
-        """
-        Obtain a demonstration execution context.
-        """
-        return analysis.DemoExecutionContext(
-            strategy_dirs=self.strategy_dirs,
-            modules=self.modules,
-        )
 
     def with_root(self, root: Path) -> "CommandExecutionContext":
         """

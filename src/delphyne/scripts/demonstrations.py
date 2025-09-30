@@ -54,13 +54,16 @@ def check_demo_file(
     # TODO: we should better report line numbers.
     demos_json = yaml.safe_load(open(file, "r").read())
     demos = ty.pydantic_load(list[dp.Demo], demos_json)
-    extra = stdlib.stdlib_globals()
     ret = DemoFileFeedback([], [])
+    loader = dp.ObjectLoader(
+        strategy_dirs=context.strategy_dirs,
+        modules=context.modules,
+        extra_objects=stdlib.stdlib_globals(),
+    )
     for i, d in enumerate(demos):
         feedback = analysis.evaluate_demo(
             d,
-            context.base,
-            extra_objects=extra,
+            object_loader=loader,
             answer_database_loader=dp.standard_answer_loader(workspace_root),
             load_implicit_answer_generators=(
                 stdlib.stdlib_implicit_answer_generators_loader(
