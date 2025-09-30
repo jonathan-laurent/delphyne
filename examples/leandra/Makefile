@@ -15,28 +15,18 @@ clean-ignored:
 clean: clean-ignored
 
 
-# Test demonstrations, in a way that does not require Why3 to be installed.
+# Test demonstrations, in a way that does not require lean-interact to be installed.
 test:
-	delphyne check abduct_and_branch.demo.yaml --ensure-no-error
-# Other demos contain implicit answers...
+	@echo "TODO"
 
 full-test: execute-commands test-exp test
 	pytest tests
 
 test-exp:
-	python experiments/test_abduction_experiment.py run --max_workers=2
-	@echo "\n"
-	python experiments/test_baseline_experiment.py run --max_workers=1
-	@echo "\n"
-	python experiments/test_abduction_experiment.py replay
-	@echo "\n"
-	python experiments/test_baseline_experiment.py replay
-	@echo "\n"
-	python experiments/test_abduction_experiment.py force-summary --add-timing
-	@echo "\n"
+	@echo "TODO"
 
 
-CMD_FILES := $(filter-out commands/test_abduct_branch_difficult.exec.yaml,$(wildcard commands/*.exec.yaml))
+CMD_FILES := $(wildcard commands/*.exec.yaml)
 
 execute-commands: $(CMD_FILES)
 

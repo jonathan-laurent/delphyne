@@ -1,0 +1,22 @@
+[project]
+name = "delphyne-leandra"
+version = "0.0.1"
+description = "A Simple and Flexible Proving Agent for Lean 4"
+authors = [{name="Jonathan Laurent", email="jonathan.laurent@cs.cmu.edu"}]
+dependencies = [
+    "delphyne>=0.13.0",
+    "lean-interact>=0.8.3"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 79
+
+[tool.pyright]
+typeCheckingMode = "strict"
+
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"

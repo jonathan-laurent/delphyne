@@ -1,0 +1,41 @@
+{
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.tabSize": 4,
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+        },
+        "editor.rulers": [80],
+        "rewrap.wrappingColumn": 72,
+    },
+    "python.testing.pytestArgs": [
+        "tests", "-s"
+    ],
+    "python.testing.pytestEnabled": true,
+    // Wrapping the lines of YAML files and using an indentation size
+    // of 2 is important for the readability of demonstration files
+    "[yaml]": {
+        "editor.wrappingIndent": "indent",
+        "editor.wordWrap": "wordWrapColumn",
+        "editor.indentSize": 2,
+        "editor.wordWrapColumn": 100,
+        "editor.rulers": [100],
+    },
+    // We also wrap template files for readability.
+    "[jinja-md]": {
+        "editor.wrappingIndent": "indent",
+        "editor.wordWrap": "wordWrapColumn",
+        "editor.wordWrapColumn": 80,
+        "editor.indentSize": 2,
+        "editor.rulers": [80],
+    },
+    // Indicate that the Jinja templates are written in Markdown
+    "files.associations": {
+        "*.jinja": "jinja-md"
+    },
+    "python.testing.unittestEnabled": false,
+    "python-envs.defaultEnvManager": "ms-python.python:conda",
+    "python-envs.defaultPackageManager": "ms-python.python:conda",
+    "python-envs.pythonProjects": []
+}
