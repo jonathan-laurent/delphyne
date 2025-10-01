@@ -10,6 +10,7 @@ import lean_interact as li  # type: ignore
 import lean_interact.interface as li_intf  # type: ignore
 
 DEFAULT_MEMORY_HARD_LIMIT_MB = 4096
+DEFAULT_TIMEOUT_IN_SECONDS = 5.0
 
 
 #####
@@ -18,11 +19,12 @@ DEFAULT_MEMORY_HARD_LIMIT_MB = 4096
 
 
 @dataclass
-class LeanServer:
+class _LeanServer:
     server: li.AutoLeanServer
+    env: int | None
 
 
-_global_lean_server: LeanServer | None = None
+_global_lean_server: _LeanServer | None = None
 
 
 def _default_lean_version() -> str:
@@ -75,7 +77,8 @@ def init_global_lean_server_with_config(
     When using multiprocessing, this function should be called in each
     worker process.
     """
-
+    if _global_lean_server is not None:
+        return
     server = li.AutoLeanServer(config)
     env = None
     for cmd in init_commands:
@@ -89,7 +92,7 @@ def init_global_lean_server_with_config(
             )
         env = res.env
     global _global_lean_server
-    _global_lean_server = LeanServer(server=server)
+    _global_lean_server = _LeanServer(server=server, env=env)
 
 
 def init_global_lean_server(
@@ -101,9 +104,36 @@ def init_global_lean_server(
     """
     Shortcut for configuring an REPL and launching a single server.
     """
-
+    if _global_lean_server is not None:
+        return
     config = lean_server_config(
         repo_path=repo_path,
         memory_hard_limit_mb=memory_hard_limit_mb,
     )
     init_global_lean_server_with_config(config, init_commands)
+
+
+def _get_global_server() -> _LeanServer:
+    global _global_lean_server
+    if _global_lean_server is None:
+        raise RuntimeError("The Lean server was not initialized.")
+    return _global_lean_server
+
+
+#####
+##### Executing Commands
+#####
+
+
+def run_lean_command(
+    command: str, *, timeout_in_seconds: float | None = None
+) -> li_intf.BaseREPLResponse | li_intf.LeanError:
+    if timeout_in_seconds is None:
+        timeout_in_seconds = DEFAULT_TIMEOUT_IN_SECONDS
+    server = _get_global_server()
+    try:
+        cmd = li.Command(cmd=command, env=server.env)
+        resp = server.server.run(cmd, timeout=1e-4)
+        return resp
+    except TimeoutError:
+        return li_intf.LeanError(message="Timeout")
