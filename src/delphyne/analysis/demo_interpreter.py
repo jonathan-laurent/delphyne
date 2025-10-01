@@ -229,8 +229,10 @@ class ObjectLoader:
 @contextmanager
 def _append_path(paths: Sequence[Path]):
     sys.path = [str(p) for p in paths] + sys.path
-    yield
-    sys.path = sys.path[len(paths) :]
+    try:
+        yield
+    finally:
+        sys.path = sys.path[len(paths) :]
 
 
 #####
