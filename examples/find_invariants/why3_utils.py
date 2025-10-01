@@ -128,7 +128,8 @@ def split_final_assertion(prog: File) -> tuple[File, Formula]:
     # Ensure there is exactly one match
     if len(matches) != 1:
         raise ValueError(
-            f"Expected exactly one assert statement, found {len(matches)}"
+            f"Expected exactly one assert statement, found {len(matches)}:"
+            f"\\n{prog}"
         )
 
     match = matches[0]
