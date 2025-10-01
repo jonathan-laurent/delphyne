@@ -1404,6 +1404,14 @@ You can then run the Delphyne CLI with a debugger attached by simply substitutin
       dataclass
   " href="../reference/stdlib/experiments/#delphyne.stdlib.experiments.experiment_launcher.Experiment"><code>Experiment</code></a> class for running an oracular program on a set of different hyperparameter combinations. It supports the use of multiple workers, allows interrupting and resuming experiments, retrying failed attempts, and caching all LLM requests for replicability.</p>
 <p>For a usage example, see <code>examples/find_invariants/experiments</code>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Replaying a configuration in a debugger</p>
+<p>Whether an experiment configuration (i.e. a run that corresponds to a specific hyperparameter setting) succeeds or fails with an exception, it can be replayed within a debugger as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">alias</span><span class="w"> </span>debug-python<span class="o">=</span><span class="s1">&#39;python -m debugpy --listen 5678 --wait-for-client&#39;</span>
+debug-python<span class="w"> </span>experiment_cli.py<span class="w"> </span>replay<span class="w"> </span>&lt;config_name&gt;
+</code></pre></div>
+<p>Here, <code>experiment_cli.py</code> is the experiment script that calls <code>Experiment.run_cli</code>. See <a href="#debugging">instructions</a> for launching a debugger client on VSCode side.</p>
+</div>
 <h2 id="conversational">Writing a Conversational Agent</h2>
 <p>A common pattern for interacting with LLMs is to have multi-message exchanges where the full conversation history is resent repeatedly. LLMs are also sometimes allowed to request tool calls. This pattern is implemented by the <a class="autorefs autorefs-internal" title="interact" href="../reference/stdlib/algorithms/#delphyne.interact"><code>interact</code></a> strategy from Delphyne's standard library. For usage examples, see:</p>
 <ul>
