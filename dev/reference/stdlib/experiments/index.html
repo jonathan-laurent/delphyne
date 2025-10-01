@@ -2558,7 +2558,8 @@ dumped, regardless of other settings.</p>
 <span class="normal">660</span>
 <span class="normal">661</span>
 <span class="normal">662</span>
-<span class="normal">663</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">663</span>
+<span class="normal">664</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Experiment</span><span class="p">[</span><span class="n">Config</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An experiment that consists in running an oracular program on a set of</span>
@@ -2943,13 +2944,14 @@ dumped, regardless of other settings.</p>
 <span class="sd">        it exists.</span>
 
 <span class="sd">        This way, one can debug the execution of an experiment after the</span>
-<span class="sd">        fact, without any LLMs being called.</span>
+<span class="sd">        fact, without any LLMs being called. Note that one can also</span>
+<span class="sd">        replay a configuration that failed with an exception within a</span>
+<span class="sd">        debugger to investigate it.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_state</span><span class="p">()</span>
         <span class="k">assert</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">assert</span> <span class="n">config_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="n">info</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">configs</span><span class="p">[</span><span class="n">config_name</span><span class="p">]</span>
-        <span class="k">assert</span> <span class="n">info</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;done&quot;</span>
         <span class="n">cmdargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
         <span class="n">cmdargs</span><span class="o">.</span><span class="n">cache_file</span> <span class="o">=</span> <span class="n">_relative_cache_path</span><span class="p">(</span><span class="n">config_name</span><span class="p">)</span>
         <span class="n">cmdargs</span><span class="o">.</span><span class="n">cache_mode</span> <span class="o">=</span> <span class="s2">&quot;replay&quot;</span>
@@ -3523,7 +3525,9 @@ useful to investigate seemingly stuck tasks.</p>
         <p>Replay a configuration with a given name, reusing the cache if
 it exists.</p>
 <p>This way, one can debug the execution of an experiment after the
-fact, without any LLMs being called.</p>
+fact, without any LLMs being called. Note that one can also
+replay a configuration that failed with an exception within a
+debugger to investigate it.</p>
 
 
             <details class="quote">
@@ -3551,19 +3555,21 @@ fact, without any LLMs being called.</p>
 <span class="normal">532</span>
 <span class="normal">533</span>
 <span class="normal">534</span>
-<span class="normal">535</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">replay_config_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">535</span>
+<span class="normal">536</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">replay_config_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replay a configuration with a given name, reusing the cache if</span>
 <span class="sd">    it exists.</span>
 
 <span class="sd">    This way, one can debug the execution of an experiment after the</span>
-<span class="sd">    fact, without any LLMs being called.</span>
+<span class="sd">    fact, without any LLMs being called. Note that one can also</span>
+<span class="sd">    replay a configuration that failed with an exception within a</span>
+<span class="sd">    debugger to investigate it.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_state</span><span class="p">()</span>
     <span class="k">assert</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="k">assert</span> <span class="n">config_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="n">info</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">configs</span><span class="p">[</span><span class="n">config_name</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="n">info</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;done&quot;</span>
     <span class="n">cmdargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
     <span class="n">cmdargs</span><span class="o">.</span><span class="n">cache_file</span> <span class="o">=</span> <span class="n">_relative_cache_path</span><span class="p">(</span><span class="n">config_name</span><span class="p">)</span>
     <span class="n">cmdargs</span><span class="o">.</span><span class="n">cache_mode</span> <span class="o">=</span> <span class="s2">&quot;replay&quot;</span>
@@ -3599,13 +3605,13 @@ fact, without any LLMs being called.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">537</span>
-<span class="normal">538</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">538</span>
 <span class="normal">539</span>
 <span class="normal">540</span>
 <span class="normal">541</span>
 <span class="normal">542</span>
-<span class="normal">543</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">replay_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">543</span>
+<span class="normal">544</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">replay_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replay a configuration. See `replay_config_by_name` for details.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3636,15 +3642,15 @@ fact, without any LLMs being called.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">545</span>
-<span class="normal">546</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">546</span>
 <span class="normal">547</span>
 <span class="normal">548</span>
 <span class="normal">549</span>
 <span class="normal">550</span>
 <span class="normal">551</span>
 <span class="normal">552</span>
-<span class="normal">553</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">replay_all_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">553</span>
+<span class="normal">554</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">replay_all_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replay all configurations, replicating the experiment.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3728,8 +3734,7 @@ each configuration.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">555</span>
-<span class="normal">556</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">556</span>
 <span class="normal">557</span>
 <span class="normal">558</span>
 <span class="normal">559</span>
@@ -3750,7 +3755,8 @@ each configuration.</p>
 <span class="normal">574</span>
 <span class="normal">575</span>
 <span class="normal">576</span>
-<span class="normal">577</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_summary</span><span class="p">(</span>
+<span class="normal">577</span>
+<span class="normal">578</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_summary</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">ignore_missing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">add_timing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3799,8 +3805,7 @@ each configuration.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">579</span>
-<span class="normal">580</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">580</span>
 <span class="normal">581</span>
 <span class="normal">582</span>
 <span class="normal">583</span>
@@ -3809,7 +3814,8 @@ each configuration.</p>
 <span class="normal">586</span>
 <span class="normal">587</span>
 <span class="normal">588</span>
-<span class="normal">589</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">589</span>
+<span class="normal">590</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load the summary file into a DataFrame.</span>
 
@@ -3877,8 +3883,7 @@ each configuration.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">591</span>
-<span class="normal">592</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">592</span>
 <span class="normal">593</span>
 <span class="normal">594</span>
 <span class="normal">595</span>
@@ -3891,7 +3896,8 @@ each configuration.</p>
 <span class="normal">602</span>
 <span class="normal">603</span>
 <span class="normal">604</span>
-<span class="normal">605</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="normal">605</span>
+<span class="normal">606</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the status of the experiment configurations.</span>
 
@@ -3931,12 +3937,12 @@ from the shell. See <code>ExperimentCLI</code> for details.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">607</span>
-<span class="normal">608</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">608</span>
 <span class="normal">609</span>
 <span class="normal">610</span>
 <span class="normal">611</span>
-<span class="normal">612</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_cli</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">612</span>
+<span class="normal">613</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_cli</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run a CLI application that allows controlling the experiment</span>
 <span class="sd">    from the shell. See `ExperimentCLI` for details.</span>
@@ -4517,8 +4523,7 @@ some access information (e.g. a port number), and then have
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">859</span>
-<span class="normal">860</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">860</span>
 <span class="normal">861</span>
 <span class="normal">862</span>
 <span class="normal">863</span>
@@ -4613,7 +4618,8 @@ some access information (e.g. a port number), and then have
 <span class="normal">952</span>
 <span class="normal">953</span>
 <span class="normal">954</span>
-<span class="normal">955</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentCLI</span><span class="p">:</span>
+<span class="normal">955</span>
+<span class="normal">956</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentCLI</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A CLI application for controlling an experiment from the shell.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -4844,8 +4850,7 @@ of the <code>verbose_output</code> setting.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">867</span>
-<span class="normal">868</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">868</span>
 <span class="normal">869</span>
 <span class="normal">870</span>
 <span class="normal">871</span>
@@ -4890,7 +4895,8 @@ of the <code>verbose_output</code> setting.</p>
 <span class="normal">910</span>
 <span class="normal">911</span>
 <span class="normal">912</span>
-<span class="normal">913</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
+<span class="normal">913</span>
+<span class="normal">914</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
@@ -4961,8 +4967,7 @@ of the <code>verbose_output</code> setting.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">915</span>
-<span class="normal">916</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">916</span>
 <span class="normal">917</span>
 <span class="normal">918</span>
 <span class="normal">919</span>
@@ -4971,7 +4976,8 @@ of the <code>verbose_output</code> setting.</p>
 <span class="normal">922</span>
 <span class="normal">923</span>
 <span class="normal">924</span>
-<span class="normal">925</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">925</span>
+<span class="normal">926</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Print the status of the experiment.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -5038,8 +5044,7 @@ provided, all configurations are replayed.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">927</span>
-<span class="normal">928</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">928</span>
 <span class="normal">929</span>
 <span class="normal">930</span>
 <span class="normal">931</span>
@@ -5050,7 +5055,8 @@ provided, all configurations are replayed.</p>
 <span class="normal">936</span>
 <span class="normal">937</span>
 <span class="normal">938</span>
-<span class="normal">939</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">replay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="normal">939</span>
+<span class="normal">940</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">replay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replay one or all configurations.</span>
 
@@ -5088,12 +5094,12 @@ file.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">941</span>
-<span class="normal">942</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">942</span>
 <span class="normal">943</span>
 <span class="normal">944</span>
 <span class="normal">945</span>
-<span class="normal">946</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clean_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">946</span>
+<span class="normal">947</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clean_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Clean unregistered configurations from the persistent state</span>
 <span class="sd">    file.</span>
@@ -5124,14 +5130,14 @@ configurations were successfully run.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">948</span>
-<span class="normal">949</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">949</span>
 <span class="normal">950</span>
 <span class="normal">951</span>
 <span class="normal">952</span>
 <span class="normal">953</span>
 <span class="normal">954</span>
-<span class="normal">955</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">force_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">add_timing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="normal">955</span>
+<span class="normal">956</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">force_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">add_timing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Force the generation of a summary file, even if not all</span>
 <span class="sd">    configurations were successfully run.</span>
