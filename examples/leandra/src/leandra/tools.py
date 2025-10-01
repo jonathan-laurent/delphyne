@@ -2,17 +2,19 @@
 Simple API to communicate with Lean and related tools
 """
 
-import os
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
 import lean_interact as li  # type: ignore
+import lean_interact.interface as li_intf  # type: ignore
 
 DEFAULT_MEMORY_HARD_LIMIT_MB = 4096
 
-MEMORY_HARD_LIMIT_MB_ENV_VAR = "LEAN_MEMORY_HARD_LIMIT_MB"
 
-LEAN_REPO_ENV_VAR = "LEAN_REPO_PATH"
+#####
+##### Global Server Initialization
+#####
 
 
 @dataclass
@@ -20,7 +22,13 @@ class LeanServer:
     server: li.AutoLeanServer
 
 
-_GLOBAL_LEAN_SERVER: LeanServer | None = None
+_global_lean_server: LeanServer | None = None
+
+
+def _default_lean_version() -> str:
+    workspace = Path(__file__).absolute().parent.parent.parent
+    toolchain_file = workspace / "benchmarks" / "minif2f" / "lean-toolchain"
+    return toolchain_file.read_text().strip()
 
 
 def lean_server_config(
@@ -28,10 +36,74 @@ def lean_server_config(
     repo_path: Path | None,
     memory_hard_limit_mb: int | None,
 ) -> li.LeanREPLConfig:
-    """ """
-    assert False
+    """
+    Obtain a REPL configuration object, which can then be shared across
+    workers and passed as an argument to
+    `init_global_lean_server_with_config`.
+
+    Arguments:
+        repo_path: The path to the root of a Lean project that imports
+            all the necessary libraries. If not provided,
+            `lean_interact` will be tasked to generate a temporary
+            project on the fly, which might be slower.
+        memory_hard_limit_mb: The memory limit in megabytes for each
+            server worker.
+    """
+
+    if memory_hard_limit_mb is None:
+        memory_hard_limit_mb = DEFAULT_MEMORY_HARD_LIMIT_MB
+    if repo_path is None:
+        project = li.TempRequireProject(
+            lean_version=_default_lean_version(), require="mathlib"
+        )
+    else:
+        project = li.LocalProject(directory=repo_path, auto_build=False)
+    return li.LeanREPLConfig(
+        project=project,
+        memory_hard_limit_mb=memory_hard_limit_mb,
+        verbose=True,
+    )
 
 
-def init_global_lean_server(config: li.LeanREPLConfig) -> None:
-    """ """
-    pass
+def init_global_lean_server_with_config(
+    config: li.LeanREPLConfig,
+    init_commands: Sequence[str],
+) -> None:
+    """
+    Initialize the global Lean server.
+
+    When using multiprocessing, this function should be called in each
+    worker process.
+    """
+
+    server = li.AutoLeanServer(config)
+    env = None
+    for cmd in init_commands:
+        res = server.run(
+            li.Command(cmd=cmd, env=env),
+            add_to_session_cache=True,
+        )
+        if isinstance(res, li_intf.LeanError):
+            raise RuntimeError(
+                f"Failed to run init command '{cmd}': {res.message}"
+            )
+        env = res.env
+    global _global_lean_server
+    _global_lean_server = LeanServer(server=server)
+
+
+def init_global_lean_server(
+    *,
+    repo_path: Path | None,
+    memory_hard_limit_mb: int | None,
+    init_commands: Sequence[str],
+) -> None:
+    """
+    Shortcut for configuring an REPL and launching a single server.
+    """
+
+    config = lean_server_config(
+        repo_path=repo_path,
+        memory_hard_limit_mb=memory_hard_limit_mb,
+    )
+    init_global_lean_server_with_config(config, init_commands)
