@@ -25,7 +25,11 @@ def make_experiment[C](
     output_dir: str,
     exp_file: str,
 ) -> Experiment[C]:
-    workspace_root = Path(exp_file).parent.parent
+    # The `exp_file` parameter is typically assigned to `__file__`` in
+    # the caller, which can be either a relative or absolute path
+    # depending on how the script is invoked. Thus, we convert it to
+    # an absolute path with `absolute` first.
+    workspace_root = Path(exp_file).absolute().parent.parent
     exp_name = Path(exp_file).stem
     context = dp.CommandExecutionContext(
         modules=MODULES, demo_files=DEMO_FILES
