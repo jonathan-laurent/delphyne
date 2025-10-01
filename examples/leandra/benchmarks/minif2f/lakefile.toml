@@ -1,0 +1,10 @@
+name = "minif2f-benchmark"
+defaultTargets = ["MiniF2F"]
+
+[[lean_lib]]
+name = "MiniF2F"
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "v4.23.0"
