@@ -63,6 +63,16 @@ Policies often feature many hyperparameters that must be tuned for the associate
 
 For a usage example, see `examples/find_invariants/experiments`.
 
+!!! tip "Replaying a configuration in a debugger"
+    Whether an experiment configuration (i.e. a run that corresponds to a specific hyperparameter setting) succeeds or fails with an exception, it can be replayed within a debugger as follows:
+
+    ```sh
+    alias debug-python='python -m debugpy --listen 5678 --wait-for-client'
+    debug-python experiment_cli.py replay <config_name>
+    ```
+
+    Here, `experiment_cli.py` is the experiment script that calls `Experiment.run_cli`. See [instructions](#debugging) for launching a debugger client on VSCode side.
+
 
 ## Writing a Conversational Agent {#conversational}
 
