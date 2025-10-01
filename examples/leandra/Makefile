@@ -1,4 +1,4 @@
-.PHONY: clean-ignored clean
+.PHONY: clean-ignored clean full-clean
 .PHONY: test full-test test-exp execute-commands FORCE
 .PHONY: delete-test-exp delete-command-cache delete-full-test-cache
 
@@ -13,6 +13,9 @@ clean-ignored:
 	find . \( $(TO_CLEAN) \) -exec rm -rf {} +
 
 clean: clean-ignored
+
+full-clean: clean
+	make -C benchmarks/minif2f full-clean
 
 
 # Test demonstrations, in a way that does not require lean-interact to be installed.

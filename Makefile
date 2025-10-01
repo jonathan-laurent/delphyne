@@ -205,7 +205,7 @@ release:
 
 # Count the number of lines of code
 cloc:
-	cloc . --exclude-dir=node_modules,out,.vscode-test --include-lang=python,typescript
+	cloc . --exclude-dir=node_modules,out,.vscode-test,minif2f --include-lang=python,typescript
 
 
 # Estimate the size of the documentation. A page is traditionally defined as 250
