@@ -139,7 +139,9 @@ class CommandExecutionContext:
             name and of a dictionary of arguments to pass. An
             initialization function must be **idempotent**: calling it
             several times should have the same effect as calling it
-            once.
+            once. For all string arguments, the `%workspace` substring
+            is replaced by the path of the workspace root directory
+            (without trailing slash).
         auto_reload: Whether to automatically reload all modules in
             `modules` between each command or demonstration evaluation.
             Modules are reloaded using `importlib.reload`, **in the
@@ -192,6 +194,22 @@ class CommandExecutionContext:
         """
         Make all paths absolute given a path to the workspace root.
         """
+
+        def _expand_initializer(
+            init: str | tuple[str, dict[str, Any]],
+        ) -> str | tuple[str, dict[str, Any]]:
+            if isinstance(init, str):
+                return init
+            else:
+                name, args = init
+                args = {
+                    k: v.replace("%workspace", str(root))
+                    if isinstance(v, str)
+                    else v
+                    for k, v in args.items()
+                }
+                return (name, args)
+
         return CommandExecutionContext(
             modules=self.modules,
             demo_files=[root / f for f in self.demo_files],
@@ -199,7 +217,7 @@ class CommandExecutionContext:
             prompt_dirs=[root / d for d in self.prompt_dirs],
             data_dirs=[root / d for d in self.data_dirs],
             cache_root=None if self.cache_root is None else self.cache_root,
-            init=self.init,
+            init=[_expand_initializer(i) for i in self.init],
             auto_reload=self.auto_reload,
             result_refresh_period=self.result_refresh_period,
             status_refresh_period=self.status_refresh_period,
