@@ -515,13 +515,14 @@ class Experiment[Config]:
         it exists.
 
         This way, one can debug the execution of an experiment after the
-        fact, without any LLMs being called.
+        fact, without any LLMs being called. Note that one can also
+        replay a configuration that failed with an exception within a
+        debugger to investigate it.
         """
         state = self._load_state()
         assert state is not None
         assert config_name is not None
         info = state.configs[config_name]
-        assert info.status == "done"
         cmdargs = self.experiment(info.params)
         cmdargs.cache_file = _relative_cache_path(config_name)
         cmdargs.cache_mode = "replay"
