@@ -127,13 +127,33 @@ def _get_global_server() -> _LeanServer:
 
 def run_lean_command(
     command: str, *, timeout_in_seconds: float | None = None
-) -> li_intf.BaseREPLResponse | li_intf.LeanError:
+) -> li_intf.BaseREPLResponse:
+    """
+    Run a Lean command.
+
+    Attributes:
+        command: The Lean command to run.
+        timeout_in_seconds: The maximum time to wait for a response. If the
+            timeout is reached, a response with a timeout error message
+            will be returned. If `None`, a default timeout is used.
+    """
     if timeout_in_seconds is None:
         timeout_in_seconds = DEFAULT_TIMEOUT_IN_SECONDS
     server = _get_global_server()
     try:
         cmd = li.Command(cmd=command, env=server.env)
         resp = server.server.run(cmd, timeout=1e-4)
+        if isinstance(resp, li_intf.LeanError):
+            raise RuntimeError(
+                f"Failed to run command:\n\n{command}\n\nError: {resp.message}"
+            )
         return resp
     except TimeoutError:
-        return li_intf.LeanError(message="Timeout")
+        dummy_pos = li_intf.Pos(line=0, column=0)
+        message = li_intf.Message(
+            start_pos=dummy_pos,
+            end_pos=dummy_pos,
+            severity="error",
+            data="Timeout",
+        )
+        return li_intf.BaseREPLResponse(messages=[message], sorries=[])
