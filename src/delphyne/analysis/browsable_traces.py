@@ -76,7 +76,7 @@ class RefSimplifier:
         # We start by converting the element answer ref or success path
         match ref.element:
             case refs.Answer():
-                aref: nv.AnswerRef = ((id, ref.space), ref.element)
+                aref: refs.GlobalAnswerRef = ((id, ref.space), ref.element)
                 if aref not in self.hint_rev_map.answers:
                     raise ValueError("Incomplete rev_map.")
                 hint = self.hint_rev_map.answers[aref]
@@ -125,7 +125,7 @@ class RefSimplifier:
         args = tuple(self.value_ref(id, a) for a in ref.args)
         return hrefs.SpaceRef(ref.name, args)
 
-    def answer(self, ref: nv.AnswerRef) -> hrefs.Hint | None:
+    def answer(self, ref: refs.GlobalAnswerRef) -> hrefs.Hint | None:
         return self.hint_rev_map.answers[ref]
 
 
@@ -398,7 +398,7 @@ class _TraceTranslator:
                     self.trace.expand_node_id(id),
                     self.trace.expand_space_ref(id, ref),
                 )
-                full_aref: nv.AnswerRef = (full_gsref, a)
+                full_aref: refs.GlobalAnswerRef = (full_gsref, a)
                 hint = self.simplifier.answer(full_aref)
                 if hint is None:
                     hint_str = ()

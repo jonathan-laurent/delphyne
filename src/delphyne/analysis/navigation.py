@@ -20,10 +20,6 @@ VAL_HINT_PREFIX = "#"
 #####
 
 
-type ActionRef = tuple[refs.GlobalNodePath, refs.ValueRef]
-type AnswerRef = tuple[refs.GlobalSpacePath, refs.Answer]
-
-
 @dataclass
 class HintReverseMap:
     """
@@ -35,8 +31,8 @@ class HintReverseMap:
     action was computed from hints.
     """
 
-    actions: dict[ActionRef, Sequence[hrefs.Hint]]
-    answers: dict[AnswerRef, hrefs.Hint | None]
+    actions: dict[refs.GlobalValueRef, Sequence[hrefs.Hint]]
+    answers: dict[refs.GlobalAnswerRef, hrefs.Hint | None]
 
     def __init__(self):
         self.actions = {}

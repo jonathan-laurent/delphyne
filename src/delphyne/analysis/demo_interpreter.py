@@ -294,7 +294,7 @@ class DemoHintResolver(nv.HintResolver):
                     raise DemoHintResolver.InvalidAnswer(i, j, parsed)
         # Used to populate `DemoFeedback.answer_refs`, which is needed
         # to implement the `Jump to Answer` action in the UI tree view.
-        self.answer_refs: dict[nv.AnswerRef, fb.DemoAnswerId] = {}
+        self.answer_refs: dict[refs.GlobalAnswerRef, fb.DemoAnswerId] = {}
         # To keep track of what queries are reachable
         self.query_used: list[bool] = [False] * len(self.queries)
         # Keeping track of implicit answers
@@ -379,7 +379,7 @@ class DemoHintResolver(nv.HintResolver):
                 return ans
         return None
 
-    def get_answer_refs(self) -> dict[nv.AnswerRef, fb.DemoAnswerId]:
+    def get_answer_refs(self) -> dict[refs.GlobalAnswerRef, fb.DemoAnswerId]:
         return self.answer_refs
 
     def get_implicit_answers(

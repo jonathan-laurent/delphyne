@@ -244,6 +244,15 @@ type GlobalSpacePath = tuple[GlobalNodePath, SpaceRef]
 A path to a global node
 """
 
+type GlobalAnswerRef = tuple[GlobalSpacePath, Answer]
+"""
+A global reference to located answer.
+"""
+
+type GlobalValueRef = tuple[GlobalNodePath, ValueRef]
+"""
+A global value reference.
+"""
 
 #####
 ##### Tracked Values
