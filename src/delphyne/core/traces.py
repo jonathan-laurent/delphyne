@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Literal, TypeGuard
 
-from delphyne.core import irefs, refs
+from delphyne.core import irefs, parse, refs
 from delphyne.core.trees import AttachedQuery, Tree
 from delphyne.utils.typing import pydantic_dump
 
@@ -136,6 +136,10 @@ class Trace:
         answers: a mapping from answer identifiers to actual answers,
             along with origin information on the associated query.
         answer_ids: reverse map of `answers`.
+
+    !!! note
+        `answer_ids` can be nonempty while `answers` is empty, since
+        one must be able to include unanswered queries in the trace.
     """
 
     GLOBAL_ORIGIN_ID = irefs.NodeId(0)
@@ -155,6 +159,33 @@ class Trace:
         self.serialized_queries: dict[QueryOrigin, _SerializedQuery] = {}
         self._last_node_id: int = 0
         self._last_answer_id: int = 0
+
+    @staticmethod
+    def load(trace: ExportableTrace) -> "Trace":
+        """
+        Load a trace from an exportable representation.
+        """
+        ret = Trace()
+        for id, origin_str in trace.nodes.items():
+            origin = parse.node_origin(origin_str)
+            node_id = irefs.NodeId(id)
+            ret.nodes[node_id] = origin
+            ret.node_ids[origin] = node_id
+        for q in trace.queries:
+            origin = QueryOrigin(
+                irefs.NodeId(q.node),
+                parse.id_based_space_ref(q.space),
+            )
+            ret.answer_ids[origin] = {}
+            for ans_id, ans in q.answers.items():
+                ret.answers[irefs.AnswerId(ans_id)] = (origin, ans)
+                ret.answer_ids[origin][ans] = irefs.AnswerId(ans_id)
+            if q.query is not None and q.args is not None:
+                serialized = (q.query, q.args)
+                ret.serialized_queries[origin] = serialized
+        ret._last_node_id = max((id.id for id in ret.nodes), default=0)
+        ret._last_answer_id = max((id.id for id in ret.answers), default=0)
+        return ret
 
     def fresh_or_cached_node_id(
         self, origin: irefs.NodeOrigin
@@ -243,7 +274,25 @@ class Trace:
         """
         for id in self.nodes:
             expanded = self.expand_node_id(id)
-            assert id == self.convert_global_node_path(expanded)
+            id_bis = self.convert_global_node_path(expanded)
+            assert id == id_bis
+
+    def check_roundabout_consistency(self) -> None:
+        """
+        Perform a sanity check, before and after serializing and
+        desarializing it.
+        """
+        self.check_consistency()
+        exportable = self.export()
+        copy = Trace.load(exportable)
+        copy.check_consistency()
+        exportable_copy = copy.export()
+        if exportable != exportable_copy:
+            print("Original exportable trace:")
+            print(exportable)
+            print("Exportable trace after round-trip:")
+            print(exportable_copy)
+            assert False
 
     ### Convert full references into id-based references
 

@@ -51,7 +51,7 @@ def test_make_sum():
     success = root.child(success_ans)
     assert isinstance(success.node, dp.Success)
     assert success.node.success.value == [9, 2]
-    tracer.trace.check_consistency()
+    tracer.trace.check_roundabout_consistency()
     pretty_trace = dump_yaml(
         dp.ExportableTrace, tracer.trace.export(), exclude_defaults=True
     )
@@ -102,7 +102,7 @@ def test_synthetize_fun():
     assert isinstance(inner_succ.node, dp.Success)
     success = root.child(inner_succ.node.success)
     assert isinstance(success.node, dp.Success)
-    tracer.trace.check_consistency()
+    tracer.trace.check_roundabout_consistency()
     pretty_trace = dump_yaml(dp.ExportableTrace, tracer.trace.export())
     print(pretty_trace)
 
@@ -182,4 +182,4 @@ def test_imperative_strategy():
     # and has not been modified by the strategy execution
     assert root_space.query.allowed == [1, 2, 3]
 
-    tracer.trace.check_consistency()
+    tracer.trace.check_roundabout_consistency()
