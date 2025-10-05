@@ -1,6 +1,7 @@
 import pytest
 
-from delphyne.core import parse, pprint
+from delphyne.core import demos as dm
+from delphyne.core import parse
 
 
 @pytest.mark.parametrize(
@@ -10,22 +11,36 @@ from delphyne.core import parse, pprint
         "sub[1]",
         "aggr(['', 'foo bar'])",
         "cex(cands{'foo'})",
-        "foo(sub[1]{%2}, cands{@3})",
         "next(nil)",
         "next(next(nil){''}[1])",
     ],
 )
-def test_space_ref_roundabout(s: str):
-    parsed = parse.space_ref(s)
+def test_hint_based_space_ref_roundabout(s: str):
+    parsed = parse.hint_based_space_ref(s)
     hash(parsed)  # should be hashable
-    assert pprint.space_ref(parsed) == s
+    assert str(parsed) == s
 
 
-@pytest.mark.parametrize("s", ["nested(1, gen)", "child(1, gen{@3})"])
+@pytest.mark.parametrize(
+    "s",
+    [
+        "foo",
+        "sub[1]",
+        "foo(sub[1]{%2}, cands{@3})",
+        "next(nil)",
+    ],
+)
+def test_id_based_space_ref_roundabout(s: str):
+    parsed = parse.id_based_space_ref(s)
+    hash(parsed)  # should be hashable
+    assert str(parsed) == s
+
+
+@pytest.mark.parametrize("s", ["nested(%1, gen)", "child(%1, gen{@3})"])
 def test_node_origin_roundabout(s: str):
     parsed = parse.node_origin(s)
     hash(parsed)
-    assert pprint.node_origin(parsed) == s
+    assert str(parsed) == s
 
 
 @pytest.mark.parametrize(
@@ -55,10 +70,10 @@ def test_node_origin_roundabout(s: str):
 )
 def test_parser(inp: str, out: str | None):
     parsed = parse.test_command(inp)
-    printed = pprint.test_command(parsed)
+    printed = dm.show_test_command(parsed)
     if out:
         assert printed == out
     else:
         assert printed == inp
     print(parsed)
-    print(pprint.test_command(parsed))
+    print(dm.show_test_command(parsed))

@@ -38,12 +38,12 @@ outcome:
           content: '83'
     raw_trace:
       nodes:
-        1: nested(0, $main)
-        2: child(1, cands{@1})
-        3: child(2, cands{@2})
-        4: nested(3, cands)
-        5: child(3, cands{%4})
-        6: child(5, nil)
+        1: nested(%0, __main__)
+        2: child(%1, cands{@1})
+        3: child(%2, cands{@2})
+        4: nested(%3, cands)
+        5: child(%3, cands{%4})
+        6: child(%5, nil)
       queries:
         - node: 1
           space: cands

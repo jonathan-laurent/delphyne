@@ -58,10 +58,10 @@ def test_make_sum():
     expected = textwrap.dedent(
         """
         nodes:
-          1: nested(0, $main)
-          2: child(1, cands{@1})
-          3: child(1, cands{@2})
-          4: child(1, cands{@3})
+          1: nested(%0, __main__)
+          2: child(%1, cands{@1})
+          3: child(%1, cands{@2})
+          4: child(%1, cands{@3})
         queries:
           - node: 1
             space: cands

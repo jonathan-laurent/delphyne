@@ -18,7 +18,7 @@ from delphyne.analysis import feedback as fb
 from delphyne.analysis import navigation as nv
 from delphyne.core import answer_databases as da
 from delphyne.core import demos as dm
-from delphyne.core import refs
+from delphyne.core import hrefs, refs
 from delphyne.utils import typing as tp
 
 #####
@@ -304,7 +304,7 @@ class DemoHintResolver(nv.HintResolver):
         self,
         query: dp.SerializedQuery,
         ref: refs.GlobalSpacePath,
-        hint: refs.HintValue | None,
+        hint: hrefs.HintValue | None,
     ) -> (
         refs.Answer
         | Literal["no_answers", "query_not_found", "label_not_found"]
@@ -332,7 +332,7 @@ class DemoHintResolver(nv.HintResolver):
 
     @override
     def answer_with_hint(
-        self, query: dp.AttachedQuery[Any], hint: refs.HintValue
+        self, query: dp.AttachedQuery[Any], hint: hrefs.HintValue
     ) -> refs.Answer | None:
         serialized = dp.SerializedQuery.make(query.query)
         res = self._answer_with_demo_examples(
@@ -451,9 +451,9 @@ Nodes saved using the `save` test instruction.
 """
 
 
-def _unused_hints(diagnostics: list[fb.Diagnostic], rem: Sequence[refs.Hint]):
+def _unused_hints(diagnostics: list[fb.Diagnostic], rem: Sequence[hrefs.Hint]):
     if rem:
-        msg = f"Unused hints: {dp.pprint.hints(rem)}."
+        msg = f"Unused hints: {hrefs.show_hints(rem)}."
         diagnostics.append(("warning", msg))
 
 
@@ -484,12 +484,12 @@ def _handle_navigation_error_or_reraise(
         diagnostics.append(("error", msg))
         return None
     elif isinstance(exn, nv.ReachedFailureNode):
-        step_str = dp.pprint.test_step(test_step)
+        step_str = dm.show_test_step(test_step)
         msg = f"Reached failure node while executing: {step_str}."
         diagnostics.append(("error", msg))
         return exn.tree
     elif isinstance(exn, nv.InvalidSpace):
-        name = dp.pprint.space_name(exn.space_name)
+        name = str(exn.space_name)
         msg = f"Invalid reference to space: {name}."
         diagnostics.append(("error", msg))
         return exn.tree
@@ -526,7 +526,7 @@ def _interpret_test_run_step(
             rem = e.remaining_hints
         _unused_hints(diagnostics, rem)
         if step.until is not None:
-            until_pp = dp.pprint.node_selector(step.until)
+            until_pp = dm.show_node_selector(step.until)
             msg = f"Leaf node reached before '{until_pp}'."
             diagnostics.append(("warning", msg))
         if step.until is None and not tree.node.leaf_node():
@@ -554,7 +554,7 @@ def _interpret_test_select_step(
     nav_info = nv.NavigationInfo(hint_rev)
     navigator.info = nav_info
     navigator.tracer = tracer
-    space_ref_pretty = dp.pprint.space_ref(step.space)
+    space_ref_pretty = str(step.space)
     try:
         space = navigator.resolve_space_ref(tree, step.space)
         source = space.source()

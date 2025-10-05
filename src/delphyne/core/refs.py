@@ -12,25 +12,17 @@ query answers (`Tracked`) so as to allow caching and enforce the
 a given tree node. *Global* references are expressed relative to a
 single, global origin.
 
-In addition, three kinds of references can be distinguished:
+References in this module are *full references*, which are produced by
+`reify`. Query answers are stored as strings and elements of spaces
+induced by strategies are denoted by sequences of value references.
 
-- **Full references**: the default kind of references produced by
-      `reify`. Query answers are stored as strings and elements of
-      spaces induced by strategies are denoted by sequences of value
-      references.
-- **Id-based references**: shorter references, where query answers and
-      success values are identified by unique identifiers. This concise
-      format is used for exporting traces (see `Trace`).
-- **Hint-based references**: query answers and success values are
-      identified by sequences of *hints*. This format is used in the
-      demonstration language (e.g. argument of test instruction `go
-      compare(['', 'foo bar'])`) and when visualizing traces resulting
-      from demonstrations.
+See modules `irefs` and `hrefs` for two alternative kinds of references:
+id-based references and hint-based references.
 """
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any, Generic, Literal, TypeVar, overload
+from typing import Any, Generic, Literal, TypeVar, cast, overload
 
 import delphyne.core.inspect as insp
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
@@ -153,6 +145,12 @@ class SpaceName:
     def __getitem__(self, index: int) -> "SpaceName":
         return SpaceName(self.name, (*self.indices, index))
 
+    def __str__(self) -> str:
+        ret = self.name
+        for i in self.indices:
+            ret += f"[{i}]"
+        return ret
+
 
 type AtomicValueRef = IndexedRef | SpaceElementRef
 """
@@ -200,26 +198,6 @@ given root.
 
 
 @dataclass(frozen=True)
-class NodeId:
-    """
-    Global identifier of a node within a trace.
-    """
-
-    id: int
-
-
-type NodeRef = NodePath | NodeId
-"""
-A node reference is either a path or a node identifier.
-
-Only one of these forms may be allowed depending on the context (e.g. in
-the id-based references used for exporting traces, only node identifiers
-are used, while in the full references attached to trees by `reify`,
-only paths are used).
-"""
-
-
-@dataclass(frozen=True)
 class SpaceRef:
     """
     A reference to a specific local space.
@@ -233,7 +211,7 @@ class SpaceRef:
     args: tuple[ValueRef, ...]
 
 
-MAIN_SPACE = SpaceRef(SpaceName("$main", ()), ())
+MAIN_SPACE = SpaceRef(SpaceName("__main__", ()), ())
 """
 A special space attached to the *global origin* node, and which contains
 the main, top-level strategy tree.
@@ -246,58 +224,13 @@ Global reference to the root of the main, top-level strategy tree.
 
 
 @dataclass(frozen=True)
-class AnswerId:
-    """
-    The identifier to an `Answer` object stored within a trace.
-    """
-
-    id: int
-
-
-type AnswerRef = Answer | AnswerId
-"""
-A reference to a query answer.
-"""
-
-
-type HintValue = str
-"""
-A string that hints at a query answer.
-"""
-
-
-@dataclass(frozen=True)
-class Hint:
-    """A hint for selecting a query answer.
-
-    A hint can be associated to a qualifier, which is the name of an
-    imported demonstration defining the hint.
-    """
-
-    qualifier: str | None
-    hint: HintValue
-
-
-@dataclass(frozen=True)
-class HintsRef:
-    """
-    References a local space element via a sequence of hints.
-    """
-
-    hints: tuple[Hint, ...]
-
-
-@dataclass(frozen=True)
 class SpaceElementRef:
     """
     A reference to an element of a local space.
-
-    When the `space` field is `None`, the primary field is considered
-    instead (if it exists).
     """
 
-    space: SpaceRef | None
-    element: AnswerRef | NodeRef | HintsRef
+    space: SpaceRef
+    element: Answer | NodePath
 
 
 type GlobalNodePath = tuple[tuple[SpaceRef, NodePath], ...]
@@ -310,42 +243,6 @@ type GlobalSpacePath = tuple[GlobalNodePath, SpaceRef]
 """
 A path to a global node
 """
-
-
-#####
-##### Node Origins (used in traces)
-#####
-
-
-type NodeOrigin = ChildOf | NestedTreeOf
-"""
-Origin of a tree.
-
-A tree is either the child of another tree or the root of a nested tree.
-Traces can be exported as mappings from node identifiers to node origin
-information featuring id-based references (see `Trace`).
-"""
-
-
-@dataclass(frozen=True)
-class ChildOf:
-    """
-    The tree of interest is the child of another one.
-    """
-
-    node: NodeId
-    action: ValueRef
-
-
-@dataclass(frozen=True)
-class NestedTreeOf:
-    """
-    The tree of interest is the root of a tree that induces a given
-    space.
-    """
-
-    node: NodeId
-    space: SpaceRef
 
 
 #####
@@ -535,3 +432,19 @@ def global_path_origin(
     if not node_path:
         return "nested", tuple(init), space
     return "child", (*init, (space, node_path[:-1])), node_path[-1]
+
+
+NONE_REF_REPR = "nil"
+
+
+def show_assembly[T](show_element: Callable[[T], str], a: Assembly[T]) -> str:
+    """
+    Print an assembly, assuming that T does not intersect with tuple.
+    """
+    if isinstance(a, tuple):
+        a = cast(tuple[Assembly[T], ...], a)
+        return "[" + ", ".join(show_assembly(show_element, x) for x in a) + "]"
+    elif a is None:
+        return NONE_REF_REPR
+    else:
+        return show_element(a)

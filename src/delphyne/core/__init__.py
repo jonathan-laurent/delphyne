@@ -6,8 +6,10 @@ Delphyne Core
 # pyright: reportUnusedImport=false
 
 from delphyne.core import (
+    hrefs,
+    irefs,
     parse,
-    pprint,
+    refs,
 )
 from delphyne.core.answer_databases import (
     AnswerDatabase,

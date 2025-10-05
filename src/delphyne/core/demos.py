@@ -10,8 +10,8 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any, Literal
 
-from delphyne.core import refs
-from delphyne.core.refs import Hint, SpaceRef, ValueRef
+from delphyne.core import hrefs, refs
+from delphyne.core.hrefs import Hint, SpaceRef, ValueRef
 
 type TestCommandString = str
 """
@@ -390,3 +390,76 @@ def translate_answer(ans: Answer) -> refs.Answer:
         content = refs.Structured(ans.answer)
     tool_calls = tuple([refs.ToolCall(c.tool, c.args) for c in ans.call])
     return refs.Answer(ans.mode, content, tool_calls, ans.justification)
+
+
+#####
+##### Printing tests
+#####
+
+
+class CmdNames:
+    RUN = "run"
+    RUN_UNTIL = "at"
+    SELECT = "go"
+    GO_TO_CHILD = "take"
+    ANSWER = "answer"
+    IS_SUCCESS = "success"
+    IS_FAILURE = "failure"
+    SAVE = "save"
+    LOAD = "load"
+
+
+def show_tag_selector(selector: TagSelector) -> str:
+    ret = selector.tag
+    if selector.num is not None:
+        ret += "#" + str(selector.num)
+    return ret
+
+
+def show_tag_selectors(selectors: TagSelectors) -> str:
+    return "&".join(show_tag_selector(sel) for sel in selectors)
+
+
+def show_node_selector(selector: NodeSelector) -> str:
+    if isinstance(selector, WithinSpace):
+        return (
+            show_tag_selectors(selector.space)
+            + "/"
+            + show_node_selector(selector.selector)
+        )
+    else:
+        return show_tag_selectors(selector)
+
+
+def show_test_step(ts: TestStep) -> str:
+    match ts:
+        case Run(hs, None):
+            if not hs:
+                return CmdNames.RUN
+            return f"{CmdNames.RUN} {hrefs.show_hints(hs)}"
+        case Run(hs, until):
+            assert until is not None
+            sel = show_node_selector(until)
+            res = f"{CmdNames.RUN_UNTIL} {sel}"
+            if hs:
+                res += f" {hrefs.show_hints(hs)}"
+            return res
+        case SelectSpace(ref):
+            if ts.expects_query:
+                return f"{CmdNames.ANSWER} {ref}"
+            else:
+                return f"{CmdNames.SELECT} {ref}"
+        case GoToChild(action):
+            return f"{CmdNames.GO_TO_CHILD} {hrefs.show_value_ref(action)}"
+        case IsSuccess():
+            return CmdNames.IS_SUCCESS
+        case IsFailure():
+            return CmdNames.IS_FAILURE
+        case Save(name):
+            return f"{CmdNames.SAVE} {name}"
+        case Load(name):
+            return f"{CmdNames.LOAD} {name}"
+
+
+def show_test_command(tc: TestCommand) -> str:
+    return " | ".join(show_test_step(ts) for ts in tc)

@@ -12,13 +12,13 @@ from typing import Any, assert_type, cast
 
 import delphyne.analysis as analysis
 import delphyne.analysis.feedback as fb
-import delphyne.core.refs as refs
 import delphyne.core_and_base as dp
 import delphyne.stdlib.environments as en
 import delphyne.stdlib.models as md
 import delphyne.stdlib.policies as pol
 import delphyne.stdlib.tasks as ta
 import delphyne.utils.caching as ca
+from delphyne.core import irefs, refs
 from delphyne.core.streams import Barrier, Solution, Spent
 from delphyne.utils.typing import pydantic_dump
 
@@ -347,14 +347,12 @@ def run_strategy(
 
 def _node_id_of_tracked_value(
     value: dp.Tracked[object], trace: dp.Trace
-) -> refs.NodeId:
+) -> irefs.NodeId:
     ref = value.ref
     while isinstance(ref, refs.IndexedRef):
         ref = ref.ref
     eref = ref.element
-    assert not isinstance(
-        eref, (refs.HintsRef, refs.Answer, refs.AnswerId, refs.NodeId)
-    )
+    assert not isinstance(eref, refs.Answer)
     assert_type(eref, refs.NodePath)
     gref: refs.GlobalNodePath = ((refs.MAIN_SPACE, eref),)
     return trace.convert_global_node_path(gref)

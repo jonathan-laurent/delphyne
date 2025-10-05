@@ -9,6 +9,16 @@
       show_root_full_path: true
       members: false
 
+::: delphyne.core.irefs
+    options:
+      show_root_full_path: true
+      members: false
+
+::: delphyne.core.hrefs
+    options:
+      show_root_full_path: true
+      members: false
+
 ## Query Answers
 
 ::: delphyne.Answer
@@ -19,13 +29,9 @@
 
 ::: delphyne.ToolCall
 
-## References
-
-::: delphyne.core.refs.NodeRef
+## Full References
 
 ::: delphyne.core.refs.NodePath
-
-::: delphyne.core.refs.NodeId
 
 ::: delphyne.core.refs.ValueRef
 
@@ -41,29 +47,11 @@
 
 ::: delphyne.core.refs.SpaceName
 
-::: delphyne.core.refs.AnswerRef
-
-::: delphyne.core.refs.AnswerId
-
-::: delphyne.core.refs.HintsRef
-
-::: delphyne.core.refs.Hint
-
-::: delphyne.core.refs.HintValue
-
 <!-- ## Global References -->
 
 ::: delphyne.core.refs.GlobalNodePath
 
 ::: delphyne.core.refs.GlobalSpacePath
-
-<!-- ## Node Origins -->
-
-::: delphyne.core.refs.NodeOrigin
-
-::: delphyne.core.refs.ChildOf
-
-::: delphyne.core.refs.NestedTreeOf
 
 ## Tracked Values
 
@@ -76,6 +64,46 @@
 ::: delphyne.core.refs.check_local_value
 
 ::: delphyne.core.refs.LocalityError
+
+## Id-Based References
+
+::: delphyne.core.irefs.AnswerId
+
+::: delphyne.core.irefs.NodeId
+
+::: delphyne.core.irefs.ValueRef
+
+::: delphyne.core.irefs.AtomicValueRef
+
+::: delphyne.core.irefs.IndexedRef
+
+::: delphyne.core.irefs.SpaceRef
+
+::: delphyne.core.irefs.SpaceElementRef
+
+<!-- ## Node Origins -->
+
+::: delphyne.core.irefs.NodeOrigin
+
+::: delphyne.core.irefs.ChildOf
+
+::: delphyne.core.irefs.NestedTreeOf
+
+## Hint-Based References
+
+::: delphyne.core.hrefs.Hint
+
+::: delphyne.core.hrefs.HintValue
+
+::: delphyne.core.hrefs.ValueRef
+
+::: delphyne.core.hrefs.AtomicValueRef
+
+::: delphyne.core.hrefs.IndexedRef
+
+::: delphyne.core.hrefs.SpaceRef
+
+::: delphyne.core.hrefs.SpaceElementRef
 
 ## Traces
 

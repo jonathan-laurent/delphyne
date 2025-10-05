@@ -210,9 +210,7 @@ def node_and_answer_ids_in_node_origin_string(
     node origin reference.
 
     This is implemented using regexes. Node ids are of the form `%<int>`
-    and answer ids are of the form `@<int>`. In addition, `origin` is of
-    the form `nested(id, ...)` or `child(id, ...)` and `id` must also be
-    added to the sequence of recognized node ids.
+    and answer ids are of the form `@<int>`.
     """
     import re
 
@@ -223,11 +221,6 @@ def node_and_answer_ids_in_node_origin_string(
     # Find all @<int> (answer ids)
     answer_id_matches = re.findall(r"@(\d+)", origin)
     answer_ids = set(int(a) for a in answer_id_matches)
-
-    # Find nested(id, ...) and child(id, ...)
-    nested_child_matches = re.findall(r"(?:nested|child)\((\d+)", origin)
-    assert len(nested_child_matches) == 1
-    node_ids.update(int(n) for n in nested_child_matches)
 
     return node_ids, answer_ids
 

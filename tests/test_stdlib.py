@@ -93,11 +93,11 @@ def test_standard_model_with_suffix():
     "input,expected",
     [
         (
-            "nested(23, compare([cands{%2}, cands{%11}]))",
+            "nested(%23, compare([cands{%2}, cands{%11}]))",
             (set([23, 2, 11]), set[int]()),
         ),
         (
-            "child(2, cands{@3})",
+            "child(%2, cands{@3})",
             (set([2]), set([3])),
         ),
     ],

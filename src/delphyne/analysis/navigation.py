@@ -10,7 +10,7 @@ from typing import Any, cast
 
 import delphyne.core as dp
 import delphyne.core.demos as dm
-from delphyne.core import AnyTree, refs
+from delphyne.core import AnyTree, hrefs, refs
 
 VAL_HINT_PREFIX = "#"
 
@@ -35,8 +35,8 @@ class HintReverseMap:
     action was computed from hints.
     """
 
-    actions: dict[ActionRef, Sequence[refs.Hint]]
-    answers: dict[AnswerRef, refs.Hint | None]
+    actions: dict[ActionRef, Sequence[hrefs.Hint]]
+    answers: dict[AnswerRef, hrefs.Hint | None]
 
     def __init__(self):
         self.actions = {}
@@ -51,7 +51,7 @@ class NavigationInfo:
     """
 
     hints_rev: HintReverseMap = field(default_factory=HintReverseMap)
-    unused_hints: list[refs.Hint] = field(default_factory=list[refs.Hint])
+    unused_hints: list[hrefs.Hint] = field(default_factory=list[hrefs.Hint])
 
 
 class HintResolver(ABC):
@@ -61,7 +61,7 @@ class HintResolver(ABC):
 
     @abstractmethod
     def answer_with_hint(
-        self, query: dp.AttachedQuery[Any], hint: refs.HintValue
+        self, query: dp.AttachedQuery[Any], hint: hrefs.HintValue
     ) -> refs.Answer | None:
         """
         Try and answer a query using a hint.
@@ -83,16 +83,6 @@ class HintResolver(ABC):
                 may be useful for generating implicit answers (see
                 `ImplicitAnswerGenerator`).
         """
-        pass
-
-
-class IdentifierResolver(ABC):
-    @abstractmethod
-    def resolve_node(self, id: refs.NodeId) -> dp.AnyTree:
-        pass
-
-    @abstractmethod
-    def resolve_answer(self, id: refs.AnswerId) -> dp.Answer:
         pass
 
 
@@ -128,19 +118,19 @@ def _tag_selectors_match(
 class Stuck(Exception):
     tree: AnyTree
     space_ref: refs.SpaceRef
-    remaining_hints: Sequence[refs.Hint]
+    remaining_hints: Sequence[hrefs.Hint]
 
 
 @dataclass
 class ReachedFailureNode(Exception):
     tree: AnyTree
-    remaining_hints: Sequence[refs.Hint]
+    remaining_hints: Sequence[hrefs.Hint]
 
 
 @dataclass
 class MatchedSelector(Exception):
     tree: AnyTree
-    remaining_hints: Sequence[refs.Hint]
+    remaining_hints: Sequence[hrefs.Hint]
 
 
 @dataclass
@@ -175,20 +165,21 @@ class Navigator:
     """
 
     hint_resolver: HintResolver | None = None
-    id_resolver: IdentifierResolver | None = None
     info: NavigationInfo | None = None
     tracer: dp.Tracer | None = None
 
     def resolve_atomic_value_ref(
-        self, tree: AnyTree, ref: refs.AtomicValueRef
+        self, tree: AnyTree, ref: hrefs.AtomicValueRef
     ) -> dp.Tracked[Any]:
-        if isinstance(ref, refs.SpaceElementRef):
+        if isinstance(ref, hrefs.SpaceElementRef):
             return self.resolve_space_element_ref(tree, ref)
         else:
             parent = self.resolve_atomic_value_ref(tree, ref.ref)
             return parent[ref.index]
 
-    def resolve_value_ref(self, tree: AnyTree, ref: refs.ValueRef) -> dp.Value:
+    def resolve_value_ref(
+        self, tree: AnyTree, ref: hrefs.ValueRef
+    ) -> dp.Value:
         if ref is None:
             return None
         elif isinstance(ref, tuple):
@@ -197,7 +188,7 @@ class Navigator:
             return self.resolve_atomic_value_ref(tree, ref)
 
     def resolve_space_ref(
-        self, tree: AnyTree, ref: refs.SpaceRef
+        self, tree: AnyTree, ref: hrefs.SpaceRef
     ) -> dp.Space[Any]:
         args = tuple(self.resolve_value_ref(tree, r) for r in ref.args)
         space = tree.node.nested_space(ref.name, args)
@@ -206,50 +197,33 @@ class Navigator:
         return space
 
     def resolve_space_element_ref(
-        self, tree: AnyTree, ref: refs.SpaceElementRef
+        self, tree: AnyTree, ref: hrefs.SpaceElementRef
     ) -> dp.Tracked[Any]:
         # Use the primary space if no space name is provided.
         if ref.space is None:
-            space_ref = tree.node.primary_space_ref()
-            if space_ref is None:
+            pspace_ref = tree.node.primary_space_ref()
+            if pspace_ref is None:
                 raise NoPrimarySpace(tree)
+            space_ref = hrefs.convert_trivial_space_ref(pspace_ref)
         else:
             space_ref = ref.space
         space = self.resolve_space_ref(tree, space_ref)
-        match ref.element:
-            case refs.HintsRef():
-                hints = ref.element.hints
-                elt, rem = self.space_element_from_hints(
-                    tree, space, hints, None, EncounteredTags()
-                )
-                if self.info is not None:
-                    self.info.unused_hints += rem
-                return elt
-            case refs.AnswerId():
-                assert self.id_resolver is not None
-                ans = self.id_resolver.resolve_answer(ref.element)
-                query = space.source()
-                assert isinstance(query, dp.AttachedQuery)
-                parsed = query.parse_answer(ans)
-                if isinstance(parsed, dp.ParseError):
-                    raise AnswerParseError(tree, query, ans, parsed)
-                return parsed
-            case refs.NodeId():
-                assert self.id_resolver is not None
-                success = self.id_resolver.resolve_node(ref.element)
-                assert isinstance(success.node, dp.Success)
-                return success.node.success
-            case _:
-                assert False
+        hints = ref.element
+        elt, rem = self.space_element_from_hints(
+            tree, space, hints, None, EncounteredTags()
+        )
+        if self.info is not None:
+            self.info.unused_hints += rem
+        return elt
 
     def space_element_from_hints(
         self,
         tree: AnyTree,
         space: dp.Space[Any],
-        hints: Sequence[refs.Hint],
+        hints: Sequence[hrefs.Hint],
         selector: dm.NodeSelector | None,
         encountered: EncounteredTags,
-    ) -> tuple[dp.Tracked[Any], Sequence[refs.Hint]]:
+    ) -> tuple[dp.Tracked[Any], Sequence[hrefs.Hint]]:
         source = space.source()
         for tag in space.tags():
             encountered.space_tags[tag] += 1
@@ -277,10 +251,10 @@ class Navigator:
     def follow_hints(
         self,
         tree: AnyTree,
-        hints: Sequence[refs.Hint],
+        hints: Sequence[hrefs.Hint],
         selector: dm.NodeSelector | None,
         encountered: EncounteredTags,
-    ) -> tuple[AnyTree, Sequence[refs.Hint]]:
+    ) -> tuple[AnyTree, Sequence[hrefs.Hint]]:
         if tree.node.leaf_node():
             if isinstance(tree.node, dp.Success):
                 return tree, hints
@@ -304,10 +278,10 @@ class Navigator:
     def action_from_hints(
         self,
         tree: AnyTree,
-        hints: Sequence[refs.Hint],
+        hints: Sequence[hrefs.Hint],
         selector: dm.NodeSelector | None,
         encountered: EncounteredTags,
-    ) -> tuple[dp.Value, Sequence[refs.Hint]]:
+    ) -> tuple[dp.Value, Sequence[hrefs.Hint]]:
         original_hints = hints
         try:
             navigator = tree.node.navigate()
@@ -329,13 +303,13 @@ class Navigator:
         self,
         tree: AnyTree,
         query: dp.AttachedQuery[Any],
-        hints: Sequence[refs.Hint],
-    ) -> tuple[dp.Tracked[Any], Sequence[refs.Hint]]:
+        hints: Sequence[hrefs.Hint],
+    ) -> tuple[dp.Tracked[Any], Sequence[hrefs.Hint]]:
         assert self.hint_resolver is not None
         if self.tracer is not None:
             self.tracer.trace_query(query)
         # TODO: we ignore qualifiers because they should not work this way.
-        used_hint: refs.Hint | None = None
+        used_hint: hrefs.Hint | None = None
         answer: refs.Answer | None = None
         # We first try the first hint if there is one
         if hints:
