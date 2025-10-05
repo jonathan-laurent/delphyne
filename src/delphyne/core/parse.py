@@ -8,6 +8,7 @@ See tests/test_parser for examples.
 # ruff: noqa: E731  # no lambda definition
 
 from collections.abc import Sequence
+from typing import cast
 
 import parsy as ps
 import yaml  # pyright: ignore[reportMissingTypeStubs]
@@ -119,7 +120,7 @@ _isref = ps.seq(_sname, _isargs.optional(()).map(tuple)).combine(
 
 # Id-based SpaceElementRef
 _iseref = ps.seq(
-    _hsref, _s("{") >> (_node_id | _answer_id) << _s("}")
+    _isref, _s("{") >> (_node_id | _answer_id) << _s("}")
 ).combine(irefs.SpaceElementRef)
 
 # Id-based ValueRef
@@ -191,27 +192,27 @@ ParseError = ps.ParseError
 
 
 def hint_based_value_ref(s: str) -> hrefs.ValueRef:
-    return _hvref.parse(s)
+    return cast(hrefs.ValueRef, _hvref.parse(s))
 
 
 def hint_based_space_ref(s: str) -> hrefs.SpaceRef:
-    return _hsref.parse(s)
+    return cast(hrefs.SpaceRef, _hsref.parse(s))
 
 
 def id_based_value_ref(s: str) -> irefs.ValueRef:
-    return _ivref.parse(s)
+    return cast(irefs.ValueRef, _ivref.parse(s))
 
 
 def id_based_space_ref(s: str) -> irefs.SpaceRef:
-    return _isref.parse(s)
+    return cast(irefs.SpaceRef, _isref.parse(s))
 
 
 def node_origin(s: str) -> irefs.NodeOrigin:
-    return _node_origin.parse(s)
+    return cast(irefs.NodeOrigin, _node_origin.parse(s))
 
 
 def test_command(s: str) -> demos.TestCommand:
-    return _test.parse(s)
+    return cast(demos.TestCommand, _test.parse(s))
 
 
 def demo_file(input: str) -> demos.DemoFile:
