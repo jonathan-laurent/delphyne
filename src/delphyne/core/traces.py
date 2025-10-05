@@ -101,16 +101,6 @@ class ExportableTrace:
 #####
 
 
-@dataclass(frozen=True)
-class QueryOrigin:
-    """
-    A global, id-based reference to the space induced by a query.
-    """
-
-    node: irefs.NodeId
-    ref: irefs.SpaceRef
-
-
 type _SerializedQuery = tuple[str, dict[str, Any]]
 """
 A serialized representation of a query, as a pair of a query name and of
@@ -151,12 +141,14 @@ class Trace:
         self.nodes: dict[irefs.NodeId, irefs.NodeOrigin] = {}
         self.node_ids: dict[irefs.NodeOrigin, irefs.NodeId] = {}
         self.answers: dict[
-            irefs.AnswerId, tuple[QueryOrigin, refs.Answer]
+            irefs.AnswerId, tuple[irefs.GlobalSpaceRef, refs.Answer]
         ] = {}
         self.answer_ids: dict[
-            QueryOrigin, dict[refs.Answer, irefs.AnswerId]
+            irefs.GlobalSpaceRef, dict[refs.Answer, irefs.AnswerId]
         ] = {}
-        self.serialized_queries: dict[QueryOrigin, _SerializedQuery] = {}
+        self.serialized_queries: dict[
+            irefs.GlobalSpaceRef, _SerializedQuery
+        ] = {}
         self._last_node_id: int = 0
         self._last_answer_id: int = 0
 
@@ -172,7 +164,7 @@ class Trace:
             ret.nodes[node_id] = origin
             ret.node_ids[origin] = node_id
         for q in trace.queries:
-            origin = QueryOrigin(
+            origin = irefs.GlobalSpaceRef(
                 irefs.NodeId(q.node),
                 parse.id_based_space_ref(q.space),
             )
@@ -204,7 +196,7 @@ class Trace:
             return id
 
     def fresh_or_cached_answer_id(
-        self, answer: refs.Answer, origin: QueryOrigin
+        self, answer: refs.Answer, origin: irefs.GlobalSpaceRef
     ) -> irefs.AnswerId:
         """
         Obtain the identifier of an answer, given its content and the
@@ -235,7 +227,7 @@ class Trace:
         desirable for this query to be part of the returned trace so
         that the user can visualize it.
         """
-        origin = self._convert_query_origin(ref)
+        origin = self._convert_global_space_ref(ref)
         if origin not in self.answer_ids:
             self.answer_ids[origin] = {}
         self.serialized_queries[origin] = query
@@ -306,14 +298,16 @@ class Trace:
             space = self._convert_space_ref(id, location.space)
         return ShortLocation(id, space)
 
-    def _convert_query_origin(self, ref: refs.GlobalSpacePath) -> QueryOrigin:
+    def _convert_global_space_ref(
+        self, ref: refs.GlobalSpacePath
+    ) -> irefs.GlobalSpaceRef:
         """
         Convert a full, global space reference denoting a quey origin
         into an id-based reference.
         """
         id = self.convert_global_node_path(ref[0])
         space = self._convert_space_ref(id, ref[1])
-        origin = QueryOrigin(id, space)
+        origin = irefs.GlobalSpaceRef(id, space)
         return origin
 
     def convert_answer_ref(
@@ -325,7 +319,7 @@ class Trace:
         node_path, space = ref[0]
         id = self.convert_global_node_path(node_path)
         space = self._convert_space_ref(id, space)
-        origin = QueryOrigin(id, space)
+        origin = irefs.GlobalSpaceRef(id, space)
         return self.fresh_or_cached_answer_id(ref[1], origin)
 
     def convert_global_node_path(
@@ -414,7 +408,7 @@ class Trace:
         match ref.element:
             case refs.Answer():
                 assert space is not None
-                origin = QueryOrigin(id, space)
+                origin = irefs.GlobalSpaceRef(id, space)
                 element = self.fresh_or_cached_answer_id(ref.element, origin)
             case tuple():
                 assert space is not None

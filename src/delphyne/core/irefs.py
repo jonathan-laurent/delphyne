@@ -91,6 +91,12 @@ class SpaceElementRef:
         return f"{self.space}{{{self.element}}}"
 
 
+@dataclass(frozen=True)
+class GlobalSpaceRef:
+    node: NodeId
+    ref: SpaceRef
+
+
 #####
 ##### Node Origins (used in traces)
 #####

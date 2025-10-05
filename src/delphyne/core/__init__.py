@@ -88,7 +88,6 @@ from delphyne.core.traces import (
     Location,
     LogLevel,
     LogMessage,
-    QueryOrigin,
     Trace,
     Tracer,
     TraceReverseMap,

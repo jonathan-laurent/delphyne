@@ -109,8 +109,6 @@
 
 ::: delphyne.core.traces.Trace
 
-::: delphyne.core.traces.QueryOrigin
-
 ::: delphyne.core.traces.ExportableTrace
 
 ::: delphyne.core.traces.ExportableQueryInfo
