@@ -26,7 +26,7 @@ def test_hint_based_space_ref_roundabout(s: str):
     [
         "foo",
         "sub[1]",
-        "foo(sub[1]{%2}, cands{@3})",
+        "foo($1{%2}, $2{@3})",
         "next(nil)",
     ],
 )
@@ -36,7 +36,13 @@ def test_id_based_space_ref_roundabout(s: str):
     assert str(parsed) == s
 
 
-@pytest.mark.parametrize("s", ["nested(%1, gen)", "child(%1, gen{@3})"])
+@pytest.mark.parametrize(
+    "s",
+    [
+        "nested($3)",
+        "child(%1, $1{@3})",
+    ],
+)
 def test_node_origin_roundabout(s: str):
     parsed = parse.node_origin(s)
     hash(parsed)

@@ -12,7 +12,6 @@ import yaml
 import delphyne.core as dp
 import delphyne.core.demos as dm
 import delphyne.utils.typing as ty
-from delphyne.core.traces import ExportableQueryInfo, NodeOriginStr
 from delphyne.stdlib.environments import HindsightFeedbackDict
 
 type _AnswerIterable = Iterable[tuple[dp.SerializedQuery, dp.LocatedAnswer]]
@@ -202,29 +201,6 @@ def load_trace_data_from_command_file(path: Path) -> _TraceData:
 #####
 
 
-def node_and_answer_ids_in_node_origin_string(
-    origin: NodeOriginStr,
-) -> tuple[set[int], set[int]]:
-    """
-    Return all node ids and answer ids mentioned in a pretty printed
-    node origin reference.
-
-    This is implemented using regexes. Node ids are of the form `%<int>`
-    and answer ids are of the form `@<int>`.
-    """
-    import re
-
-    # Find all %<int> (node ids)
-    node_id_matches = re.findall(r"%(\d+)", origin)
-    node_ids = set(int(n) for n in node_id_matches)
-
-    # Find all @<int> (answer ids)
-    answer_id_matches = re.findall(r"@(\d+)", origin)
-    answer_ids = set(int(a) for a in answer_id_matches)
-
-    return node_ids, answer_ids
-
-
 @dataclass
 class _RelevantAnswer:
     query: dp.SerializedQuery
@@ -246,30 +222,7 @@ def relevant_answers(
     The output can include duplicates.
     """
 
-    answer_info: dict[int, ExportableQueryInfo] = {}
-    for query in trace.queries:
-        for ans_id in query.answers:
-            answer_info[ans_id] = query
+    # TODO
 
-    def aux(
-        node_id: int,
-    ) -> Iterable[_RelevantAnswer]:
-        if node_id == 0:
-            return
-        if hindsight_feedback and node_id in hindsight_feedback:
-            feedback = hindsight_feedback[node_id]
-            query = dp.SerializedQuery.from_json(feedback.query, feedback.args)
-            yield _RelevantAnswer(query, feedback.answer, node_id, True)
-        origin = trace.nodes[node_id]
-        nids, aids = node_and_answer_ids_in_node_origin_string(origin)
-        for aid in aids:
-            info = answer_info[aid]
-            assert info.query is not None and info.args is not None, (
-                f"Missing query information for answer {aid}."
-            )
-            query = dp.SerializedQuery.from_json(info.query, info.args)
-            yield _RelevantAnswer(query, info.answers[aid], aid, False)
-        for n in nids:
-            yield from aux(n)
-
-    yield from aux(node_id)
+    return
+    yield

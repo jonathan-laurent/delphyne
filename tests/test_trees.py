@@ -58,23 +58,29 @@ def test_make_sum():
     expected = textwrap.dedent(
         """
         nodes:
-          1: nested(%0, __main__)
-          2: child(%1, cands{@1})
-          3: child(%1, cands{@2})
-          4: child(%1, cands{@3})
-        queries:
-          - node: 1
-            space: cands
-            answers:
-              1:
-                mode: null
-                content: '[4, 6]'
-              2:
-                mode: null
-                content: '[4, 8]'
-              3:
-                mode: null
-                content: '[9, 2]'
+          1: nested($0)
+          2: child(%1, $1{@1})
+          3: child(%1, $1{@2})
+          4: child(%1, $1{@3})
+        spaces:
+          0: '%0.__main__'
+          1: '%1.cands'
+        answers:
+          1:
+            space: 1
+            answer:
+              mode: null
+              content: '[4, 6]'
+          2:
+            space: 1
+            answer:
+              mode: null
+              content: '[4, 8]'
+          3:
+            space: 1
+            answer:
+              mode: null
+              content: '[9, 2]'
         """
     )
     print(pretty_trace)

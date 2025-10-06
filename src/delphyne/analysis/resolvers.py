@@ -33,7 +33,7 @@ class IRefResolver:
             self.cache[id] = tree
 
     def resolve_answer(self, ref: irefs.AnswerId) -> dp.Answer:
-        return self.trace.answers[ref][1]
+        return self.trace.answers[ref].answer
 
     def resolve_node(self, ref: irefs.NodeId) -> dp.AnyTree:
         if self.cache is not None and ref in self.cache:
@@ -44,13 +44,13 @@ class IRefResolver:
             action = self.resolve_value(origin.node, origin.action)
             tree = parent.child(action)
         else:
-            assert_type(origin, irefs.NestedTreeOf)
-            if origin.node == dp.Trace.GLOBAL_ORIGIN_ID:
+            assert_type(origin, irefs.NestedIn)
+            if origin.space == dp.Trace.MAIN_SPACE_ID:
                 if self.root is None:
                     raise ValueError("IRefResolver.root is not set.")
                 tree = self.root
             else:
-                space = self.resolve_space(origin.node, origin.space)
+                space = self.resolve_space(origin.space)
                 source = space.source()
                 assert isinstance(source, dp.NestedTree)
                 tree = source.spawn_tree()
@@ -58,7 +58,11 @@ class IRefResolver:
             self.cache[ref] = tree
         return tree
 
-    def resolve_space(
+    def resolve_space(self, space_id: irefs.SpaceId) -> dp.Space[Any]:
+        origin = self.trace.spaces[space_id]
+        return self.resolve_space_def(origin.node, origin.space)
+
+    def resolve_space_def(
         self, node: irefs.NodeId, ref: irefs.SpaceRef
     ) -> dp.Space[Any]:
         parent = self.resolve_node(node)
@@ -69,9 +73,9 @@ class IRefResolver:
         return space
 
     def resolve_space_element(
-        self, node: irefs.NodeId, ref: irefs.SpaceElementRef
+        self, ref: irefs.SpaceElementRef
     ) -> dp.Tracked[Any]:
-        space_source = self.resolve_space(node, ref.space).source()
+        space_source = self.resolve_space(ref.space).source()
         match space_source:
             case dp.NestedTree():
                 assert isinstance(ref.element, irefs.NodeId)
@@ -93,7 +97,7 @@ class IRefResolver:
                 container = self.resolve_atomic_value(node, ref.ref)
                 return container[ref.index]
             case irefs.SpaceElementRef():
-                return self.resolve_space_element(node, ref)
+                return self.resolve_space_element(ref)
 
     def resolve_value(
         self, node: irefs.NodeId, ref: irefs.ValueRef

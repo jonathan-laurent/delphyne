@@ -75,6 +75,7 @@ _tuple = lambda p: (_s("[") >> p.sep_by(_comma) << _s("]")).map(tuple)
 # NodeId | AnswerId
 _node_id = _s("%") >> _num.map(irefs.NodeId)
 _answer_id = _s("@") >> _num.map(irefs.AnswerId)
+_space_id = _s("$") >> _num.map(irefs.SpaceId)
 
 # Hint
 _hint_qual = _ident
@@ -120,7 +121,7 @@ _isref = ps.seq(_sname, _isargs.optional(()).map(tuple)).combine(
 
 # Id-based SpaceElementRef
 _iseref = ps.seq(
-    _isref, _s("{") >> (_node_id | _answer_id) << _s("}")
+    _space_id, _s("{") >> (_node_id | _answer_id) << _s("}")
 ).combine(irefs.SpaceElementRef)
 
 # Id-based ValueRef
@@ -131,13 +132,13 @@ _inoneref = _s(refs.NONE_REF_REPR).map(lambda _: None)
 _ivref.become(_inoneref | _tuple(_ivref) | _iavref)
 
 
-# NodeOrigin
+# NodeOrigin, SpaceOrigin
 _child = ps.seq(_node_id, _comma >> _ivref).combine(irefs.ChildOf)
 _child = _s("child(") >> _child << _s(")")
-_nested = ps.seq(_node_id, _comma >> _isref).combine(irefs.NestedTreeOf)
-_nested = _s("nested(") >> _nested << _s(")")
+_nested = (_s("nested(") >> _space_id << _s(")")).map(irefs.NestedIn)
 _node_origin = _child | _nested
 
+_space_origin = ps.seq(_node_id, _s(".") >> _isref).combine(irefs.SpaceOrigin)
 
 # Node selectors
 _tag_sel = ps.seq(_ident, (_s("#") >> _num).optional())
@@ -209,6 +210,10 @@ def id_based_space_ref(s: str) -> irefs.SpaceRef:
 
 def node_origin(s: str) -> irefs.NodeOrigin:
     return cast(irefs.NodeOrigin, _node_origin.parse(s))
+
+
+def space_origin(s: str) -> irefs.SpaceOrigin:
+    return cast(irefs.SpaceOrigin, _space_origin.parse(s))
 
 
 def test_command(s: str) -> demos.TestCommand:

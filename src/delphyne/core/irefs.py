@@ -8,7 +8,8 @@ traces (see `Trace`).
 
 from dataclasses import dataclass
 
-from delphyne.core.refs import Assembly, SpaceName, show_assembly
+from delphyne.core import refs
+from delphyne.core.refs import Answer, Assembly, SpaceName
 
 type AtomicValueRef = IndexedRef | SpaceElementRef
 """
@@ -39,6 +40,18 @@ class AnswerId:
 
     def __str__(self) -> str:
         return f"@{self.id}"
+
+
+@dataclass(frozen=True)
+class SpaceId:
+    """
+    The identifier to a `Space` object stored within a trace.
+    """
+
+    id: int
+
+    def __str__(self) -> str:
+        return f"${self.id}"
 
 
 @dataclass(frozen=True)
@@ -84,17 +97,11 @@ class SpaceElementRef:
     A reference to an element of a local space.
     """
 
-    space: SpaceRef
+    space: SpaceId
     element: AnswerId | NodeId
 
     def __str__(self) -> str:
         return f"{self.space}{{{self.element}}}"
-
-
-@dataclass(frozen=True)
-class GlobalSpaceRef:
-    node: NodeId
-    ref: SpaceRef
 
 
 #####
@@ -102,7 +109,7 @@ class GlobalSpaceRef:
 #####
 
 
-type NodeOrigin = ChildOf | NestedTreeOf
+type NodeOrigin = ChildOf | NestedIn
 """
 Origin of a tree.
 
@@ -126,18 +133,50 @@ class ChildOf:
 
 
 @dataclass(frozen=True)
-class NestedTreeOf:
+class NestedIn:
     """
     The tree of interest is the root of a tree that induces a given
     space.
+    """
+
+    space: SpaceId
+
+    def __str__(self) -> str:
+        return f"nested({self.space})"
+
+
+@dataclass(frozen=True)
+class SpaceOrigin:
+    """
+    Definition of a space identifier in the trace.
     """
 
     node: NodeId
     space: SpaceRef
 
     def __str__(self) -> str:
-        return f"nested({self.node}, {self.space})"
+        return f"{self.node}.{self.space}"
+
+
+@dataclass(frozen=True)
+class LocatedAnswer:
+    """
+    An answer located within a specific space.
+
+    Traces map answer identifiers to located answers.
+    """
+
+    space: SpaceId
+    answer: Answer
+
+
+#####
+##### Utilities
+#####
 
 
 def show_value_ref(vr: ValueRef) -> str:
-    return show_assembly(str, vr)
+    return refs.show_assembly(str, vr)
+
+
+MAIN_SPACE = SpaceRef(SpaceName(refs.MAIN_SPACE_NAME, ()), ())

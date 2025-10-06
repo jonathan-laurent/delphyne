@@ -111,6 +111,9 @@ def load_demo(demo_label: str) -> DemoExpectTest | dp.QueryDemo:
         "flags_global",
         "abduction",
         "trivial_untyped_strategy",
+        # "make_sum_fetched_answers",
+        # "using_hindsight_feedback",
+        # "without_hindsight_feedback",
         "loading_data",
         "loading_bad_data",
     ],
@@ -143,4 +146,4 @@ def test_query_demo(name: str, valid: bool):
 
 if __name__ == "__main__":
     # Entry point for the debugger (see "Debug Server Tests" configuration).
-    test_interpreter("without_hindsight_feedback")
+    test_interpreter("loading_data")

@@ -33,29 +33,24 @@ outcome:
       - 2
     raw_trace:
       nodes:
-        1: nested(%0, __main__)
-        2: child(%1, cands{@1})
-      queries:
-        - node: 1
-          space: cands
-          answers:
-            1:
-              mode: null
-              content: |-
-                - 9
-                - 2
-          query: MakeSum
-          args:
-            allowed:
+        1: nested($0)
+        2: child(%1, $1{@1})
+      spaces:
+        0: '%0.__main__'
+        1: '%1.cands'
+      answers:
+        1:
+          space: 1
+          answer:
+            mode: null
+            content: |-
               - 9
-              - 6
               - 2
-            goal: 11
     log:
       - message: llm_request
         level: info
         node: 1
-        space: cands
+        space: $1
         metadata:
           hash: 66f40312
           query: MakeSum
@@ -90,7 +85,7 @@ outcome:
       - message: llm_response
         level: info
         node: 1
-        space: cands
+        space: $1
         metadata:
           request: 66f40312
           response:

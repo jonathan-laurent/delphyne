@@ -11,7 +11,7 @@ from collections import defaultdict
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Literal, TypeGuard
+from typing import Any, Literal, TypeGuard, assert_type
 
 from delphyne.core import irefs, parse, refs
 from delphyne.core.trees import AttachedQuery, Tree
@@ -43,7 +43,7 @@ class ShortLocation:
     """
 
     node: irefs.NodeId
-    space: irefs.SpaceRef | None
+    space: irefs.SpaceId | None
 
 
 #####
@@ -59,27 +59,18 @@ Can be parsed back using `parse.node_origin`.
 """
 
 
-@dataclass(kw_only=True)
-class ExportableQueryInfo:
-    """
-    Information about a query encountered in an exportable trace.
+type SpaceOriginStr = str
+"""
+A concise, serialized representation for `SpaceOrigin`.
 
-    Attributes:
-        node: Identifier of the node that the query is attached to.
-        space: Local, id-based reference of the space that the query
-            belongs to. Serialized using `pprint.space_ref`.
-        answers: Mapping from answer identifiers to actual answers.
-            Answer identifiers are unique across a whole exportable
-            trace (and not only across an `ExportableQueryInfo` value).
-        query: The query name, if available.
-        args: The query arguments, if available.
-    """
+Can be parsed back using `parse.space_origin`.
+"""
 
-    node: int
-    space: str
-    answers: dict[int, refs.Answer]
-    query: str | None = None
-    args: dict[str, Any] | None = None
+
+@dataclass(frozen=True)
+class _ExportableLocatedAnswer:
+    space: int
+    answer: refs.Answer
 
 
 @dataclass
@@ -88,24 +79,19 @@ class ExportableTrace:
     A lightweight trace format that can be easily exported to JSON/YAML.
 
     Attributes:
-        nodes: a mapping from node ids to serialized origin information.
-        queries: a list of encountered queries with associated answers.
+        nodes: a mapping that defines node identifiers
+        spaces: a mapping that defines space identifiers
+        answers: a mapping that defines answer identifiers
     """
 
     nodes: dict[int, NodeOriginStr]
-    queries: list[ExportableQueryInfo]
+    spaces: dict[int, SpaceOriginStr]
+    answers: dict[int, _ExportableLocatedAnswer]
 
 
 #####
 ##### Traces
 #####
-
-
-type _SerializedQuery = tuple[str, dict[str, Any]]
-"""
-A serialized representation of a query, as a pair of a query name and of
-JSON-serialized arguments.
-"""
 
 
 class Trace:
@@ -126,6 +112,9 @@ class Trace:
         answers: a mapping from answer identifiers to actual answers,
             along with origin information on the associated query.
         answer_ids: reverse map of `answers`.
+        spaces: a mapping from space identifiers to actual space
+            definitions
+        space_ids: reverse map of `spaces`.
 
     !!! note
         `answer_ids` can be nonempty while `answers` is empty, since
@@ -133,6 +122,8 @@ class Trace:
     """
 
     GLOBAL_ORIGIN_ID = irefs.NodeId(0)
+    MAIN_SPACE_ID = irefs.SpaceId(0)
+    MAIN_SPACE_ORIGIN = irefs.SpaceOrigin(GLOBAL_ORIGIN_ID, irefs.MAIN_SPACE)
 
     def __init__(self):
         """
@@ -140,17 +131,16 @@ class Trace:
         """
         self.nodes: dict[irefs.NodeId, irefs.NodeOrigin] = {}
         self.node_ids: dict[irefs.NodeOrigin, irefs.NodeId] = {}
-        self.answers: dict[
-            irefs.AnswerId, tuple[irefs.GlobalSpaceRef, refs.Answer]
-        ] = {}
-        self.answer_ids: dict[
-            irefs.GlobalSpaceRef, dict[refs.Answer, irefs.AnswerId]
-        ] = {}
-        self.serialized_queries: dict[
-            irefs.GlobalSpaceRef, _SerializedQuery
-        ] = {}
+        self.answers: dict[irefs.AnswerId, irefs.LocatedAnswer] = {}
+        self.answer_ids: dict[irefs.LocatedAnswer, irefs.AnswerId] = {}
+        self.spaces: dict[irefs.SpaceId, irefs.SpaceOrigin] = {}
+        self.space_ids: dict[irefs.SpaceOrigin, irefs.SpaceId] = {}
         self._last_node_id: int = 0
         self._last_answer_id: int = 0
+        self._last_space_id: int = 0
+
+        self.spaces[Trace.MAIN_SPACE_ID] = Trace.MAIN_SPACE_ORIGIN
+        self.space_ids[Trace.MAIN_SPACE_ORIGIN] = Trace.MAIN_SPACE_ID
 
     @staticmethod
     def load(trace: ExportableTrace) -> "Trace":
@@ -163,19 +153,19 @@ class Trace:
             node_id = irefs.NodeId(id)
             ret.nodes[node_id] = origin
             ret.node_ids[origin] = node_id
-        for q in trace.queries:
-            origin = irefs.GlobalSpaceRef(
-                irefs.NodeId(q.node),
-                parse.id_based_space_ref(q.space),
-            )
-            ret.answer_ids[origin] = {}
-            for ans_id, ans in q.answers.items():
-                ret.answers[irefs.AnswerId(ans_id)] = (origin, ans)
-                ret.answer_ids[origin][ans] = irefs.AnswerId(ans_id)
-            if q.query is not None and q.args is not None:
-                serialized = (q.query, q.args)
-                ret.serialized_queries[origin] = serialized
+        for id, origin_str in trace.spaces.items():
+            origin = parse.space_origin(origin_str)
+            space_id = irefs.SpaceId(id)
+            ret.spaces[space_id] = origin
+            ret.space_ids[origin] = space_id
+        for id, located_s in trace.answers.items():
+            answer_id = irefs.AnswerId(id)
+            space_id = irefs.SpaceId(located_s.space)
+            located = irefs.LocatedAnswer(space_id, located_s.answer)
+            ret.answers[answer_id] = located
+            ret.answer_ids[located] = answer_id
         ret._last_node_id = max((id.id for id in ret.nodes), default=0)
+        ret._last_space_id = max((id.id for id in ret.spaces), default=0)
         ret._last_answer_id = max((id.id for id in ret.answers), default=0)
         return ret
 
@@ -195,66 +185,50 @@ class Trace:
             self.node_ids[origin] = id
             return id
 
+    def fresh_or_cached_space_id(
+        self, origin: irefs.SpaceOrigin
+    ) -> irefs.SpaceId:
+        """
+        Obtain the identifier of a space, given its origin. Create a new,
+        fresh identifier on the fly if it does not exist yet.
+        """
+        if origin in self.space_ids:
+            return self.space_ids[origin]
+        else:
+            self._last_space_id += 1
+            id = irefs.SpaceId(self._last_space_id)
+            self.spaces[id] = origin
+            self.space_ids[origin] = id
+            return id
+
     def fresh_or_cached_answer_id(
-        self, answer: refs.Answer, origin: irefs.GlobalSpaceRef
+        self, answer: irefs.LocatedAnswer
     ) -> irefs.AnswerId:
         """
         Obtain the identifier of an answer, given its content and the
         origin of the query that it corresponds to. Create a new, fresh
         identifier on the fly if it does not exist yet.
         """
-        if origin not in self.answer_ids:
-            self.answer_ids[origin] = {}
-        if answer in self.answer_ids[origin]:
-            return self.answer_ids[origin][answer]
+        if answer in self.answer_ids:
+            return self.answer_ids[answer]
         else:
             self._last_answer_id += 1
             id = irefs.AnswerId(self._last_answer_id)
-            self.answers[id] = (origin, answer)
-            self.answer_ids[origin][answer] = id
+            self.answers[id] = answer
+            self.answer_ids[answer] = id
             return id
 
-    def register_query(
-        self, ref: refs.GlobalSpacePath, query: _SerializedQuery
-    ) -> None:
-        """
-        Ensure that a query appears in the trace, even if not answers
-        are associated with it yet. Optionally, attach a serialized
-        query representation to the trace.
-
-        This is particularly useful for the demonstration interpreter.
-        Indeed, when a test gets stuck on an unanswered query, it is
-        desirable for this query to be part of the returned trace so
-        that the user can visualize it.
-        """
-        origin = self._convert_global_space_ref(ref)
-        if origin not in self.answer_ids:
-            self.answer_ids[origin] = {}
-        self.serialized_queries[origin] = query
-
-    def export(self, add_serialized_queries: bool = True) -> ExportableTrace:
+    def export(self) -> ExportableTrace:
         """
         Export a trace into a lightweight, serializable format.
         """
         nodes = {id.id: str(origin) for id, origin in self.nodes.items()}
-        queries: list[ExportableQueryInfo] = []
-        for q, a in self.answer_ids.items():
-            if add_serialized_queries:
-                serialized = self.serialized_queries.get(q, (None, None))
-            else:
-                serialized = (None, None)
-            ref = str(q.ref)
-            answers = {id.id: value for value, id in a.items()}
-            queries.append(
-                ExportableQueryInfo(
-                    node=q.node.id,
-                    space=ref,
-                    answers=answers,
-                    query=serialized[0],
-                    args=serialized[1],
-                )
-            )
-        return ExportableTrace(nodes, queries)
+        spaces = {id.id: str(origin) for id, origin in self.spaces.items()}
+        answers = {
+            id.id: _ExportableLocatedAnswer(located.space.id, located.answer)
+            for id, located in self.answers.items()
+        }
+        return ExportableTrace(nodes, spaces, answers)
 
     def check_consistency(self) -> None:
         """
@@ -298,17 +272,26 @@ class Trace:
             space = self._convert_space_ref(id, location.space)
         return ShortLocation(id, space)
 
-    def _convert_global_space_ref(
+    def _convert_space_ref(
+        self, id: irefs.NodeId, ref: refs.SpaceRef
+    ) -> irefs.SpaceId:
+        """
+        Convert a full local space reference into an id-based one, relative
+        to a given node.
+        """
+        args = tuple(self._convert_value_ref(id, a) for a in ref.args)
+        space_ref = irefs.SpaceRef(ref.name, args)
+        return self.fresh_or_cached_space_id(irefs.SpaceOrigin(id, space_ref))
+
+    def convert_global_space_path(
         self, ref: refs.GlobalSpacePath
-    ) -> irefs.GlobalSpaceRef:
+    ) -> irefs.SpaceId:
         """
         Convert a full, global space reference denoting a quey origin
         into an id-based reference.
         """
         id = self.convert_global_node_path(ref[0])
-        space = self._convert_space_ref(id, ref[1])
-        origin = irefs.GlobalSpaceRef(id, space)
-        return origin
+        return self._convert_space_ref(id, ref[1])
 
     def convert_answer_ref(
         self, ref: tuple[refs.GlobalSpacePath, refs.Answer]
@@ -316,11 +299,9 @@ class Trace:
         """
         Convert a full answer reference into an answer id.
         """
-        node_path, space = ref[0]
-        id = self.convert_global_node_path(node_path)
-        space = self._convert_space_ref(id, space)
-        origin = irefs.GlobalSpaceRef(id, space)
-        return self.fresh_or_cached_answer_id(ref[1], origin)
+        space = self.convert_global_space_path(ref[0])
+        located = irefs.LocatedAnswer(space, ref[1])
+        return self.fresh_or_cached_answer_id(located)
 
     def convert_global_node_path(
         self, path: refs.GlobalNodePath
@@ -330,22 +311,10 @@ class Trace:
         """
         id = Trace.GLOBAL_ORIGIN_ID
         for space, node_path in path:
-            space_ref = self._convert_space_ref(id, space)
-            id = self.fresh_or_cached_node_id(
-                irefs.NestedTreeOf(id, space_ref)
-            )
+            space_id = self._convert_space_ref(id, space)
+            id = self.fresh_or_cached_node_id(irefs.NestedIn(space_id))
             id = self._convert_node_path(id, node_path)
         return id
-
-    def convert_global_space_path(
-        self, path: refs.GlobalSpacePath
-    ) -> irefs.SpaceRef:
-        """
-        Convert a full global space reference into an id-based one.
-        """
-        node_path, space_ref = path
-        id = self.convert_global_node_path(node_path)
-        return self._convert_space_ref(id, space_ref)
 
     def _convert_node_path(
         self, id: irefs.NodeId, path: refs.NodePath
@@ -358,16 +327,6 @@ class Trace:
             action_ref = self._convert_value_ref(id, a)
             id = self.fresh_or_cached_node_id(irefs.ChildOf(id, action_ref))
         return id
-
-    def _convert_space_ref(
-        self, id: irefs.NodeId, ref: refs.SpaceRef
-    ) -> irefs.SpaceRef:
-        """
-        Convert a full local space reference into an id-based one, relative
-        to a given node.
-        """
-        args = tuple(self._convert_value_ref(id, a) for a in ref.args)
-        return irefs.SpaceRef(ref.name, args)
 
     def _convert_atomic_value_ref(
         self, id: irefs.NodeId, ref: refs.AtomicValueRef
@@ -404,18 +363,17 @@ class Trace:
         Convert a full local space element reference into an id-based one,
         relative to a given node.
         """
-        space = self._convert_space_ref(id, ref.space)
+        space_id = self._convert_space_ref(id, ref.space)
         match ref.element:
             case refs.Answer():
-                assert space is not None
-                origin = irefs.GlobalSpaceRef(id, space)
-                element = self.fresh_or_cached_answer_id(ref.element, origin)
+                located = irefs.LocatedAnswer(space_id, ref.element)
+                element = self.fresh_or_cached_answer_id(located)
             case tuple():
-                assert space is not None
-                nested_root_orig = irefs.NestedTreeOf(id, space)
+                assert_type(ref.element, refs.NodePath)
+                nested_root_orig = irefs.NestedIn(space_id)
                 nested_root = self.fresh_or_cached_node_id(nested_root_orig)
                 element = self._convert_node_path(nested_root, ref.element)
-        return irefs.SpaceElementRef(space, element)
+        return irefs.SpaceElementRef(space_id, element)
 
     ### Reverse direction: expanding id-based references into full ones.
 
@@ -428,6 +386,28 @@ class Trace:
         """
         args = tuple(self.expand_value_ref(id, a) for a in ref.args)
         return refs.SpaceRef(ref.name, args)
+
+    def expand_space_id(self, id: irefs.SpaceId) -> refs.SpaceRef:
+        origin = self.spaces[id]
+        return self.expand_space_ref(origin.node, origin.space)
+
+    def expand_global_space_id(
+        self, id: irefs.SpaceId
+    ) -> refs.GlobalSpacePath:
+        origin = self.spaces[id]
+        node_path = self.expand_node_id(origin.node)
+        space_ref = self.expand_space_ref(origin.node, origin.space)
+        return (node_path, space_ref)
+
+    def _expand_located_answer_ref(
+        self, ans: irefs.LocatedAnswer
+    ) -> refs.GlobalAnswerRef:
+        space = self.expand_global_space_id(ans.space)
+        return (space, ans.answer)
+
+    def expand_answer_id(self, ans: irefs.AnswerId) -> refs.GlobalAnswerRef:
+        located = self.answers[ans]
+        return self._expand_located_answer_ref(located)
 
     def expand_value_ref(
         self, id: irefs.NodeId, ref: irefs.ValueRef
@@ -476,11 +456,11 @@ class Trace:
         """
         assert isinstance(ref, irefs.SpaceElementRef)
         assert ref.space is not None
-        space = self.expand_space_ref(id, ref.space)
+        space = self.expand_space_id(ref.space)
         match ref.element:
             case irefs.AnswerId():
-                _orig, ans = self.answers[ref.element]
-                element = ans
+                located = self.answers[ref.element]
+                element = located.answer
             case irefs.NodeId():
                 orig, _, element = self._recover_path(ref.element)
                 assert orig == id
@@ -503,9 +483,47 @@ class Trace:
                 case irefs.ChildOf(before, action):
                     rev_path.append(self.expand_value_ref(before, action))
                     dst = before
-                case irefs.NestedTreeOf(orig, space):
-                    space = self.expand_space_ref(orig, space)
+                case irefs.NestedIn(space_id):
+                    space = self.expand_space_id(space_id)
+                    orig = self.spaces[space_id].node
                     return orig, space, tuple(reversed(rev_path))
+
+    ### Extracting local space elements
+
+    def space_elements_in_value_ref(
+        self, ref: irefs.ValueRef
+    ) -> Iterable[irefs.SpaceElementRef]:
+        """
+        Enumerate all local space elements that are used to define a
+        value.
+
+        Duplicate values can be returned.
+        """
+
+        if ref is None:
+            pass
+        elif isinstance(ref, tuple):
+            for r in ref:
+                yield from self.space_elements_in_value_ref(r)
+        else:
+            yield from self._space_elements_in_atomic_value_ref(ref)
+
+    def _space_elements_in_atomic_value_ref(
+        self,
+        ref: irefs.AtomicValueRef,
+    ) -> Iterable[irefs.SpaceElementRef]:
+        if isinstance(ref, irefs.IndexedRef):
+            yield from self._space_elements_in_atomic_value_ref(ref.ref)
+        else:
+            yield ref
+            space_ref = self.spaces[ref.space].space
+            yield from self._space_elements_in_space_ref(space_ref)
+
+    def _space_elements_in_space_ref(
+        self, ref: irefs.SpaceRef
+    ) -> Iterable[irefs.SpaceElementRef]:
+        for a in ref.args:
+            yield from self.space_elements_in_value_ref(a)
 
 
 #####
@@ -523,15 +541,26 @@ class TraceReverseMap:
             per child, which maps the id-based value reference of the
             associated action to the id of the subtree's root.
         nested_trees: maps a node identifier to a dictionary with one
-            entry per nested tree, which maps the id-based spce
-            reference of the induced space to the nested tree id.
+            entry per nested tree, which maps the id of the inducing
+            space to the nested tree id.
+        local_spaces: maps a node identifier to the identifiers of the
+            local spaces defined in that node.
+        query_answers: maps a space identifier denoting a query to the
+            identifier of the answers provided for that query.
+
     """
 
     children: dict[irefs.NodeId, dict[irefs.ValueRef, irefs.NodeId]] = field(
         default_factory=lambda: defaultdict(lambda: {})
     )
-    nested_trees: dict[irefs.NodeId, dict[irefs.SpaceRef, irefs.NodeId]] = (
+    nested_trees: dict[irefs.NodeId, dict[irefs.SpaceId, irefs.NodeId]] = (
         field(default_factory=lambda: defaultdict(lambda: {}))
+    )
+    local_spaces: dict[irefs.NodeId, list[irefs.SpaceId]] = field(
+        default_factory=lambda: defaultdict(lambda: [])
+    )
+    query_answers: dict[irefs.SpaceId, list[irefs.AnswerId]] = field(
+        default_factory=lambda: defaultdict(lambda: [])
     )
 
     @staticmethod
@@ -544,8 +573,13 @@ class TraceReverseMap:
             match origin:
                 case irefs.ChildOf(parent_id, action):
                     map.children[parent_id][action] = child_id
-                case irefs.NestedTreeOf(parent_id, space):
-                    map.nested_trees[parent_id][space] = child_id
+                case irefs.NestedIn(space_id):
+                    parent_id = trace.spaces[space_id].node
+                    map.nested_trees[parent_id][space_id] = child_id
+        for space_id, origin in trace.spaces.items():
+            map.local_spaces[origin.node].append(space_id)
+        for answer_id, located in trace.answers.items():
+            map.query_answers[located.space].append(answer_id)
         return map
 
 
@@ -660,9 +694,8 @@ class Tracer:
         Ensure that a query at a given reference is present in the
         trace, even if no answer is provided for it.
         """
-        serialized = (query.query.query_name(), query.query.serialize_args())
         with self.lock:
-            self.trace.register_query(query.ref, serialized)
+            self.trace.convert_global_space_path(query.ref)
 
     def trace_answer(
         self, space: refs.GlobalSpacePath, answer: refs.Answer

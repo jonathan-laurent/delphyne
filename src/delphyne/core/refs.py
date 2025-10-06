@@ -211,7 +211,9 @@ class SpaceRef:
     args: tuple[ValueRef, ...]
 
 
-MAIN_SPACE = SpaceRef(SpaceName("__main__", ()), ())
+MAIN_SPACE_NAME = "__main__"
+
+MAIN_SPACE = SpaceRef(SpaceName(MAIN_SPACE_NAME, ()), ())
 """
 A special space attached to the *global origin* node, and which contains
 the main, top-level strategy tree.
@@ -239,20 +241,24 @@ Path to a node from the global origin, as a sequence of (space to enter,
 path to follow) instruction pairs.
 """
 
+
 type GlobalSpacePath = tuple[GlobalNodePath, SpaceRef]
 """
 A path to a global node
 """
+
 
 type GlobalAnswerRef = tuple[GlobalSpacePath, Answer]
 """
 A global reference to located answer.
 """
 
+
 type GlobalValueRef = tuple[GlobalNodePath, ValueRef]
 """
 A global value reference.
 """
+
 
 #####
 ##### Tracked Values
