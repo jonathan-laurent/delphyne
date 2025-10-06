@@ -11,40 +11,23 @@ from collections import defaultdict
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Literal, TypeGuard, assert_type
+from typing import Any, Literal, TypeGuard
 
 from delphyne.core import irefs, parse, refs
 from delphyne.core.trees import AttachedQuery, Tree
 from delphyne.utils.typing import pydantic_dump
 
+type Location = refs.GlobalNodeRef | refs.GlobalSpacePath | None
+"""
+Optional location information for log messages.
 
-@dataclass(frozen=True)
-class Location:
-    """
-    A **full**, global reference to either a node or a space.
+Log messages can be attached to a given node or space.
+"""
 
-    This is useful in particular for attaching location information to
-    logging messages.
-    """
-
-    node: refs.GlobalNodePath
-    space: refs.SpaceRef | None
-
-
-@dataclass(frozen=True)
-class ShortLocation:
-    """
-    An **id-based**, global reference to either a node or a space.
-
-    This is the id-based counterpart of `Location`. Policies typically
-    log messages with `Location` values attached (since trees feature
-    full references), which are then converted into `ShortLocation` in
-    the final exportable log.
-    """
-
-    node: irefs.NodeId
-    space: irefs.SpaceId | None
-
+type ShortLocation = irefs.NodeId | irefs.SpaceId | None
+"""
+Optional location information for exportable log messages.
+"""
 
 #####
 ##### Exportable traces
@@ -121,9 +104,7 @@ class Trace:
         one must be able to include unanswered queries in the trace.
     """
 
-    GLOBAL_ORIGIN_ID = irefs.NodeId(0)
     MAIN_SPACE_ID = irefs.SpaceId(0)
-    MAIN_SPACE_ORIGIN = irefs.SpaceOrigin(GLOBAL_ORIGIN_ID, irefs.MAIN_SPACE)
 
     def __init__(self):
         """
@@ -139,8 +120,8 @@ class Trace:
         self._last_answer_id: int = 0
         self._last_space_id: int = 0
 
-        self.spaces[Trace.MAIN_SPACE_ID] = Trace.MAIN_SPACE_ORIGIN
-        self.space_ids[Trace.MAIN_SPACE_ORIGIN] = Trace.MAIN_SPACE_ID
+        self.spaces[Trace.MAIN_SPACE_ID] = irefs.MainSpace()
+        self.space_ids[irefs.MainSpace()] = Trace.MAIN_SPACE_ID
 
     @staticmethod
     def load(trace: ExportableTrace) -> "Trace":
@@ -240,7 +221,7 @@ class Trace:
         """
         for id in self.nodes:
             expanded = self.expand_node_id(id)
-            id_bis = self.convert_global_node_path(expanded)
+            id_bis = self.convert_global_node_ref(expanded)
             assert id == id_bis
 
     def check_roundabout_consistency(self) -> None:
@@ -262,27 +243,6 @@ class Trace:
 
     ### Convert full references into id-based references
 
-    def convert_location(self, location: Location) -> ShortLocation:
-        """
-        Convert a full location into an id-based one.
-        """
-        id = self.convert_global_node_path(location.node)
-        space = None
-        if location.space is not None:
-            space = self._convert_space_ref(id, location.space)
-        return ShortLocation(id, space)
-
-    def _convert_space_ref(
-        self, id: irefs.NodeId, ref: refs.SpaceRef
-    ) -> irefs.SpaceId:
-        """
-        Convert a full local space reference into an id-based one, relative
-        to a given node.
-        """
-        args = tuple(self._convert_value_ref(id, a) for a in ref.args)
-        space_ref = irefs.SpaceRef(ref.name, args)
-        return self.fresh_or_cached_space_id(irefs.SpaceOrigin(id, space_ref))
-
     def convert_global_space_path(
         self, ref: refs.GlobalSpacePath
     ) -> irefs.SpaceId:
@@ -290,12 +250,24 @@ class Trace:
         Convert a full, global space reference denoting a quey origin
         into an id-based reference.
         """
-        id = self.convert_global_node_path(ref[0])
-        return self._convert_space_ref(id, ref[1])
+        id = Trace.MAIN_SPACE_ID
+        for path, space in ref.steps:
+            nid = self.fresh_or_cached_node_id(irefs.NestedIn(id))
+            nid = self._convert_node_path(nid, path)
+            id = self._convert_space_ref(nid, space)
+        return id
 
-    def convert_answer_ref(
-        self, ref: tuple[refs.GlobalSpacePath, refs.Answer]
-    ) -> irefs.AnswerId:
+    def convert_global_node_ref(
+        self, path: refs.GlobalNodeRef
+    ) -> irefs.NodeId:
+        """
+        Convert a full, global node reference into an id-based one.
+        """
+        space_id = self.convert_global_space_path(path.space)
+        root = self.fresh_or_cached_node_id(irefs.NestedIn(space_id))
+        return self._convert_node_path(root, path.path)
+
+    def convert_answer_ref(self, ref: refs.GlobalAnswerRef) -> irefs.AnswerId:
         """
         Convert a full answer reference into an answer id.
         """
@@ -303,33 +275,45 @@ class Trace:
         located = irefs.LocatedAnswer(space, ref[1])
         return self.fresh_or_cached_answer_id(located)
 
-    def convert_global_node_path(
-        self, path: refs.GlobalNodePath
-    ) -> irefs.NodeId:
+    def convert_location(self, location: Location) -> ShortLocation:
         """
-        Convert a full, global node reference into an id-based one.
+        Convert a full location into an id-based one.
         """
-        id = Trace.GLOBAL_ORIGIN_ID
-        for space, node_path in path:
-            space_id = self._convert_space_ref(id, space)
-            id = self.fresh_or_cached_node_id(irefs.NestedIn(space_id))
-            id = self._convert_node_path(id, node_path)
-        return id
+        match location:
+            case None:
+                return None
+            case refs.GlobalNodeRef():
+                return self.convert_global_node_ref(location)
+            case refs.GlobalSpacePath():
+                return self.convert_global_space_path(location)
+
+    def _convert_space_ref(
+        self, node: irefs.NodeId, ref: refs.SpaceRef
+    ) -> irefs.SpaceId:
+        """
+        Convert a full local space reference into an id-based one, relative
+        to a given node.
+        """
+        args = tuple(self._convert_value_ref(node, a) for a in ref.args)
+        space_ref = irefs.SpaceRef(ref.name, args)
+        return self.fresh_or_cached_space_id(irefs.LocalSpace(node, space_ref))
 
     def _convert_node_path(
-        self, id: irefs.NodeId, path: refs.NodePath
+        self, node: irefs.NodeId, path: refs.NodePath
     ) -> irefs.NodeId:
         """
         Convert a full local node path into an identifier, relative to a
         given node.
         """
-        for a in path:
-            action_ref = self._convert_value_ref(id, a)
-            id = self.fresh_or_cached_node_id(irefs.ChildOf(id, action_ref))
-        return id
+        for a in path.actions:
+            action_ref = self._convert_value_ref(node, a)
+            node = self.fresh_or_cached_node_id(
+                irefs.ChildOf(node, action_ref)
+            )
+        return node
 
     def _convert_atomic_value_ref(
-        self, id: irefs.NodeId, ref: refs.AtomicValueRef
+        self, node: irefs.NodeId, ref: refs.AtomicValueRef
     ) -> irefs.AtomicValueRef:
         """
         Convert a full local atomic value reference into an id-based one,
@@ -337,13 +321,13 @@ class Trace:
         """
         if isinstance(ref, refs.IndexedRef):
             return irefs.IndexedRef(
-                self._convert_atomic_value_ref(id, ref.ref), ref.index
+                self._convert_atomic_value_ref(node, ref.ref), ref.index
             )
         else:
-            return self._convert_space_element_ref(id, ref)
+            return self._convert_space_element_ref(node, ref)
 
     def _convert_value_ref(
-        self, id: irefs.NodeId, ref: refs.ValueRef
+        self, node: irefs.NodeId, ref: refs.ValueRef
     ) -> irefs.ValueRef:
         """
         Convert a full local value reference into an id-based one,
@@ -352,24 +336,29 @@ class Trace:
         if ref is None:
             return None
         elif isinstance(ref, tuple):
-            return tuple(self._convert_value_ref(id, a) for a in ref)
+            return tuple(self._convert_value_ref(node, a) for a in ref)
         else:
-            return self._convert_atomic_value_ref(id, ref)
+            return self._convert_atomic_value_ref(node, ref)
 
     def _convert_space_element_ref(
-        self, id: irefs.NodeId, ref: refs.SpaceElementRef
+        self, node: irefs.NodeId, ref: refs.SpaceElementRef
     ) -> irefs.SpaceElementRef:
         """
         Convert a full local space element reference into an id-based one,
         relative to a given node.
         """
-        space_id = self._convert_space_ref(id, ref.space)
+        # We leverage locality to speed up the computation.
+        # The following would work but be much slower:
+        #     space_id = self.convert_global_space_path(ref.space)
+
+        # The space is attached to a node with an identifier.
+        assert ref.space is not None
+        space_id = self._convert_space_ref(node, ref.space)
         match ref.element:
             case refs.Answer():
                 located = irefs.LocatedAnswer(space_id, ref.element)
                 element = self.fresh_or_cached_answer_id(located)
-            case tuple():
-                assert_type(ref.element, refs.NodePath)
+            case refs.NodePath():
                 nested_root_orig = irefs.NestedIn(space_id)
                 nested_root = self.fresh_or_cached_node_id(nested_root_orig)
                 element = self._convert_node_path(nested_root, ref.element)
@@ -377,27 +366,35 @@ class Trace:
 
     ### Reverse direction: expanding id-based references into full ones.
 
-    def expand_space_ref(
-        self, id: irefs.NodeId, ref: irefs.SpaceRef
-    ) -> refs.SpaceRef:
-        """
-        Convert a local id-based space reference into a full one,
-        relative to a given node.
-        """
-        args = tuple(self.expand_value_ref(id, a) for a in ref.args)
-        return refs.SpaceRef(ref.name, args)
-
-    def expand_space_id(self, id: irefs.SpaceId) -> refs.SpaceRef:
-        origin = self.spaces[id]
-        return self.expand_space_ref(origin.node, origin.space)
-
     def expand_global_space_id(
         self, id: irefs.SpaceId
     ) -> refs.GlobalSpacePath:
+        rev_steps: list[tuple[refs.NodePath, refs.SpaceRef]] = []
         origin = self.spaces[id]
-        node_path = self.expand_node_id(origin.node)
-        space_ref = self.expand_space_ref(origin.node, origin.space)
-        return (node_path, space_ref)
+        while not isinstance(origin, irefs.MainSpace):
+            space_ref = self.expand_space_ref(origin.space)
+            id, path = self._recover_path(origin.node)
+            rev_steps.append((path, space_ref))
+            origin = self.spaces[id]
+        return refs.GlobalSpacePath(tuple(reversed(rev_steps)))
+
+    def _recover_path(
+        self, dst: irefs.NodeId
+    ) -> tuple[irefs.SpaceId, refs.NodePath]:
+        """
+        Find the space from which the tree containing `dst` originates,
+        along with the path from the root of that tree to `dst`.
+        """
+        rev_path: list[refs.ValueRef] = []
+        while True:
+            dst_origin = self.nodes[dst]
+            match dst_origin:
+                case irefs.ChildOf(before, action):
+                    rev_path.append(self.expand_value_ref(action))
+                    dst = before
+                case irefs.NestedIn(space_id):
+                    path = refs.NodePath(tuple(reversed(rev_path)))
+                    return (space_id, path)
 
     def _expand_located_answer_ref(
         self, ans: irefs.LocatedAnswer
@@ -409,9 +406,23 @@ class Trace:
         located = self.answers[ans]
         return self._expand_located_answer_ref(located)
 
-    def expand_value_ref(
-        self, id: irefs.NodeId, ref: irefs.ValueRef
-    ) -> refs.ValueRef:
+    def expand_node_id(self, id: irefs.NodeId) -> refs.GlobalNodeRef:
+        """
+        Convert a node identifier into a full, global node reference.
+        """
+        orig, path = self._recover_path(id)
+        space = self.expand_global_space_id(orig)
+        return refs.GlobalNodeRef(space, path)
+
+    def expand_space_ref(self, ref: irefs.SpaceRef) -> refs.SpaceRef:
+        """
+        Convert a local id-based space reference into a full one,
+        relative to a given node.
+        """
+        args = tuple(self.expand_value_ref(a) for a in ref.args)
+        return refs.SpaceRef(ref.name, args)
+
+    def expand_value_ref(self, ref: irefs.ValueRef) -> refs.ValueRef:
         """
         Convert a local id-based value reference into a full one,
         relative to a given node.
@@ -419,22 +430,12 @@ class Trace:
         if ref is None:
             return None
         elif isinstance(ref, tuple):
-            return tuple(self.expand_value_ref(id, a) for a in ref)
+            return tuple(self.expand_value_ref(a) for a in ref)
         else:
-            return self._expand_atomic_value_ref(id, ref)
-
-    def expand_node_id(self, id: irefs.NodeId) -> refs.GlobalNodePath:
-        """
-        Convert a node identifier into a full, global node reference.
-        """
-        rev_path: list[tuple[refs.SpaceRef, refs.NodePath]] = []
-        while id != Trace.GLOBAL_ORIGIN_ID:
-            id, space, path = self._recover_path(id)
-            rev_path.append((space, path))
-        return tuple(reversed(rev_path))
+            return self._expand_atomic_value_ref(ref)
 
     def _expand_atomic_value_ref(
-        self, id: irefs.NodeId, ref: irefs.AtomicValueRef
+        self, ref: irefs.AtomicValueRef
     ) -> refs.AtomicValueRef:
         """
         Convert a local id-based atomic value reference into a full one,
@@ -442,51 +443,31 @@ class Trace:
         """
         if isinstance(ref, irefs.IndexedRef):
             return refs.IndexedRef(
-                self._expand_atomic_value_ref(id, ref.ref), ref.index
+                self._expand_atomic_value_ref(ref.ref), ref.index
             )
         else:
-            return self._expand_space_element_ref(id, ref)
+            return self._expand_space_element_ref(ref)
 
     def _expand_space_element_ref(
-        self, id: irefs.NodeId, ref: irefs.SpaceElementRef
+        self, ref: irefs.SpaceElementRef
     ) -> refs.SpaceElementRef:
         """
         Convert a local id-based space element reference into a full
         one, relative to a given node.
         """
-        assert isinstance(ref, irefs.SpaceElementRef)
-        assert ref.space is not None
-        space = self.expand_space_id(ref.space)
+        # The following would work but be terribly inefficient:
+        #    space = self.expand_global_space_id(ref.space)
+        space_def = self.spaces[ref.space]
+        assert not isinstance(space_def, irefs.MainSpace)
+        local_space = self.expand_space_ref(space_def.space)
         match ref.element:
             case irefs.AnswerId():
                 located = self.answers[ref.element]
                 element = located.answer
             case irefs.NodeId():
-                orig, _, element = self._recover_path(ref.element)
-                assert orig == id
-        return refs.SpaceElementRef(space, element)
-
-    def _recover_path(
-        self, dst: irefs.NodeId
-    ) -> tuple[irefs.NodeId, refs.SpaceRef, refs.NodePath]:
-        """
-        Find the node from which the tree containing `dst` originates.
-
-        Return the node in which the full surrounding tree is nested,
-        the associated space reference, and a path to `dst` from the
-        root of the surrounding tree.
-        """
-        rev_path: list[refs.ValueRef] = []
-        while True:
-            dst_origin = self.nodes[dst]
-            match dst_origin:
-                case irefs.ChildOf(before, action):
-                    rev_path.append(self.expand_value_ref(before, action))
-                    dst = before
-                case irefs.NestedIn(space_id):
-                    space = self.expand_space_id(space_id)
-                    orig = self.spaces[space_id].node
-                    return orig, space, tuple(reversed(rev_path))
+                space_id, element = self._recover_path(ref.element)
+                assert space_id == ref.space
+        return refs.SpaceElementRef(local_space, element)
 
     ### Extracting local space elements
 
@@ -516,8 +497,9 @@ class Trace:
             yield from self._space_elements_in_atomic_value_ref(ref.ref)
         else:
             yield ref
-            space_ref = self.spaces[ref.space].space
-            yield from self._space_elements_in_space_ref(space_ref)
+            space_def = self.spaces[ref.space]
+            if isinstance(space_def, irefs.LocalSpace):
+                yield from self._space_elements_in_space_ref(space_def.space)
 
     def _space_elements_in_space_ref(
         self, ref: irefs.SpaceRef
@@ -574,10 +556,13 @@ class TraceReverseMap:
                 case irefs.ChildOf(parent_id, action):
                     map.children[parent_id][action] = child_id
                 case irefs.NestedIn(space_id):
-                    parent_id = trace.spaces[space_id].node
-                    map.nested_trees[parent_id][space_id] = child_id
-        for space_id, origin in trace.spaces.items():
-            map.local_spaces[origin.node].append(space_id)
+                    space_def = trace.spaces[space_id]
+                    if isinstance(space_def, irefs.LocalSpace):
+                        parent_id = space_def.node
+                        map.nested_trees[parent_id][space_id] = child_id
+        for space_id, space_def in trace.spaces.items():
+            if isinstance(space_def, irefs.LocalSpace):
+                map.local_spaces[space_def.node].append(space_id)
         for answer_id, located in trace.answers.items():
             map.query_answers[located.space].append(answer_id)
         return map
@@ -634,7 +619,7 @@ class ExportableLogMessage:
     level: LogLevel
     time: datetime | None = None
     node: int | None = None
-    space: str | None = None
+    space: int | None = None
     metadata: object | None = None  # JSON value
 
 
@@ -670,15 +655,15 @@ class Tracer:
         # the trace in parallel.
         self.lock = threading.RLock()
 
-    def global_node_id(self, node: refs.GlobalNodePath) -> irefs.NodeId:
+    def global_node_id(self, node: refs.GlobalNodeRef) -> irefs.NodeId:
         """
         Ensure that a node at a given reference is present in the trace
         and return the corresponding node identififier.
         """
         with self.lock:
-            return self.trace.convert_global_node_path(node)
+            return self.trace.convert_global_node_ref(node)
 
-    def trace_node(self, node: refs.GlobalNodePath) -> None:
+    def trace_node(self, node: refs.GlobalNodeRef) -> None:
         """
         Ensure that a node at a given reference is present in the trace.
 
@@ -745,10 +730,10 @@ class Tracer:
             for m in self.messages:
                 node = None
                 space = None
-                if (loc := m.location) is not None:
-                    node = loc.node.id
-                    if loc.space is not None:
-                        space = str(loc.space)
+                if isinstance(m.location, irefs.NodeId):
+                    node = m.location.id
+                if isinstance(m.location, irefs.SpaceId):
+                    space = m.location.id
                 yield ExportableLogMessage(
                     message=m.message,
                     level=m.level,

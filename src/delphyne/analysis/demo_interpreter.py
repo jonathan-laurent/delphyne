@@ -676,7 +676,7 @@ def _evaluate_test(
         )
         if status == "stop":
             break
-    ref = tracer.trace.convert_global_node_path(tree.ref)
+    ref = tracer.trace.convert_global_node_ref(tree.ref)
     return fb.TestFeedback(diagnostics, ref.id)
 
 
@@ -757,7 +757,7 @@ def evaluate_strategy_demo_and_return_trace(
         )
         feedback.test_feedback.append(test_feedback)
     feedback.saved_nodes = {
-        k: tracer.trace.convert_global_node_path(v.ref).id
+        k: tracer.trace.convert_global_node_ref(v.ref).id
         for k, v in saved.items()
     }
     trace.check_roundabout_consistency()

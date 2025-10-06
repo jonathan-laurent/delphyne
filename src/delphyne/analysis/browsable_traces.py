@@ -11,7 +11,7 @@ from the former format to the latter.
 import pprint
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, assert_type
+from typing import Any
 
 import delphyne.core as dp
 from delphyne.analysis import feedback as fb
@@ -42,62 +42,50 @@ class RefSimplifier:
     hint_rev_map: nv.HintReverseMap
 
     def action(
-        self, node: refs.GlobalNodePath, action: refs.ValueRef
+        self, node: refs.GlobalNodeRef, action: refs.ValueRef
     ) -> Sequence[hrefs.Hint] | None:
         return self.hint_rev_map.actions.get((node, action))
 
     def path_to(
-        self, orig_id: refs.GlobalNodePath, dst_id: refs.GlobalNodePath
-    ) -> Sequence[hrefs.Hint] | None:
-        # Compute a sequence of hints necessary to go from the root of a
-        # tree directly nested within `orig` to the destination.
-        match refs.global_path_origin(dst_id):
-            case "global_origin":
-                assert False
-            case ("nested", dst_origin, _):
-                assert dst_origin == orig_id
-                return ()
-            case ("child", before, action):
-                action_hints = self.hint_rev_map.actions.get((before, action))
-                if action_hints is None:
-                    return None
-                prefix = self.path_to(orig_id, before)
-                if prefix is None:
-                    return None
-                return tuple([*prefix] + [*action_hints])
+        self, space: refs.GlobalSpacePath, path: refs.NodePath
+    ) -> tuple[hrefs.Hint, ...]:
+        hints: list[hrefs.Hint] = []
+        cur = refs.GlobalNodeRef(space, refs.NodePath(()))
+        for action in path.actions:
+            action_hints = self.action(cur, action)
+            if action_hints is None:
+                raise ValueError("RefSimplifier: incomplete hint_rev_map.")
+            hints.extend(action_hints)
+        return tuple(hints)
 
     def space_element_ref(
-        self, id: refs.GlobalNodePath, ref: refs.SpaceElementRef
+        self, node_ref: refs.GlobalNodeRef, ref: refs.SpaceElementRef
     ) -> hrefs.SpaceElementRef:
         assert ref.space is not None
-        # We start by converting the element answer ref or success path
+        gsref = node_ref.nested_space(ref.space)
         match ref.element:
             case refs.Answer():
-                aref: refs.GlobalAnswerRef = ((id, ref.space), ref.element)
+                aref: refs.GlobalAnswerRef = (gsref, ref.element)
                 if aref not in self.hint_rev_map.answers:
                     raise ValueError("Incomplete rev_map.")
                 hint = self.hint_rev_map.answers[aref]
                 hints = (hint,) if hint is not None else ()
-            case tuple():
-                assert_type(ref.element, refs.NodePath)
-                gpath: refs.GlobalNodePath = (*id, (ref.space, ref.element))
-                hints_raw = self.path_to(id, gpath)
-                assert hints_raw is not None
-                hints = tuple(hints_raw)
+            case refs.NodePath():
+                hints = self.path_to(gsref, ref.element)
         # We make the space reference implicit if we can ('foo bar'
         # instead of cands{'foo bar'}).
-        tree = self.cache[id]
+        tree = self.cache[node_ref]
         node = tree.node
         assert isinstance(node, dp.Node)
         primary_ref = node.primary_space_ref()
         if primary_ref is not None and ref.space == primary_ref:
             return hrefs.SpaceElementRef(None, hints)
         else:
-            # Else we recursively simplify the space reference.
-            return hrefs.SpaceElementRef(self.space_ref(id, ref.space), hints)
+            h_space_ref = self.space_ref(node_ref, ref.space)
+            return hrefs.SpaceElementRef(h_space_ref, hints)
 
     def atomic_value_ref(
-        self, id: refs.GlobalNodePath, ref: refs.AtomicValueRef
+        self, id: refs.GlobalNodeRef, ref: refs.AtomicValueRef
     ) -> hrefs.AtomicValueRef:
         if isinstance(ref, refs.IndexedRef):
             parent = self.atomic_value_ref(id, ref.ref)
@@ -106,7 +94,7 @@ class RefSimplifier:
             return self.space_element_ref(id, ref)
 
     def value_ref(
-        self, id: refs.GlobalNodePath, v: refs.ValueRef
+        self, id: refs.GlobalNodeRef, v: refs.ValueRef
     ) -> hrefs.ValueRef:
         if v is None:
             return None
@@ -116,7 +104,7 @@ class RefSimplifier:
             return self.atomic_value_ref(id, v)
 
     def space_ref(
-        self, id: refs.GlobalNodePath, ref: refs.SpaceRef
+        self, id: refs.GlobalNodeRef, ref: refs.SpaceRef
     ) -> hrefs.SpaceRef:
         args = tuple(self.value_ref(id, a) for a in ref.args)
         return hrefs.SpaceRef(ref.name, args)
@@ -255,6 +243,7 @@ class _TraceTranslator:
         # We obtain the root id of the nested tree, which can be `None`
         # if the tree hasn't been explored.
         origin = self.trace.spaces[space_id]
+        assert not isinstance(origin, irefs.MainSpace)
         root_id = self.rev_map.nested_trees[origin.node].get(space_id)
         root_id_raw = root_id.id if root_id is not None else None
         return fb.NestedTree(
@@ -303,6 +292,7 @@ class _TraceTranslator:
         self, space_id: irefs.SpaceId
     ) -> tuple[fb.Reference, fb.NodeProperty]:
         space = self.resolver.resolve_space(space_id)
+        assert space != "main"
         match source := space.source():
             case dp.NestedTree():
                 prop = self.translate_strategy_comp(
@@ -314,10 +304,11 @@ class _TraceTranslator:
                 )
         # In the UI, what do we want to show?
         origin = self.trace.spaces[space_id]
+        assert not isinstance(origin, irefs.MainSpace)
         ref_str = fb.Reference(with_ids=str(origin.space), with_hints=None)
         if self.simplifier is not None:
             full_nref = self.trace.expand_node_id(origin.node)
-            full_sref = self.trace.expand_space_ref(origin.node, origin.space)
+            full_sref = self.trace.expand_space_ref(origin.space)
             simplified = self.simplifier.space_ref(full_nref, full_sref)
             ref_str.with_hints = str(simplified)
         return (ref_str, prop)
@@ -335,7 +326,7 @@ class _TraceTranslator:
             # There are two ways actions could be shown in the UI using
             # hints. See `feedback.Action`.
             full_src_ref = self.trace.expand_node_id(src)
-            full_aref = self.trace.expand_value_ref(src, action)
+            full_aref = self.trace.expand_value_ref(action)
             hints = self.simplifier.action(full_src_ref, full_aref)
             simplified_value_ref = self.simplifier.value_ref(
                 full_src_ref, full_aref
@@ -372,8 +363,9 @@ class _TraceTranslator:
                 action_id = self.action_ids[(parent, action)]
                 return ("child", parent.id, action_id)
             case irefs.NestedIn(space_id):
-                if space_id == dp.Trace.MAIN_SPACE_ID:
+                space_def = self.trace.spaces[space_id]
+                if isinstance(space_def, irefs.MainSpace):
                     return "root"
-                parent = self.trace.spaces[space_id].node
+                parent = space_def.node
                 prop_id = self.space_prop_ids[space_id]
                 return ("nested", parent.id, prop_id)

@@ -25,7 +25,7 @@ class _NodeState:
     # mutability is not an issue as long as the part that is relevant
     # for comparison is immutable).
     depth: int
-    children: list[refs.GlobalNodePath]  # can be mutated
+    children: list[refs.GlobalNodeRef]  # can be mutated
     confidence: float
     stream: list[Stream[Any] | None]  # using one element (mutated)
     node: Branch  # equal to tree.node, with a more precise type

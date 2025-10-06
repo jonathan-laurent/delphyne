@@ -10,7 +10,7 @@ from typing import Any, cast
 from delphyne.core import refs
 from delphyne.core import trees as tr
 from delphyne.core.queries import AbstractQuery
-from delphyne.core.refs import GlobalNodePath, SpaceName, Value
+from delphyne.core.refs import SpaceName, Value
 from delphyne.core.trees import Node, Strategy, StrategyComp, Success, Tree
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
@@ -19,7 +19,7 @@ from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 #####
 
 
-type TreeCache = dict[refs.GlobalNodePath, Tree[Any, Any, Any]]
+type TreeCache = dict[refs.GlobalNodeRef, Tree[Any, Any, Any]]
 """
 A cache for never recomputing the same node twice.
 
@@ -109,7 +109,7 @@ def reify[N: Node, P, T](
     """
     return _reify(
         strategy=strategy,
-        root_ref=None,
+        root_space=refs.GlobalSpacePath(()),
         monitor=monitor,
         allow_noncopyable_actions=allow_noncopyable_actions,
     )
@@ -120,22 +120,9 @@ def reify[N: Node, P, T](
 #####
 
 
-type _NonEmptyGlobalPath = tuple[GlobalNodePath, refs.SpaceRef, refs.NodePath]
-"""
-Encodes a non-empty global node path.
-
-More precisely, `(gr, sr, nr)` stands for `(*gr, (sr, nr))`.
-"""
-
-
-def _nonempty_path(ref: _NonEmptyGlobalPath) -> GlobalNodePath:
-    (gr, sr, nr) = ref
-    return (*gr, (sr, nr))
-
-
 def _reify[N: Node, P, T](
     strategy: StrategyComp[N, P, T],
-    root_ref: _NonEmptyGlobalPath | None,
+    root_space: refs.GlobalSpacePath,
     monitor: TreeMonitor,
     allow_noncopyable_actions: bool,
     enable_unsound_generator_caching: bool = False,
@@ -143,7 +130,7 @@ def _reify[N: Node, P, T](
     """
     Reify a strategy into a tree.
 
-    This version is private because it exposes the `root_ref` argument.
+    This version is private because it exposes the `root_space` argument.
     Outside of these modules, trees can only be reified relative to the
     global origin.
 
@@ -159,14 +146,14 @@ def _reify[N: Node, P, T](
     def aux(
         strategy: StrategyComp[N, P, T],
         actions: Sequence[object],
-        ref: _NonEmptyGlobalPath,
+        ref: refs.GlobalNodeRef,
         node: N | Success[T],
         cur_generator: Strategy[N, P, T],
     ) -> Tree[N, P, T]:
         generator_valid = enable_unsound_generator_caching
 
         def child(action: Value) -> Tree[N, P, T]:
-            refs.check_local_value(action, _nonempty_path(ref))
+            refs.check_local_value(action, ref)
             action_raw = refs.drop_refs(action)
             action_ref = refs.value_ref(action)
             # We deepcopy actions and do not allow them to contain
@@ -183,10 +170,9 @@ def _reify[N: Node, P, T](
                 + f"{type(node)}: {action_raw}."
             )
             # Compute new references and use the cache if necessary
-            gr, cr, nr = ref
-            new_ref = (gr, cr, (*nr, action_ref))
+            new_ref = ref.child(action_ref)
             if monitor.cache is not None:
-                cached = monitor.cache.get(_nonempty_path(new_ref))
+                cached = monitor.cache.get(new_ref)
                 if cached is not None:
                     return cached
             # If `child` has never been called before, the generator
@@ -208,21 +194,20 @@ def _reify[N: Node, P, T](
             )
             return aux(strategy, new_actions, new_ref, new_node, new_gen)
 
-        tree = Tree(node, child, _nonempty_path(ref))
+        tree = Tree(node, child, ref)
         if monitor.cache is not None:
-            monitor.cache[_nonempty_path(ref)] = tree
+            monitor.cache[ref] = tree
         for hook in monitor.hooks:
             hook(tree)
         return tree
 
-    if root_ref is None:
-        root_ref = ((), refs.MAIN_SPACE, ())
     pre_node, gen = _recompute(strategy, ())
     ret_type = strategy.return_type()
+    ref = refs.GlobalNodeRef(root_space, refs.NodePath(()))
     node = _finalize_node(
-        pre_node, root_ref, ret_type, monitor, allow_noncopyable_actions
+        pre_node, ref, ret_type, monitor, allow_noncopyable_actions
     )
-    return aux(strategy, (), root_ref, node, gen)
+    return aux(strategy, (), ref, node, gen)
 
 
 def _is_copyable(obj: object) -> bool:
@@ -278,7 +263,7 @@ def _recompute[N: Node, P, T](
 
 def _finalize_node[N: Node, P, T](
     pre_node: _PreNode[N, P, T],
-    ref: _NonEmptyGlobalPath,
+    ref: refs.GlobalNodeRef,
     type: TypeAnnot[T] | NoTypeInfo,
     monitor: TreeMonitor,
     allow_noncopyable_actions: bool,
@@ -287,9 +272,9 @@ def _finalize_node[N: Node, P, T](
         return pre_node.build_node(
             _BuilderExecutor(ref, monitor, allow_noncopyable_actions)
         )
-    (gr, sr, nr) = ref
-    ser = refs.SpaceElementRef(sr, nr)
-    return Success(refs.Tracked(pre_node.value, ser, gr, type))
+    parent_node, parent_space = ref.space.split()
+    ser = refs.SpaceElementRef(parent_space, ref.path)
+    return Success(refs.Tracked(pre_node.value, ser, parent_node, type))
 
 
 #####
@@ -303,7 +288,7 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
     Allows spawning arbitrary parametric subspaces at a given node.
     """
 
-    _ref: "_NonEmptyGlobalPath"
+    _ref: refs.GlobalNodeRef
     _monitor: "TreeMonitor"
     _allow_noncopyable_actions: bool
 
@@ -314,7 +299,7 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
     ) -> Callable[..., S]:
         def run_builder(*args: Any) -> S:
             for arg in args:
-                refs.check_local_value(arg, _nonempty_path(self._ref))
+                refs.check_local_value(arg, self._ref)
             args_raw = [refs.drop_refs(arg) for arg in args]
             args_ref = tuple(refs.value_ref(arg) for arg in args)
             # We deepcopy the arguments to prevent them being mutated.
@@ -323,40 +308,45 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
             # general but such functions must _not_ be stateful.
             args_raw = [deepcopy(arg) for arg in args_raw]
             builder = parametric_builder(*args_raw)
-            gr = _nonempty_path(self._ref)
             sr = refs.SpaceRef(space_name, args_ref)
 
             def spawn_tree[N: Node, P, T](
                 strategy: StrategyComp[N, P, T],
             ) -> tr.NestedTree[N, P, T]:
+                new_ref = self._ref.nested_tree(sr)
+
                 def spawn() -> Tree[N, P, T]:
-                    new_ref = (gr, sr, ())
                     if (cache := self._monitor.cache) is not None:
-                        cached = cache.get(_nonempty_path(new_ref))
+                        cached = cache.get(new_ref)
                         if cached is not None:
                             return cached
                     return _reify(
                         strategy,
-                        new_ref,
+                        new_ref.space,
                         self._monitor,
                         self._allow_noncopyable_actions,
                     )
 
-                return tr.NestedTree(strategy, (gr, sr), spawn)
+                return tr.NestedTree(strategy, new_ref.space, spawn)
 
             def spawn_query[T](
                 query: tr.AbstractQuery[T],
             ) -> tr.AttachedQuery[T]:
+                space_ref = self._ref.nested_space(sr)
+
                 def parse_answer(
                     answer: refs.Answer,
                 ) -> tr.Tracked[T] | tr.ParseError:
-                    ref = refs.SpaceElementRef(sr, answer)
+                    parent_node, parent_space = space_ref.split()
+                    ref = refs.SpaceElementRef(parent_space, answer)
                     parsed = query.parse_answer(answer)
                     if isinstance(parsed, tr.ParseError):
                         return parsed
-                    return tr.Tracked(parsed, ref, gr, query.answer_type())
+                    return tr.Tracked(
+                        parsed, ref, parent_node, query.answer_type()
+                    )
 
-                return tr.AttachedQuery(query, (gr, sr), parse_answer)
+                return tr.AttachedQuery(query, space_ref, parse_answer)
 
             return builder(spawn_tree, spawn_query)
 
@@ -380,10 +370,11 @@ def spawn_standalone_query[T](query: AbstractQuery[T]) -> tr.AttachedQuery[T]:
     """
 
     def parse_answer(answer: refs.Answer) -> tr.Tracked[T] | tr.ParseError:
-        ref = refs.SpaceElementRef(refs.MAIN_SPACE, answer)
+        ref = refs.SpaceElementRef(None, answer)
         parsed = query.parse_answer(answer)
         if isinstance(parsed, tr.ParseError):
             return parsed
-        return tr.Tracked(parsed, ref, (), query.answer_type())
+        return tr.Tracked(parsed, ref, None, query.answer_type())
 
-    return tr.AttachedQuery(query, ((), refs.MAIN_SPACE), parse_answer)
+    space_ref = refs.GlobalSpacePath(())
+    return tr.AttachedQuery(query, space_ref, parse_answer)

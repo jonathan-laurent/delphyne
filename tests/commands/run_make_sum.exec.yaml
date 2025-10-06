@@ -36,8 +36,8 @@ outcome:
         1: nested($0)
         2: child(%1, $1{@1})
       spaces:
-        0: '%0.__main__'
-        1: '%1.cands'
+        0: main
+        1: local(%1, cands)
       answers:
         1:
           space: 1
@@ -49,8 +49,7 @@ outcome:
     log:
       - message: llm_request
         level: info
-        node: 1
-        space: $1
+        space: 1
         metadata:
           hash: 66f40312
           query: MakeSum
@@ -84,8 +83,7 @@ outcome:
             options: {}
       - message: llm_response
         level: info
-        node: 1
-        space: $1
+        space: 1
         metadata:
           request: 66f40312
           response:

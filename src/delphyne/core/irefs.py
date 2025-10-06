@@ -145,17 +145,33 @@ class NestedIn:
         return f"nested({self.space})"
 
 
+type SpaceOrigin = MainSpace | LocalSpace
+"""
+Definition of a space identifier in the trace.
+"""
+
+
 @dataclass(frozen=True)
-class SpaceOrigin:
+class MainSpace:
     """
-    Definition of a space identifier in the trace.
+    Main space that corresponds to the top-level strategy.
+    """
+
+    def __str__(self) -> str:
+        return "main"
+
+
+@dataclass(frozen=True)
+class LocalSpace:
+    """
+    Space attached to a specific node.
     """
 
     node: NodeId
     space: SpaceRef
 
     def __str__(self) -> str:
-        return f"{self.node}.{self.space}"
+        return f"local({self.node}, {self.space})"
 
 
 @dataclass(frozen=True)
@@ -177,6 +193,3 @@ class LocatedAnswer:
 
 def show_value_ref(vr: ValueRef) -> str:
     return refs.show_assembly(str, vr)
-
-
-MAIN_SPACE = SpaceRef(SpaceName(refs.MAIN_SPACE_NAME, ()), ())

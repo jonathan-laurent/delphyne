@@ -31,7 +31,7 @@ class HintReverseMap:
     action was computed from hints.
     """
 
-    actions: dict[refs.GlobalValueRef, Sequence[hrefs.Hint]]
+    actions: dict[refs.GlobalActionRef, Sequence[hrefs.Hint]]
     answers: dict[refs.GlobalAnswerRef, hrefs.Hint | None]
 
     def __init__(self):
@@ -113,7 +113,7 @@ def _tag_selectors_match(
 @dataclass
 class Stuck(Exception):
     tree: AnyTree
-    space_ref: refs.SpaceRef
+    space_ref: refs.GlobalSpacePath
     remaining_hints: Sequence[hrefs.Hint]
 
 
@@ -336,7 +336,7 @@ class Navigator:
                 answer = defa
         # If we still have no answer, we're stuck
         if answer is None:
-            raise Stuck(tree, query.ref[1], hints)
+            raise Stuck(tree, query.ref, hints)
         parsed = query.parse_answer(answer)
         if isinstance(parsed, dp.ParseError):
             raise AnswerParseError(tree, query, answer, parsed)

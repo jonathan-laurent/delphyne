@@ -1,6 +1,7 @@
 import time
 from collections.abc import Sequence
 from dataclasses import dataclass
+from typing import Any, cast
 
 import pytest
 
@@ -24,7 +25,7 @@ def _spend(
 
 
 def _dummy_tracked[T](obj: T) -> dp.Tracked[T]:
-    return dp.Tracked(obj, None, None, None)  # type: ignore
+    return dp.Tracked(obj, cast(Any, None), None, None)
 
 
 def _solution[T](obj: T) -> dp.StreamGen[T]:

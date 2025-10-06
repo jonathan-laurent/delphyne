@@ -21,7 +21,7 @@ def test_make_sum():
     cache: dp.TreeCache = {}
     monitor = dp.TreeMonitor(cache=cache, hooks=[dp.tracer_hook(tracer)])
     root = dp.reify(make_sum([4, 6, 2, 9], 11), monitor)
-    assert root.ref == refs.MAIN_ROOT
+    assert root.ref.space.parent_node() is None
     assert isinstance(root.node, dp.Branch)
     root_space = root.node.cands.source()
     assert isinstance(root_space, dp.AttachedQuery)
@@ -63,8 +63,8 @@ def test_make_sum():
           3: child(%1, $1{@2})
           4: child(%1, $1{@3})
         spaces:
-          0: '%0.__main__'
-          1: '%1.cands'
+          0: main
+          1: local(%1, cands)
         answers:
           1:
             space: 1

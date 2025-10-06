@@ -67,7 +67,7 @@ Strategies can be reified (i.e. compiled) into trees using the [`reify`][delphyn
 class Tree[N: Node, P, T]:
     node: N | Success[T]
     child: Callable[[Value], Tree[N, P, T]]
-    ref: GlobalNodePath # (1)!
+    ref: GlobalNodeRef # (1)!
 ```
 
 1. To ignore on first reading. See [documentation on references](../reference/strategies/traces.md).

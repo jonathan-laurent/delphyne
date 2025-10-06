@@ -2,7 +2,7 @@
 Resolving id-based references in traces.
 """
 
-from typing import Any, assert_type
+from typing import Any, Literal, assert_type
 
 import delphyne.core as dp
 from delphyne.core import irefs
@@ -29,7 +29,7 @@ class IRefResolver:
         if self.cache is None:
             return
         for ref, tree in cache.items():
-            id = self.trace.convert_global_node_path(ref)
+            id = self.trace.convert_global_node_ref(ref)
             self.cache[id] = tree
 
     def resolve_answer(self, ref: irefs.AnswerId) -> dp.Answer:
@@ -45,12 +45,12 @@ class IRefResolver:
             tree = parent.child(action)
         else:
             assert_type(origin, irefs.NestedIn)
-            if origin.space == dp.Trace.MAIN_SPACE_ID:
+            space = self.resolve_space(origin.space)
+            if space == "main":
                 if self.root is None:
                     raise ValueError("IRefResolver.root is not set.")
                 tree = self.root
             else:
-                space = self.resolve_space(origin.space)
                 source = space.source()
                 assert isinstance(source, dp.NestedTree)
                 tree = source.spawn_tree()
@@ -58,9 +58,13 @@ class IRefResolver:
             self.cache[ref] = tree
         return tree
 
-    def resolve_space(self, space_id: irefs.SpaceId) -> dp.Space[Any]:
-        origin = self.trace.spaces[space_id]
-        return self.resolve_space_def(origin.node, origin.space)
+    def resolve_space(
+        self, space_id: irefs.SpaceId
+    ) -> dp.Space[Any] | Literal["main"]:
+        space_def = self.trace.spaces[space_id]
+        if isinstance(space_def, irefs.MainSpace):
+            return "main"
+        return self.resolve_space_def(space_def.node, space_def.space)
 
     def resolve_space_def(
         self, node: irefs.NodeId, ref: irefs.SpaceRef
@@ -75,9 +79,10 @@ class IRefResolver:
     def resolve_space_element(
         self, ref: irefs.SpaceElementRef
     ) -> dp.Tracked[Any]:
-        space_source = self.resolve_space(ref.space).source()
+        space = self.resolve_space(ref.space)
+        space_source = space.source() if space != "main" else None
         match space_source:
-            case dp.NestedTree():
+            case dp.NestedTree() | None:
                 assert isinstance(ref.element, irefs.NodeId)
                 tree = self.resolve_node(ref.element)
                 assert isinstance(tree.node, dp.Success)

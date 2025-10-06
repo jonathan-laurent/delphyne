@@ -190,11 +190,17 @@ hashable and so cannot contain lists, while `Value` can contain lists.
 """
 
 
-type NodePath = tuple[ValueRef, ...]
-"""
-Encodes a sequence of actions leading to a node with respect to a
-given root.
-"""
+@dataclass(frozen=True)
+class NodePath:
+    """
+    Encodes a sequence of actions leading to a node with respect to a
+    given root.
+    """
+
+    actions: tuple[ValueRef, ...]
+
+    def append(self, action: ValueRef) -> "NodePath":
+        return NodePath((*self.actions, action))
 
 
 @dataclass(frozen=True)
@@ -211,41 +217,65 @@ class SpaceRef:
     args: tuple[ValueRef, ...]
 
 
-MAIN_SPACE_NAME = "__main__"
+@dataclass(frozen=True)
+class GlobalSpacePath:
+    """
+    A path to a global space, which alternates between following a path from
+    a local root and entering a space within the reached node.
+    """
 
-MAIN_SPACE = SpaceRef(SpaceName(MAIN_SPACE_NAME, ()), ())
-"""
-A special space attached to the *global origin* node, and which contains
-the main, top-level strategy tree.
-"""
+    steps: tuple[tuple[NodePath, SpaceRef], ...]
 
-MAIN_ROOT: "GlobalNodePath" = ((MAIN_SPACE, ()),)
-"""
-Global reference to the root of the main, top-level strategy tree.
-"""
+    def append(self, path: NodePath, space: SpaceRef) -> "GlobalSpacePath":
+        return GlobalSpacePath((*self.steps, (path, space)))
+
+    def split(self) -> "tuple[GlobalNodeRef | None, SpaceRef | None]":
+        if not self.steps:
+            return (None, None)
+        last_path, last_space = self.steps[-1]
+        parent_steps = self.steps[:-1]
+        gsref = GlobalNodeRef(GlobalSpacePath(parent_steps), last_path)
+        return (gsref, last_space)
+
+    def parent_node(self) -> "GlobalNodeRef | None":
+        return self.split()[0]
+
+    def local_ref(self) -> "SpaceRef | None":
+        return self.split()[1]
 
 
 @dataclass(frozen=True)
 class SpaceElementRef:
     """
     A reference to an element of a local space.
+
+    Attributes:
+        space: The space containing the element, or `None` if this is
+            the top-level main space.
+        element: The element pointer.
     """
 
-    space: SpaceRef
+    space: SpaceRef | None
     element: Answer | NodePath
 
 
-type GlobalNodePath = tuple[tuple[SpaceRef, NodePath], ...]
-"""
-Path to a node from the global origin, as a sequence of (space to enter,
-path to follow) instruction pairs.
-"""
+@dataclass(frozen=True)
+class GlobalNodeRef:
+    """
+    Global reference to a node.
+    """
 
+    space: GlobalSpacePath
+    path: NodePath
 
-type GlobalSpacePath = tuple[GlobalNodePath, SpaceRef]
-"""
-A path to a global node
-"""
+    def child(self, action: ValueRef) -> "GlobalNodeRef":
+        return GlobalNodeRef(self.space, self.path.append(action))
+
+    def nested_space(self, space: SpaceRef) -> "GlobalSpacePath":
+        return GlobalSpacePath((*self.space.steps, (self.path, space)))
+
+    def nested_tree(self, space: SpaceRef) -> "GlobalNodeRef":
+        return GlobalNodeRef(self.nested_space(space), NodePath(()))
 
 
 type GlobalAnswerRef = tuple[GlobalSpacePath, Answer]
@@ -254,9 +284,9 @@ A global reference to located answer.
 """
 
 
-type GlobalValueRef = tuple[GlobalNodePath, ValueRef]
+type GlobalActionRef = tuple[GlobalNodeRef, ValueRef]
 """
-A global value reference.
+A global reference to a located action.
 """
 
 
@@ -275,12 +305,9 @@ class Tracked(Generic[T]):
 
     Attributes:
         value: The value being tracked.
-        ref: A local reference to the value, relative to the node
-            reference by the `node` field.
-        node: A global reference to the node to which the space that the
-            value originates from is attached. In particular, this field
-            is useful to check the locality invariant at runtime (e.g.,
-            when passing a tracked value to `Tree.child`).
+        ref: A global reference to the space that the value belongs to.
+        node: A reference to the node that the value is local to, or
+            `None` if the value is a top-level result.
         type_annot: An optional type annotation for the `value` field.
             This is mostly used for improving the rendering of values
             when exporting trace information for external tools.
@@ -292,7 +319,7 @@ class Tracked(Generic[T]):
 
     value: T
     ref: AtomicValueRef
-    node: GlobalNodePath
+    node: GlobalNodeRef | None
     type_annot: TypeAnnot[T] | NoTypeInfo
 
     @overload
@@ -337,12 +364,12 @@ class LocalityError(Exception):
     See `Tree` and `check_local_value`.
     """
 
-    expected_node_ref: GlobalNodePath
-    node_ref: GlobalNodePath
+    expected_node_ref: GlobalNodeRef | None
+    node_ref: GlobalNodeRef | None
     local_ref: AtomicValueRef
 
 
-def check_local_value(val: Value, node: GlobalNodePath):
+def check_local_value(val: Value, node: GlobalNodeRef | None):
     """
     Raise a `LocalityError` exception if a given value is not a local
     value relative to a given node.
@@ -418,35 +445,6 @@ def value_type(v: Value) -> TypeAnnot[Any] | NoTypeInfo:
 #####
 ##### Utilities
 #####
-
-
-def append_node_path(path: NodePath, v: ValueRef) -> NodePath:
-    return (*path, v)
-
-
-def child_ref(path: GlobalNodePath, action: ValueRef) -> GlobalNodePath:
-    assert path
-    *init, (space, node_path) = path
-    return (*init, (space, (*node_path, action)))
-
-
-def nested_ref(path: GlobalNodePath, ref: SpaceRef) -> GlobalNodePath:
-    return (*path, (ref, ()))
-
-
-def global_path_origin(
-    path: GlobalNodePath,
-) -> (
-    Literal["global_origin"]
-    | tuple[Literal["child"], GlobalNodePath, ValueRef]
-    | tuple[Literal["nested"], GlobalNodePath, SpaceRef]
-):
-    if not path:
-        return "global_origin"
-    *init, (space, node_path) = path
-    if not node_path:
-        return "nested", tuple(init), space
-    return "child", (*init, (space, node_path[:-1])), node_path[-1]
 
 
 NONE_REF_REPR = "nil"

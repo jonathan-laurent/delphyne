@@ -12,7 +12,7 @@ from delphyne.core import inspect, refs
 from delphyne.core import node_fields as nf
 from delphyne.core.node_fields import NodeFields, detect_node_structure
 from delphyne.core.queries import AbstractQuery, ParseError
-from delphyne.core.refs import GlobalNodePath, SpaceName, Tracked, Value
+from delphyne.core.refs import GlobalNodeRef, SpaceName, Tracked, Value
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
 #####
@@ -298,7 +298,7 @@ class Node(ABC):
         space = self.primary_space()
         if space is None:
             return None
-        return space.source().ref[1]
+        return space.source().ref.local_ref()
 
     @final
     def nested_space(
@@ -797,7 +797,7 @@ class Tree(Generic[N, P, T]):
 
     node: "N | Success[T]"
     child: "Callable[[Value], Tree[N, P, T]]"
-    ref: GlobalNodePath
+    ref: GlobalNodeRef
 
     def transform[M: Node](
         self,

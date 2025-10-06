@@ -354,5 +354,6 @@ def _node_id_of_tracked_value(
     eref = ref.element
     assert not isinstance(eref, refs.Answer)
     assert_type(eref, refs.NodePath)
-    gref: refs.GlobalNodePath = ((refs.MAIN_SPACE, eref),)
-    return trace.convert_global_node_path(gref)
+    main_space = refs.GlobalSpacePath(())
+    gref = refs.GlobalNodeRef(main_space, eref)
+    return trace.convert_global_node_ref(gref)

@@ -138,7 +138,11 @@ _child = _s("child(") >> _child << _s(")")
 _nested = (_s("nested(") >> _space_id << _s(")")).map(irefs.NestedIn)
 _node_origin = _child | _nested
 
-_space_origin = ps.seq(_node_id, _s(".") >> _isref).combine(irefs.SpaceOrigin)
+_main_space = _s("main").map(lambda _: irefs.MainSpace())
+_local_space = ps.seq(
+    _s("local(") >> _node_id, _comma >> _isref << _s(")")
+).combine(irefs.LocalSpace)
+_space_origin = _main_space | _local_space
 
 # Node selectors
 _tag_sel = ps.seq(_ident, (_s("#") >> _num).optional())

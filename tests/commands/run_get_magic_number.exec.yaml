@@ -45,10 +45,10 @@ outcome:
         5: child(%3, $3{%4})
         6: child(%5, nil)
       spaces:
-        0: '%0.__main__'
-        1: '%1.cands'
-        2: '%2.cands'
-        3: '%3.cands'
+        0: main
+        1: local(%1, cands)
+        2: local(%2, cands)
+        3: local(%3, cands)
       answers:
         1:
           space: 1
@@ -63,8 +63,7 @@ outcome:
     log:
       - message: llm_request
         level: info
-        node: 1
-        space: $1
+        space: 1
         metadata:
           hash: fd47bdbb
           query: AskNumber
@@ -78,8 +77,7 @@ outcome:
             options: {}
       - message: llm_response
         level: info
-        node: 1
-        space: $1
+        space: 1
         metadata:
           request: fd47bdbb
           response:
@@ -125,8 +123,7 @@ outcome:
                 cached_tokens: 0
       - message: llm_request
         level: info
-        node: 2
-        space: $2
+        space: 2
         metadata:
           hash: 49e1d018
           query: AskNumber
@@ -151,8 +148,7 @@ outcome:
             options: {}
       - message: llm_response
         level: info
-        node: 2
-        space: $2
+        space: 2
         metadata:
           request: 49e1d018
           response:

@@ -49,7 +49,7 @@
 
 <!-- ## Global References -->
 
-::: delphyne.core.refs.GlobalNodePath
+::: delphyne.core.refs.GlobalNodeRef
 
 ::: delphyne.core.refs.GlobalSpacePath
 

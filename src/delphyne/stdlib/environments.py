@@ -441,14 +441,7 @@ class PolicyEnv:
             loc: Tree or attached query that the message is about, if
                 relevant.
         """
-
-        match loc:
-            case None:
-                location = None
-            case dp.Tree():
-                location = dp.Location(loc.ref, None)
-            case dp.AttachedQuery(_, ref):
-                location = dp.Location(ref[0], ref[1])
+        location = loc.ref if loc is not None else None
         self.tracer.log(level, message, metadata, location)
 
     def trace(
