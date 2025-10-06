@@ -2252,7 +2252,12 @@ child tree.</p>
           <tr class="doc-section-item">
             <td><code><span title="delphyne.Tree.ref">ref</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="GlobalNodePath (delphyne.core.refs.GlobalNodePath)" href="../traces/#delphyne.core.refs.GlobalNodePath">GlobalNodePath</a></code>
+                  <code><a class="autorefs autorefs-internal" title="GlobalNodeRef
+
+
+  
+      dataclass
+   (delphyne.core.refs.GlobalNodeRef)" href="../traces/#delphyne.core.refs.GlobalNodeRef">GlobalNodeRef</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2370,7 +2375,7 @@ an oracular program).</p>
 
     <span class="n">node</span><span class="p">:</span> <span class="s2">&quot;N | Success[T]&quot;</span>
     <span class="n">child</span><span class="p">:</span> <span class="s2">&quot;Callable[[Value], Tree[N, P, T]]&quot;</span>
-    <span class="n">ref</span><span class="p">:</span> <span class="n">GlobalNodePath</span>
+    <span class="n">ref</span><span class="p">:</span> <span class="n">GlobalNodeRef</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">[</span><span class="n">M</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -3181,7 +3186,7 @@ writers.</p>
         <span class="n">space</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_space</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">space</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="n">space</span><span class="o">.</span><span class="n">source</span><span class="p">()</span><span class="o">.</span><span class="n">ref</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">space</span><span class="o">.</span><span class="n">source</span><span class="p">()</span><span class="o">.</span><span class="n">ref</span><span class="o">.</span><span class="n">local_ref</span><span class="p">()</span>
 
     <span class="nd">@final</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">nested_space</span><span class="p">(</span>
@@ -3808,7 +3813,7 @@ primary space, if it is defined.</p>
     <span class="n">space</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_space</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">space</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
-    <span class="k">return</span> <span class="n">space</span><span class="o">.</span><span class="n">source</span><span class="p">()</span><span class="o">.</span><span class="n">ref</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">space</span><span class="o">.</span><span class="n">source</span><span class="p">()</span><span class="o">.</span><span class="n">ref</span><span class="o">.</span><span class="n">local_ref</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -5255,7 +5260,12 @@ underscores, dots, and dashes.</p>
           <tr class="doc-section-item">
             <td><code><span title="delphyne.AttachedQuery.ref">ref</span></code></td>
             <td>
-                  <code><a class="autorefs autorefs-internal" title="GlobalSpacePath (delphyne.core.refs.GlobalSpacePath)" href="../traces/#delphyne.core.refs.GlobalSpacePath">GlobalSpacePath</a></code>
+                  <code><a class="autorefs autorefs-internal" title="GlobalSpacePath
+
+
+  
+      dataclass
+   (delphyne.core.refs.GlobalSpacePath)" href="../traces/#delphyne.core.refs.GlobalSpacePath">GlobalSpacePath</a></code>
             </td>
             <td>
               <div class="doc-md-description">
