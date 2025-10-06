@@ -34,7 +34,6 @@ from delphyne.stdlib.misc import (
     const_space,
     failing_pp,
     just_compute,
-    just_dfs,
     map_space,
     nofail,
     or_else,

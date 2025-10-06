@@ -26,10 +26,6 @@
 
 ## Opaque Spaces Sugar
 
-::: delphyne.just_dfs
-
-::: delphyne.just_compute
-
 ::: delphyne.ambient_pp
 
 ::: delphyne.ambient

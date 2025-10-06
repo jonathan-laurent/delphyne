@@ -11,7 +11,7 @@ from delphyne.core_and_base import Opaque
 from delphyne.stdlib.computations import Compute, elim_compute
 from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.flags import Flag, FlagQuery, elim_flag, get_flag
-from delphyne.stdlib.nodes import Branch, Fail, branch
+from delphyne.stdlib.nodes import Branch, branch
 from delphyne.stdlib.policies import Policy, PromptingPolicy, SearchPolicy
 from delphyne.stdlib.search.dfs import dfs
 from delphyne.stdlib.strategies import strategy
@@ -32,7 +32,7 @@ def const_space[T](value: T) -> Opaque[object, T]:
     """
     Build an opaque space containing a single constant value.
     """
-    return const_strategy(value).using(just_dfs)
+    return const_strategy(value).using(lambda p: dfs() & p)
 
 
 @strategy(name="map")
@@ -57,15 +57,6 @@ def map_space[P, A, B](
     return map_space_strategy(space, f).using(lambda p: dfs() & p)
 
 
-def just_dfs[P](policy: P) -> Policy[Branch | Fail, P]:
-    """
-    Convenience shortcut to avoid passing lambdas to the `get_policy`
-    argument of `using`, when using DFS in combination with the ambient
-    inner policy.
-    """
-    return dfs() & policy
-
-
 def just_compute[P](policy: P) -> Policy[Compute, P]:
     """
     Convenience shortcut to avoid passing lambdas to the `get_policy`
@@ -88,7 +79,7 @@ def ambient[F](policy: F) -> F:
     """
     Convenience shortcut to avoid passing lambdas to the `get_policy`
     argument of `Query.using`, when using the ambient inner policy as a
-    sub-policy (or as a sub- prompting policy).
+    sub-policy (or as a sub-prompting policy).
     """
     return policy
 
