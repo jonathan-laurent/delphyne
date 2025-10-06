@@ -51,7 +51,7 @@ Can be parsed back using `parse.space_origin`.
 
 
 @dataclass(frozen=True)
-class _ExportableLocatedAnswer:
+class ExportableLocatedAnswer:
     space: int
     answer: refs.Answer
 
@@ -69,7 +69,7 @@ class ExportableTrace:
 
     nodes: dict[int, NodeOriginStr]
     spaces: dict[int, SpaceOriginStr]
-    answers: dict[int, _ExportableLocatedAnswer]
+    answers: dict[int, ExportableLocatedAnswer]
 
 
 #####
@@ -206,7 +206,7 @@ class Trace:
         nodes = {id.id: str(origin) for id, origin in self.nodes.items()}
         spaces = {id.id: str(origin) for id, origin in self.spaces.items()}
         answers = {
-            id.id: _ExportableLocatedAnswer(located.space.id, located.answer)
+            id.id: ExportableLocatedAnswer(located.space.id, located.answer)
             for id, located in self.answers.items()
         }
         return ExportableTrace(nodes, spaces, answers)

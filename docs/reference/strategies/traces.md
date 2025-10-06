@@ -87,7 +87,7 @@
 
 ::: delphyne.core.irefs.ChildOf
 
-::: delphyne.core.irefs.NestedTreeOf
+::: delphyne.core.irefs.NestedIn
 
 ## Hint-Based References
 
@@ -111,9 +111,11 @@
 
 ::: delphyne.core.traces.ExportableTrace
 
-::: delphyne.core.traces.ExportableQueryInfo
-
 ::: delphyne.core.traces.NodeOriginStr
+
+::: delphyne.core.traces.SpaceOriginStr
+
+::: delphyne.core.traces.ExportableLocatedAnswer
 
 ::: delphyne.core.traces.Location
 
