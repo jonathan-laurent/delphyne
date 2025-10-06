@@ -46,8 +46,8 @@ def prove_program_by_recursive_abduction(
         suggest=lambda feedback:
             _suggest_invariants(feedback)
                 .using(lambda p: p.suggest, ProveProgIP),
-        search_equivalent=lambda proved, fml:
-            _search_equivalent(proved, fml)
+        search_equivalent=lambda facts, fml:
+            _search_equivalent(facts, fml)
                 .using(lambda p: p.search_equivalent, ProveProgIP),
         redundant=lambda proved, fml:
             _is_redundant(proved, fml)
@@ -79,20 +79,16 @@ def _suggest_invariants(
     assert len(unproved) > 0
     # We focus on the first unproved obligation
     answer = yield from dp.branch(
-        SuggestInvariants(unproved[0]).using(dp.ambient_pp))
+        SuggestInvariants(unproved[0]).using(lambda p: p, dp.PromptingPolicy))
     return [s.invariant for s in answer.suggestions]
 
 
 @strategy
 def _search_equivalent(
-    proved: Sequence[Formula], fml: Formula
+    facts: Sequence[Formula], fml: Formula
 ) -> Strategy[Compute, None, Formula | None]:
-    for p in proved:
-        limpl = yield from dp.compute(why3.is_valid_implication)([p], fml)
-        rimpl = yield from dp.compute(why3.is_valid_implication)([fml], p)
-        if limpl and rimpl:
-            return p
-    return None
+    ret = yield from dp.compute(search_equivalent)(facts, fml)
+    return ret
 
 
 @strategy
@@ -104,6 +100,15 @@ def _is_redundant(
 
 
 ### Utilities
+
+
+def search_equivalent(facts: Sequence[Formula], fml: Formula) -> Formula | None:
+    for f in facts:
+        limpl = why3.is_valid_implication([f], fml)
+        rimpl = why3.is_valid_implication([fml], f)
+        if limpl and rimpl:
+            return f
+    return None
 
 
 def _modified_program(
