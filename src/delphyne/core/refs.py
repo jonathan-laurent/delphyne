@@ -229,7 +229,7 @@ class GlobalSpacePath:
     def append(self, path: NodePath, space: SpaceRef) -> "GlobalSpacePath":
         return GlobalSpacePath((*self.steps, (path, space)))
 
-    def split(self) -> "tuple[GlobalNodeRef | None, SpaceRef | None]":
+    def split(self) -> "tuple[GlobalNodeRef, SpaceRef] | tuple[None, None]":
         if not self.steps:
             return (None, None)
         last_path, last_space = self.steps[-1]
