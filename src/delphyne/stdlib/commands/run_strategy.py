@@ -102,9 +102,16 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
     # We do not need to cache all tree nodes (which can cost a lot of
     # memory) unless a browsable trace may be computed.
     cache: dp.TreeCache | None = None
+    hooks: list[dp.TreeHook] = []
     if args.export_browsable_trace or args.export_all_on_pull:
         cache = {}
-    monitor = dp.TreeMonitor(cache, hooks=[dp.tracer_hook(env.tracer)])
+    if (
+        args.export_browsable_trace
+        or args.export_all_on_pull
+        or args.export_raw_trace
+    ):
+        hooks.append(dp.tracer_hook(env.tracer))
+    monitor = dp.TreeMonitor(cache, hooks=hooks)
     tree = dp.reify(args.strategy, monitor)
     policy = args.policy
     stream = policy.search(tree, env, policy.inner)
