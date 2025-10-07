@@ -2198,7 +2198,7 @@ created, preserving abstraction.</p>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">dp</span><span class="o">.</span><span class="n">SpaceBuilder</span><span class="p">(</span>
-            <span class="n">build</span><span class="o">=</span><span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">spawner</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">build</span><span class="p">(</span><span class="n">spawner</span><span class="p">,</span> <span class="n">tags</span><span class="p">),</span>
+            <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">spawner</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">build</span><span class="p">(</span><span class="n">spawner</span><span class="p">,</span> <span class="n">tags</span><span class="p">),</span>
             <span class="n">tags</span><span class="o">=</span><span class="n">query</span><span class="o">.</span><span class="n">default_tags</span><span class="p">(),</span>
         <span class="p">)</span>
 
@@ -2226,7 +2226,7 @@ created, preserving abstraction.</p>
             <span class="k">return</span> <span class="n">OpaqueSpace</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">nested</span><span class="p">,</span> <span class="n">tags</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">dp</span><span class="o">.</span><span class="n">SpaceBuilder</span><span class="p">(</span>
-            <span class="n">build</span><span class="o">=</span><span class="k">lambda</span> <span class="n">spawner</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">build</span><span class="p">(</span><span class="n">spawner</span><span class="p">,</span> <span class="n">tags</span><span class="p">),</span>
+            <span class="k">lambda</span> <span class="n">spawner</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">build</span><span class="p">(</span><span class="n">spawner</span><span class="p">,</span> <span class="n">tags</span><span class="p">),</span>
             <span class="n">tags</span><span class="o">=</span><span class="n">strategy</span><span class="o">.</span><span class="n">default_tags</span><span class="p">(),</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2331,7 +2331,7 @@ created, preserving abstraction.</p>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dp</span><span class="o">.</span><span class="n">SpaceBuilder</span><span class="p">(</span>
-        <span class="n">build</span><span class="o">=</span><span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">spawner</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">build</span><span class="p">(</span><span class="n">spawner</span><span class="p">,</span> <span class="n">tags</span><span class="p">),</span>
+        <span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">spawner</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">build</span><span class="p">(</span><span class="n">spawner</span><span class="p">,</span> <span class="n">tags</span><span class="p">),</span>
         <span class="n">tags</span><span class="o">=</span><span class="n">query</span><span class="o">.</span><span class="n">default_tags</span><span class="p">(),</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2436,7 +2436,7 @@ created, preserving abstraction.</p>
         <span class="k">return</span> <span class="n">OpaqueSpace</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">nested</span><span class="p">,</span> <span class="n">tags</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dp</span><span class="o">.</span><span class="n">SpaceBuilder</span><span class="p">(</span>
-        <span class="n">build</span><span class="o">=</span><span class="k">lambda</span> <span class="n">spawner</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">build</span><span class="p">(</span><span class="n">spawner</span><span class="p">,</span> <span class="n">tags</span><span class="p">),</span>
+        <span class="k">lambda</span> <span class="n">spawner</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="n">build</span><span class="p">(</span><span class="n">spawner</span><span class="p">,</span> <span class="n">tags</span><span class="p">),</span>
         <span class="n">tags</span><span class="o">=</span><span class="n">strategy</span><span class="o">.</span><span class="n">default_tags</span><span class="p">(),</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
