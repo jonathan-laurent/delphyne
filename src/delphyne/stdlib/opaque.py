@@ -70,7 +70,7 @@ class OpaqueSpace(Generic[P, T], dp.Space[T]):
             )
 
         return dp.SpaceBuilder(
-            build=lambda _, spawner, tags: build(spawner, tags),
+            lambda _, spawner, tags: build(spawner, tags),
             tags=query.default_tags(),
         )
 
@@ -98,7 +98,7 @@ class OpaqueSpace(Generic[P, T], dp.Space[T]):
             return OpaqueSpace(stream, nested, tags)
 
         return dp.SpaceBuilder(
-            build=lambda spawner, _, tags: build(spawner, tags),
+            lambda spawner, _, tags: build(spawner, tags),
             tags=strategy.default_tags(),
         )
 

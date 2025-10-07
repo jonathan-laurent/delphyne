@@ -292,7 +292,7 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
     _monitor: "TreeMonitor"
     _allow_noncopyable_actions: bool
 
-    def parametric[S](
+    def parametric[S: tr.Space[Any]](
         self,
         space_name: SpaceName,
         parametric_builder: Callable[..., tr.SpaceBuilder[S]],
@@ -352,7 +352,7 @@ class _BuilderExecutor(tr.AbstractBuilderExecutor):
 
         return run_builder
 
-    def nonparametric[S](
+    def nonparametric[S: tr.Space[Any]](
         self, name: SpaceName, builder: tr.SpaceBuilder[S]
     ) -> S:
         return self.parametric(name, lambda: builder)()

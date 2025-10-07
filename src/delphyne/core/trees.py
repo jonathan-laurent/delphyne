@@ -60,6 +60,12 @@ class Space[T](ABC):
         """
         pass
 
+    def ref(self) -> refs.GlobalSpacePath:
+        """
+        Return a global reference to the space.
+        """
+        return self.source().ref
+
 
 @dataclass(frozen=True)
 class AttachedQuery[T]:
@@ -105,9 +111,7 @@ class TransparentQuery[T](Space[T]):
         query: AbstractQuery[T1],
     ) -> "SpaceBuilder[TransparentQuery[T1]]":
         return SpaceBuilder(
-            build=lambda _, spawner, tags: TransparentQuery(
-                spawner(query), tags
-            ),
+            lambda _, spawner, tags: TransparentQuery(spawner(query), tags),
             tags=query.default_tags(),
         )
 
@@ -658,7 +662,7 @@ class EmbeddedTree[N: Node, P, T](Space[T]):
         strategy: StrategyComp[N1, P1, T1],
     ) -> "SpaceBuilder[EmbeddedTree[N1, P1, T1]]":
         return SpaceBuilder[EmbeddedTree[N1, P1, T1]](
-            build=lambda spawn, _, tags: EmbeddedTree(spawn(strategy), tags),
+            lambda spawn, _, tags: EmbeddedTree(spawn(strategy), tags),
             tags=strategy.default_tags(),
         )
 
@@ -703,7 +707,7 @@ class QuerySpawner(Protocol):
 
 
 @dataclass(frozen=True)
-class SpaceBuilder[S]:
+class SpaceBuilder[S: Space[Any]]:
     """
     Wrapper for a function that builds a space, given the ability to
     spawn nested trees and attached queries.
@@ -715,11 +719,11 @@ class SpaceBuilder[S]:
     ultimately passed to the resulting space.
 
     Attributes:
-        build: Wrapped builder function
-        tags: Tags to be assocaited to the space.
+        _build: Wrapped builder function
+        tags: Tags to be associated to the space.
     """
 
-    build: Callable[[NestedTreeSpawner, QuerySpawner, Sequence[Tag]], S]
+    _build: Callable[[NestedTreeSpawner, QuerySpawner, Sequence[Tag]], S]
     tags: Sequence[Tag]
 
     def tagged(self, *tags: Tag) -> "SpaceBuilder[S]":
@@ -735,7 +739,7 @@ class SpaceBuilder[S]:
         Build a space, given the provided capabilities along with the
         current set of tags.
         """
-        return self.build(spawner, query_spawner, self.tags)
+        return self._build(spawner, query_spawner, self.tags)
 
 
 class AbstractBuilderExecutor(ABC):
@@ -748,14 +752,16 @@ class AbstractBuilderExecutor(ABC):
     """
 
     @abstractmethod
-    def parametric[S](
+    def parametric[S: Space[Any]](
         self,
         space_name: SpaceName,
         parametric_builder: Callable[..., SpaceBuilder[S]],
     ) -> Callable[..., S]: ...
 
     @abstractmethod
-    def nonparametric[S](self, name: SpaceName, builder: SpaceBuilder[S]) -> S:
+    def nonparametric[S: Space[Any]](
+        self, name: SpaceName, builder: SpaceBuilder[S]
+    ) -> S:
         return self.parametric(name, lambda: builder)()
 
 
