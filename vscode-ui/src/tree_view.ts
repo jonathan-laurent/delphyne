@@ -13,6 +13,8 @@ import {
   TraceAnswerId,
   TraceNodeId,
   NestedTree,
+  Reference,
+  TraceSpaceId,
 } from "./stubs/feedback";
 import { Element } from "./elements";
 import { QueryDemo, StrategyDemo } from "./stubs/demos";
@@ -58,8 +60,29 @@ function renderAnswerHint(
       : `'${hint[0]}'`;
 }
 
+function renderUINodeId(id: number): string {
+  // return `ID: ${id}`;
+  // return `ID ${id}`;
+  return `%${id}`;
+}
+
+function renderUISpaceId(id: number): string {
+  // return `ID: ${id}`;
+  // return `ID ${id}`;
+  return `$${id}`;
+}
+
 function renderActionLabel(main: string, numDescendants: number): string {
   return `${main} / ${numDescendants}`;
+}
+
+function renderPropertyLabel(
+  ref: Reference,
+  sid: TraceSpaceId | null,
+  prop: NodeProperty,
+): string {
+  const refLabel = ref.with_hints ?? ref.with_ids;
+  return sid === null ? refLabel : `(${renderUISpaceId(sid)}) ${refLabel}`;
 }
 
 // function renderActionLabel(main: string, numDescendants: number): string {
@@ -449,7 +472,7 @@ function collectDescendants(
   for (const action of node.actions) {
     collectDescendants(trace, action.destination, acc);
   }
-  for (const [_, nestedTree] of node.properties) {
+  for (const [_ref, _sid, nestedTree] of node.properties) {
     if (nestedTree.kind === "nested" && nestedTree.node_id !== null) {
       collectDescendants(trace, nestedTree.node_id, acc);
     }
@@ -554,7 +577,7 @@ export class TreeView {
     if (this.pointedTree) {
       const node = this.pointedTree.getNode();
       const nodeId = this.pointedTree.selectedNode;
-      this.nodeView.description = `${node.kind} (${nodeId})`;
+      this.nodeView.description = `${node.kind} (${renderUINodeId(nodeId)})`;
       if (node.summary_message !== null) {
         this.nodeView.message = node.summary_message;
       }
@@ -684,11 +707,11 @@ class NodeView implements vscode.TreeDataProvider<NodeViewItem> {
           },
         ];
       }
-      const children: PropertyItem[] = node.properties.map(([k, v]) => {
+      const children: PropertyItem[] = node.properties.map(([k, sid, v]) => {
         const node_id = v.kind === "nested" ? v.node_id : null;
         return {
           kind: "property",
-          label: k.with_hints ?? k.with_ids,
+          label: renderPropertyLabel(k, sid, v),
           prop: v,
           node_id,
         };
@@ -1020,7 +1043,7 @@ function computePath(
     const path = computePath(trace, src_id, before_id);
     const nestedTreeItem: PathNestedTreeItem = {
       kind: "path_nested_tree",
-      nestedTrees: sub_parent.properties[prop_id][1] as NestedTree,
+      nestedTrees: sub_parent.properties[prop_id][2] as NestedTree,
       path: singletonPath(dst_id, dst),
       expanded: false,
     };

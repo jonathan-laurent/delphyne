@@ -32,6 +32,10 @@ type TraceNodeId = int
 """Global node id, as set in `core.traces.Trace`."""
 
 
+type TraceSpaceId = int
+"""Global space id, as set in `core.traces.Trace`."""
+
+
 type TraceAnswerId = int
 """Global answer id, as set by `core.traces.Trace`."""
 
@@ -252,12 +256,12 @@ class Node:
     leaf_node: bool
     label: str | None
     tags: list[str]
-    properties: list[tuple[Reference, NodeProperty]]
+    properties: list[tuple[Reference, TraceSpaceId | None, NodeProperty]]
     actions: list[Action]
     origin: NodeOrigin
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Trace:
     """
     A browsable trace.
@@ -283,6 +287,7 @@ class Trace:
     """
 
     nodes: dict[TraceNodeId, Node]
+    spaces: dict[TraceSpaceId, tuple[TraceNodeId, TraceNodePropertyId]]
 
 
 #####

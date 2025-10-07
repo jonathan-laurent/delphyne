@@ -694,7 +694,7 @@ def evaluate_strategy_demo_and_return_trace(
 ) -> tuple[fb.StrategyDemoFeedback, dp.Trace | None]:
     feedback = fb.StrategyDemoFeedback(
         kind="strategy",
-        trace=fb.Trace({}),
+        trace=fb.Trace(nodes={}, spaces={}),
         answer_refs={},
         saved_nodes={},
         test_feedback=[],

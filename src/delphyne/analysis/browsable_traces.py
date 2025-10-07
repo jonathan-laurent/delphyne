@@ -180,12 +180,16 @@ class _TraceTranslator:
         # Both `self.space_prop_ids` and `self.action_ids` are populated
         # when a node is translated and read later by `translate_origin`
         # when processing a child node or a directly nested node.
+        self.spaces: dict[
+            fb.TraceSpaceId, tuple[fb.TraceNodeId, fb.TraceNodePropertyId]
+        ] = {}
 
     def translate_trace(self) -> fb.Trace:
         # We rely on the nodes in the trace being presented in
         # topological order (see explanation in `translate_node`).
         ids = list(self.trace.nodes.keys())
-        trace = fb.Trace({id.id: self.translate_node(id) for id in ids})
+        nodes = {id.id: self.translate_node(id) for id in ids}
+        trace = fb.Trace(nodes=nodes, spaces=self.spaces)
         return trace
 
     def translate_node(self, id: irefs.NodeId) -> fb.Node:
@@ -207,6 +211,9 @@ class _TraceTranslator:
         # TODO: add data fields.
         # Now we can translate properties
         props = [self.translate_space(sid) for sid in local_spaces]
+        for i, (_, sid, _) in enumerate(props):
+            if sid is not None:
+                self.spaces[sid] = (id.id, i)
         # Computing actions. The same reasoning than for property ids
         # applies since `translate_origin` also reads action ids.
         actions: list[fb.Action] = []
@@ -290,7 +297,7 @@ class _TraceTranslator:
 
     def translate_space(
         self, space_id: irefs.SpaceId
-    ) -> tuple[fb.Reference, fb.NodeProperty]:
+    ) -> tuple[fb.Reference, fb.TraceSpaceId | None, fb.NodeProperty]:
         space = self.resolver.resolve_space(space_id)
         assert space != "main"
         match source := space.source():
@@ -311,7 +318,7 @@ class _TraceTranslator:
             full_sref = self.trace.expand_space_ref(origin.space)
             simplified = self.simplifier.space_ref(full_nref, full_sref)
             ref_str.with_hints = str(simplified)
-        return (ref_str, prop)
+        return (ref_str, space_id.id, prop)
 
     def translate_action(
         self, src: irefs.NodeId, action: irefs.ValueRef, dst: irefs.NodeId

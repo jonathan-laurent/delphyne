@@ -4,6 +4,8 @@ export type Diagnostic = [DiagnosticType, string];
 
 export type TraceNodeId = number;
 
+export type TraceSpaceId = number;
+
 export type TraceAnswerId = number;
 
 export type TraceActionId = number;
@@ -72,13 +74,14 @@ export interface Node {
   leaf_node: boolean;
   label: string | null;
   tags: string[];
-  properties: [Reference, NodeProperty][];
+  properties: [Reference, TraceSpaceId | null, NodeProperty][];
   actions: Action[];
   origin: NodeOrigin;
 }
 
 export interface Trace {
   nodes: Record<TraceNodeId, Node>;
+  spaces: Record<TraceSpaceId, [TraceNodeId, TraceNodePropertyId]>;
 }
 
 export type DemoQueryId = number;
