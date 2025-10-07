@@ -21,23 +21,25 @@ class IRefResolver:
     ) -> None:
         self.trace = trace
         self.root = root
-        self.cache: dict[irefs.NodeId, dp.AnyTree] | None = None
+        self.node_cache: dict[irefs.NodeId, dp.AnyTree] | None = None
+        self.space_cache: dict[irefs.SpaceId, dp.Space[Any]] | None = None
         if enable_caching:
-            self.cache = {}
+            self.node_cache = {}
+            self.space_cache = {}
 
     def load_tree_cache(self, cache: dp.TreeCache) -> None:
-        if self.cache is None:
+        if self.node_cache is None:
             return
         for ref, tree in cache.items():
             id = self.trace.convert_global_node_ref(ref)
-            self.cache[id] = tree
+            self.node_cache[id] = tree
 
     def resolve_answer(self, ref: irefs.AnswerId) -> dp.Answer:
         return self.trace.answers[ref].answer
 
     def resolve_node(self, ref: irefs.NodeId) -> dp.AnyTree:
-        if self.cache is not None and ref in self.cache:
-            return self.cache[ref]
+        if self.node_cache is not None and ref in self.node_cache:
+            return self.node_cache[ref]
         origin = self.trace.nodes[ref]
         if isinstance(origin, irefs.ChildOf):
             parent = self.resolve_node(origin.node)
@@ -54,17 +56,22 @@ class IRefResolver:
                 source = space.source()
                 assert isinstance(source, dp.NestedTree)
                 tree = source.spawn_tree()
-        if self.cache is not None:
-            self.cache[ref] = tree
+        if self.node_cache is not None:
+            self.node_cache[ref] = tree
         return tree
 
     def resolve_space(
         self, space_id: irefs.SpaceId
     ) -> dp.Space[Any] | Literal["main"]:
+        if self.space_cache is not None and space_id in self.space_cache:
+            return self.space_cache[space_id]
         space_def = self.trace.spaces[space_id]
         if isinstance(space_def, irefs.MainSpace):
             return "main"
-        return self.resolve_space_def(space_def.node, space_def.space)
+        space = self.resolve_space_def(space_def.node, space_def.space)
+        if self.space_cache is not None:
+            self.space_cache[space_id] = space
+        return space
 
     def resolve_space_def(
         self, node: irefs.NodeId, ref: irefs.SpaceRef
