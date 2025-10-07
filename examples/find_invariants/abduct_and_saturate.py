@@ -102,10 +102,15 @@ def _is_redundant(
 ### Utilities
 
 
-def search_equivalent(facts: Sequence[Formula], fml: Formula) -> Formula | None:
+def search_equivalent(
+    facts: Sequence[Formula],
+    fml: Formula,
+    *,
+    timeout: float | None = None
+) -> Formula | None:
     for f in facts:
-        limpl = why3.is_valid_implication([f], fml)
-        rimpl = why3.is_valid_implication([fml], f)
+        limpl = why3.is_valid_implication([f], fml, timeout=timeout)
+        rimpl = why3.is_valid_implication([fml], f, timeout=timeout)
         if limpl and rimpl:
             return f
     return None
