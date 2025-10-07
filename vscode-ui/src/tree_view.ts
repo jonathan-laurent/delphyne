@@ -24,6 +24,7 @@ import {
   serializeWithoutLocInfo,
 } from "./yaml_utils";
 import { ROOT_ID } from "./common";
+import { logWarning } from "./logging";
 
 const USE_PROPERTY_ICONS = true;
 const COLLAPSE_BY_DEFAULT = true;
@@ -535,6 +536,20 @@ export class TreeView {
         const node_id = Number(value);
         this.setSelectedNode(node_id, true);
       }),
+      vscode.commands.registerCommand(
+        "delphyne.jumpToSpaceWithId",
+        async () => {
+          const value = await vscode.window.showInputBox({
+            title: "Jump to space",
+            prompt: "Enter a space identifier",
+          });
+          if (value === undefined) {
+            return;
+          }
+          const space_id = Number(value);
+          this.setSelectedSpace(space_id);
+        },
+      ),
     );
   }
 
@@ -556,11 +571,29 @@ export class TreeView {
     if (this.pointedTree === null) {
       return;
     }
+    const trace = this.pointedTree.tree.trace;
+    if (!(node_id in trace.nodes)) {
+      logWarning(`Attempted to jump to invalid node id: ${node_id}.`);
+      return;
+    }
     if (push_to_history) {
       this.navigationHistory.push(node_id);
     }
     this.pointedTree = new PointedTree(this.pointedTree.tree, node_id);
     this.updateViews();
+  }
+
+  setSelectedSpace(space_id: TraceSpaceId, push_to_history: boolean = true) {
+    if (this.pointedTree === null) {
+      return;
+    }
+    const trace = this.pointedTree.tree.trace;
+    if (!(space_id in trace.spaces)) {
+      logWarning(`Attempted to jump to invalid space id: ${space_id}.`);
+      return;
+    }
+    const node_id = trace.spaces[space_id][0];
+    this.setSelectedNode(node_id, (push_to_history = push_to_history));
   }
 
   undoNavigationAction() {
