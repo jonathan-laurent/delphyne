@@ -1118,6 +1118,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.nodes.Skippable" class="md-nav__link">
+    <span class="md-ellipsis">
+      Skippable
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1687,6 +1696,15 @@
   <a href="#delphyne.stdlib.nodes.TypedSpaceRef" class="md-nav__link">
     <span class="md-ellipsis">
       TypedSpaceRef
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.nodes.Skippable" class="md-nav__link">
+    <span class="md-ellipsis">
+      Skippable
     </span>
   </a>
   
@@ -2334,6 +2352,108 @@ information.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">ref</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">refs</span><span class="o">.</span><span class="n">GlobalSpacePath</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="delphyne.stdlib.nodes.Skippable" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Skippable</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Node (delphyne.core.Node)" href="../../strategies/trees/#delphyne.Node">Node</a></code></p>
+
+
+        <p>Base class for skippable nodes that contain meta-information and can
+be safely skipped by policies.</p>
+<p>Many standard policies such as <a class="autorefs autorefs-internal" title="dfs" href="../algorithms/#delphyne.stdlib.search.dfs.dfs"><code>dfs</code></a> handle such nodes by default.
+An example child class is <code>Hindsight. We choose not to make [</code>Value<code>][delphyne.Value]
+skippable since eliminating value information must be explicit. The
+[</code>Message<code>][delphyne.Message] node is also not skippable, since doing so would risk
+[</code>elim_messages`][delphyne.elim_messages] not being called and the messages being lost.</p>
+
+
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Skippable</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for skippable nodes that contain meta-information and can</span>
+<span class="sd">    be safely skipped by policies.</span>
+
+<span class="sd">    Many standard policies such as `dfs` handle such nodes by default.</span>
+<span class="sd">    An example child class is `Hindsight. We choose not to make `Value`</span>
+<span class="sd">    skippable since eliminating value information must be explicit. The</span>
+<span class="sd">    `Message` node is also not skippable, since doing so would risk</span>
+<span class="sd">    `elim_messages` not being called and the messages being lost.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">navigate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Navigation</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">yield</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">valid_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">action</span> <span class="ow">is</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
               </details>
 

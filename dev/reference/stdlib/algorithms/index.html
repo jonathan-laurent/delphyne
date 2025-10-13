@@ -2356,7 +2356,12 @@ message that can contain several tool call requests).</p>
 
   
       dataclass
-   (delphyne.stdlib.nodes.Fail)" href="../effects/#delphyne.stdlib.nodes.Fail">Fail</a></span> <span class="o">|</span> <span class="n"><span title="delphyne.stdlib.nodes.Skippable">Skippable</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.dfs.dfs[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.dfs.dfs[T]">T</span></span><span class="p">],</span>
+   (delphyne.stdlib.nodes.Fail)" href="../effects/#delphyne.stdlib.nodes.Fail">Fail</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="Skippable
+
+
+  
+      dataclass
+   (delphyne.stdlib.nodes.Skippable)" href="../effects/#delphyne.stdlib.nodes.Skippable">Skippable</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.dfs.dfs[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.dfs.dfs[T]">T</span></span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.search.dfs.dfs[P]">P</span></span><span class="p">,</span>
     <span class="n">max_depth</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
