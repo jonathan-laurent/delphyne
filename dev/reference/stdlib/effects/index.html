@@ -2493,7 +2493,7 @@ inference when necessary.</p>
 <span class="sd">            is not used at runtime but it can be provided to help type</span>
 <span class="sd">            inference when necessary.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">spawn_node</span><span class="p">(</span><span class="n">Branch</span><span class="p">,</span> <span class="n">cands</span><span class="o">=</span><span class="n">cands</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">)</span>
+    <span class="n">ret</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">spawn_node</span><span class="p">(</span><span class="n">Branch</span><span class="p">,</span> <span class="n">cands</span><span class="o">=</span><span class="n">cands</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">ret</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -4179,7 +4179,7 @@ arbitrary metadata accessible to search policies.</p>
 <span class="sd">    Returns:</span>
 <span class="sd">        A sequence featuring all computation results.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">spawn_node</span><span class="p">(</span><span class="n">Join</span><span class="p">,</span> <span class="n">subs</span><span class="o">=</span><span class="n">subs</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">)</span>
+    <span class="n">ret</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">spawn_node</span><span class="p">(</span><span class="n">Join</span><span class="p">,</span> <span class="n">subs</span><span class="o">=</span><span class="n">subs</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">Sequence</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">ret</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -4596,7 +4596,7 @@ inference when necessary.</p>
         <span class="n">fun</span> <span class="o">=</span> <span class="n">insp</span><span class="o">.</span><span class="n">function_name</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">fun</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="n">query</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">TransparentQuery</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">__Computation__</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">fun_args</span><span class="p">))</span>
-        <span class="n">unparsed</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">spawn_node</span><span class="p">(</span>
+        <span class="n">unparsed</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">spawn_node</span><span class="p">(</span>
             <span class="n">Compute</span><span class="p">,</span>
             <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>
             <span class="n">override_args</span><span class="o">=</span><span class="n">override_args</span><span class="p">,</span>
@@ -5380,7 +5380,7 @@ list. If provided, Pydantic is used to load the data.</p>
         <span class="k">return</span> <span class="p">[]</span>
 
     <span class="n">query</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">TransparentQuery</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">__LoadData__</span><span class="p">(</span><span class="n">refs</span><span class="p">))</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">spawn_node</span><span class="p">(</span><span class="n">Data</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">)</span>
+    <span class="n">result</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">spawn_node</span><span class="p">(</span><span class="n">Data</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">DataNotFound</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">DataNotFound</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">result</span>
@@ -5764,7 +5764,7 @@ Python does not support higher-kinded types.</p>
 <span class="sd">        Python does not support higher-kinded types.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">query</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">TransparentQuery</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">flag</span><span class="p">())</span>
-    <span class="n">ret</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">spawn_node</span><span class="p">(</span><span class="n">Flag</span><span class="p">,</span> <span class="n">flag</span><span class="o">=</span><span class="n">query</span><span class="p">)</span>
+    <span class="n">ret</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">spawn_node</span><span class="p">(</span><span class="n">Flag</span><span class="p">,</span> <span class="n">flag</span><span class="o">=</span><span class="n">query</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">ret</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>

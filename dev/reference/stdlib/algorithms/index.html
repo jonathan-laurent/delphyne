@@ -4575,7 +4575,7 @@ trying to prove and accumulating redundant facts.</p>
 <span class="sd">    Returns:</span>
 <span class="sd">      a proof of the top-level goal.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">res</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">spawn_node</span><span class="p">(</span>
+    <span class="n">res</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">spawn_node</span><span class="p">(</span>
         <span class="n">Abduction</span><span class="p">,</span>
         <span class="n">prove</span><span class="o">=</span><span class="n">prove</span><span class="p">,</span>
         <span class="n">suggest</span><span class="o">=</span><span class="n">suggest</span><span class="p">,</span>

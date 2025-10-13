@@ -2308,14 +2308,7 @@ an oracular program).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">773</span>
-<span class="normal">774</span>
-<span class="normal">775</span>
-<span class="normal">776</span>
-<span class="normal">777</span>
-<span class="normal">778</span>
-<span class="normal">779</span>
-<span class="normal">780</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">780</span>
 <span class="normal">781</span>
 <span class="normal">782</span>
 <span class="normal">783</span>
@@ -2360,7 +2353,14 @@ an oracular program).</p>
 <span class="normal">822</span>
 <span class="normal">823</span>
 <span class="normal">824</span>
-<span class="normal">825</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">825</span>
+<span class="normal">826</span>
+<span class="normal">827</span>
+<span class="normal">828</span>
+<span class="normal">829</span>
+<span class="normal">830</span>
+<span class="normal">831</span>
+<span class="normal">832</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Tree</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Strategy Trees.</span>
@@ -2462,14 +2462,7 @@ useful to implement tree transformers such as <a class="autorefs autorefs-intern
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">808</span>
-<span class="normal">809</span>
-<span class="normal">810</span>
-<span class="normal">811</span>
-<span class="normal">812</span>
-<span class="normal">813</span>
-<span class="normal">814</span>
-<span class="normal">815</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">815</span>
 <span class="normal">816</span>
 <span class="normal">817</span>
 <span class="normal">818</span>
@@ -2479,7 +2472,14 @@ useful to implement tree transformers such as <a class="autorefs autorefs-intern
 <span class="normal">822</span>
 <span class="normal">823</span>
 <span class="normal">824</span>
-<span class="normal">825</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">[</span><span class="n">M</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span>
+<span class="normal">825</span>
+<span class="normal">826</span>
+<span class="normal">827</span>
+<span class="normal">828</span>
+<span class="normal">829</span>
+<span class="normal">830</span>
+<span class="normal">831</span>
+<span class="normal">832</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">[</span><span class="n">M</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">node</span><span class="p">:</span> <span class="s2">&quot;M | Success[T]&quot;</span><span class="p">,</span>
     <span class="n">transformer</span><span class="p">:</span> <span class="s2">&quot;AbstractTreeTransformer[N, M]&quot;</span><span class="p">,</span>
@@ -2559,14 +2559,7 @@ rule out.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">828</span>
-<span class="normal">829</span>
-<span class="normal">830</span>
-<span class="normal">831</span>
-<span class="normal">832</span>
-<span class="normal">833</span>
-<span class="normal">834</span>
-<span class="normal">835</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">835</span>
 <span class="normal">836</span>
 <span class="normal">837</span>
 <span class="normal">838</span>
@@ -2607,7 +2600,14 @@ rule out.</p>
 <span class="normal">873</span>
 <span class="normal">874</span>
 <span class="normal">875</span>
-<span class="normal">876</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">876</span>
+<span class="normal">877</span>
+<span class="normal">878</span>
+<span class="normal">879</span>
+<span class="normal">880</span>
+<span class="normal">881</span>
+<span class="normal">882</span>
+<span class="normal">883</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Success</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A success leaf, carrying a tracked value.</span>
@@ -5477,14 +5477,7 @@ transformers (see <code>Node.map_embedded</code>).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">630</span>
-<span class="normal">631</span>
-<span class="normal">632</span>
-<span class="normal">633</span>
-<span class="normal">634</span>
-<span class="normal">635</span>
-<span class="normal">636</span>
-<span class="normal">637</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">637</span>
 <span class="normal">638</span>
 <span class="normal">639</span>
 <span class="normal">640</span>
@@ -5492,7 +5485,14 @@ transformers (see <code>Node.map_embedded</code>).</p>
 <span class="normal">642</span>
 <span class="normal">643</span>
 <span class="normal">644</span>
-<span class="normal">645</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">645</span>
+<span class="normal">646</span>
+<span class="normal">647</span>
+<span class="normal">648</span>
+<span class="normal">649</span>
+<span class="normal">650</span>
+<span class="normal">651</span>
+<span class="normal">652</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">NestedTree</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper for a tree attached to a particular node.</span>
@@ -5700,14 +5700,7 @@ policy as its surrounding tree.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">648</span>
-<span class="normal">649</span>
-<span class="normal">650</span>
-<span class="normal">651</span>
-<span class="normal">652</span>
-<span class="normal">653</span>
-<span class="normal">654</span>
-<span class="normal">655</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">655</span>
 <span class="normal">656</span>
 <span class="normal">657</span>
 <span class="normal">658</span>
@@ -5734,7 +5727,14 @@ policy as its surrounding tree.</p>
 <span class="normal">679</span>
 <span class="normal">680</span>
 <span class="normal">681</span>
-<span class="normal">682</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">682</span>
+<span class="normal">683</span>
+<span class="normal">684</span>
+<span class="normal">685</span>
+<span class="normal">686</span>
+<span class="normal">687</span>
+<span class="normal">688</span>
+<span class="normal">689</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">EmbeddedTree</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span><span class="n">Space</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Space defined by a nested tree with the same signature and inner</span>
@@ -5863,14 +5863,7 @@ ultimately passed to the resulting space.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">709</span>
-<span class="normal">710</span>
-<span class="normal">711</span>
-<span class="normal">712</span>
-<span class="normal">713</span>
-<span class="normal">714</span>
-<span class="normal">715</span>
-<span class="normal">716</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">716</span>
 <span class="normal">717</span>
 <span class="normal">718</span>
 <span class="normal">719</span>
@@ -5896,7 +5889,14 @@ ultimately passed to the resulting space.</p>
 <span class="normal">739</span>
 <span class="normal">740</span>
 <span class="normal">741</span>
-<span class="normal">742</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">742</span>
+<span class="normal">743</span>
+<span class="normal">744</span>
+<span class="normal">745</span>
+<span class="normal">746</span>
+<span class="normal">747</span>
+<span class="normal">748</span>
+<span class="normal">749</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpaceBuilder</span><span class="p">[</span><span class="n">S</span><span class="p">:</span> <span class="n">Space</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper for a function that builds a space, given the ability to</span>
@@ -5969,11 +5969,11 @@ ultimately passed to the resulting space.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">729</span>
-<span class="normal">730</span>
-<span class="normal">731</span>
-<span class="normal">732</span>
-<span class="normal">733</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">tagged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">tags</span><span class="p">:</span> <span class="n">Tag</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SpaceBuilder[S]&quot;</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">736</span>
+<span class="normal">737</span>
+<span class="normal">738</span>
+<span class="normal">739</span>
+<span class="normal">740</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">tagged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">tags</span><span class="p">:</span> <span class="n">Tag</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SpaceBuilder[S]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add new tags to the space builder.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -6003,14 +6003,14 @@ current set of tags.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">735</span>
-<span class="normal">736</span>
-<span class="normal">737</span>
-<span class="normal">738</span>
-<span class="normal">739</span>
-<span class="normal">740</span>
-<span class="normal">741</span>
-<span class="normal">742</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">742</span>
+<span class="normal">743</span>
+<span class="normal">744</span>
+<span class="normal">745</span>
+<span class="normal">746</span>
+<span class="normal">747</span>
+<span class="normal">748</span>
+<span class="normal">749</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">spawner</span><span class="p">:</span> <span class="n">NestedTreeSpawner</span><span class="p">,</span> <span class="n">query_spawner</span><span class="p">:</span> <span class="n">QuerySpawner</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">S</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -6061,13 +6061,13 @@ with signature M, preserving its inner policy type and return type.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">898</span>
-<span class="normal">899</span>
-<span class="normal">900</span>
-<span class="normal">901</span>
-<span class="normal">902</span>
-<span class="normal">903</span>
-<span class="normal">904</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractTreeTransformer</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">M</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">905</span>
+<span class="normal">906</span>
+<span class="normal">907</span>
+<span class="normal">908</span>
+<span class="normal">909</span>
+<span class="normal">910</span>
+<span class="normal">911</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractTreeTransformer</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">M</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A function that transforms any tree with signature N into a tree</span>
 <span class="sd">    with signature M, preserving its inner policy type and return type.</span>
