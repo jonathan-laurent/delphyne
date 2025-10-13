@@ -3329,7 +3329,7 @@ returns a pure tree transformer (<a class="autorefs autorefs-internal" title="Pu
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__rmatmul__</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">search_policy</span><span class="p">:</span> <span class="s2">&quot;SearchPolicy[B | N]&quot;</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SearchPolicy[A | N]&quot;</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SearchPolicy[A | B | N]&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compose a contextual tree transformer with a search policy.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3438,7 +3438,7 @@ transformer.</p>
 
   
       dataclass
-   (delphyne.stdlib.policies.SearchPolicy)" href="#delphyne.SearchPolicy">SearchPolicy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer[A]">A</span></span> <span class="o">|</span> <span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer.__rmatmul__[N]">N</span></span><span class="p">]</span>
+   (delphyne.stdlib.policies.SearchPolicy)" href="#delphyne.SearchPolicy">SearchPolicy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer[A]">A</span></span> <span class="o">|</span> <span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer[B]">B</span></span> <span class="o">|</span> <span class="n"><span title="delphyne.stdlib.policies.ContextualTreeTransformer.__rmatmul__[N]">N</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -3467,7 +3467,7 @@ transformer.</p>
 <span class="normal">350</span>
 <span class="normal">351</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__rmatmul__</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">search_policy</span><span class="p">:</span> <span class="s2">&quot;SearchPolicy[B | N]&quot;</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SearchPolicy[A | N]&quot;</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SearchPolicy[A | B | N]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compose a contextual tree transformer with a search policy.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

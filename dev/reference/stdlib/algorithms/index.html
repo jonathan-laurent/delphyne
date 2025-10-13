@@ -2356,7 +2356,7 @@ message that can contain several tool call requests).</p>
 
   
       dataclass
-   (delphyne.stdlib.nodes.Fail)" href="../effects/#delphyne.stdlib.nodes.Fail">Fail</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.dfs.dfs[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.dfs.dfs[T]">T</span></span><span class="p">],</span>
+   (delphyne.stdlib.nodes.Fail)" href="../effects/#delphyne.stdlib.nodes.Fail">Fail</a></span> <span class="o">|</span> <span class="n"><span title="delphyne.stdlib.nodes.Skippable">Skippable</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.dfs.dfs[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.dfs.dfs[T]">T</span></span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.search.dfs.dfs[P]">P</span></span><span class="p">,</span>
     <span class="n">max_depth</span><span class="p">:</span> <span class="n"><span title="int">int</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2450,9 +2450,14 @@ each branching node.</p>
 <span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
-<span class="normal">52</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">dfs</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
-    <span class="n">tree</span><span class="p">:</span> <span class="n">Tree</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
+    <span class="n">tree</span><span class="p">:</span> <span class="n">Tree</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span> <span class="o">|</span> <span class="n">Skippable</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">P</span><span class="p">,</span>
     <span class="n">max_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2474,6 +2479,11 @@ each branching node.</p>
     <span class="k">match</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="p">:</span>
         <span class="k">case</span> <span class="n">Success</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
             <span class="k">yield</span> <span class="n">Solution</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">case</span> <span class="n">Skippable</span><span class="p">():</span>
+            <span class="k">yield from</span> <span class="n">dfs</span><span class="p">(</span>
+                <span class="n">max_depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">,</span>
+                <span class="n">max_branching</span><span class="o">=</span><span class="n">max_branching</span><span class="p">,</span>
+            <span class="p">)(</span><span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
         <span class="k">case</span> <span class="n">Fail</span><span class="p">():</span>
             <span class="k">pass</span>
         <span class="k">case</span> <span class="n">Branch</span><span class="p">(</span><span class="n">cands</span><span class="p">):</span>
@@ -2532,12 +2542,7 @@ parallel.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/search/dfs.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">60</span>
 <span class="normal">61</span>
 <span class="normal">62</span>
 <span class="normal">63</span>
@@ -2556,7 +2561,12 @@ parallel.</p>
 <span class="normal">76</span>
 <span class="normal">77</span>
 <span class="normal">78</span>
-<span class="normal">79</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">par_dfs</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="n">tree</span><span class="p">:</span> <span class="n">Tree</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
