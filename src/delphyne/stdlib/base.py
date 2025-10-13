@@ -66,6 +66,7 @@ from delphyne.stdlib.nodes import (
     Join,
     Message,
     NodeMeta,
+    TypedSpaceRef,
     Value,
     binarize_values,
     branch,

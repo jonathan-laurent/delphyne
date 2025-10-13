@@ -8,6 +8,8 @@
 
 ::: delphyne.stdlib.nodes.NodeMeta
 
+::: delphyne.stdlib.nodes.TypedSpaceRef
+
 ## Branch
 
 ::: delphyne.stdlib.nodes.Branch

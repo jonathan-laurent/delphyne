@@ -4,7 +4,17 @@ Standard Nodes and Effects
 
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Any, Never, NoReturn, cast, override
+from typing import (
+    Any,
+    Generic,
+    Literal,
+    Never,
+    NoReturn,
+    TypeVar,
+    cast,
+    overload,
+    override,
+)
 
 import delphyne.core as dp
 import delphyne.stdlib.policies as pol
@@ -55,6 +65,26 @@ class NodeMeta:
 
 
 #####
+##### Typed space references
+#####
+
+
+T_inv = TypeVar("T_inv", contravariant=False, covariant=False)
+
+
+@dataclass(frozen=True)
+class TypedSpaceRef(Generic[T_inv]):
+    """
+    A wrapper around global space references that carries phantom type
+    information.
+
+    See `branch` for an example of usage.
+    """
+
+    ref: dp.refs.GlobalSpacePath
+
+
+#####
 ##### Branch Node
 #####
 
@@ -80,11 +110,32 @@ class Branch(dp.Node):
         return self.cands
 
 
+@overload
 def branch[P, T](
     cands: Opaque[P, T],
+    *,
     meta: Callable[[P], NodeMeta] | None = None,
     inner_policy_type: type[P] | None = None,
-) -> dp.Strategy[Branch, P, T]:
+) -> dp.Strategy[Branch, P, T]: ...
+
+
+@overload
+def branch[P, T](
+    cands: Opaque[P, T],
+    *,
+    meta: Callable[[P], NodeMeta] | None = None,
+    return_space_ref: Literal[True],
+    inner_policy_type: type[P] | None = None,
+) -> dp.Strategy[Branch, P, tuple[T, TypedSpaceRef[T]]]: ...
+
+
+def branch[P, T](
+    cands: Opaque[P, T],
+    *,
+    meta: Callable[[P], NodeMeta] | None = None,
+    return_space_ref: bool = False,
+    inner_policy_type: type[P] | None = None,
+) -> dp.Strategy[Branch, P, T | tuple[T, TypedSpaceRef[T]]]:
     """
     Branch over the elements of an opaque space.
 
@@ -96,9 +147,15 @@ def branch[P, T](
         inner_policy_type: Ambient inner policy type. This information
             is not used at runtime but it can be provided to help type
             inference when necessary.
+        return_space_ref: Whether to return a typed reference to the
+            space of candidates along with the chosen element.
     """
-    ret, _ = yield spawn_node(Branch, cands=cands, meta=meta)
-    return cast(T, ret)
+    ret, nref = yield spawn_node(Branch, cands=cands, meta=meta)
+    ret = cast(T, ret)
+    if not return_space_ref:
+        return ret
+    lsref = dp.refs.SpaceRef(dp.refs.SpaceName("cands", ()), ())
+    return ret, TypedSpaceRef[T](nref.nested_space(lsref))
 
 
 #####
