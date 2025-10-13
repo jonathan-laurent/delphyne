@@ -103,7 +103,7 @@ def get_flag[T: str](
         Python does not support higher-kinded types.
     """
     query = dp.TransparentQuery.build(flag())
-    ret = yield spawn_node(Flag, flag=query)
+    ret, _ = yield spawn_node(Flag, flag=query)
     return cast(T, ret)
 
 

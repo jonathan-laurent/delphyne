@@ -447,13 +447,15 @@ generated and returned.
 ####
 
 
-type Strategy[N: Node, P, T] = Generator[NodeBuilder[N, P], object, T]
+type Strategy[N: Node, P, T] = Generator[
+    NodeBuilder[N, P], tuple[object, refs.GlobalNodeRef], T
+]
 """
 Type of a strategy computation.
 
 A strategy computation is a generator (i.e., a coroutine) that yields
-node builders and receives corresponding actions, until it returns a
-success value.
+node builders and receives corresponding action/reference pairs, until
+it returns a success value.
 
 Type Parameters:
     N: The strategy's signature, typically a union of node types
@@ -466,6 +468,11 @@ Type Parameters:
     computations cannot create nodes since they are unaware of
     references. The task of concretely building nodes and maintaining
     references is delegated to the `refine` function.
+
+!!! info
+    Strategy generators receive references to the spawned nodes along
+    with corresponding actions. This is useful to implement hindsight
+    feedback, where pointers to specific spaces are needed.
 """
 
 

@@ -97,7 +97,7 @@ def branch[P, T](
             is not used at runtime but it can be provided to help type
             inference when necessary.
     """
-    ret = yield spawn_node(Branch, cands=cands, meta=meta)
+    ret, _ = yield spawn_node(Branch, cands=cands, meta=meta)
     return cast(T, ret)
 
 
@@ -510,5 +510,5 @@ def join[N: dp.Node, P, T](
     Returns:
         A sequence featuring all computation results.
     """
-    ret = yield spawn_node(Join, subs=subs, meta=meta)
+    ret, _ = yield spawn_node(Join, subs=subs, meta=meta)
     return cast(Sequence[T], ret)

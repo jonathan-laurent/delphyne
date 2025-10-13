@@ -115,7 +115,7 @@ def make_conjecture[P, T](
     aggregation function that combines several candidates into a list of
     candidates (e.g. removing semantic duplicates).
     """
-    cand = yield dp.spawn_node(
+    cand, _ = yield dp.spawn_node(
         Conjecture, cands=cands, disprove=disprove, aggregate=aggregate
     )
     return cast(T, cand)

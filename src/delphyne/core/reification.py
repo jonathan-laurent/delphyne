@@ -145,7 +145,7 @@ def _reify[N: Node, P, T](
 
     def aux(
         strategy: StrategyComp[N, P, T],
-        actions: Sequence[object],
+        actions_and_refs: Sequence[tuple[object, refs.GlobalNodeRef]],
         ref: refs.GlobalNodeRef,
         node: N | Success[T],
         cur_generator: Strategy[N, P, T],
@@ -181,18 +181,20 @@ def _reify[N: Node, P, T](
             # None and the strategy is resimulated from scratch
             # following `self._path`.
             nonlocal generator_valid
-            new_actions = (*actions, action_raw)
+            new_actions_and_refs = (*actions_and_refs, (action_raw, new_ref))
             if generator_valid:
-                pre_node = _send_action(cur_generator, action_raw)
+                pre_node = _send_action(cur_generator, (action_raw, new_ref))
                 new_gen = cur_generator
                 generator_valid = False
             else:
-                pre_node, new_gen = _recompute(strategy, new_actions)
+                pre_node, new_gen = _recompute(strategy, new_actions_and_refs)
             ret_type = strategy.return_type()
             new_node = _finalize_node(
                 pre_node, new_ref, ret_type, monitor, allow_noncopyable_actions
             )
-            return aux(strategy, new_actions, new_ref, new_node, new_gen)
+            return aux(
+                strategy, new_actions_and_refs, new_ref, new_node, new_gen
+            )
 
         tree = Tree(node, child, ref)
         if monitor.cache is not None:
@@ -236,10 +238,14 @@ type _PreNode[N: Node, P, T] = tr.NodeBuilder[N, P] | _PreSuccess[T]
 
 
 def _send_action[N: Node, P, T](
-    gen: Strategy[N, P, T], action: object
+    gen: Strategy[N, P, T],
+    action_and_ref: tuple[object, refs.GlobalNodeRef] | None,
 ) -> _PreNode[N, P, T]:
     try:
-        return gen.send(deepcopy(action))
+        if action_and_ref is not None:
+            action, ref = action_and_ref
+            return gen.send((deepcopy(action), ref))
+        return next(gen)  # `gen.send(None)` gives a type error in pyright
     except StopIteration as e:
         v = cast(T, e.value)
         return _PreSuccess(v)
@@ -249,15 +255,17 @@ def _send_action[N: Node, P, T](
 
 def _recompute[N: Node, P, T](
     strategy: StrategyComp[N, P, T],
-    actions: Sequence[object],
+    actions_and_refs: Sequence[tuple[object, refs.GlobalNodeRef]],
 ) -> tuple[_PreNode[N, P, T], Strategy[N, P, T]]:
     try:
+        # Exceptions may be raised even before the generator starts, if
+        # the strategy functions is passed wrong arguments for example.
         gen = strategy.run_generator()
     except Exception as e:
         raise tr.StrategyException(e)
     mknode = _send_action(gen, None)
-    for a in actions:
-        mknode = _send_action(gen, a)
+    for ar in actions_and_refs:
+        mknode = _send_action(gen, ar)
     return mknode, gen
 
 

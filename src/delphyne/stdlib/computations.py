@@ -174,7 +174,7 @@ def compute[**A, T, P](
         fun = insp.function_name(f)
         assert fun is not None
         query = dp.TransparentQuery.build(__Computation__(fun, fun_args))
-        unparsed = yield spawn_node(
+        unparsed, _ = yield spawn_node(
             Compute,
             query=query,
             override_args=override_args,

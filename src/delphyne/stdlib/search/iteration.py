@@ -38,7 +38,7 @@ def _iterate_inherited_tags(next: Any) -> Sequence[dp.SpaceBuilder[Any]]:
 def _iterate[P, S, T](
     next: Callable[[S | None], Opaque[P, tuple[T | None, S]]],
 ) -> dp.Strategy[Iteration | Fail, P, T]:
-    ret = yield spawn_node(Iteration, next=next)
+    ret, _ = yield spawn_node(Iteration, next=next)
     ret = cast(tuple[T | None, S], ret)
     yielded, _new_state = ret
     if yielded is None:
