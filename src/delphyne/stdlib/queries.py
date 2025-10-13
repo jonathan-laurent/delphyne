@@ -1003,9 +1003,9 @@ class Query[T](dp.AbstractQuery[T]):
     ### Hindsight Feedback
 
     @override
-    def hindsight_answer(self, feedback: Any) -> Answer | None:
+    def unparse(self, feedback: T) -> Answer | None:
         """
-        Return a hindsight answer that parses back to the given value.
+        Unparse an answer.
 
         By default, this method checks whether there is a single mode
         that uses structured output, and handles this case. This method

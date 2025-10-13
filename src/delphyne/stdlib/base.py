@@ -23,7 +23,6 @@ from delphyne.stdlib.environments import (
 from delphyne.stdlib.hindsight_feedback import (
     Hindsight,
     elim_hindsight,
-    hindsight,
 )
 from delphyne.stdlib.models import (
     DOLLAR_PRICE,

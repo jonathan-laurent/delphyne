@@ -388,17 +388,6 @@ class PolicyEnv:
         for path in demonstration_files:
             for demo in loaders.load_demo_file(path):
                 self.examples.add_demonstration(demo)
-        self._hindsight_feedback: HindsightFeedbackDict = {}
-
-    def add_hindsight_feedback(
-        self, node_id: int, feedback: HindsightFeedback
-    ) -> None:
-        with self.tracer.lock:
-            self._hindsight_feedback[node_id] = feedback
-
-    def get_hindsight_feedback(self) -> HindsightFeedbackDict:
-        with self.tracer.lock:
-            return self._hindsight_feedback.copy()
 
     def overriden_answer(
         self, query: dp.AbstractQuery[Any]

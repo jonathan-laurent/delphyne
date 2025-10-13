@@ -307,14 +307,10 @@ class AbstractQuery(Generic[T], ABC):
         """
         return None
 
-    def hindsight_answer(self, feedback: Any) -> Answer | None:
+    def unparse(self, feedback: T) -> Answer | None:
         """
-        Return a hindsight answer that parses back to the given value,
-        given some feedback.
+        Return an answer that parses back to the given value.
 
-        !!! note
-            In many cases, `feedback` has type `T`, but this is not
-            always the case, as arbitrary forms of feedback are
-            accepted.
+        This is sometimes useful for hindsight feedback.
         """
         return None

@@ -27,15 +27,7 @@ outcome:
       cached_input_tokens: 0
       price: 4.78e-06
     success_nodes:
-      - 6
-    hindsight_feedback:
-      5:
-        query: AskNumber
-        args:
-          prefix: []
-        answer:
-          mode: null
-          content: '83'
+      - 5
     raw_trace:
       nodes:
         1: nested($0)
@@ -43,7 +35,6 @@ outcome:
         3: child(%2, $2{@2})
         4: nested($3)
         5: child(%3, $3{%4})
-        6: child(%5, nil)
       spaces:
         0: main
         1: local(%1, cands)
