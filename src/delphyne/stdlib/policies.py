@@ -333,7 +333,7 @@ class ContextualTreeTransformer[A: Node, B: Node]:
 
     def __rmatmul__[N: Node](
         self, search_policy: "SearchPolicy[B | N]"
-    ) -> "SearchPolicy[A | N]":
+    ) -> "SearchPolicy[A | B | N]":
         """
         Compose a contextual tree transformer with a search policy.
         """
