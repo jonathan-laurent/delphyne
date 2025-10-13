@@ -21,8 +21,18 @@ from delphyne.stdlib.environments import (
     TemplatesManager,
 )
 from delphyne.stdlib.hindsight_feedback import (
-    Hindsight,
-    elim_hindsight,
+    AttachedFeedback,
+    BackpropagateFeedback,
+    BadValue,
+    Feedback,
+    FeedbackMessage,
+    GoodValue,
+    Shortcut,
+    ThrowFeedback,
+    backward,
+    elim_feedback,
+    feedback,
+    send,
 )
 from delphyne.stdlib.models import (
     DOLLAR_PRICE,

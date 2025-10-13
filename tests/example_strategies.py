@@ -926,7 +926,7 @@ class AskNumber(dp.Query[dp.Response[int | dp.WrappedParseError, Never]]):
 
 @strategy
 def get_magic_number() -> Strategy[
-    Branch | dp.Hindsight, dp.PromptingPolicy, int
+    Branch | dp.Feedback, dp.PromptingPolicy, int
 ]:
     ret = yield from dp.interact(
         step=lambda pre, _: AskNumber(pre).using(dp.ambient_pp),
@@ -941,7 +941,7 @@ def get_magic_number() -> Strategy[
 
 @dp.ensure_compatible(get_magic_number)
 def get_magic_number_policy(model: dp.LLM, no_wrap: bool):
-    sp = dp.dfs() @ dp.elim_hindsight()
+    sp = dp.dfs() @ dp.elim_feedback()
     pp = dp.few_shot(model, no_wrap_parse_errors=no_wrap)
     return sp & pp
 

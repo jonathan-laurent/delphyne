@@ -1,43 +1,126 @@
 """
-Defining the standard `Hindsight` effect for hindsight feedback.
+Defining the standard `Feedback` effect for hindsight feedback.
 """
 
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from typing import Any, Never
+from typing import Any, Generic, Never, TypeVar
 
 import delphyne.core as dp
+import delphyne.stdlib.nodes as nd
 import delphyne.stdlib.policies as pol
 
+#####
+##### Feedback Messages
+#####
 
-@dataclass
-class Hindsight(dp.Node):
-    """
-    The standard `Hindsight` effect.
-    """
 
+T_co = TypeVar("T_co", covariant=True, contravariant=False)
+
+
+@dataclass(frozen=True)
+class FeedbackMessage(Generic[T_co]):
     pass
 
-    def navigate(self) -> dp.Navigation:
-        return None
-        yield
+
+@dataclass(frozen=True)
+class GoodValue(FeedbackMessage[Never]):
+    pass
+
+
+@dataclass(frozen=True)
+class BadValue(FeedbackMessage[Never]):
+    error: dp.Error
+
+
+@dataclass(frozen=True)
+class Shortcut[T](FeedbackMessage[T]):
+    value: T
+
+
+@dataclass(frozen=True)
+class AttachedFeedback[T]:
+    msg: FeedbackMessage[T]
+    dst: nd.TypedSpaceRef[T]
+
+
+def send[T](
+    msg: FeedbackMessage[T], to: nd.TypedSpaceRef[T], /
+) -> AttachedFeedback[T]:
+    return AttachedFeedback(msg, to)
+
+
+#####
+##### Feedback Nodes
+#####
+
+
+@dataclass(frozen=True)
+class Feedback(nd.Skippable):
+    """
+    The standard `Feedback` effect.
+    """
+
+
+@dataclass(frozen=True)
+class ThrowFeedback(Feedback):
+    """
+    Feedback source.
+    """
+
+    label: str
+    messages: Iterable[AttachedFeedback[Any]]
+
+
+@dataclass(frozen=True)
+class BackpropagateFeedback(Feedback):
+    """
+    Handler for backpropagating feedback.
+    """
+
+    label: str
+    back: Callable[[FeedbackMessage[Any]], Iterable[AttachedFeedback[Any]]]
+
+
+#####
+##### Triggers
+#####
+
+
+def feedback(
+    label: str, messages: Iterable[AttachedFeedback[Any]]
+) -> dp.Strategy[Feedback, object, None]:
+    yield nd.spawn_node(ThrowFeedback, label=label, messages=messages)
+    return None
+
+
+def backward[T](
+    label: str,
+    res: T,
+    back: Callable[[FeedbackMessage[T]], Iterable[AttachedFeedback[Any]]],
+) -> dp.Strategy[Feedback, object, None]:
+    yield nd.spawn_node(BackpropagateFeedback, label=label, back=back)
+    return None
+
+
+#####
+##### Transformers
+#####
 
 
 @pol.contextual_tree_transformer
-def elim_hindsight(
+def elim_feedback(
     env: pol.PolicyEnv,
     policy: Any,
-) -> pol.PureTreeTransformerFn[Hindsight, Never]:
+) -> pol.PureTreeTransformerFn[Feedback, Never]:
     """
-    Eliminate the `Hindsight` effect.
-
-    This transformer populates the `hindsight_feedback` field of
-    `PolicyEnv`.
+    Eliminate the `Feedback` effect, by removing all feedback nodes.
     """
 
     def transform[N: dp.Node, P, T](
-        tree: dp.Tree[Hindsight | N, P, T],
+        tree: dp.Tree[Feedback | N, P, T],
     ) -> dp.Tree[N, P, T]:
-        if isinstance(tree.node, Hindsight):
+        if isinstance(tree.node, Feedback):
             return transform(tree.child(None))
         return tree.transform(tree.node, transform)
 
