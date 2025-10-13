@@ -65,6 +65,7 @@ from delphyne.stdlib.nodes import (
     Join,
     Message,
     NodeMeta,
+    Skippable,
     TypedSpaceRef,
     Value,
     binarize_values,

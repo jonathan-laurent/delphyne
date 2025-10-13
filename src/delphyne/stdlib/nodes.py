@@ -85,6 +85,34 @@ class TypedSpaceRef(Generic[T_inv]):
 
 
 #####
+##### Skippable Nodes
+#####
+
+
+@dataclass(frozen=True)
+class Skippable(dp.Node):
+    """
+    Base class for skippable nodes that contain meta-information and can
+    be safely skipped by policies.
+
+    Many standard policies such as `dfs` handle such nodes by default.
+    An example child class is `Hindsight. We choose not to make `Value`
+    skippable since eliminating value information must be explicit. The
+    `Message` node is also not skippable, since doing so would risk
+    `elim_messages` not being called and the messages being lost.
+    """
+
+    @override
+    def navigate(self) -> dp.Navigation:
+        return None
+        yield
+
+    @override
+    def valid_action(self, action: object) -> bool:
+        return action is None
+
+
+#####
 ##### Branch Node
 #####
 

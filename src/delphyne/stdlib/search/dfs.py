@@ -5,14 +5,14 @@ Depth-First Search Algorithm
 from delphyne.core.streams import Solution, StreamGen
 from delphyne.core.trees import Success, Tree
 from delphyne.stdlib.environments import PolicyEnv
-from delphyne.stdlib.nodes import Branch, Fail
+from delphyne.stdlib.nodes import Branch, Fail, Skippable
 from delphyne.stdlib.policies import search_policy, unsupported_node
 from delphyne.stdlib.streams import Stream
 
 
 @search_policy
 def dfs[P, T](
-    tree: Tree[Branch | Fail, P, T],
+    tree: Tree[Branch | Fail | Skippable, P, T],
     env: PolicyEnv,
     policy: P,
     max_depth: int | None = None,
@@ -34,6 +34,11 @@ def dfs[P, T](
     match tree.node:
         case Success(x):
             yield Solution(x)
+        case Skippable():
+            yield from dfs(
+                max_depth=max_depth,
+                max_branching=max_branching,
+            )(tree.child(None), env, policy).gen()
         case Fail():
             pass
         case Branch(cands):

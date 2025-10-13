@@ -10,6 +10,8 @@
 
 ::: delphyne.stdlib.nodes.TypedSpaceRef
 
+::: delphyne.stdlib.nodes.Skippable
+
 ## Branch
 
 ::: delphyne.stdlib.nodes.Branch
