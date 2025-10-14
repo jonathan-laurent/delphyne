@@ -4,7 +4,7 @@ A standard strategy for creating conversational agents.
 
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Literal, overload
 
 import delphyne.core_and_base as dp
 import delphyne.stdlib.queries as dq
@@ -31,6 +31,7 @@ class InteractStats:
     num_tool_call_rounds: int
 
 
+@overload
 def interact[P, A, B, T: md.AbstractTool[Any]](
     step: Callable[
         [dp.AnswerPrefix, InteractStats],
@@ -40,7 +41,34 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
     process: Callable[[A, InteractStats], Opaque[P, B | dp.Error]],
     tools: Mapping[type[T], Callable[[Any], Opaque[P, Any]]] | None = None,
     inner_policy_type: type[P] | None = None,
-) -> dp.Strategy[Branch, P, B]:
+) -> dp.Strategy[Branch, P, B]: ...
+
+
+@overload
+def interact[P, A, B, T: md.AbstractTool[Any]](
+    step: Callable[
+        [dp.AnswerPrefix, InteractStats],
+        Opaque[P, dq.Response[A | WrappedParseError, T]],
+    ],
+    *,
+    process: Callable[[A, InteractStats], Opaque[P, B | dp.Error]],
+    tools: Mapping[type[T], Callable[[Any], Opaque[P, Any]]] | None = None,
+    produce_feedback: Literal[True] = True,
+    inner_policy_type: type[P] | None = None,
+) -> dp.Strategy[Branch | dp.Feedback, P, B]: ...
+
+
+def interact[P, A, B, T: md.AbstractTool[Any]](
+    step: Callable[
+        [dp.AnswerPrefix, InteractStats],
+        Opaque[P, dq.Response[A | WrappedParseError, T]],
+    ],
+    *,
+    process: Callable[[A, InteractStats], Opaque[P, B | dp.Error]],
+    tools: Mapping[type[T], Callable[[Any], Opaque[P, Any]]] | None = None,
+    produce_feedback: bool = False,
+    inner_policy_type: type[P] | None = None,
+) -> dp.Strategy[Branch | dp.Feedback, P, B]:
     """
     A standard strategy for creating conversational agents.
 
@@ -66,6 +94,7 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
             implementations. Tools themselves can be implemented using
             arbitrary strategies or queries, allowing the integration of
             horizontal and vertical LLM pipelines.
+        produce_feedback: Whether or not to produce `Feedback` nodes.
         inner_policy_type: Ambient inner policy type. This information
             is not used at runtime but it can be provided to help type
             inference when necessary.
