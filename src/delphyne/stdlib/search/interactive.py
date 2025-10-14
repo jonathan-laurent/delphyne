@@ -7,7 +7,6 @@ from dataclasses import dataclass
 from typing import Any, Literal, overload
 
 import delphyne.core_and_base as dp
-import delphyne.stdlib.queries as dq
 from delphyne.stdlib import models as md
 from delphyne.stdlib.nodes import Branch, branch
 from delphyne.stdlib.opaque import Opaque
@@ -35,7 +34,7 @@ class InteractStats:
 def interact[P, A, B, T: md.AbstractTool[Any]](
     step: Callable[
         [dp.AnswerPrefix, InteractStats],
-        Opaque[P, dq.Response[A | WrappedParseError, T]],
+        Opaque[P, dp.Response[A | WrappedParseError, T]],
     ],
     *,
     process: Callable[[A, InteractStats], Opaque[P, B | dp.Error]],
@@ -48,12 +47,13 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
 def interact[P, A, B, T: md.AbstractTool[Any]](
     step: Callable[
         [dp.AnswerPrefix, InteractStats],
-        Opaque[P, dq.Response[A | WrappedParseError, T]],
+        Opaque[P, dp.Response[A | WrappedParseError, T]],
     ],
     *,
     process: Callable[[A, InteractStats], Opaque[P, B | dp.Error]],
     tools: Mapping[type[T], Callable[[Any], Opaque[P, Any]]] | None = None,
     produce_feedback: Literal[True] = True,
+    unprocess: Callable[[B], A | None] | None = None,
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Branch | dp.Feedback, P, B]: ...
 
@@ -61,12 +61,13 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
 def interact[P, A, B, T: md.AbstractTool[Any]](
     step: Callable[
         [dp.AnswerPrefix, InteractStats],
-        Opaque[P, dq.Response[A | WrappedParseError, T]],
+        Opaque[P, dp.Response[A | WrappedParseError, T]],
     ],
     *,
     process: Callable[[A, InteractStats], Opaque[P, B | dp.Error]],
     tools: Mapping[type[T], Callable[[Any], Opaque[P, Any]]] | None = None,
     produce_feedback: bool = False,
+    unprocess: Callable[[B], A | None] | None = None,
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Branch | dp.Feedback, P, B]:
     """
@@ -95,6 +96,8 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
             arbitrary strategies or queries, allowing the integration of
             horizontal and vertical LLM pipelines.
         produce_feedback: Whether or not to produce `Feedback` nodes.
+        unprocess: If `produce_feedback` is `True`, this function is
+            useful for backpropagating `Shortcut` feedback messages.
         inner_policy_type: Ambient inner policy type. This information
             is not used at runtime but it can be provided to help type
             inference when necessary.
@@ -102,11 +105,16 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
 
     prefix: dp.AnswerPrefix = []
     stats = InteractStats(num_rejected=0, num_tool_call_rounds=0)
+    init_resp_ref = None
     while True:
-        resp = yield from branch(step(prefix, stats))
+        resp, resp_ref = yield from branch(
+            step(prefix, stats), return_space_ref=True
+        )
+        if init_resp_ref is None:
+            init_resp_ref = resp_ref
         prefix.append(dp.OracleMessage("oracle", resp.answer))
         match resp.parsed:
-            case dq.FinalAnswer(a):
+            case dp.FinalAnswer(a):
                 if isinstance(a, WrappedParseError):
                     msg = dp.FeedbackMessage(
                         kind="feedback",
@@ -127,9 +135,42 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
                         )
                         stats.num_rejected += 1
                         prefix.append(msg)
+                        if produce_feedback:
+                            err_f = dp.send(dp.BadValue(res), resp_ref)
+                            yield from dp.feedback("interact:error", [err_f])
                     else:
+                        if produce_feedback:
+
+                            def backward(msg: dp.HindsightMessage[B]):
+                                if isinstance(msg, dp.GoodValue):
+                                    yield dp.send(msg, resp_ref)
+                                    yield dp.send(
+                                        dp.Shortcut(resp), init_resp_ref
+                                    )
+                                elif (
+                                    isinstance(msg, dp.Shortcut) and unprocess
+                                ):
+                                    # We send a shortcut to the initial
+                                    # response, knowing that the raw
+                                    # answer will be discarded and only
+                                    # the parsed answer will matter.
+                                    v = unprocess(msg.value)
+                                    if v is not None:
+                                        yield dp.send(
+                                            dp.Shortcut(
+                                                dp.Response[A, T](
+                                                    resp.answer,  # irrelevant
+                                                    dp.FinalAnswer(v),
+                                                )
+                                            ),
+                                            init_resp_ref,
+                                        )
+                                elif isinstance(msg, dp.BadValue):
+                                    yield dp.send(msg, resp_ref)
+
+                            dp.backward("interact:shortcut", res, backward)
                         return res
-            case dq.ToolRequests(tc):
+            case dp.ToolRequests(tc):
                 for i, t in enumerate(tc):
                     assert tools is not None
                     tres = yield from branch(tools[type(t)](t))
