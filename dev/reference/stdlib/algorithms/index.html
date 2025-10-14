@@ -1885,7 +1885,7 @@
 
   
       dataclass
-   (delphyne.stdlib.queries.Response)" href="../queries/#delphyne.Response">Response</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[A]">A</span></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="WrappedParseError
+   (delphyne.core_and_base.Response)" href="../queries/#delphyne.Response">Response</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[A]">A</span></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="WrappedParseError
 
 
   
@@ -1924,7 +1924,7 @@
 
   
       dataclass
-   (delphyne.stdlib.queries.Response)" href="../queries/#delphyne.Response">Response</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[A]">A</span></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="WrappedParseError
+   (delphyne.core_and_base.Response)" href="../queries/#delphyne.Response">Response</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[A]">A</span></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="WrappedParseError
 
 
   
@@ -1945,6 +1945,7 @@
    (delphyne.core_and_base.Error)" href="../../strategies/misc/#delphyne.Error">Error</a></span><span class="p">]],</span>
     <span class="n">tools</span><span class="p">:</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[T]">T</span></span><span class="p">],</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[P]">P</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">]]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">produce_feedback</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="kc">True</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">unprocess</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[B]">B</span></span><span class="p">],</span> <span class="n"><span title="delphyne.stdlib.search.interactive.interact[A]">A</span></span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[P]">P</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core_and_base.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Branch
 
@@ -1965,7 +1966,7 @@
 
   
       dataclass
-   (delphyne.stdlib.queries.Response)" href="../queries/#delphyne.Response">Response</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[A]">A</span></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="WrappedParseError
+   (delphyne.core_and_base.Response)" href="../queries/#delphyne.Response">Response</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[A]">A</span></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="WrappedParseError
 
 
   
@@ -1986,6 +1987,7 @@
    (delphyne.core_and_base.Error)" href="../../strategies/misc/#delphyne.Error">Error</a></span><span class="p">]],</span>
     <span class="n">tools</span><span class="p">:</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[T]">T</span></span><span class="p">],</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[P]">P</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">]]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">produce_feedback</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">unprocess</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[B]">B</span></span><span class="p">],</span> <span class="n"><span title="delphyne.stdlib.search.interactive.interact[A]">A</span></span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[P]">P</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core_and_base.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Branch
 
@@ -2031,7 +2033,7 @@ strategy (since it is not decorated with <a class="autorefs autorefs-internal" t
 
   
       dataclass
-   (delphyne.stdlib.queries.Response)" href="../queries/#delphyne.Response">Response</a>[<span title="delphyne.stdlib.search.interactive.interact[A]">A</span> | <a class="autorefs autorefs-internal" title="WrappedParseError
+   (delphyne.core_and_base.Response)" href="../queries/#delphyne.Response">Response</a>[<span title="delphyne.stdlib.search.interactive.interact[A]">A</span> | <a class="autorefs autorefs-internal" title="WrappedParseError
 
 
   
@@ -2120,6 +2122,23 @@ horizontal and vertical LLM pipelines.</p>
             </td>
             <td>
                   <code>False</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>unprocess</code>
+            </td>
+            <td>
+                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.search.interactive.interact[B]">B</span>], <span title="delphyne.stdlib.search.interactive.interact[A]">A</span> | None] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If <code>produce_feedback</code> is <code>True</code>, this function is
+useful for backpropagating [<code>Shortcut</code>][delphyne.Shortcut] feedback messages.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -2227,15 +2246,57 @@ inference when necessary.</p>
 <span class="normal">139</span>
 <span class="normal">140</span>
 <span class="normal">141</span>
-<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">interact</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">T</span><span class="p">:</span> <span class="n">md</span><span class="o">.</span><span class="n">AbstractTool</span><span class="p">[</span><span class="n">Any</span><span class="p">]](</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">interact</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">T</span><span class="p">:</span> <span class="n">md</span><span class="o">.</span><span class="n">AbstractTool</span><span class="p">[</span><span class="n">Any</span><span class="p">]](</span>
     <span class="n">step</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span>
         <span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">AnswerPrefix</span><span class="p">,</span> <span class="n">InteractStats</span><span class="p">],</span>
-        <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">dq</span><span class="o">.</span><span class="n">Response</span><span class="p">[</span><span class="n">A</span> <span class="o">|</span> <span class="n">WrappedParseError</span><span class="p">,</span> <span class="n">T</span><span class="p">]],</span>
+        <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">Response</span><span class="p">[</span><span class="n">A</span> <span class="o">|</span> <span class="n">WrappedParseError</span><span class="p">,</span> <span class="n">T</span><span class="p">]],</span>
     <span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">process</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">A</span><span class="p">,</span> <span class="n">InteractStats</span><span class="p">],</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">B</span> <span class="o">|</span> <span class="n">dp</span><span class="o">.</span><span class="n">Error</span><span class="p">]],</span>
     <span class="n">tools</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">produce_feedback</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">unprocess</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">B</span><span class="p">],</span> <span class="n">A</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">dp</span><span class="o">.</span><span class="n">Feedback</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">B</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2264,6 +2325,8 @@ inference when necessary.</p>
 <span class="sd">            arbitrary strategies or queries, allowing the integration of</span>
 <span class="sd">            horizontal and vertical LLM pipelines.</span>
 <span class="sd">        produce_feedback: Whether or not to produce `Feedback` nodes.</span>
+<span class="sd">        unprocess: If `produce_feedback` is `True`, this function is</span>
+<span class="sd">            useful for backpropagating `Shortcut` feedback messages.</span>
 <span class="sd">        inner_policy_type: Ambient inner policy type. This information</span>
 <span class="sd">            is not used at runtime but it can be provided to help type</span>
 <span class="sd">            inference when necessary.</span>
@@ -2271,11 +2334,16 @@ inference when necessary.</p>
 
     <span class="n">prefix</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerPrefix</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">stats</span> <span class="o">=</span> <span class="n">InteractStats</span><span class="p">(</span><span class="n">num_rejected</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_tool_call_rounds</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">init_resp_ref</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">resp</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">branch</span><span class="p">(</span><span class="n">step</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">stats</span><span class="p">))</span>
+        <span class="n">resp</span><span class="p">,</span> <span class="n">resp_ref</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">branch</span><span class="p">(</span>
+            <span class="n">step</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">stats</span><span class="p">),</span> <span class="n">return_space_ref</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">init_resp_ref</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">init_resp_ref</span> <span class="o">=</span> <span class="n">resp_ref</span>
         <span class="n">prefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">OracleMessage</span><span class="p">(</span><span class="s2">&quot;oracle&quot;</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">answer</span><span class="p">))</span>
         <span class="k">match</span> <span class="n">resp</span><span class="o">.</span><span class="n">parsed</span><span class="p">:</span>
-            <span class="k">case</span> <span class="n">dq</span><span class="o">.</span><span class="n">FinalAnswer</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+            <span class="k">case</span> <span class="n">dp</span><span class="o">.</span><span class="n">FinalAnswer</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">WrappedParseError</span><span class="p">):</span>
                     <span class="n">msg</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">FeedbackMessage</span><span class="p">(</span>
                         <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;feedback&quot;</span><span class="p">,</span>
@@ -2296,9 +2364,42 @@ inference when necessary.</p>
                         <span class="p">)</span>
                         <span class="n">stats</span><span class="o">.</span><span class="n">num_rejected</span> <span class="o">+=</span> <span class="mi">1</span>
                         <span class="n">prefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">produce_feedback</span><span class="p">:</span>
+                            <span class="n">err_f</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">BadValue</span><span class="p">(</span><span class="n">res</span><span class="p">),</span> <span class="n">resp_ref</span><span class="p">)</span>
+                            <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">feedback</span><span class="p">(</span><span class="s2">&quot;interact:error&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">err_f</span><span class="p">])</span>
                     <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">produce_feedback</span><span class="p">:</span>
+
+                            <span class="k">def</span><span class="w"> </span><span class="nf">backward</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">HindsightMessage</span><span class="p">[</span><span class="n">B</span><span class="p">]):</span>
+                                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">GoodValue</span><span class="p">):</span>
+                                    <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">resp_ref</span><span class="p">)</span>
+                                    <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+                                        <span class="n">dp</span><span class="o">.</span><span class="n">Shortcut</span><span class="p">(</span><span class="n">resp</span><span class="p">),</span> <span class="n">init_resp_ref</span>
+                                    <span class="p">)</span>
+                                <span class="k">elif</span> <span class="p">(</span>
+                                    <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">Shortcut</span><span class="p">)</span> <span class="ow">and</span> <span class="n">unprocess</span>
+                                <span class="p">):</span>
+                                    <span class="c1"># We send a shortcut to the initial</span>
+                                    <span class="c1"># response, knowing that the raw</span>
+                                    <span class="c1"># answer will be discarded and only</span>
+                                    <span class="c1"># the parsed answer will matter.</span>
+                                    <span class="n">v</span> <span class="o">=</span> <span class="n">unprocess</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                                    <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                                        <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+                                            <span class="n">dp</span><span class="o">.</span><span class="n">Shortcut</span><span class="p">(</span>
+                                                <span class="n">dp</span><span class="o">.</span><span class="n">Response</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+                                                    <span class="n">resp</span><span class="o">.</span><span class="n">answer</span><span class="p">,</span>  <span class="c1"># irrelevant</span>
+                                                    <span class="n">dp</span><span class="o">.</span><span class="n">FinalAnswer</span><span class="p">(</span><span class="n">v</span><span class="p">),</span>
+                                                <span class="p">)</span>
+                                            <span class="p">),</span>
+                                            <span class="n">init_resp_ref</span><span class="p">,</span>
+                                        <span class="p">)</span>
+                                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">BadValue</span><span class="p">):</span>
+                                    <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">resp_ref</span><span class="p">)</span>
+
+                            <span class="n">dp</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="s2">&quot;interact:shortcut&quot;</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">backward</span><span class="p">)</span>
                         <span class="k">return</span> <span class="n">res</span>
-            <span class="k">case</span> <span class="n">dq</span><span class="o">.</span><span class="n">ToolRequests</span><span class="p">(</span><span class="n">tc</span><span class="p">):</span>
+            <span class="k">case</span> <span class="n">dp</span><span class="o">.</span><span class="n">ToolRequests</span><span class="p">(</span><span class="n">tc</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tc</span><span class="p">):</span>
                     <span class="k">assert</span> <span class="n">tools</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
                     <span class="n">tres</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">branch</span><span class="p">(</span><span class="n">tools</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">t</span><span class="p">)](</span><span class="n">t</span><span class="p">))</span>
@@ -2383,7 +2484,8 @@ message that can contain several tool call requests).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/search/interactive.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
+<span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
@@ -2396,8 +2498,7 @@ message that can contain several tool call requests).</p>
 <span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">InteractStats</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Statistics maintained by `interact`.</span>
