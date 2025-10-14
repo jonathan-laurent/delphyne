@@ -6,7 +6,7 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from typing import Any
 
-import delphyne.core as dp
+import delphyne.core_and_base as dp
 import delphyne.stdlib.queries as dq
 from delphyne.stdlib import models as md
 from delphyne.stdlib.nodes import Branch, branch
@@ -36,6 +36,7 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
         [dp.AnswerPrefix, InteractStats],
         Opaque[P, dq.Response[A | WrappedParseError, T]],
     ],
+    *,
     process: Callable[[A, InteractStats], Opaque[P, B | dp.Error]],
     tools: Mapping[type[T], Callable[[Any], Opaque[P, Any]]] | None = None,
     inner_policy_type: type[P] | None = None,
@@ -74,7 +75,7 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
     stats = InteractStats(num_rejected=0, num_tool_call_rounds=0)
     while True:
         resp = yield from branch(step(prefix, stats))
-        prefix += [dp.OracleMessage("oracle", resp.answer)]
+        prefix.append(dp.OracleMessage("oracle", resp.answer))
         match resp.parsed:
             case dq.FinalAnswer(a):
                 if isinstance(a, WrappedParseError):
@@ -85,7 +86,7 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
                         meta=a.error.meta,
                     )
                     stats.num_rejected += 1
-                    prefix += [msg]
+                    prefix.append(msg)
                 else:
                     res = yield from branch(process(a, stats))
                     if isinstance(res, dp.Error):
@@ -96,7 +97,7 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
                             meta=res.meta,
                         )
                         stats.num_rejected += 1
-                        prefix += [msg]
+                        prefix.append(msg)
                     else:
                         return res
             case dq.ToolRequests(tc):
@@ -108,5 +109,5 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
                         resp.answer.tool_calls[i],
                         t.render_result(tres),
                     )
-                    prefix += [msg]
+                    prefix.append(msg)
                 stats.num_tool_call_rounds += 1

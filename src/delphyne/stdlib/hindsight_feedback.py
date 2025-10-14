@@ -19,33 +19,33 @@ T_co = TypeVar("T_co", covariant=True, contravariant=False)
 
 
 @dataclass(frozen=True)
-class FeedbackMessage(Generic[T_co]):
+class HindsightMessage(Generic[T_co]):
     pass
 
 
 @dataclass(frozen=True)
-class GoodValue(FeedbackMessage[Never]):
+class GoodValue(HindsightMessage[Never]):
     pass
 
 
 @dataclass(frozen=True)
-class BadValue(FeedbackMessage[Never]):
+class BadValue(HindsightMessage[Never]):
     error: dp.Error
 
 
 @dataclass(frozen=True)
-class Shortcut[T](FeedbackMessage[T]):
+class Shortcut[T](HindsightMessage[T]):
     value: T
 
 
 @dataclass(frozen=True)
 class AttachedFeedback[T]:
-    msg: FeedbackMessage[T]
+    msg: HindsightMessage[T]
     dst: nd.TypedSpaceRef[T]
 
 
 def send[T](
-    msg: FeedbackMessage[T], to: nd.TypedSpaceRef[T], /
+    msg: HindsightMessage[T], to: nd.TypedSpaceRef[T], /
 ) -> AttachedFeedback[T]:
     return AttachedFeedback(msg, to)
 
@@ -79,7 +79,7 @@ class BackpropagateFeedback(Feedback):
     """
 
     label: str
-    back: Callable[[FeedbackMessage[Any]], Iterable[AttachedFeedback[Any]]]
+    back: Callable[[HindsightMessage[Any]], Iterable[AttachedFeedback[Any]]]
 
 
 #####
@@ -97,7 +97,7 @@ def feedback(
 def backward[T](
     label: str,
     res: T,
-    back: Callable[[FeedbackMessage[T]], Iterable[AttachedFeedback[Any]]],
+    back: Callable[[HindsightMessage[T]], Iterable[AttachedFeedback[Any]]],
 ) -> dp.Strategy[Feedback, object, None]:
     yield nd.spawn_node(BackpropagateFeedback, label=label, back=back)
     return None
