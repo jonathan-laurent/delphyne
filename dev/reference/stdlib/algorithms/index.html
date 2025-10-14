@@ -1874,7 +1874,7 @@
 </h3>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">interact</span><span class="p">(</span>
     <span class="n">step</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[</span>
-        <span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="AnswerPrefix (delphyne.core.AnswerPrefix)" href="../../strategies/queries/#delphyne.AnswerPrefix">AnswerPrefix</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="InteractStats
+        <span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="AnswerPrefix (delphyne.core_and_base.AnswerPrefix)" href="../../strategies/queries/#delphyne.AnswerPrefix">AnswerPrefix</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="InteractStats
 
 
   
@@ -1891,6 +1891,7 @@
       dataclass
    (delphyne.stdlib.queries.WrappedParseError)" href="../queries/#delphyne.WrappedParseError">WrappedParseError</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.interactive.interact[T]">T</span></span><span class="p">]]</span>
     <span class="p">],</span>
+    <span class="o">*</span><span class="p">,</span>
     <span class="n">process</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[A]">A</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="InteractStats
 
 
@@ -1901,10 +1902,10 @@
 
   
       dataclass
-   (delphyne.core.Error)" href="../../strategies/misc/#delphyne.Error">Error</a></span><span class="p">]],</span>
+   (delphyne.core_and_base.Error)" href="../../strategies/misc/#delphyne.Error">Error</a></span><span class="p">]],</span>
     <span class="n">tools</span><span class="p">:</span> <span class="n"><span title="collections.abc.Mapping">Mapping</span></span><span class="p">[</span><span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[T]">T</span></span><span class="p">],</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="typing.Any">Any</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[P]">P</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">]]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.interactive.interact[P]">P</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Branch
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core_and_base.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Branch
 
 
   
@@ -1938,7 +1939,7 @@ strategy (since it is not decorated with <a class="autorefs autorefs-internal" t
                 <code>step</code>
             </td>
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[[<a class="autorefs autorefs-internal" title="AnswerPrefix (delphyne.core.AnswerPrefix)" href="../../strategies/queries/#delphyne.AnswerPrefix">AnswerPrefix</a>, <a class="autorefs autorefs-internal" title="InteractStats
+                  <code><span title="collections.abc.Callable">Callable</span>[[<a class="autorefs autorefs-internal" title="AnswerPrefix (delphyne.core_and_base.AnswerPrefix)" href="../../strategies/queries/#delphyne.AnswerPrefix">AnswerPrefix</a>, <a class="autorefs autorefs-internal" title="InteractStats
 
 
   
@@ -1984,7 +1985,7 @@ receiving the chat history (see <a class="autorefs autorefs-internal" title="Que
 
   
       dataclass
-   (delphyne.core.Error)" href="../../strategies/misc/#delphyne.Error">Error</a>]]</code>
+   (delphyne.core_and_base.Error)" href="../../strategies/misc/#delphyne.Error">Error</a>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2125,11 +2126,13 @@ inference when necessary.</p>
 <span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
-<span class="normal">112</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">interact</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">T</span><span class="p">:</span> <span class="n">md</span><span class="o">.</span><span class="n">AbstractTool</span><span class="p">[</span><span class="n">Any</span><span class="p">]](</span>
+<span class="normal">112</span>
+<span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">interact</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">T</span><span class="p">:</span> <span class="n">md</span><span class="o">.</span><span class="n">AbstractTool</span><span class="p">[</span><span class="n">Any</span><span class="p">]](</span>
     <span class="n">step</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span>
         <span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">AnswerPrefix</span><span class="p">,</span> <span class="n">InteractStats</span><span class="p">],</span>
         <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">dq</span><span class="o">.</span><span class="n">Response</span><span class="p">[</span><span class="n">A</span> <span class="o">|</span> <span class="n">WrappedParseError</span><span class="p">,</span> <span class="n">T</span><span class="p">]],</span>
     <span class="p">],</span>
+    <span class="o">*</span><span class="p">,</span>
     <span class="n">process</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">A</span><span class="p">,</span> <span class="n">InteractStats</span><span class="p">],</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">B</span> <span class="o">|</span> <span class="n">dp</span><span class="o">.</span><span class="n">Error</span><span class="p">]],</span>
     <span class="n">tools</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2168,7 +2171,7 @@ inference when necessary.</p>
     <span class="n">stats</span> <span class="o">=</span> <span class="n">InteractStats</span><span class="p">(</span><span class="n">num_rejected</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_tool_call_rounds</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">resp</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">branch</span><span class="p">(</span><span class="n">step</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">stats</span><span class="p">))</span>
-        <span class="n">prefix</span> <span class="o">+=</span> <span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">OracleMessage</span><span class="p">(</span><span class="s2">&quot;oracle&quot;</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">answer</span><span class="p">)]</span>
+        <span class="n">prefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">OracleMessage</span><span class="p">(</span><span class="s2">&quot;oracle&quot;</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">answer</span><span class="p">))</span>
         <span class="k">match</span> <span class="n">resp</span><span class="o">.</span><span class="n">parsed</span><span class="p">:</span>
             <span class="k">case</span> <span class="n">dq</span><span class="o">.</span><span class="n">FinalAnswer</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">WrappedParseError</span><span class="p">):</span>
@@ -2179,7 +2182,7 @@ inference when necessary.</p>
                         <span class="n">meta</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">meta</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="n">stats</span><span class="o">.</span><span class="n">num_rejected</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="n">prefix</span> <span class="o">+=</span> <span class="p">[</span><span class="n">msg</span><span class="p">]</span>
+                    <span class="n">prefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">res</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">branch</span><span class="p">(</span><span class="n">process</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">stats</span><span class="p">))</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">Error</span><span class="p">):</span>
@@ -2190,7 +2193,7 @@ inference when necessary.</p>
                             <span class="n">meta</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">meta</span><span class="p">,</span>
                         <span class="p">)</span>
                         <span class="n">stats</span><span class="o">.</span><span class="n">num_rejected</span> <span class="o">+=</span> <span class="mi">1</span>
-                        <span class="n">prefix</span> <span class="o">+=</span> <span class="p">[</span><span class="n">msg</span><span class="p">]</span>
+                        <span class="n">prefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">return</span> <span class="n">res</span>
             <span class="k">case</span> <span class="n">dq</span><span class="o">.</span><span class="n">ToolRequests</span><span class="p">(</span><span class="n">tc</span><span class="p">):</span>
@@ -2202,7 +2205,7 @@ inference when necessary.</p>
                         <span class="n">resp</span><span class="o">.</span><span class="n">answer</span><span class="o">.</span><span class="n">tool_calls</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
                         <span class="n">t</span><span class="o">.</span><span class="n">render_result</span><span class="p">(</span><span class="n">tres</span><span class="p">),</span>
                     <span class="p">)</span>
-                    <span class="n">prefix</span> <span class="o">+=</span> <span class="p">[</span><span class="n">msg</span><span class="p">]</span>
+                    <span class="n">prefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
                 <span class="n">stats</span><span class="o">.</span><span class="n">num_tool_call_rounds</span> <span class="o">+=</span> <span class="mi">1</span>
 </code></pre></div></td></tr></table></div>
             </details>
