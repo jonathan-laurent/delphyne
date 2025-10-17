@@ -137,7 +137,7 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
                         prefix.append(msg)
                         if produce_feedback:
                             err_f = dp.send(dp.BadValue(res), resp_ref)
-                            yield from dp.feedback("interact:error", [err_f])
+                            yield from dp.feedback("error", [err_f])
                     else:
                         if produce_feedback:
 
@@ -168,7 +168,7 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
                                 elif isinstance(msg, dp.BadValue):
                                     yield dp.send(msg, resp_ref)
 
-                            dp.backward("interact:shortcut", res, backward)
+                            dp.backward("shortcut", res, backward)
                         return res
             case dp.ToolRequests(tc):
                 for i, t in enumerate(tc):

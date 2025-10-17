@@ -25,3 +25,6 @@ from delphyne.analysis.feedback import (
     StrategyDemoFeedback,
     TestFeedback,
 )
+from delphyne.analysis.resolvers import (
+    IRefResolver,
+)
