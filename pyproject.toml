@@ -4,7 +4,11 @@ version = "0.13.0"
 description = ""
 authors = [{name="Jonathan Laurent", email="jonathan.laurent@cs.cmu.edu"}]
 readme = "README.md"
-requires-python = ">=3.12"
+
+# Python >=3.12 is required for PEP 695 generics.
+# Python >=3.13 is not supported due to an unresolved typing issue:
+# https://discuss.python.org/t/make-replace-stop-interfering-with-variance-inference/96092
+requires-python = ">=3.12,<3.13"
 
 dependencies = [
     "fastapi>=0.111",  # to implement the delphyne language server
