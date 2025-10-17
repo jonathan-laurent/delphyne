@@ -1446,7 +1446,7 @@ git<span class="w"> </span>checkout<span class="w"> </span>v0.13.0<span class="w
 <p>Then, to install the Delphyne library and CLI in your current Python environment:</p>
 <div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
 </code></pre></div>
-<p>Note that Python 3.12 (or more recent) is required, since Delphyne makes heavy use of <a href="https://peps.python.org/pep-0695/">PEP 695 generics</a>. Next, you should build the Delphyne vscode extension. For this, assuming you have <a href="https://nodejs.org/en/download">Node.js</a> installed (version 22 or later), run:</p>
+<p>Note that Python 3.12 is required, since Delphyne makes heavy use of <a href="https://peps.python.org/pep-0695/">PEP 695 generics</a>, and that Python 3.13 (and above) is <em>not yet supported</em>, due to an unresolved <a href="https://discuss.python.org/t/make-replace-stop-interfering-with-variance-inference/96092">typing issue</a>. Next, you should build the Delphyne vscode extension. For this, assuming you have <a href="https://nodejs.org/en/download">Node.js</a> installed (version 22 or later), run:</p>
 <div class="highlight"><pre><span></span><code>cd vscode-ui
 npm install
 npx vsce package
