@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../../None">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.21">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.22">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.2a3383ac.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.84d31ad4.min.css">
       
         
         <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
@@ -2366,7 +2366,7 @@ inference when necessary.</p>
                         <span class="n">prefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">produce_feedback</span><span class="p">:</span>
                             <span class="n">err_f</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">BadValue</span><span class="p">(</span><span class="n">res</span><span class="p">),</span> <span class="n">resp_ref</span><span class="p">)</span>
-                            <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">feedback</span><span class="p">(</span><span class="s2">&quot;interact:error&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">err_f</span><span class="p">])</span>
+                            <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">feedback</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">err_f</span><span class="p">])</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">produce_feedback</span><span class="p">:</span>
 
@@ -2397,7 +2397,7 @@ inference when necessary.</p>
                                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">BadValue</span><span class="p">):</span>
                                     <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">resp_ref</span><span class="p">)</span>
 
-                            <span class="n">dp</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="s2">&quot;interact:shortcut&quot;</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">backward</span><span class="p">)</span>
+                            <span class="n">dp</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="s2">&quot;shortcut&quot;</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">backward</span><span class="p">)</span>
                         <span class="k">return</span> <span class="n">res</span>
             <span class="k">case</span> <span class="n">dp</span><span class="o">.</span><span class="n">ToolRequests</span><span class="p">(</span><span class="n">tc</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tc</span><span class="p">):</span>
