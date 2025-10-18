@@ -1110,9 +1110,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#delphyne.stdlib.nodes.TypedSpaceRef" class="md-nav__link">
+  <a href="#delphyne.stdlib.nodes.TypedSpaceElementRef" class="md-nav__link">
     <span class="md-ellipsis">
-      TypedSpaceRef
+      TypedSpaceElementRef
     </span>
   </a>
   
@@ -1816,9 +1816,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#delphyne.stdlib.nodes.TypedSpaceRef" class="md-nav__link">
+  <a href="#delphyne.stdlib.nodes.TypedSpaceElementRef" class="md-nav__link">
     <span class="md-ellipsis">
-      TypedSpaceRef
+      TypedSpaceElementRef
     </span>
   </a>
   
@@ -2430,18 +2430,18 @@
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">29</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
 <span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">spawn_node</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">](</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">spawn_node</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">](</span>
     <span class="n">node_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">N</span><span class="p">],</span> <span class="o">**</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">NodeBuilder</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2516,18 +2516,18 @@ accidentally passing uninstantiated parametric inner policy fields.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">53</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
 <span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NodeMeta</span><span class="p">:</span>
+<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">NodeMeta</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract base class for node metadata.</span>
 
@@ -2550,8 +2550,8 @@ accidentally passing uninstantiated parametric inner policy fields.</p>
 
 
 
-<h3 id="delphyne.stdlib.nodes.TypedSpaceRef" class="doc doc-heading">
-            <span class="doc doc-object-name doc-class-name">TypedSpaceRef</span>
+<h3 id="delphyne.stdlib.nodes.TypedSpaceElementRef" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">TypedSpaceElementRef</span>
 
 
   <span class="doc doc-labels">
@@ -2566,8 +2566,8 @@ accidentally passing uninstantiated parametric inner policy fields.</p>
               Bases: <code><span title="typing.Generic">Generic</span>[<span title="delphyne.stdlib.nodes.T_inv">T_inv</span>]</code></p>
 
 
-        <p>A wrapper around global space references that carries phantom type
-information.</p>
+        <p>A wrapper around a global space element reference that carries
+phantom type information.</p>
 <p>See <a class="autorefs autorefs-internal" title="branch" href="#delphyne.stdlib.nodes.branch"><code>branch</code></a> for an example of usage.</p>
 
 
@@ -2579,25 +2579,27 @@ information.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">TypedSpaceRef</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T_inv</span><span class="p">]):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TypedSpaceElementRef</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T_inv</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A wrapper around global space references that carries phantom type</span>
-<span class="sd">    information.</span>
+<span class="sd">    A wrapper around a global space element reference that carries</span>
+<span class="sd">    phantom type information.</span>
 
 <span class="sd">    See `branch` for an example of usage.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">ref</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">refs</span><span class="o">.</span><span class="n">GlobalSpacePath</span>
+    <span class="n">node</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">refs</span><span class="o">.</span><span class="n">GlobalNodeRef</span>
+    <span class="n">element</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">refs</span><span class="o">.</span><span class="n">SpaceElementRef</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2659,7 +2661,15 @@ skippable since eliminating value information must be explicit. The
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 92</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
 <span class="normal"> 93</span>
 <span class="normal"> 94</span>
 <span class="normal"> 95</span>
@@ -2671,15 +2681,7 @@ skippable since eliminating value information must be explicit. The
 <span class="normal">101</span>
 <span class="normal">102</span>
 <span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Skippable</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for skippable nodes that contain meta-information and can</span>
@@ -2763,7 +2765,15 @@ over elements of an opaque space.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">120</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
 <span class="normal">121</span>
 <span class="normal">122</span>
 <span class="normal">123</span>
@@ -2773,15 +2783,7 @@ over elements of an opaque space.</p>
 <span class="normal">127</span>
 <span class="normal">128</span>
 <span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Branch</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The standard `Branch` effect.</span>
@@ -2848,37 +2850,37 @@ over elements of an opaque space.</p>
     <span class="n">cands</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.branch[T]">T</span></span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">meta</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">return_space_ref</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="kc">True</span><span class="p">],</span>
+    <span class="n">return_ref</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="kc">True</span><span class="p">],</span>
     <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Branch
 
 
   
       dataclass
-   (delphyne.stdlib.nodes.Branch)" href="#delphyne.stdlib.nodes.Branch">Branch</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">,</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[T]">T</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="TypedSpaceRef
+   (delphyne.stdlib.nodes.Branch)" href="#delphyne.stdlib.nodes.Branch">Branch</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">,</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[T]">T</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="TypedSpaceElementRef
 
 
   
       dataclass
-   (delphyne.stdlib.nodes.TypedSpaceRef)" href="#delphyne.stdlib.nodes.TypedSpaceRef">TypedSpaceRef</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[T]">T</span></span><span class="p">]]]</span>
+   (delphyne.stdlib.nodes.TypedSpaceElementRef)" href="#delphyne.stdlib.nodes.TypedSpaceElementRef">TypedSpaceElementRef</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[T]">T</span></span><span class="p">]]]</span>
 </code></pre></div>          </div>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">branch</span><span class="p">(</span>
     <span class="n">cands</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.branch[T]">T</span></span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">meta</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">return_space_ref</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">return_ref</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Branch
 
 
   
       dataclass
-   (delphyne.stdlib.nodes.Branch)" href="#delphyne.stdlib.nodes.Branch">Branch</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.branch[T]">T</span></span> <span class="o">|</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[T]">T</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="TypedSpaceRef
+   (delphyne.stdlib.nodes.Branch)" href="#delphyne.stdlib.nodes.Branch">Branch</a></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.branch[T]">T</span></span> <span class="o">|</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[T]">T</span></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="TypedSpaceElementRef
 
 
   
       dataclass
-   (delphyne.stdlib.nodes.TypedSpaceRef)" href="#delphyne.stdlib.nodes.TypedSpaceRef">TypedSpaceRef</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[T]">T</span></span><span class="p">]]]</span>
+   (delphyne.stdlib.nodes.TypedSpaceElementRef)" href="#delphyne.stdlib.nodes.TypedSpaceElementRef">TypedSpaceElementRef</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[T]">T</span></span><span class="p">]]]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -2951,7 +2953,7 @@ inference when necessary.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>return_space_ref</code>
+                <code>return_ref</code>
             </td>
             <td>
                   <code><span title="bool">bool</span></code>
@@ -2972,7 +2974,15 @@ space of candidates along with the chosen element.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">160</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
 <span class="normal">161</span>
 <span class="normal">162</span>
 <span class="normal">163</span>
@@ -2997,13 +3007,15 @@ space of candidates along with the chosen element.</p>
 <span class="normal">182</span>
 <span class="normal">183</span>
 <span class="normal">184</span>
-<span class="normal">185</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">branch</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">branch</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="n">cands</span><span class="p">:</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">meta</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">NodeMeta</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">return_space_ref</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">return_ref</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">TypedSpaceRef</span><span class="p">[</span><span class="n">T</span><span class="p">]]]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">TypedSpaceElementRef</span><span class="p">[</span><span class="n">T</span><span class="p">]]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Branch over the elements of an opaque space.</span>
 
@@ -3015,14 +3027,24 @@ space of candidates along with the chosen element.</p>
 <span class="sd">        inner_policy_type: Ambient inner policy type. This information</span>
 <span class="sd">            is not used at runtime but it can be provided to help type</span>
 <span class="sd">            inference when necessary.</span>
-<span class="sd">        return_space_ref: Whether to return a typed reference to the</span>
+<span class="sd">        return_ref: Whether to return a typed reference to the</span>
 <span class="sd">            space of candidates along with the chosen element.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">recv</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">spawn_node</span><span class="p">(</span><span class="n">Branch</span><span class="p">,</span> <span class="n">cands</span><span class="o">=</span><span class="n">cands</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">)</span>
     <span class="n">ret</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">recv</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">return_space_ref</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">return_ref</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">ret</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># type: ignore  # TODO</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">recv</span><span class="o">.</span><span class="n">value_ref</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">refs</span><span class="o">.</span><span class="n">SpaceElementRef</span><span class="p">):</span>
+        <span class="c1"># The error below should virtually never happen in practice when</span>
+        <span class="c1"># using policies that make no assumptions about the specific</span>
+        <span class="c1"># type of candidates (by a parametricity argument).</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;When calling `branch` with `return_ref=True`, only space &quot;</span>
+            <span class="s2">&quot;elements can be sent back by the policy (and not nontrivial &quot;</span>
+            <span class="s2">&quot;assemblies of space elements).&quot;</span>
+        <span class="p">)</span>
+    <span class="n">ref</span> <span class="o">=</span> <span class="n">TypedSpaceElementRef</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">node</span><span class="o">=</span><span class="n">recv</span><span class="o">.</span><span class="n">node_ref</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="n">recv</span><span class="o">.</span><span class="n">value_ref</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">ref</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3067,9 +3089,7 @@ space of candidates along with the chosen element.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">195</span>
 <span class="normal">196</span>
 <span class="normal">197</span>
 <span class="normal">198</span>
@@ -3088,7 +3108,9 @@ space of candidates along with the chosen element.</p>
 <span class="normal">211</span>
 <span class="normal">212</span>
 <span class="normal">213</span>
-<span class="normal">214</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Fail</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The standard `Fail` effect.</span>
@@ -3182,9 +3204,7 @@ result in a no-op at runtime.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">231</span>
 <span class="normal">232</span>
 <span class="normal">233</span>
 <span class="normal">234</span>
@@ -3206,12 +3226,14 @@ result in a no-op at runtime.</p>
 <span class="normal">250</span>
 <span class="normal">251</span>
 <span class="normal">252</span>
-<span class="normal">253</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fail</span><span class="p">(</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fail</span><span class="p">(</span>
     <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">error</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Error</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Fail</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">NoReturn</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Fail</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">NoReturn</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fail immediately with an error.</span>
 
@@ -3281,9 +3303,7 @@ result in a no-op at runtime.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">258</span>
 <span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span>
@@ -3303,7 +3323,9 @@ result in a no-op at runtime.</p>
 <span class="normal">275</span>
 <span class="normal">276</span>
 <span class="normal">277</span>
-<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">ensure</span><span class="p">(</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">ensure</span><span class="p">(</span>
     <span class="n">prop</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
@@ -3590,7 +3612,7 @@ result in a no-op at runtime.</p>
 <span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AttachedFeedback</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="n">msg</span><span class="p">:</span> <span class="n">ValueFeedback</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
-    <span class="n">dst</span><span class="p">:</span> <span class="n">nd</span><span class="o">.</span><span class="n">TypedSpaceRef</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+    <span class="n">dst</span><span class="p">:</span> <span class="n">nd</span><span class="o">.</span><span class="n">TypedSpaceElementRef</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -3875,12 +3897,12 @@ result in a no-op at runtime.</p>
 
   
       dataclass
-   (delphyne.stdlib.hindsight_feedback.ValueFeedback)" href="#delphyne.stdlib.hindsight_feedback.ValueFeedback">ValueFeedback</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.hindsight_feedback.send[T]">T</span></span><span class="p">],</span> <span class="n">to</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="TypedSpaceRef
+   (delphyne.stdlib.hindsight_feedback.ValueFeedback)" href="#delphyne.stdlib.hindsight_feedback.ValueFeedback">ValueFeedback</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.hindsight_feedback.send[T]">T</span></span><span class="p">],</span> <span class="n">to</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="TypedSpaceElementRef
 
 
   
       dataclass
-   (delphyne.stdlib.nodes.TypedSpaceRef)" href="#delphyne.stdlib.nodes.TypedSpaceRef">TypedSpaceRef</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.hindsight_feedback.send[T]">T</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="AttachedFeedback
+   (delphyne.stdlib.nodes.TypedSpaceElementRef)" href="#delphyne.stdlib.nodes.TypedSpaceElementRef">TypedSpaceElementRef</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.hindsight_feedback.send[T]">T</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="AttachedFeedback
 
 
   
@@ -3897,7 +3919,7 @@ result in a no-op at runtime.</p>
 <span class="normal">48</span>
 <span class="normal">49</span>
 <span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">send</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
-    <span class="n">msg</span><span class="p">:</span> <span class="n">ValueFeedback</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">to</span><span class="p">:</span> <span class="n">nd</span><span class="o">.</span><span class="n">TypedSpaceRef</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="o">/</span>
+    <span class="n">msg</span><span class="p">:</span> <span class="n">ValueFeedback</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">to</span><span class="p">:</span> <span class="n">nd</span><span class="o">.</span><span class="n">TypedSpaceElementRef</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="o">/</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AttachedFeedback</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">AttachedFeedback</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -4114,9 +4136,7 @@ causing the same message to be repeatedly printed.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">288</span>
 <span class="normal">289</span>
 <span class="normal">290</span>
 <span class="normal">291</span>
@@ -4140,7 +4160,9 @@ causing the same message to be repeatedly printed.</p>
 <span class="normal">309</span>
 <span class="normal">310</span>
 <span class="normal">311</span>
-<span class="normal">312</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Message</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The standard `Message` effect.</span>
@@ -4293,9 +4315,7 @@ result in a no-op at runtime.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">317</span>
 <span class="normal">318</span>
 <span class="normal">319</span>
 <span class="normal">320</span>
@@ -4313,7 +4333,9 @@ result in a no-op at runtime.</p>
 <span class="normal">332</span>
 <span class="normal">333</span>
 <span class="normal">334</span>
-<span class="normal">335</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">message</span><span class="p">(</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">message</span><span class="p">(</span>
     <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">LogLevel</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Message</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4422,9 +4444,7 @@ severity level is specified in the message node.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">338</span>
-<span class="normal">339</span>
-<span class="normal">340</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">340</span>
 <span class="normal">341</span>
 <span class="normal">342</span>
 <span class="normal">343</span>
@@ -4450,7 +4470,9 @@ severity level is specified in the message node.</p>
 <span class="normal">363</span>
 <span class="normal">364</span>
 <span class="normal">365</span>
-<span class="normal">366</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@pol</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@pol</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">elim_messages</span><span class="p">(</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
@@ -4535,9 +4557,7 @@ whole node is ignored.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">374</span>
-<span class="normal">375</span>
-<span class="normal">376</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">376</span>
 <span class="normal">377</span>
 <span class="normal">378</span>
 <span class="normal">379</span>
@@ -4560,7 +4580,9 @@ whole node is ignored.</p>
 <span class="normal">396</span>
 <span class="normal">397</span>
 <span class="normal">398</span>
-<span class="normal">399</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Factor</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The standard `Factor` effect.</span>
@@ -4702,9 +4724,7 @@ result in a no-op at runtime.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">402</span>
-<span class="normal">403</span>
-<span class="normal">404</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">404</span>
 <span class="normal">405</span>
 <span class="normal">406</span>
 <span class="normal">407</span>
@@ -4732,7 +4752,9 @@ result in a no-op at runtime.</p>
 <span class="normal">429</span>
 <span class="normal">430</span>
 <span class="normal">431</span>
-<span class="normal">432</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">factor</span><span class="p">[</span><span class="n">E</span><span class="p">,</span> <span class="n">P</span><span class="p">](</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">factor</span><span class="p">[</span><span class="n">E</span><span class="p">,</span> <span class="n">P</span><span class="p">](</span>
     <span class="nb">eval</span><span class="p">:</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">E</span><span class="p">],</span>
     <span class="n">factor</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">E</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span>
     <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -4812,9 +4834,7 @@ the whole value of the branch instead of just multiplying it.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">440</span>
-<span class="normal">441</span>
-<span class="normal">442</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">442</span>
 <span class="normal">443</span>
 <span class="normal">444</span>
 <span class="normal">445</span>
@@ -4831,7 +4851,9 @@ the whole value of the branch instead of just multiplying it.</p>
 <span class="normal">456</span>
 <span class="normal">457</span>
 <span class="normal">458</span>
-<span class="normal">459</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Value</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The standard `Value` effect.</span>
@@ -4912,9 +4934,7 @@ result in a no-op at runtime.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">462</span>
-<span class="normal">463</span>
-<span class="normal">464</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">464</span>
 <span class="normal">465</span>
 <span class="normal">466</span>
 <span class="normal">467</span>
@@ -4931,7 +4951,9 @@ result in a no-op at runtime.</p>
 <span class="normal">478</span>
 <span class="normal">479</span>
 <span class="normal">480</span>
-<span class="normal">481</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">value</span><span class="p">[</span><span class="n">E</span><span class="p">,</span> <span class="n">P</span><span class="p">](</span>
+<span class="normal">481</span>
+<span class="normal">482</span>
+<span class="normal">483</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">value</span><span class="p">[</span><span class="n">E</span><span class="p">,</span> <span class="n">P</span><span class="p">](</span>
     <span class="nb">eval</span><span class="p">:</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">E</span><span class="p">],</span>
     <span class="n">value</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">E</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span>
     <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -4985,9 +5007,7 @@ result in a no-op at runtime.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">484</span>
-<span class="normal">485</span>
-<span class="normal">486</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">486</span>
 <span class="normal">487</span>
 <span class="normal">488</span>
 <span class="normal">489</span>
@@ -5001,7 +5021,9 @@ result in a no-op at runtime.</p>
 <span class="normal">497</span>
 <span class="normal">498</span>
 <span class="normal">499</span>
-<span class="normal">500</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@pol</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
+<span class="normal">500</span>
+<span class="normal">501</span>
+<span class="normal">502</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@pol</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">elim_values</span><span class="p">(</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
@@ -5099,9 +5121,7 @@ acceptable.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">503</span>
-<span class="normal">504</span>
-<span class="normal">505</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">505</span>
 <span class="normal">506</span>
 <span class="normal">507</span>
 <span class="normal">508</span>
@@ -5149,7 +5169,9 @@ acceptable.</p>
 <span class="normal">550</span>
 <span class="normal">551</span>
 <span class="normal">552</span>
-<span class="normal">553</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@pol</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
+<span class="normal">553</span>
+<span class="normal">554</span>
+<span class="normal">555</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@pol</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">binarize_values</span><span class="p">(</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
@@ -5250,9 +5272,7 @@ node features a sequence of embedded trees.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">561</span>
-<span class="normal">562</span>
-<span class="normal">563</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">563</span>
 <span class="normal">564</span>
 <span class="normal">565</span>
 <span class="normal">566</span>
@@ -5267,7 +5287,9 @@ node features a sequence of embedded trees.</p>
 <span class="normal">575</span>
 <span class="normal">576</span>
 <span class="normal">577</span>
-<span class="normal">578</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">578</span>
+<span class="normal">579</span>
+<span class="normal">580</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Join</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The standard `Join` effect.</span>
@@ -5412,9 +5434,7 @@ arbitrary metadata accessible to search policies.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">581</span>
-<span class="normal">582</span>
-<span class="normal">583</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">583</span>
 <span class="normal">584</span>
 <span class="normal">585</span>
 <span class="normal">586</span>
@@ -5429,7 +5449,9 @@ arbitrary metadata accessible to search policies.</p>
 <span class="normal">595</span>
 <span class="normal">596</span>
 <span class="normal">597</span>
-<span class="normal">598</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">join</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+<span class="normal">598</span>
+<span class="normal">599</span>
+<span class="normal">600</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">join</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="n">subs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">StrategyComp</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]],</span>
     <span class="n">meta</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">NodeMeta</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">T</span><span class="p">]]:</span>
