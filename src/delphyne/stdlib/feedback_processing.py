@@ -9,11 +9,16 @@ from typing import Any, Protocol, assert_type
 import delphyne.core_and_base as dp
 from delphyne.core.irefs import AnswerId, NodeId, SpaceId
 
+#####
+##### General propagation mechanism
+#####
+
 
 @dataclass
 class QueryFeedback:
     query: dp.AbstractQuery[Any]
     space_id: dp.irefs.SpaceId
+    answer_id: AnswerId
     answer: dp.Answer
     feedback: dp.ValueFeedback[Any]
 
@@ -110,7 +115,11 @@ def process_feedback(
         assert isinstance(source, dp.AttachedQuery)
         query = source.query
         yield QueryFeedback(
-            query=query, space_id=space_id, answer=ans, feedback=message
+            query=query,
+            space_id=space_id,
+            answer_id=answer_id,
+            answer=ans,
+            feedback=message,
         )
 
     def send_to_success_node(
@@ -165,3 +174,126 @@ def process_feedback(
             if filter_sources(label=node.label, node_id=node_id):
                 for msg in node.messages:
                     yield from send_attached_message(msg)
+
+
+#####
+##### Automatically extracting examples
+#####
+
+
+@dataclass
+class ExtractedExample:
+    """
+    Attributes:
+        modified: Whether the returned answer has been modified from the
+            original answer described by `answer_id`, via a
+            `BetterValue` feedback message.
+    """
+
+    query: dp.AbstractQuery[Any]
+    answer: dp.Answer
+    answer_id: AnswerId
+    modified: bool
+
+
+def _surrounding_spaces(trace: dp.Trace, node: NodeId) -> Sequence[SpaceId]:
+    """
+    Return the list of consecutive space ids surrounding the current
+    node, **not** including the main space.
+    """
+    spaces_rev: list[SpaceId] = []
+    while True:
+        origin = trace.nodes[node]
+        if isinstance(origin, dp.irefs.NestedIn):
+            spaces_rev.append(origin.space)
+            space_origin = trace.spaces[origin.space]
+            if isinstance(space_origin, dp.irefs.MainSpace):
+                break
+            node = space_origin.node
+        else:
+            assert_type(origin, dp.irefs.ChildOf)
+            node = origin.node
+    return list(reversed(spaces_rev))
+
+
+def match_handler_pattern(
+    pattern: str,
+    surrounding_space_tags: Sequence[Sequence[dp.Tag]],
+    handler_label: str,
+) -> bool:
+    comps = pattern.split("/")
+    assert comps, "Empty tag pattern"
+    if len(comps) >= 2:
+        spaces_descr = comps[:-1]
+        label = comps[-1]
+    else:
+        spaces_descr = []
+        label = comps[0]
+    return (
+        handler_label == label
+        and len(spaces_descr) == len(surrounding_space_tags)
+        and all(
+            all(t in tags for t in pat.split("&"))
+            for pat, tags in zip(spaces_descr, surrounding_space_tags)
+        )
+    )
+
+
+def _surrounding_spaces_tags(
+    resolver: dp.IRefResolver, node_id: NodeId
+) -> Iterable[Sequence[dp.Tag]]:
+    """
+    Return the list of consecutive space tags surrounding the current
+    node, **not** including the main space.
+    """
+    space_ids = _surrounding_spaces(resolver.trace, node_id)
+    for id in space_ids:
+        space = resolver.resolve_space(id)
+        assert space != "main"
+        yield space.tags()
+
+
+def extract_examples(
+    resolver: dp.IRefResolver,
+    *,
+    roots: Sequence[NodeId],
+    backprop_handler_tags: Sequence[str] | None = None,
+) -> Iterable[ExtractedExample]:
+    """
+    Extract individual query/answer pairs using feedback propagation.
+    """
+
+    def filter_backprop_handlers(*, label: str, node_id: NodeId):
+        surrounding_space_tags = list(
+            _surrounding_spaces_tags(resolver, node_id)
+        )
+        return any(
+            match_handler_pattern(pat, surrounding_space_tags, label)
+            for pat in backprop_handler_tags or []
+        )
+
+    feedback_items = process_feedback(
+        resolver,
+        roots=roots,
+        filter_sources=None,
+        filter_backprop_handlers=filter_backprop_handlers,
+    )
+    for f in feedback_items:
+        if isinstance(f.feedback, dp.BetterValue):
+            answer = f.query.unparse(f.feedback.value)
+            assert answer is not None, (
+                f"Unable to unparse answer for {f.query.query_name()}: "
+                f"{f.feedback.value}"
+            )
+            modified = True
+        elif isinstance(f.feedback, dp.GoodValue):
+            answer = f.answer
+            modified = False
+        else:
+            continue
+        yield ExtractedExample(
+            query=f.query,
+            answer=answer,
+            answer_id=f.answer_id,
+            modified=modified,
+        )

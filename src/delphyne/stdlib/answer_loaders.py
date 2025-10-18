@@ -5,14 +5,13 @@ A concrete implementation of `AnswerDatabaseLoader`.
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 import yaml
 
 import delphyne.core as dp
 import delphyne.core.demos as dm
 import delphyne.utils.typing as ty
-from delphyne.stdlib.environments import HindsightFeedbackDict
 
 type _AnswerIterable = Iterable[tuple[dp.SerializedQuery, dp.LocatedAnswer]]
 
@@ -22,7 +21,6 @@ COMMAND_FILE_EXT = ".exec.yaml"
 COMMAND_RESULT_PATH = ("outcome", "result")
 COMMAND_RESULT_TRACE_FIELD = "raw_trace"
 COMMAND_RESULT_SUCCESS_NODES_FIELD = "success_nodes"
-COMMAND_RESULT_HINDSIGHT_FEEDBACK_FIELD = "hindsight_feedback"
 
 
 def standard_answer_loader(workspace_root: Path) -> dp.AnswerDatabaseLoader:
@@ -67,33 +65,13 @@ def standard_answer_loader(workspace_root: Path) -> dp.AnswerDatabaseLoader:
     ) -> _AnswerIterable:
         command_file = workspace_root / source.command
         trace_data = load_trace_data_from_command_file(command_file)
-        if not source.hindsight:
-            trace_data.hindsight_feedback = None
         node_ids = source.node_ids
         if node_ids is None:
             if trace_data.success_nodes:
                 node_ids = [trace_data.success_nodes[0]]
             else:
                 node_ids = []
-        for node_id in node_ids:
-            all_relevant = relevant_answers(
-                trace_data.trace, node_id, trace_data.hindsight_feedback
-            )
-            for relevant in all_relevant:
-                if relevant.hindsight:
-                    answer_source = dp.FromCommandResultHindsightFeedback(
-                        "command_result_hindsight",
-                        command_file=source.command,
-                        node_id=relevant.id,
-                    )
-                else:
-                    answer_source = dp.FromCommandResult(
-                        "command_result",
-                        command_file=source.command,
-                        answer_id=relevant.id,
-                    )
-                located = dp.LocatedAnswer(relevant.answer, answer_source)
-                yield (relevant.query, located)
+        assert False
 
     def unfiltered_loader(source: dp.AnswerSource) -> _AnswerIterable:
         match source:
@@ -173,7 +151,6 @@ def demo_with_name(demos: Sequence[dm.Demo], name: str) -> dm.Demo:
 class _TraceData:
     trace: dp.ExportableTrace
     success_nodes: Sequence[int]
-    hindsight_feedback: HindsightFeedbackDict | None
 
 
 def load_trace_data_from_command_file(path: Path) -> _TraceData:
@@ -191,38 +168,4 @@ def load_trace_data_from_command_file(path: Path) -> _TraceData:
     success_value = content.get(COMMAND_RESULT_SUCCESS_NODES_FIELD, [])
     trace = ty.pydantic_load(dp.ExportableTrace, trace_raw)
     success_nodes = ty.pydantic_load(Sequence[int], success_value)
-    hf_raw = content.get(COMMAND_RESULT_HINDSIGHT_FEEDBACK_FIELD, None)
-    hf = cast(Any, ty.pydantic_load(HindsightFeedbackDict | None, hf_raw))
-    return _TraceData(trace, success_nodes, hf)
-
-
-#####
-##### Extract answers from traces
-#####
-
-
-@dataclass
-class _RelevantAnswer:
-    query: dp.SerializedQuery
-    answer: dp.Answer
-    id: int  # answer id if `hindsight=False`, else node if
-    hindsight: bool  # whether this answer comes from hindsight feedback
-
-
-def relevant_answers(
-    trace: dp.ExportableTrace,
-    node_id: int,
-    hindsight_feedback: HindsightFeedbackDict | None,
-) -> Iterable[_RelevantAnswer]:
-    """
-    Take a trace and a node identifier and return an iterable of all
-    answers needed to reach this node in the trace, along with answers
-    coming from relevant hindsight feedback.
-
-    The output can include duplicates.
-    """
-
-    # TODO
-
-    return
-    yield
+    return _TraceData(trace, success_nodes)

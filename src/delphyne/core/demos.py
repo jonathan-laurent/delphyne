@@ -90,16 +90,15 @@ class CommandResultAnswerSource:
         node_ids: Identifiers of the nodes whose full references
             features answers to be fetched. If `None`, the success node
             for the first generated result is used.
-        hindsight: Whether to also fetch answers from the collected
-            hindsight feedback. If `True`, such answers override their
-            original counterparts in the trace.
+        backprop_with: Tags for the feedback backpropagation handlers to
+            activate.
         queries: Query types to be fetched. If `None`, queries are
             fetched regardless of their type.
     """
 
     command: str
     node_ids: Sequence[int] | None = None
-    hindsight: bool = True
+    backprop_with: Sequence[str] | None = None
     queries: Sequence[str] | None = None
 
 

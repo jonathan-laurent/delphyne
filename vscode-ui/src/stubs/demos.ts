@@ -37,6 +37,7 @@ export type AnswerSource = CommandResultAnswerSource | DemoAnswerSource;
 export interface CommandResultAnswerSource {
   command: string;
   node_ids?: number[] | null;
+  backprop_with?: string[] | null;
   queries?: string[] | null;
   __loc: vscode.Range;
   __loc__command: vscode.Range;

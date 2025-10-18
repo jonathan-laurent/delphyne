@@ -121,10 +121,20 @@
           "default": null,
           "title": "Node Ids"
         },
-        "hindsight": {
-          "default": true,
-          "title": "Hindsight",
-          "type": "boolean"
+        "backprop_with": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Backprop With"
         },
         "queries": {
           "anyOf": [
