@@ -123,16 +123,45 @@ def process_feedback(
                 return
             messaged_success_nodes.add(node_id)
         handlers = list(find_backprop_handlers(node_id))
-        if not handlers:
+        if not handlers and isinstance(message, dp.GoodValue):
+            # If the message is `GoodValue` and there is no registered
+            # handler, we do the default propagation.
             yield from propagate_good_value_message(node_id)
             return
-        assert False
-        # for handler in handlers:
-        #     for attached in handler.back(message):
-        #         full_ref = attached.dst.ref
-        #         _dst = resolver.trace.convert_global_space_path(full_ref)
-        #         assert False
+        for handler in handlers:
+            for attached in handler.back(message):
+                yield from send_attached_message(attached)
 
+    def send_attached_message(
+        attached: dp.AttachedFeedback[Any],
+    ) -> Iterable[QueryFeedback]:
+        ref = attached.dst
+        nref = resolver.trace.convert_global_node_ref(ref.node)
+        eref = resolver.trace.convert_space_element_ref(nref, ref.element)
+        if isinstance(eref.element, NodeId):
+            yield from send_to_success_node(eref.element, attached.msg)
+        else:
+            assert_type(eref.element, AnswerId)
+            yield from send_to_answer(
+                answer_id=eref.element,
+                space_id=eref.space,
+                message=attached.msg,
+            )
+
+    def iter_sources() -> Iterable[tuple[NodeId, dp.ThrowFeedback]]:
+        for node_id in resolver.trace.nodes:
+            tree = resolver.resolve_node(node_id)
+            if isinstance(tree.node, dp.ThrowFeedback):
+                yield (node_id, tree.node)
+
+    # If some roots are specified, we go through them
     if roots:
         for root in roots:
             yield from send_to_success_node(root, dp.GoodValue())
+
+    # Then use provided sources to send messages
+    if filter_sources is not None:
+        for node_id, node in iter_sources():
+            if filter_sources(label=node.label, node_id=node_id):
+                for msg in node.messages:
+                    yield from send_attached_message(msg)

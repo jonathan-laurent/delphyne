@@ -324,7 +324,7 @@ class Trace:
                 self._convert_atomic_value_ref(node, ref.ref), ref.index
             )
         else:
-            return self._convert_space_element_ref(node, ref)
+            return self.convert_space_element_ref(node, ref)
 
     def _convert_value_ref(
         self, node: irefs.NodeId, ref: refs.ValueRef
@@ -340,7 +340,7 @@ class Trace:
         else:
             return self._convert_atomic_value_ref(node, ref)
 
-    def _convert_space_element_ref(
+    def convert_space_element_ref(
         self, node: irefs.NodeId, ref: refs.SpaceElementRef
     ) -> irefs.SpaceElementRef:
         """
