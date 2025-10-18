@@ -298,28 +298,6 @@ def _dump_json_object(
 
 
 ####
-#### Hindsight Feedback Data
-####
-
-
-@dataclass(frozen=True)
-class HindsightFeedback:
-    """
-    Feedback about what the answer to a query *should have been*.
-    """
-
-    query: str
-    args: dict[str, object]
-    answer: dp.Answer
-
-
-type HindsightFeedbackDict = dict[int, HindsightFeedback]
-"""
-A mapping from node IDs to the attached hindsight feedback.
-"""
-
-
-####
 #### Policy Environment
 ####
 

@@ -15,8 +15,6 @@ from delphyne.stdlib.environments import (
     DataManager,
     Example,
     ExampleDatabase,
-    HindsightFeedback,
-    HindsightFeedbackDict,
     PolicyEnv,
     TemplatesManager,
 )
