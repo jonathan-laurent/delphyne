@@ -4,6 +4,7 @@ A standard strategy for creating conversational agents.
 
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
+from functools import partial
 from typing import Any, Literal, overload
 
 import delphyne.core_and_base as dp
@@ -106,79 +107,86 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
     prefix: dp.AnswerPrefix = []
     stats = InteractStats(num_rejected=0, num_tool_call_rounds=0)
     init_resp_ref = None
+
     while True:
+        # We ask for a response, providing the full chat history.
         resp, resp_ref = yield from branch(
             step(prefix, stats), return_ref=True
         )
         if init_resp_ref is None:
             init_resp_ref = resp_ref
         prefix.append(dp.OracleMessage("oracle", resp.answer))
-        match resp.parsed:
-            case dp.FinalAnswer(a):
-                if isinstance(a, WrappedParseError):
-                    msg = dp.FeedbackMessage(
-                        kind="feedback",
-                        label=a.error.label,
-                        description=a.error.description,
-                        meta=a.error.meta,
-                    )
-                    stats.num_rejected += 1
-                    prefix.append(msg)
+
+        # Case where a tool call is requested.
+        if isinstance(resp.parsed, dp.ToolRequests):
+            tc = resp.parsed.tool_calls
+            for i, t in enumerate(tc):
+                assert tools is not None
+                tres = yield from branch(tools[type(t)](t))
+                msg = dp.ToolResult(
+                    "tool",
+                    resp.answer.tool_calls[i],
+                    t.render_result(tres),
+                )
+                prefix.append(msg)
+            stats.num_tool_call_rounds += 1
+            continue
+
+        ans = resp.parsed.final
+
+        # Case where the answer does not parse.
+        if isinstance(ans, WrappedParseError):
+            msg = dp.FeedbackMessage(
+                kind="feedback",
+                label=ans.error.label,
+                description=ans.error.description,
+                meta=ans.error.meta,
+            )
+            stats.num_rejected += 1
+            prefix.append(msg)
+            continue
+
+        res = yield from branch(process(ans, stats))
+
+        # Case where the parsed answer cannot be processed.
+        if isinstance(res, dp.Error):
+            msg = dp.FeedbackMessage(
+                kind="feedback",
+                label=res.label,
+                description=res.description,
+                meta=res.meta,
+            )
+            stats.num_rejected += 1
+            prefix.append(msg)
+            if produce_feedback:
+                err_f = dp.send(dp.BadValue(res), resp_ref)
+                yield from dp.feedback("error", [err_f])
+            continue
+
+        # Case where we have a final good answer.
+        # We define a backward feedback function and then return the answer.
+
+        def backward(msg: dp.ValueFeedback[B], *, shortcut: bool = False):
+            if isinstance(msg, dp.GoodValue):
+                if shortcut:
+                    yield dp.send(dp.BetterValue(resp), init_resp_ref)
                 else:
-                    res = yield from branch(process(a, stats))
-                    if isinstance(res, dp.Error):
-                        msg = dp.FeedbackMessage(
-                            kind="feedback",
-                            label=res.label,
-                            description=res.description,
-                            meta=res.meta,
-                        )
-                        stats.num_rejected += 1
-                        prefix.append(msg)
-                        if produce_feedback:
-                            err_f = dp.send(dp.BadValue(res), resp_ref)
-                            yield from dp.feedback("error", [err_f])
-                    else:
-                        if produce_feedback:
-
-                            def backward(msg: dp.ValueFeedback[B]):
-                                if isinstance(msg, dp.GoodValue):
-                                    yield dp.send(msg, resp_ref)
-                                    yield dp.send(
-                                        dp.BetterValue(resp), init_resp_ref
-                                    )
-                                elif (
-                                    isinstance(msg, dp.BetterValue)
-                                    and unprocess
-                                ):
-                                    # We send a shortcut to the initial
-                                    # response, knowing that the raw
-                                    # answer will be discarded and only
-                                    # the parsed answer will matter.
-                                    v = unprocess(msg.value)
-                                    if v is not None:
-                                        yield dp.send(
-                                            dp.BetterValue(
-                                                dp.Response[A, T](
-                                                    resp.answer,  # irrelevant
-                                                    dp.FinalAnswer(v),
-                                                )
-                                            ),
-                                            init_resp_ref,
-                                        )
-                                elif isinstance(msg, dp.BadValue):
-                                    yield dp.send(msg, resp_ref)
-
-                            dp.backward("shortcut", res, backward)
-                        return res
-            case dp.ToolRequests(tc):
-                for i, t in enumerate(tc):
-                    assert tools is not None
-                    tres = yield from branch(tools[type(t)](t))
-                    msg = dp.ToolResult(
-                        "tool",
-                        resp.answer.tool_calls[i],
-                        t.render_result(tres),
+                    yield dp.send(msg, resp_ref)
+            elif isinstance(msg, dp.BetterValue) and unprocess:
+                # We send a shortcut to the initial response, knowing
+                # that the raw answer will be discarded and only the
+                # parsed answer will matter.
+                v = unprocess(msg.value)
+                if v is not None:
+                    better = dp.Response[A, T](
+                        resp.answer,  # irrelevant
+                        dp.FinalAnswer(v),
                     )
-                    prefix.append(msg)
-                stats.num_tool_call_rounds += 1
+                    yield dp.send(dp.BetterValue(better), init_resp_ref)
+            elif isinstance(msg, dp.BadValue):
+                yield dp.send(msg, resp_ref)
+
+        if produce_feedback:
+            dp.backward("last", res, partial(backward, shortcut=False))
+            dp.backward("shortcut", res, partial(backward, shortcut=True))
+        return res
