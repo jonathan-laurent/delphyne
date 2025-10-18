@@ -919,9 +919,9 @@ class AskNumber(dp.Query[dp.Response[int | dp.WrappedParseError, Never]]):
     __parser__ = dp.get_text.map(parse_83).wrap_errors.response
 
     @override
-    def unparse(self, feedback: object):
-        assert isinstance(feedback, int)
-        return dp.Answer(None, str(feedback))
+    def unparse(self, value: dp.Response[Any, Any]):
+        assert isinstance(value.parsed, dp.FinalAnswer)
+        return dp.Answer(None, str(value.parsed.final))
 
 
 @strategy
@@ -931,11 +931,9 @@ def get_magic_number() -> Strategy[
     ret = yield from dp.interact(
         step=lambda pre, _: AskNumber(pre).using(dp.ambient_pp),
         process=lambda x, _: dp.const_space(x),
+        produce_feedback=True,
+        unprocess=lambda res: res,
     )
-    # TODO: restore the example
-    # yield from dp.hindsight(
-    #     AskNumber(()), feedback=ret, as_parsed_answer=False
-    # )
     return ret
 
 

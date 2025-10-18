@@ -1003,7 +1003,7 @@ class Query[T](dp.AbstractQuery[T]):
     ### Hindsight Feedback
 
     @override
-    def unparse(self, feedback: T) -> Answer | None:
+    def unparse(self, value: T) -> Answer | None:
         """
         Unparse an answer.
 
@@ -1022,7 +1022,7 @@ class Query[T](dp.AbstractQuery[T]):
         output_type = parser.settings.structured_output.type
         if isinstance(output_type, ty.NoTypeInfo):
             return None
-        structured = ty.pydantic_dump(output_type, feedback)
+        structured = ty.pydantic_dump(output_type, value)
         answer = dp.Answer(mode, dp.Structured(structured))
         return answer
 

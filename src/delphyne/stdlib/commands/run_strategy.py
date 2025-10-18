@@ -59,6 +59,7 @@ class RunLoadedStrategyArgs[N: dp.Node, P, T]:
 
     strategy: dp.StrategyComp[N, P, T]
     policy: pol.Policy[N, P]
+    answer_loader: dp.AnswerDatabaseLoader | None
     num_generated: int = 1
     budget: dict[str, float] | None = None
     using: Sequence[dp.AnswerSource] | None = None
@@ -84,8 +85,10 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
         assert exe.workspace_root is not None, (
             "No workspace root is specified."
         )
-        loader = dp.standard_answer_loader(exe.workspace_root)
-        answer_database = dp.AnswerDatabase(args.using, loader=loader)
+        assert args.answer_loader is not None, "No answer loader specified."
+        answer_database = dp.AnswerDatabase(
+            args.using, loader=args.answer_loader
+        )
     env = en.PolicyEnv(
         prompt_dirs=exe.prompt_dirs,
         data_dirs=exe.data_dirs,
@@ -321,6 +324,10 @@ def run_strategy(
     loader = exe.object_loader()
     strategy = loader.load_strategy_instance(args.strategy, args.args)
     policy = loader.load_and_call_function(args.policy, args.policy_args)
+    answer_loader = None
+    if args.using is not None:
+        assert exe.workspace_root is not None
+        answer_loader = dp.standard_answer_loader(exe.workspace_root, loader)
     assert isinstance(policy, dp.AbstractPolicy)
     policy = cast(pol.Policy[Any, Any], policy)
     run_loaded_strategy(
@@ -329,6 +336,7 @@ def run_strategy(
         args=RunLoadedStrategyArgs(
             strategy=strategy,
             policy=policy,
+            answer_loader=answer_loader,
             num_generated=args.num_generated,
             budget=args.budget,
             using=args.using,

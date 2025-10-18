@@ -307,7 +307,7 @@ class AbstractQuery(Generic[T], ABC):
         """
         return None
 
-    def unparse(self, feedback: T) -> Answer | None:
+    def unparse(self, value: T) -> Answer | None:
         """
         Return an answer that parses back to the given value.
 

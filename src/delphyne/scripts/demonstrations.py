@@ -60,7 +60,9 @@ def check_demo_file(
         feedback = analysis.evaluate_demo(
             d,
             object_loader=loader,
-            answer_database_loader=dp.standard_answer_loader(workspace_root),
+            answer_database_loader=dp.standard_answer_loader(
+                workspace_root, loader
+            ),
             load_implicit_answer_generators=(
                 stdlib.stdlib_implicit_answer_generators_loader(
                     context.data_dirs

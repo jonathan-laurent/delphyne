@@ -153,7 +153,7 @@ def compute_browsable_trace(
 
     A simplifier is typically only available for demonstrations.
     """
-    resolver = IRefResolver(trace)
+    resolver = IRefResolver(trace, root=None)
     resolver.load_tree_cache(cache)
     tr = _TraceTranslator(trace, resolver, simplifier)
     return tr.translate_trace()

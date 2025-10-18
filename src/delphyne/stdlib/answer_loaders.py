@@ -20,12 +20,17 @@ type _AnswerIterable = Iterable[tuple[dp.SerializedQuery, dp.LocatedAnswer]]
 
 DEMO_FILE_EXT = ".demo.yaml"
 COMMAND_FILE_EXT = ".exec.yaml"
+COMMAND_ARGS_PATH = ("args",)
+COMMAND_STRATEGY_NAME_FIELD = "strategy"
+COMMAND_STRATEGY_ARGS_FIELD = "args"
 COMMAND_RESULT_PATH = ("outcome", "result")
 COMMAND_RESULT_TRACE_FIELD = "raw_trace"
 COMMAND_RESULT_SUCCESS_NODES_FIELD = "success_nodes"
 
 
-def standard_answer_loader(workspace_root: Path) -> dp.AnswerDatabaseLoader:
+def standard_answer_loader(
+    workspace_root: Path, object_loader: an.ObjectLoader
+) -> dp.AnswerDatabaseLoader:
     """
     Standard answer loader.
     """
@@ -74,7 +79,13 @@ def standard_answer_loader(workspace_root: Path) -> dp.AnswerDatabaseLoader:
             else:
                 node_ids = []
         trace = dp.Trace.load(trace_data.trace)
-        resolver = an.IRefResolver(trace)
+        strategy = object_loader.load_strategy_instance(
+            trace_data.strategy, trace_data.args
+        )
+        resolver = an.IRefResolver(
+            trace,
+            root=dp.reify(strategy),
+        )
         raw_examples = fp.extract_examples(
             resolver,
             roots=[dp.irefs.NodeId(i) for i in node_ids],
@@ -169,6 +180,8 @@ def demo_with_name(demos: Sequence[dm.Demo], name: str) -> dm.Demo:
 
 @dataclass
 class _TraceData:
+    strategy: str
+    args: dict[str, Any]
     trace: dp.ExportableTrace
     success_nodes: Sequence[int]
 
@@ -182,10 +195,15 @@ def load_trace_data_from_command_file(path: Path) -> _TraceData:
         path = path.with_suffix(COMMAND_FILE_EXT)
     with open(path, "r") as f:
         content: Any = yaml.safe_load(f)
+    cmd_args = content
+    for key in COMMAND_ARGS_PATH:
+        cmd_args = cmd_args[key]
+    strategy = cmd_args[COMMAND_STRATEGY_NAME_FIELD]
+    args = cmd_args.get(COMMAND_STRATEGY_ARGS_FIELD, {})
     for key in COMMAND_RESULT_PATH:
         content = content[key]
     trace_raw = content[COMMAND_RESULT_TRACE_FIELD]
     success_value = content.get(COMMAND_RESULT_SUCCESS_NODES_FIELD, [])
     trace = ty.pydantic_load(dp.ExportableTrace, trace_raw)
     success_nodes = ty.pydantic_load(Sequence[int], success_value)
-    return _TraceData(trace, success_nodes)
+    return _TraceData(strategy, args, trace, success_nodes)

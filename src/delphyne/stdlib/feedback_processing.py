@@ -35,6 +35,7 @@ def process_feedback(
     roots: Sequence[NodeId],
     filter_sources: FeedbackFilter | None = None,
     filter_backprop_handlers: FeedbackFilter | None = None,
+    verbose: bool = True,
 ) -> Iterable[QueryFeedback]:
     """
     Propagate feedback within a trace.
@@ -53,6 +54,10 @@ def process_feedback(
     # Success nodes that have received a `GoodValue` message already. We
     # keep track of those so as to not send a message several times.
     messaged_success_nodes: set[NodeId] = set()
+
+    def log(msg: str):
+        if verbose:
+            print(msg)
 
     def find_backprop_handlers(
         node_id: NodeId,
@@ -83,6 +88,7 @@ def process_feedback(
         # contains. If the element is an answer, we send a message to
         # it. If it is a nested tree, we send a message to the
         # corresponding success node.
+        log(f"Auto-propagating GoodValue from node {node_id}.")
         node = resolver.resolve_node(node_id)
         assert isinstance(node.node, dp.Success)
         while True:
@@ -103,12 +109,14 @@ def process_feedback(
                 else:
                     assert_type(elt.element, NodeId)
                     yield from propagate_good_value_message(elt.element)
+            node_id = origin.node
 
     def send_to_answer(
         answer_id: AnswerId,
         space_id: SpaceId,
         message: hf.ValueFeedback[Any],
     ) -> Iterable[QueryFeedback]:
+        # log(f"Sending {type(message).__name__} to answer {answer_id}.")
         # Send a message to an answer, yielding a feedback item.
         space = resolver.resolve_space(space_id)
         ans = resolver.resolve_answer(answer_id)
@@ -127,6 +135,7 @@ def process_feedback(
     def send_to_success_node(
         node_id: NodeId, message: hf.ValueFeedback[Any]
     ) -> Iterable[QueryFeedback]:
+        log(f"Sending {type(message).__name__} to success node {node_id}.")
         # We do not process a GoodValue message multiple times at a
         # given success node.
         if isinstance(message, hf.GoodValue):
@@ -207,10 +216,10 @@ def _surrounding_spaces(trace: dp.Trace, node: NodeId) -> Sequence[SpaceId]:
     while True:
         origin = trace.nodes[node]
         if isinstance(origin, dp.irefs.NestedIn):
-            spaces_rev.append(origin.space)
             space_origin = trace.spaces[origin.space]
             if isinstance(space_origin, dp.irefs.MainSpace):
                 break
+            spaces_rev.append(origin.space)
             node = space_origin.node
         else:
             assert_type(origin, dp.irefs.ChildOf)

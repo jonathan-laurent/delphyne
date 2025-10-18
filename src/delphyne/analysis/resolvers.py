@@ -16,9 +16,20 @@ class IRefResolver:
     def __init__(
         self,
         trace: dp.Trace,
-        root: dp.AnyTree | None = None,
+        root: dp.AnyTree | None,
         enable_caching: bool = True,
     ) -> None:
+        """
+        Arguments:
+            trace: The trace.
+            root: The tree corresponding to the root node of the trace.
+                If not provided, some methods may raise `ValueError`
+                (unless a cache is loaded directly via
+                `load_tree_cache`).
+            enable_caching: Whether to enable caching of resolved nodes
+                and spaces.
+        """
+
         self.trace = trace
         self.root = root
         self.node_cache: dict[irefs.NodeId, dp.AnyTree] | None = None

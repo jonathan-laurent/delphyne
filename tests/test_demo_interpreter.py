@@ -61,7 +61,9 @@ class DemoExpectTest(dp.StrategyDemo):
         feedback, trace = analysis.evaluate_strategy_demo_and_return_trace(
             self,
             object_loader=loader,
-            answer_database_loader=dp.standard_answer_loader(TESTS_FOLDER),
+            answer_database_loader=dp.standard_answer_loader(
+                TESTS_FOLDER, loader
+            ),
             load_implicit_answer_generators=(
                 dp.stdlib_implicit_answer_generators_loader((DATA_FOLDER,))
             ),
@@ -111,8 +113,8 @@ def load_demo(demo_label: str) -> DemoExpectTest | dp.QueryDemo:
         "flags_global",
         "abduction",
         "trivial_untyped_strategy",
-        # "make_sum_fetched_answers",
-        # "using_hindsight_feedback",
+        "make_sum_fetched_answers",
+        "using_hindsight_feedback",
         # "without_hindsight_feedback",
         "loading_data",
         "loading_bad_data",
@@ -146,4 +148,4 @@ def test_query_demo(name: str, valid: bool):
 
 if __name__ == "__main__":
     # Entry point for the debugger (see "Debug Server Tests" configuration).
-    test_interpreter("loading_data")
+    test_interpreter("without_hindsight_feedback")

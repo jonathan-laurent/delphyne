@@ -187,6 +187,10 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
                 yield dp.send(msg, resp_ref)
 
         if produce_feedback:
-            dp.backward("last", res, partial(backward, shortcut=False))
-            dp.backward("shortcut", res, partial(backward, shortcut=True))
+            yield from dp.backward(
+                "last", res, partial(backward, shortcut=False)
+            )
+            yield from dp.backward(
+                "shortcut", res, partial(backward, shortcut=True)
+            )
         return res
