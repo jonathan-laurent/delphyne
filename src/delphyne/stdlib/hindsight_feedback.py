@@ -41,11 +41,11 @@ class BetterValue[T](ValueFeedback[T]):
 @dataclass(frozen=True)
 class AttachedFeedback[T]:
     msg: ValueFeedback[T]
-    dst: nd.TypedSpaceRef[T]
+    dst: nd.TypedSpaceElementRef[T]
 
 
 def send[T](
-    msg: ValueFeedback[T], to: nd.TypedSpaceRef[T], /
+    msg: ValueFeedback[T], to: nd.TypedSpaceElementRef[T], /
 ) -> AttachedFeedback[T]:
     return AttachedFeedback(msg, to)
 

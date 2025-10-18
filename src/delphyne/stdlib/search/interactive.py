@@ -108,7 +108,7 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
     init_resp_ref = None
     while True:
         resp, resp_ref = yield from branch(
-            step(prefix, stats), return_space_ref=True
+            step(prefix, stats), return_ref=True
         )
         if init_resp_ref is None:
             init_resp_ref = resp_ref

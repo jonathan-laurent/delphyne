@@ -2,19 +2,10 @@
 Standard Nodes and Effects
 """
 
+import typing
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import (
-    Any,
-    Generic,
-    Literal,
-    Never,
-    NoReturn,
-    TypeVar,
-    cast,
-    overload,
-    override,
-)
+from typing import Any, Generic, Literal, Never, cast, overload, override
 
 import delphyne.core as dp
 import delphyne.stdlib.policies as pol
@@ -69,19 +60,20 @@ class NodeMeta:
 #####
 
 
-T_inv = TypeVar("T_inv", contravariant=False, covariant=False)
+T_inv = typing.TypeVar("T_inv", contravariant=False, covariant=False)
 
 
 @dataclass(frozen=True)
-class TypedSpaceRef(Generic[T_inv]):
+class TypedSpaceElementRef(Generic[T_inv]):
     """
-    A wrapper around global space references that carries phantom type
-    information.
+    A wrapper around a global space element reference that carries
+    phantom type information.
 
     See `branch` for an example of usage.
     """
 
-    ref: dp.refs.GlobalSpacePath
+    node: dp.refs.GlobalNodeRef
+    element: dp.refs.SpaceElementRef
 
 
 #####
@@ -152,18 +144,18 @@ def branch[P, T](
     cands: Opaque[P, T],
     *,
     meta: Callable[[P], NodeMeta] | None = None,
-    return_space_ref: Literal[True],
+    return_ref: Literal[True],
     inner_policy_type: type[P] | None = None,
-) -> dp.Strategy[Branch, P, tuple[T, TypedSpaceRef[T]]]: ...
+) -> dp.Strategy[Branch, P, tuple[T, TypedSpaceElementRef[T]]]: ...
 
 
 def branch[P, T](
     cands: Opaque[P, T],
     *,
     meta: Callable[[P], NodeMeta] | None = None,
-    return_space_ref: bool = False,
+    return_ref: bool = False,
     inner_policy_type: type[P] | None = None,
-) -> dp.Strategy[Branch, P, T | tuple[T, TypedSpaceRef[T]]]:
+) -> dp.Strategy[Branch, P, T | tuple[T, TypedSpaceElementRef[T]]]:
     """
     Branch over the elements of an opaque space.
 
@@ -175,14 +167,24 @@ def branch[P, T](
         inner_policy_type: Ambient inner policy type. This information
             is not used at runtime but it can be provided to help type
             inference when necessary.
-        return_space_ref: Whether to return a typed reference to the
+        return_ref: Whether to return a typed reference to the
             space of candidates along with the chosen element.
     """
     recv = yield spawn_node(Branch, cands=cands, meta=meta)
     ret = cast(T, recv.action)
-    if not return_space_ref:
+    if not return_ref:
         return ret
-    return (ret, None)  # type: ignore  # TODO
+    if not isinstance(recv.value_ref, dp.refs.SpaceElementRef):
+        # The error below should virtually never happen in practice when
+        # using policies that make no assumptions about the specific
+        # type of candidates (by a parametricity argument).
+        raise ValueError(
+            "When calling `branch` with `return_ref=True`, only space "
+            "elements can be sent back by the policy (and not nontrivial "
+            "assemblies of space elements)."
+        )
+    ref = TypedSpaceElementRef[T](node=recv.node_ref, element=recv.value_ref)
+    return (ret, ref)
 
 
 #####
@@ -231,7 +233,7 @@ def fail(
     *,
     message: str | None = None,
     error: dp.Error | None = None,
-) -> dp.Strategy[Fail, object, NoReturn]:
+) -> dp.Strategy[Fail, object, typing.NoReturn]:
     """
     Fail immediately with an error.
 

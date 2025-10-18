@@ -126,11 +126,12 @@ def process_feedback(
         if not handlers:
             yield from propagate_good_value_message(node_id)
             return
-        for handler in handlers:
-            for attached in handler.back(message):
-                full_ref = attached.dst.ref
-                _dst = resolver.trace.convert_global_space_path(full_ref)
-                assert False
+        assert False
+        # for handler in handlers:
+        #     for attached in handler.back(message):
+        #         full_ref = attached.dst.ref
+        #         _dst = resolver.trace.convert_global_space_path(full_ref)
+        #         assert False
 
     if roots:
         for root in roots:

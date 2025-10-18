@@ -8,7 +8,7 @@
 
 ::: delphyne.stdlib.nodes.NodeMeta
 
-::: delphyne.stdlib.nodes.TypedSpaceRef
+::: delphyne.stdlib.nodes.TypedSpaceElementRef
 
 ::: delphyne.stdlib.nodes.Skippable
 

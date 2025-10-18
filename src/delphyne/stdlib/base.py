@@ -76,7 +76,7 @@ from delphyne.stdlib.nodes import (
     Message,
     NodeMeta,
     Skippable,
-    TypedSpaceRef,
+    TypedSpaceElementRef,
     Value,
     binarize_values,
     branch,
