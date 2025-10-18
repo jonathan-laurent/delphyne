@@ -9,8 +9,10 @@ from typing import Any
 
 import yaml
 
+import delphyne.analysis as an
 import delphyne.core as dp
 import delphyne.core.demos as dm
+import delphyne.stdlib.feedback_processing as fp
 import delphyne.utils.typing as ty
 
 type _AnswerIterable = Iterable[tuple[dp.SerializedQuery, dp.LocatedAnswer]]
@@ -71,7 +73,25 @@ def standard_answer_loader(workspace_root: Path) -> dp.AnswerDatabaseLoader:
                 node_ids = [trace_data.success_nodes[0]]
             else:
                 node_ids = []
-        assert False
+        trace = dp.Trace.load(trace_data.trace)
+        resolver = an.IRefResolver(trace)
+        raw_examples = fp.extract_examples(
+            resolver,
+            roots=[dp.irefs.NodeId(i) for i in node_ids],
+            backprop_handler_tags=source.backprop_with,
+        )
+        for ex in raw_examples:
+            serialized = dp.SerializedQuery.make(ex.query)
+            answer = dp.LocatedAnswer(
+                answer=ex.answer,
+                source=dp.FromCommandResult(
+                    "command_result",
+                    source.command,
+                    answer_id=ex.answer_id.id,
+                    modified=ex.modified,
+                ),
+            )
+            yield (serialized, answer)
 
     def unfiltered_loader(source: dp.AnswerSource) -> _AnswerIterable:
         match source:

@@ -6,7 +6,9 @@ from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from typing import Any, Protocol, assert_type
 
-import delphyne.core_and_base as dp
+import delphyne.analysis as an
+import delphyne.core as dp
+import delphyne.stdlib.hindsight_feedback as hf
 from delphyne.core.irefs import AnswerId, NodeId, SpaceId
 
 #####
@@ -20,7 +22,7 @@ class QueryFeedback:
     space_id: dp.irefs.SpaceId
     answer_id: AnswerId
     answer: dp.Answer
-    feedback: dp.ValueFeedback[Any]
+    feedback: hf.ValueFeedback[Any]
 
 
 class FeedbackFilter(Protocol):
@@ -28,7 +30,7 @@ class FeedbackFilter(Protocol):
 
 
 def process_feedback(
-    resolver: dp.IRefResolver,
+    resolver: an.IRefResolver,
     *,
     roots: Sequence[NodeId],
     filter_sources: FeedbackFilter | None = None,
@@ -54,7 +56,7 @@ def process_feedback(
 
     def find_backprop_handlers(
         node_id: NodeId,
-    ) -> Iterable[dp.BackpropagateFeedback]:
+    ) -> Iterable[hf.BackpropagateFeedback]:
         # Starting at a success node, find all feedback backpropagation
         # handlers in the tree.
         if filter_backprop_handlers is None:
@@ -68,7 +70,7 @@ def process_feedback(
             assert_type(origin, dp.irefs.ChildOf)
             node_id = origin.node
             node = resolver.resolve_node(node_id)
-            if isinstance(node.node, dp.BackpropagateFeedback):
+            if isinstance(node.node, hf.BackpropagateFeedback):
                 if filter_backprop_handlers(
                     label=node.node.label, node_id=node_id
                 ):
@@ -96,7 +98,7 @@ def process_feedback(
                     yield from send_to_answer(
                         answer_id=elt.element,
                         space_id=elt.space,
-                        message=dp.GoodValue(),
+                        message=hf.GoodValue(),
                     )
                 else:
                     assert_type(elt.element, NodeId)
@@ -105,7 +107,7 @@ def process_feedback(
     def send_to_answer(
         answer_id: AnswerId,
         space_id: SpaceId,
-        message: dp.ValueFeedback[Any],
+        message: hf.ValueFeedback[Any],
     ) -> Iterable[QueryFeedback]:
         # Send a message to an answer, yielding a feedback item.
         space = resolver.resolve_space(space_id)
@@ -123,16 +125,16 @@ def process_feedback(
         )
 
     def send_to_success_node(
-        node_id: NodeId, message: dp.ValueFeedback[Any]
+        node_id: NodeId, message: hf.ValueFeedback[Any]
     ) -> Iterable[QueryFeedback]:
         # We do not process a GoodValue message multiple times at a
         # given success node.
-        if isinstance(message, dp.GoodValue):
+        if isinstance(message, hf.GoodValue):
             if node_id in messaged_success_nodes:
                 return
             messaged_success_nodes.add(node_id)
         handlers = list(find_backprop_handlers(node_id))
-        if not handlers and isinstance(message, dp.GoodValue):
+        if not handlers and isinstance(message, hf.GoodValue):
             # If the message is `GoodValue` and there is no registered
             # handler, we do the default propagation.
             yield from propagate_good_value_message(node_id)
@@ -142,7 +144,7 @@ def process_feedback(
                 yield from send_attached_message(attached)
 
     def send_attached_message(
-        attached: dp.AttachedFeedback[Any],
+        attached: hf.AttachedFeedback[Any],
     ) -> Iterable[QueryFeedback]:
         ref = attached.dst
         nref = resolver.trace.convert_global_node_ref(ref.node)
@@ -157,16 +159,16 @@ def process_feedback(
                 message=attached.msg,
             )
 
-    def iter_sources() -> Iterable[tuple[NodeId, dp.ThrowFeedback]]:
+    def iter_sources() -> Iterable[tuple[NodeId, hf.ThrowFeedback]]:
         for node_id in resolver.trace.nodes:
             tree = resolver.resolve_node(node_id)
-            if isinstance(tree.node, dp.ThrowFeedback):
+            if isinstance(tree.node, hf.ThrowFeedback):
                 yield (node_id, tree.node)
 
     # If some roots are specified, we go through them
     if roots:
         for root in roots:
-            yield from send_to_success_node(root, dp.GoodValue())
+            yield from send_to_success_node(root, hf.GoodValue())
 
     # Then use provided sources to send messages
     if filter_sources is not None:
@@ -240,7 +242,7 @@ def match_handler_pattern(
 
 
 def _surrounding_spaces_tags(
-    resolver: dp.IRefResolver, node_id: NodeId
+    resolver: an.IRefResolver, node_id: NodeId
 ) -> Iterable[Sequence[dp.Tag]]:
     """
     Return the list of consecutive space tags surrounding the current
@@ -254,7 +256,7 @@ def _surrounding_spaces_tags(
 
 
 def extract_examples(
-    resolver: dp.IRefResolver,
+    resolver: an.IRefResolver,
     *,
     roots: Sequence[NodeId],
     backprop_handler_tags: Sequence[str] | None = None,
@@ -279,14 +281,14 @@ def extract_examples(
         filter_backprop_handlers=filter_backprop_handlers,
     )
     for f in feedback_items:
-        if isinstance(f.feedback, dp.BetterValue):
+        if isinstance(f.feedback, hf.BetterValue):
             answer = f.query.unparse(f.feedback.value)
             assert answer is not None, (
                 f"Unable to unparse answer for {f.query.query_name()}: "
                 f"{f.feedback.value}"
             )
             modified = True
-        elif isinstance(f.feedback, dp.GoodValue):
+        elif isinstance(f.feedback, hf.GoodValue):
             answer = f.answer
             modified = False
         else:

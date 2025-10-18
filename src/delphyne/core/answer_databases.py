@@ -58,13 +58,15 @@ class FromCommandResult:
     Attributes:
         command_file: Path to the command file, relative to the
             workspace root.
-        answer_id: Index of the answer within the command result
-            (0-based).
+        answer_id: Index of the answer within the command result.
+        modified: Whether the answer was modified by custom feedback
+            handlers.
     """
 
     source: Literal["command_result"]
     command_file: str
     answer_id: int
+    modified: bool
 
 
 type LocatedAnswerSource = (
@@ -88,7 +90,8 @@ def pp_located_answer_source(src: LocatedAnswerSource) -> str:
                 f"{src.query_id}:{src.answer_id}"
             )
         case FromCommandResult():
-            return f"{src.command_file}:trace:{src.answer_id}"
+            mod = "!" if src.modified else ""
+            return f"{src.command_file}:trace:{src.answer_id}{mod}"
 
 
 @dataclass
