@@ -3704,7 +3704,7 @@ appended to a chat history), and possibly a sequence of tool calls.</p>
     <span class="c1">### Hindsight Feedback</span>
 
     <span class="nd">@override</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">unparse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feedback</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Answer</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unparse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Answer</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Unparse an answer.</span>
 
@@ -3723,7 +3723,7 @@ appended to a chat history), and possibly a sequence of tool calls.</p>
         <span class="n">output_type</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">structured_output</span><span class="o">.</span><span class="n">type</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output_type</span><span class="p">,</span> <span class="n">ty</span><span class="o">.</span><span class="n">NoTypeInfo</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="n">structured</span> <span class="o">=</span> <span class="n">ty</span><span class="o">.</span><span class="n">pydantic_dump</span><span class="p">(</span><span class="n">output_type</span><span class="p">,</span> <span class="n">feedback</span><span class="p">)</span>
+        <span class="n">structured</span> <span class="o">=</span> <span class="n">ty</span><span class="o">.</span><span class="n">pydantic_dump</span><span class="p">(</span><span class="n">output_type</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="n">answer</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">Answer</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">Structured</span><span class="p">(</span><span class="n">structured</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">answer</span>
 
@@ -4058,7 +4058,7 @@ attribute.</p>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">unparse</span><span class="p">(</span><span class="n">feedback</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">T</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Answer
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">unparse</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.queries.Query[T]">T</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Answer
 
 
   
@@ -4099,7 +4099,7 @@ can be overriden to handle more advanced cases.</p>
 <span class="normal">1025</span>
 <span class="normal">1026</span>
 <span class="normal">1027</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@override</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">unparse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feedback</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Answer</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">unparse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Answer</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Unparse an answer.</span>
 
@@ -4118,7 +4118,7 @@ can be overriden to handle more advanced cases.</p>
     <span class="n">output_type</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">structured_output</span><span class="o">.</span><span class="n">type</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output_type</span><span class="p">,</span> <span class="n">ty</span><span class="o">.</span><span class="n">NoTypeInfo</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">None</span>
-    <span class="n">structured</span> <span class="o">=</span> <span class="n">ty</span><span class="o">.</span><span class="n">pydantic_dump</span><span class="p">(</span><span class="n">output_type</span><span class="p">,</span> <span class="n">feedback</span><span class="p">)</span>
+    <span class="n">structured</span> <span class="o">=</span> <span class="n">ty</span><span class="o">.</span><span class="n">pydantic_dump</span><span class="p">(</span><span class="n">output_type</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
     <span class="n">answer</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">Answer</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">Structured</span><span class="p">(</span><span class="n">structured</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">answer</span>
 </code></pre></div></td></tr></table></div>

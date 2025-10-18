@@ -2185,8 +2185,7 @@ inference when necessary.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/search/interactive.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 61</span>
-<span class="normal"> 62</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 62</span>
 <span class="normal"> 63</span>
 <span class="normal"> 64</span>
 <span class="normal"> 65</span>
@@ -2308,7 +2307,19 @@ inference when necessary.</p>
 <span class="normal">181</span>
 <span class="normal">182</span>
 <span class="normal">183</span>
-<span class="normal">184</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">interact</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">T</span><span class="p">:</span> <span class="n">md</span><span class="o">.</span><span class="n">AbstractTool</span><span class="p">[</span><span class="n">Any</span><span class="p">]](</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">interact</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">T</span><span class="p">:</span> <span class="n">md</span><span class="o">.</span><span class="n">AbstractTool</span><span class="p">[</span><span class="n">Any</span><span class="p">]](</span>
     <span class="n">step</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span>
         <span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">AnswerPrefix</span><span class="p">,</span> <span class="n">InteractStats</span><span class="p">],</span>
         <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">Response</span><span class="p">[</span><span class="n">A</span> <span class="o">|</span> <span class="n">WrappedParseError</span><span class="p">,</span> <span class="n">T</span><span class="p">]],</span>
@@ -2356,82 +2367,93 @@ inference when necessary.</p>
     <span class="n">prefix</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerPrefix</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">stats</span> <span class="o">=</span> <span class="n">InteractStats</span><span class="p">(</span><span class="n">num_rejected</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_tool_call_rounds</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">init_resp_ref</span> <span class="o">=</span> <span class="kc">None</span>
+
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># We ask for a response, providing the full chat history.</span>
         <span class="n">resp</span><span class="p">,</span> <span class="n">resp_ref</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">branch</span><span class="p">(</span>
             <span class="n">step</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">stats</span><span class="p">),</span> <span class="n">return_ref</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">init_resp_ref</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">init_resp_ref</span> <span class="o">=</span> <span class="n">resp_ref</span>
         <span class="n">prefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">OracleMessage</span><span class="p">(</span><span class="s2">&quot;oracle&quot;</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">answer</span><span class="p">))</span>
-        <span class="k">match</span> <span class="n">resp</span><span class="o">.</span><span class="n">parsed</span><span class="p">:</span>
-            <span class="k">case</span> <span class="n">dp</span><span class="o">.</span><span class="n">FinalAnswer</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">WrappedParseError</span><span class="p">):</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">FeedbackMessage</span><span class="p">(</span>
-                        <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;feedback&quot;</span><span class="p">,</span>
-                        <span class="n">label</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
-                        <span class="n">description</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
-                        <span class="n">meta</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">meta</span><span class="p">,</span>
-                    <span class="p">)</span>
-                    <span class="n">stats</span><span class="o">.</span><span class="n">num_rejected</span> <span class="o">+=</span> <span class="mi">1</span>
-                    <span class="n">prefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="c1"># Case where a tool call is requested.</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">parsed</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">ToolRequests</span><span class="p">):</span>
+            <span class="n">tc</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">parsed</span><span class="o">.</span><span class="n">tool_calls</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tc</span><span class="p">):</span>
+                <span class="k">assert</span> <span class="n">tools</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="n">tres</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">branch</span><span class="p">(</span><span class="n">tools</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">t</span><span class="p">)](</span><span class="n">t</span><span class="p">))</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">ToolResult</span><span class="p">(</span>
+                    <span class="s2">&quot;tool&quot;</span><span class="p">,</span>
+                    <span class="n">resp</span><span class="o">.</span><span class="n">answer</span><span class="o">.</span><span class="n">tool_calls</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                    <span class="n">t</span><span class="o">.</span><span class="n">render_result</span><span class="p">(</span><span class="n">tres</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="n">prefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">stats</span><span class="o">.</span><span class="n">num_tool_call_rounds</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">continue</span>
+
+        <span class="n">ans</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">parsed</span><span class="o">.</span><span class="n">final</span>
+
+        <span class="c1"># Case where the answer does not parse.</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ans</span><span class="p">,</span> <span class="n">WrappedParseError</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">FeedbackMessage</span><span class="p">(</span>
+                <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;feedback&quot;</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">ans</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="n">ans</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+                <span class="n">meta</span><span class="o">=</span><span class="n">ans</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">meta</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">stats</span><span class="o">.</span><span class="n">num_rejected</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">prefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">branch</span><span class="p">(</span><span class="n">process</span><span class="p">(</span><span class="n">ans</span><span class="p">,</span> <span class="n">stats</span><span class="p">))</span>
+
+        <span class="c1"># Case where the parsed answer cannot be processed.</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">Error</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">FeedbackMessage</span><span class="p">(</span>
+                <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;feedback&quot;</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+                <span class="n">description</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+                <span class="n">meta</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">meta</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">stats</span><span class="o">.</span><span class="n">num_rejected</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">prefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">produce_feedback</span><span class="p">:</span>
+                <span class="n">err_f</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">BadValue</span><span class="p">(</span><span class="n">res</span><span class="p">),</span> <span class="n">resp_ref</span><span class="p">)</span>
+                <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">feedback</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">err_f</span><span class="p">])</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># Case where we have a final good answer.</span>
+        <span class="c1"># We define a backward feedback function and then return the answer.</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">backward</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">ValueFeedback</span><span class="p">[</span><span class="n">B</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">shortcut</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">GoodValue</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">shortcut</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">BetterValue</span><span class="p">(</span><span class="n">resp</span><span class="p">),</span> <span class="n">init_resp_ref</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">res</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">branch</span><span class="p">(</span><span class="n">process</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">stats</span><span class="p">))</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">Error</span><span class="p">):</span>
-                        <span class="n">msg</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">FeedbackMessage</span><span class="p">(</span>
-                            <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;feedback&quot;</span><span class="p">,</span>
-                            <span class="n">label</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
-                            <span class="n">description</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
-                            <span class="n">meta</span><span class="o">=</span><span class="n">res</span><span class="o">.</span><span class="n">meta</span><span class="p">,</span>
-                        <span class="p">)</span>
-                        <span class="n">stats</span><span class="o">.</span><span class="n">num_rejected</span> <span class="o">+=</span> <span class="mi">1</span>
-                        <span class="n">prefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">produce_feedback</span><span class="p">:</span>
-                            <span class="n">err_f</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">BadValue</span><span class="p">(</span><span class="n">res</span><span class="p">),</span> <span class="n">resp_ref</span><span class="p">)</span>
-                            <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">feedback</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">err_f</span><span class="p">])</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">if</span> <span class="n">produce_feedback</span><span class="p">:</span>
-
-                            <span class="k">def</span><span class="w"> </span><span class="nf">backward</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">ValueFeedback</span><span class="p">[</span><span class="n">B</span><span class="p">]):</span>
-                                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">GoodValue</span><span class="p">):</span>
-                                    <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">resp_ref</span><span class="p">)</span>
-                                    <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
-                                        <span class="n">dp</span><span class="o">.</span><span class="n">BetterValue</span><span class="p">(</span><span class="n">resp</span><span class="p">),</span> <span class="n">init_resp_ref</span>
-                                    <span class="p">)</span>
-                                <span class="k">elif</span> <span class="p">(</span>
-                                    <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">BetterValue</span><span class="p">)</span>
-                                    <span class="ow">and</span> <span class="n">unprocess</span>
-                                <span class="p">):</span>
-                                    <span class="c1"># We send a shortcut to the initial</span>
-                                    <span class="c1"># response, knowing that the raw</span>
-                                    <span class="c1"># answer will be discarded and only</span>
-                                    <span class="c1"># the parsed answer will matter.</span>
-                                    <span class="n">v</span> <span class="o">=</span> <span class="n">unprocess</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-                                    <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                                        <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
-                                            <span class="n">dp</span><span class="o">.</span><span class="n">BetterValue</span><span class="p">(</span>
-                                                <span class="n">dp</span><span class="o">.</span><span class="n">Response</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
-                                                    <span class="n">resp</span><span class="o">.</span><span class="n">answer</span><span class="p">,</span>  <span class="c1"># irrelevant</span>
-                                                    <span class="n">dp</span><span class="o">.</span><span class="n">FinalAnswer</span><span class="p">(</span><span class="n">v</span><span class="p">),</span>
-                                                <span class="p">)</span>
-                                            <span class="p">),</span>
-                                            <span class="n">init_resp_ref</span><span class="p">,</span>
-                                        <span class="p">)</span>
-                                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">BadValue</span><span class="p">):</span>
-                                    <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">resp_ref</span><span class="p">)</span>
-
-                            <span class="n">dp</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="s2">&quot;shortcut&quot;</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">backward</span><span class="p">)</span>
-                        <span class="k">return</span> <span class="n">res</span>
-            <span class="k">case</span> <span class="n">dp</span><span class="o">.</span><span class="n">ToolRequests</span><span class="p">(</span><span class="n">tc</span><span class="p">):</span>
-                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tc</span><span class="p">):</span>
-                    <span class="k">assert</span> <span class="n">tools</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                    <span class="n">tres</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">branch</span><span class="p">(</span><span class="n">tools</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">t</span><span class="p">)](</span><span class="n">t</span><span class="p">))</span>
-                    <span class="n">msg</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">ToolResult</span><span class="p">(</span>
-                        <span class="s2">&quot;tool&quot;</span><span class="p">,</span>
-                        <span class="n">resp</span><span class="o">.</span><span class="n">answer</span><span class="o">.</span><span class="n">tool_calls</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-                        <span class="n">t</span><span class="o">.</span><span class="n">render_result</span><span class="p">(</span><span class="n">tres</span><span class="p">),</span>
+                    <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">resp_ref</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">BetterValue</span><span class="p">)</span> <span class="ow">and</span> <span class="n">unprocess</span><span class="p">:</span>
+                <span class="c1"># We send a shortcut to the initial response, knowing</span>
+                <span class="c1"># that the raw answer will be discarded and only the</span>
+                <span class="c1"># parsed answer will matter.</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">unprocess</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">better</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">Response</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+                        <span class="n">resp</span><span class="o">.</span><span class="n">answer</span><span class="p">,</span>  <span class="c1"># irrelevant</span>
+                        <span class="n">dp</span><span class="o">.</span><span class="n">FinalAnswer</span><span class="p">(</span><span class="n">v</span><span class="p">),</span>
                     <span class="p">)</span>
-                    <span class="n">prefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-                <span class="n">stats</span><span class="o">.</span><span class="n">num_tool_call_rounds</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">BetterValue</span><span class="p">(</span><span class="n">better</span><span class="p">),</span> <span class="n">init_resp_ref</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">BadValue</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">resp_ref</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">produce_feedback</span><span class="p">:</span>
+            <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span>
+                <span class="s2">&quot;last&quot;</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">partial</span><span class="p">(</span><span class="n">backward</span><span class="p">,</span> <span class="n">shortcut</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span>
+                <span class="s2">&quot;shortcut&quot;</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">partial</span><span class="p">(</span><span class="n">backward</span><span class="p">,</span> <span class="n">shortcut</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2506,8 +2528,7 @@ message that can contain several tool call requests).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/search/interactive.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
-<span class="normal">17</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
 <span class="normal">18</span>
 <span class="normal">19</span>
 <span class="normal">20</span>
@@ -2520,7 +2541,8 @@ message that can contain several tool call requests).</p>
 <span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
-<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">InteractStats</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Statistics maintained by `interact`.</span>
