@@ -15,7 +15,7 @@ class QueryFeedback:
     query: dp.AbstractQuery[Any]
     space_id: dp.irefs.SpaceId
     answer: dp.Answer
-    feedback: dp.HindsightMessage[Any]
+    feedback: dp.ValueFeedback[Any]
 
 
 class FeedbackFilter(Protocol):
@@ -100,7 +100,7 @@ def process_feedback(
     def send_to_answer(
         answer_id: AnswerId,
         space_id: SpaceId,
-        message: dp.HindsightMessage[Any],
+        message: dp.ValueFeedback[Any],
     ) -> Iterable[QueryFeedback]:
         # Send a message to an answer, yielding a feedback item.
         space = resolver.resolve_space(space_id)
@@ -114,7 +114,7 @@ def process_feedback(
         )
 
     def send_to_success_node(
-        node_id: NodeId, message: dp.HindsightMessage[Any]
+        node_id: NodeId, message: dp.ValueFeedback[Any]
     ) -> Iterable[QueryFeedback]:
         # We do not process a GoodValue message multiple times at a
         # given success node.

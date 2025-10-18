@@ -97,7 +97,7 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
             horizontal and vertical LLM pipelines.
         produce_feedback: Whether or not to produce `Feedback` nodes.
         unprocess: If `produce_feedback` is `True`, this function is
-            useful for backpropagating `Shortcut` feedback messages.
+            useful for backpropagating `BetterValue` feedback messages.
         inner_policy_type: Ambient inner policy type. This information
             is not used at runtime but it can be provided to help type
             inference when necessary.
@@ -141,14 +141,15 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
                     else:
                         if produce_feedback:
 
-                            def backward(msg: dp.HindsightMessage[B]):
+                            def backward(msg: dp.ValueFeedback[B]):
                                 if isinstance(msg, dp.GoodValue):
                                     yield dp.send(msg, resp_ref)
                                     yield dp.send(
-                                        dp.Shortcut(resp), init_resp_ref
+                                        dp.BetterValue(resp), init_resp_ref
                                     )
                                 elif (
-                                    isinstance(msg, dp.Shortcut) and unprocess
+                                    isinstance(msg, dp.BetterValue)
+                                    and unprocess
                                 ):
                                     # We send a shortcut to the initial
                                     # response, knowing that the raw
@@ -157,7 +158,7 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
                                     v = unprocess(msg.value)
                                     if v is not None:
                                         yield dp.send(
-                                            dp.Shortcut(
+                                            dp.BetterValue(
                                                 dp.Response[A, T](
                                                     resp.answer,  # irrelevant
                                                     dp.FinalAnswer(v),

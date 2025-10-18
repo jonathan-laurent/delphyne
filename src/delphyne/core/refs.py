@@ -338,12 +338,13 @@ class Tracked(Generic[T]):
     ) -> "Tracked[U]": ...
 
     def __getitem__[U](
-        self: "Tracked[Sequence[U] | tuple[Any, ...]]", index: int
+        self: "Tracked[Sequence[U]] | Tracked[tuple[Any, ...]]", index: int
     ) -> "Tracked[U | Any]":
         return Tracked(
             self.value[index],
             IndexedRef(self.ref, index),
             self.node,
+            # TODO: will not work well for union of tuples for example
             insp.element_type_of_sequence_type(self.type_annot, index),
         )
 
