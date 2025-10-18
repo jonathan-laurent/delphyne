@@ -145,7 +145,7 @@ def _reify[N: Node, P, T](
 
     def aux(
         strategy: StrategyComp[N, P, T],
-        actions_and_refs: Sequence[tuple[object, refs.GlobalNodeRef]],
+        actions: Sequence[tr.ActionWithRefs],
         ref: refs.GlobalNodeRef,
         node: N | Success[T],
         cur_generator: Strategy[N, P, T],
@@ -181,20 +181,19 @@ def _reify[N: Node, P, T](
             # None and the strategy is resimulated from scratch
             # following `self._path`.
             nonlocal generator_valid
-            new_actions_and_refs = (*actions_and_refs, (action_raw, new_ref))
+            latest_action = tr.ActionWithRefs(action_raw, ref, action_ref)
+            new_actions = (*actions, latest_action)
             if generator_valid:
-                pre_node = _send_action(cur_generator, (action_raw, new_ref))
+                pre_node = _send_action(cur_generator, latest_action)
                 new_gen = cur_generator
                 generator_valid = False
             else:
-                pre_node, new_gen = _recompute(strategy, new_actions_and_refs)
+                pre_node, new_gen = _recompute(strategy, new_actions)
             ret_type = strategy.return_type()
             new_node = _finalize_node(
                 pre_node, new_ref, ret_type, monitor, allow_noncopyable_actions
             )
-            return aux(
-                strategy, new_actions_and_refs, new_ref, new_node, new_gen
-            )
+            return aux(strategy, new_actions, new_ref, new_node, new_gen)
 
         tree = Tree(node, child, ref)
         if monitor.cache is not None:
@@ -237,15 +236,22 @@ class _PreSuccess[T]:
 type _PreNode[N: Node, P, T] = tr.NodeBuilder[N, P] | _PreSuccess[T]
 
 
+def _deepcopy_action_with_refs(action: tr.ActionWithRefs) -> tr.ActionWithRefs:
+    return tr.ActionWithRefs(
+        deepcopy(action.action),
+        action.node_ref,
+        action.value_ref,
+    )
+
+
 def _send_action[N: Node, P, T](
     gen: Strategy[N, P, T],
-    action_and_ref: tuple[object, refs.GlobalNodeRef] | None,
+    action: tr.ActionWithRefs | None,
 ) -> _PreNode[N, P, T]:
     try:
-        if action_and_ref is not None:
-            action, ref = action_and_ref
-            return gen.send((deepcopy(action), ref))
-        return next(gen)  # `gen.send(None)` gives a type error in pyright
+        if action is not None:
+            return gen.send(_deepcopy_action_with_refs(action))
+        return next(gen)
     except StopIteration as e:
         v = cast(T, e.value)
         return _PreSuccess(v)
@@ -255,7 +261,7 @@ def _send_action[N: Node, P, T](
 
 def _recompute[N: Node, P, T](
     strategy: StrategyComp[N, P, T],
-    actions_and_refs: Sequence[tuple[object, refs.GlobalNodeRef]],
+    actions: Sequence[tr.ActionWithRefs],
 ) -> tuple[_PreNode[N, P, T], Strategy[N, P, T]]:
     try:
         # Exceptions may be raised even before the generator starts, if
@@ -264,8 +270,8 @@ def _recompute[N: Node, P, T](
     except Exception as e:
         raise tr.StrategyException(e)
     mknode = _send_action(gen, None)
-    for ar in actions_and_refs:
-        mknode = _send_action(gen, ar)
+    for a in actions:
+        mknode = _send_action(gen, a)
     return mknode, gen
 
 

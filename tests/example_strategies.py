@@ -115,10 +115,10 @@ def make_conjecture[P, T](
     aggregation function that combines several candidates into a list of
     candidates (e.g. removing semantic duplicates).
     """
-    cand, _ = yield dp.spawn_node(
+    recv = yield dp.spawn_node(
         Conjecture, cands=cands, disprove=disprove, aggregate=aggregate
     )
-    return cast(T, cand)
+    return cast(T, recv.action)
 
 
 @dp.search_policy

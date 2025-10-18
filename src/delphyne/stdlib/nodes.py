@@ -178,12 +178,11 @@ def branch[P, T](
         return_space_ref: Whether to return a typed reference to the
             space of candidates along with the chosen element.
     """
-    ret, nref = yield spawn_node(Branch, cands=cands, meta=meta)
-    ret = cast(T, ret)
+    recv = yield spawn_node(Branch, cands=cands, meta=meta)
+    ret = cast(T, recv.action)
     if not return_space_ref:
         return ret
-    lsref = dp.refs.SpaceRef(dp.refs.SpaceName("cands", ()), ())
-    return ret, TypedSpaceRef[T](nref.nested_space(lsref))
+    return (ret, None)  # type: ignore  # TODO
 
 
 #####
@@ -595,5 +594,5 @@ def join[N: dp.Node, P, T](
     Returns:
         A sequence featuring all computation results.
     """
-    ret, _ = yield spawn_node(Join, subs=subs, meta=meta)
-    return cast(Sequence[T], ret)
+    recv = yield spawn_node(Join, subs=subs, meta=meta)
+    return cast(Sequence[T], recv.action)

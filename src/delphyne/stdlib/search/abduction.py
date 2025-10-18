@@ -147,14 +147,14 @@ def abduction[Fact, Feedback, Proof, P](
     Returns:
       a proof of the top-level goal.
     """
-    res, _ = yield spawn_node(
+    recv = yield spawn_node(
         Abduction,
         prove=prove,
         suggest=suggest,
         search_equivalent=search_equivalent,
         redundant=redundant,
     )
-    return cast(Proof, res)
+    return cast(Proof, recv.action)
 
 
 #####

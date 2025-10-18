@@ -166,8 +166,8 @@ def load_data(
         return []
 
     query = dp.TransparentQuery.build(__LoadData__(refs))
-    result, _ = yield dp.spawn_node(Data, query=query)
-    result = cast(Sequence[Any] | DataNotFound, result)
+    recv = yield dp.spawn_node(Data, query=query)
+    result = cast(Sequence[Any] | DataNotFound, recv.action)
     if isinstance(result, DataNotFound):
         raise result
     if isinstance(type, NoTypeInfo):

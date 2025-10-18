@@ -6,6 +6,8 @@
 
 ::: delphyne.Strategy
 
+::: delphyne.core.trees.ActionWithRefs
+
 ::: delphyne.NodeBuilder
 
 ::: delphyne.StrategyComp

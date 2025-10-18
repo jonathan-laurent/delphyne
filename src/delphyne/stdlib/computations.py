@@ -174,14 +174,14 @@ def compute[**A, T, P](
         fun = insp.function_name(f)
         assert fun is not None
         query = dp.TransparentQuery.build(__Computation__(fun, fun_args))
-        unparsed, _ = yield spawn_node(
+        recv = yield spawn_node(
             Compute,
             query=query,
             override_args=override_args,
             _comp=comp,
             _ret_type=ret_type,
         )
-        ret = ty.pydantic_load(ret_type, unparsed)
+        ret = ty.pydantic_load(ret_type, recv.action)
         return cast(T, ret)
 
     return wrapped

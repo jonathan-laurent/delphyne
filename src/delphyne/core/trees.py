@@ -447,9 +447,7 @@ generated and returned.
 ####
 
 
-type Strategy[N: Node, P, T] = Generator[
-    NodeBuilder[N, P], tuple[object, refs.GlobalNodeRef], T
-]
+type Strategy[N: Node, P, T] = Generator[NodeBuilder[N, P], ActionWithRefs, T]
 """
 Type of a strategy computation.
 
@@ -468,12 +466,22 @@ Type Parameters:
     computations cannot create nodes since they are unaware of
     references. The task of concretely building nodes and maintaining
     references is delegated to the `refine` function.
-
-!!! info
-    Strategy generators receive references to the spawned nodes along
-    with corresponding actions. This is useful to implement hindsight
-    feedback, where pointers to specific spaces are needed.
 """
+
+
+@dataclass(frozen=True)
+class ActionWithRefs:
+    """
+    An action along with a reference to the node that the action is
+    associated and a local reference to the value representing the action.
+
+    Strategy generators expect to receive such tuples. Receiving references
+    is useful for implementing hindsight feedback.
+    """
+
+    action: object
+    node_ref: refs.GlobalNodeRef
+    value_ref: refs.ValueRef
 
 
 # We provide manual variance annotations since `P` is a phantom type
