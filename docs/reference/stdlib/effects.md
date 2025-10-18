@@ -26,6 +26,32 @@
 
 ::: delphyne.stdlib.nodes.ensure
 
+## Feedback
+
+::: delphyne.stdlib.hindsight_feedback.Feedback
+
+::: delphyne.stdlib.hindsight_feedback.ThrowFeedback
+
+::: delphyne.stdlib.hindsight_feedback.BackpropagateFeedback
+
+::: delphyne.stdlib.hindsight_feedback.AttachedFeedback
+
+::: delphyne.stdlib.hindsight_feedback.ValueFeedback
+
+::: delphyne.stdlib.hindsight_feedback.GoodValue
+
+::: delphyne.stdlib.hindsight_feedback.BadValue
+
+::: delphyne.stdlib.hindsight_feedback.BetterValue
+
+::: delphyne.stdlib.hindsight_feedback.send
+
+::: delphyne.stdlib.hindsight_feedback.feedback
+
+::: delphyne.stdlib.hindsight_feedback.backward
+
+::: delphyne.stdlib.hindsight_feedback.elim_feedback
+
 ## Message
 
 ::: delphyne.stdlib.nodes.Message
