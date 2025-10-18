@@ -4276,7 +4276,8 @@ resulting in tracked values with <code>IndexedRef</code> references. Since
 <span class="normal">345</span>
 <span class="normal">346</span>
 <span class="normal">347</span>
-<span class="normal">348</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">348</span>
+<span class="normal">349</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Tracked</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A tracked value, which pairs a value with a reference.</span>
@@ -4316,12 +4317,13 @@ resulting in tracked values with <code>IndexedRef</code> references. Since
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Tracked[U]&quot;</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">[</span><span class="n">U</span><span class="p">](</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Tracked[Sequence[U] | tuple[Any, ...]]&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Tracked[Sequence[U]] | Tracked[tuple[Any, ...]]&quot;</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Tracked[U | Any]&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Tracked</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
             <span class="n">IndexedRef</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ref</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="p">,</span>
+            <span class="c1"># TODO: will not work well for union of tuples for example</span>
             <span class="n">insp</span><span class="o">.</span><span class="n">element_type_of_sequence_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type_annot</span><span class="p">,</span> <span class="n">index</span><span class="p">),</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -4418,8 +4420,7 @@ value relative to a given node.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/refs.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">372</span>
-<span class="normal">373</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">373</span>
 <span class="normal">374</span>
 <span class="normal">375</span>
 <span class="normal">376</span>
@@ -4437,7 +4438,8 @@ value relative to a given node.</p>
 <span class="normal">388</span>
 <span class="normal">389</span>
 <span class="normal">390</span>
-<span class="normal">391</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_local_value</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="n">Value</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">GlobalNodeRef</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
+<span class="normal">391</span>
+<span class="normal">392</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_local_value</span><span class="p">(</span><span class="n">val</span><span class="p">:</span> <span class="n">Value</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">GlobalNodeRef</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Raise a `LocalityError` exception if a given value is not a local</span>
 <span class="sd">    value relative to a given node.</span>
@@ -4500,8 +4502,7 @@ value relative to a given node.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/refs.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">359</span>
-<span class="normal">360</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">360</span>
 <span class="normal">361</span>
 <span class="normal">362</span>
 <span class="normal">363</span>
@@ -4510,7 +4511,8 @@ value relative to a given node.</p>
 <span class="normal">366</span>
 <span class="normal">367</span>
 <span class="normal">368</span>
-<span class="normal">369</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">369</span>
+<span class="normal">370</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">LocalityError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exception raised when the locality invariant is violated.</span>

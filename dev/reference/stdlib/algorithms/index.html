@@ -2134,7 +2134,7 @@ horizontal and vertical LLM pipelines.</p>
             <td>
               <div class="doc-md-description">
                 <p>If <code>produce_feedback</code> is <code>True</code>, this function is
-useful for backpropagating [<code>Shortcut</code>][delphyne.Shortcut] feedback messages.</p>
+useful for backpropagating [<code>BetterValue</code>][delphyne.BetterValue] feedback messages.</p>
               </div>
             </td>
             <td>
@@ -2287,7 +2287,8 @@ inference when necessary.</p>
 <span class="normal">180</span>
 <span class="normal">181</span>
 <span class="normal">182</span>
-<span class="normal">183</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">interact</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">T</span><span class="p">:</span> <span class="n">md</span><span class="o">.</span><span class="n">AbstractTool</span><span class="p">[</span><span class="n">Any</span><span class="p">]](</span>
+<span class="normal">183</span>
+<span class="normal">184</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">interact</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">T</span><span class="p">:</span> <span class="n">md</span><span class="o">.</span><span class="n">AbstractTool</span><span class="p">[</span><span class="n">Any</span><span class="p">]](</span>
     <span class="n">step</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span>
         <span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">AnswerPrefix</span><span class="p">,</span> <span class="n">InteractStats</span><span class="p">],</span>
         <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">Response</span><span class="p">[</span><span class="n">A</span> <span class="o">|</span> <span class="n">WrappedParseError</span><span class="p">,</span> <span class="n">T</span><span class="p">]],</span>
@@ -2326,7 +2327,7 @@ inference when necessary.</p>
 <span class="sd">            horizontal and vertical LLM pipelines.</span>
 <span class="sd">        produce_feedback: Whether or not to produce `Feedback` nodes.</span>
 <span class="sd">        unprocess: If `produce_feedback` is `True`, this function is</span>
-<span class="sd">            useful for backpropagating `Shortcut` feedback messages.</span>
+<span class="sd">            useful for backpropagating `BetterValue` feedback messages.</span>
 <span class="sd">        inner_policy_type: Ambient inner policy type. This information</span>
 <span class="sd">            is not used at runtime but it can be provided to help type</span>
 <span class="sd">            inference when necessary.</span>
@@ -2370,14 +2371,15 @@ inference when necessary.</p>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">produce_feedback</span><span class="p">:</span>
 
-                            <span class="k">def</span><span class="w"> </span><span class="nf">backward</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">HindsightMessage</span><span class="p">[</span><span class="n">B</span><span class="p">]):</span>
+                            <span class="k">def</span><span class="w"> </span><span class="nf">backward</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">ValueFeedback</span><span class="p">[</span><span class="n">B</span><span class="p">]):</span>
                                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">GoodValue</span><span class="p">):</span>
                                     <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">resp_ref</span><span class="p">)</span>
                                     <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
-                                        <span class="n">dp</span><span class="o">.</span><span class="n">Shortcut</span><span class="p">(</span><span class="n">resp</span><span class="p">),</span> <span class="n">init_resp_ref</span>
+                                        <span class="n">dp</span><span class="o">.</span><span class="n">BetterValue</span><span class="p">(</span><span class="n">resp</span><span class="p">),</span> <span class="n">init_resp_ref</span>
                                     <span class="p">)</span>
                                 <span class="k">elif</span> <span class="p">(</span>
-                                    <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">Shortcut</span><span class="p">)</span> <span class="ow">and</span> <span class="n">unprocess</span>
+                                    <span class="nb">isinstance</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">BetterValue</span><span class="p">)</span>
+                                    <span class="ow">and</span> <span class="n">unprocess</span>
                                 <span class="p">):</span>
                                     <span class="c1"># We send a shortcut to the initial</span>
                                     <span class="c1"># response, knowing that the raw</span>
@@ -2386,7 +2388,7 @@ inference when necessary.</p>
                                     <span class="n">v</span> <span class="o">=</span> <span class="n">unprocess</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
                                     <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                                         <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
-                                            <span class="n">dp</span><span class="o">.</span><span class="n">Shortcut</span><span class="p">(</span>
+                                            <span class="n">dp</span><span class="o">.</span><span class="n">BetterValue</span><span class="p">(</span>
                                                 <span class="n">dp</span><span class="o">.</span><span class="n">Response</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
                                                     <span class="n">resp</span><span class="o">.</span><span class="n">answer</span><span class="p">,</span>  <span class="c1"># irrelevant</span>
                                                     <span class="n">dp</span><span class="o">.</span><span class="n">FinalAnswer</span><span class="p">(</span><span class="n">v</span><span class="p">),</span>
