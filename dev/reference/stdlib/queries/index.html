@@ -3101,7 +3101,8 @@ appended to a chat history), and possibly a sequence of tool calls.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 743</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 742</span>
+<span class="normal"> 743</span>
 <span class="normal"> 744</span>
 <span class="normal"> 745</span>
 <span class="normal"> 746</span>
@@ -3440,8 +3441,7 @@ appended to a chat history), and possibly a sequence of tool calls.</p>
 <span class="normal">1079</span>
 <span class="normal">1080</span>
 <span class="normal">1081</span>
-<span class="normal">1082</span>
-<span class="normal">1083</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Query</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="normal">1082</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Query</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for queries.</span>
 
@@ -3829,7 +3829,8 @@ specifications can then depend on query attributes.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">826</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">825</span>
+<span class="normal">826</span>
 <span class="normal">827</span>
 <span class="normal">828</span>
 <span class="normal">829</span>
@@ -3838,8 +3839,7 @@ specifications can then depend on query attributes.</p>
 <span class="normal">832</span>
 <span class="normal">833</span>
 <span class="normal">834</span>
-<span class="normal">835</span>
-<span class="normal">836</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parser</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parser</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">GenericParser</span><span class="p">:</span>
+<span class="normal">835</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parser</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parser</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">GenericParser</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Method to override to provide a parser specification common to</span>
 <span class="sd">    all modes. Alternatively, the `__parser__` class attribute can</span>
@@ -3897,7 +3897,8 @@ specifications can then depend on query attributes.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">838</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">837</span>
+<span class="normal">838</span>
 <span class="normal">839</span>
 <span class="normal">840</span>
 <span class="normal">841</span>
@@ -3930,8 +3931,7 @@ specifications can then depend on query attributes.</p>
 <span class="normal">868</span>
 <span class="normal">869</span>
 <span class="normal">870</span>
-<span class="normal">871</span>
-<span class="normal">872</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parser_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerMode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parser</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">GenericParser</span><span class="p">:</span>
+<span class="normal">871</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parser_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerMode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parser</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="n">GenericParser</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Obtain a parser speficiation for a given answer mode.</span>
 
@@ -3991,15 +3991,15 @@ annotation <a class="autorefs autorefs-internal" title="AnswerPrefix" href="../.
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">904</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">903</span>
+<span class="normal">904</span>
 <span class="normal">905</span>
 <span class="normal">906</span>
 <span class="normal">907</span>
 <span class="normal">908</span>
 <span class="normal">909</span>
 <span class="normal">910</span>
-<span class="normal">911</span>
-<span class="normal">912</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@override</span>
+<span class="normal">911</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@override</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">query_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ct</span><span class="o">.</span><span class="n">AnswerPrefix</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the value of the `prefix` attribute if it has type</span>
@@ -4033,12 +4033,12 @@ attribute.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">971</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">970</span>
+<span class="normal">971</span>
 <span class="normal">972</span>
 <span class="normal">973</span>
 <span class="normal">974</span>
-<span class="normal">975</span>
-<span class="normal">976</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">globals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">975</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">globals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return global objects accessible in prompts via the `globals`</span>
 <span class="sd">    attribute.</span>
@@ -4076,7 +4076,8 @@ can be overriden to handle more advanced cases.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1005</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1004</span>
+<span class="normal">1005</span>
 <span class="normal">1006</span>
 <span class="normal">1007</span>
 <span class="normal">1008</span>
@@ -4097,8 +4098,7 @@ can be overriden to handle more advanced cases.</p>
 <span class="normal">1023</span>
 <span class="normal">1024</span>
 <span class="normal">1025</span>
-<span class="normal">1026</span>
-<span class="normal">1027</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@override</span>
+<span class="normal">1026</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@override</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">unparse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Answer</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Unparse an answer.</span>
@@ -4212,7 +4212,8 @@ ambient inner policy.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1042</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1041</span>
+<span class="normal">1042</span>
 <span class="normal">1043</span>
 <span class="normal">1044</span>
 <span class="normal">1045</span>
@@ -4240,8 +4241,7 @@ ambient inner policy.</p>
 <span class="normal">1067</span>
 <span class="normal">1068</span>
 <span class="normal">1069</span>
-<span class="normal">1070</span>
-<span class="normal">1071</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">P</span><span class="p">](</span>
+<span class="normal">1070</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">P</span><span class="p">](</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">get_policy</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">]</span> <span class="o">|</span> <span class="n">EllipsisType</span><span class="p">,</span>
     <span class="o">/</span><span class="p">,</span>
@@ -4306,7 +4306,8 @@ policy.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1073</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1072</span>
+<span class="normal">1073</span>
 <span class="normal">1074</span>
 <span class="normal">1075</span>
 <span class="normal">1076</span>
@@ -4315,8 +4316,7 @@ policy.</p>
 <span class="normal">1079</span>
 <span class="normal">1080</span>
 <span class="normal">1081</span>
-<span class="normal">1082</span>
-<span class="normal">1083</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_toplevel</span><span class="p">(</span>
+<span class="normal">1082</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_toplevel</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">pol</span><span class="o">.</span><span class="n">PromptingPolicy</span><span class="p">,</span>
@@ -4438,7 +4438,8 @@ the <a class="autorefs autorefs-internal" title="ParseError
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">174</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">173</span>
+<span class="normal">174</span>
 <span class="normal">175</span>
 <span class="normal">176</span>
 <span class="normal">177</span>
@@ -4672,8 +4673,7 @@ the <a class="autorefs autorefs-internal" title="ParseError
 <span class="normal">405</span>
 <span class="normal">406</span>
 <span class="normal">407</span>
-<span class="normal">408</span>
-<span class="normal">409</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">408</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Parser</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A parser specification.</span>
@@ -5198,7 +5198,8 @@ caught and wrapped into a <a class="autorefs autorefs-internal" title="ParseErro
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">201</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">200</span>
+<span class="normal">201</span>
 <span class="normal">202</span>
 <span class="normal">203</span>
 <span class="normal">204</span>
@@ -5231,8 +5232,7 @@ caught and wrapped into a <a class="autorefs autorefs-internal" title="ParseErro
 <span class="normal">231</span>
 <span class="normal">232</span>
 <span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">map</span><span class="p">[</span><span class="n">B</span><span class="p">](</span>
+<span class="normal">234</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">map</span><span class="p">[</span><span class="n">B</span><span class="p">](</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">A</span><span class="p">],</span> <span class="n">B</span> <span class="o">|</span> <span class="n">dp</span><span class="o">.</span><span class="n">ParseError</span><span class="p">],</span>
     <span class="o">/</span><span class="p">,</span>
@@ -5310,7 +5310,8 @@ Otherwise, it may return or raise a <a class="autorefs autorefs-internal" title=
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">237</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">236</span>
+<span class="normal">237</span>
 <span class="normal">238</span>
 <span class="normal">239</span>
 <span class="normal">240</span>
@@ -5340,8 +5341,7 @@ Otherwise, it may return or raise a <a class="autorefs autorefs-internal" title=
 <span class="normal">264</span>
 <span class="normal">265</span>
 <span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span>
+<span class="normal">267</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">A</span><span class="p">],</span> <span class="n">dp</span><span class="o">.</span><span class="n">ParseError</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span>
     <span class="o">/</span><span class="p">,</span>
@@ -5412,7 +5412,8 @@ Otherwise, it may return or raise a <a class="autorefs autorefs-internal" title=
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">286</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">285</span>
+<span class="normal">286</span>
 <span class="normal">287</span>
 <span class="normal">288</span>
 <span class="normal">289</span>
@@ -5453,8 +5454,7 @@ Otherwise, it may return or raise a <a class="autorefs autorefs-internal" title=
 <span class="normal">324</span>
 <span class="normal">325</span>
 <span class="normal">326</span>
-<span class="normal">327</span>
-<span class="normal">328</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">response_with</span><span class="p">[</span><span class="n">T</span><span class="p">:</span> <span class="n">md</span><span class="o">.</span><span class="n">AbstractTool</span><span class="p">[</span><span class="n">Any</span><span class="p">]](</span>
+<span class="normal">327</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">response_with</span><span class="p">[</span><span class="n">T</span><span class="p">:</span> <span class="n">md</span><span class="o">.</span><span class="n">AbstractTool</span><span class="p">[</span><span class="n">Any</span><span class="p">]](</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">tools</span><span class="p">:</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Parser[Response[A, T]]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5533,7 +5533,8 @@ replaced with <code>TypeExpr</code> (incoming in Python 3.14).</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">378</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">377</span>
+<span class="normal">378</span>
 <span class="normal">379</span>
 <span class="normal">380</span>
 <span class="normal">381</span>
@@ -5547,8 +5548,7 @@ replaced with <code>TypeExpr</code> (incoming in Python 3.14).</p>
 <span class="normal">389</span>
 <span class="normal">390</span>
 <span class="normal">391</span>
-<span class="normal">392</span>
-<span class="normal">393</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">json_as</span><span class="p">[</span><span class="n">U</span><span class="p">](</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Parser[str]&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">U</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Parser[U]&quot;</span><span class="p">:</span>
+<span class="normal">392</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">json_as</span><span class="p">[</span><span class="n">U</span><span class="p">](</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Parser[str]&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">U</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Parser[U]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse a string as a JSON object.</span>
 
@@ -5600,7 +5600,8 @@ replaced with <code>TypeExpr</code> (incoming in Python 3.14).</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">395</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">394</span>
+<span class="normal">395</span>
 <span class="normal">396</span>
 <span class="normal">397</span>
 <span class="normal">398</span>
@@ -5613,8 +5614,7 @@ replaced with <code>TypeExpr</code> (incoming in Python 3.14).</p>
 <span class="normal">405</span>
 <span class="normal">406</span>
 <span class="normal">407</span>
-<span class="normal">408</span>
-<span class="normal">409</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">yaml_as</span><span class="p">[</span><span class="n">U</span><span class="p">](</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Parser[str]&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">U</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Parser[U]&quot;</span><span class="p">:</span>
+<span class="normal">408</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">yaml_as</span><span class="p">[</span><span class="n">U</span><span class="p">](</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Parser[str]&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">U</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Parser[U]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse a string as a YAML object.</span>
 
@@ -5713,7 +5713,8 @@ particular, it allows writing:</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">412</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">411</span>
+<span class="normal">412</span>
 <span class="normal">413</span>
 <span class="normal">414</span>
 <span class="normal">415</span>
@@ -5780,8 +5781,7 @@ particular, it allows writing:</p>
 <span class="normal">476</span>
 <span class="normal">477</span>
 <span class="normal">478</span>
-<span class="normal">479</span>
-<span class="normal">480</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">479</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">GenericParser</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A mapping from a query&#39;s answer type to a parser specification.</span>
@@ -5984,12 +5984,12 @@ and an exception is raised if this type does not have the form
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">483</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">482</span>
+<span class="normal">483</span>
 <span class="normal">484</span>
 <span class="normal">485</span>
 <span class="normal">486</span>
-<span class="normal">487</span>
-<span class="normal">488</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_GenericParserFn</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="normal">487</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_GenericParserFn</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Type of functions wrapped by `GenericParser`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -6155,7 +6155,8 @@ some tool call requests wrapped in <a class="autorefs autorefs-internal" title="
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">103</span>
+<span class="normal">104</span>
 <span class="normal">105</span>
 <span class="normal">106</span>
 <span class="normal">107</span>
@@ -6172,8 +6173,7 @@ some tool call requests wrapped in <a class="autorefs autorefs-internal" title="
 <span class="normal">118</span>
 <span class="normal">119</span>
 <span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">121</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Response</span><span class="p">[</span><span class="n">F</span><span class="p">,</span> <span class="n">T</span><span class="p">:</span> <span class="n">md</span><span class="o">.</span><span class="n">AbstractTool</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Answer type for queries that allow follow-ups.</span>
@@ -6250,13 +6250,13 @@ some tool call requests wrapped in <a class="autorefs autorefs-internal" title="
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">86</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">85</span>
+<span class="normal">86</span>
 <span class="normal">87</span>
 <span class="normal">88</span>
 <span class="normal">89</span>
 <span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">FinalAnswer</span><span class="p">[</span><span class="n">F</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    See `Response`.</span>
@@ -6321,13 +6321,13 @@ some tool call requests wrapped in <a class="autorefs autorefs-internal" title="
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 95</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 94</span>
+<span class="normal"> 95</span>
 <span class="normal"> 96</span>
 <span class="normal"> 97</span>
 <span class="normal"> 98</span>
 <span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">100</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ToolRequests</span><span class="p">[</span><span class="n">T</span><span class="p">:</span> <span class="n">md</span><span class="o">.</span><span class="n">AbstractTool</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    See `Response`.</span>
@@ -6438,7 +6438,8 @@ for creating parsers that produce <a class="autorefs autorefs-internal" title="W
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">125</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
+<span class="normal">125</span>
 <span class="normal">126</span>
 <span class="normal">127</span>
 <span class="normal">128</span>
@@ -6459,8 +6460,7 @@ for creating parsers that produce <a class="autorefs autorefs-internal" title="W
 <span class="normal">143</span>
 <span class="normal">144</span>
 <span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">146</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">WrappedParseError</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A wrapped parse error that is returned to a strategy instead of</span>
@@ -6640,7 +6640,8 @@ prompt and not in examples.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">697</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">696</span>
+<span class="normal">697</span>
 <span class="normal">698</span>
 <span class="normal">699</span>
 <span class="normal">700</span>
@@ -6677,8 +6678,7 @@ prompt and not in examples.</p>
 <span class="normal">731</span>
 <span class="normal">732</span>
 <span class="normal">733</span>
-<span class="normal">734</span>
-<span class="normal">735</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">QueryTemplateArgs</span><span class="p">(</span><span class="n">typing</span><span class="o">.</span><span class="n">TypedDict</span><span class="p">):</span>
+<span class="normal">734</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">QueryTemplateArgs</span><span class="p">(</span><span class="n">typing</span><span class="o">.</span><span class="n">TypedDict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Template arguments passed to all query templates.</span>
 
@@ -6770,7 +6770,8 @@ only support structured output and tool calls for JSON objects.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">491</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">490</span>
+<span class="normal">491</span>
 <span class="normal">492</span>
 <span class="normal">493</span>
 <span class="normal">494</span>
@@ -6785,8 +6786,7 @@ only support structured output and tool calls for JSON objects.</p>
 <span class="normal">503</span>
 <span class="normal">504</span>
 <span class="normal">505</span>
-<span class="normal">506</span>
-<span class="normal">507</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">structured_as</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="nb">type</span><span class="p">:</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parser</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal">506</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">structured_as</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="nb">type</span><span class="p">:</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parser</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parse an LLM structured answer into a given target type.</span>
 
@@ -6840,7 +6840,8 @@ only support structured output and tool calls for JSON objects.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">518</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">517</span>
+<span class="normal">518</span>
 <span class="normal">519</span>
 <span class="normal">520</span>
 <span class="normal">521</span>
@@ -6865,8 +6866,7 @@ only support structured output and tool calls for JSON objects.</p>
 <span class="normal">540</span>
 <span class="normal">541</span>
 <span class="normal">542</span>
-<span class="normal">543</span>
-<span class="normal">544</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">final_tool_call_as</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">annot</span><span class="p">:</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parser</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="normal">543</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">final_tool_call_as</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">annot</span><span class="p">:</span> <span class="n">TypeAnnot</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="o">/</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Parser</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Variant of `structured_as`, where the query answer type is presented</span>
 <span class="sd">    to oracles as a tool, which must be called to produce the final</span>
@@ -7283,10 +7283,7 @@ the standard <a class="autorefs autorefs-internal" title="interact" href="../alg
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1497</span>
-<span class="normal">1498</span>
-<span class="normal">1499</span>
-<span class="normal">1500</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1500</span>
 <span class="normal">1501</span>
 <span class="normal">1502</span>
 <span class="normal">1503</span>
@@ -7442,7 +7439,10 @@ the standard <a class="autorefs autorefs-internal" title="interact" href="../alg
 <span class="normal">1653</span>
 <span class="normal">1654</span>
 <span class="normal">1655</span>
-<span class="normal">1656</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
+<span class="normal">1656</span>
+<span class="normal">1657</span>
+<span class="normal">1658</span>
+<span class="normal">1659</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">few_shot</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
     <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
@@ -7522,7 +7522,7 @@ the standard <a class="autorefs autorefs-internal" title="interact" href="../alg
         <span class="k">yield</span> <span class="n">dp</span><span class="o">.</span><span class="n">Solution</span><span class="p">(</span><span class="n">overriden_parsed</span><span class="p">)</span>
         <span class="k">return</span>
 
-    <span class="n">examples</span> <span class="o">=</span> <span class="n">fetch_examples</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">examples</span><span class="p">,</span> <span class="n">query</span><span class="o">.</span><span class="n">query</span><span class="p">,</span> <span class="n">select_examples</span><span class="p">)</span>
+    <span class="n">examples</span> <span class="o">=</span> <span class="n">fetch_examples</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">query</span><span class="o">.</span><span class="n">query</span><span class="p">,</span> <span class="n">select_examples</span><span class="p">)</span>
     <span class="n">mngr</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">templates</span>
     <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
@@ -7812,10 +7812,7 @@ distribution <code>D</code> is transformed into <code>(1-p)*D + p*dirac(e)</code
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1367</span>
-<span class="normal">1368</span>
-<span class="normal">1369</span>
-<span class="normal">1370</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1370</span>
 <span class="normal">1371</span>
 <span class="normal">1372</span>
 <span class="normal">1373</span>
@@ -7895,7 +7892,10 @@ distribution <code>D</code> is transformed into <code>(1-p)*D + p*dirac(e)</code
 <span class="normal">1447</span>
 <span class="normal">1448</span>
 <span class="normal">1449</span>
-<span class="normal">1450</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
+<span class="normal">1450</span>
+<span class="normal">1451</span>
+<span class="normal">1452</span>
+<span class="normal">1453</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">classify</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
     <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
@@ -7930,7 +7930,7 @@ distribution <code>D</code> is transformed into <code>(1-p)*D + p*dirac(e)</code
 <span class="sd">    See `few_shot` for details on some of the arguments above.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">env</span><span class="o">.</span><span class="n">tracer</span><span class="o">.</span><span class="n">trace_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-    <span class="n">examples</span> <span class="o">=</span> <span class="n">fetch_examples</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">examples</span><span class="p">,</span> <span class="n">query</span><span class="o">.</span><span class="n">query</span><span class="p">,</span> <span class="n">select_examples</span><span class="p">)</span>
+    <span class="n">examples</span> <span class="o">=</span> <span class="n">fetch_examples</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">query</span><span class="o">.</span><span class="n">query</span><span class="p">,</span> <span class="n">select_examples</span><span class="p">)</span>
     <span class="n">mngr</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">templates</span>
     <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
@@ -8016,13 +8016,13 @@ distribution <code>D</code> is transformed into <code>(1-p)*D + p*dirac(e)</code
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1278</span>
-<span class="normal">1279</span>
-<span class="normal">1280</span>
-<span class="normal">1281</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1281</span>
 <span class="normal">1282</span>
 <span class="normal">1283</span>
-<span class="normal">1284</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">1284</span>
+<span class="normal">1285</span>
+<span class="normal">1286</span>
+<span class="normal">1287</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ProbInfo</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">SearchMeta</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Distribution probability, guaranteed to be nonempty and to sum to 1.</span>
