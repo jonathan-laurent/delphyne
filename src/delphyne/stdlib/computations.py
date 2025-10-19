@@ -14,7 +14,7 @@ import delphyne.core_and_base as dp
 import delphyne.stdlib.models as md
 import delphyne.utils.typing as ty
 from delphyne.core_and_base import PolicyEnv, spawn_node
-from delphyne.stdlib.queries import create_prompt, json_object_digest
+from delphyne.stdlib.queries import json_object_digest
 from delphyne.utils.yaml import dump_yaml
 
 
@@ -43,12 +43,7 @@ class __Computation__(dp.AbstractQuery[object]):
         extra_args: dict[str, object] | None = None,
         env: dp.AbstractTemplatesManager | None = None,
     ) -> str:
-        # TODO: should this error instead?
-
-        # The prompt is never sent to LLMs but it is important that it
-        # uniquely identifies the query instance since it is used for
-        # caching.
-        return dump_yaml(Any, self.__dict__)
+        assert False
 
     @override
     def query_modes(self):
@@ -123,22 +118,18 @@ class Compute(dp.Node):
         Disguise the computation as an LLM request so as to reuse the
         caching infrastructure.
         """
-        chat = create_prompt(
-            self.query.attached.query,
-            examples=[],
-            params={},
-            mode=None,
-            env=None,
-        )
 
         def _compute_answer() -> dp.LLMResponse:
             res = self.run_computation(overriden_args=overriden_args)
             return dp.LLMResponse(outputs=[dp.LLMOutput(content=res)])
 
-        # TODO: the request we are currently generating is bad. Using
-        # `create_prompt` creates a system message for nothing. The
-        # model name should be used to make the request unique.
-        req = dp.LLMRequest(chat=chat, num_completions=1, options={})
+        query = self.query.attached.query
+        assert isinstance(query, __Computation__)
+        serialized = dump_yaml(Any, query.__dict__)
+        chat = (dp.UserMessage(serialized),)
+        req = dp.LLMRequest(
+            chat=chat, num_completions=1, options={"model": "__compute__"}
+        )
         resp = md.fetch_or_answer(cache, req, lambda _: _compute_answer())
         assert len(resp.outputs) == 1
         answer = resp.outputs[0].content

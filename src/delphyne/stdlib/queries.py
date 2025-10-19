@@ -1426,7 +1426,7 @@ def classify[T](
         "temperature": 0.0,
     }
     req = md.LLMRequest(
-        prompt,
+        chat=prompt,
         num_completions=1,
         options=options,
     )
@@ -1603,7 +1603,7 @@ def few_shot[T](
     while max_requests is None or num_reqs < max_requests:
         num_reqs += 1
         req = md.LLMRequest(
-            prompt,
+            chat=prompt,
             num_completions=num_completions,
             options=options,
             tools=tuple(tools),

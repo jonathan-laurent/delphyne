@@ -373,17 +373,17 @@ class LLMResponseLogItem:
     metadata: Any = None
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class LLMRequest:
     """
     An LLM chat completion request.
 
     Attributes:
         chat: The chat history.
+        options: Request options.
         num_completions: The number of completions to generate. Note
             that most LLM providers only bill input tokens once,
             regardless of the number of requested completions.
-        options: Request options.
         tools: Available tools.
         structured_output: Provide a schema to enable structured output,
             or `None` for disabling it.
@@ -394,8 +394,8 @@ class LLMRequest:
     """
 
     chat: Chat
-    num_completions: int
     options: RequestOptions
+    num_completions: int = 1
     tools: tuple[Schema, ...] = ()
     structured_output: Schema | None = None
 

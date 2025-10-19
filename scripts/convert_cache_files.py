@@ -3,6 +3,7 @@ Utilities to convert cache files when the encoding scheme changes.
 """
 
 from collections.abc import Callable, Iterable, Sequence
+from dataclasses import replace
 from pathlib import Path
 
 import delphyne as dp
@@ -20,12 +21,9 @@ type RequestProcessor = Callable[[dp.LLMRequest], dp.LLMRequest]
 
 
 def find_cache_files(dir: Path) -> Iterable[Path]:
-    """
-    Recursively traverse `dir` to find all files of the form
-    **/cache/*.yaml and **/*.cache.yaml.
-    """
     yield from dir.rglob("cache/*.yaml")
     yield from dir.rglob("*.cache.yaml")
+    yield from dir.rglob("**/cache.yaml")
 
 
 def on_requests(f: RequestProcessor) -> Mapper:
@@ -49,6 +47,19 @@ def on_parsed(f: Mapper) -> RawMapper:
     return map
 
 
+def compute_request_format_v1_to_v2(req: dp.LLMRequest) -> dp.LLMRequest:
+    if req.options:
+        # We recognize compute messages because they have an empty
+        # option dict.
+        return req
+    assert isinstance(req.chat[1], dp.UserMessage)
+    return replace(
+        req,
+        chat=(req.chat[1],),
+        options={"model": "__compute__"},
+    )
+
+
 def rewrite(dir: Path, mappers: Sequence[RawMapper]) -> None:
     files = list(find_cache_files(dir))
     for i, f in enumerate(files):
@@ -60,4 +71,7 @@ def rewrite(dir: Path, mappers: Sequence[RawMapper]) -> None:
 
 
 if __name__ == "__main__":
-    rewrite(Path("."), [on_parsed(lambda p: p)])
+    # rewrite(Path("."), [on_parsed(lambda p: p)])
+    rewrite(
+        Path("."), [on_parsed(on_requests(compute_request_format_v1_to_v2))]
+    )

@@ -9,7 +9,12 @@ _TEST_PROMPT: dp.Chat = (dp.UserMessage("What is the capital of France?"),)
 
 def _test_completion():
     model = dp.openai_model("gpt-4o-mini")
-    print(model.send_request(dp.LLMRequest(_TEST_PROMPT, 2, {}), None))
+    print(
+        model.send_request(
+            dp.LLMRequest(chat=_TEST_PROMPT, num_completions=2, options={}),
+            None,
+        )
+    )
 
 
 async def _test_stream():
