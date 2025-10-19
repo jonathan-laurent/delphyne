@@ -92,7 +92,6 @@ outcome:
                   - 9
                   - 2
                 tool_calls: []
-                finish_reason: stop
             budget:
               values:
                 num_requests: 1

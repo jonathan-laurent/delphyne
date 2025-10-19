@@ -281,8 +281,8 @@ class LLMOutput:
     """
 
     content: str | Structured
-    tool_calls: Sequence[ToolCall]
-    finish_reason: FinishReason
+    tool_calls: Sequence[ToolCall] = ()
+    finish_reason: FinishReason = "stop"
     logprobs: Sequence[TokenInfo] | None = None
     reasoning_content: str | None = None
 
@@ -437,8 +437,8 @@ class LLMResponse:
     """
 
     outputs: Sequence[LLMOutput]
-    budget: Budget
-    log_items: list[LLMResponseLogItem]
+    budget: Budget | None = None
+    log_items: Sequence[LLMResponseLogItem] = ()
     model_name: str | None = None
     usage_info: dict[str, Any] | None = None
 
@@ -572,11 +572,10 @@ class WithRetry(LLM):
             try:
                 ret = self.model.send_request(req, None)
                 if i > 0:
-                    ret.log_items.append(
-                        LLMResponseLogItem(
-                            "info", "successful_retry", {"delay": retry_delay}
-                        )
+                    msg = LLMResponseLogItem(
+                        "info", "successful_retry", {"delay": retry_delay}
                     )
+                    ret.log_items = (*ret.log_items, msg)
                 return ret
             except LLMBusyException as e:
                 if retry_delay is None:

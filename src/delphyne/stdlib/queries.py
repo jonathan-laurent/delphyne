@@ -1357,10 +1357,14 @@ def _send_request(
     query: dp.AttachedQuery[Any],
     request: md.LLMRequest,
 ) -> dp.StreamContext[md.LLMResponse | SpendingDeclined]:
+    def expensive():
+        resp = model.send_request(request, env.cache)
+        assert resp.budget is not None
+        return (resp, resp.budget)
+
     _log_request(env, query=query, request=request)
     response = yield from spend_on(
-        lambda: (resp := model.send_request(request, env.cache), resp.budget),
-        estimate=model.estimate_budget(request),
+        expensive, estimate=model.estimate_budget(request)
     )
     if not isinstance(response, SpendingDeclined):
         _log_response(env, query=query, request=request, response=response)

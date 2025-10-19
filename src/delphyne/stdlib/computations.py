@@ -43,6 +43,8 @@ class __Computation__(dp.AbstractQuery[object]):
         extra_args: dict[str, object] | None = None,
         env: dp.AbstractTemplatesManager | None = None,
     ) -> str:
+        # TODO: should this error instead?
+
         # The prompt is never sent to LLMs but it is important that it
         # uniquely identifies the query instance since it is used for
         # caching.
@@ -131,13 +133,11 @@ class Compute(dp.Node):
 
         def _compute_answer() -> dp.LLMResponse:
             res = self.run_computation(overriden_args=overriden_args)
-            output = dp.LLMOutput(
-                content=res, tool_calls=[], finish_reason="stop"
-            )
-            return dp.LLMResponse(
-                outputs=[output], budget=dp.Budget({}), log_items=[]
-            )
+            return dp.LLMResponse(outputs=[dp.LLMOutput(content=res)])
 
+        # TODO: the request we are currently generating is bad. Using
+        # `create_prompt` creates a system message for nothing. The
+        # model name should be used to make the request unique.
         req = dp.LLMRequest(chat=chat, num_completions=1, options={})
         resp = md.fetch_or_answer(cache, req, lambda _: _compute_answer())
         assert len(resp.outputs) == 1
