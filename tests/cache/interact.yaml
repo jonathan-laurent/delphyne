@@ -8,7 +8,6 @@
             Please carefully explain your reasoning before calling any tool.
         - role: user
           content: 'user_name: Jonathan'
-      num_completions: 1
       options:
         model: gpt-4.1-mini
         tool_choice: required
@@ -107,7 +106,6 @@
             args:
               user_name: Jonathan
           result: Soccer
-      num_completions: 1
       options:
         model: gpt-4.1-mini
         tool_choice: required

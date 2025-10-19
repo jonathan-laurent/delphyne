@@ -1,28 +1,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |
-                use int.Int
-
-                let main () diverges =
-                  let ref x = 1 in
-                  while (any bool) do
-                    x <- x + 1;
-                  done;
-                  assert { x >= 0 }
-              annotated: |
-                use int.Int
-
-                let main () diverges =
-                  let ref x = 1 in
-                  while (any bool) do
-                    x <- x + 1;
-                  done;
-                  assert { x >= 0 }
         - role: user
           content: |
             fun: check
@@ -45,8 +23,8 @@
                     x <- x + 1;
                   done;
                   assert { x >= 0 }
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -383,7 +361,6 @@
             Can you fix this by suggesting new invariant candidates?
 
             Just answer with a JSON object denoting a list of `(trick_name, invariant_candidate)` pairs and nothing else.
-      num_completions: 1
       options:
         model: mistral-small-2503
       structured_output:
@@ -441,30 +418,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = 1 in
-                  while (any bool) do
-                    invariant { x >= 1 }
-                    x <- x + 1;
-                  done;
-                  assert { true }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = 1 in
-                  while (any bool) do
-                    invariant { x >= 1 }
-                    x <- x + 1;
-                  done;
-                  assert { true }
         - role: user
           content: |
             fun: check
@@ -489,8 +442,8 @@
                     x <- x + 1;
                   done;
                   assert { true }
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -543,30 +496,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = 1 in
-                  while (any bool) do
-                    invariant { x >= 1 }
-                    x <- x + 1;
-                  done;
-                  assert { x >= 0 }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = 1 in
-                  while (any bool) do
-                    invariant { x >= 1 }
-                    x <- x + 1;
-                  done;
-                  assert { x >= 0 }
         - role: user
           content: |
             fun: check
@@ -591,8 +520,8 @@
                     x <- x + 1;
                   done;
                   assert { x >= 0 }
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:

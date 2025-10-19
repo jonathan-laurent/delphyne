@@ -25,7 +25,6 @@
           content: |-
             List: [1, 2, 3, 4]
             Target: 5
-      num_completions: 1
       options:
         model: gemini-2.5-flash
     iter: 1

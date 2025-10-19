@@ -5,7 +5,6 @@
           content: Answer with a number and nothing else.
         - role: user
           content: '{}'
-      num_completions: 1
       options:
         model: gpt-4.1-mini
     iter: 1
@@ -53,7 +52,6 @@
             """
             Expected '83'. Please answer with 83 instead.
             """
-      num_completions: 1
       options:
         model: gpt-4.1-mini
     iter: 1

@@ -58,7 +58,7 @@ outcome:
         level: info
         space: 1
         metadata:
-          hash: fd47bdbb
+          hash: 787bc401
           query: AskNumber
           request:
             chat:
@@ -66,13 +66,12 @@ outcome:
                 content: Answer with a number and nothing else.
               - role: user
                 content: '{}'
-            num_completions: 1
             options: {}
       - message: llm_response
         level: info
         space: 1
         metadata:
-          request: fd47bdbb
+          request: 787bc401
           response:
             outputs:
               - content: '0'
@@ -117,7 +116,7 @@ outcome:
         level: info
         space: 2
         metadata:
-          hash: 49e1d018
+          hash: 49e8c817
           query: AskNumber
           request:
             chat:
@@ -136,13 +135,12 @@ outcome:
                   """
                   Expected '83'. Please answer with 83 instead.
                   """
-            num_completions: 1
             options: {}
       - message: llm_response
         level: info
         space: 2
         metadata:
-          request: 49e1d018
+          request: 49e8c817
           response:
             outputs:
               - content: '83'

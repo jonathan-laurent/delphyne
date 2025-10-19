@@ -9,7 +9,6 @@
             with a code block delimited by triple backquotes containing an integer.
         - role: user
           content: 'expr: 2*x**2 - 4*x + n'
-      num_completions: 1
       options:
         model: gpt-5-mini
     iter: 1
@@ -57,7 +56,6 @@
             new sympy expression, or nothing if no rewriting could be found.
         - role: user
           content: 'expr: 2*x**2 - 4*x + 2'
-      num_completions: 1
       options:
         model: gpt-5-mini
     iter: 1

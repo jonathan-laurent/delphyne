@@ -157,7 +157,6 @@
             ```
 
             Please reason carefully and then finish your answer with a YAML object surrounded by triple quotes that denotes a list of invariants. If you make a mistake, I'll give you feedback and you'll have another chance to answer (using the same format).
-      num_completions: 1
       options:
         model: gpt-4.1-mini
     iter: 1
@@ -252,43 +251,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |
-                use int.Int
-
-                let main () diverges =
-                  let ref i = any int in
-                  let ref n = any int in
-                  let ref sn = any int in
-                  sn <- 0;
-                  i <- 1;
-                  while i <= n do
-                    i <- i + 1;
-                    sn <- sn + 1
-                  done;
-                  if sn <> n then
-                    assert { sn = 0 }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref i = any int in
-                  let ref n = any int in
-                  let ref sn = any int in
-                  sn <- 0;
-                  i <- 1;
-                  while i <= n do
-                    invariant { sn = i - 1 }
-                    invariant { i >= 1 }
-                    invariant { i <= n + 1 }
-                    i <- i + 1;
-                    sn <- sn + 1
-                  done;
-                  if sn <> n then
-                    assert { sn = 0 }
         - role: user
           content: |
             fun: check
@@ -326,8 +288,8 @@
                   done;
                   if sn <> n then
                     assert { sn = 0 }
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -735,7 +697,6 @@
               if sn <> n then
                 assert { sn = 0 }
             ```
-      num_completions: 1
       options:
         model: gpt-4.1-mini
     iter: 1
@@ -810,43 +771,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |
-                use int.Int
-
-                let main () diverges =
-                  let ref i = any int in
-                  let ref n = any int in
-                  let ref sn = any int in
-                  sn <- 0;
-                  i <- 1;
-                  while i <= n do
-                    i <- i + 1;
-                    sn <- sn + 1
-                  done;
-                  if sn <> n then
-                    assert { sn = 0 }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref i = any int in
-                  let ref n = any int in
-                  let ref sn = any int in
-                  sn <- 0;
-                  i <- 1;
-                  while i <= n do
-                    invariant { sn = i - 1 }
-                    invariant { i >= 1 }
-                    invariant { n < 0 || i <= n + 1 }
-                    i <- i + 1;
-                    sn <- sn + 1
-                  done;
-                  if sn <> n then
-                    assert { sn = 0 }
         - role: user
           content: |
             fun: check
@@ -884,8 +808,8 @@
                   done;
                   if sn <> n then
                     assert { sn = 0 }
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -1364,7 +1288,6 @@
               if sn <> n then  (* premise *)
                 assert { sn = 0 }  (* GOAL *)
             ```
-      num_completions: 1
       options:
         model: gpt-4.1-mini
     iter: 1
@@ -1472,44 +1395,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |
-                use int.Int
-
-                let main () diverges =
-                  let ref i = any int in
-                  let ref n = any int in
-                  let ref sn = any int in
-                  sn <- 0;
-                  i <- 1;
-                  while i <= n do
-                    i <- i + 1;
-                    sn <- sn + 1
-                  done;
-                  if sn <> n then
-                    assert { sn = 0 }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref i = any int in
-                  let ref n = any int in
-                  let ref sn = any int in
-                  sn <- 0;
-                  i <- 1;
-                  while i <= n do
-                    invariant { sn = i - 1 }
-                    invariant { i >= 1 }
-                    invariant { n < 0 || i <= n + 1 }
-                    invariant { n < 1 -> sn = 0 }
-                    i <- i + 1;
-                    sn <- sn + 1
-                  done;
-                  if sn <> n then
-                    assert { sn = 0 }
         - role: user
           content: |
             fun: check
@@ -1548,8 +1433,8 @@
                   done;
                   if sn <> n then
                     assert { sn = 0 }
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:

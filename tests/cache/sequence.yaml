@@ -25,7 +25,6 @@
           content: |-
             List: [1, 2, 3, 4]
             Target: 7
-      num_completions: 1
       options:
         model: gpt-4.1-mini
     iter: 1
@@ -82,9 +81,9 @@
           content: |-
             List: [1, 2, 3, 4]
             Target: 7
-      num_completions: 2
       options:
         model: gpt-4.1-mini
+      num_completions: 2
     iter: 1
   output:
     outputs:

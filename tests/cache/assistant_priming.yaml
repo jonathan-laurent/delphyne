@@ -13,7 +13,6 @@
           answer:
             mode: null
             content: 'Here are _exactly_ 4 baby boy names in this style (and nothing else):'
-      num_completions: 1
       options:
         model: gpt-4.1-mini
     iter: 1

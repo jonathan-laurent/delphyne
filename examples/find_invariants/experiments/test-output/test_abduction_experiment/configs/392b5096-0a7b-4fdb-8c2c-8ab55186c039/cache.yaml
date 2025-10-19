@@ -1,42 +1,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  assume { x >= 0 };
-                  assume { x <= 10 };
-                  assume { y <= 10 };
-                  assume { y >= 0 };
-                  while any bool do
-                    x <- x + 10;
-                    y <- y + 10
-                  done;
-                  if x = 20 then
-                    assert { y <> 0 }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  assume { x >= 0 };
-                  assume { x <= 10 };
-                  assume { y <= 10 };
-                  assume { y >= 0 };
-                  while any bool do
-                    x <- x + 10;
-                    y <- y + 10
-                  done;
-                  if x = 20 then
-                    assert { y <> 0 }
         - role: user
           content: |
             fun: check
@@ -73,10 +37,8 @@
                   done;
                   if x = 20 then
                     assert { y <> 0 }
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -103,14 +65,9 @@
                     assert { y <> 0 }  (* GOAL *)
               goal_formula: not y = 0
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
@@ -218,7 +175,6 @@
                     invariant: z <= 0
                   - trick: propose_post
                     invariant: x <> y
-            tool_calls: []
             justification: |
               Explanations:
                 - Since `z` is only decremented and starts at `0`, invariant `z <= 0` clearly holds. It is also likely to be useful since it shows that the conditional statement within the loop body always executes.
@@ -257,7 +213,6 @@
                 suggestions:
                   - trick: cond_guard
                     invariant: z <= 0
-            tool_calls: []
             justification: |
               Explanations:
               - From the shown obligation, Why3 cannot prove that `x <> y` is preserved by the loop body. However, this is true since the conditional statement is always executed, and thus both `x` and `y` are incremented at each iteration. In turn, the conditional statement is always executed since `z` starts at `0` and is only decremented. This suggests adding `z <= 0` as an invariant.
@@ -296,7 +251,6 @@
                     invariant: 3*x - 2*y >= 6
                   - trick: relax_loop_guard
                     invariant: x < 12
-            tool_calls: []
             justification: |
               Explanations:
                 - Since `y` is decremented by 3 every time `x` in incremented by `2`, the quantity `3*x - 2*y` is constant throughout the program. Since it at least `3*2 - 2*0 = 6` initially, the inequality "3*x - 2*y >= 6" is an invariant.
@@ -333,7 +287,6 @@
                 suggestions:
                   - trick: abduct_post
                     invariant: n > 0 -> x >= n -> g >= 1
-            tool_calls: []
             justification: |
               Explanations:
                 - We want to add an invariant that implies the final assertion `g >= 1`, assuming `n > 0` (the guard around the assertion) and `x >= n` (the negation of the loop guard). Suggesting `g >= 1` does not work since `g >= 1` does not hold initially. We propose trying the whole obligation itself as an invariant.
@@ -370,7 +323,6 @@
                 suggestions:
                   - trick: true_or_continue
                     invariant: g >= 1 || x < n
-            tool_calls: []
             justification: |
               Explanations:
                 - The user tried to prove `g >= 1` as an invariant but it does not hold initially. Still, it always hold after an iteration of the loop since the loop body sets `g` to 4. Thus, I am proposing to try invariant `g >= 1 || x < n` instead.
@@ -407,7 +359,6 @@
                 suggestions:
                   - trick: guard_inv
                     invariant: n > 0 -> (g >= 1 || x < n)
-            tool_calls: []
             justification: |-
               Explanations:
                 - The user tried to prove `g >= 1 || x < n` as an invariant but it does not hold initially. Indeed, no assumption about `n` is known initially. However, a useful assumption `n > 0` is made after the loop. Thus, I propose guarding the current candidate with it and suggesting `n > 0 -> (g >= 1 || x < n)` as an invariant.
@@ -438,11 +389,10 @@
             Can you fix this by suggesting new invariant candidates?
 
             Just answer with a JSON object denoting a list of `(trick_name, invariant_candidate)` pairs and nothing else.
-      num_completions: 4
       options:
         model: gpt-4.1-nano
         temperature: 1.5
-      tools: []
+      num_completions: 4
       structured_output:
         name: InvariantSuggestions
         description: |-
@@ -484,9 +434,6 @@
               - trick: linear
                 invariant: y >=  yayin y >= 0
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
       - content:
           structured:
             suggestions:
@@ -501,9 +448,6 @@
               - trick: propose_post
                 invariant: y <> 0
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
       - content:
           structured:
             suggestions:
@@ -516,9 +460,6 @@
               - trick: linear
                 invariant: y <= 30
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
       - content:
           structured:
             suggestions:
@@ -529,9 +470,6 @@
               - trick: linear
                 invariant: y <= 30
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -557,22 +495,14 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: is_valid_implication
-            args:
-              assumptions: []
-              conclusion: x <= 20
         - role: user
           content: |
             fun: is_valid_implication
             args:
               assumptions: []
               conclusion: x <= 20
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -580,55 +510,12 @@
           false
           ...
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  assume { x >= 0 };
-                  assume { x <= 10 };
-                  assume { y <= 10 };
-                  assume { y >= 0 };
-                  while any bool do
-                    invariant { x <= 20 }
-                    x <- x + 10;
-                    y <- y + 10
-                  done;
-                  if x = 20 then
-                    assert { true }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  assume { x >= 0 };
-                  assume { x <= 10 };
-                  assume { y <= 10 };
-                  assume { y >= 0 };
-                  while any bool do
-                    invariant { x <= 20 }
-                    x <- x + 10;
-                    y <- y + 10
-                  done;
-                  if x = 20 then
-                    assert { true }
         - role: user
           content: |
             fun: check
@@ -667,10 +554,8 @@
                   done;
                   if x = 20 then
                     assert { true }
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -738,33 +623,20 @@
                     assert { true }  (* GOAL *)
               goal_formula: 'true'
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: is_valid_implication
-            args:
-              assumptions: []
-              conclusion: x >= 0
         - role: user
           content: |
             fun: is_valid_implication
             args:
               assumptions: []
               conclusion: x >= 0
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -772,55 +644,12 @@
           false
           ...
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  assume { x >= 0 };
-                  assume { x <= 10 };
-                  assume { y <= 10 };
-                  assume { y >= 0 };
-                  while any bool do
-                    invariant { x >= 0 }
-                    x <- x + 10;
-                    y <- y + 10
-                  done;
-                  if x = 20 then
-                    assert { true }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  assume { x >= 0 };
-                  assume { x <= 10 };
-                  assume { y <= 10 };
-                  assume { y >= 0 };
-                  while any bool do
-                    invariant { x >= 0 }
-                    x <- x + 10;
-                    y <- y + 10
-                  done;
-                  if x = 20 then
-                    assert { true }
         - role: user
           content: |
             fun: check
@@ -859,10 +688,8 @@
                   done;
                   if x = 20 then
                     assert { true }
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -930,24 +757,12 @@
                     assert { true }  (* GOAL *)
               goal_formula: 'true'
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: is_valid_implication
-            args:
-              assumptions:
-                - x >= 0
-              conclusion: y >= 0
         - role: user
           content: |
             fun: is_valid_implication
@@ -955,10 +770,8 @@
               assumptions:
                 - x >= 0
               conclusion: y >= 0
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -966,57 +779,12 @@
           false
           ...
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  assume { x >= 0 };
-                  assume { x <= 10 };
-                  assume { y <= 10 };
-                  assume { y >= 0 };
-                  while any bool do
-                    invariant { x >= 0 }
-                    invariant { y >= 0 }
-                    x <- x + 10;
-                    y <- y + 10
-                  done;
-                  if x = 20 then
-                    assert { true }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  assume { x >= 0 };
-                  assume { x <= 10 };
-                  assume { y <= 10 };
-                  assume { y >= 0 };
-                  while any bool do
-                    invariant { x >= 0 }
-                    invariant { y >= 0 }
-                    x <- x + 10;
-                    y <- y + 10
-                  done;
-                  if x = 20 then
-                    assert { true }
         - role: user
           content: |
             fun: check
@@ -1057,10 +825,8 @@
                   done;
                   if x = 20 then
                     assert { true }
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -1173,25 +939,12 @@
                     assert { true }  (* GOAL *)
               goal_formula: 'true'
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: is_valid_implication
-            args:
-              assumptions:
-                - x >= 0
-                - y >= 0
-              conclusion: y <= 30
         - role: user
           content: |
             fun: is_valid_implication
@@ -1200,10 +953,8 @@
                 - x >= 0
                 - y >= 0
               conclusion: y <= 30
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -1211,59 +962,12 @@
           false
           ...
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  assume { x >= 0 };
-                  assume { x <= 10 };
-                  assume { y <= 10 };
-                  assume { y >= 0 };
-                  while any bool do
-                    invariant { x >= 0 }
-                    invariant { y >= 0 }
-                    invariant { y <= 30 }
-                    x <- x + 10;
-                    y <- y + 10
-                  done;
-                  if x = 20 then
-                    assert { true }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  assume { x >= 0 };
-                  assume { x <= 10 };
-                  assume { y <= 10 };
-                  assume { y >= 0 };
-                  while any bool do
-                    invariant { x >= 0 }
-                    invariant { y >= 0 }
-                    invariant { y <= 30 }
-                    x <- x + 10;
-                    y <- y + 10
-                  done;
-                  if x = 20 then
-                    assert { true }
         - role: user
           content: |
             fun: check
@@ -1306,10 +1010,8 @@
                   done;
                   if x = 20 then
                     assert { true }
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -1471,25 +1173,12 @@
                     assert { true }  (* GOAL *)
               goal_formula: 'true'
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: is_valid_implication
-            args:
-              assumptions:
-                - x >= 0
-                - y >= 0
-              conclusion: x = 20 -> y <> 0
         - role: user
           content: |
             fun: is_valid_implication
@@ -1498,10 +1187,8 @@
                 - x >= 0
                 - y >= 0
               conclusion: x = 20 -> y <> 0
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -1509,59 +1196,12 @@
           false
           ...
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  assume { x >= 0 };
-                  assume { x <= 10 };
-                  assume { y <= 10 };
-                  assume { y >= 0 };
-                  while any bool do
-                    invariant { x >= 0 }
-                    invariant { y >= 0 }
-                    invariant { x = 20 -> y <> 0 }
-                    x <- x + 10;
-                    y <- y + 10
-                  done;
-                  if x = 20 then
-                    assert { true }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  assume { x >= 0 };
-                  assume { x <= 10 };
-                  assume { y <= 10 };
-                  assume { y >= 0 };
-                  while any bool do
-                    invariant { x >= 0 }
-                    invariant { y >= 0 }
-                    invariant { x = 20 -> y <> 0 }
-                    x <- x + 10;
-                    y <- y + 10
-                  done;
-                  if x = 20 then
-                    assert { true }
         - role: user
           content: |
             fun: check
@@ -1604,10 +1244,8 @@
                   done;
                   if x = 20 then
                     assert { true }
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -1769,26 +1407,12 @@
                     assert { true }  (* GOAL *)
               goal_formula: 'true'
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: is_valid_implication
-            args:
-              assumptions:
-                - x >= 0
-                - y >= 0
-                - x = 20 -> y <> 0
-              conclusion: y >=  yayin y >= 0
         - role: user
           content: |
             fun: is_valid_implication
@@ -1798,10 +1422,8 @@
                 - y >= 0
                 - x = 20 -> y <> 0
               conclusion: y >=  yayin y >= 0
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -1809,61 +1431,12 @@
           false
           ...
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  assume { x >= 0 };
-                  assume { x <= 10 };
-                  assume { y <= 10 };
-                  assume { y >= 0 };
-                  while any bool do
-                    invariant { x >= 0 }
-                    invariant { y >= 0 }
-                    invariant { x = 20 -> y <> 0 }
-                    invariant { y >=  yayin y >= 0 }
-                    x <- x + 10;
-                    y <- y + 10
-                  done;
-                  if x = 20 then
-                    assert { true }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  assume { x >= 0 };
-                  assume { x <= 10 };
-                  assume { y <= 10 };
-                  assume { y >= 0 };
-                  while any bool do
-                    invariant { x >= 0 }
-                    invariant { y >= 0 }
-                    invariant { x = 20 -> y <> 0 }
-                    invariant { y >=  yayin y >= 0 }
-                    x <- x + 10;
-                    y <- y + 10
-                  done;
-                  if x = 20 then
-                    assert { true }
         - role: user
           content: |
             fun: check
@@ -1908,10 +1481,8 @@
                   done;
                   if x = 20 then
                     assert { true }
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -1919,26 +1490,12 @@
           error: 'File line 14, characters 22-27: unbound function or predicate symbol ''yayin'''
           obligations: []
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: is_valid_implication
-            args:
-              assumptions:
-                - x >= 0
-                - y >= 0
-                - x = 20 -> y <> 0
-              conclusion: y <= 20
         - role: user
           content: |
             fun: is_valid_implication
@@ -1948,10 +1505,8 @@
                 - y >= 0
                 - x = 20 -> y <> 0
               conclusion: y <= 20
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -1959,61 +1514,12 @@
           false
           ...
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  assume { x >= 0 };
-                  assume { x <= 10 };
-                  assume { y <= 10 };
-                  assume { y >= 0 };
-                  while any bool do
-                    invariant { x >= 0 }
-                    invariant { y >= 0 }
-                    invariant { x = 20 -> y <> 0 }
-                    invariant { y <= 20 }
-                    x <- x + 10;
-                    y <- y + 10
-                  done;
-                  if x = 20 then
-                    assert { true }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  assume { x >= 0 };
-                  assume { x <= 10 };
-                  assume { y <= 10 };
-                  assume { y >= 0 };
-                  while any bool do
-                    invariant { x >= 0 }
-                    invariant { y >= 0 }
-                    invariant { x = 20 -> y <> 0 }
-                    invariant { y <= 20 }
-                    x <- x + 10;
-                    y <- y + 10
-                  done;
-                  if x = 20 then
-                    assert { true }
         - role: user
           content: |
             fun: check
@@ -2058,10 +1564,8 @@
                   done;
                   if x = 20 then
                     assert { true }
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -2276,59 +1780,12 @@
                     assert { true }  (* GOAL *)
               goal_formula: 'true'
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  assume { x >= 0 };
-                  assume { x <= 10 };
-                  assume { y <= 10 };
-                  assume { y >= 0 };
-                  while any bool do
-                    invariant { x >= 0 }
-                    invariant { y >= 0 }
-                    invariant { x = 20 -> y <> 0 }
-                    x <- x + 10;
-                    y <- y + 10
-                  done;
-                  if x = 20 then
-                    assert { y <> 0 }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  assume { x >= 0 };
-                  assume { x <= 10 };
-                  assume { y <= 10 };
-                  assume { y >= 0 };
-                  while any bool do
-                    invariant { x >= 0 }
-                    invariant { y >= 0 }
-                    invariant { x = 20 -> y <> 0 }
-                    x <- x + 10;
-                    y <- y + 10
-                  done;
-                  if x = 20 then
-                    assert { y <> 0 }
         - role: user
           content: |
             fun: check
@@ -2371,10 +1828,8 @@
                   done;
                   if x = 20 then
                     assert { y <> 0 }
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -2536,11 +1991,6 @@
                     assert { y <> 0 }  (* GOAL *)
               goal_formula: not y = 0
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null

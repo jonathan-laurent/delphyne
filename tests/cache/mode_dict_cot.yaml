@@ -9,7 +9,6 @@
             single object with fields `name` (str) and `ingredients` (list[str]).
         - role: user
           content: 'user: Jonathan Laurent'
-      num_completions: 1
       options:
         model: gpt-4.1-mini
     iter: 1

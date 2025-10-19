@@ -8,7 +8,6 @@
             Please carefully explain your reasoning before calling any tool.
         - role: user
           content: 'user_name: Alice'
-      num_completions: 1
       options:
         model: gpt-4.1-mini
         tool_choice: required

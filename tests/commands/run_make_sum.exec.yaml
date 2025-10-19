@@ -51,7 +51,7 @@ outcome:
         level: info
         space: 1
         metadata:
-          hash: 66f40312
+          hash: 6585cccc
           query: MakeSum
           request:
             chat:
@@ -79,13 +79,12 @@ outcome:
                 content: |-
                   List: [9, 6, 2]
                   Target: 11
-            num_completions: 1
             options: {}
       - message: llm_response
         level: info
         space: 1
         metadata:
-          request: 66f40312
+          request: 6585cccc
           response:
             outputs:
               - content: |-

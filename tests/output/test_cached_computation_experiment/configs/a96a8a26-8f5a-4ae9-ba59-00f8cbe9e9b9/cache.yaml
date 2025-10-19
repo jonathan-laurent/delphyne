@@ -1,18 +1,13 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: expensive_computation
-            args:
-              n: 3
         - role: user
           content: |
             fun: expensive_computation
             args:
               n: 3
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -26,18 +21,13 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: expensive_computation
-            args:
-              n: 3
         - role: user
           content: |
             fun: expensive_computation
             args:
               n: 3
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 2
   output:
     outputs:
@@ -51,18 +41,13 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: expensive_computation
-            args:
-              n: 4
         - role: user
           content: |
             fun: expensive_computation
             args:
               n: 4
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:

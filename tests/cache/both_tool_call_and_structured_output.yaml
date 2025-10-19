@@ -5,7 +5,6 @@
           content: Find the user's tastes and propose an article for them.
         - role: user
           content: 'user_name: Jonathan'
-      num_completions: 1
       options:
         model: gpt-4.1-mini
       tools:
@@ -101,7 +100,6 @@
             args:
               user_name: Jonathan
           result: Soccer
-      num_completions: 1
       options:
         model: gpt-4.1-mini
       tools:

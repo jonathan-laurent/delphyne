@@ -112,7 +112,6 @@
               ```
         - role: user
           content: 'Prove the following equality: `sin(pi/4) = cos(pi/4)`.'
-      num_completions: 1
       options:
         model: gpt-4o
     iter: 1
@@ -327,7 +326,6 @@
 
             Error at step 1: Rule application failed. Obtained: 'sin(0)*cos(pi/4) + sin(pi/4)*cos(0)' instead of the expected right-hand side.
             ```
-      num_completions: 1
       options:
         model: gpt-4o
     iter: 1

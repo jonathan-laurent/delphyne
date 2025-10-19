@@ -65,8 +65,6 @@
               - "x <> y"
               - "z <= 0"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -103,8 +101,6 @@
               - "3*x - 2*y >= 6"
               - "x < 12"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -139,8 +135,6 @@
               ```
               - "n > 0 -> (g >= 1 || x < n)"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -161,12 +155,9 @@
             ```
 
             Please reason carefully and then finish your answer with a YAML object surrounded by triple quotes that denotes a list of invariants. If you make a mistake, I'll give you feedback and you'll have another chance to answer (using the same format).
-      num_completions: 1
       options:
         model: mistral-small-2503
         temperature: 1.0
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -178,9 +169,6 @@
           - "x >= y || y < 100000"
           ```
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -197,37 +185,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { x >= y }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    invariant { x >= y || y < 100000 }
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { x >= y }
         - role: user
           content: |
             fun: check
@@ -259,10 +216,8 @@
                     y <- y + 1
                   done;
                   assert { x >= y }
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -321,14 +276,9 @@
                   assert { x >= y }  (* GOAL *)
               goal_formula: x >= y
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
@@ -396,8 +346,6 @@
               - "x <> y"
               - "z <= 0"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -434,8 +382,6 @@
               - "3*x - 2*y >= 6"
               - "x < 12"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -470,8 +416,6 @@
               ```
               - "n > 0 -> (g >= 1 || x < n)"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -502,8 +446,6 @@
               ```
               - "x >= y || y < 100000"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Some obligations failed to be proved. Here is a list of them:
@@ -525,12 +467,9 @@
               done;
               assert { x >= y }
             ```
-      num_completions: 1
       options:
         model: mistral-small-2503
         temperature: 1.0
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -544,9 +483,6 @@
           - "x - y >= 0 || y < 100000"
           ```
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -563,37 +499,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { x >= y }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    invariant { x - y >= 0 || y < 100000 }
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { x >= y }
         - role: user
           content: |
             fun: check
@@ -625,10 +530,8 @@
                     y <- y + 1
                   done;
                   assert { x >= y }
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -687,14 +590,9 @@
                   assert { x >= y }  (* GOAL *)
               goal_formula: x >= y
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
@@ -762,8 +660,6 @@
               - "x <> y"
               - "z <= 0"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -800,8 +696,6 @@
               - "3*x - 2*y >= 6"
               - "x < 12"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -836,8 +730,6 @@
               ```
               - "n > 0 -> (g >= 1 || x < n)"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -868,8 +760,6 @@
               ```
               - "x >= y || y < 100000"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Some obligations failed to be proved. Here is a list of them:
@@ -903,8 +793,6 @@
               ```
               - "x - y >= 0 || y < 100000"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Some obligations failed to be proved. Here is a list of them:
@@ -926,12 +814,9 @@
               done;
               assert { x >= y }
             ```
-      num_completions: 1
       options:
         model: mistral-small-2503
         temperature: 1.0
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -951,9 +836,6 @@
           - "x - y >= 1 || y < 100000"
           ```
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -970,37 +852,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { x >= y }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    invariant { x - y >= 1 || y < 100000 }
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { x >= y }
         - role: user
           content: |
             fun: check
@@ -1032,10 +883,8 @@
                     y <- y + 1
                   done;
                   assert { x >= y }
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -1094,14 +943,9 @@
                   assert { x >= y }  (* GOAL *)
               goal_formula: x >= y
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
@@ -1169,8 +1013,6 @@
               - "x <> y"
               - "z <= 0"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -1207,8 +1049,6 @@
               - "3*x - 2*y >= 6"
               - "x < 12"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -1243,8 +1083,6 @@
               ```
               - "n > 0 -> (g >= 1 || x < n)"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -1275,8 +1113,6 @@
               ```
               - "x >= y || y < 100000"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Some obligations failed to be proved. Here is a list of them:
@@ -1310,8 +1146,6 @@
               ```
               - "x - y >= 0 || y < 100000"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Some obligations failed to be proved. Here is a list of them:
@@ -1351,8 +1185,6 @@
               ```
               - "x - y >= 1 || y < 100000"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Some obligations failed to be proved. Here is a list of them:
@@ -1374,12 +1206,9 @@
               done;
               assert { x >= y }
             ```
-      num_completions: 1
       options:
         model: mistral-small-2503
         temperature: 1.0
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -1401,9 +1230,6 @@
           - "x >= y + 1 || y < 100000"
           ```
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -1420,37 +1246,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { x >= y }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    invariant { x >= y + 1 || y < 100000 }
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { x >= y }
         - role: user
           content: |
             fun: check
@@ -1482,10 +1277,8 @@
                     y <- y + 1
                   done;
                   assert { x >= y }
-      num_completions: 1
-      options: {}
-      tools: []
-      structured_output: null
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -1544,11 +1337,6 @@
                   assert { x >= y }  (* GOAL *)
               goal_formula: x >= y
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null

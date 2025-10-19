@@ -5,7 +5,6 @@
           content: Generate an article on the given topic. Answer as a JSON object.
         - role: user
           content: 'topic: AI'
-      num_completions: 1
       options:
         model: mistral-small-2503
       structured_output:

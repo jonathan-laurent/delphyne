@@ -5,9 +5,9 @@
           content: Generate an article on the given topic. Answer as a JSON object.
         - role: user
           content: 'topic: Love'
-      num_completions: 2
       options:
         model: gpt-4.1-mini
+      num_completions: 2
       structured_output:
         name: Article
         description: 'Article(title: str, authors: list[str])'
@@ -72,9 +72,9 @@
           content: Generate an article on the given topic. Answer as a JSON object.
         - role: user
           content: 'topic: Love'
-      num_completions: 2
       options:
         model: gpt-4.1-mini
+      num_completions: 2
       structured_output:
         name: Article
         description: 'Article(title: str, authors: list[str])'
@@ -139,9 +139,9 @@
           content: Generate an article on the given topic. Answer as a JSON object.
         - role: user
           content: 'topic: Love'
-      num_completions: 2
       options:
         model: gpt-4.1-mini
+      num_completions: 2
       structured_output:
         name: Article
         description: 'Article(title: str, authors: list[str])'
@@ -206,9 +206,9 @@
           content: Generate an article on the given topic. Answer as a JSON object.
         - role: user
           content: 'topic: Love'
-      num_completions: 2
       options:
         model: gpt-4.1-mini
+      num_completions: 2
       structured_output:
         name: Article
         description: 'Article(title: str, authors: list[str])'

@@ -9,7 +9,6 @@
           content: |-
             min_val: 1
             max_val: 50
-      num_completions: 1
       options:
         model: gpt-4.1-mini
     iter: 1
@@ -50,7 +49,6 @@
           content: |-
             min_val: 51
             max_val: 100
-      num_completions: 1
       options:
         model: gpt-4.1-mini
     iter: 1

@@ -7,7 +7,6 @@
             Just answer with one of those words and nothing else.
         - role: user
           content: 'user_name: ''X Æ A-Xii:'''
-      num_completions: 1
       options:
         model: gpt-4.1-mini
         temperature: 0.0

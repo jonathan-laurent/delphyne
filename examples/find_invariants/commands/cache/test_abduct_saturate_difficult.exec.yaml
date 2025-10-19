@@ -1,36 +1,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { x >= y }
-              annotated: |
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { x >= y }
         - role: user
           content: |
             fun: check
@@ -61,8 +31,8 @@
                     y <- y + 1
                   done;
                   assert { x >= y }
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -407,10 +377,10 @@
             Can you fix this by suggesting new invariant candidates?
 
             Just answer with a JSON object denoting a list of `(trick_name, invariant_candidate)` pairs and nothing else.
-      num_completions: 4
       options:
         model: gpt-4.1-mini
         temperature: 1.0
+      num_completions: 4
       structured_output:
         name: InvariantSuggestions
         description: |-
@@ -501,20 +471,14 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: is_valid_implication
-            args:
-              assumptions: []
-              conclusion: y >= 0
         - role: user
           content: |
             fun: is_valid_implication
             args:
               assumptions: []
               conclusion: y >= 0
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -528,38 +492,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    invariant { y >= 0 }
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { true }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    invariant { y >= 0 }
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { true }
         - role: user
           content: |
             fun: check
@@ -592,8 +524,8 @@
                     y <- y + 1
                   done;
                   assert { true }
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -658,13 +590,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: is_valid_implication
-            args:
-              assumptions:
-                - y >= 0
-              conclusion: x >= y
         - role: user
           content: |
             fun: is_valid_implication
@@ -672,8 +597,8 @@
               assumptions:
                 - y >= 0
               conclusion: x >= y
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -687,40 +612,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    invariant { y >= 0 }
-                    invariant { x >= y }
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { true }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    invariant { y >= 0 }
-                    invariant { x >= y }
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { true }
         - role: user
           content: |
             fun: check
@@ -755,8 +646,8 @@
                     y <- y + 1
                   done;
                   assert { true }
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -860,13 +751,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: is_valid_implication
-            args:
-              assumptions:
-                - y >= 0
-              conclusion: x >= (y * (y - 1)) / 2 + 1
         - role: user
           content: |
             fun: is_valid_implication
@@ -874,8 +758,8 @@
               assumptions:
                 - y >= 0
               conclusion: x >= (y * (y - 1)) / 2 + 1
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -889,40 +773,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    invariant { y >= 0 }
-                    invariant { x >= (y * (y - 1)) / 2 + 1 }
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { true }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    invariant { y >= 0 }
-                    invariant { x >= (y * (y - 1)) / 2 + 1 }
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { true }
         - role: user
           content: |
             fun: check
@@ -957,8 +807,8 @@
                     y <- y + 1
                   done;
                   assert { true }
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -972,13 +822,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: is_valid_implication
-            args:
-              assumptions:
-                - y >= 0
-              conclusion: x >= 1
         - role: user
           content: |
             fun: is_valid_implication
@@ -986,8 +829,8 @@
               assumptions:
                 - y >= 0
               conclusion: x >= 1
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -1001,40 +844,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    invariant { y >= 0 }
-                    invariant { x >= 1 }
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { true }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    invariant { y >= 0 }
-                    invariant { x >= 1 }
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { true }
         - role: user
           content: |
             fun: check
@@ -1069,8 +878,8 @@
                     y <- y + 1
                   done;
                   assert { true }
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -1174,40 +983,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    invariant { y >= 0 }
-                    invariant { x >= 1 }
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { x >= y }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    invariant { y >= 0 }
-                    invariant { x >= 1 }
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { x >= y }
         - role: user
           content: |
             fun: check
@@ -1242,8 +1017,8 @@
                     y <- y + 1
                   done;
                   assert { x >= y }
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -1347,14 +1122,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: is_valid_implication
-            args:
-              assumptions:
-                - y >= 0
-                - x >= 1
-              conclusion: x >= y
         - role: user
           content: |
             fun: is_valid_implication
@@ -1363,8 +1130,8 @@
                 - y >= 0
                 - x >= 1
               conclusion: x >= y
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -1378,42 +1145,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    invariant { y >= 0 }
-                    invariant { x >= 1 }
-                    invariant { x >= y }
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { true }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    invariant { y >= 0 }
-                    invariant { x >= 1 }
-                    invariant { x >= y }
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { true }
         - role: user
           content: |
             fun: check
@@ -1450,8 +1181,8 @@
                     y <- y + 1
                   done;
                   assert { true }
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:
@@ -1598,42 +1329,6 @@
 - input:
     request:
       chat:
-        - role: system
-          content: |
-            fun: check
-            args:
-              prog: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    invariant { y >= 0 }
-                    invariant { x >= 1 }
-                    invariant { x >= y }
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { x >= y }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref x = any int in
-                  let ref y = any int in
-                  x <- 1;
-                  y <- 0;
-                  while y < 100000 do
-                    invariant { y >= 0 }
-                    invariant { x >= 1 }
-                    invariant { x >= y }
-                    x <- x + y;
-                    y <- y + 1
-                  done;
-                  assert { x >= y }
         - role: user
           content: |
             fun: check
@@ -1670,8 +1365,8 @@
                     y <- y + 1
                   done;
                   assert { x >= y }
-      num_completions: 1
-      options: {}
+      options:
+        model: __compute__
     iter: 1
   output:
     outputs:

@@ -47,7 +47,6 @@
             ```
 
             Type of value to generate (as a YAML object): list[int]
-      num_completions: 1
       options:
         model: gpt-5-mini
     iter: 1
