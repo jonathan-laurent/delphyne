@@ -5537,7 +5537,12 @@ Answers</code> code action from Delphyne's VSCode extension).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 72</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
 <span class="normal"> 73</span>
 <span class="normal"> 74</span>
 <span class="normal"> 75</span>
@@ -5602,16 +5607,7 @@ Answers</code> code action from Delphyne's VSCode extension).</p>
 <span class="normal">134</span>
 <span class="normal">135</span>
 <span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">137</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Compute</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The standard `Compute` effect.</span>
@@ -5665,22 +5661,18 @@ Answers</code> code action from Delphyne's VSCode extension).</p>
 <span class="sd">        Disguise the computation as an LLM request so as to reuse the</span>
 <span class="sd">        caching infrastructure.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">chat</span> <span class="o">=</span> <span class="n">create_prompt</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">attached</span><span class="o">.</span><span class="n">query</span><span class="p">,</span>
-            <span class="n">examples</span><span class="o">=</span><span class="p">[],</span>
-            <span class="n">params</span><span class="o">=</span><span class="p">{},</span>
-            <span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="p">)</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">_compute_answer</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">LLMResponse</span><span class="p">:</span>
             <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_computation</span><span class="p">(</span><span class="n">overriden_args</span><span class="o">=</span><span class="n">overriden_args</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">dp</span><span class="o">.</span><span class="n">LLMResponse</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">LLMOutput</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">res</span><span class="p">)])</span>
 
-        <span class="c1"># TODO: the request we are currently generating is bad. Using</span>
-        <span class="c1"># `create_prompt` creates a system message for nothing. The</span>
-        <span class="c1"># model name should be used to make the request unique.</span>
-        <span class="n">req</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">LLMRequest</span><span class="p">(</span><span class="n">chat</span><span class="o">=</span><span class="n">chat</span><span class="p">,</span> <span class="n">num_completions</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">attached</span><span class="o">.</span><span class="n">query</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">__Computation__</span><span class="p">)</span>
+        <span class="n">serialized</span> <span class="o">=</span> <span class="n">dump_yaml</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">query</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+        <span class="n">chat</span> <span class="o">=</span> <span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">UserMessage</span><span class="p">(</span><span class="n">serialized</span><span class="p">),)</span>
+        <span class="n">req</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">LLMRequest</span><span class="p">(</span>
+            <span class="n">chat</span><span class="o">=</span><span class="n">chat</span><span class="p">,</span> <span class="n">num_completions</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;__compute__&quot;</span><span class="p">}</span>
+        <span class="p">)</span>
         <span class="n">resp</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">fetch_or_answer</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="n">_compute_answer</span><span class="p">())</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
         <span class="n">answer</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">content</span>
@@ -5814,7 +5806,16 @@ inference when necessary.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">149</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
 <span class="normal">150</span>
 <span class="normal">151</span>
 <span class="normal">152</span>
@@ -5850,16 +5851,7 @@ inference when necessary.</p>
 <span class="normal">182</span>
 <span class="normal">183</span>
 <span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">[</span><span class="o">**</span><span class="n">A</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">](</span>
+<span class="normal">185</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">[</span><span class="o">**</span><span class="n">A</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">](</span>
     <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">override_args</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -6038,7 +6030,16 @@ than those specified with the <code>override_args</code> argument of
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">197</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
 <span class="normal">198</span>
 <span class="normal">199</span>
 <span class="normal">200</span>
@@ -6118,16 +6119,7 @@ than those specified with the <code>override_args</code> argument of
 <span class="normal">274</span>
 <span class="normal">275</span>
 <span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
-<span class="normal">286</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dp</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
+<span class="normal">277</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dp</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">elim_compute</span><span class="p">(</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
@@ -6334,12 +6326,7 @@ than those specified with the <code>override_args</code> argument of
 <span class="normal">61</span>
 <span class="normal">62</span>
 <span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">__Computation__</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="nb">object</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A special query that represents a computation.</span>
@@ -6364,12 +6351,7 @@ than those specified with the <code>override_args</code> argument of
         <span class="n">extra_args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">env</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AbstractTemplatesManager</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="c1"># TODO: should this error instead?</span>
-
-        <span class="c1"># The prompt is never sent to LLMs but it is important that it</span>
-        <span class="c1"># uniquely identifies the query instance since it is used for</span>
-        <span class="c1"># caching.</span>
-        <span class="k">return</span> <span class="n">dump_yaml</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="kc">False</span>
 
     <span class="nd">@override</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">query_modes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
