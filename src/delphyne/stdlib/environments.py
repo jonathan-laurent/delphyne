@@ -5,6 +5,7 @@ Policies have access to a global environment for fetching prompts, data,
 examples, caching LLM requests, and logging information.
 """
 
+import random
 from collections import defaultdict
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
@@ -318,7 +319,8 @@ class PolicyEnv:
         templates: The prompt templates manager.
         tracer: The tracer, which can also be used for logging.
         examples: The example database.
-        log_long_computations: see constructor.
+        log_long_computations: See constructor.
+        random: A random number generator.
     """
 
     def __init__(
@@ -332,6 +334,7 @@ class PolicyEnv:
         log_level: dp.LogLevel = "info",
         log_long_computations: tuple[dp.LogLevel, float] | None = None,
         do_not_match_identical_queries: bool = False,
+        random_seed: int = 0,
     ):
         """
         Args:
@@ -355,6 +358,8 @@ class PolicyEnv:
                 level. This settings can be locally overriden by
                 `elim_compute`.
             do_not_match_identical_queries: See `ExampleDatabase`.
+            random_seed: The seed with which to initialize the random
+                number generator.
         """
         self.data_manager = DataManager(data_dirs)
         self.templates = TemplatesManager(prompt_dirs, self.data_manager)
@@ -363,6 +368,7 @@ class PolicyEnv:
         self.log_long_computations = log_long_computations
         self.cache = cache
         self.override_answers = override_answers
+        self.random = random.Random(random_seed)
         for path in demonstration_files:
             for demo in loaders.load_demo_file(path):
                 self.examples.add_demonstration(demo)

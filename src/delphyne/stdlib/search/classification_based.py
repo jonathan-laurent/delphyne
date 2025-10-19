@@ -2,8 +2,6 @@
 Some policies leveraging classification.
 """
 
-import numpy as np
-
 import delphyne as dp
 from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.nodes import Branch
@@ -39,8 +37,7 @@ def sample_and_proceed[N: dp.Node, P, T](
             distr = meta.distr
             values = [x[0] for x in distr]
             probs = [x[1] for x in distr]
-            k = np.random.choice(len(values), p=probs)
-            selected = values[k]
+            selected = env.random.choices(values, weights=probs)
             yield from proceed_with(tree.child(selected), env, policy).gen()
         case _:
             assert False, "Expected branching or success node at the root."

@@ -3,7 +3,6 @@ Standard queries and building blocks for prompting policies.
 """
 
 import inspect
-import random
 import re
 import textwrap
 import typing
@@ -21,7 +20,7 @@ import delphyne.core.inspect as dpi
 import delphyne.stdlib.models as md
 import delphyne.stdlib.policies as pol
 from delphyne.core.refs import Answer
-from delphyne.stdlib.environments import Example, ExampleDatabase, PolicyEnv
+from delphyne.stdlib.environments import Example, PolicyEnv
 from delphyne.stdlib.opaque import Opaque, OpaqueSpace
 from delphyne.stdlib.policies import IPDict, prompting_policy
 from delphyne.stdlib.streams import SpendingDeclined, Stream, spend_on
@@ -1105,13 +1104,16 @@ def _match_string_literal_type(t: Any) -> Sequence[str] | None:
 #####
 
 
-type ExampleSelector = Callable[[Sequence[Example]], Sequence[Example]]
+type ExampleSelector = Callable[
+    [PolicyEnv, Sequence[Example]], Sequence[Example]
+]
 """
 A function for selecting a subset of examples from a given sequence.
 """
 
 
 def select_all_examples(
+    env: PolicyEnv,
     examples: Sequence[Example],
 ) -> Sequence[Example]:
     """
@@ -1129,11 +1131,12 @@ def select_random_examples(num_examples: int) -> ExampleSelector:
     """
 
     def select(
+        env: PolicyEnv,
         examples: Sequence[Example],
     ) -> Sequence[Example]:
         if num_examples >= len(examples):
             return examples
-        selected = random.sample(examples, num_examples)
+        selected = env.random.sample(examples, num_examples)
         return selected
 
     return select
@@ -1159,13 +1162,13 @@ def select_with_either_tags(tags: Sequence[str]):
 
 
 def fetch_examples(
-    database: ExampleDatabase,
+    env: PolicyEnv,
     query: dp.AbstractQuery[Any],
     selectors: Sequence[ExampleSelector],
 ) -> Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]]:
-    raw = list(database.examples(dp.SerializedQuery.make(query)))
+    raw = list(env.examples.examples(dp.SerializedQuery.make(query)))
     for sel in selectors:
-        raw = sel(raw)
+        raw = sel(env, raw)
     return [(ex.query.parse(type(query)), ex.answer) for ex in raw]
 
 
@@ -1399,7 +1402,7 @@ def classify[T](
     See `few_shot` for details on some of the arguments above.
     """
     env.tracer.trace_query(query)
-    examples = fetch_examples(env.examples, query.query, select_examples)
+    examples = fetch_examples(env, query.query, select_examples)
     mngr = env.templates
     if params is None:
         params = {}
@@ -1574,7 +1577,7 @@ def few_shot[T](
         yield dp.Solution(overriden_parsed)
         return
 
-    examples = fetch_examples(env.examples, query.query, select_examples)
+    examples = fetch_examples(env, query.query, select_examples)
     mngr = env.templates
     if params is None:
         params = {}

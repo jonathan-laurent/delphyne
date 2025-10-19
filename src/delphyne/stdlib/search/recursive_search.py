@@ -5,7 +5,6 @@ A generic search algorithm that leverages stream combinators attached as
 metadata on Branch and Join nodes.
 """
 
-import random
 from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
@@ -143,7 +142,7 @@ def combine_via_repeated_sampling(
         i = 0
         while max_attempts is None or i < max_attempts:
             i += 1
-            stream = random.choices(streams, weights=probs)[0]
+            stream = env.random.choices(streams, weights=probs)[0]
             yield from stream.gen()
 
     return StreamCombinator(combine)
