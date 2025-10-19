@@ -5,14 +5,14 @@ Tools to manipulate embeddings
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import final
+from typing import Literal, final, override
 
 import delphyne.core as dp
 import delphyne.stdlib.models as md
 from delphyne.utils.yaml import pretty_yaml
 
 #####
-##### Models
+##### Base Models and Caching
 #####
 
 
@@ -33,6 +33,14 @@ class EmbeddingModel(ABC):
     def get_model_name(self) -> str:
         pass
 
+    @abstractmethod
+    def embed(self, batch: Sequence[str]) -> EmbeddingResponse:
+        pass
+
+    @abstractmethod
+    def spent(self, resp: EmbeddingResponse) -> dp.Budget:
+        pass
+
     @final
     def embed_with_cache(
         self, batch: Sequence[str], cache: md.LLMCache | None
@@ -42,10 +50,6 @@ class EmbeddingModel(ABC):
             cache, req, lambda _: _encode_embedding_response(self.embed(batch))
         )
         return _decode_embedding_response(resp)
-
-    @abstractmethod
-    def embed(self, batch: Sequence[str]) -> EmbeddingResponse:
-        pass
 
 
 def _encode_embedding_request(
@@ -82,8 +86,70 @@ def _decode_embedding_response(resp: md.LLMResponse) -> EmbeddingResponse:
 
 
 #####
+##### OpenAI-Compatible API
 #####
-#####
+
 
 # API Documentation:
 # https://platform.openai.com/docs/api-reference/embeddings/create
+
+
+@dataclass
+class OpenAICompatibleEmbeddingModel(EmbeddingModel):
+    model_name: str
+    api_key: str | None = None
+    base_url: str | None = None
+    dollars_per_token: float | None = None
+
+    @override
+    def get_model_name(self) -> str:
+        return self.model_name
+
+    @override
+    def spent(self, resp: EmbeddingResponse) -> dp.Budget:
+        # TODO: handle model classes to register other metrics?
+        budget: dict[str, float] = {}
+        if self.dollars_per_token is not None:
+            budget[md.DOLLAR_PRICE] = (
+                self.dollars_per_token * resp.total_tokens
+            )
+        return dp.Budget(budget)
+
+    @override
+    def embed(self, batch: Sequence[str]) -> EmbeddingResponse:
+        import openai
+
+        client = openai.OpenAI(api_key=self.api_key, base_url=self.base_url)
+        response = client.embeddings.create(
+            model=self.model_name, input=list(batch)
+        )
+        embeddings = [data.embedding for data in response.data]
+        return EmbeddingResponse(
+            model=response.model,
+            embeddings=embeddings,
+            total_tokens=response.usage.total_tokens,
+        )
+
+
+#####
+##### Standard Models
+#####
+
+
+type StandardOpenAIEmbeddingModel = Literal[
+    "text-embedding-3-small",
+    "text-embedding-3-large",
+]
+
+
+def standard_openai_embedding_model(
+    name: StandardOpenAIEmbeddingModel,
+) -> EmbeddingModel:
+    match name:
+        case "text-embedding-3-small":
+            price = 0.02 * md.PER_MILLION
+        case "text-embedding-3-large":
+            price = 0.13 * md.PER_MILLION
+    return OpenAICompatibleEmbeddingModel(
+        model_name=name, dollars_per_token=price
+    )

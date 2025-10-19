@@ -11,6 +11,13 @@ from delphyne.stdlib.answer_loaders import (
     load_demo_file,
     standard_answer_loader,
 )
+from delphyne.stdlib.embeddings import (
+    EmbeddingModel,
+    EmbeddingResponse,
+    OpenAICompatibleEmbeddingModel,
+    StandardOpenAIEmbeddingModel,
+    standard_openai_embedding_model,
+)
 from delphyne.stdlib.environments import (
     DataManager,
     Example,
