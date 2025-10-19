@@ -112,6 +112,7 @@ from delphyne.stdlib.queries import (
     Parser,
     ParserDict,
     ProbInfo,
+    PseudoQuery,
     Query,
     Response,
     ToolRequests,

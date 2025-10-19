@@ -4,15 +4,15 @@ The `Flag` Effect
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Never, cast
+from typing import Any, Never, cast, override
 
 import delphyne.core.inspect as insp
 import delphyne.core_and_base as dp
 from delphyne.core_and_base import PolicyEnv, spawn_node
-from delphyne.stdlib.queries import Query
+from delphyne.stdlib.queries import PseudoQuery
 
 
-class FlagQuery[T: str](Query[T]):
+class FlagQuery[T: str](PseudoQuery[T]):
     """
     Base class for flag queries.
 
@@ -28,13 +28,16 @@ class FlagQuery[T: str](Query[T]):
         assert all(isinstance(a, str) for a in args)
         return cast(Sequence[str], args)
 
+    @override
     def finite_answer_set(self) -> Sequence[dp.Answer]:
         vals = self.flag_values()
         return [dp.Answer(None, v) for v in vals]
 
+    @override
     def default_answer(self) -> dp.Answer:
         return self.finite_answer_set()[0]
 
+    @override
     def parse_answer(self, answer: dp.Answer) -> T | dp.ParseError:
         if not isinstance(answer.content, str):
             return dp.ParseError(description="Flag answer must be a string.")

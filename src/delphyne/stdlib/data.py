@@ -9,7 +9,6 @@ from typing import Any, Literal, Never, cast, overload, override
 
 import delphyne.core_and_base as dp
 from delphyne.utils.typing import NoTypeInfo, pydantic_load
-from delphyne.utils.yaml import dump_yaml
 
 type DataRef = str | tuple[str, str]
 """
@@ -74,7 +73,7 @@ def _parse_raw_answer(raw: _RawAnswer) -> Sequence[Any] | DataNotFound:
 
 
 @dataclass
-class __LoadData__(dp.AbstractQuery[Sequence[Any] | DataNotFound]):
+class __LoadData__(dp.PseudoQuery[Sequence[Any] | DataNotFound]):
     """
     A special query that represents the loading of data.
 
@@ -85,26 +84,6 @@ class __LoadData__(dp.AbstractQuery[Sequence[Any] | DataNotFound]):
     """
 
     refs: Sequence[DataRef]
-
-    @override
-    def generate_prompt(
-        self,
-        *,
-        kind: str,
-        mode: dp.AnswerMode,
-        params: dict[str, object],
-        extra_args: dict[str, object] | None = None,
-        env: dp.AbstractTemplatesManager | None = None,
-    ) -> str:
-        return dump_yaml(Any, self.__dict__)
-
-    @override
-    def query_modes(self):
-        return [None]
-
-    @override
-    def answer_type(self):
-        return object
 
     @override
     def parse_answer(self, answer: dp.Answer) -> Sequence[Any] | DataNotFound:

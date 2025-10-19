@@ -19,7 +19,7 @@ from delphyne.utils.yaml import dump_yaml
 
 
 @dataclass
-class __Computation__(dp.AbstractQuery[object]):
+class __Computation__(dp.PseudoQuery[object]):
     """
     A special query that represents a computation.
 
@@ -32,26 +32,6 @@ class __Computation__(dp.AbstractQuery[object]):
 
     fun: str
     args: dict[str, Any]
-
-    @override
-    def generate_prompt(
-        self,
-        *,
-        kind: str,
-        mode: dp.AnswerMode,
-        params: dict[str, object],
-        extra_args: dict[str, object] | None = None,
-        env: dp.AbstractTemplatesManager | None = None,
-    ) -> str:
-        assert False
-
-    @override
-    def query_modes(self):
-        return [None]
-
-    @override
-    def answer_type(self):
-        return object
 
     @override
     def parse_answer(self, answer: dp.Answer) -> object:

@@ -1100,6 +1100,40 @@ def _match_string_literal_type(t: Any) -> Sequence[str] | None:
 
 
 #####
+##### Pseudo Queries
+#####
+
+
+class PseudoQuery[T](dp.AbstractQuery[T]):
+    """
+    Base class for queries that do not target LLMs and are not
+    associated with any prompts (e.g. `Compute`).
+    """
+
+    @override
+    def generate_prompt(
+        self,
+        *,
+        kind: str,
+        mode: dp.AnswerMode,
+        params: dict[str, object],
+        extra_args: dict[str, object] | None = None,
+        env: dp.AbstractTemplatesManager | None = None,
+    ) -> str:
+        raise RuntimeError(
+            f"No prompt associated with pseudo-query {type(self)}."
+        )
+
+    @override
+    def query_modes(self):
+        return [None]
+
+    @override
+    def answer_type(self):
+        return dpi.first_parameter_of_base_class(type(self))
+
+
+#####
 ##### Example Selectors
 #####
 
