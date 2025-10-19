@@ -58,8 +58,6 @@
             args:
               user_name: Jonathan
         finish_reason: tool_calls
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0
@@ -97,7 +95,6 @@
               - name: GetUserFavoriteTopic
                 args:
                   user_name: Jonathan
-            justification: null
         - role: tool
           call:
             name: GetUserFavoriteTopic
@@ -158,9 +155,6 @@
               - John D. Smith
               - Maria Gonzalez
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0

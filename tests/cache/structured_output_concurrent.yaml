@@ -8,7 +8,6 @@
       num_completions: 2
       options:
         model: gpt-4.1-mini
-      tools: []
       structured_output:
         name: Article
         description: 'Article(title: str, authors: list[str])'
@@ -37,9 +36,6 @@
               - Jane Doe
               - John Smith
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
       - content:
           structured:
             title: 'The Many Faces of Love: Exploring Its Depths and Dimensions'
@@ -47,9 +43,6 @@
               - Jane Doe
               - John Smith
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0
@@ -82,7 +75,6 @@
       num_completions: 2
       options:
         model: gpt-4.1-mini
-      tools: []
       structured_output:
         name: Article
         description: 'Article(title: str, authors: list[str])'
@@ -111,9 +103,6 @@
               - Jane Doe
               - John Smith
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
       - content:
           structured:
             title: Exploring the Multifaceted Nature of Love
@@ -121,9 +110,6 @@
               - Jane Doe
               - John Smith
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0
@@ -156,7 +142,6 @@
       num_completions: 2
       options:
         model: gpt-4.1-mini
-      tools: []
       structured_output:
         name: Article
         description: 'Article(title: str, authors: list[str])'
@@ -185,9 +170,6 @@
               - Jane Doe
               - John Smith
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
       - content:
           structured:
             title: 'Understanding Love: A Multifaceted Emotion'
@@ -195,9 +177,6 @@
               - Alex Morgan
               - Jamie Lee
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0
@@ -230,7 +209,6 @@
       num_completions: 2
       options:
         model: gpt-4.1-mini
-      tools: []
       structured_output:
         name: Article
         description: 'Article(title: str, authors: list[str])'
@@ -258,9 +236,6 @@
             authors:
               - Alex Johnson
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
       - content:
           structured:
             title: The Many Dimensions of Love
@@ -268,9 +243,6 @@
               - Jane Doe
               - John Smith
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0

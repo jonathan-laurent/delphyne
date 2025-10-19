@@ -13,14 +13,11 @@
         temperature: 0.0
         logprobs: true
         top_logprobs: 20
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
       - content: rare
         tool_calls: []
-        finish_reason: stop
         logprobs:
           - token:
               token: rare
@@ -149,7 +146,6 @@
                     - 116
                     - 101
                 - -28.625
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0

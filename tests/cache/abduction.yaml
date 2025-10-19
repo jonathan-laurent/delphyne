@@ -43,7 +43,6 @@
       num_completions: 1
       options:
         model: gpt-4.1-mini
-      tools: []
       structured_output:
         name: ItemsToFind
         description: 'ItemsToFind(items: Sequence[str])'
@@ -66,9 +65,6 @@
             items:
               - C
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0
@@ -136,7 +132,6 @@
       num_completions: 1
       options:
         model: gpt-4.1-mini
-      tools: []
       structured_output:
         name: ItemsToFind
         description: 'ItemsToFind(items: Sequence[str])'
@@ -161,9 +156,6 @@
               - D
               - E
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0
@@ -232,7 +224,6 @@
       num_completions: 1
       options:
         model: gpt-4.1-mini
-      tools: []
       structured_output:
         name: ItemsToFind
         description: 'ItemsToFind(items: Sequence[str])'
@@ -255,9 +246,6 @@
             items:
               - B
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0

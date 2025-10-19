@@ -13,14 +13,11 @@
         temperature: 0.0
         logprobs: true
         top_logprobs: 20
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
       - content: common
         tool_calls: []
-        finish_reason: stop
         logprobs:
           - token:
               token: common
@@ -202,7 +199,6 @@
                   bytes:
                     - 49
                 - -30.5
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0

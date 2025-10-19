@@ -12,16 +12,11 @@
       num_completions: 1
       options:
         model: gpt-4.1-mini
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
       - content: '37'
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0
@@ -58,16 +53,11 @@
       num_completions: 1
       options:
         model: gpt-4.1-mini
-      tools: []
-      structured_output: null
     iter: 2
   output:
     outputs:
       - content: '27'
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0
@@ -104,16 +94,11 @@
       num_completions: 1
       options:
         model: gpt-4.1-mini
-      tools: []
-      structured_output: null
     iter: 2
   output:
     outputs:
       - content: '73'
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0
@@ -150,16 +135,11 @@
       num_completions: 1
       options:
         model: gpt-4.1-mini
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
       - content: '74'
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0
@@ -196,16 +176,11 @@
       num_completions: 1
       options:
         model: gpt-4.1-mini
-      tools: []
-      structured_output: null
     iter: 4
   output:
     outputs:
       - content: '78'
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0
@@ -242,16 +217,11 @@
       num_completions: 1
       options:
         model: gpt-4.1-mini
-      tools: []
-      structured_output: null
     iter: 3
   output:
     outputs:
       - content: '83'
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0

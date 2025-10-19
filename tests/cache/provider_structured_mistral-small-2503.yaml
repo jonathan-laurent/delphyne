@@ -8,7 +8,6 @@
       num_completions: 1
       options:
         model: mistral-small-2503
-      tools: []
       structured_output:
         name: Article
         description: 'Article(title: str, authors: list[str])'
@@ -37,9 +36,6 @@
               - Jane Doe
               - John Smith
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0

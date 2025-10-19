@@ -50,8 +50,6 @@
       num_completions: 1
       options:
         model: gpt-5-mini
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -61,9 +59,6 @@
           - 3
           ```
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0

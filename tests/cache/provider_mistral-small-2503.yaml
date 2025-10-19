@@ -28,8 +28,6 @@
       num_completions: 1
       options:
         model: mistral-small-2503
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -39,9 +37,6 @@
           - 2
           - 3
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0

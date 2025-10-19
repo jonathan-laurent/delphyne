@@ -28,8 +28,6 @@
       num_completions: 1
       options:
         model: gpt-4o-mini
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -38,9 +36,6 @@
             - 2
             - 3
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -93,8 +88,6 @@
       num_completions: 1
       options:
         model: gpt-4o-mini
-      tools: []
-      structured_output: null
     iter: 2
   output:
     outputs:
@@ -103,9 +96,6 @@
             - 2
             - 3
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -158,8 +148,6 @@
       num_completions: 1
       options:
         model: gpt-4o-mini
-      tools: []
-      structured_output: null
     iter: 3
   output:
     outputs:
@@ -168,9 +156,6 @@
             - 2
             - 3
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -223,8 +208,6 @@
       num_completions: 1
       options:
         model: gpt-4o-mini
-      tools: []
-      structured_output: null
     iter: 4
   output:
     outputs:
@@ -233,9 +216,6 @@
             - 2
             - 3
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -288,8 +268,6 @@
       num_completions: 1
       options:
         model: gpt-4o-mini
-      tools: []
-      structured_output: null
     iter: 5
   output:
     outputs:
@@ -298,9 +276,6 @@
             - 2
             - 3
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -353,8 +328,6 @@
       num_completions: 1
       options:
         model: gpt-4o-mini
-      tools: []
-      structured_output: null
     iter: 6
   output:
     outputs:
@@ -363,9 +336,6 @@
             - 2
             - 3
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -418,8 +388,6 @@
       num_completions: 1
       options:
         model: gpt-4o-mini
-      tools: []
-      structured_output: null
     iter: 7
   output:
     outputs:
@@ -428,9 +396,6 @@
             - 2
             - 3
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -483,8 +448,6 @@
       num_completions: 1
       options:
         model: gpt-4o-mini
-      tools: []
-      structured_output: null
     iter: 8
   output:
     outputs:
@@ -493,9 +456,6 @@
             - 2
             - 3
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -548,8 +508,6 @@
       num_completions: 1
       options:
         model: gpt-4o-mini
-      tools: []
-      structured_output: null
     iter: 9
   output:
     outputs:
@@ -558,9 +516,6 @@
             - 2
             - 3
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -613,8 +568,6 @@
       num_completions: 1
       options:
         model: gpt-4o-mini
-      tools: []
-      structured_output: null
     iter: 10
   output:
     outputs:
@@ -623,9 +576,6 @@
             - 2
             - 3
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -678,8 +628,6 @@
       num_completions: 1
       options:
         model: gpt-4o-mini
-      tools: []
-      structured_output: null
     iter: 11
   output:
     outputs:
@@ -688,9 +636,6 @@
             - 2
             - 3
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -743,8 +688,6 @@
       num_completions: 1
       options:
         model: gpt-4o-mini
-      tools: []
-      structured_output: null
     iter: 12
   output:
     outputs:
@@ -753,9 +696,6 @@
             - 2
             - 3
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -808,8 +748,6 @@
       num_completions: 1
       options:
         model: gpt-4o-mini
-      tools: []
-      structured_output: null
     iter: 13
   output:
     outputs:
@@ -817,9 +755,6 @@
           - 2
           - 3
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1

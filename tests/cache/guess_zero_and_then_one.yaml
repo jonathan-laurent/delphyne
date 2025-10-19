@@ -8,7 +8,6 @@
       num_completions: 1
       options:
         model: gpt-5-nano
-      tools: []
       structured_output:
         name: NumberOutput
         description: 'NumberOutput(number: int)'
@@ -28,9 +27,6 @@
           structured:
             number: 0
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -66,14 +62,11 @@
             content:
               structured:
                 number: 0
-            tool_calls: []
-            justification: null
         - role: user
           content: Now try to answer `1`.
       num_completions: 1
       options:
         model: gpt-5-nano
-      tools: []
       structured_output:
         name: NumberOutput
         description: 'NumberOutput(number: int)'
@@ -93,9 +86,6 @@
           structured:
             number: 1
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1

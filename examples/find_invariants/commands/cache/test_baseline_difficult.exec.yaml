@@ -65,8 +65,6 @@
               - "x <> y"
               - "z <= 0"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -103,8 +101,6 @@
               - "3*x - 2*y >= 6"
               - "x < 12"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -139,8 +135,6 @@
               ```
               - "n > 0 -> (g >= 1 || x < n)"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -166,8 +160,6 @@
       num_completions: 1
       options:
         model: gpt-4.1-mini
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -235,9 +227,6 @@
           - "i <= n + 1"
           ```
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -339,8 +328,6 @@
                     assert { sn = 0 }
       num_completions: 1
       options: {}
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -495,14 +482,9 @@
                     assert { sn = 0 }  (* GOAL *)
               goal_formula: (i - 1) = 0
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
@@ -570,8 +552,6 @@
               - "x <> y"
               - "z <= 0"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -608,8 +588,6 @@
               - "3*x - 2*y >= 6"
               - "x < 12"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -644,8 +622,6 @@
               ```
               - "n > 0 -> (g >= 1 || x < n)"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -734,8 +710,6 @@
               - "i >= 1"
               - "i <= n + 1"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Some obligations failed to be proved. Here is a list of them:
@@ -764,8 +738,6 @@
       num_completions: 1
       options:
         model: gpt-4.1-mini
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -813,9 +785,6 @@
           - "n < 0 || i <= n + 1"
           ```
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -917,8 +886,6 @@
                     assert { sn = 0 }
       num_completions: 1
       options: {}
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -1073,14 +1040,9 @@
                     assert { sn = 0 }  (* GOAL *)
               goal_formula: (i - 1) = 0
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
@@ -1148,8 +1110,6 @@
               - "x <> y"
               - "z <= 0"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -1186,8 +1146,6 @@
               - "3*x - 2*y >= 6"
               - "x < 12"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -1222,8 +1180,6 @@
               ```
               - "n > 0 -> (g >= 1 || x < n)"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |-
             Can you propose invariants for the following Why3 program in order to prove that the final assertion always holds?
@@ -1312,8 +1268,6 @@
               - "i >= 1"
               - "i <= n + 1"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Some obligations failed to be proved. Here is a list of them:
@@ -1385,8 +1339,6 @@
               - "i >= 1"
               - "n < 0 || i <= n + 1"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Some obligations failed to be proved. Here is a list of them:
@@ -1415,8 +1367,6 @@
       num_completions: 1
       options:
         model: gpt-4.1-mini
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -1497,9 +1447,6 @@
           - "n < 1 -> sn = 0"
           ```
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -1603,8 +1550,6 @@
                     assert { sn = 0 }
       num_completions: 1
       options: {}
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -1810,11 +1755,6 @@
                     assert { sn = 0 }  (* GOAL *)
               goal_formula: (i - 1) = 0
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null

@@ -28,16 +28,11 @@
       num_completions: 1
       options:
         model: deepseek-chat
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
       - content: '[2, 3]'
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0

@@ -52,7 +52,6 @@
               - authors
             title: Article
             type: object
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -62,8 +61,6 @@
             args:
               user_name: Alice
         finish_reason: tool_calls
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0

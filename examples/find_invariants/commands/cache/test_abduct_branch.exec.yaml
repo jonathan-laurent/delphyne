@@ -59,8 +59,6 @@
                   assert { x >= 0 }
       num_completions: 1
       options: {}
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -83,14 +81,9 @@
                   assert { x >= 0 }  (* GOAL *)
               goal_formula: x >= 0
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
@@ -148,8 +141,6 @@
               - "z <= 0"
               - "x <> y"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Here is the program that Why3 was tasked to verify.
@@ -187,8 +178,6 @@
               ```
               - "z <= 0"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Here is the program that Why3 was tasked to verify.
@@ -222,8 +211,6 @@
               ```
               - "n > 0 -> x <= n"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Here is the program that Why3 was tasked to verify.
@@ -259,8 +246,6 @@
               ```
               - "z >= y || x < 500"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Here is the program that Why3 was tasked to verify.
@@ -294,8 +279,6 @@
               ```
               - "x <> y"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Here is the program that Why3 was tasked to verify.
@@ -329,8 +312,6 @@
               ```
               - "z <= 0"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Here is the program that Why3 was tasked to verify.
@@ -357,8 +338,6 @@
       num_completions: 1
       options:
         model: gpt-4o
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -378,9 +357,6 @@
           - "x >= 0"
           ```
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -466,8 +442,6 @@
                   assert { x >= 0 }
       num_completions: 1
       options: {}
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -523,14 +497,9 @@
                   assert { x >= 0 }  (* GOAL *)
               goal_formula: x >= 0
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null
 - input:
     request:
       chat:
@@ -588,8 +557,6 @@
               - "z <= 0"
               - "x <> y"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Here is the program that Why3 was tasked to verify.
@@ -627,8 +594,6 @@
               ```
               - "z <= 0"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Here is the program that Why3 was tasked to verify.
@@ -662,8 +627,6 @@
               ```
               - "n > 0 -> x <= n"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Here is the program that Why3 was tasked to verify.
@@ -699,8 +662,6 @@
               ```
               - "z >= y || x < 500"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Here is the program that Why3 was tasked to verify.
@@ -734,8 +695,6 @@
               ```
               - "x <> y"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Here is the program that Why3 was tasked to verify.
@@ -769,8 +728,6 @@
               ```
               - "z <= 0"
               ```
-            tool_calls: []
-            justification: null
         - role: user
           content: |
             Here is the program that Why3 was tasked to verify.
@@ -798,8 +755,6 @@
       num_completions: 1
       options:
         model: gpt-4o
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -825,9 +780,6 @@
           - "b >= 2"
           ```
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1
@@ -915,8 +867,6 @@
                   assert { x >= 0 }
       num_completions: 1
       options: {}
-      tools: []
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -1009,11 +959,6 @@
                   assert { x >= 0 }  (* GOAL *)
               goal_formula: x >= 0
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values: {}
     log_items: []
-    model_name: null
-    usage_info: null

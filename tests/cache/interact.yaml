@@ -52,7 +52,6 @@
               - authors
             title: Article
             type: object
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -62,8 +61,6 @@
             args:
               user_name: Jonathan
         finish_reason: tool_calls
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0
@@ -104,7 +101,6 @@
               - name: GetUserFavoriteTopic
                 args:
                   user_name: Jonathan
-            justification: null
         - role: tool
           call:
             name: GetUserFavoriteTopic
@@ -155,7 +151,6 @@
               - authors
             title: Article
             type: object
-      structured_output: null
     iter: 1
   output:
     outputs:
@@ -168,8 +163,6 @@
                 - John Smith
                 - Emily Doe
         finish_reason: tool_calls
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0

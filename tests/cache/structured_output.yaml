@@ -8,7 +8,6 @@
       num_completions: 1
       options:
         model: gpt-4.1-mini
-      tools: []
       structured_output:
         name: Article
         description: 'Article(title: str, authors: list[str])'
@@ -37,9 +36,6 @@
               - Dr. Jane Smith
               - Prof. Alan Turing
         tool_calls: []
-        finish_reason: stop
-        logprobs: null
-        reasoning_content: null
     budget:
       values:
         num_requests: 1.0
