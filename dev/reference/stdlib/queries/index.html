@@ -8145,9 +8145,7 @@ distribution <code>D</code> is transformed into <code>(1-p)*D + p*dirac(e)</code
 <span class="normal">507</span>
 <span class="normal">508</span>
 <span class="normal">509</span>
-<span class="normal">510</span>
-<span class="normal">511</span>
-<span class="normal">512</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LLM</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="normal">510</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LLM</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for an LLM.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -8210,10 +8208,8 @@ distribution <code>D</code> is transformed into <code>(1-p)*D + p*dirac(e)</code
 <span class="sd">            req: The request to send.</span>
 <span class="sd">            cache: An optional cache to use for the request.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span> <span class="o">=</span> <span class="n">CachedModel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span>
         <span class="n">full_req</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_model_defaults</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_final_request</span><span class="p">(</span><span class="n">full_req</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fetch_or_answer</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">full_req</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_final_request</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -8469,9 +8465,7 @@ retrials may be warranted.</p>
 <span class="normal">507</span>
 <span class="normal">508</span>
 <span class="normal">509</span>
-<span class="normal">510</span>
-<span class="normal">511</span>
-<span class="normal">512</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@final</span>
+<span class="normal">510</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@final</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">send_request</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">LLMRequest</span><span class="p">,</span> <span class="n">cache</span><span class="p">:</span> <span class="s2">&quot;LLMCache | None&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LLMResponse</span><span class="p">:</span>
@@ -8486,10 +8480,8 @@ retrials may be warranted.</p>
 <span class="sd">        req: The request to send.</span>
 <span class="sd">        cache: An optional cache to use for the request.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span> <span class="o">=</span> <span class="n">CachedModel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span>
     <span class="n">full_req</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_model_defaults</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_final_request</span><span class="p">(</span><span class="n">full_req</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fetch_or_answer</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">full_req</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_final_request</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -10148,7 +10140,9 @@ generally does not).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">515</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">513</span>
+<span class="normal">514</span>
+<span class="normal">515</span>
 <span class="normal">516</span>
 <span class="normal">517</span>
 <span class="normal">518</span>
@@ -10163,9 +10157,7 @@ generally does not).</p>
 <span class="normal">527</span>
 <span class="normal">528</span>
 <span class="normal">529</span>
-<span class="normal">530</span>
-<span class="normal">531</span>
-<span class="normal">532</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">530</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">DummyModel</span><span class="p">(</span><span class="n">LLM</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A model that always fails to generate completions.</span>
@@ -10238,7 +10230,9 @@ generally does not).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">540</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">538</span>
+<span class="normal">539</span>
+<span class="normal">540</span>
 <span class="normal">541</span>
 <span class="normal">542</span>
 <span class="normal">543</span>
@@ -10284,9 +10278,7 @@ generally does not).</p>
 <span class="normal">583</span>
 <span class="normal">584</span>
 <span class="normal">585</span>
-<span class="normal">586</span>
-<span class="normal">587</span>
-<span class="normal">588</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">586</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">WithRetry</span><span class="p">(</span><span class="n">LLM</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Retrying with exponential backoff.</span>
@@ -10408,23 +10400,7 @@ should rarely need to manually wrap models with <a class="autorefs autorefs-inte
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">637</span>
-<span class="normal">638</span>
-<span class="normal">639</span>
-<span class="normal">640</span>
-<span class="normal">641</span>
-<span class="normal">642</span>
-<span class="normal">643</span>
-<span class="normal">644</span>
-<span class="normal">645</span>
-<span class="normal">646</span>
-<span class="normal">647</span>
-<span class="normal">648</span>
-<span class="normal">649</span>
-<span class="normal">650</span>
-<span class="normal">651</span>
-<span class="normal">652</span>
-<span class="normal">653</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">653</span>
 <span class="normal">654</span>
 <span class="normal">655</span>
 <span class="normal">656</span>
@@ -10444,7 +10420,13 @@ should rarely need to manually wrap models with <a class="autorefs autorefs-inte
 <span class="normal">670</span>
 <span class="normal">671</span>
 <span class="normal">672</span>
-<span class="normal">673</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">673</span>
+<span class="normal">674</span>
+<span class="normal">675</span>
+<span class="normal">676</span>
+<span class="normal">677</span>
+<span class="normal">678</span>
+<span class="normal">679</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CachedModel</span><span class="p">(</span><span class="n">LLM</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrap a model to use a given cache.</span>
@@ -10460,19 +10442,9 @@ should rarely need to manually wrap models with <a class="autorefs autorefs-inte
     <span class="n">model</span><span class="p">:</span> <span class="n">LLM</span>
     <span class="n">cache</span><span class="p">:</span> <span class="n">LLMCache</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nd">@self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">cache</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">run_request</span><span class="p">(</span><span class="n">req</span><span class="p">:</span> <span class="n">_CachedRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LLMResponse</span><span class="p">:</span>
-            <span class="n">base</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">request</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">send_request</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">run_request</span> <span class="o">=</span> <span class="n">run_request</span>
-
     <span class="nd">@override</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_send_final_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">LLMRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LLMResponse</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">num_seen</span><span class="p">[</span><span class="n">req</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">num_seen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">num_seen</span><span class="p">[</span><span class="n">req</span><span class="p">]</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_request</span><span class="p">(</span><span class="n">_CachedRequest</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">num_seen</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">fetch_or_answer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_send_final_request</span><span class="p">)</span>
 
     <span class="nd">@override</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">estimate_budget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">LLMRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Budget</span><span class="p">:</span>
@@ -10546,7 +10518,9 @@ context manager.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">602</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">600</span>
+<span class="normal">601</span>
+<span class="normal">602</span>
 <span class="normal">603</span>
 <span class="normal">604</span>
 <span class="normal">605</span>
@@ -10565,9 +10539,7 @@ context manager.</p>
 <span class="normal">618</span>
 <span class="normal">619</span>
 <span class="normal">620</span>
-<span class="normal">621</span>
-<span class="normal">622</span>
-<span class="normal">623</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">621</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">LLMCache</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A cache for LLM requests.</span>
@@ -10631,15 +10603,15 @@ context manager.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/models.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">626</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">624</span>
+<span class="normal">625</span>
+<span class="normal">626</span>
 <span class="normal">627</span>
 <span class="normal">628</span>
 <span class="normal">629</span>
 <span class="normal">630</span>
 <span class="normal">631</span>
-<span class="normal">632</span>
-<span class="normal">633</span>
-<span class="normal">634</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@contextmanager</span>
+<span class="normal">632</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@contextmanager</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_request_cache</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">CacheMode</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Context manager that loads an LLM request cache from a YAML file.</span>
