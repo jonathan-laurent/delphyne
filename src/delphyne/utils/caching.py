@@ -62,8 +62,8 @@ def load_cache(
     """
     Load a cache from a YAML file on disk.
     """
-    assoc_type = _AssocList[input_type, output_type]
-    assoc_adapter = TypeAdapter[_AssocList[Any, Any]](assoc_type)
+    assoc_type = AssocList[input_type, output_type]
+    assoc_adapter = TypeAdapter[AssocList[Any, Any]](assoc_type)
     # Load the cache content
     if file.exists():
         with file.open("r") as f:
@@ -79,15 +79,17 @@ def load_cache(
         # Upon destruction, write the cache back to disk
         file.parent.mkdir(parents=True, exist_ok=True)
         with file.open("w") as f:
-            assoc = [_Assoc(i, o) for i, o in cache.items()]
-            assoc_yaml = assoc_adapter.dump_python(assoc)
+            assoc = [Assoc(i, o) for i, o in cache.items()]
+            assoc_yaml = assoc_adapter.dump_python(
+                assoc, exclude_defaults=True
+            )
             f.write(pretty_yaml(assoc_yaml))
 
 
 @dataclass
-class _Assoc[P, T]:
+class Assoc[P, T]:
     input: P
     output: T
 
 
-type _AssocList[P, T] = list[_Assoc[P, T]]
+type AssocList[P, T] = list[Assoc[P, T]]

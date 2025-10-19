@@ -58,7 +58,7 @@ def dump_yaml_object(
     )
 
 
-def load_yaml[T](type: type[T], s: str) -> T:
+def load_yaml[T](type: type[T] | Any, s: str) -> T:
     """
     Raises ValidationError.
     """

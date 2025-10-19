@@ -591,7 +591,7 @@ class WithRetry(LLM):
 
 
 @dataclass(frozen=True)
-class _CachedRequest:
+class CachedRequest:
     request: LLMRequest
     iter: int
 
@@ -612,10 +612,10 @@ class LLMCache:
     context manager.
     """
 
-    cache: Cache[_CachedRequest, LLMResponse]
+    cache: Cache[CachedRequest, LLMResponse]
     num_seen: dict[LLMRequest, int]
 
-    def __init__(self, cache: Cache[_CachedRequest, LLMResponse]):
+    def __init__(self, cache: Cache[CachedRequest, LLMResponse]):
         self.cache = cache
         self.num_seen: dict[LLMRequest, int] = defaultdict(lambda: 0)
 
@@ -626,7 +626,7 @@ def load_request_cache(file: Path, *, mode: CacheMode):
     Context manager that loads an LLM request cache from a YAML file.
     """
     with load_cache(
-        file, mode=mode, input_type=_CachedRequest, output_type=LLMResponse
+        file, mode=mode, input_type=CachedRequest, output_type=LLMResponse
     ) as cache:
         yield LLMCache(cache)
 
@@ -645,7 +645,7 @@ def fetch_or_answer(
         return f(req)
     cache.num_seen[req] += 1
     num_seen = cache.num_seen[req]
-    full_req = _CachedRequest(req, num_seen)
+    full_req = CachedRequest(req, num_seen)
     return cache.cache(lambda full: f(full.request))(full_req)
 
 
