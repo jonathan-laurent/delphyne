@@ -10553,10 +10553,10 @@ context manager.</p>
 <span class="sd">    context manager.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">cache</span><span class="p">:</span> <span class="n">Cache</span><span class="p">[</span><span class="n">_CachedRequest</span><span class="p">,</span> <span class="n">LLMResponse</span><span class="p">]</span>
+    <span class="n">cache</span><span class="p">:</span> <span class="n">Cache</span><span class="p">[</span><span class="n">CachedRequest</span><span class="p">,</span> <span class="n">LLMResponse</span><span class="p">]</span>
     <span class="n">num_seen</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">LLMRequest</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache</span><span class="p">:</span> <span class="n">Cache</span><span class="p">[</span><span class="n">_CachedRequest</span><span class="p">,</span> <span class="n">LLMResponse</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache</span><span class="p">:</span> <span class="n">Cache</span><span class="p">[</span><span class="n">CachedRequest</span><span class="p">,</span> <span class="n">LLMResponse</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">cache</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">num_seen</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">LLMRequest</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -10615,7 +10615,7 @@ context manager.</p>
 <span class="sd">    Context manager that loads an LLM request cache from a YAML file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">load_cache</span><span class="p">(</span>
-        <span class="n">file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">input_type</span><span class="o">=</span><span class="n">_CachedRequest</span><span class="p">,</span> <span class="n">output_type</span><span class="o">=</span><span class="n">LLMResponse</span>
+        <span class="n">file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">input_type</span><span class="o">=</span><span class="n">CachedRequest</span><span class="p">,</span> <span class="n">output_type</span><span class="o">=</span><span class="n">LLMResponse</span>
     <span class="p">)</span> <span class="k">as</span> <span class="n">cache</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">LLMCache</span><span class="p">(</span><span class="n">cache</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
