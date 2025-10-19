@@ -2,6 +2,9 @@
 Testing oracular programs in an end-to-end fashion
 """
 
+# TODO: use the PolicyEnv caching mechanism instead of wrapping models
+# with `CachedModel` manually.
+
 from collections.abc import Callable, Sequence
 from functools import partial
 from pathlib import Path
@@ -379,6 +382,9 @@ def test_embedded_tree_and_transformers():
     def policy(_: dp.LLM):
         return ex.recursive_joins_policy()
 
+    # Since _eval_strategy does not configure a cache at the policy
+    # environment level and wraps individual models instead,
+    # computations are not cached here.
     res, log = _eval_strategy(
         strategy, policy, cache_name="no_need_for_caching", max_res=1
     )

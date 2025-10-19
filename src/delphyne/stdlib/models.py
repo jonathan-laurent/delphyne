@@ -7,7 +7,7 @@ import time
 import typing
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from collections.abc import AsyncIterable, Iterable, Sequence
+from collections.abc import AsyncIterable, Callable, Iterable, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -506,10 +506,8 @@ class LLM(ABC):
             req: The request to send.
             cache: An optional cache to use for the request.
         """
-        if cache is not None:
-            self = CachedModel(self, cache)
         full_req = self.add_model_defaults(req)
-        return self._send_final_request(full_req)
+        return fetch_or_answer(cache, full_req, self._send_final_request)
 
 
 @dataclass
@@ -634,6 +632,24 @@ def load_request_cache(file: Path, *, mode: CacheMode):
         yield LLMCache(cache)
 
 
+def fetch_or_answer(
+    cache: LLMCache | None,
+    req: LLMRequest,
+    f: Callable[[LLMRequest], LLMResponse],
+) -> LLMResponse:
+    """
+    Try and fetch the answer to a request into the cache, and compute
+    the answer using `f` if not found.
+    """
+
+    if cache is None:
+        return f(req)
+    cache.num_seen[req] += 1
+    num_seen = cache.num_seen[req]
+    full_req = _CachedRequest(req, num_seen)
+    return cache.cache(lambda full: f(full.request))(full_req)
+
+
 @dataclass
 class CachedModel(LLM):
     """
@@ -650,19 +666,9 @@ class CachedModel(LLM):
     model: LLM
     cache: LLMCache
 
-    def __post_init__(self):
-        @self.cache.cache
-        def run_request(req: _CachedRequest) -> LLMResponse:
-            base = req.request
-            return self.model.send_request(base, None)
-
-        self.run_request = run_request
-
     @override
     def _send_final_request(self, req: LLMRequest) -> LLMResponse:
-        self.cache.num_seen[req] += 1
-        num_seen = self.cache.num_seen[req]
-        return self.run_request(_CachedRequest(req, num_seen))
+        return fetch_or_answer(self.cache, req, self.model._send_final_request)
 
     @override
     def estimate_budget(self, req: LLMRequest) -> Budget:
