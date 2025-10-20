@@ -1200,7 +1200,7 @@ def fetch_examples(
     query: dp.AbstractQuery[Any],
     selectors: Sequence[ExampleSelector],
 ) -> Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]]:
-    raw = list(env.examples.examples(dp.SerializedQuery.make(query)))
+    raw = list(env.examples.examples(query))
     for sel in selectors:
         raw = sel(env, raw)
     return [(ex.query.parse(type(query)), ex.answer) for ex in raw]

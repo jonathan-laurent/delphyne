@@ -9,7 +9,9 @@ from typing import Literal, final, override
 
 import delphyne.core as dp
 import delphyne.stdlib.models as md
-from delphyne.utils.yaml import pretty_yaml
+
+EMBEDDING_PROMPT_NAME = "embed"
+
 
 #####
 ##### Base Models and Caching
@@ -19,7 +21,7 @@ from delphyne.utils.yaml import pretty_yaml
 @dataclass
 class EmbeddingResponse:
     model: str
-    embeddings: Sequence[Sequence[float]]
+    embedding: Sequence[float]
     total_tokens: int
 
 
@@ -34,7 +36,11 @@ class EmbeddingModel(ABC):
         pass
 
     @abstractmethod
-    def embed(self, batch: Sequence[str]) -> EmbeddingResponse:
+    def get_max_batch_size(self) -> int:
+        pass
+
+    @abstractmethod
+    def _embed(self, batch: Sequence[str]) -> Sequence[EmbeddingResponse]:
         pass
 
     @abstractmethod
@@ -42,29 +48,69 @@ class EmbeddingModel(ABC):
         pass
 
     @final
+    def embed(self, batch: Sequence[str]) -> Sequence[EmbeddingResponse]:
+        m = self.get_max_batch_size()
+        if len(batch) <= m:
+            return self._embed(batch)
+        # Split the batch into chunks of max_batch_size
+        results: list[EmbeddingResponse] = []
+        for i in range(0, len(batch), m):
+            chunk = batch[i : i + m]
+            chunk_results = self._embed(chunk)
+            results.extend(chunk_results)
+        return results
+
+    @final
     def embed_with_cache(
         self, batch: Sequence[str], cache: md.LLMCache | None
-    ) -> EmbeddingResponse:
-        req = _encode_embedding_request(batch, self.get_model_name())
-        resp = md.fetch_or_answer(
-            cache, req, lambda _: _encode_embedding_response(self.embed(batch))
-        )
-        return _decode_embedding_response(resp)
+    ) -> Sequence[EmbeddingResponse]:
+        """
+        Compute a batch of embeddings, using an LLM request cache.
+
+        This function encodes and decodes embedding requests as
+        `CachedRequest` values so that the `LLMCache` infrastructure can
+        be reused.
+        """
+        if cache is None:
+            return self.embed(batch)
+
+        def compute_batch(
+            reqs: Sequence[md.CachedRequest],
+        ) -> Sequence[md.LLMResponse]:
+            batch = [_decode_embedding_request(r) for r in reqs]
+            resps = self._embed(batch)
+            return [_encode_embedding_response(r) for r in resps]
+
+        reqs = _encode_embedding_requests(batch, self.get_model_name())
+        resps = cache.cache.batched(compute_batch)(reqs)
+        return [_decode_embedding_response(r) for r in resps]
 
 
-def _encode_embedding_request(
+def _encode_embedding_requests(
     batch: Sequence[str], model: str
-) -> md.LLMRequest:
-    content = pretty_yaml(batch)
-    return md.LLMRequest(
-        chat=(md.UserMessage(content=content),),
-        num_completions=1,
-        options={"model": model},
-    )
+) -> Sequence[md.CachedRequest]:
+    # Embeddings are cached once and for all (we set `iter` to a constant).
+    return [
+        md.CachedRequest(
+            md.LLMRequest(
+                chat=(md.UserMessage(content=elt),),
+                num_completions=1,
+                options={"model": model},
+            ),
+            iter=0,
+        )
+        for elt in batch
+    ]
+
+
+def _decode_embedding_request(req: md.CachedRequest) -> str:
+    message = req.request.chat[0]
+    assert isinstance(message, md.UserMessage)
+    return message.content
 
 
 def _encode_embedding_response(resp: EmbeddingResponse) -> md.LLMResponse:
-    output = md.LLMOutput(dp.Structured(resp.embeddings))
+    output = md.LLMOutput(dp.Structured(resp.embedding))
     return md.LLMResponse(
         [output],
         model_name=resp.model,
@@ -75,12 +121,12 @@ def _encode_embedding_response(resp: EmbeddingResponse) -> md.LLMResponse:
 def _decode_embedding_response(resp: md.LLMResponse) -> EmbeddingResponse:
     content = resp.outputs[0].content
     assert isinstance(content, dp.Structured)
-    embeddings = content.structured
+    embedding = content.structured
     assert resp.model_name is not None
     assert resp.usage_info is not None
     return EmbeddingResponse(
         model=resp.model_name,
-        embeddings=embeddings,
+        embedding=embedding,
         total_tokens=resp.usage_info["total_tokens"],
     )
 
@@ -97,6 +143,7 @@ def _decode_embedding_response(resp: md.LLMResponse) -> EmbeddingResponse:
 @dataclass
 class OpenAICompatibleEmbeddingModel(EmbeddingModel):
     model_name: str
+    max_batch_size: int = 2048
     api_key: str | None = None
     base_url: str | None = None
     dollars_per_token: float | None = None
@@ -104,6 +151,10 @@ class OpenAICompatibleEmbeddingModel(EmbeddingModel):
     @override
     def get_model_name(self) -> str:
         return self.model_name
+
+    @override
+    def get_max_batch_size(self) -> int:
+        return self.max_batch_size
 
     @override
     def spent(self, resp: EmbeddingResponse) -> dp.Budget:
@@ -116,19 +167,38 @@ class OpenAICompatibleEmbeddingModel(EmbeddingModel):
         return dp.Budget(budget)
 
     @override
-    def embed(self, batch: Sequence[str]) -> EmbeddingResponse:
+    def _embed(self, batch: Sequence[str]) -> Sequence[EmbeddingResponse]:
         import openai
 
         client = openai.OpenAI(api_key=self.api_key, base_url=self.base_url)
         response = client.embeddings.create(
             model=self.model_name, input=list(batch)
         )
-        embeddings = [data.embedding for data in response.data]
-        return EmbeddingResponse(
-            model=response.model,
-            embeddings=embeddings,
-            total_tokens=response.usage.total_tokens,
-        )
+        # There is no guarantee that embeddings are returned in order,
+        # although they usually are.
+        embeddings: dict[int, Sequence[float]] = {}
+        for data in response.data:
+            embeddings[data.index] = data.embedding
+        # The Openai API only returns global token usage, while we need
+        # a figure for each input separately. Thus, we build our own
+        # estimate using tiktoken.
+        sizes = [_count_tokens(s) for s in batch]
+        return [
+            EmbeddingResponse(
+                model=response.model,
+                embedding=embeddings[i],
+                total_tokens=sizes[i],
+            )
+            for i in range(len(batch))
+        ]
+
+
+def _count_tokens(s: str) -> int:
+    import tiktoken
+
+    encoding = tiktoken.get_encoding("cl100k_base")
+    tokens = encoding.encode(s)
+    return len(tokens)
 
 
 #####
@@ -143,13 +213,15 @@ type StandardOpenAIEmbeddingModel = Literal[
 
 
 def standard_openai_embedding_model(
-    name: StandardOpenAIEmbeddingModel,
+    name: StandardOpenAIEmbeddingModel | str,
 ) -> EmbeddingModel:
     match name:
         case "text-embedding-3-small":
             price = 0.02 * md.PER_MILLION
         case "text-embedding-3-large":
             price = 0.13 * md.PER_MILLION
+        case _:
+            raise ValueError(f"Unknown standard embedding model: {name}")
     return OpenAICompatibleEmbeddingModel(
         model_name=name, dollars_per_token=price
     )

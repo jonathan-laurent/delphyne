@@ -3,7 +3,7 @@ Utilities for memoizing function calls.
 """
 
 import functools
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -38,6 +38,10 @@ class Cache[P, T]:
     mode: CacheMode
 
     def __call__(self, func: Callable[[P], T]) -> Callable[[P], T]:
+        """
+        Decorate a function to use the cache.
+        """
+
         @functools.wraps(func)
         def cached_func(arg: P) -> T:
             if self.mode == "off":
@@ -51,6 +55,45 @@ class Cache[P, T]:
             ret = func(arg)
             self.dict[arg] = ret
             return ret
+
+        return cached_func
+
+    def batched(
+        self, func: Callable[[Sequence[P]], Sequence[T]]
+    ) -> Callable[[Sequence[P]], Sequence[T]]:
+        """
+        Decorate a **batched** evaluation function to use the cache.
+
+        Whenever the resulting function is called, some elements are
+        taken from the cache while others are computed by calling
+        `func`.
+
+        !!! note
+            The case where some batch elements are identical is
+            consistently handled, in the sense that the same cached
+            answer is returned for all of them.
+        """
+
+        @functools.wraps(func)
+        def cached_func(args: Sequence[P]) -> Sequence[T]:
+            if self.mode == "off":
+                return func(args)
+            n = len(args)
+            cached_already: set[int] = set()
+            for i in range(n):
+                arg = args[i]
+                if arg in self.dict:
+                    assert self.mode != "create", "Cache entry already exists."
+                    cached_already.add(i)
+            to_compute = [i for i in range(n) if i not in cached_already]
+            if to_compute:
+                assert self.mode != "replay", (
+                    f"Cache entry not found for:\n\n{args[to_compute[0]]}"
+                )
+            computed = func([args[j] for j in to_compute])
+            for i, v in zip(to_compute, computed):
+                self.dict[args[i]] = v
+            return [self.dict[a] for a in args]
 
         return cached_func
 
