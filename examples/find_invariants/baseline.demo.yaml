@@ -82,8 +82,8 @@
                 - "x <> y"
                 ```
           - kind: feedback
-            category: feedback
-            arg:
+            label: feedback
+            meta:
               error: null
               obligations:
                 - name: VC for example (loop invariant preservation)
