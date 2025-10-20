@@ -1705,12 +1705,12 @@ common embeddings (e.g. embeddings of examples).</p>
                 <p>A sequence of initialization functions to call
 before any object is loaded. Each element specifies a
 qualified function name, or a pair of a qualified function
-name and of a dictionary of arguments to pass. An
-initialization function must be <strong>idempotent</strong>: calling it
-several times should have the same effect as calling it
-once. For all string arguments, the <code>%workspace</code> substring
-is replaced by the path of the workspace root directory
-(without trailing slash).</p>
+name and of a dictionary of arguments to pass. Each
+initializer function is called at most once per Python
+process (subsequent calls with possibly different arguments
+are ignored). For all string arguments, the "%workspace"
+substring is replaced by the path of the workspace root
+directory (without trailing slash).</p>
               </div>
             </td>
             <td>
@@ -1952,12 +1952,12 @@ possibly after other comments.</p>
 <span class="sd">        init: A sequence of initialization functions to call</span>
 <span class="sd">            before any object is loaded. Each element specifies a</span>
 <span class="sd">            qualified function name, or a pair of a qualified function</span>
-<span class="sd">            name and of a dictionary of arguments to pass. An</span>
-<span class="sd">            initialization function must be **idempotent**: calling it</span>
-<span class="sd">            several times should have the same effect as calling it</span>
-<span class="sd">            once. For all string arguments, the `%workspace` substring</span>
-<span class="sd">            is replaced by the path of the workspace root directory</span>
-<span class="sd">            (without trailing slash).</span>
+<span class="sd">            name and of a dictionary of arguments to pass. Each</span>
+<span class="sd">            initializer function is called at most once per Python</span>
+<span class="sd">            process (subsequent calls with possibly different arguments</span>
+<span class="sd">            are ignored). For all string arguments, the &quot;%workspace&quot;</span>
+<span class="sd">            substring is replaced by the path of the workspace root</span>
+<span class="sd">            directory (without trailing slash).</span>
 <span class="sd">        result_refresh_period: The period in seconds at which the</span>
 <span class="sd">            current result is computed and communicated to the UI (e.g.,</span>
 <span class="sd">            the period at which the current trace is exported when</span>
