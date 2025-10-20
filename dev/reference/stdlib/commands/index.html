@@ -1949,7 +1949,10 @@ possibly after other comments.</p>
 <span class="normal">238</span>
 <span class="normal">239</span>
 <span class="normal">240</span>
-<span class="normal">241</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CommandExecutionContext</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Context information available to all commands.</span>
@@ -2069,13 +2072,16 @@ possibly after other comments.</p>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">object_loader</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">extra_objects</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">allow_autoreload</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">extra_objects</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectLoader</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">ObjectLoader</span><span class="p">(</span>
             <span class="n">strategy_dirs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">strategy_dirs</span><span class="p">,</span>
             <span class="n">modules</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modules</span><span class="p">,</span>
             <span class="n">extra_objects</span><span class="o">=</span><span class="n">extra_objects</span><span class="p">,</span>
-            <span class="n">reload</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">auto_reload</span><span class="p">,</span>
+            <span class="n">reload</span><span class="o">=</span><span class="n">allow_autoreload</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_reload</span><span class="p">,</span>
             <span class="n">initializers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">,</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2645,10 +2651,7 @@ instead of abruptly interrupting it.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/tasks.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
-<span class="normal">318</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">318</span>
 <span class="normal">319</span>
 <span class="normal">320</span>
 <span class="normal">321</span>
@@ -2766,7 +2769,10 @@ instead of abruptly interrupting it.</p>
 <span class="normal">433</span>
 <span class="normal">434</span>
 <span class="normal">435</span>
-<span class="normal">436</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_command</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span>
+<span class="normal">439</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_command</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="n">command</span><span class="p">:</span> <span class="n">Command</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
     <span class="n">args</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span>
     <span class="n">ctx</span><span class="p">:</span> <span class="n">CommandExecutionContext</span><span class="p">,</span>
@@ -2925,14 +2931,14 @@ instead of abruptly interrupting it.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/tasks.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">252</span>
 <span class="normal">253</span>
 <span class="normal">254</span>
 <span class="normal">255</span>
-<span class="normal">256</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CommandResult</span><span class="p">(</span><span class="n">typing</span><span class="o">.</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Outcome of executing a command.</span>
@@ -3003,8 +3009,7 @@ specification.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/commands/run_strategy.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">316</span>
-<span class="normal">317</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">317</span>
 <span class="normal">318</span>
 <span class="normal">319</span>
 <span class="normal">320</span>
@@ -3041,7 +3046,8 @@ specification.</p>
 <span class="normal">351</span>
 <span class="normal">352</span>
 <span class="normal">353</span>
-<span class="normal">354</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_strategy</span><span class="p">(</span>
+<span class="normal">354</span>
+<span class="normal">355</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_strategy</span><span class="p">(</span>
     <span class="n">task</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">TaskContext</span><span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">CommandResult</span><span class="p">[</span><span class="n">RunStrategyResponse</span><span class="p">]],</span>
     <span class="n">exe</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">CommandExecutionContext</span><span class="p">,</span>
     <span class="n">args</span><span class="p">:</span> <span class="n">RunStrategyArgs</span><span class="p">,</span>
@@ -3323,8 +3329,7 @@ particularly useful for making commands deterministic.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/commands/run_strategy.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">261</span>
-<span class="normal">262</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">262</span>
 <span class="normal">263</span>
 <span class="normal">264</span>
 <span class="normal">265</span>
@@ -3375,7 +3380,8 @@ particularly useful for making commands deterministic.</p>
 <span class="normal">310</span>
 <span class="normal">311</span>
 <span class="normal">312</span>
-<span class="normal">313</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">313</span>
+<span class="normal">314</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">RunStrategyArgs</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments for the `run_strategy` command that runs an oracular</span>
