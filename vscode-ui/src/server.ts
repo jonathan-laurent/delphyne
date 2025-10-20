@@ -66,16 +66,30 @@ export class DelphyneServer {
     }
   }
 
-  kill(): boolean | undefined {
+  async kill(): Promise<boolean> {
+    // Return a boolean indicating whether or not the killing was successful.
     log.info("Attempting to terminate the Delphyne server.");
-    const ret = this.process?.kill();
-    if (ret === true) {
-      this.process = null;
+    if (!this.process) {
+      log.info("No Delphyne server process to terminate.");
+      return false;
     }
-    return ret;
+    const ret = this.process.kill();
+    if (ret === false) {
+      throw new Error(
+        "Internal error: failed to send termination signal to server.",
+      );
+    }
+    await new Promise((resolve) => {
+      this.process?.on("exit", () => {
+        resolve(true);
+      });
+    });
+    this.process = null;
+    return true;
   }
 
-  async callServer(query: string, payload: any) {
+  async callServer(query: string, payload: any): Promise<Response | null> {
+    // Can throw an exception if `fetch` fails.
     const address = `${SERVER_ADDRESS}/${query}`;
     const config = {
       method: "POST",
@@ -84,21 +98,32 @@ export class DelphyneServer {
       },
       body: JSON.stringify(payload),
     };
-    return await fetch(address, config);
+    try {
+      return await fetch(address, config);
+    } catch (error) {
+      // If the server does not exist, TypeError is raised.
+      if (error instanceof TypeError) {
+        showAlert(
+          'No Delphyne server is running. Use the "Delphyne: ' +
+            'Start Server" command to start an instance.',
+        );
+      }
+      log.error("Delphyne server error: ", error);
+      return null;
+    }
   }
 
-  async query(query: string, payload: any): Promise<any> {
+  async query(query: string, payload: any): Promise<any | null> {
+    // Returns `null` if the server could not be reached (or other errors occur).
     const id = this.nextSimpleQueryId++;
-    try {
-      log.debug(`Sending Query #${id}:`, { query, payload });
-      const response = await this.callServer(query, payload);
-      const json = await response.json();
-      log.debug(`Received answer for Query #${id}:`, json);
-      return json;
-    } catch (error) {
-      log.error("Server error:", error);
-      throw error;
+    log.debug(`Sending Query #${id}:`, { query, payload });
+    const response = await this.callServer(query, payload);
+    if (!response) {
+      return null;
     }
+    const json = await response.json();
+    log.debug(`Received answer for Query #${id}:`, json);
+    return json;
   }
 
   async *streamingQuery<T>(
@@ -107,12 +132,16 @@ export class DelphyneServer {
     token: vscode.CancellationToken,
   ): MessageStream<T> {
     const response = await this.callServer(query, payload);
+    if (response === null) {
+      // Server could not be reached or errored straight away.
+      return;
+    }
     const reader = response.body?.getReader();
     if (!reader) {
       throw new Error("Failed to read the response body.");
     }
-    let buffer = "";
     try {
+      let buffer = "";
       let readNext: () => Promise<ReadableStreamReadResult<any>> = () =>
         reader.read();
       while (true) {

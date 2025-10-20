@@ -113,6 +113,12 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
   );
 
+  context.subscriptions.push(
+    vscode.commands.registerCommand("delphyne.restartServer", async () => {
+      await restartServerCommand(server);
+    }),
+  );
+
   // Show root directory command
   context.subscriptions.push(
     vscode.commands.registerCommand("delphyne.showRootDirectory", () => {
@@ -144,37 +150,41 @@ async function evaluateCommand(server: DelphyneServer) {
   }
 }
 
-function killServerCommand(server: DelphyneServer) {
+async function killServerCommand(server: DelphyneServer): Promise<boolean> {
+  // Return a boolean indicating whether the killing was successful
   // Show status bar message while killing
   const loadingStatusBar = vscode.window.createStatusBarItem(
     vscode.StatusBarAlignment.Left,
   );
   loadingStatusBar.text = "$(loading~spin) Killing Delphyne server...";
   loadingStatusBar.show();
-  const killResult = server.kill();
+  const killed = await server.kill();
   // Hide the loading message now that kill operation is complete
   loadingStatusBar.hide();
   loadingStatusBar.dispose();
 
   const killCommand = '"sudo kill -9 $(sudo lsof -t -i :3008)"';
-  if (killResult === undefined) {
+  if (killed === false) {
     logWarning(
       "No server instance is managed by the Delphyne extension. " +
         `Is an external instance running? If so, consider killing it using ${killCommand}.`,
       true,
     );
-  } else if (killResult === false) {
-    showAlert(
-      "The Delphyne server could not be killed.\n" +
-        `Consider running ${killCommand}.`,
-    );
   } else {
     logInfo("Delphyne server killed.", true);
   }
+  return killed;
 }
 
 async function startServerCommand(server: DelphyneServer) {
   await server.start(true);
+}
+
+async function restartServerCommand(server: DelphyneServer) {
+  const success = await killServerCommand(server);
+  if (success) {
+    await startServerCommand(server);
+  }
 }
 
 function showRootDirectoryCommand() {

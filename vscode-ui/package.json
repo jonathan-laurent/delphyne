@@ -51,6 +51,10 @@
       {
         "key": "cmd+d cmd+s",
         "command": "delphyne.jumpToSpaceWithId"
+      },
+      {
+        "key": "cmd+d cmd+r",
+        "command": "delphyne.restartServer"
       }
     ],
     "viewsContainers": {
@@ -330,6 +334,10 @@
       {
         "command": "delphyne.showRootDirectory",
         "title": "Delphyne: Show Root Directory for Current File"
+      },
+      {
+        "command": "delphyne.restartServer",
+        "title": "Delphyne: Restart Server"
       }
     ]
   },
