@@ -19,9 +19,6 @@ function indentString(str: string, level: number, indent: string): string {
 
 // Insert a new element in a YAML list and return the position of the added
 // element.
-//
-// TODO: this function was written via trial and error and it might benefit from
-// cleaning up the logic.
 export function insertYamlListElements(
   editor: vscode.TextEditor,
   listRange: vscode.Range,
@@ -29,6 +26,9 @@ export function insertYamlListElements(
   newYamlElements: string[],
   parentIndentLevel: number,
 ): vscode.Position {
+  if (newYamlElements.length === 0) {
+    return listRange.start;
+  }
   if (!editorUsesTwoSpaceIndent(editor)) {
     showAlert("Only two-space indentation is supported.");
   }
@@ -45,28 +45,25 @@ export function insertYamlListElements(
     element = newPrefix + element.substring(newPrefix.length);
     elements.push(element);
   }
-  let toInsert = elements.join("\n");
-  toInsert = originalListEmpty ? "\n" + toInsert : toInsert + "\n";
-  let addedEmptyLine = false;
+  // If the next position after the replaced list (listRange.end) is at the
+  // start of a line (e.g. the list is not empty and there is a newline
+  // character after it), then we add a "\n" before the inserted elements.
+  // Otherwise (e.g. the list is empty or is immediately followed by EOF), we
+  // add it after.
+  const addInitialNewline = listRange.end.character !== 0;
+  const toInsert = addInitialNewline
+    ? "\n" + elements.join("\n")
+    : elements.join("\n") + "\n";
   editor.edit((editBuilder) => {
     if (originalListEmpty) {
       // We have to erase the current empty list that is in the document
       editBuilder.delete(listRange);
-    } else if (insertPos.line == editor.document.lineCount - 1) {
-      // There seems to be an edge case where the list is not empty but it is at
-      // the very end of the file and there is no empty line after it. In this
-      // case, we add an empty line at the end of the file before doing the
-      // change.
-      const lastLine = editor.document.lineAt(editor.document.lineCount - 1);
-      if (lastLine.text.trim() !== "") {
-        editBuilder.insert(lastLine.range.end, "\n");
-        addedEmptyLine = true;
-      }
     }
     editBuilder.insert(insertPos, toInsert);
   });
-  const firstInsertedLine =
-    originalListEmpty || addedEmptyLine ? insertPos.line + 1 : insertPos.line;
+  const firstInsertedLine = addInitialNewline
+    ? insertPos.line + 1
+    : insertPos.line;
   return new vscode.Position(firstInsertedLine, 2 * (parentIndentLevel + 2));
 }
 

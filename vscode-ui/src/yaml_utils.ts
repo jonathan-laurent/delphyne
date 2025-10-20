@@ -13,16 +13,20 @@ import {
 import * as yaml from "yaml";
 import * as vscode from "vscode";
 
-// Convert between YAML ranges and VSCODE ranges
+// Convert between YAML ranges and VSCode ranges
 function toVscodeRange(
-  yamlRange: [number, number, number],
+  yamlRange: yaml.Range,
   lineCounter: LineCounter,
 ): vscode.Range {
-  const start = lineCounter.linePos(yamlRange[0]);
-  const end = lineCounter.linePos(yamlRange[1]);
+  // The difference between `nodeEnd` and `valueEnd` is that the later includes
+  // trailing comments. We do not include those comments in our ranges.
+  const [start, valueEnd, nodeEnd] = yamlRange;
+  const startPos = lineCounter.linePos(start);
+  const endPos = lineCounter.linePos(valueEnd);
+  // LineCounter uses 1-based indexing and vscode uses 0-based indexing
   return new vscode.Range(
-    new vscode.Position(start.line - 1, start.col - 1),
-    new vscode.Position(end.line - 1, end.col - 1),
+    new vscode.Position(startPos.line - 1, startPos.col - 1),
+    new vscode.Position(endPos.line - 1, endPos.col - 1),
   );
 }
 
