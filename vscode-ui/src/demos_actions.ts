@@ -273,7 +273,10 @@ async function evaluateDemo(
     },
   );
   const outcome = await task.outcome;
-  const feedback = outcome.result as DemoFeedback;
+  const feedback = outcome.result as DemoFeedback | null;
+  if (feedback === null) {
+    return;
+  }
   // The world may have changed a lot when we arrive here!
   demosManager.receiveFeedback(element.uri, element.demo, feedback);
 }

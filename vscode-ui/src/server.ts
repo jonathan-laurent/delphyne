@@ -199,6 +199,7 @@ export class DelphyneServer {
   }
 
   // A task is associated to an element and is cancelled if the element disappears
+  // The outcome of a task can always be `null` (e.g. if it is cancelled).
   launchTask(
     info: TaskInfo,
     options: TaskOptions<any>,
