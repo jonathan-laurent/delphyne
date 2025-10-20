@@ -8,12 +8,14 @@ examples, caching LLM requests, and logging information.
 import random
 from collections import defaultdict
 from collections.abc import Iterable, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal, cast, override
 
 import jinja2
+import numpy as np
 import yaml
+from numpy.typing import NDArray
 
 import delphyne.core as dp
 import delphyne.core.answer_databases as ad
@@ -109,28 +111,35 @@ class Example:
     tags: Sequence[str]
 
 
-@dataclass
 class ExampleDatabase:
     """
     A simple example database.
-
-    Attributes:
-        do_not_match_identical_queries: If set to `True`, the `examples`
-            method won't return examples that match identical queries
-            (i.e., with the exact same arguments). This is useful in the
-            context of writing demonstrations, where one may want to see
-            how an LLM would answer a query, even when a ground-truth
-            answer is provided already.
     """
 
     # TODO: add provenance info for better error messages.
 
-    do_not_match_identical_queries: bool = False
-
-    # Maps each query name to a list of
-    _examples: dict[_QueryName, list[Example]] = field(
-        default_factory=lambda: defaultdict(list)
-    )
+    def __init__(
+        self,
+        *,
+        embeddings_cache_file: Path | None,
+        do_not_match_identical_queries: bool = False,
+    ):
+        """
+        Arguments:
+            embeddings_cache_file: Global cache file that stores
+                common embeddings (e.g. embeddings of examples).
+            do_not_match_identical_queries: If set to `True`, the
+                `examples` method won't return examples that match
+                identical queries (i.e., with the exact same arguments).
+                This is useful in the context of writing demonstrations,
+                where one may want to see how an LLM would answer a
+                query, even when a ground-truth answer is provided
+                already.
+        """
+        self._embeddings_cache_file = embeddings_cache_file
+        self._do_not_match_identical_queries = do_not_match_identical_queries
+        self._examples: dict[_QueryName, list[Example]] = defaultdict(list)
+        self._embeddings: dict[_QueryName, NDArray[np.float64]] = {}
 
     def add_query_demonstration(self, demo: dp.QueryDemo):
         """
@@ -169,7 +178,7 @@ class ExampleDatabase:
         prompting with a given query.
         """
         for ex in self._examples[query.name]:
-            if self.do_not_match_identical_queries:
+            if self._do_not_match_identical_queries:
                 if ex.query == query:
                     continue
             yield ex
@@ -330,6 +339,7 @@ class PolicyEnv:
         demonstration_files: Sequence[Path] = (),
         data_dirs: Sequence[Path] = (),
         cache: md.LLMCache | None = None,
+        embeddings_cache_file: Path | None = None,
         override_answers: dp.AnswerDatabase | None = None,
         log_level: dp.LogLevel = "info",
         log_long_computations: tuple[dp.LogLevel, float] | None = None,
@@ -346,6 +356,8 @@ class PolicyEnv:
             data_dirs: A sequence of directories where data files can be
                 found.
             cache: A request cache, or `None` to disable caching.
+            embeddings_cache_file: Global cache file that stores
+                common embeddings (e.g. embeddings of examples).
             override_answers: If provided, a database of answers that
                 must be used to override LLM calls whenever possible.
                 Individual prompting policies such as `few_shot` are
@@ -363,7 +375,10 @@ class PolicyEnv:
         """
         self.data_manager = DataManager(data_dirs)
         self.templates = TemplatesManager(prompt_dirs, self.data_manager)
-        self.examples = ExampleDatabase(do_not_match_identical_queries)
+        self.examples = ExampleDatabase(
+            embeddings_cache_file=embeddings_cache_file,
+            do_not_match_identical_queries=do_not_match_identical_queries,
+        )
         self.tracer = dp.Tracer(log_level=log_level)
         self.log_long_computations = log_long_computations
         self.cache = cache

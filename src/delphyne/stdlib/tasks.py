@@ -25,6 +25,7 @@ from delphyne.utils.yaml import pretty_yaml
 DEFAULT_STRATEGY_DIRS = (Path("."),)
 DEFAULT_PROMPTS_DIRS = (Path("prompts"),)
 DEFAULT_DATA_DIRS = (Path("data"),)
+DEFAULT_EMBEDDINGS_CACHE_FILE = Path("embeddings.cache.yaml")
 
 
 #####
@@ -133,6 +134,8 @@ class CommandExecutionContext:
             files.
         cache_root: The directory in which to store all request cache
             subdirectories.
+        embeddings_cache_file: Global cache file that stores
+            common embeddings (e.g. embeddings of examples).
         init: A sequence of initialization functions to call
             before any object is loaded. Each element specifies a
             qualified function name, or a pair of a qualified function
@@ -184,6 +187,7 @@ class CommandExecutionContext:
     prompt_dirs: Sequence[Path] = DEFAULT_PROMPTS_DIRS
     data_dirs: Sequence[Path] = DEFAULT_DATA_DIRS
     cache_root: Path | None = None
+    embeddings_cache_file: Path = DEFAULT_EMBEDDINGS_CACHE_FILE
     init: Sequence[str | tuple[str, dict[str, Any]]] = ()
     auto_reload: bool = True
     result_refresh_period: float | None = None
@@ -217,6 +221,7 @@ class CommandExecutionContext:
             prompt_dirs=[root / d for d in self.prompt_dirs],
             data_dirs=[root / d for d in self.data_dirs],
             cache_root=None if self.cache_root is None else self.cache_root,
+            embeddings_cache_file=(root / self.embeddings_cache_file),
             init=[_expand_initializer(i) for i in self.init],
             auto_reload=self.auto_reload,
             result_refresh_period=self.result_refresh_period,

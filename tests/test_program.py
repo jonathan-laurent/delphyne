@@ -25,6 +25,7 @@ def _make_policy_env():
         demonstration_files=(),
         prompt_dirs=(PROMPT_DIR,),
         data_dirs=(DATA_DIR,),
+        embeddings_cache_file=CACHE_DIR / "embeddings.cache.yaml",
     )
 
 
