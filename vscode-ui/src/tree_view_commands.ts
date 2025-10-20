@@ -21,11 +21,16 @@ import {
   TraceNodeId,
 } from "./stubs/feedback";
 import { log } from "./logging";
-import { getEditorForUri } from "./edit_utils";
+import {
+  alertIfEditorNotTwoSpaceIndent,
+  getEditorForUri,
+  replaceYamlValue,
+} from "./edit_utils";
 import { StrategyDemo } from "./stubs/demos";
 import { Element } from "./elements";
 import { gotoCommandResultAnswer } from "./commands";
 import { addQueries } from "./edit";
+import { prettyYaml } from "./yaml_utils";
 
 export function registerTreeViewCommands(
   context: vscode.ExtensionContext,
@@ -39,6 +44,14 @@ export function registerTreeViewCommands(
         const prop_item = arg as PropertyItem;
         const query = prop_item.prop as Query;
         addQueryFromTreeView(query, demosManager, treeView);
+      },
+    ),
+    vscode.commands.registerCommand(
+      "delphyne.updateQueryArgsFromTreeView",
+      (arg: NodeViewItem) => {
+        const prop_item = arg as PropertyItem;
+        const query = prop_item.prop as Query;
+        updateQueryArgsFromTreeView(query, demosManager, treeView);
       },
     ),
     vscode.commands.registerCommand(
@@ -168,8 +181,8 @@ function gotoAnswer(
   }
   const [demonstration, feedback, editor] = demoInfo;
   if (!(answer in feedback.answer_refs)) {
-      // Some answers are generated on the fly by the demo interpreter and do
-      // not have counterparts in the demo file.
+    // Some answers are generated on the fly by the demo interpreter and do
+    // not have counterparts in the demo file.
     return;
   }
   const [queryIdx, answerIdx] = feedback.answer_refs[answer];
@@ -180,4 +193,77 @@ function gotoAnswer(
 
 function viewNode(node_id: TraceNodeId, treeView: TreeView) {
   treeView.setSelectedNode(node_id);
+}
+
+/////
+// Suggest query argument edits
+/////
+
+async function updateQueryArgsFromTreeView(
+  query: Query,
+  demosManager: DemosManager,
+  treeView: TreeView,
+) {
+  const demoInfo = getDemoInfoForTreeView(demosManager, treeView);
+  if (!demoInfo) {
+    return;
+  }
+  const [demonstration, _, editor] = demoInfo;
+  // Find all queries in the demo with the same name as `query`.
+  const matchingQueries = demonstration.queries.filter(
+    (q) => q.query === query.name,
+  );
+  const possibleEdits = matchingQueries.map((q) => {
+    const range = q.__loc__args;
+    const parentIndentLevel = q.__loc.start.character / 2;
+    const newYamlText = prettyYaml(query.args);
+    return replaceYamlValue(range, parentIndentLevel, newYamlText);
+  });
+
+  if (possibleEdits.length == 0) {
+    return;
+  }
+
+  alertIfEditorNotTwoSpaceIndent(editor);
+  const customRefactorKind = vscode.CodeActionKind.Refactor.append(
+    "delphyne.updateQueryArgs",
+  );
+  const provider = vscode.languages.registerCodeActionsProvider(
+    { scheme: "file", language: "yaml" },
+    {
+      provideCodeActions(document, range, context, token) {
+        const codeAction = new vscode.CodeAction(
+          "Update query argument",
+          customRefactorKind,
+        );
+        const workspaceEdit = new vscode.WorkspaceEdit();
+        possibleEdits.forEach((edit) => {
+          const [editRange, newText] = edit;
+          workspaceEdit.replace(document.uri, editRange, newText, {
+            needsConfirmation: true,
+            label: `Update query "${query.name}" arguments`,
+          });
+        });
+        codeAction.edit = workspaceEdit;
+        codeAction.isPreferred = true;
+        console.log("Return CA.");
+        return [codeAction];
+      },
+    },
+    {
+      providedCodeActionKinds: [customRefactorKind],
+    },
+  );
+  console.log("Before register");
+  // Execute the code action command to show refactoring preview
+  await vscode.commands.executeCommand("editor.action.codeAction", {
+    kind: customRefactorKind,
+    apply: "first",
+    showPreview: true,
+  });
+  console.log("Dispose");
+  // Wait a bit before disposing to ensure the code action is applied
+  setTimeout(() => {
+    provider.dispose();
+  }, 500);
 }

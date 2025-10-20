@@ -9,6 +9,12 @@ function editorUsesTwoSpaceIndent(editor: vscode.TextEditor): boolean {
   return editor.options.insertSpaces === true && editor.options.tabSize === 2;
 }
 
+export function alertIfEditorNotTwoSpaceIndent(editor: vscode.TextEditor) {
+  if (!editorUsesTwoSpaceIndent(editor)) {
+    showAlert("Only two-space indentation is supported.");
+  }
+}
+
 function indentString(str: string, level: number, indent: string): string {
   let prefix = indent.repeat(level);
   return str
@@ -29,9 +35,7 @@ export function insertYamlListElements(
   if (newYamlElements.length === 0) {
     return listRange.start;
   }
-  if (!editorUsesTwoSpaceIndent(editor)) {
-    showAlert("Only two-space indentation is supported.");
-  }
+  alertIfEditorNotTwoSpaceIndent(editor);
   const indent = " ".repeat(2);
   const insertPos = listRange.end;
   const newPrefix = indent.repeat(parentIndentLevel + 1) + "- ";
@@ -65,6 +69,31 @@ export function insertYamlListElements(
     ? insertPos.line + 1
     : insertPos.line;
   return new vscode.Position(firstInsertedLine, 2 * (parentIndentLevel + 2));
+}
+
+// Create an edit that modifies a YAML value at a given range.
+// Must only be applied to editors that use 2-space indentation.
+export function replaceYamlValue(
+  valueRange: vscode.Range,
+  parentIndentLevel: number,
+  newYamlText: string,
+): [vscode.Range, string] {
+  const indent = " ".repeat(2);
+  const newText = newYamlText.trim();
+  const multilineReplacement = newText.includes("\n");
+  const multilineSource = valueRange.start.line !== valueRange.end.line;
+  let replacement = newText;
+  if (multilineReplacement) {
+    replacement = indentString(
+      replacement,
+      parentIndentLevel + 1,
+      indent,
+    ).trimStart();
+  }
+  if (multilineSource) {
+    replacement = replacement + "\n";
+  }
+  return [valueRange, replacement];
 }
 
 export function getEditorForUri(

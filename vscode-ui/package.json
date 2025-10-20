@@ -131,6 +131,11 @@
           "group": "inline"
         },
         {
+          "command": "delphyne.updateQueryArgsFromTreeView",
+          "when": "view == delphyne.tree.node && viewItem =~ /^query/ && viewItem =~ /exists-false/",
+          "group": "inline"
+        },
+        {
           "command": "delphyne.gotoQuery",
           "when": "view == delphyne.tree.node && viewItem =~ /^query/ && viewItem =~ /exists-true/",
           "group": "inline"
@@ -257,6 +262,11 @@
         "command": "delphyne.addQueryFromTreeView",
         "title": "Insert Query in File",
         "icon": "$(add)"
+      },
+      {
+        "command": "delphyne.updateQueryArgsFromTreeView",
+        "title": "Update Existing Query",
+        "icon": "$(wrench)"
       },
       {
         "command": "delphyne.gotoQuery",
