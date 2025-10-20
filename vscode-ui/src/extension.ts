@@ -3,10 +3,8 @@
 //////
 
 import * as vscode from "vscode";
-import * as path from "path";
 import { TreeView } from "./tree_view";
 import {
-  showAlert,
   initLogChannels,
   log,
   logInfo,
