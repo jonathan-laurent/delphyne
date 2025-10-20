@@ -139,17 +139,12 @@ class CommandExecutionContext:
         init: A sequence of initialization functions to call
             before any object is loaded. Each element specifies a
             qualified function name, or a pair of a qualified function
-            name and of a dictionary of arguments to pass. An
-            initialization function must be **idempotent**: calling it
-            several times should have the same effect as calling it
-            once. For all string arguments, the `%workspace` substring
-            is replaced by the path of the workspace root directory
-            (without trailing slash).
-        auto_reload: Whether to automatically reload all modules in
-            `modules` between each command or demonstration evaluation.
-            Modules are reloaded using `importlib.reload`, **in the
-            specified order** (thus, dependencies should be reloaded
-            before modules using them).
+            name and of a dictionary of arguments to pass. Each
+            initializer function is called at most once per Python
+            process (subsequent calls with possibly different arguments
+            are ignored). For all string arguments, the "%workspace"
+            substring is replaced by the path of the workspace root
+            directory (without trailing slash).
         result_refresh_period: The period in seconds at which the
             current result is computed and communicated to the UI (e.g.,
             the period at which the current trace is exported when
@@ -189,7 +184,6 @@ class CommandExecutionContext:
     cache_root: Path | None = None
     embeddings_cache_file: Path = DEFAULT_EMBEDDINGS_CACHE_FILE
     init: Sequence[str | tuple[str, dict[str, Any]]] = ()
-    auto_reload: bool = True
     result_refresh_period: float | None = None
     status_refresh_period: float | None = None
     workspace_root: Path | None = None
@@ -223,7 +217,6 @@ class CommandExecutionContext:
             cache_root=None if self.cache_root is None else self.cache_root,
             embeddings_cache_file=(root / self.embeddings_cache_file),
             init=[_expand_initializer(i) for i in self.init],
-            auto_reload=self.auto_reload,
             result_refresh_period=self.result_refresh_period,
             status_refresh_period=self.status_refresh_period,
             workspace_root=root,
@@ -232,14 +225,12 @@ class CommandExecutionContext:
     def object_loader(
         self,
         *,
-        allow_autoreload: bool = False,
         extra_objects: dict[str, Any] | None = None,
     ) -> ObjectLoader:
         return ObjectLoader(
             strategy_dirs=self.strategy_dirs,
             modules=self.modules,
             extra_objects=extra_objects,
-            reload=allow_autoreload and self.auto_reload,
             initializers=self.init,
         )
 

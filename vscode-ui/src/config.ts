@@ -64,7 +64,6 @@ export interface CommandExecutionContext {
   data_dirs?: string[];
   cache_root?: string;
   init?: (string | [string, Record<string, any>])[];
-  auto_reload?: boolean;
   result_refresh_period?: number | null;
   status_refresh_period?: number | null;
 }

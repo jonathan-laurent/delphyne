@@ -3,7 +3,7 @@
 ## DEV
 
 - Add `init` key to `delphyne.yaml` to register custom initializers.
-- Allow configuring `auto_reload` in `delphyne.yaml`.
+- Remove automatic reloading of Python modules, which is very error prone. Users should manually restart the server instead.
 - Allow replaying failing experiment configurations in a debugger.
 
 ## Version 0.13.0 (2025-09-27)

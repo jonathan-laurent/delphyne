@@ -87,9 +87,6 @@ Each test in a demonstration, even a failing one, describes a path through the u
 
 To evaluate all demonstrations within a file, you can use the `Delphyne: Evaluate All Demonstrations in File` command (use ++cmd+shift+p++ to open the command palette). To see the prompt associated to a query, put your cursor on this query and use the `See Prompt` code action. Doing so will create and run the appropriate [command](#commands) in a new tab.
 
-!!! info "Automatic Reloading of Strategies"
-    The language server reloads all modules listed in [`delphyne.yaml`](#config) for _every_ query, using `importlib.reload`. This way, strategies can be updated interactively without effort. Note that modules are reloaded in the order in which they are listed. Thus, a module should always be listed after its dependencies.
-
 !!! info "Evaluating Demonstrations using the CLI"
     Demonstrations can also be evaluated from the shell, using the [Delphyne CLI][delphyne.__main__.DelphyneCLI]. However, the CLI provides much more limited feedback so it is mainly useful for testing and continuous integration.
 

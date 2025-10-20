@@ -2,8 +2,8 @@
 Demonstration Interpreter.
 """
 
-import importlib
 import sys
+import threading
 import traceback
 from collections import defaultdict
 from collections.abc import Callable, Sequence
@@ -68,6 +68,20 @@ class AmbiguousObjectIdentifier(Exception):
     modules: Sequence[str]
 
 
+_GLOBAL_OBJECT_LOADER_LOCK = threading.Lock()
+"""
+Global lock that ensures that instances of `ObjectLoader` are never
+initialized concurrently.
+"""
+
+
+_GLOBAL_OBJECT_LOADER_EXECUTED_INITIALIZERS: set[int] = set()
+"""
+The set of ids of initializers that have already been executed, so that
+no initializer is executed several times.
+"""
+
+
 class ObjectLoader:
     """
     Utility class for loading Python objects.
@@ -86,7 +100,6 @@ class ObjectLoader:
         strategy_dirs: Sequence[Path],
         modules: Sequence[str],
         extra_objects: dict[str, object] | None = None,
-        reload: bool = False,
         initializers: Sequence[str | tuple[str, dict[str, Any]]] = (),
     ):
         """
@@ -98,43 +111,39 @@ class ObjectLoader:
                 packages and so their name may feature `.`.
             extra_objects: Additional objects that can be resolved by
                 name (with higher precedence).
-            reload: Whether to reload all modules specified in the
-                execution context upon initialization. Setting this
-                value to `True` makes `ObjectLoader` not thread-safe
-                (also, multiple instances must not be used in an
-                overlappaping way within a single thread).
             initializers: A sequence of initialization functions to call
                 before any object is loaded. Each element specifies a
                 qualified function name, or a pair of a qualified
                 function name and of a dictionary of arguments to pass.
-                An initialization function must be **idempotent**:
-                calling it several times should have the same effect as
-                calling it once.
+                Each initializer function is called at most once per
+                Python process (subsequent calls with possibly different
+                arguments are ignored).
 
         Raises:
             ModuleNotFound: a module could not be found.
         """
         self.extra_objects = extra_objects if extra_objects is not None else {}
         self.modules: list[Any] = []
-        with _append_path(strategy_dirs):
-            for module_name in modules:
-                try:
-                    module = __import__(module_name)
-                    if reload:
-                        module = importlib.reload(module)
-                    self.modules.append(module)
-                except AttributeError:
-                    raise ModuleNotFound(module_name)
-        for initializer in initializers:
-            match initializer:
-                case str() as name:
-                    f = self.find_object(name)
-                    args = {}
-                case (str() as name, dict() as args):
-                    f = self.find_object(name)
-            if not callable(f):
-                raise TypeError(f"Initializer {name} is not callable.")
-            f(**args)
+        with _GLOBAL_OBJECT_LOADER_LOCK:
+            with _append_path(strategy_dirs):
+                for module_name in modules:
+                    try:
+                        module = __import__(module_name)
+                        self.modules.append(module)
+                    except AttributeError:
+                        raise ModuleNotFound(module_name)
+            for initializer in initializers:
+                match initializer:
+                    case str() as name:
+                        f = self.find_object(name)
+                        args = {}
+                    case (str() as name, dict() as args):
+                        f = self.find_object(name)
+                if not callable(f):
+                    raise TypeError(f"Initializer {name} is not callable.")
+                if id(f) not in _GLOBAL_OBJECT_LOADER_EXECUTED_INITIALIZERS:
+                    _GLOBAL_OBJECT_LOADER_EXECUTED_INITIALIZERS.add(id(f))
+                    f(**args)
 
     def find_object(self, name: str) -> Any:
         """
