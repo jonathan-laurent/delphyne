@@ -86,7 +86,7 @@ class ObjectLoader:
         strategy_dirs: Sequence[Path],
         modules: Sequence[str],
         extra_objects: dict[str, object] | None = None,
-        reload: bool = True,
+        reload: bool = False,
         initializers: Sequence[str | tuple[str, dict[str, Any]]] = (),
     ):
         """

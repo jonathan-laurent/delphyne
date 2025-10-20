@@ -230,13 +230,16 @@ class CommandExecutionContext:
         )
 
     def object_loader(
-        self, extra_objects: dict[str, Any] | None = None
+        self,
+        *,
+        allow_autoreload: bool = False,
+        extra_objects: dict[str, Any] | None = None,
     ) -> ObjectLoader:
         return ObjectLoader(
             strategy_dirs=self.strategy_dirs,
             modules=self.modules,
             extra_objects=extra_objects,
-            reload=self.auto_reload,
+            reload=allow_autoreload and self.auto_reload,
             initializers=self.init,
         )
 

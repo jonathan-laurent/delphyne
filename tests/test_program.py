@@ -18,14 +18,20 @@ import delphyne as dp
 PROMPT_DIR = Path(__file__).parent / "prompts"
 DATA_DIR = Path(__file__).parent / "data"
 CACHE_DIR = Path(__file__).parent / "cache"
+STRATEGY_DIRS = (Path(__file__).parent,)
+STRATEGY_MODULES = ("example_strategies",)
 
 
 def _make_policy_env():
+    object_loader = dp.ObjectLoader(
+        strategy_dirs=STRATEGY_DIRS, modules=STRATEGY_MODULES
+    )
     return dp.PolicyEnv(
         demonstration_files=(),
         prompt_dirs=(PROMPT_DIR,),
         data_dirs=(DATA_DIR,),
         embeddings_cache_file=CACHE_DIR / "embeddings.cache.yaml",
+        object_loader=object_loader,
     )
 
 

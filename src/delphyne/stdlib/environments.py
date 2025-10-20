@@ -21,7 +21,9 @@ import delphyne.core as dp
 import delphyne.core.answer_databases as ad
 import delphyne.core.demos as dm
 import delphyne.stdlib.answer_loaders as loaders
+import delphyne.stdlib.embeddings as em
 import delphyne.stdlib.models as md
+from delphyne.analysis import ObjectLoader
 from delphyne.utils.yaml import dump_yaml_object
 
 ####
@@ -94,6 +96,9 @@ def _load_data(data_dirs: Sequence[Path]) -> dict[str, Any]:
 type _QueryName = str
 
 
+type _EmbeddingModelMame = str
+
+
 @dataclass(kw_only=True)
 class Example:
     """
@@ -121,13 +126,19 @@ class ExampleDatabase:
     def __init__(
         self,
         *,
-        embeddings_cache_file: Path | None,
+        embeddings_cache_file: Path | None = None,
+        templates_manager: dp.AbstractTemplatesManager | None = None,
+        object_loader: ObjectLoader | None = None,
         do_not_match_identical_queries: bool = False,
     ):
         """
         Arguments:
             embeddings_cache_file: Global cache file that stores
                 common embeddings (e.g. embeddings of examples).
+            templates_manager: A templates manager, necessary when using
+                embeddings.
+            object_loader: An object loader, necessary when using
+                embeddings.
             do_not_match_identical_queries: If set to `True`, the
                 `examples` method won't return examples that match
                 identical queries (i.e., with the exact same arguments).
@@ -137,9 +148,13 @@ class ExampleDatabase:
                 already.
         """
         self._embeddings_cache_file = embeddings_cache_file
+        self._templates_manager = templates_manager
+        self._object_loader = object_loader
         self._do_not_match_identical_queries = do_not_match_identical_queries
         self._examples: dict[_QueryName, list[Example]] = defaultdict(list)
-        self._embeddings: dict[_QueryName, NDArray[np.float64]] = {}
+        self._embeddings: dict[
+            tuple[_QueryName, _EmbeddingModelMame], NDArray[np.float64]
+        ] = {}
 
     def add_query_demonstration(self, demo: dp.QueryDemo):
         """
@@ -172,16 +187,109 @@ class ExampleDatabase:
             for q in demo.queries:
                 self.add_query_demonstration(q)
 
-    def examples(self, query: dp.SerializedQuery) -> Iterable[Example]:
+    def examples(self, query: dp.AbstractQuery[Any]) -> Iterable[Example]:
         """
         Obtain all potential examples that can be used for few-shot
         prompting with a given query.
         """
-        for ex in self._examples[query.name]:
+        serialized = dp.SerializedQuery.make(query)
+        for ex in self._examples[serialized.name]:
             if self._do_not_match_identical_queries:
-                if ex.query == query:
+                if ex.query == serialized:
                     continue
             yield ex
+
+    ### Useful accessors
+
+    @property
+    def templates_manager(self) -> dp.AbstractTemplatesManager:
+        if self._templates_manager is None:
+            raise ValueError(
+                "ExampleDatabase.templates_manager was not provided."
+            )
+        return self._templates_manager
+
+    @property
+    def object_loader(self) -> ObjectLoader:
+        if self._object_loader is None:
+            raise ValueError("ExampleDatabase.object_loader was not provided.")
+        return self._object_loader
+
+    @property
+    def embeddings_cache_file(self) -> Path:
+        if self._embeddings_cache_file is None:
+            raise ValueError(
+                "ExampleDatabase.embeddings_cache_file was not provided."
+            )
+        return self._embeddings_cache_file
+
+    ### Dealing with embeddings
+
+    def load_embeddings_for_query_type(
+        self, name: _QueryName, model: _EmbeddingModelMame
+    ) -> None:
+        """
+        Load emebdings for all examples of a given query type.
+
+        This method takes a global file lock so as to avoid concurrent
+        accesses to the embeddings cache file.
+        """
+        import filelock
+
+        lock_file = _embeddings_cache_lockfile(self.embeddings_cache_file)
+        examples = self._examples[name]
+        with filelock.FileLock(lock_file):
+            res = self._load_embeddings(model, examples)
+        self._embeddings[(name, model)] = res
+
+    def _embedding_text(self, query: dp.SerializedQuery) -> str:
+        return _query_embedding_text(
+            self.templates_manager,
+            self.object_loader.load_query(query.name, query.args_dict),
+        )
+
+    def _load_embeddings(
+        self,
+        model_name: _EmbeddingModelMame,
+        examples: Sequence[Example],
+    ) -> NDArray[np.float64]:
+        model = em.standard_openai_embedding_model(model_name)
+        to_embed = [self._embedding_text(ex.query) for ex in examples]
+        cache_file = self.embeddings_cache_file
+        with md.load_request_cache(cache_file, mode="read_write") as cache:
+            res = model.embed_with_cache(to_embed, cache)
+        embeddings = np.array([r.embedding for r in res], dtype=np.float64)
+        # We ignore spending for the global cache.
+        return embeddings
+
+    def closest_examples(
+        self, query: dp.AbstractQuery[Any], k: int
+    ) -> list[tuple[Example, float]]:
+        """
+        Obtain the `k` closest examples to the given query, based on
+        embedding similarity. Return a list of `(example, similarity)`
+        tuples, sorted by decreasing similarity.
+        """
+        raise NotImplementedError(
+            "ExampleDatabase.closest_examples is not implemented yet."
+        )
+
+
+def _embeddings_cache_lockfile(cache_file: Path) -> Path:
+    return cache_file.with_suffix(cache_file.suffix + ".lock")
+
+
+def _query_embedding_text(
+    templates_manager: dp.AbstractTemplatesManager,
+    query: dp.AbstractQuery[Any],
+) -> str:
+    return query.generate_prompt(
+        kind=em.EMBEDDING_PROMPT_NAME,
+        mode=None,
+        params={},
+        extra_args=None,
+        env=templates_manager,
+    )
 
 
 ####
@@ -340,6 +448,7 @@ class PolicyEnv:
         data_dirs: Sequence[Path] = (),
         cache: md.LLMCache | None = None,
         embeddings_cache_file: Path | None = None,
+        object_loader: ObjectLoader | None = None,
         override_answers: dp.AnswerDatabase | None = None,
         log_level: dp.LogLevel = "info",
         log_long_computations: tuple[dp.LogLevel, float] | None = None,
@@ -363,6 +472,9 @@ class PolicyEnv:
                 Individual prompting policies such as `few_shot` are
                 responsible for consulting this global database using
                 the `overriden_answer` method.
+            object_loader: An object loader. This is useful for
+                computing query embeddings, which requires parsing
+                serialized queries.
             log_level: The minimum log level to record. Messages with a
                 lower level will be ignored.
             log_long_computations: if set, log computations taking more
@@ -379,6 +491,7 @@ class PolicyEnv:
             embeddings_cache_file=embeddings_cache_file,
             do_not_match_identical_queries=do_not_match_identical_queries,
         )
+        self._object_loader = object_loader
         self.tracer = dp.Tracer(log_level=log_level)
         self.log_long_computations = log_long_computations
         self.cache = cache
@@ -387,6 +500,17 @@ class PolicyEnv:
         for path in demonstration_files:
             for demo in loaders.load_demo_file(path):
                 self.examples.add_demonstration(demo)
+
+    @property
+    def object_loader(self) -> ObjectLoader:
+        """
+        The object loader associated with this environment.
+
+        A runtime error is raised if no object loader was provided.
+        """
+        if self._object_loader is None:
+            raise ValueError("PolicyEnv.object_loader was not provided.")
+        return self._object_loader
 
     def overriden_answer(
         self, query: dp.AbstractQuery[Any]

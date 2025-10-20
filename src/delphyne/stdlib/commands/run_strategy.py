@@ -95,6 +95,7 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
         demonstration_files=exe.demo_files,
         cache=request_cache,
         embeddings_cache_file=exe.embeddings_cache_file,
+        object_loader=exe.object_loader(),
         override_answers=answer_database,
         log_level=args.log_level,
         log_long_computations=args.log_long_computations,
