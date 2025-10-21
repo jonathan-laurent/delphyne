@@ -61,16 +61,18 @@ function renderAnswerHint(
       : `'${hint[0]}'`;
 }
 
-function renderUINodeId(id: number): string {
-  // return `ID: ${id}`;
-  // return `ID ${id}`;
-  return `%${id}`;
+function renderUINodeIdAnnot(id: number): string {
+  return `[${id}]`;
+  // return `(ID ${id})`;
+  // return `#${id}`;
+  // return `(#${id})`;
 }
 
-function renderUISpaceId(id: number): string {
-  // return `ID: ${id}`;
-  // return `ID ${id}`;
-  return `$${id}`;
+function renderUISpaceIdAnnot(id: number): string {
+  return `[${id}]`;
+  // return `(ID ${id})`;
+  // return `#${id}`;
+  // return `(#${id})`;
 }
 
 function renderActionLabel(main: string, numDescendants: number): string {
@@ -83,7 +85,7 @@ function renderPropertyLabel(
   prop: NodeProperty,
 ): string {
   const refLabel = ref.with_hints ?? ref.with_ids;
-  return sid === null ? refLabel : `(${renderUISpaceId(sid)}) ${refLabel}`;
+  return sid === null ? refLabel : `${renderUISpaceIdAnnot(sid)} ${refLabel}`;
 }
 
 // function renderActionLabel(main: string, numDescendants: number): string {
@@ -610,7 +612,7 @@ export class TreeView {
     if (this.pointedTree) {
       const node = this.pointedTree.getNode();
       const nodeId = this.pointedTree.selectedNode;
-      this.nodeView.description = `${node.kind} (${renderUINodeId(nodeId)})`;
+      this.nodeView.description = `${node.kind} ${renderUINodeIdAnnot(nodeId)}`;
       if (node.summary_message !== null) {
         this.nodeView.message = node.summary_message;
       }
