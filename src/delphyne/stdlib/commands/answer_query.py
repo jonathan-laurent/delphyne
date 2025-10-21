@@ -12,7 +12,6 @@ import delphyne.stdlib.models as md
 import delphyne.stdlib.models as mo
 import delphyne.stdlib.queries as qu
 import delphyne.stdlib.standard_models as stdm
-import delphyne.stdlib.streams as st
 import delphyne.stdlib.tasks as ta
 import delphyne.utils.caching as ca
 from delphyne.core.streams import Barrier, Solution, Spent
@@ -85,13 +84,13 @@ def answer_query_with_cache(
     if cmd.prompt_only:
         model = mo.DummyModel()
     policy = qu.few_shot(model=model, iterative_mode=cmd.iterative_mode)
-    stream = iter(policy(attached, env))
+    stream = policy(attached, env)
     if cmd.budget is not None:
-        stream = st.stream_with_budget(stream, dp.BudgetLimit(cmd.budget))
+        stream = stream.with_budget(dp.BudgetLimit(cmd.budget))
     if cmd.prompt_only:
         only_one_req = dp.BudgetLimit({mo.NUM_REQUESTS: 1})
-        stream = st.stream_with_budget(stream, only_one_req)
-    stream = st.stream_take(stream, cmd.num_answers)
+        stream = stream.with_budget(only_one_req)
+    stream = stream.take(cmd.num_answers)
     total_budget = dp.Budget.zero()
     num_successes = 0
 

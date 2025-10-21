@@ -26,7 +26,7 @@ class Stream[T](dp.AbstractStream[T]):
     to the [search stream protocol][delphyne.core.streams].
 
     Attributes:
-        _generate: A zeroary function that produces a stream generator.
+        _generate: A zeroary function that produces a stream iterator.
     """
 
     _generate: Callable[[], dp.StreamGen[T]]
