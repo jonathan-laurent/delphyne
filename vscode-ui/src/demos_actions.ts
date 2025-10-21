@@ -103,7 +103,7 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
         "View Tree Root",
         vscode.CodeActionKind.Empty,
       );
-      const tree = new TreeInfo(feedback.trace, element);
+      const tree = new TreeInfo(feedback.trace, element, feedback);
       const pointedTree = new PointedTree(tree, ROOT_ID);
       action.command = {
         command: "delphyne.anonDemoCmd",
@@ -136,7 +136,7 @@ export class DemosActionsProvider implements vscode.CodeActionProvider {
         "View Test Destination",
         vscode.CodeActionKind.Empty,
       );
-      const tree = new TreeInfo(feedback.trace, element);
+      const tree = new TreeInfo(feedback.trace, element, feedback);
       const pointedTree = new PointedTree(tree, node_id);
       action.command = {
         command: "delphyne.anonDemoCmd",

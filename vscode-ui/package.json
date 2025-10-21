@@ -132,7 +132,7 @@
         },
         {
           "command": "delphyne.updateQueryArgsFromTreeView",
-          "when": "view == delphyne.tree.node && viewItem =~ /^query/ && viewItem =~ /exists-false/",
+          "when": "view == delphyne.tree.node && viewItem =~ /^query/ && viewItem =~ /update-args-true/",
           "group": "inline"
         },
         {

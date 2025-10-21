@@ -15,6 +15,7 @@ import {
   NestedTree,
   Reference,
   TraceSpaceId,
+  StrategyDemoFeedback,
 } from "./stubs/feedback";
 import { Element } from "./elements";
 import { QueryDemo, StrategyDemo } from "./stubs/demos";
@@ -104,8 +105,9 @@ export class TreeInfo {
   constructor(
     public readonly trace: Trace,
     public readonly origin: Element,
+    public readonly feedback?: StrategyDemoFeedback,
   ) {
-    this.cached = computeCachedInfo(trace, origin);
+    this.cached = computeCachedInfo(trace, origin, feedback);
   }
   public readonly cached: TreeCachedInfo;
 }
@@ -115,6 +117,7 @@ export class TreeInfo {
 interface TreeCachedInfo {
   fromDemo: boolean;
   existingQueries: Set<QueryKey>;
+  unreachableQueryTypes: Set<string>;
 }
 
 // The input of a tree view, which is determined by a tree along with a node within it.
@@ -143,15 +146,37 @@ export function queryDemoKey(query: QueryDemo): QueryKey {
   return serializeWithoutLocInfo({ name: query.query, args: query.args });
 }
 
-function computeCachedInfo(trace: Trace, origin: Element): TreeCachedInfo {
+function computeCachedInfo(
+  trace: Trace,
+  origin: Element,
+  feedback?: StrategyDemoFeedback,
+): TreeCachedInfo {
   let existingQueries: QueriesMap = new Set();
+  let unreachableQueryTypes: Set<string> = new Set();
+
   if (origin.kind === "strategy_demo") {
     const demo = JSON.parse(origin.demo) as StrategyDemo;
     for (const query of demo.queries) {
       existingQueries.add(queryDemoKey(query));
     }
+    // Collect unreachable query types from feedback diagnostics
+    if (feedback) {
+      for (const [queryId, diagnostic] of feedback.query_diagnostics) {
+        // Check if diagnostic has an "unreachable" tag
+        if (diagnostic.tags && diagnostic.tags.includes("unreachable")) {
+          // Get the query name from the demo
+          const queryName = demo.queries[queryId].query;
+          unreachableQueryTypes.add(queryName);
+        }
+      }
+    }
   }
-  return { existingQueries, fromDemo: origin.kind === "strategy_demo" };
+
+  return {
+    existingQueries,
+    unreachableQueryTypes,
+    fromDemo: origin.kind === "strategy_demo",
+  };
 }
 
 type QueriesMap = Set<QueryKey>;
@@ -165,7 +190,14 @@ function queryContextValue(query: Query, pointedTree: PointedTree) {
   } else if (cached.fromDemo) {
     exists = false;
   }
-  return `query:exists-${exists}`;
+  // If the query does not exist but unreachable queries with the same type are
+  // known, then we want to propose a refactoring action and so we set an
+  // 'update-args-available' flag.
+  let updateArgsAvailable = false;
+  if (exists === false && cached.unreachableQueryTypes.has(query.name)) {
+    updateArgsAvailable = true;
+  }
+  return `query:exists-${exists}:update-args-${updateArgsAvailable}`;
 }
 
 //////
