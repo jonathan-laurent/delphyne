@@ -94,7 +94,7 @@ class StrategyInstance[N: dp.Node, P, T](dp.StrategyComp[N, P, T]):
         Reify a strategy into a tree and run it using a given policy.
         """
         tree = dp.reify(self, monitor)
-        return policy.search(tree, env, policy.inner)
+        return policy(tree, env)
 
 
 class _StrategyDecorator(Protocol):

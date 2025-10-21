@@ -122,17 +122,13 @@ def sequence_search_policies[N: dp.Node](
 def sequence_policies[N: dp.Node, P](
     policies: Iterable[Policy[N, P]], *, stop_on_reject: bool = True
 ) -> Policy[N, P]:
-    @dp.search_policy
-    def search[T](
-        tree: dp.Tree[N, Any, T], env: PolicyEnv, policy: Any
-    ) -> dp.StreamGen[T]:
-        assert policy is None
+    def aux[T](tree: dp.Tree[N, Any, T], env: PolicyEnv) -> dp.StreamGen[T]:
         yield from Stream.sequence(
-            (p.search(tree, env, p.inner) for p in policies),
+            (p(tree, env) for p in policies),
             stop_on_reject=stop_on_reject,
         )
 
-    return search() & cast(P, None)
+    return Policy(aux)
 
 
 @overload
@@ -235,9 +231,7 @@ def parallel_policies[N: dp.Node, P](
         tree: dp.Tree[N, Any, T], env: PolicyEnv, policy: Any
     ) -> dp.StreamGen[T]:
         assert policy is None
-        yield from Stream.parallel(
-            [p.search(tree, env, p.inner) for p in policies]
-        )
+        yield from Stream.parallel([p(tree, env) for p in policies])
 
     return search() & cast(P, None)
 
@@ -327,19 +321,13 @@ def search_policy_or_else[N: dp.Node](
 def policy_or_else[N: dp.Node, P](
     main: Policy[N, P], other: Policy[N, P]
 ) -> Policy[N, P]:
-    # TODO: this is not the cleanest implementation since we lie about
-    # the return type by returning a dummy internal policy.
-    @dp.search_policy
-    def sp[T](
-        tree: dp.Tree[N, Any, T], env: PolicyEnv, policy: Any
-    ) -> dp.StreamGen[T]:
-        assert policy is None
+    def aux[T](tree: dp.Tree[N, Any, T], env: PolicyEnv) -> dp.StreamGen[T]:
         yield from stream_or_else(
-            main.search(tree, env, main.inner).__iter__,
-            other.search(tree, env, other.inner).__iter__,
+            main(tree, env).__iter__,
+            other(tree, env).__iter__,
         )
 
-    return sp() & cast(P, None)
+    return Policy(aux)
 
 
 @overload

@@ -93,7 +93,7 @@ class OpaqueSpace(Generic[P, T], dp.Space[T]):
             def stream(env: PolicyEnv, policy: P1) -> Stream[T1]:
                 tree = nested.spawn_tree()
                 sub = get_policy(policy, tags)
-                return sub.search(tree, env, sub.inner)
+                return sub(tree, env)
 
             return OpaqueSpace(stream, nested, tags)
 

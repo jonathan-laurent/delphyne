@@ -117,7 +117,7 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
     monitor = dp.TreeMonitor(cache, hooks=hooks)
     tree = dp.reify(args.strategy, monitor)
     policy = args.policy
-    stream = policy.search(tree, env, policy.inner)
+    stream = policy(tree, env)
     if args.budget is not None:
         stream = stream.with_budget(dp.BudgetLimit(args.budget))
     stream = stream.take(args.num_generated)

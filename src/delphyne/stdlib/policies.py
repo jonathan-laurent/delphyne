@@ -23,26 +23,25 @@ P = TypeVar("P", covariant=True)
 @dataclass(frozen=True)
 class Policy(Generic[N, P], dp.AbstractPolicy[PolicyEnv, N, P]):
     """
-    A pair of a search policy and of an inner policy.
+    A policy maps a tree with a given signature (contravariant parameter
+    N) and inner policy type (covariant parameter P) to a search stream.
 
-    More precisely, a policy for trees with effects `N` (contravariant)
-    gathers a search policy handling `N` along with an inner policy
-    object of type `P` (covariant).
-
-    Values of this type can be built concisely using the `&` operator
-    defined on type `SearchPolicy`.
+    Values of this type can be built by combining a search policy and an
+    inner policy using the `&` operator defined on type `SearchPolicy`.
     """
 
-    _search: "SearchPolicy[N]"
-    _inner: P
+    _fn: "_PolicyFn[N, P]"
 
-    @property
-    def search(self) -> "SearchPolicy[N]":
-        return self._search
+    def __call__[T](
+        self, tree: "dp.Tree[N, P, T]", env: PolicyEnv
+    ) -> Stream[T]:
+        return Stream(lambda: self._fn(tree, env))
 
-    @property
-    def inner(self) -> P:
-        return self._inner
+
+class _PolicyFn[N: Node, P](Protocol):
+    def __call__[T](
+        self, tree: dp.Tree[N, P, T], env: PolicyEnv
+    ) -> dp.StreamGen[T]: ...
 
 
 #####
@@ -81,7 +80,13 @@ class SearchPolicy[N: Node](dp.AbstractSearchPolicy[PolicyEnv, N]):
         """
         Pair a search policy with an inner policy to form a policy.
         """
-        return Policy(self, other)
+
+        def policy[T](
+            tree: dp.Tree[N, P, T], env: PolicyEnv
+        ) -> dp.StreamGen[T]:
+            return self._fn(tree, env, other)
+
+        return Policy(policy)
 
     def __rmatmul__(self, other: StreamTransformer) -> "SearchPolicy[N]":
         """
