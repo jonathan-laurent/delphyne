@@ -2738,7 +2738,7 @@ each branching node.</p>
             <span class="k">yield from</span> <span class="n">dfs</span><span class="p">(</span>
                 <span class="n">max_depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">,</span>
                 <span class="n">max_branching</span><span class="o">=</span><span class="n">max_branching</span><span class="p">,</span>
-            <span class="p">)(</span><span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
+            <span class="p">)(</span><span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span>
         <span class="k">case</span> <span class="n">Fail</span><span class="p">():</span>
             <span class="k">pass</span>
         <span class="k">case</span> <span class="n">Branch</span><span class="p">(</span><span class="n">cands</span><span class="p">):</span>
@@ -2751,8 +2751,8 @@ each branching node.</p>
                 <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">dfs</span><span class="p">(</span>
                     <span class="n">max_depth</span><span class="o">=</span><span class="n">max_depth</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">max_depth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="n">max_branching</span><span class="o">=</span><span class="n">max_branching</span><span class="p">,</span>
-                <span class="p">)(</span><span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">tracked</span><span class="p">),</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
+                <span class="p">)(</span><span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">tracked</span><span class="p">),</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
             <span class="n">unsupported_node</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2843,7 +2843,7 @@ parallel.</p>
             <span class="n">cands</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">cands</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
             <span class="k">yield from</span> <span class="n">Stream</span><span class="o">.</span><span class="n">parallel</span><span class="p">(</span>
                 <span class="p">[</span><span class="n">par_dfs</span><span class="p">()(</span><span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">tracked</span><span class="p">),</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">cands</span><span class="p">]</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
+            <span class="p">)</span>
         <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
             <span class="n">unsupported_node</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3126,7 +3126,9 @@ policies to try in parallel.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/misc.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">268</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
 <span class="normal">269</span>
 <span class="normal">270</span>
 <span class="normal">271</span>
@@ -3149,9 +3151,7 @@ policies to try in parallel.</p>
 <span class="normal">288</span>
 <span class="normal">289</span>
 <span class="normal">290</span>
-<span class="normal">291</span>
-<span class="normal">292</span>
-<span class="normal">293</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parallel</span><span class="p">(</span>
+<span class="normal">291</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parallel</span><span class="p">(</span>
     <span class="n">policies</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">_AnyPolicy</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_AnyPolicy</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3253,7 +3253,9 @@ fails (i.e., it does not produce any solution).</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/misc.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">366</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
 <span class="normal">367</span>
 <span class="normal">368</span>
 <span class="normal">369</span>
@@ -3264,9 +3266,7 @@ fails (i.e., it does not produce any solution).</p>
 <span class="normal">374</span>
 <span class="normal">375</span>
 <span class="normal">376</span>
-<span class="normal">377</span>
-<span class="normal">378</span>
-<span class="normal">379</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">or_else</span><span class="p">(</span><span class="n">main</span><span class="p">:</span> <span class="n">_AnyPolicy</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">_AnyPolicy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_AnyPolicy</span><span class="p">:</span>
+<span class="normal">377</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">or_else</span><span class="p">(</span><span class="n">main</span><span class="p">:</span> <span class="n">_AnyPolicy</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">_AnyPolicy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_AnyPolicy</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take two policies, search policies, or prompting policies as</span>
 <span class="sd">    arguments. Try the first one, and then the second one only if it</span>
@@ -3308,7 +3308,9 @@ solution is produced, the provided default value is used.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/misc.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">413</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
 <span class="normal">414</span>
 <span class="normal">415</span>
 <span class="normal">416</span>
@@ -3321,9 +3323,7 @@ solution is produced, the provided default value is used.</p>
 <span class="normal">423</span>
 <span class="normal">424</span>
 <span class="normal">425</span>
-<span class="normal">426</span>
-<span class="normal">427</span>
-<span class="normal">428</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">nofail</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">](</span><span class="n">space</span><span class="p">:</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">B</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span> <span class="o">|</span> <span class="n">B</span><span class="p">]:</span>
+<span class="normal">426</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">nofail</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">](</span><span class="n">space</span><span class="p">:</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="n">B</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span> <span class="o">|</span> <span class="n">B</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Modify an opaque space to that branching over it can never fail.</span>
 

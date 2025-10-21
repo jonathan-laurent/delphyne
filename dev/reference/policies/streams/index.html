@@ -858,9 +858,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#delphyne.AbstractStream.gen" class="md-nav__link">
+  <a href="#delphyne.AbstractStream.__iter__" class="md-nav__link">
     <span class="md-ellipsis">
-      gen
+      __iter__
     </span>
   </a>
   
@@ -1412,9 +1412,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#delphyne.AbstractStream.gen" class="md-nav__link">
+  <a href="#delphyne.AbstractStream.__iter__" class="md-nav__link">
     <span class="md-ellipsis">
-      gen
+      __iter__
     </span>
   </a>
   
@@ -1942,9 +1942,9 @@ features (<a class="autorefs autorefs-internal" title="Stream
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">gen</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Produce a search stream generator, i.e. an iterator that yields</span>
+<span class="sd">        Produce a search stream iterator, i.e. an iterator that yields</span>
 <span class="sd">        `Barrier` and `Spent` messages along with solutions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
@@ -1967,8 +1967,8 @@ features (<a class="autorefs autorefs-internal" title="Stream
 <div class="doc doc-object doc-function">
 
 
-<h4 id="delphyne.AbstractStream.gen" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">gen</span>
+<h4 id="delphyne.AbstractStream.__iter__" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">__iter__</span>
 
 
   <span class="doc doc-labels">
@@ -1976,12 +1976,12 @@ features (<a class="autorefs autorefs-internal" title="Stream
   </span>
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">gen</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="StreamGen (delphyne.core.streams.StreamGen)" href="#delphyne.StreamGen">StreamGen</a></span><span class="p">[</span><span class="n"><span title="delphyne.core.streams.AbstractStream[T]">T</span></span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">__iter__</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="StreamGen (delphyne.core.streams.StreamGen)" href="#delphyne.StreamGen">StreamGen</a></span><span class="p">[</span><span class="n"><span title="delphyne.core.streams.AbstractStream[T]">T</span></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>Produce a search stream generator, i.e. an iterator that yields
+        <p>Produce a search stream iterator, i.e. an iterator that yields
 <code>Barrier</code> and <code>Spent</code> messages along with solutions.</p>
 
 
@@ -1994,9 +1994,9 @@ features (<a class="autorefs autorefs-internal" title="Stream
 <span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">gen</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Produce a search stream generator, i.e. an iterator that yields</span>
+<span class="sd">    Produce a search stream iterator, i.e. an iterator that yields</span>
 <span class="sd">    `Barrier` and `Spent` messages along with solutions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span>
@@ -2023,7 +2023,7 @@ features (<a class="autorefs autorefs-internal" title="Stream
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nc">StreamGen</span> <span class="o">=</span> <span class="n"><span title="collections.abc.Generator">Generator</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Solution
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">StreamGen</span> <span class="o">=</span> <span class="n"><span title="collections.abc.Iterator">Iterator</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Solution
 
 
   
@@ -2038,7 +2038,7 @@ features (<a class="autorefs autorefs-internal" title="Stream
 
   
       dataclass
-   (delphyne.core.streams.Spent)" href="#delphyne.core.streams.Spent">Spent</a></span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+   (delphyne.core.streams.Spent)" href="#delphyne.core.streams.Spent">Spent</a></span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">

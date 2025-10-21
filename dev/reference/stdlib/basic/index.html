@@ -2801,7 +2801,7 @@ a search policy with an inner policy.</p>
         <span class="k">def</span><span class="w"> </span><span class="nf">policy</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
             <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n">P</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="n">trans</span><span class="p">(</span><span class="bp">self</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">),</span> <span class="n">env</span><span class="p">)</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
+            <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="n">trans</span><span class="p">(</span><span class="bp">self</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">),</span> <span class="n">env</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">SearchPolicy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3038,7 +3038,7 @@ an example.</p>
         <span class="k">def</span><span class="w"> </span><span class="nf">policy</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
             <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="n">trans</span><span class="p">(</span><span class="bp">self</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">env</span><span class="p">),</span> <span class="n">env</span><span class="p">)</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
+            <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="n">trans</span><span class="p">(</span><span class="bp">self</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">env</span><span class="p">),</span> <span class="n">env</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">PromptingPolicy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3342,7 +3342,7 @@ returns a pure tree transformer (<a class="autorefs autorefs-internal" title="Pu
             <span class="n">policy</span><span class="p">:</span> <span class="n">P</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
             <span class="n">new_tree</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)(</span><span class="n">tree</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">search_policy</span><span class="p">(</span><span class="n">new_tree</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
+            <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="n">search_policy</span><span class="p">(</span><span class="n">new_tree</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">SearchPolicy</span><span class="p">(</span><span class="n">new_search_policy</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3480,7 +3480,7 @@ transformer.</p>
         <span class="n">policy</span><span class="p">:</span> <span class="n">P</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
         <span class="n">new_tree</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)(</span><span class="n">tree</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">search_policy</span><span class="p">(</span><span class="n">new_tree</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="n">search_policy</span><span class="p">(</span><span class="n">new_tree</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">SearchPolicy</span><span class="p">(</span><span class="n">new_search_policy</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>

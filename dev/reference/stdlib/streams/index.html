@@ -1964,7 +1964,7 @@ to the <a class="autorefs autorefs-internal" title="delphyne.core.streams" href=
     <span class="n">_generate</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]]</span>
 
     <span class="nd">@override</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">gen</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate</span><span class="p">()</span>
 
     <span class="c1">## Collecting all elements</span>
@@ -1995,7 +1995,7 @@ to the <a class="autorefs autorefs-internal" title="delphyne.core.streams" href=
             <span class="bp">self</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_budget</span><span class="p">(</span><span class="n">budget</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">num_generated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">num_generated</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">stream_collect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">stream_collect</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
 
     <span class="c1">## Transforming the stream</span>
 
@@ -2011,7 +2011,7 @@ to the <a class="autorefs autorefs-internal" title="delphyne.core.streams" href=
 <span class="sd">        error and `N` is the concurrency level of the stream (1 if</span>
 <span class="sd">        `Stream.parallel` is never used).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_with_budget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">(),</span> <span class="n">budget</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_with_budget</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">budget</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">take</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_generated</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2020,7 +2020,7 @@ to the <a class="autorefs autorefs-internal" title="delphyne.core.streams" href=
 <span class="sd">        solutions can be returned, provided that no additional budget</span>
 <span class="sd">        must be spent for generating them.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_take</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">(),</span> <span class="n">num_generated</span><span class="p">,</span> <span class="n">strict</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_take</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">num_generated</span><span class="p">,</span> <span class="n">strict</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">loop</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">stop_on_reject</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
@@ -2039,12 +2039,12 @@ to the <a class="autorefs autorefs-internal" title="delphyne.core.streams" href=
         <span class="n">it</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span>
             <span class="k">lambda</span><span class="p">:</span> <span class="n">stream_sequence</span><span class="p">(</span>
-                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">it</span><span class="p">),</span> <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="fm">__iter__</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">it</span><span class="p">),</span> <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">bind</span><span class="p">[</span><span class="n">U</span><span class="p">](</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">dp</span><span class="o">.</span><span class="n">Solution</span><span class="p">[</span><span class="n">T</span><span class="p">]],</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">U</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="s2">&quot;Callable[[dp.Solution[T]], Stream[U]]&quot;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Stream[U]&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply a function to all generated solutions of a stream and</span>
@@ -2055,7 +2055,7 @@ to the <a class="autorefs autorefs-internal" title="delphyne.core.streams" href=
 <span class="sd">            def concat_map(f, xs):</span>
 <span class="sd">                return [y for x in xs for y in f(x)]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_bind</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">(),</span> <span class="n">f</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_bind</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">iter</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span>
 
     <span class="c1">## Monadic Methods</span>
 
@@ -2064,13 +2064,13 @@ to the <a class="autorefs autorefs-internal" title="delphyne.core.streams" href=
 <span class="sd">        Obtain the first solution from a stream, or return `None` if the</span>
 <span class="sd">        stream terminates without yielding any solution.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">stream_first</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">stream_first</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamContext</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">Solution</span><span class="p">[</span><span class="n">T</span><span class="p">]]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Obtain all solutions from a stream.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">stream_all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">stream_all</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">next</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -2084,7 +2084,7 @@ to the <a class="autorefs autorefs-internal" title="delphyne.core.streams" href=
 <span class="sd">        Return a sequence of generated solutions, the total spent</span>
 <span class="sd">        budget, and the remaining stream, if any.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">gen</span><span class="p">,</span> <span class="n">budg</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">stream_next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
+        <span class="n">gen</span><span class="p">,</span> <span class="n">budg</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">stream_next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="n">new_rest</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">rest</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">rest</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">gen</span><span class="p">,</span> <span class="n">budg</span><span class="p">,</span> <span class="n">new_rest</span>
 
@@ -2105,7 +2105,7 @@ to the <a class="autorefs autorefs-internal" title="delphyne.core.streams" href=
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span>
             <span class="k">lambda</span><span class="p">:</span> <span class="n">stream_sequence</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">gen</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">),</span> <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span>
+                <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="fm">__iter__</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">),</span> <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
@@ -2115,7 +2115,7 @@ to the <a class="autorefs autorefs-internal" title="delphyne.core.streams" href=
 <span class="sd">        Run all streams of a sequence in separate threads, possibly</span>
 <span class="sd">        interleaving the resulting solutions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_parallel</span><span class="p">([</span><span class="n">s</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_parallel</span><span class="p">([</span><span class="nb">iter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">]))</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">or_else</span><span class="p">[</span><span class="n">U</span><span class="p">](</span><span class="n">main</span><span class="p">:</span> <span class="s2">&quot;Stream[U]&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="p">:</span> <span class="s2">&quot;Stream[U]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Stream[U]&quot;</span><span class="p">:</span>
@@ -2123,7 +2123,7 @@ to the <a class="autorefs autorefs-internal" title="delphyne.core.streams" href=
 <span class="sd">        Run the `main` stream and, if it does not yield any solution,</span>
 <span class="sd">        run the `fallback` stream.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_or_else</span><span class="p">(</span><span class="n">main</span><span class="o">.</span><span class="n">gen</span><span class="p">,</span> <span class="n">fallback</span><span class="o">.</span><span class="n">gen</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_or_else</span><span class="p">(</span><span class="n">main</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">,</span> <span class="n">fallback</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2304,7 +2304,7 @@ parent stream). See <code>Stream.all</code>.</p>
         <span class="bp">self</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_budget</span><span class="p">(</span><span class="n">budget</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">num_generated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">num_generated</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">stream_collect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">stream_collect</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2365,7 +2365,7 @@ error and <code>N</code> is the concurrency level of the stream (1 if
 <span class="sd">    error and `N` is the concurrency level of the stream (1 if</span>
 <span class="sd">    `Stream.parallel` is never used).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_with_budget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">(),</span> <span class="n">budget</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_with_budget</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">budget</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2407,7 +2407,7 @@ must be spent for generating them.</p>
 <span class="sd">    solutions can be returned, provided that no additional budget</span>
 <span class="sd">    must be spent for generating them.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_take</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">(),</span> <span class="n">num_generated</span><span class="p">,</span> <span class="n">strict</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_take</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">num_generated</span><span class="p">,</span> <span class="n">strict</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2524,7 +2524,7 @@ termination, even if <code>n</code> is <code>None</code>.</p>
     <span class="n">it</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span>
         <span class="k">lambda</span><span class="p">:</span> <span class="n">stream_sequence</span><span class="p">(</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">it</span><span class="p">),</span> <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="fm">__iter__</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">it</span><span class="p">),</span> <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span>
         <span class="p">)</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2546,7 +2546,12 @@ termination, even if <code>n</code> is <code>None</code>.</p>
 
   
       dataclass
-   (delphyne.core.Solution)" href="../../policies/streams/#delphyne.Solution">Solution</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">T</span></span><span class="p">]],</span> <span class="n"><a class="autorefs autorefs-internal" title="StreamGen (delphyne.core.StreamGen)" href="../../policies/streams/#delphyne.StreamGen">StreamGen</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.bind[U]">U</span></span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
+   (delphyne.core.Solution)" href="../../policies/streams/#delphyne.Solution">Solution</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream[T]">T</span></span><span class="p">]],</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
+
+
+  
+      dataclass
+   (delphyne.stdlib.streams.Stream)" href="#delphyne.Stream">Stream</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.streams.Stream.bind[U]">U</span></span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Stream
 
 
   
@@ -2579,7 +2584,7 @@ concatenate the resulting streams.</p>
 <span class="normal">124</span>
 <span class="normal">125</span>
 <span class="normal">126</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">bind</span><span class="p">[</span><span class="n">U</span><span class="p">](</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">dp</span><span class="o">.</span><span class="n">Solution</span><span class="p">[</span><span class="n">T</span><span class="p">]],</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">U</span><span class="p">]]</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">:</span> <span class="s2">&quot;Callable[[dp.Solution[T]], Stream[U]]&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Stream[U]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply a function to all generated solutions of a stream and</span>
@@ -2590,7 +2595,7 @@ concatenate the resulting streams.</p>
 <span class="sd">        def concat_map(f, xs):</span>
 <span class="sd">            return [y for x in xs for y in f(x)]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_bind</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">(),</span> <span class="n">f</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_bind</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">iter</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2631,7 +2636,7 @@ stream terminates without yielding any solution.</p>
 <span class="sd">    Obtain the first solution from a stream, or return `None` if the</span>
 <span class="sd">    stream terminates without yielding any solution.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">stream_first</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">stream_first</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2669,7 +2674,7 @@ stream terminates without yielding any solution.</p>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Obtain all solutions from a stream.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">stream_all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">stream_all</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2738,7 +2743,7 @@ budget, and the remaining stream, if any.</p>
 <span class="sd">    Return a sequence of generated solutions, the total spent</span>
 <span class="sd">    budget, and the remaining stream, if any.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">gen</span><span class="p">,</span> <span class="n">budg</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">stream_next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gen</span><span class="p">())</span>
+    <span class="n">gen</span><span class="p">,</span> <span class="n">budg</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">stream_next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
     <span class="n">new_rest</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">rest</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">rest</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">gen</span><span class="p">,</span> <span class="n">budg</span><span class="p">,</span> <span class="n">new_rest</span>
 </code></pre></div></td></tr></table></div>
@@ -2816,7 +2821,7 @@ infinite collection of streams is passed.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span>
         <span class="k">lambda</span><span class="p">:</span> <span class="n">stream_sequence</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">gen</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">),</span> <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span>
+            <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="fm">__iter__</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">),</span> <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span>
         <span class="p">)</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -2870,7 +2875,7 @@ interleaving the resulting solutions.</p>
 <span class="sd">    Run all streams of a sequence in separate threads, possibly</span>
 <span class="sd">    interleaving the resulting solutions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_parallel</span><span class="p">([</span><span class="n">s</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_parallel</span><span class="p">([</span><span class="nb">iter</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">]))</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2927,7 +2932,7 @@ run the <code>fallback</code> stream.</p>
 <span class="sd">    Run the `main` stream and, if it does not yield any solution,</span>
 <span class="sd">    run the `fallback` stream.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_or_else</span><span class="p">(</span><span class="n">main</span><span class="o">.</span><span class="n">gen</span><span class="p">,</span> <span class="n">fallback</span><span class="o">.</span><span class="n">gen</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">stream_or_else</span><span class="p">(</span><span class="n">main</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">,</span> <span class="n">fallback</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3326,7 +3331,7 @@ policies, search policies and other stream transformers using the
             <span class="n">stream</span><span class="p">:</span> <span class="n">Stream</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
             <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="p">(</span><span class="n">other</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">env</span><span class="p">),</span> <span class="n">env</span><span class="p">)</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
+            <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">(</span><span class="n">other</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">env</span><span class="p">),</span> <span class="n">env</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">StreamTransformer</span><span class="p">(</span><span class="n">transformer</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3397,7 +3402,7 @@ policies, search policies and other stream transformers using the
         <span class="n">stream</span><span class="p">:</span> <span class="n">Stream</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
         <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="p">(</span><span class="n">other</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">env</span><span class="p">),</span> <span class="n">env</span><span class="p">)</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="p">(</span><span class="n">other</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">env</span><span class="p">),</span> <span class="n">env</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">StreamTransformer</span><span class="p">(</span><span class="n">transformer</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3457,7 +3462,7 @@ policies, search policies and other stream transformers using the
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stream transformer version of `Stream.take`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">stream_take</span><span class="p">(</span><span class="n">stream</span><span class="o">.</span><span class="n">gen</span><span class="p">(),</span> <span class="n">num_generated</span><span class="p">,</span> <span class="n">strict</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">stream_take</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">stream</span><span class="p">),</span> <span class="n">num_generated</span><span class="p">,</span> <span class="n">strict</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3510,7 +3515,7 @@ policies, search policies and other stream transformers using the
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stream transformer version of `Stream.with_budget`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">stream_with_budget</span><span class="p">(</span><span class="n">stream</span><span class="o">.</span><span class="n">gen</span><span class="p">(),</span> <span class="n">budget</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">stream_with_budget</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">stream</span><span class="p">),</span> <span class="n">budget</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3573,7 +3578,7 @@ up to an (optional) limit.</p>
 <span class="sd">    up to an (optional) limit.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">stream</span><span class="o">.</span><span class="n">loop</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span><span class="p">)</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="n">stream</span><span class="o">.</span><span class="n">loop</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
