@@ -1305,10 +1305,8 @@
               Bases: <code><span title="typing.Generic">Generic</span>[<span title="delphyne.core.policies.E">E</span>, <span title="delphyne.core.policies.N">N</span>, <span title="delphyne.core.policies.P">P</span>]</code>, <code><span title="abc.ABC">ABC</span></code></p>
 
 
-        <p>A pair of a search policy and of an inner policy.</p>
-<p>More preciely, a policy for trees with effects <code>N</code> (contravariant)
-gathers a search policy handling <code>N</code> along with an inner policy
-object of type <code>P</code> (covariant).</p>
+        <p>A policy maps a tree with a given signature (contravariant parameter
+N) and inner policy type (covariant parameter P) to a search stream.</p>
 
 
 
@@ -1327,23 +1325,15 @@ object of type <code>P</code> (covariant).</p>
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractPolicy</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">E</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractPolicy</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">E</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A pair of a search policy and of an inner policy.</span>
-
-<span class="sd">    More preciely, a policy for trees with effects `N` (contravariant)</span>
-<span class="sd">    gathers a search policy handling `N` along with an inner policy</span>
-<span class="sd">    object of type `P` (covariant).</span>
+<span class="sd">    A policy maps a tree with a given signature (contravariant parameter</span>
+<span class="sd">    N) and inner policy type (covariant parameter P) to a search stream.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AbstractSearchPolicy[E, N]&quot;</span><span class="p">:</span> <span class="o">...</span>
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">inner</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">P</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="s2">&quot;Tree[N, P, T]&quot;</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="n">E</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractStream</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="k">pass</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1381,7 +1371,7 @@ object of type <code>P</code> (covariant).</p>
 
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><span title="typing.Generic">Generic</span>[<span title="delphyne.core.policies.E">E</span>, <span title="delphyne.core.policies.N">N</span>]</code>, <code><span title="typing.Protocol">Protocol</span></code></p>
+              Bases: <code><span title="typing.Generic">Generic</span>[<span title="delphyne.core.policies.E">E</span>, <span title="delphyne.core.policies.N">N</span>]</code>, <code><span title="abc.ABC">ABC</span></code></p>
 
 
         <p>A search policy takes as arguments a tree with a given signature
@@ -1397,25 +1387,29 @@ inner policy with appropriate type, and returns a search stream.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">33</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
 <span class="normal">34</span>
 <span class="normal">35</span>
 <span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span>
 <span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractSearchPolicy</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">E</span><span class="p">,</span> <span class="n">N</span><span class="p">],</span> <span class="n">Protocol</span><span class="p">):</span>
+<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractSearchPolicy</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">E</span><span class="p">,</span> <span class="n">N</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A search policy takes as arguments a tree with a given signature</span>
 <span class="sd">    (covariant type parameter `N`), a global policy environment, and an</span>
 <span class="sd">    inner policy with appropriate type, and returns a search stream.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="s2">&quot;Tree[N, P, T]&quot;</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="n">E</span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n">P</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractStream</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractStream</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="k">pass</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1453,7 +1447,7 @@ inner policy with appropriate type, and returns a search stream.</p>
 
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><span title="typing.Generic">Generic</span>[<span title="delphyne.core.policies.E">E</span>]</code>, <code><span title="typing.Protocol">Protocol</span></code></p>
+              Bases: <code><span title="typing.Generic">Generic</span>[<span title="delphyne.core.policies.E">E</span>]</code>, <code><span title="abc.ABC">ABC</span></code></p>
 
 
         <p>A prompting policy takes as arguments a query (attached to a
@@ -1469,7 +1463,9 @@ stream.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
 <span class="normal">46</span>
 <span class="normal">47</span>
 <span class="normal">48</span>
@@ -1478,16 +1474,18 @@ stream.</p>
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
-<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractPromptingPolicy</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">E</span><span class="p">],</span> <span class="n">Protocol</span><span class="p">):</span>
+<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractPromptingPolicy</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">E</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A prompting policy takes as arguments a query (attached to a</span>
 <span class="sd">    specific node) and a global policy environment, and returns a search</span>
 <span class="sd">    stream.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n">E</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractStream</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AbstractStream</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="k">pass</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
