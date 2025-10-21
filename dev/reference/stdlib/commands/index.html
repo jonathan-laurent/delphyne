@@ -2842,7 +2842,7 @@ instead of abruptly interrupting it.</p>
                 <span class="n">on_set_pull_result_str</span><span class="p">(</span><span class="n">pull_str</span><span class="p">)</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">raise_internal_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">error</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Internal error: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="n">fb</span><span class="o">.</span><span class="n">Diagnostic</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Internal error: </span><span class="si">{</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">CommandResult</span><span class="p">([</span><span class="n">error</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="n">handler</span> <span class="o">=</span> <span class="n">Handler</span><span class="p">()</span>
