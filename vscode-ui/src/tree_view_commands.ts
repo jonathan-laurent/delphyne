@@ -246,7 +246,6 @@ async function updateQueryArgsFromTreeView(
         });
         codeAction.edit = workspaceEdit;
         codeAction.isPreferred = true;
-        console.log("Return CA.");
         return [codeAction];
       },
     },
@@ -254,14 +253,12 @@ async function updateQueryArgsFromTreeView(
       providedCodeActionKinds: [customRefactorKind],
     },
   );
-  console.log("Before register");
   // Execute the code action command to show refactoring preview
   await vscode.commands.executeCommand("editor.action.codeAction", {
     kind: customRefactorKind,
     apply: "first",
     showPreview: true,
   });
-  console.log("Dispose");
   // Wait a bit before disposing to ensure the code action is applied
   setTimeout(() => {
     provider.dispose();

@@ -143,14 +143,14 @@ export function isValidDemoFile(file: unknown): file is DemoFile {
 /// Diagnostic computation
 //////
 
-function makeDiagnostic([kind, message]: Diagnostic, loc: vscode.Range) {
+function makeDiagnostic(diag: Diagnostic, loc: vscode.Range) {
   let severity =
-    kind === "error"
+    diag.severity === "error"
       ? vscode.DiagnosticSeverity.Error
-      : kind === "warning"
+      : diag.severity === "warning"
         ? vscode.DiagnosticSeverity.Warning
         : vscode.DiagnosticSeverity.Information;
-  return new vscode.Diagnostic(loc, message, severity);
+  return new vscode.Diagnostic(loc, diag.message, severity);
 }
 
 function computeDiagnostics(
@@ -187,7 +187,7 @@ function computeQueryDemoDiagnostics(
   ) {
     diagnostics.push(
       makeDiagnostic(
-        ["info", "Answers parsed successfully."],
+        { severity: "info", message: "Answers parsed successfully." },
         demonstration.__loc__query,
       ),
     );
@@ -217,13 +217,18 @@ function computeStrategyDemoDiagnostics(
       diagnostics.push(makeDiagnostic(d, loc));
     }
     if (f.node_id !== null && f.diagnostics.length === 0) {
-      diagnostics.push(makeDiagnostic(["info", "Test passed."], loc));
+      diagnostics.push(
+        makeDiagnostic({ severity: "info", message: "Test passed." }, loc),
+      );
     }
   }
   for (const [category, answers] of Object.entries(feedback.implicit_answers)) {
     const msg = `Implicit answers were used: ${category} (${answers.length}).`;
     diagnostics.push(
-      makeDiagnostic(["info", msg], demonstration.__loc__strategy),
+      makeDiagnostic(
+        { severity: "info", message: msg },
+        demonstration.__loc__strategy,
+      ),
     );
   }
   return diagnostics;

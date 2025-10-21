@@ -11,12 +11,23 @@ from typing import Any, Literal
 #####
 
 
+type DiagnosticTag = Literal["unreachable", "stuck"] | str
+"""Optional tag for classifying diagnostic information."""
+
+
 type DiagnosticType = Literal["error", "warning", "info"]
 """Diagnostic type."""
 
 
-type Diagnostic = tuple[DiagnosticType, str]
-"""A diagnostic gathers a type (i.e. severity) and a message."""
+@dataclass(frozen=True)
+class Diagnostic:
+    """
+    A diagnostic message shown in the editor.
+    """
+
+    severity: DiagnosticType
+    message: str
+    tags: Sequence[DiagnosticTag] = ()
 
 
 #####

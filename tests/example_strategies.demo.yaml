@@ -77,14 +77,16 @@
         diagnostics: __empty__
       - node_id: 3
         diagnostics:
-          - ["error", "Success check failed."]
+          - severity: "error"
+            message: "Success check failed."
       - node_id: 4
         diagnostics: __empty__
       - node_id: 4
         diagnostics: __empty__
       - node_id: 1
         diagnostics:
-          - ["error", "Failure check failed."]
+          - severity: "error"
+            message: "Failure check failed."
 
 
 - demonstration: make_sum_selectors
@@ -114,7 +116,8 @@
       - node_id: 2
       - node_id: 3
         diagnostics:
-          - ["warning", "Unused hints: 'unknown_hint'."]
+          - severity: "warning"
+            message: "Unused hints: 'unknown_hint'."
 
 
 - demonstration: make_sum_at
@@ -142,7 +145,8 @@
     test_feedback:
       - node_id: 2
         diagnostics:
-          - ["warning", "Leaf node reached before 'Unknown'."]
+          - severity: "warning"
+            message: "Leaf node reached before 'Unknown'."
       - diagnostics: __empty__
 
 
@@ -158,7 +162,9 @@
     trace:
       nodes: {1: {kind: Branch}}
     test_feedback:
-      - diagnostics: [["warning", "Test is stuck."]]
+      - diagnostics:
+          - severity: "warning"
+            message: "Test is stuck."
         node_id: 1
 
 
@@ -172,7 +178,9 @@
   queries: []
   expect:
     test_feedback:
-      - diagnostics: [["error", "Syntax error."]]
+      - diagnostics:
+          - severity: "error"
+            message: "Syntax error."
 
 
 - demonstration: trivial_strategy
@@ -190,7 +198,7 @@
   queries: []
   expect:
     global_diagnostics:
-      - ["error"]
+      - severity: "error"
 
 
 - demonstration: strategy_not_found
@@ -200,7 +208,7 @@
   queries: []
   expect:
     global_diagnostics:
-      - ["error"]
+      - severity: "error"
 
 
 - demonstration: invalid_arguments
@@ -211,7 +219,7 @@
   queries: []
   expect:
     global_diagnostics:
-      - ["error"]
+      - severity: "error"
 
 
 - demonstration: unknown_query
@@ -232,7 +240,7 @@
       answers: []
   expect:
     query_diagnostics:
-      - [1, ["error"]]
+      - [1, severity: "error"]
 
 
 - demonstration: invalid_answer
@@ -251,7 +259,7 @@
         - answer: "'foo'"
   expect:
     answer_diagnostics:
-      - [[0, 0], ["error"]]
+      - [[0, 0], severity: "error"]
 
 
 ##### Testing synthetize_fun
@@ -307,13 +315,13 @@
       - diagnostics: __empty__
       - diagnostics: __empty__
       - diagnostics:
-        - - "error"
-          - "Not a nested tree: aggregate(['', 'wrong1', 'wrong2'])."
+        - severity: "error"
+          message: "Not a nested tree: aggregate(['', 'wrong1', 'wrong2'])."
       - diagnostics:
-        - - "warning"
-          - "Unused hints: 'unknown'."
+        - severity: "warning"
+          message: "Unused hints: 'unknown'."
       - diagnostics:
-        - - "error"
+        - severity: "error"
       - diagnostics: __empty__
 
     global_diagnostics: __empty__
@@ -383,9 +391,9 @@
       - diagnostics: __empty__
       - diagnostics: __empty__
       - diagnostics:
-          - - "warning"
+          - severity: "warning"
       - diagnostics:
-          - - "error"
+          - severity: "error"
 
 
 ##### Testing generate_pairs and advanced selectors
@@ -413,7 +421,7 @@
       - diagnostics: __empty__
       - diagnostics: __empty__
       - diagnostics:
-          - - "warning"
+          - severity: "warning"
 
 
 ##### Testing cached computations
@@ -522,7 +530,7 @@
       - diagnostics: __empty__
       - diagnostics: __empty__
       - diagnostics:
-        - - "warning"
+        - severity: "warning"
 
 
 - demonstration: flags_global
@@ -656,6 +664,6 @@
   expect:  # two implicit answers are used this time
     test_feedback:
       - diagnostics:
-        - - "error"
+        - severity: "error"
     implicit_answers:
       data: []

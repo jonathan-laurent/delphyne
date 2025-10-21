@@ -20,11 +20,10 @@ class DemoFileFeedback:
     def add_diagnostic(
         self, demo_name: str, loc: str, diag: analysis.Diagnostic
     ):
-        t, s = diag
-        pp = f"[{demo_name}:{loc}] {s}"
-        if t == "error":
+        pp = f"[{demo_name}:{loc}] {diag.message}"
+        if diag.severity == "error":
             self.errors.append(pp)
-        elif t == "warning":
+        elif diag.severity == "warning":
             self.warnings.append(pp)
 
     def add_diagnostics(self, demo_name: str, f: analysis.DemoFeedback):
@@ -45,7 +44,8 @@ class DemoFileFeedback:
                 self.add_diagnostic(demo_name, f"query_{qi}:answer_{ai}", d)
             for cat, d in f.implicit_answers.items():
                 msg = f"Implicit answers: {cat} ({len(d)} answer(s))"
-                self.add_diagnostic(demo_name, "implicit", ("warning", msg))
+                diag = analysis.Diagnostic("warning", msg)
+                self.add_diagnostic(demo_name, "implicit", diag)
 
 
 def check_demo_file(

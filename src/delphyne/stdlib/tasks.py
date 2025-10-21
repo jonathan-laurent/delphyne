@@ -416,7 +416,7 @@ def run_command[A, T](
                 on_set_pull_result_str(pull_str)
 
         def raise_internal_error(self, message: str) -> None:
-            error = ("error", f"Internal error: {message}")
+            error = fb.Diagnostic("error", f"Internal error: {message}")
             self.result = CommandResult([error], None)
 
     handler = Handler()

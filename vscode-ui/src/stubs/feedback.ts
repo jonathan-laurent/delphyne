@@ -1,6 +1,12 @@
+export type DiagnosticTag = "unreachable" | "stuck" | string;
+
 export type DiagnosticType = "error" | "warning" | "info";
 
-export type Diagnostic = [DiagnosticType, string];
+export interface Diagnostic {
+  severity: DiagnosticType;
+  message: string;
+  tags?: DiagnosticTag[];
+};
 
 export type TraceNodeId = number;
 

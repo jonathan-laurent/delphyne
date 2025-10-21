@@ -406,7 +406,8 @@ class DemoHintResolver(nv.HintResolver):
         for i, used in enumerate(self.query_used):
             if not used:
                 msg = "Unreachable query."
-                feedback.query_diagnostics.append((i, ("warning", msg)))
+                diag = fb.Diagnostic("warning", msg, ("unreachable",))
+                feedback.query_diagnostics.append((i, diag))
 
     def navigator(self) -> nv.Navigator:
         return nv.Navigator(self)
@@ -463,13 +464,13 @@ Nodes saved using the `save` test instruction.
 def _unused_hints(diagnostics: list[fb.Diagnostic], rem: Sequence[hrefs.Hint]):
     if rem:
         msg = f"Unused hints: {hrefs.show_hints(rem)}."
-        diagnostics.append(("warning", msg))
+        diagnostics.append(fb.Diagnostic("warning", msg))
 
 
 def _strategy_exn(diagnostics: list[fb.Diagnostic], exn: dp.StrategyException):
     details = f"{repr(exn.exn)}\n\n{traceback.format_exc()}"
     msg = f"Exception raised in strategy:\n\n{details}"
-    diagnostics.append(("error", msg))
+    diagnostics.append(fb.Diagnostic("error", msg))
 
 
 def _handle_navigation_error_or_reraise(
@@ -482,7 +483,7 @@ def _handle_navigation_error_or_reraise(
     """
     if isinstance(exn, nv.Stuck):
         msg = "Test is stuck."
-        diagnostics.append(("warning", msg))
+        diagnostics.append(fb.Diagnostic("warning", msg, ("stuck",)))
         return exn.tree
     elif isinstance(exn, dp.StrategyException):
         _strategy_exn(diagnostics, exn)
@@ -490,25 +491,25 @@ def _handle_navigation_error_or_reraise(
     elif isinstance(exn, dp.NavigationError):
         details = f"{repr(exn.message)}\n\n{traceback.format_exc()}"
         msg = f"Navigation error:\n\n{details}"
-        diagnostics.append(("error", msg))
+        diagnostics.append(fb.Diagnostic("error", msg))
         return None
     elif isinstance(exn, nv.ReachedFailureNode):
         step_str = dm.show_test_step(test_step)
         msg = f"Reached failure node while executing: {step_str}."
-        diagnostics.append(("error", msg))
+        diagnostics.append(fb.Diagnostic("error", msg))
         return exn.tree
     elif isinstance(exn, nv.InvalidSpace):
         name = str(exn.space_name)
         msg = f"Invalid reference to space: {name}."
-        diagnostics.append(("error", msg))
+        diagnostics.append(fb.Diagnostic("error", msg))
         return exn.tree
     elif isinstance(exn, nv.NoPrimarySpace):
         msg = f"Node {exn.tree.node.effect_name()} has no primary space."
-        diagnostics.append(("error", msg))
+        diagnostics.append(fb.Diagnostic("error", msg))
         return exn.tree
     elif isinstance(exn, da.SeveralAnswerMatches):
         msg = str(exn)
-        diagnostics.append(("error", msg))
+        diagnostics.append(fb.Diagnostic("error", msg))
         return None
     raise exn
 
@@ -537,10 +538,10 @@ def _interpret_test_run_step(
         if step.until is not None:
             until_pp = dm.show_node_selector(step.until)
             msg = f"Leaf node reached before '{until_pp}'."
-            diagnostics.append(("warning", msg))
+            diagnostics.append(fb.Diagnostic("warning", msg))
         if step.until is None and not tree.node.leaf_node():
             msg = "The `run` command did not reach a leaf."
-            diagnostics.append(("warning", msg))
+            diagnostics.append(fb.Diagnostic("warning", msg))
         return tree, "continue"
     except nv.MatchedSelector as intr:
         tree = intr.tree
@@ -571,13 +572,13 @@ def _interpret_test_select_step(
         if step.expects_query:
             if not isinstance(source, dp.AttachedQuery):
                 msg = f"Not a query: {space_ref_pretty}."
-                diagnostics.append(("error", msg))
+                diagnostics.append(fb.Diagnostic("error", msg))
                 return tree, "stop"
             tracer.trace_query(source)
             answer = hint_resolver.answer_without_hint(source, tree)
             if answer is None:
                 msg = f"Query not answered: {space_ref_pretty}."
-                diagnostics.append(("error", msg))
+                diagnostics.append(fb.Diagnostic("error", msg))
                 return tree, "stop"
             tracer.trace_answer(source.ref, answer)
             hint_rev.answers[(source.ref, answer)] = None
@@ -585,7 +586,7 @@ def _interpret_test_select_step(
         else:
             if not isinstance(source, dp.NestedTree):
                 msg = f"Not a nested tree: {space_ref_pretty}."
-                diagnostics.append(("error", msg))
+                diagnostics.append(fb.Diagnostic("error", msg))
                 return tree, "stop"
             tree = source.spawn_tree()
             return tree, "continue"
@@ -641,7 +642,7 @@ def _interpret_test_step(
         case dm.IsSuccess():
             if not isinstance(tree.node, dp.Success):
                 msg = "Success check failed."
-                diagnostics.append(("error", msg))
+                diagnostics.append(fb.Diagnostic("error", msg))
                 return tree, "stop"
             else:
                 return tree, "continue"
@@ -649,7 +650,7 @@ def _interpret_test_step(
             node = tree.node
             if not (node.leaf_node() and not isinstance(node, dp.Success)):
                 msg = "Failure check failed."
-                diagnostics.append(("error", msg))
+                diagnostics.append(fb.Diagnostic("error", msg))
                 return tree, "stop"
             else:
                 return tree, "continue"
@@ -659,7 +660,7 @@ def _interpret_test_step(
         case dm.Load():
             if step.name not in saved:
                 msg = f"No saved node named: '{step.name}'."
-                diagnostics.append(("error", msg))
+                diagnostics.append(fb.Diagnostic("error", msg))
                 return tree, "stop"
             return saved[step.name], "continue"
 
@@ -677,7 +678,7 @@ def _evaluate_test(
     try:
         test = dp.parse.test_command(test_str)
     except dp.parse.ParseError:
-        diagnostics = [("error", "Syntax error.")]
+        diagnostics = [fb.Diagnostic("error", "Syntax error.")]
         return fb.TestFeedback(diagnostics, None)
     for step in test:
         tree, status = _interpret_test_step(
@@ -718,7 +719,7 @@ def evaluate_strategy_demo_and_return_trace(
         )
     except Exception as e:
         msg = f"Failed to instantiate strategy:\n{e}"
-        feedback.global_diagnostics.append(("error", msg))
+        feedback.global_diagnostics.append(fb.Diagnostic("error", msg))
         return feedback, None
     try:
         cache: dp.TreeCache = {}
@@ -734,13 +735,13 @@ def evaluate_strategy_demo_and_return_trace(
             demo.using, loader=answer_database_loader
         )
     except dp.SourceLoadingError as e:
-        feedback.global_diagnostics.append(("error", str(e)))
+        feedback.global_diagnostics.append(fb.Diagnostic("error", str(e)))
         return feedback, trace
     try:
         implicit_answer_generators = load_implicit_answer_generators()
     except Exception as e:
         msg = f"Failed to load implicit answer generators:\n{e}"
-        feedback.global_diagnostics.append(("error", msg))
+        feedback.global_diagnostics.append(fb.Diagnostic("error", msg))
         return feedback, trace
     try:
         hresolver = DemoHintResolver(
@@ -751,11 +752,11 @@ def evaluate_strategy_demo_and_return_trace(
         )
     except DemoHintResolver.InvalidQuery as e:
         msg = f"Failed to load query:\n{e.exn}"
-        feedback.query_diagnostics.append((e.id, ("error", msg)))
+        feedback.query_diagnostics.append((e.id, fb.Diagnostic("error", msg)))
         return feedback, trace
     except DemoHintResolver.InvalidAnswer as e:
         msg = f"Failed to parse answer:\n{e.parse_error}"
-        diag = ("error", msg)
+        diag = fb.Diagnostic("error", msg)
         feedback.answer_diagnostics.append(((e.query_id, e.answer_id), diag))
         return feedback, trace
     saved: SavedNodes = {}
@@ -798,17 +799,17 @@ def evaluate_standalone_query_demo(
         query = object_loader.load_query(demo.query, demo.args)
     except Exception as e:
         msg = f"Failed to instantiate query:\n{e}"
-        feedback.diagnostics.append(("error", msg))
+        feedback.diagnostics.append(fb.Diagnostic("error", msg))
         return feedback
     # We just check that all the answers parse
     for i, a in enumerate(demo.answers):
         try:
             elt = query.parse_answer(dm.translate_answer(a))
             if isinstance(elt, dp.ParseError):
-                diag = ("error", f"Parse error: {str(elt)}")
+                diag = fb.Diagnostic("error", f"Parse error: {str(elt)}")
                 feedback.answer_diagnostics.append((i, diag))
         except Exception as e:
-            diag = ("error", f"Internal parser error: {str(e)}")
+            diag = fb.Diagnostic("error", f"Internal parser error: {str(e)}")
             feedback.answer_diagnostics.append((i, diag))
     return feedback
 

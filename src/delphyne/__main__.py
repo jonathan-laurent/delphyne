@@ -193,8 +193,10 @@ class DelphyneCLI:
         if update:
             with open(file_path, "w") as f:
                 f.write(output)
-        errors = [d[1] for d in res.diagnostics if d[0] == "error"]
-        warnings = [d[1] for d in res.diagnostics if d[0] == "warning"]
+        errors = [d.message for d in res.diagnostics if d.severity == "error"]
+        warnings = [
+            d.message for d in res.diagnostics if d.severity == "warning"
+        ]
         self._process_diagnostics(
             warnings,
             errors,
