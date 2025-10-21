@@ -1048,6 +1048,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Policy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.Policy.or_else" class="md-nav__link">
+    <span class="md-ellipsis">
+      or_else
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1078,6 +1093,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#delphyne.SearchPolicy.or_else" class="md-nav__link">
+    <span class="md-ellipsis">
+      or_else
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1092,6 +1116,15 @@
   
     <nav class="md-nav" aria-label="PromptingPolicy">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.PromptingPolicy.or_else" class="md-nav__link">
+    <span class="md-ellipsis">
+      or_else
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#delphyne.PromptingPolicy.__rmatmul__" class="md-nav__link">
@@ -1636,6 +1669,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Policy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.Policy.or_else" class="md-nav__link">
+    <span class="md-ellipsis">
+      or_else
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1666,6 +1714,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#delphyne.SearchPolicy.or_else" class="md-nav__link">
+    <span class="md-ellipsis">
+      or_else
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1680,6 +1737,15 @@
   
     <nav class="md-nav" aria-label="PromptingPolicy">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.PromptingPolicy.or_else" class="md-nav__link">
+    <span class="md-ellipsis">
+      or_else
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#delphyne.PromptingPolicy.__rmatmul__" class="md-nav__link">
@@ -2565,7 +2631,7 @@ instance of <code>.using(...)</code>, a runtime error is raised.</p>
 
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><span title="typing.Generic">Generic</span>[<span title="delphyne.stdlib.policies.N">N</span>, <span title="delphyne.stdlib.policies.P">P</span>]</code>, <code><a class="autorefs autorefs-internal" title="AbstractPolicy (delphyne.core.AbstractPolicy)" href="../../policies/definitions/#delphyne.AbstractPolicy">AbstractPolicy</a>[<a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a>, <span title="delphyne.stdlib.policies.N">N</span>, <span title="delphyne.stdlib.policies.P">P</span>]</code></p>
+              Bases: <code><span title="typing.Generic">Generic</span>[<span title="delphyne.stdlib.policies.N">N</span>, <span title="delphyne.stdlib.policies.P">P</span>]</code>, <code><a class="autorefs autorefs-internal" title="AbstractPolicy (delphyne.core.AbstractPolicy)" href="../../policies/definitions/#delphyne.AbstractPolicy">AbstractPolicy</a>[<a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a>, <span title="delphyne.stdlib.policies.N">N</span>, <span title="delphyne.stdlib.policies.P">P</span>]</code>, <code><a class="autorefs autorefs-internal" title="SupportsStreamCombinators (delphyne.stdlib.streams.SupportsStreamCombinators)" href="../algorithms/#delphyne.stdlib.streams.SupportsStreamCombinators">SupportsStreamCombinators</a></code></p>
 
 
         <p>A policy maps a tree with a given signature (contravariant parameter
@@ -2587,8 +2653,7 @@ inner policy using the <code>&amp;</code> operator defined on type <a class="aut
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">23</span>
-<span class="normal">24</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">24</span>
 <span class="normal">25</span>
 <span class="normal">26</span>
 <span class="normal">27</span>
@@ -2602,8 +2667,53 @@ inner policy using the <code>&amp;</code> operator defined on type <a class="aut
 <span class="normal">35</span>
 <span class="normal">36</span>
 <span class="normal">37</span>
-<span class="normal">38</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">Policy</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">],</span> <span class="n">dp</span><span class="o">.</span><span class="n">AbstractPolicy</span><span class="p">[</span><span class="n">PolicyEnv</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">]):</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Policy</span><span class="p">(</span>
+    <span class="n">Generic</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">],</span>
+    <span class="n">dp</span><span class="o">.</span><span class="n">AbstractPolicy</span><span class="p">[</span><span class="n">PolicyEnv</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">],</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">SupportsStreamCombinators</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A policy maps a tree with a given signature (contravariant parameter</span>
 <span class="sd">    N) and inner policy type (covariant parameter P) to a search stream.</span>
@@ -2618,6 +2728,42 @@ inner policy using the <code>&amp;</code> operator defined on type <a class="aut
         <span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="s2">&quot;dp.Tree[N, P, T]&quot;</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Stream</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fn</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">env</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">or_else</span><span class="p">[</span><span class="n">M</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Q</span><span class="p">](</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Policy[M, Q]&quot;</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;Policy[M, Q]&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Policy[M, Q]&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Combine two policies into one that tries the first one,</span>
+<span class="sd">        and if it yields no solution, tries the second one.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">policy</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
+            <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">M</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+            <span class="k">yield from</span> <span class="bp">self</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span><span class="o">.</span><span class="n">or_else</span><span class="p">(</span><span class="n">other</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">env</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">Policy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sequence</span><span class="p">[</span><span class="n">M</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Q</span><span class="p">](</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">policies</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="s2">&quot;Policy[M, Q]&quot;</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">stop_on_reject</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Policy[M, Q]&quot;</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">aux</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">M</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+            <span class="k">yield from</span> <span class="n">Stream</span><span class="o">.</span><span class="n">sequence</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">p</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">policies</span><span class="p">),</span>
+                <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Policy</span><span class="p">(</span><span class="n">aux</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parallel</span><span class="p">[</span><span class="n">M</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Q</span><span class="p">](</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">policies</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="s2">&quot;Policy[M, Q]&quot;</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Policy[M, Q]&quot;</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">aux</span><span class="p">[</span><span class="n">T</span><span class="p">](</span><span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">M</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+            <span class="k">yield from</span> <span class="n">Stream</span><span class="o">.</span><span class="n">parallel</span><span class="p">([</span><span class="n">p</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">policies</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">Policy</span><span class="p">(</span><span class="n">aux</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2633,6 +2779,68 @@ inner policy using the <code>&amp;</code> operator defined on type <a class="aut
 
 
 
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.Policy.or_else" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">or_else</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">or_else</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Policy
+
+
+  
+      dataclass
+   (delphyne.stdlib.policies.Policy)" href="#delphyne.Policy">Policy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.Policy.or_else[M]">M</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.policies.Policy.or_else[Q]">Q</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Policy
+
+
+  
+      dataclass
+   (delphyne.stdlib.policies.Policy)" href="#delphyne.Policy">Policy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.Policy.or_else[M]">M</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.policies.Policy.or_else[Q]">Q</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Combine two policies into one that tries the first one,
+and if it yields no solution, tries the second one.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">or_else</span><span class="p">[</span><span class="n">M</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Q</span><span class="p">](</span>
+    <span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;Policy[M, Q]&quot;</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;Policy[M, Q]&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Policy[M, Q]&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Combine two policies into one that tries the first one,</span>
+<span class="sd">    and if it yields no solution, tries the second one.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">policy</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
+        <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">M</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="k">yield from</span> <span class="bp">self</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span><span class="o">.</span><span class="n">or_else</span><span class="p">(</span><span class="n">other</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">env</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">Policy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
 
 
 
@@ -2659,7 +2867,7 @@ inner policy using the <code>&amp;</code> operator defined on type <a class="aut
 
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="AbstractSearchPolicy (delphyne.core.AbstractSearchPolicy)" href="../../policies/definitions/#delphyne.AbstractSearchPolicy">AbstractSearchPolicy</a>[<a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a>, <span title="delphyne.stdlib.policies.SearchPolicy[N]">N</span>]</code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="AbstractSearchPolicy (delphyne.core.AbstractSearchPolicy)" href="../../policies/definitions/#delphyne.AbstractSearchPolicy">AbstractSearchPolicy</a>[<a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a>, <span title="delphyne.stdlib.policies.SearchPolicy[N]">N</span>]</code>, <code><a class="autorefs autorefs-internal" title="SupportsStreamCombinators (delphyne.stdlib.streams.SupportsStreamCombinators)" href="../algorithms/#delphyne.stdlib.streams.SupportsStreamCombinators">SupportsStreamCombinators</a></code></p>
 
 
         <p>A search policy takes as arguments a tree with a given signature
@@ -2687,48 +2895,7 @@ a search policy with an inner policy.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 52</span>
-<span class="normal"> 53</span>
-<span class="normal"> 54</span>
-<span class="normal"> 55</span>
-<span class="normal"> 56</span>
-<span class="normal"> 57</span>
-<span class="normal"> 58</span>
-<span class="normal"> 59</span>
-<span class="normal"> 60</span>
-<span class="normal"> 61</span>
-<span class="normal"> 62</span>
-<span class="normal"> 63</span>
-<span class="normal"> 64</span>
-<span class="normal"> 65</span>
-<span class="normal"> 66</span>
-<span class="normal"> 67</span>
-<span class="normal"> 68</span>
-<span class="normal"> 69</span>
-<span class="normal"> 70</span>
-<span class="normal"> 71</span>
-<span class="normal"> 72</span>
-<span class="normal"> 73</span>
-<span class="normal"> 74</span>
-<span class="normal"> 75</span>
-<span class="normal"> 76</span>
-<span class="normal"> 77</span>
-<span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 93</span>
 <span class="normal"> 94</span>
 <span class="normal"> 95</span>
 <span class="normal"> 96</span>
@@ -2743,8 +2910,102 @@ a search policy with an inner policy.</p>
 <span class="normal">105</span>
 <span class="normal">106</span>
 <span class="normal">107</span>
-<span class="normal">108</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">SearchPolicy</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractSearchPolicy</span><span class="p">[</span><span class="n">PolicyEnv</span><span class="p">,</span> <span class="n">N</span><span class="p">]):</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SearchPolicy</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span>
+    <span class="n">dp</span><span class="o">.</span><span class="n">AbstractSearchPolicy</span><span class="p">[</span><span class="n">PolicyEnv</span><span class="p">,</span> <span class="n">N</span><span class="p">],</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">SupportsStreamCombinators</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A search policy takes as arguments a tree with a given signature</span>
 <span class="sd">    (covariant type parameter `N`), a global policy environment, and an</span>
@@ -2800,6 +3061,53 @@ a search policy with an inner policy.</p>
             <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="n">trans</span><span class="p">(</span><span class="bp">self</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">),</span> <span class="n">env</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">SearchPolicy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">or_else</span><span class="p">[</span><span class="n">M</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;SearchPolicy[M]&quot;</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;SearchPolicy[M]&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SearchPolicy[M]&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Combine two search policies into one that tries the first one,</span>
+<span class="sd">        and if it yields no solution, tries the second one.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">policy</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
+            <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">M</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+            <span class="k">yield from</span> <span class="bp">self</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span><span class="o">.</span><span class="n">or_else</span><span class="p">(</span>
+                <span class="n">other</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">SearchPolicy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sequence</span><span class="p">[</span><span class="n">M</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">policies</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="s2">&quot;SearchPolicy[M]&quot;</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">stop_on_reject</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SearchPolicy[M]&quot;</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">aux</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+            <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">M</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n">P</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+            <span class="k">yield from</span> <span class="n">Stream</span><span class="o">.</span><span class="n">sequence</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">p</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">policies</span><span class="p">),</span>
+                <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">SearchPolicy</span><span class="p">(</span><span class="n">aux</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parallel</span><span class="p">[</span><span class="n">M</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">policies</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="s2">&quot;SearchPolicy[M]&quot;</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SearchPolicy[M]&quot;</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">aux</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+            <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">M</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n">P</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+            <span class="k">yield from</span> <span class="n">Stream</span><span class="o">.</span><span class="n">parallel</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">p</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">policies</span><span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">SearchPolicy</span><span class="p">(</span><span class="n">aux</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2839,17 +3147,17 @@ a search policy with an inner policy.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__and__</span><span class="p">[</span><span class="n">P</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">P</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Policy[N, P]&quot;</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__and__</span><span class="p">[</span><span class="n">P</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">P</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Policy[N, P]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pair a search policy with an inner policy to form a policy.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2894,19 +3202,85 @@ a search policy with an inner policy.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span>
-<span class="normal">97</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__rmatmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">StreamTransformer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SearchPolicy[N]&quot;</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__rmatmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">StreamTransformer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SearchPolicy[N]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compose a search policy with a stream transformer.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">StreamTransformer</span><span class="p">):</span>  <span class="c1"># pyright: ignore[reportUnnecessaryIsInstance]</span>
         <span class="k">return</span> <span class="bp">NotImplemented</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compose_with_stream_transformer</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="delphyne.SearchPolicy.or_else" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">or_else</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">or_else</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="SearchPolicy
+
+
+  
+      dataclass
+   (delphyne.stdlib.policies.SearchPolicy)" href="#delphyne.SearchPolicy">SearchPolicy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.SearchPolicy.or_else[M]">M</span></span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="SearchPolicy
+
+
+  
+      dataclass
+   (delphyne.stdlib.policies.SearchPolicy)" href="#delphyne.SearchPolicy">SearchPolicy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.policies.SearchPolicy.or_else[M]">M</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Combine two search policies into one that tries the first one,
+and if it yields no solution, tries the second one.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">or_else</span><span class="p">[</span><span class="n">M</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span>
+    <span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;SearchPolicy[M]&quot;</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;SearchPolicy[M]&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SearchPolicy[M]&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Combine two search policies into one that tries the first one,</span>
+<span class="sd">    and if it yields no solution, tries the second one.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">policy</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
+        <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">M</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="k">yield from</span> <span class="bp">self</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span><span class="o">.</span><span class="n">or_else</span><span class="p">(</span>
+            <span class="n">other</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">SearchPolicy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2938,7 +3312,7 @@ a search policy with an inner policy.</p>
 
     <div class="doc doc-contents first">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="AbstractPromptingPolicy (delphyne.core.AbstractPromptingPolicy)" href="../../policies/definitions/#delphyne.AbstractPromptingPolicy">AbstractPromptingPolicy</a>[<a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a>]</code></p>
+              Bases: <code><a class="autorefs autorefs-internal" title="AbstractPromptingPolicy (delphyne.core.AbstractPromptingPolicy)" href="../../policies/definitions/#delphyne.AbstractPromptingPolicy">AbstractPromptingPolicy</a>[<a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a>]</code>, <code><a class="autorefs autorefs-internal" title="SupportsStreamCombinators (delphyne.stdlib.streams.SupportsStreamCombinators)" href="../algorithms/#delphyne.stdlib.streams.SupportsStreamCombinators">SupportsStreamCombinators</a></code></p>
 
 
         <p>A prompting policy takes as arguments a query (attached to a
@@ -2966,49 +3340,96 @@ an example.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">PromptingPolicy</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractPromptingPolicy</span><span class="p">[</span><span class="n">PolicyEnv</span><span class="p">]):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PromptingPolicy</span><span class="p">(</span>
+    <span class="n">dp</span><span class="o">.</span><span class="n">AbstractPromptingPolicy</span><span class="p">[</span><span class="n">PolicyEnv</span><span class="p">],</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">SupportsStreamCombinators</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A prompting policy takes as arguments a query (attached to a</span>
 <span class="sd">    specific node) and a global policy environment, and returns a search</span>
@@ -3030,6 +3451,47 @@ an example.</p>
         <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Stream</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">Stream</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fn</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">env</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">or_else</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;PromptingPolicy&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PromptingPolicy&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Combine two prompting policies into one that tries the first one,</span>
+<span class="sd">        and if it yields no solution, tries the second one.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">policy</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
+            <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+            <span class="k">yield from</span> <span class="bp">self</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span><span class="o">.</span><span class="n">or_else</span><span class="p">(</span><span class="n">other</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">env</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">PromptingPolicy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sequence</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">policies</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="s2">&quot;PromptingPolicy&quot;</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">stop_on_reject</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PromptingPolicy&quot;</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">aux</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
+            <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+            <span class="k">yield from</span> <span class="n">Stream</span><span class="o">.</span><span class="n">sequence</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">p</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">policies</span><span class="p">),</span>
+                <span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">PromptingPolicy</span><span class="p">(</span><span class="n">aux</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parallel</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">policies</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="s2">&quot;PromptingPolicy&quot;</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PromptingPolicy&quot;</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">aux</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
+            <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+            <span class="k">yield from</span> <span class="n">Stream</span><span class="o">.</span><span class="n">parallel</span><span class="p">([</span><span class="n">p</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">policies</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">PromptingPolicy</span><span class="p">(</span><span class="n">aux</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__rmatmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">StreamTransformer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PromptingPolicy&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3068,6 +3530,64 @@ an example.</p>
 <div class="doc doc-object doc-function">
 
 
+<h4 id="delphyne.PromptingPolicy.or_else" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">or_else</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">or_else</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PromptingPolicy
+
+
+  
+      dataclass
+   (delphyne.stdlib.policies.PromptingPolicy)" href="#delphyne.PromptingPolicy">PromptingPolicy</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="PromptingPolicy
+
+
+  
+      dataclass
+   (delphyne.stdlib.policies.PromptingPolicy)" href="#delphyne.PromptingPolicy">PromptingPolicy</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Combine two prompting policies into one that tries the first one,
+and if it yields no solution, tries the second one.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">or_else</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;PromptingPolicy&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PromptingPolicy&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Combine two prompting policies into one that tries the first one,</span>
+<span class="sd">    and if it yields no solution, tries the second one.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">policy</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
+        <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StreamGen</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="k">yield from</span> <span class="bp">self</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">env</span><span class="p">)</span><span class="o">.</span><span class="n">or_else</span><span class="p">(</span><span class="n">other</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">env</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">PromptingPolicy</span><span class="p">(</span><span class="n">policy</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h4 id="delphyne.PromptingPolicy.__rmatmul__" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">__rmatmul__</span>
 
@@ -3093,13 +3613,13 @@ an example.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__rmatmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">StreamTransformer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PromptingPolicy&quot;</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__rmatmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">StreamTransformer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;PromptingPolicy&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compose a prompting policy with a stream transformer.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3236,65 +3756,65 @@ returns a pure tree transformer (<a class="autorefs autorefs-internal" title="Pu
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">298</span>
-<span class="normal">299</span>
-<span class="normal">300</span>
-<span class="normal">301</span>
-<span class="normal">302</span>
-<span class="normal">303</span>
-<span class="normal">304</span>
-<span class="normal">305</span>
-<span class="normal">306</span>
-<span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span>
-<span class="normal">312</span>
-<span class="normal">313</span>
-<span class="normal">314</span>
-<span class="normal">315</span>
-<span class="normal">316</span>
-<span class="normal">317</span>
-<span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span>
-<span class="normal">323</span>
-<span class="normal">324</span>
-<span class="normal">325</span>
-<span class="normal">326</span>
-<span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span>
-<span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
-<span class="normal">337</span>
-<span class="normal">338</span>
-<span class="normal">339</span>
-<span class="normal">340</span>
-<span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span>
-<span class="normal">344</span>
-<span class="normal">345</span>
-<span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
-<span class="normal">352</span>
-<span class="normal">353</span>
-<span class="normal">354</span>
-<span class="normal">355</span>
-<span class="normal">356</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span>
+<span class="normal">438</span>
+<span class="normal">439</span>
+<span class="normal">440</span>
+<span class="normal">441</span>
+<span class="normal">442</span>
+<span class="normal">443</span>
+<span class="normal">444</span>
+<span class="normal">445</span>
+<span class="normal">446</span>
+<span class="normal">447</span>
+<span class="normal">448</span>
+<span class="normal">449</span>
+<span class="normal">450</span>
+<span class="normal">451</span>
+<span class="normal">452</span>
+<span class="normal">453</span>
+<span class="normal">454</span>
+<span class="normal">455</span>
+<span class="normal">456</span>
+<span class="normal">457</span>
+<span class="normal">458</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span>
+<span class="normal">469</span>
+<span class="normal">470</span>
+<span class="normal">471</span>
+<span class="normal">472</span>
+<span class="normal">473</span>
+<span class="normal">474</span>
+<span class="normal">475</span>
+<span class="normal">476</span>
+<span class="normal">477</span>
+<span class="normal">478</span>
+<span class="normal">479</span>
+<span class="normal">480</span>
+<span class="normal">481</span>
+<span class="normal">482</span>
+<span class="normal">483</span>
+<span class="normal">484</span>
+<span class="normal">485</span>
+<span class="normal">486</span>
+<span class="normal">487</span>
+<span class="normal">488</span>
+<span class="normal">489</span>
+<span class="normal">490</span>
+<span class="normal">491</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ContextualTreeTransformer</span><span class="p">[</span><span class="n">A</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">Node</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper for a function that maps trees to trees, possibly</span>
@@ -3397,19 +3917,19 @@ transformer.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">325</span>
-<span class="normal">326</span>
-<span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span>
-<span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
-<span class="normal">337</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">460</span>
+<span class="normal">461</span>
+<span class="normal">462</span>
+<span class="normal">463</span>
+<span class="normal">464</span>
+<span class="normal">465</span>
+<span class="normal">466</span>
+<span class="normal">467</span>
+<span class="normal">468</span>
+<span class="normal">469</span>
+<span class="normal">470</span>
+<span class="normal">471</span>
+<span class="normal">472</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">pure</span><span class="p">(</span>
     <span class="n">fn</span><span class="p">:</span> <span class="n">PureTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ContextualTreeTransformer[A, B]&quot;</span><span class="p">:</span>
@@ -3456,24 +3976,24 @@ transformer.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">339</span>
-<span class="normal">340</span>
-<span class="normal">341</span>
-<span class="normal">342</span>
-<span class="normal">343</span>
-<span class="normal">344</span>
-<span class="normal">345</span>
-<span class="normal">346</span>
-<span class="normal">347</span>
-<span class="normal">348</span>
-<span class="normal">349</span>
-<span class="normal">350</span>
-<span class="normal">351</span>
-<span class="normal">352</span>
-<span class="normal">353</span>
-<span class="normal">354</span>
-<span class="normal">355</span>
-<span class="normal">356</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__rmatmul__</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">474</span>
+<span class="normal">475</span>
+<span class="normal">476</span>
+<span class="normal">477</span>
+<span class="normal">478</span>
+<span class="normal">479</span>
+<span class="normal">480</span>
+<span class="normal">481</span>
+<span class="normal">482</span>
+<span class="normal">483</span>
+<span class="normal">484</span>
+<span class="normal">485</span>
+<span class="normal">486</span>
+<span class="normal">487</span>
+<span class="normal">488</span>
+<span class="normal">489</span>
+<span class="normal">490</span>
+<span class="normal">491</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__rmatmul__</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">search_policy</span><span class="p">:</span> <span class="s2">&quot;SearchPolicy[B | N]&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SearchPolicy[A | B | N]&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3590,34 +4110,34 @@ search stream generator (<code>SearchStreamGen</code>).</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">search_policy</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">A</span><span class="p">](</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">search_policy</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">A</span><span class="p">](</span>
     <span class="n">fn</span><span class="p">:</span> <span class="n">_ParametricSearchPolicyFn</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">A</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_ParametricSearchPolicy</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">A</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3676,13 +4196,13 @@ search stream generator (<code>SearchStreamGen</code>).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_SearchPolicyFn</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_SearchPolicyFn</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
@@ -3738,15 +4258,15 @@ search stream generator (<code>SearchStreamGen</code>).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricSearchPolicyFn</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">A</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricSearchPolicyFn</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">A</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
@@ -3804,10 +4324,10 @@ search stream generator (<code>SearchStreamGen</code>).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricSearchPolicy</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">A</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricSearchPolicy</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">A</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">A</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">A</span><span class="o">.</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SearchPolicy</span><span class="p">[</span><span class="n">N</span><span class="p">]:</span> <span class="o">...</span>
@@ -3921,34 +4441,34 @@ returns a search stream generator (<code>SearchStreamGen</code>).</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">prompting_policy</span><span class="p">[</span><span class="o">**</span><span class="n">A</span><span class="p">](</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">prompting_policy</span><span class="p">[</span><span class="o">**</span><span class="n">A</span><span class="p">](</span>
     <span class="n">fn</span><span class="p">:</span> <span class="n">_ParametricPromptingPolicyFn</span><span class="p">[</span><span class="n">A</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_ParametricPromptingPolicy</span><span class="p">[</span><span class="n">A</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4007,12 +4527,12 @@ returns a search stream generator (<code>SearchStreamGen</code>).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_PromptingPolicyFn</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_PromptingPolicyFn</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
@@ -4067,14 +4587,14 @@ returns a search stream generator (<code>SearchStreamGen</code>).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricPromptingPolicyFn</span><span class="p">[</span><span class="o">**</span><span class="n">A</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricPromptingPolicyFn</span><span class="p">[</span><span class="o">**</span><span class="n">A</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
@@ -4131,10 +4651,10 @@ returns a search stream generator (<code>SearchStreamGen</code>).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricPromptingPolicy</span><span class="p">[</span><span class="o">**</span><span class="n">A</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricPromptingPolicy</span><span class="p">[</span><span class="o">**</span><span class="n">A</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">A</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">A</span><span class="o">.</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PromptingPolicy</span><span class="p">:</span> <span class="o">...</span>
@@ -4284,32 +4804,32 @@ tree transformer (<a class="autorefs autorefs-internal" title="PureTreeTransform
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">359</span>
-<span class="normal">360</span>
-<span class="normal">361</span>
-<span class="normal">362</span>
-<span class="normal">363</span>
-<span class="normal">364</span>
-<span class="normal">365</span>
-<span class="normal">366</span>
-<span class="normal">367</span>
-<span class="normal">368</span>
-<span class="normal">369</span>
-<span class="normal">370</span>
-<span class="normal">371</span>
-<span class="normal">372</span>
-<span class="normal">373</span>
-<span class="normal">374</span>
-<span class="normal">375</span>
-<span class="normal">376</span>
-<span class="normal">377</span>
-<span class="normal">378</span>
-<span class="normal">379</span>
-<span class="normal">380</span>
-<span class="normal">381</span>
-<span class="normal">382</span>
-<span class="normal">383</span>
-<span class="normal">384</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">contextual_tree_transformer</span><span class="p">[</span><span class="n">A</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">C</span><span class="p">](</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">494</span>
+<span class="normal">495</span>
+<span class="normal">496</span>
+<span class="normal">497</span>
+<span class="normal">498</span>
+<span class="normal">499</span>
+<span class="normal">500</span>
+<span class="normal">501</span>
+<span class="normal">502</span>
+<span class="normal">503</span>
+<span class="normal">504</span>
+<span class="normal">505</span>
+<span class="normal">506</span>
+<span class="normal">507</span>
+<span class="normal">508</span>
+<span class="normal">509</span>
+<span class="normal">510</span>
+<span class="normal">511</span>
+<span class="normal">512</span>
+<span class="normal">513</span>
+<span class="normal">514</span>
+<span class="normal">515</span>
+<span class="normal">516</span>
+<span class="normal">517</span>
+<span class="normal">518</span>
+<span class="normal">519</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">contextual_tree_transformer</span><span class="p">[</span><span class="n">A</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">C</span><span class="p">](</span>
     <span class="n">f</span><span class="p">:</span> <span class="n">_ParametricContextualTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">],</span> <span class="o">/</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">C</span><span class="p">,</span> <span class="n">ContextualTreeTransformer</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4369,15 +4889,15 @@ signature <code>B | N</code>, for all <code>N</code>.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PureTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PureTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A function that maps any tree with signature `A | N` to a tree with</span>
 <span class="sd">    signature `B | N`, for all `N`.</span>
@@ -4435,10 +4955,10 @@ signature <code>B | N</code>, for all <code>N</code>.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">286</span>
-<span class="normal">287</span>
-<span class="normal">288</span>
-<span class="normal">289</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ContextualTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ContextualTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">Node</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PureTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">]:</span> <span class="o">...</span>
@@ -4491,10 +5011,10 @@ signature <code>B | N</code>, for all <code>N</code>.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">292</span>
-<span class="normal">293</span>
-<span class="normal">294</span>
-<span class="normal">295</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricContextualTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">C</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">_ParametricContextualTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="o">**</span><span class="n">C</span><span class="p">](</span><span class="n">Protocol</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">C</span><span class="o">.</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PureTreeTransformerFn</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">]:</span> <span class="o">...</span>
