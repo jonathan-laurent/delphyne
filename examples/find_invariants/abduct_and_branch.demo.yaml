@@ -39,7 +39,7 @@
           proved: false
           relevance_hints: |-
             use int.Int
-      
+
             let example1 () diverges =  (* GOAL *)
               let ref x = any int in  (* premise *)
               let ref y = 3 in

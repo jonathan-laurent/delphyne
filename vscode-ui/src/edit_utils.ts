@@ -19,7 +19,7 @@ function indentString(str: string, level: number, indent: string): string {
   let prefix = indent.repeat(level);
   return str
     .split("\n")
-    .map((line) => prefix + line)
+    .map((line) => (line === "" ? line : prefix + line))
     .join("\n");
 }
 
