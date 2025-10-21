@@ -199,7 +199,7 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
     last_refreshed_status = time.time()
     # TODO: generating each element is blocking here. Should we spawn a
     # thread for every new element?
-    for msg in stream.gen():
+    for msg in stream:
         with lock:
             match msg:
                 case Solution():

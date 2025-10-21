@@ -38,7 +38,7 @@ def dfs[P, T](
             yield from dfs(
                 max_depth=max_depth,
                 max_branching=max_branching,
-            )(tree.child(None), env, policy).gen()
+            )(tree.child(None), env, policy)
         case Fail():
             pass
         case Branch(cands):
@@ -51,8 +51,8 @@ def dfs[P, T](
                 lambda a: dfs(
                     max_depth=max_depth - 1 if max_depth is not None else None,
                     max_branching=max_branching,
-                )(tree.child(a.tracked), env, policy).gen()
-            ).gen()
+                )(tree.child(a.tracked), env, policy)
+            )
         case _:
             unsupported_node(tree.node)
 
@@ -79,6 +79,6 @@ def par_dfs[P, T](
             cands = yield from cands.stream(env, policy).all()
             yield from Stream.parallel(
                 [par_dfs()(tree.child(a.tracked), env, policy) for a in cands]
-            ).gen()
+            )
         case _:
             unsupported_node(tree.node)

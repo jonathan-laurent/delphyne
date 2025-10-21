@@ -38,6 +38,6 @@ def sample_and_proceed[N: dp.Node, P, T](
             values = [x[0] for x in distr]
             probs = [x[1] for x in distr]
             selected = env.random.choices(values, weights=probs)
-            yield from proceed_with(tree.child(selected), env, policy).gen()
+            yield from proceed_with(tree.child(selected), env, policy)
         case _:
             assert False, "Expected branching or success node at the root."

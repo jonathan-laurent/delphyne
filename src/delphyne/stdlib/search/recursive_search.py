@@ -89,7 +89,7 @@ def recursive_search[P, T](
                 if elt is None:
                     return
                 rec = recursive_search()(tree.child(elt.tracked), env, policy)
-                yield from rec.gen()
+                yield from rec
             elif isinstance(meta, CombineStreamDistr):
                 res = yield from cands.stream(env, policy).first()
                 if res is None:
@@ -103,7 +103,7 @@ def recursive_search[P, T](
                     recursive_search()(tree.child(x[0]), env, policy)
                     for x in distr
                 ]
-                yield from meta.combine(streams, probs, env).gen()
+                yield from meta.combine(streams, probs, env)
             else:
                 assert False, f"Unsupported behavior for `Branch`: {meta}"
         case Join(subs):
@@ -117,9 +117,7 @@ def recursive_search[P, T](
                     if elt is None:
                         return
                     elts.append(elt.tracked)
-                yield from recursive_search()(
-                    tree.child(elts), env, policy
-                ).gen()
+                yield from recursive_search()(tree.child(elts), env, policy)
             else:
                 assert False, f"Unknown behavior for `Join`: {meta}"
         case _:
@@ -143,6 +141,6 @@ def combine_via_repeated_sampling(
         while max_attempts is None or i < max_attempts:
             i += 1
             stream = env.random.choices(streams, weights=probs)[0]
-            yield from stream.gen()
+            yield from stream
 
     return StreamCombinator(combine)

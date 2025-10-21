@@ -100,7 +100,7 @@ def sequence_prompting_policies(
     ) -> dp.StreamGen[T]:
         yield from Stream.sequence(
             (pp(query, env) for pp in policies), stop_on_reject=stop_on_reject
-        ).gen()
+        )
 
     return PromptingPolicy(policy)
 
@@ -114,7 +114,7 @@ def sequence_search_policies[N: dp.Node](
         yield from Stream.sequence(
             (sp(tree, env, policy) for sp in policies),
             stop_on_reject=stop_on_reject,
-        ).gen()
+        )
 
     return SearchPolicy(policy)
 
@@ -130,7 +130,7 @@ def sequence_policies[N: dp.Node, P](
         yield from Stream.sequence(
             (p.search(tree, env, p.inner) for p in policies),
             stop_on_reject=stop_on_reject,
-        ).gen()
+        )
 
     return search() & cast(P, None)
 
@@ -211,7 +211,7 @@ def parallel_prompting_policies(
     def policy[T](
         query: dp.AttachedQuery[T], env: PolicyEnv
     ) -> dp.StreamGen[T]:
-        yield from Stream.parallel([pp(query, env) for pp in policies]).gen()
+        yield from Stream.parallel([pp(query, env) for pp in policies])
 
     return PromptingPolicy(policy)
 
@@ -222,9 +222,7 @@ def parallel_search_policies[N: dp.Node](
     def policy[T](
         tree: dp.Tree[N, Any, T], env: PolicyEnv, policy: Any
     ) -> dp.StreamGen[T]:
-        yield from Stream.parallel(
-            [sp(tree, env, policy) for sp in policies]
-        ).gen()
+        yield from Stream.parallel([sp(tree, env, policy) for sp in policies])
 
     return SearchPolicy(policy)
 
@@ -239,7 +237,7 @@ def parallel_policies[N: dp.Node, P](
         assert policy is None
         yield from Stream.parallel(
             [p.search(tree, env, p.inner) for p in policies]
-        ).gen()
+        )
 
     return search() & cast(P, None)
 
@@ -305,8 +303,8 @@ def prompting_policy_or_else(
         query: dp.AttachedQuery[T], env: PolicyEnv
     ) -> dp.StreamGen[T]:
         yield from stream_or_else(
-            lambda: main(query, env).gen(),
-            lambda: other(query, env).gen(),
+            main(query, env).__iter__,
+            other(query, env).__iter__,
         )
 
     return PromptingPolicy(policy)
@@ -319,8 +317,8 @@ def search_policy_or_else[N: dp.Node](
         tree: dp.Tree[N, Any, T], env: PolicyEnv, policy: Any
     ) -> dp.StreamGen[T]:
         yield from stream_or_else(
-            lambda: main(tree, env, policy).gen(),
-            lambda: other(tree, env, policy).gen(),
+            main(tree, env, policy).__iter__,
+            other(tree, env, policy).__iter__,
         )
 
     return SearchPolicy(policy)
@@ -337,8 +335,8 @@ def policy_or_else[N: dp.Node, P](
     ) -> dp.StreamGen[T]:
         assert policy is None
         yield from stream_or_else(
-            lambda: main.search(tree, env, main.inner).gen(),
-            lambda: other.search(tree, env, other.inner).gen(),
+            main.search(tree, env, main.inner).__iter__,
+            other.search(tree, env, other.inner).__iter__,
         )
 
     return sp() & cast(P, None)

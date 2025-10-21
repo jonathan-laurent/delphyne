@@ -98,7 +98,7 @@ class SearchPolicy[N: Node](dp.AbstractSearchPolicy[PolicyEnv, N]):
         def policy[P, T](
             tree: dp.Tree[N, P, T], env: PolicyEnv, policy: P
         ) -> dp.StreamGen[T]:
-            return trans(self(tree, env, policy), env).gen()
+            return iter(trans(self(tree, env, policy), env))
 
         return SearchPolicy(policy)
 
@@ -203,7 +203,7 @@ class PromptingPolicy(dp.AbstractPromptingPolicy[PolicyEnv]):
         def policy[T](
             query: dp.AttachedQuery[T], env: PolicyEnv
         ) -> dp.StreamGen[T]:
-            return trans(self(query, env), env).gen()
+            return iter(trans(self(query, env), env))
 
         return PromptingPolicy(policy)
 
@@ -346,7 +346,7 @@ class ContextualTreeTransformer[A: Node, B: Node]:
             policy: P,
         ) -> dp.StreamGen[T]:
             new_tree = self.fn(env, policy)(tree)
-            return search_policy(new_tree, env, policy).gen()
+            return iter(search_policy(new_tree, env, policy))
 
         return SearchPolicy(new_search_policy)
 
@@ -503,7 +503,7 @@ def query_dependent(
         query: dp.AttachedQuery[T], env: PolicyEnv
     ) -> dp.StreamGen[T]:
         query_policy = f(query.query)
-        return query_policy(query, env).gen()
+        return iter(query_policy(query, env))
 
     return PromptingPolicy(policy)
 

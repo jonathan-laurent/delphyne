@@ -170,7 +170,7 @@ def par_dfs[P, T](
             cands = yield from cands.stream(env, policy).all()
             yield from Stream.parallel([
                 par_dfs()(tree.child(a.tracked), env, policy)
-                for a in cands]).gen()
+                for a in cands])
 ```
 
 The manual [chapter](./policies.md) on policies provides details on how new policy components can be defined, using [search stream combinators](../reference/stdlib/streams.md).

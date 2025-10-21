@@ -39,7 +39,7 @@ stream combinators:
 
 import math
 from abc import ABC, abstractmethod
-from collections.abc import Generator, Mapping
+from collections.abc import Generator, Iterator, Mapping
 from dataclasses import dataclass
 
 from delphyne.core.refs import Tracked
@@ -218,7 +218,7 @@ class Spent:
     barrier_id: BarrierId
 
 
-type StreamGen[T] = Generator[Solution[T] | Barrier | Spent, None, None]
+type StreamGen[T] = Iterator[Solution[T] | Barrier | Spent]
 """
 A search stream generator.
 
@@ -253,9 +253,9 @@ class AbstractStream[T](ABC):
     """
 
     @abstractmethod
-    def gen(self) -> StreamGen[T]:
+    def __iter__(self) -> StreamGen[T]:
         """
-        Produce a search stream generator, i.e. an iterator that yields
+        Produce a search stream iterator, i.e. an iterator that yields
         `Barrier` and `Spent` messages along with solutions.
         """
         pass

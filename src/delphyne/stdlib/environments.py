@@ -223,7 +223,7 @@ class ExampleDatabase:
             )
         return self._embeddings_cache_file
 
-    ### Dealing with embeddings
+    ### Loading embeddings
 
     def load_embeddings_for_query_type(
         self, name: _QueryName, model: _EmbeddingModelMame
@@ -261,6 +261,8 @@ class ExampleDatabase:
         embeddings = np.array([r.embedding for r in res], dtype=np.float64)
         # We ignore spending for the global cache.
         return embeddings
+
+    ### Accessing with embeddings
 
     def closest_examples(
         self, query: dp.AbstractQuery[Any], k: int

@@ -32,7 +32,7 @@ class Stream[T](dp.AbstractStream[T]):
     _generate: Callable[[], dp.StreamGen[T]]
 
     @override
-    def gen(self) -> dp.StreamGen[T]:
+    def __iter__(self) -> dp.StreamGen[T]:
         return self._generate()
 
     ## Collecting all elements
@@ -63,7 +63,7 @@ class Stream[T](dp.AbstractStream[T]):
             self = self.with_budget(budget)
         if num_generated is not None:
             self = self.take(num_generated)
-        return stream_collect(self.gen())
+        return stream_collect(iter(self))
 
     ## Transforming the stream
 
@@ -79,7 +79,7 @@ class Stream[T](dp.AbstractStream[T]):
         error and `N` is the concurrency level of the stream (1 if
         `Stream.parallel` is never used).
         """
-        return Stream(lambda: stream_with_budget(self.gen(), budget))
+        return Stream(lambda: stream_with_budget(iter(self), budget))
 
     def take(self, num_generated: int, strict: bool = True):
         """
@@ -88,7 +88,7 @@ class Stream[T](dp.AbstractStream[T]):
         solutions can be returned, provided that no additional budget
         must be spent for generating them.
         """
-        return Stream(lambda: stream_take(self.gen(), num_generated, strict))
+        return Stream(lambda: stream_take(iter(self), num_generated, strict))
 
     def loop(
         self, n: int | None = None, *, stop_on_reject: bool = True
@@ -107,12 +107,12 @@ class Stream[T](dp.AbstractStream[T]):
         it = itertools.count() if n is None else range(n)
         return Stream(
             lambda: stream_sequence(
-                (self.gen for _ in it), stop_on_reject=stop_on_reject
+                (self.__iter__ for _ in it), stop_on_reject=stop_on_reject
             )
         )
 
     def bind[U](
-        self, f: Callable[[dp.Solution[T]], dp.StreamGen[U]]
+        self, f: "Callable[[dp.Solution[T]], Stream[U]]"
     ) -> "Stream[U]":
         """
         Apply a function to all generated solutions of a stream and
@@ -123,7 +123,7 @@ class Stream[T](dp.AbstractStream[T]):
             def concat_map(f, xs):
                 return [y for x in xs for y in f(x)]
         """
-        return Stream(lambda: stream_bind(self.gen(), f))
+        return Stream(lambda: stream_bind(iter(self), lambda x: iter(f(x))))
 
     ## Monadic Methods
 
@@ -132,13 +132,13 @@ class Stream[T](dp.AbstractStream[T]):
         Obtain the first solution from a stream, or return `None` if the
         stream terminates without yielding any solution.
         """
-        return stream_first(self.gen())
+        return stream_first(iter(self))
 
     def all(self) -> dp.StreamContext[Sequence[dp.Solution[T]]]:
         """
         Obtain all solutions from a stream.
         """
-        return stream_all(self.gen())
+        return stream_all(iter(self))
 
     def next(
         self,
@@ -152,7 +152,7 @@ class Stream[T](dp.AbstractStream[T]):
         Return a sequence of generated solutions, the total spent
         budget, and the remaining stream, if any.
         """
-        gen, budg, rest = yield from stream_next(self.gen())
+        gen, budg, rest = yield from stream_next(iter(self))
         new_rest = None if rest is None else Stream(lambda: rest)
         return gen, budg, new_rest
 
@@ -173,7 +173,7 @@ class Stream[T](dp.AbstractStream[T]):
         """
         return Stream(
             lambda: stream_sequence(
-                (s.gen for s in streams), stop_on_reject=stop_on_reject
+                (s.__iter__ for s in streams), stop_on_reject=stop_on_reject
             )
         )
 
@@ -183,7 +183,7 @@ class Stream[T](dp.AbstractStream[T]):
         Run all streams of a sequence in separate threads, possibly
         interleaving the resulting solutions.
         """
-        return Stream(lambda: stream_parallel([s.gen() for s in streams]))
+        return Stream(lambda: stream_parallel([iter(s) for s in streams]))
 
     @staticmethod
     def or_else[U](main: "Stream[U]", fallback: "Stream[U]") -> "Stream[U]":
@@ -191,7 +191,7 @@ class Stream[T](dp.AbstractStream[T]):
         Run the `main` stream and, if it does not yield any solution,
         run the `fallback` stream.
         """
-        return Stream(lambda: stream_or_else(main.gen, fallback.gen))
+        return Stream(lambda: stream_or_else(main.__iter__, fallback.__iter__))
 
 
 #####
@@ -249,7 +249,7 @@ class StreamTransformer:
             stream: Stream[T],
             env: PolicyEnv,
         ) -> dp.StreamGen[T]:
-            return self(other(stream, env), env).gen()
+            return iter(self(other(stream, env), env))
 
         return StreamTransformer(transformer)
 
@@ -319,7 +319,7 @@ class StreamCombinator:
             probs: Sequence[float],
             env: PolicyEnv,
         ) -> dp.StreamGen[T]:
-            return other(self(streams, probs, env), env).gen()
+            return iter(other(self(streams, probs, env), env))
 
         return StreamCombinator(combinator)
 
@@ -338,7 +338,7 @@ def with_budget[T](
     """
     Stream transformer version of `Stream.with_budget`.
     """
-    return stream_with_budget(stream.gen(), budget)
+    return stream_with_budget(iter(stream), budget)
 
 
 @stream_transformer
@@ -351,7 +351,7 @@ def take[T](
     """
     Stream transformer version of `Stream.take`.
     """
-    return stream_take(stream.gen(), num_generated, strict)
+    return stream_take(iter(stream), num_generated, strict)
 
 
 @stream_transformer
@@ -367,7 +367,7 @@ def loop[T](
     up to an (optional) limit.
     """
 
-    return stream.loop(n, stop_on_reject=stop_on_reject).gen()
+    return iter(stream.loop(n, stop_on_reject=stop_on_reject))
 
 
 #####
