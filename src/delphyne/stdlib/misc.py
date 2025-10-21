@@ -4,7 +4,7 @@ Miscellaneous utilities for Delphyne's standard library.
 
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from typing import Any, Iterable, Literal, Never, cast, overload
+from typing import Any, Iterable, Literal, Never, cast
 
 import delphyne.core_and_base as dp
 from delphyne.core_and_base import Opaque
@@ -15,7 +15,7 @@ from delphyne.stdlib.nodes import Branch, branch
 from delphyne.stdlib.policies import Policy, PromptingPolicy, SearchPolicy
 from delphyne.stdlib.search.dfs import dfs
 from delphyne.stdlib.strategies import strategy
-from delphyne.stdlib.streams import Stream, stream_or_else
+from delphyne.stdlib.streams import Stream
 
 
 @strategy(name="const")
@@ -131,71 +131,6 @@ def sequence_policies[N: dp.Node, P](
     return Policy(aux)
 
 
-@overload
-def sequence(
-    policies: Iterable[PromptingPolicy],
-    *,
-    stop_on_reject: bool = True,
-) -> PromptingPolicy:
-    pass
-
-
-@overload
-def sequence[N: dp.Node](
-    policies: Iterable[SearchPolicy[N]],
-    *,
-    stop_on_reject: bool = True,
-) -> SearchPolicy[N]:
-    pass
-
-
-@overload
-def sequence[N: dp.Node, P](
-    policies: Iterable[Policy[N, P]],
-    *,
-    stop_on_reject: bool = True,
-) -> Policy[N, P]:
-    pass
-
-
-def sequence(
-    policies: Iterable[_AnyPolicy],
-    *,
-    stop_on_reject: bool = True,
-) -> _AnyPolicy:
-    """
-    Try a list of policies, search policies, or prompting policies in
-    sequence.
-
-    Arguments:
-        policies: An iterable of policies, search policies, or prompting
-            policies to try in sequence.
-        stop_on_reject: If True, stop the sequence as soon as one policy
-            sees all its resource requests denied. Note that this is
-            necessary for termination when `policies` is an infinite
-            iterator.
-    """
-
-    it = iter(policies)
-    first = next(it)
-    if isinstance(first, PromptingPolicy):
-        return sequence_prompting_policies(
-            cast(Iterable[PromptingPolicy], policies),
-            stop_on_reject=stop_on_reject,
-        )
-    elif isinstance(first, SearchPolicy):
-        return sequence_search_policies(
-            cast(Iterable[SearchPolicy[Any]], policies),
-            stop_on_reject=stop_on_reject,
-        )
-    else:
-        assert isinstance(first, Policy)
-        return sequence_policies(
-            cast(Iterable[Policy[Any, Any]], policies),
-            stop_on_reject=stop_on_reject,
-        )
-
-
 #####
 ##### Parallel combination
 #####
@@ -234,135 +169,6 @@ def parallel_policies[N: dp.Node, P](
         yield from Stream.parallel([p(tree, env) for p in policies])
 
     return search() & cast(P, None)
-
-
-@overload
-def parallel(
-    policies: Sequence[PromptingPolicy],
-) -> PromptingPolicy:
-    pass
-
-
-@overload
-def parallel[N: dp.Node](
-    policies: Sequence[SearchPolicy[N]],
-) -> SearchPolicy[N]:
-    pass
-
-
-@overload
-def parallel[N: dp.Node, P](
-    policies: Sequence[Policy[N, P]],
-) -> Policy[N, P]:
-    pass
-
-
-def parallel(
-    policies: Sequence[_AnyPolicy],
-) -> _AnyPolicy:
-    """
-    Try a sequence of policies in parallel.
-
-    Arguments:
-        policies: A sequence of policies, search policies, or prompting
-            policies to try in parallel.
-    """
-
-    if not policies:
-        raise ValueError("Cannot parallelize an empty sequence of policies")
-
-    first = policies[0]
-    if isinstance(first, PromptingPolicy):
-        return parallel_prompting_policies(
-            cast(Sequence[PromptingPolicy], policies)
-        )
-    elif isinstance(first, SearchPolicy):
-        return parallel_search_policies(
-            cast(Sequence[SearchPolicy[Any]], policies)
-        )
-    else:
-        assert isinstance(first, Policy)
-        return parallel_policies(cast(Sequence[Policy[Any, Any]], policies))
-
-
-#####
-##### Or-Else
-#####
-
-
-def prompting_policy_or_else(
-    main: PromptingPolicy, other: PromptingPolicy
-) -> PromptingPolicy:
-    def policy[T](
-        query: dp.AttachedQuery[T], env: PolicyEnv
-    ) -> dp.StreamGen[T]:
-        yield from stream_or_else(
-            main(query, env).__iter__,
-            other(query, env).__iter__,
-        )
-
-    return PromptingPolicy(policy)
-
-
-def search_policy_or_else[N: dp.Node](
-    main: SearchPolicy[N], other: SearchPolicy[N]
-) -> SearchPolicy[N]:
-    def policy[T](
-        tree: dp.Tree[N, Any, T], env: PolicyEnv, policy: Any
-    ) -> dp.StreamGen[T]:
-        yield from stream_or_else(
-            main(tree, env, policy).__iter__,
-            other(tree, env, policy).__iter__,
-        )
-
-    return SearchPolicy(policy)
-
-
-def policy_or_else[N: dp.Node, P](
-    main: Policy[N, P], other: Policy[N, P]
-) -> Policy[N, P]:
-    def aux[T](tree: dp.Tree[N, Any, T], env: PolicyEnv) -> dp.StreamGen[T]:
-        yield from stream_or_else(
-            main(tree, env).__iter__,
-            other(tree, env).__iter__,
-        )
-
-    return Policy(aux)
-
-
-@overload
-def or_else(main: PromptingPolicy, other: PromptingPolicy) -> PromptingPolicy:
-    pass
-
-
-@overload
-def or_else[N: dp.Node](
-    main: SearchPolicy[N], other: SearchPolicy[N]
-) -> SearchPolicy[N]:
-    pass
-
-
-@overload
-def or_else[N: dp.Node, P](
-    main: Policy[N, P], other: Policy[N, P]
-) -> Policy[N, P]:
-    pass
-
-
-def or_else(main: _AnyPolicy, other: _AnyPolicy) -> _AnyPolicy:
-    """
-    Take two policies, search policies, or prompting policies as
-    arguments. Try the first one, and then the second one only if it
-    fails (i.e., it does not produce any solution).
-    """
-    if isinstance(main, PromptingPolicy):
-        assert isinstance(other, PromptingPolicy)
-        return prompting_policy_or_else(main, other)
-    elif isinstance(main, SearchPolicy):
-        assert isinstance(other, SearchPolicy)
-        return search_policy_or_else(main, other)
-    else:
-        return policy_or_else(main, other)  # type: ignore
 
 
 #####
@@ -408,9 +214,8 @@ def nofail[P, A, B](space: Opaque[P, A], *, default: B) -> Opaque[P, A | B]:
     """
     try_policy = dfs() @ elim_flag(NoFailFlag, "no_fail_try")
     def_policy = dfs() @ elim_flag(NoFailFlag, "no_fail_default")
-    search_policy = or_else(try_policy, def_policy)
     return nofail_strategy(space, default=default).using(
-        lambda p: search_policy & p
+        lambda p: try_policy.or_else(def_policy) & p
     )
 
 

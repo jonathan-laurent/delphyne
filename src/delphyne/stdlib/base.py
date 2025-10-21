@@ -148,6 +148,8 @@ from delphyne.stdlib.streams import (
     Stream,
     StreamTransformer,
     loop,
+    parallel,
+    sequence,
     spend_on,
     stream_transformer,
     take,

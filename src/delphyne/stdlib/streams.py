@@ -5,7 +5,7 @@ Search streams and stream combinators.
 import itertools
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
-from typing import Protocol, override
+from typing import Protocol, Self, override
 
 import delphyne.core as dp
 from delphyne.core.streams import Barrier, BarrierId, Spent
@@ -158,9 +158,9 @@ class Stream[T](dp.AbstractStream[T]):
 
     ## Static Methods
 
-    @staticmethod
+    @classmethod
     def sequence[U](
-        streams: Iterable["Stream[U]"], *, stop_on_reject: bool = True
+        cls, streams: Iterable["Stream[U]"], *, stop_on_reject: bool = True
     ) -> "Stream[U]":
         """
         Concatenate all streams from a possibly infinite collection.
@@ -185,13 +185,12 @@ class Stream[T](dp.AbstractStream[T]):
         """
         return Stream(lambda: stream_parallel([iter(s) for s in streams]))
 
-    @staticmethod
-    def or_else[U](main: "Stream[U]", fallback: "Stream[U]") -> "Stream[U]":
+    def or_else(self, fallback: "Stream[T]") -> "Stream[T]":
         """
         Run the `main` stream and, if it does not yield any solution,
         run the `fallback` stream.
         """
-        return Stream(lambda: stream_or_else(main.__iter__, fallback.__iter__))
+        return Stream(lambda: stream_or_else(self.__iter__, fallback.__iter__))
 
 
 #####
@@ -787,3 +786,58 @@ def stream_parallel[T](streams: Sequence[dp.StreamGen[T]]) -> dp.StreamGen[T]:
             ev.set()
     if exn is not None:
         raise exn
+
+
+#####
+##### Stream Combinators
+#####
+
+
+class SupportsStreamCombinators(Protocol):
+    @classmethod
+    def sequence(
+        cls: type[Self],
+        elts: Iterable[Self],
+        /,
+        *,
+        stop_on_reject: bool = True,
+    ) -> Self: ...
+
+    @classmethod
+    def parallel(cls: type[Self], elts: Sequence[Self], /) -> Self: ...
+
+
+def sequence[T: SupportsStreamCombinators](
+    elts: Iterable[T], /, *, stop_on_reject: bool = True
+) -> T:
+    """
+    Try a list of streams, policies, search policies, or prompting
+    policies in sequence.
+
+    Arguments:
+        elts: An iterable of streams, policies, search policies, or
+            prompting policies to try in sequence.
+        stop_on_reject: If True, stop the sequence as soon as one policy
+            sees all its resource requests denied. Note that this is
+            necessary for termination when `policies` is an infinite
+            iterator.
+    """
+    try:
+        first = next(iter(elts))
+    except StopIteration:
+        raise ValueError("Called `sequence` on an empty collection.")
+    return first.sequence(elts, stop_on_reject=stop_on_reject)
+
+
+def parallel[T: SupportsStreamCombinators](elts: Sequence[T], /) -> T:
+    """
+    Try a sequence of streams or policies in parallel.
+
+    Arguments:
+        elts: A sequence of streams, policies, search policies, or
+            prompting policies to try in parallel.
+    """
+    if not elts:
+        raise ValueError("Called `parallel` on an empty collection.")
+    first = elts[0]
+    return first.parallel(elts)
