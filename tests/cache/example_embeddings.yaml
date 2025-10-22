@@ -1,0 +1,48 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: Answer the given trivia questions.
+        - role: user
+          content: What is the capital city of Spain?
+        - role: assistant
+          answer:
+            mode: null
+            content: Madrid
+        - role: user
+          content: How many states does the USA have?
+        - role: assistant
+          answer:
+            mode: null
+            content: '50'
+        - role: user
+          content: What is the most populated country in Europe?
+      options:
+        model: gpt-4.1-mini
+    iter: 1
+  output:
+    outputs:
+      - content: The most populated country in Europe is Russia.
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 60
+        output_tokens: 9
+        cached_input_tokens: 0
+        price: 4.9800000000000004e-05
+    log_items: []
+    model_name: gpt-4.1-mini-2025-04-14
+    usage_info:
+      completion_tokens: 9
+      prompt_tokens: 60
+      total_tokens: 69
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 0
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0

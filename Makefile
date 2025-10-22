@@ -19,6 +19,7 @@ TO_CLEAN := \
 	-name '_build' -o \
 	-name '.ruff_cache' -o \
 	-name '.DS_Store' -o \
+	-name '*.yaml.lock' -o \
 	-name 'repomix-output.xml'
 
 SCHEMAS_FOLDER := vscode-ui/resources

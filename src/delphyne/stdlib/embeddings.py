@@ -51,6 +51,8 @@ class EmbeddingModel(ABC):
     def _split_and_embed(
         self, batch: Sequence[str]
     ) -> Sequence[EmbeddingResponse]:
+        if not batch:
+            return []
         m = self.get_max_batch_size()
         if len(batch) <= m:
             return self._embed(batch)
@@ -58,6 +60,7 @@ class EmbeddingModel(ABC):
         results: list[EmbeddingResponse] = []
         for i in range(0, len(batch), m):
             chunk = batch[i : i + m]
+            assert chunk
             chunk_results = self._embed(chunk)
             results.extend(chunk_results)
         return results

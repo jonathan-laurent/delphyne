@@ -1281,7 +1281,7 @@ def closest_examples(
                 "query": query.serialize_args(),
                 "selected": [
                     {
-                        "similarity": sims[k],
+                        "similarity": float(sims[k]),
                         "query": examples[k].query.args_dict,
                     }
                     for k in top_k_indices

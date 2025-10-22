@@ -1017,3 +1017,21 @@ def strategy_loading_data(key: str) -> dp.Strategy[dp.Data, None, str]:
 @dp.ensure_compatible(strategy_loading_data)
 def strategy_loading_data_policy():
     return dp.dfs() @ dp.elim_data() & None
+
+
+#####
+##### Embeddings
+#####
+
+
+@dataclass
+class AnswerTriviaQuestion(dp.Query[str]):
+    """
+    Answer the given trivia questions.
+    """
+
+    question: str
+
+    __parser__ = dp.get_text
+    __embed_prompt__: ClassVar[str] = "{{query.question}}"
+    __instance_prompt__: ClassVar[str] = "{{query.question}}"

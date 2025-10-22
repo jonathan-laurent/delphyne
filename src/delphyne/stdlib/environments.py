@@ -239,6 +239,9 @@ class ExampleDatabase:
         """
         import filelock
 
+        # Note: on Unix systems, the lockfile may not be automatically
+        # deleted. See https://stackoverflow.com/questions/58098634/
+
         lock_file = _embeddings_cache_lockfile(self.embeddings_cache_file)
         examples = self._examples[name]
         with filelock.FileLock(lock_file):
@@ -482,7 +485,9 @@ class PolicyEnv:
         self.data_manager = DataManager(data_dirs)
         self.templates = TemplatesManager(prompt_dirs, self.data_manager)
         self.examples = ExampleDatabase(
-            embeddings_cache_file=embeddings_cache_file
+            embeddings_cache_file=embeddings_cache_file,
+            templates_manager=self.templates,
+            object_loader=object_loader,
         )
         self._object_loader = object_loader
         self.tracer = dp.Tracer(log_level=log_level)

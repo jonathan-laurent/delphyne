@@ -14,25 +14,35 @@ import example_strategies as ex
 import pytest
 
 import delphyne as dp
+from delphyne.utils.yaml import dump_yaml
 
 PROMPT_DIR = Path(__file__).parent / "prompts"
 DATA_DIR = Path(__file__).parent / "data"
 CACHE_DIR = Path(__file__).parent / "cache"
 STRATEGY_DIRS = (Path(__file__).parent,)
+DEMO_DIR = Path(__file__).parent
 STRATEGY_MODULES = ("example_strategies",)
 
 
-def _make_policy_env():
+def _make_policy_env(demo_files: Sequence[str] = ()):
     object_loader = dp.ObjectLoader(
         strategy_dirs=STRATEGY_DIRS, modules=STRATEGY_MODULES
     )
     return dp.PolicyEnv(
-        demonstration_files=(),
+        demonstration_files=tuple(DEMO_DIR / f for f in demo_files),
         prompt_dirs=(PROMPT_DIR,),
         data_dirs=(DATA_DIR,),
-        embeddings_cache_file=CACHE_DIR / "embeddings.cache.yaml",
+        embeddings_cache_file=CACHE_DIR / "__embeddings__.yaml",
         object_loader=object_loader,
     )
+
+
+def _log_yaml(log: Sequence[dp.ExportableLogMessage]) -> str:
+    return dump_yaml(Sequence[dp.ExportableLogMessage], log)
+
+
+def _log_messages(log: Sequence[dp.ExportableLogMessage]) -> str:
+    return "\n".join(e.message for e in log)
 
 
 def _load_cache(name: str):
@@ -54,14 +64,17 @@ def test_query_properties():
 def _eval_query(
     query: dp.Query[Any],
     cache_name: str,
+    *,
     budget: int = 1,
     num_completions: int = 1,
     model_name: dp.StandardModelName | str = "gpt-4.1-mini",
     model_options: dp.RequestOptions | None = None,
     model_class: str | None = None,
+    demo_files: Sequence[str] = (),
+    select_examples: dp.ExampleSelector | None = None,
     mode: dp.AnswerMode = None,
 ):
-    env = _make_policy_env()
+    env = _make_policy_env(demo_files=demo_files)
     with _load_cache(cache_name) as cache:
         base_model = dp.standard_model(
             model_name, options=model_options, model_class=model_class
@@ -69,12 +82,14 @@ def _eval_query(
         model = dp.CachedModel(base_model, cache)
         bl = dp.BudgetLimit({dp.NUM_REQUESTS: budget})
         pp = dp.with_budget(bl) @ dp.few_shot(
-            model, num_completions=num_completions, mode=mode
+            model,
+            num_completions=num_completions,
+            mode=mode,
+            select_examples=select_examples,
         )
         stream = query.run_toplevel(env, pp)
         res, _ = stream.collect()
         log = list(env.tracer.export_log())
-        print(log)
         return res, log
 
 
@@ -85,7 +100,7 @@ def _eval_strategy[N: dp.Node, P, T](
     max_requests: int = 1,
     max_res: int = 1,
     model_name: dp.StandardModelName | str = "gpt-4.1-mini",
-) -> tuple[Sequence[dp.Solution[T]], str]:
+) -> tuple[Sequence[dp.Solution[T]], Sequence[dp.ExportableLogMessage]]:
     env = _make_policy_env()
     with _load_cache(cache_name) as cache:
         model = dp.CachedModel(dp.standard_model(model_name), cache)
@@ -93,8 +108,7 @@ def _eval_strategy[N: dp.Node, P, T](
         budget = dp.BudgetLimit({dp.NUM_REQUESTS: max_requests})
         ret, _spent = stream.collect(budget=budget, num_generated=max_res)
         log = list(env.tracer.export_log())
-        log_str = "\n".join(e.message for e in log)
-        return ret, log_str
+        return ret, log
 
 
 def test_concurrent():
@@ -200,7 +214,7 @@ def _eval_classifier_query(
         stream = query.run_toplevel(env, pp)
         res, _ = stream.collect()
         log = list(env.tracer.export_log())
-        print(log)
+        print(_log_messages(log))
         assert res
         return res[0].meta
 
@@ -348,7 +362,7 @@ def test_abduction():
     # assert res
     print(res)
     print()
-    print(log)
+    print(_log_messages(log))
 
 
 #####
@@ -374,7 +388,7 @@ def test_sequence():
     res, log = _eval_strategy(
         strategy, policy, cache_name="sequence", max_requests=10, max_res=10
     )
-    print(log)
+    print(_log_messages(log))
     assert len(res) == 3
 
 
@@ -395,7 +409,7 @@ def test_embedded_tree_and_transformers():
     res, log = _eval_strategy(
         strategy, policy, cache_name="no_need_for_caching", max_res=1
     )
-    print(log)
+    print(_log_messages(log))
     assert res
 
 
@@ -413,7 +427,7 @@ def test_make_sum_dict_ip():
         max_requests=2,
         max_res=1,
     )
-    print(log)
+    print(_log_messages(log))
     assert res
 
 
@@ -427,7 +441,7 @@ def test_dual_number_generation(shared: bool):
         max_requests=4,
         max_res=1,
     )
-    print(log)
+    print(_log_messages(log))
     assert res
 
 
@@ -528,3 +542,22 @@ def test_strategy_loading_data():
     )
     assert res
     print(res[0].tracked.value)
+
+
+#####
+##### Embeddings
+#####
+
+
+def test_example_embeddings():
+    question = "What is the most populated country in Europe?"
+    _res, _log = _eval_query(
+        ex.AnswerTriviaQuestion(question),
+        "example_embeddings",
+        demo_files=["example_embeddings"],
+        select_examples=dp.closest_examples(
+            k=2, model_name="text-embedding-3-large"
+        ),
+    )
+    print()
+    print(_log_yaml(_log))
