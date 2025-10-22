@@ -5537,7 +5537,8 @@ Answers</code> code action from Delphyne's VSCode extension).</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 47</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 46</span>
+<span class="normal"> 47</span>
 <span class="normal"> 48</span>
 <span class="normal"> 49</span>
 <span class="normal"> 50</span>
@@ -5606,8 +5607,7 @@ Answers</code> code action from Delphyne's VSCode extension).</p>
 <span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">116</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Compute</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The standard `Compute` effect.</span>
@@ -5806,7 +5806,8 @@ inference when necessary.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">120</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">119</span>
+<span class="normal">120</span>
 <span class="normal">121</span>
 <span class="normal">122</span>
 <span class="normal">123</span>
@@ -5850,8 +5851,7 @@ inference when necessary.</p>
 <span class="normal">161</span>
 <span class="normal">162</span>
 <span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">[</span><span class="o">**</span><span class="n">A</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">](</span>
+<span class="normal">164</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">[</span><span class="o">**</span><span class="n">A</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">P</span><span class="p">](</span>
     <span class="n">f</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">override_args</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -6030,7 +6030,8 @@ than those specified with the <code>override_args</code> argument of
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">168</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
+<span class="normal">168</span>
 <span class="normal">169</span>
 <span class="normal">170</span>
 <span class="normal">171</span>
@@ -6119,7 +6120,10 @@ than those specified with the <code>override_args</code> argument of
 <span class="normal">254</span>
 <span class="normal">255</span>
 <span class="normal">256</span>
-<span class="normal">257</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dp</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dp</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">elim_compute</span><span class="p">(</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
@@ -6163,13 +6167,16 @@ than those specified with the <code>override_args</code> argument of
                 <span class="n">cache</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">cache</span>
             <span class="n">query</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">attached</span><span class="o">.</span><span class="n">query</span>
             <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">__Computation__</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
-            <span class="n">digest</span> <span class="o">=</span> <span class="n">json_object_digest</span><span class="p">(</span><span class="n">ty</span><span class="o">.</span><span class="n">pydantic_dump</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">query</span><span class="p">))</span>
+            <span class="n">lid</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">log_computations</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">lid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">lid</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">generate_unique_log_message_id</span><span class="p">()</span>
                 <span class="n">env</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
                     <span class="n">log_computations</span><span class="p">,</span>
                     <span class="s2">&quot;computation_started&quot;</span><span class="p">,</span>
-                    <span class="p">{</span><span class="s2">&quot;hash&quot;</span><span class="p">:</span> <span class="n">digest</span><span class="p">,</span> <span class="s2">&quot;details&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">},</span>
+                    <span class="p">{</span><span class="s2">&quot;computation&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">},</span>
                     <span class="n">loc</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span>
+                    <span class="nb">id</span><span class="o">=</span><span class="n">lid</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="n">overriden</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">override_args</span> <span class="ow">or</span> <span class="p">{}</span>
             <span class="k">if</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">override_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -6182,19 +6189,20 @@ than those specified with the <code>override_args</code> argument of
             <span class="p">)</span>
             <span class="n">_elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
             <span class="k">if</span> <span class="n">log_computations</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">lid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
                 <span class="n">env</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
                     <span class="n">log_computations</span><span class="p">,</span>
                     <span class="s2">&quot;computation_finished&quot;</span><span class="p">,</span>
-                    <span class="p">{</span><span class="s2">&quot;hash&quot;</span><span class="p">:</span> <span class="n">digest</span><span class="p">,</span> <span class="s2">&quot;elapsed&quot;</span><span class="p">:</span> <span class="n">_elapsed</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">answer</span><span class="p">},</span>
+                    <span class="p">{</span><span class="s2">&quot;elapsed&quot;</span><span class="p">:</span> <span class="n">_elapsed</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">answer</span><span class="p">},</span>
                     <span class="n">loc</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span>
+                    <span class="n">related</span><span class="o">=</span><span class="p">[</span><span class="n">lid</span><span class="p">],</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">log_long_computations</span> <span class="ow">and</span> <span class="n">_elapsed</span> <span class="o">&gt;</span> <span class="n">log_long_computations</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
                 <span class="n">env</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
                     <span class="n">log_long_computations</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                     <span class="s2">&quot;long_computation&quot;</span><span class="p">,</span>
                     <span class="p">{</span>
-                        <span class="s2">&quot;hash&quot;</span><span class="p">:</span> <span class="n">digest</span><span class="p">,</span>
-                        <span class="s2">&quot;details&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span>
+                        <span class="s2">&quot;computation&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span>
                         <span class="s2">&quot;elapsed&quot;</span><span class="p">:</span> <span class="n">_elapsed</span><span class="p">,</span>
                         <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">answer</span><span class="p">,</span>
                     <span class="p">},</span>
@@ -6283,7 +6291,8 @@ than those specified with the <code>override_args</code> argument of
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">21</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">20</span>
+<span class="normal">21</span>
 <span class="normal">22</span>
 <span class="normal">23</span>
 <span class="normal">24</span>
@@ -6305,8 +6314,7 @@ than those specified with the <code>override_args</code> argument of
 <span class="normal">40</span>
 <span class="normal">41</span>
 <span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">43</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">__Computation__</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">PseudoQuery</span><span class="p">[</span><span class="nb">object</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A special query that represents a computation.</span>
