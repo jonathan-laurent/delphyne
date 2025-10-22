@@ -1190,6 +1190,30 @@ class ExampleSelector:
         """
         return self.filter(take_random(num_examples))
 
+    def cached(self) -> "ExampleSelector":
+        """
+        Return a new example selector that caches its output the first
+        time it is called and then always returns the cached result
+        regardless of its inputs.
+
+        This is useful in particular when using `interact`, so that each
+        query that is part of a same conversation is mapped to the same
+        set of examples.
+        """
+
+        cached: Sequence[Example] | None = None
+
+        def select(
+            env: PolicyEnv,
+            query: dp.AbstractQuery[Any],
+        ) -> Sequence[Example]:
+            nonlocal cached
+            if cached is None:
+                cached = self._fn(env, query)
+            return cached
+
+        return ExampleSelector(select)
+
 
 @ExampleSelector
 def all_examples(
