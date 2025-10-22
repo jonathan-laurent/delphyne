@@ -1382,15 +1382,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#delphyne.Tracer.unique_log_message_id" class="md-nav__link">
-    <span class="md-ellipsis">
-      unique_log_message_id
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#delphyne.Tracer.global_node_id" class="md-nav__link">
     <span class="md-ellipsis">
       global_node_id
@@ -2732,15 +2723,6 @@
   <a href="#delphyne.Tracer.__init__" class="md-nav__link">
     <span class="md-ellipsis">
       __init__
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#delphyne.Tracer.unique_log_message_id" class="md-nav__link">
-    <span class="md-ellipsis">
-      unique_log_message_id
     </span>
   </a>
   
@@ -7951,14 +7933,7 @@ messages in between.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">633</span>
-<span class="normal">634</span>
-<span class="normal">635</span>
-<span class="normal">636</span>
-<span class="normal">637</span>
-<span class="normal">638</span>
-<span class="normal">639</span>
-<span class="normal">640</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">640</span>
 <span class="normal">641</span>
 <span class="normal">642</span>
 <span class="normal">643</span>
@@ -8091,8 +8066,7 @@ messages in between.</p>
 <span class="normal">770</span>
 <span class="normal">771</span>
 <span class="normal">772</span>
-<span class="normal">773</span>
-<span class="normal">774</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Tracer</span><span class="p">:</span>
+<span class="normal">773</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Tracer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A mutable trace along with a mutable list of log messages.</span>
 
@@ -8119,20 +8093,10 @@ messages in between.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="n">Trace</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">LogMessage</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_level</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="n">log_level</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_last_unique_message_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="c1"># Different threads may be logging information or appending to</span>
         <span class="c1"># the trace in parallel.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">unique_log_message_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate a unique identifier, which can be used to tie several</span>
-<span class="sd">        log messages together.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_last_unique_message_id</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_unique_message_id</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">global_node_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">refs</span><span class="o">.</span><span class="n">GlobalNodeRef</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">irefs</span><span class="o">.</span><span class="n">NodeId</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -8176,18 +8140,19 @@ messages in between.</p>
         <span class="n">level</span><span class="p">:</span> <span class="n">LogLevel</span><span class="p">,</span>
         <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">metadata</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
         <span class="n">location</span><span class="p">:</span> <span class="n">Location</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">related</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">):</span>
+        <span class="n">related</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">LogMessageId</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LogMessageId</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Log a message, with optional metadata and location information.</span>
 <span class="sd">        The metadata must be exportable to JSON using Pydantic.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">log_level_greater_or_equal</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_level</span><span class="p">):</span>
-            <span class="k">return</span>
+            <span class="k">return</span> <span class="kc">None</span>
         <span class="n">time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+            <span class="nb">id</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="p">)</span>
             <span class="n">short_location</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">location</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">short_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">convert_location</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
@@ -8198,10 +8163,11 @@ messages in between.</p>
                     <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span>
                     <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
                     <span class="n">location</span><span class="o">=</span><span class="n">short_location</span><span class="p">,</span>
-                    <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span>
-                    <span class="n">related</span><span class="o">=</span><span class="n">related</span><span class="p">,</span>
+                    <span class="n">message_id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span>
+                    <span class="n">related</span><span class="o">=</span><span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">related</span> <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">],</span>
                 <span class="p">)</span>
             <span class="p">)</span>
+            <span class="k">return</span> <span class="nb">id</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">export_log</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">remove_timing_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -8224,8 +8190,8 @@ messages in between.</p>
                     <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span>
                     <span class="n">space</span><span class="o">=</span><span class="n">space</span><span class="p">,</span>
                     <span class="n">metadata</span><span class="o">=</span><span class="n">pydantic_dump</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">metadata</span><span class="p">),</span>
-                    <span class="nb">id</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-                    <span class="n">related</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">related</span><span class="p">,</span>
+                    <span class="n">message_id</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">message_id</span><span class="p">,</span>
+                    <span class="n">related</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">related</span><span class="p">),</span>
                 <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">export_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExportableTrace</span><span class="p">:</span>
@@ -8298,19 +8264,18 @@ messages in between.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">652</span>
-<span class="normal">653</span>
-<span class="normal">654</span>
-<span class="normal">655</span>
-<span class="normal">656</span>
-<span class="normal">657</span>
-<span class="normal">658</span>
-<span class="normal">659</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">659</span>
 <span class="normal">660</span>
 <span class="normal">661</span>
 <span class="normal">662</span>
 <span class="normal">663</span>
-<span class="normal">664</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_level</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span><span class="p">):</span>
+<span class="normal">664</span>
+<span class="normal">665</span>
+<span class="normal">666</span>
+<span class="normal">667</span>
+<span class="normal">668</span>
+<span class="normal">669</span>
+<span class="normal">670</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_level</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parameters:</span>
 <span class="sd">        log_level: The minimum severity level of messages to log.</span>
@@ -8318,51 +8283,10 @@ messages in between.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="n">Trace</span><span class="p">()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">LogMessage</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">log_level</span><span class="p">:</span> <span class="n">LogLevel</span> <span class="o">=</span> <span class="n">log_level</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_last_unique_message_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="c1"># Different threads may be logging information or appending to</span>
     <span class="c1"># the trace in parallel.</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h4 id="delphyne.Tracer.unique_log_message_id" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">unique_log_message_id</span>
-
-
-</h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">unique_log_message_id</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="str">str</span></span>
-</code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>Generate a unique identifier, which can be used to tie several
-log messages together.</p>
-
-
-            <details class="quote">
-              <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">666</span>
-<span class="normal">667</span>
-<span class="normal">668</span>
-<span class="normal">669</span>
-<span class="normal">670</span>
-<span class="normal">671</span>
-<span class="normal">672</span>
-<span class="normal">673</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">unique_log_message_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Generate a unique identifier, which can be used to tie several</span>
-<span class="sd">    log messages together.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_last_unique_message_id</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_unique_message_id</span><span class="si">}</span><span class="s2">&quot;</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -8398,13 +8322,13 @@ and return the corresponding node identififier.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">675</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">672</span>
+<span class="normal">673</span>
+<span class="normal">674</span>
+<span class="normal">675</span>
 <span class="normal">676</span>
 <span class="normal">677</span>
-<span class="normal">678</span>
-<span class="normal">679</span>
-<span class="normal">680</span>
-<span class="normal">681</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">global_node_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">refs</span><span class="o">.</span><span class="n">GlobalNodeRef</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">irefs</span><span class="o">.</span><span class="n">NodeId</span><span class="p">:</span>
+<span class="normal">678</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">global_node_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">refs</span><span class="o">.</span><span class="n">GlobalNodeRef</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">irefs</span><span class="o">.</span><span class="n">NodeId</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Ensure that a node at a given reference is present in the trace</span>
 <span class="sd">    and return the corresponding node identififier.</span>
@@ -8443,16 +8367,16 @@ calls this method on all encountered nodes.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">683</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">680</span>
+<span class="normal">681</span>
+<span class="normal">682</span>
+<span class="normal">683</span>
 <span class="normal">684</span>
 <span class="normal">685</span>
 <span class="normal">686</span>
 <span class="normal">687</span>
 <span class="normal">688</span>
-<span class="normal">689</span>
-<span class="normal">690</span>
-<span class="normal">691</span>
-<span class="normal">692</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">trace_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">refs</span><span class="o">.</span><span class="n">GlobalNodeRef</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">689</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">trace_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">refs</span><span class="o">.</span><span class="n">GlobalNodeRef</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Ensure that a node at a given reference is present in the trace.</span>
 
@@ -8492,13 +8416,13 @@ trace, even if no answer is provided for it.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">694</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">691</span>
+<span class="normal">692</span>
+<span class="normal">693</span>
+<span class="normal">694</span>
 <span class="normal">695</span>
 <span class="normal">696</span>
-<span class="normal">697</span>
-<span class="normal">698</span>
-<span class="normal">699</span>
-<span class="normal">700</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">trace_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">AttachedQuery</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">697</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">trace_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">AttachedQuery</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Ensure that a query at a given reference is present in the</span>
 <span class="sd">    trace, even if no answer is provided for it.</span>
@@ -8540,15 +8464,15 @@ it is is not used to reach a node.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">702</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">699</span>
+<span class="normal">700</span>
+<span class="normal">701</span>
+<span class="normal">702</span>
 <span class="normal">703</span>
 <span class="normal">704</span>
 <span class="normal">705</span>
 <span class="normal">706</span>
-<span class="normal">707</span>
-<span class="normal">708</span>
-<span class="normal">709</span>
-<span class="normal">710</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">trace_answer</span><span class="p">(</span>
+<span class="normal">707</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">trace_answer</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">space</span><span class="p">:</span> <span class="n">refs</span><span class="o">.</span><span class="n">GlobalSpacePath</span><span class="p">,</span> <span class="n">answer</span><span class="p">:</span> <span class="n">refs</span><span class="o">.</span><span class="n">Answer</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -8575,10 +8499,10 @@ it is is not used to reach a node.</p>
     <span class="n">level</span><span class="p">:</span> <span class="n"><span title="delphyne.core.traces.LogLevel">LogLevel</span></span><span class="p">,</span>
     <span class="n">message</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">,</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="n"><span title="object">object</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
     <span class="n">location</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Location (delphyne.core.traces.Location)" href="#delphyne.core.traces.Location">Location</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="nb">id</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">related</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span>
+    <span class="n">related</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.core.traces.LogMessageId">LogMessageId</span></span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="delphyne.core.traces.LogMessageId">LogMessageId</span></span> <span class="o">|</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -8589,7 +8513,10 @@ The metadata must be exportable to JSON using Pydantic.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">712</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">709</span>
+<span class="normal">710</span>
+<span class="normal">711</span>
+<span class="normal">712</span>
 <span class="normal">713</span>
 <span class="normal">714</span>
 <span class="normal">715</span>
@@ -8618,24 +8545,24 @@ The metadata must be exportable to JSON using Pydantic.</p>
 <span class="normal">738</span>
 <span class="normal">739</span>
 <span class="normal">740</span>
-<span class="normal">741</span>
-<span class="normal">742</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span>
+<span class="normal">741</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">level</span><span class="p">:</span> <span class="n">LogLevel</span><span class="p">,</span>
     <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
     <span class="n">location</span><span class="p">:</span> <span class="n">Location</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">related</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">):</span>
+    <span class="n">related</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">LogMessageId</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LogMessageId</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Log a message, with optional metadata and location information.</span>
 <span class="sd">    The metadata must be exportable to JSON using Pydantic.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">log_level_greater_or_equal</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_level</span><span class="p">):</span>
-        <span class="k">return</span>
+        <span class="k">return</span> <span class="kc">None</span>
     <span class="n">time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
     <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+        <span class="nb">id</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">messages</span><span class="p">)</span>
         <span class="n">short_location</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">location</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">short_location</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">convert_location</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
@@ -8646,10 +8573,11 @@ The metadata must be exportable to JSON using Pydantic.</p>
                 <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span>
                 <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
                 <span class="n">location</span><span class="o">=</span><span class="n">short_location</span><span class="p">,</span>
-                <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span>
-                <span class="n">related</span><span class="o">=</span><span class="n">related</span><span class="p">,</span>
+                <span class="n">message_id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span>
+                <span class="n">related</span><span class="o">=</span><span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">related</span> <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">],</span>
             <span class="p">)</span>
         <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">id</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -8679,7 +8607,8 @@ The metadata must be exportable to JSON using Pydantic.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">744</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">743</span>
+<span class="normal">744</span>
 <span class="normal">745</span>
 <span class="normal">746</span>
 <span class="normal">747</span>
@@ -8701,8 +8630,7 @@ The metadata must be exportable to JSON using Pydantic.</p>
 <span class="normal">763</span>
 <span class="normal">764</span>
 <span class="normal">765</span>
-<span class="normal">766</span>
-<span class="normal">767</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">export_log</span><span class="p">(</span>
+<span class="normal">766</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">export_log</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">remove_timing_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">ExportableLogMessage</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -8723,8 +8651,8 @@ The metadata must be exportable to JSON using Pydantic.</p>
                 <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span>
                 <span class="n">space</span><span class="o">=</span><span class="n">space</span><span class="p">,</span>
                 <span class="n">metadata</span><span class="o">=</span><span class="n">pydantic_dump</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">metadata</span><span class="p">),</span>
-                <span class="nb">id</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-                <span class="n">related</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">related</span><span class="p">,</span>
+                <span class="n">message_id</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">message_id</span><span class="p">,</span>
+                <span class="n">related</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">related</span><span class="p">),</span>
             <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -8755,12 +8683,12 @@ The metadata must be exportable to JSON using Pydantic.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">769</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">768</span>
+<span class="normal">769</span>
 <span class="normal">770</span>
 <span class="normal">771</span>
 <span class="normal">772</span>
-<span class="normal">773</span>
-<span class="normal">774</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">export_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExportableTrace</span><span class="p">:</span>
+<span class="normal">773</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">export_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExportableTrace</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Export the trace into an easily serializable format.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -8858,9 +8786,9 @@ message was logged, if applicable.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><span title="delphyne.LogMessage.id">id</span></code></td>
+            <td><code><span title="delphyne.LogMessage.message_id">message_id</span></code></td>
             <td>
-                  <code><span title="str">str</span> | None</code>
+                  <code><span title="delphyne.core.traces.LogMessageId">LogMessageId</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -8872,7 +8800,7 @@ be used to tie related messages together.</p>
           <tr class="doc-section-item">
             <td><code><span title="delphyne.LogMessage.related">related</span></code></td>
             <td>
-                  <code><span title="collections.abc.Sequence">Sequence</span>[<span title="str">str</span>] | None</code>
+                  <code><span title="collections.abc.Sequence">Sequence</span>[<span title="delphyne.core.traces.LogMessageId">LogMessageId</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -8892,14 +8820,7 @@ be used to tie related messages together.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">590</span>
-<span class="normal">591</span>
-<span class="normal">592</span>
-<span class="normal">593</span>
-<span class="normal">594</span>
-<span class="normal">595</span>
-<span class="normal">596</span>
-<span class="normal">597</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">597</span>
 <span class="normal">598</span>
 <span class="normal">599</span>
 <span class="normal">600</span>
@@ -8915,7 +8836,14 @@ be used to tie related messages together.</p>
 <span class="normal">610</span>
 <span class="normal">611</span>
 <span class="normal">612</span>
-<span class="normal">613</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">613</span>
+<span class="normal">614</span>
+<span class="normal">615</span>
+<span class="normal">616</span>
+<span class="normal">617</span>
+<span class="normal">618</span>
+<span class="normal">619</span>
+<span class="normal">620</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">LogMessage</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A log message.</span>
@@ -8927,7 +8855,7 @@ be used to tie related messages together.</p>
 <span class="sd">            object that can be serialized to JSON using Pydantic.</span>
 <span class="sd">        location: An optional location in the strategy tree where the</span>
 <span class="sd">            message was logged, if applicable.</span>
-<span class="sd">        id: Optionally, a unique identifier for the message, which can</span>
+<span class="sd">        message_id: Optionally, a unique identifier for the message, which can</span>
 <span class="sd">            be used to tie related messages together.</span>
 <span class="sd">        related: Optionally, a list of identifiers of related messages.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -8937,8 +8865,8 @@ be used to tie related messages together.</p>
     <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">location</span><span class="p">:</span> <span class="n">ShortLocation</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">related</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">message_id</span><span class="p">:</span> <span class="n">LogMessageId</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">related</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">LogMessageId</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -8998,21 +8926,21 @@ values (as opposed to <a class="autorefs autorefs-internal" title="LogMessage
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">616</span>
-<span class="normal">617</span>
-<span class="normal">618</span>
-<span class="normal">619</span>
-<span class="normal">620</span>
-<span class="normal">621</span>
-<span class="normal">622</span>
-<span class="normal">623</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">623</span>
 <span class="normal">624</span>
 <span class="normal">625</span>
 <span class="normal">626</span>
 <span class="normal">627</span>
 <span class="normal">628</span>
 <span class="normal">629</span>
-<span class="normal">630</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">630</span>
+<span class="normal">631</span>
+<span class="normal">632</span>
+<span class="normal">633</span>
+<span class="normal">634</span>
+<span class="normal">635</span>
+<span class="normal">636</span>
+<span class="normal">637</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExportableLogMessage</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An exportable log message, as a dataclass whose fields are JSON</span>
@@ -9021,8 +8949,8 @@ values (as opposed to <a class="autorefs autorefs-internal" title="LogMessage
 
     <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">level</span><span class="p">:</span> <span class="n">LogLevel</span>
-    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">related</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">message_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">related</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">time</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">node</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">space</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -9080,12 +9008,12 @@ visited nodes into a trace.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/core/traces.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">777</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">776</span>
+<span class="normal">777</span>
 <span class="normal">778</span>
 <span class="normal">779</span>
 <span class="normal">780</span>
-<span class="normal">781</span>
-<span class="normal">782</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">tracer_hook</span><span class="p">(</span><span class="n">tracer</span><span class="p">:</span> <span class="n">Tracer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Tree</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="normal">781</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">tracer_hook</span><span class="p">(</span><span class="n">tracer</span><span class="p">:</span> <span class="n">Tracer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Tree</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Standard hook to be passed to `TreeMonitor` to automatically log</span>
 <span class="sd">    visited nodes into a trace.</span>

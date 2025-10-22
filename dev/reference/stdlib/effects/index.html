@@ -6120,10 +6120,7 @@ than those specified with the <code>override_args</code> argument of
 <span class="normal">254</span>
 <span class="normal">255</span>
 <span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dp</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
+<span class="normal">257</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dp</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">elim_compute</span><span class="p">(</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
     <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
@@ -6169,14 +6166,11 @@ than those specified with the <code>override_args</code> argument of
             <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">__Computation__</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
             <span class="n">lid</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">log_computations</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">lid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">lid</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">unique_log_message_id</span><span class="p">()</span>
-                <span class="n">env</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+                <span class="n">lid</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
                     <span class="n">log_computations</span><span class="p">,</span>
                     <span class="s2">&quot;computation_started&quot;</span><span class="p">,</span>
                     <span class="p">{</span><span class="s2">&quot;computation&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">},</span>
                     <span class="n">loc</span><span class="o">=</span><span class="n">tree</span><span class="p">,</span>
-                    <span class="nb">id</span><span class="o">=</span><span class="n">lid</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="n">overriden</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">override_args</span> <span class="ow">or</span> <span class="p">{}</span>
             <span class="k">if</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">override_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
