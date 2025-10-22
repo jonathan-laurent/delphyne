@@ -1483,6 +1483,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#delphyne.ExampleSelector.exclude_identical_queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      exclude_identical_queries
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#delphyne.ExampleSelector.cached" class="md-nav__link">
     <span class="md-ellipsis">
       cached
@@ -2633,6 +2642,15 @@
   <a href="#delphyne.ExampleSelector.random" class="md-nav__link">
     <span class="md-ellipsis">
       random
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.ExampleSelector.exclude_identical_queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      exclude_identical_queries
     </span>
   </a>
   
@@ -7411,24 +7429,7 @@ the standard <a class="autorefs autorefs-internal" title="interact" href="../alg
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1619</span>
-<span class="normal">1620</span>
-<span class="normal">1621</span>
-<span class="normal">1622</span>
-<span class="normal">1623</span>
-<span class="normal">1624</span>
-<span class="normal">1625</span>
-<span class="normal">1626</span>
-<span class="normal">1627</span>
-<span class="normal">1628</span>
-<span class="normal">1629</span>
-<span class="normal">1630</span>
-<span class="normal">1631</span>
-<span class="normal">1632</span>
-<span class="normal">1633</span>
-<span class="normal">1634</span>
-<span class="normal">1635</span>
-<span class="normal">1636</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1636</span>
 <span class="normal">1637</span>
 <span class="normal">1638</span>
 <span class="normal">1639</span>
@@ -7570,7 +7571,24 @@ the standard <a class="autorefs autorefs-internal" title="interact" href="../alg
 <span class="normal">1775</span>
 <span class="normal">1776</span>
 <span class="normal">1777</span>
-<span class="normal">1778</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
+<span class="normal">1778</span>
+<span class="normal">1779</span>
+<span class="normal">1780</span>
+<span class="normal">1781</span>
+<span class="normal">1782</span>
+<span class="normal">1783</span>
+<span class="normal">1784</span>
+<span class="normal">1785</span>
+<span class="normal">1786</span>
+<span class="normal">1787</span>
+<span class="normal">1788</span>
+<span class="normal">1789</span>
+<span class="normal">1790</span>
+<span class="normal">1791</span>
+<span class="normal">1792</span>
+<span class="normal">1793</span>
+<span class="normal">1794</span>
+<span class="normal">1795</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">few_shot</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
     <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
@@ -7951,24 +7969,7 @@ distribution <code>D</code> is transformed into <code>(1-p)*D + p*dirac(e)</code
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1486</span>
-<span class="normal">1487</span>
-<span class="normal">1488</span>
-<span class="normal">1489</span>
-<span class="normal">1490</span>
-<span class="normal">1491</span>
-<span class="normal">1492</span>
-<span class="normal">1493</span>
-<span class="normal">1494</span>
-<span class="normal">1495</span>
-<span class="normal">1496</span>
-<span class="normal">1497</span>
-<span class="normal">1498</span>
-<span class="normal">1499</span>
-<span class="normal">1500</span>
-<span class="normal">1501</span>
-<span class="normal">1502</span>
-<span class="normal">1503</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1503</span>
 <span class="normal">1504</span>
 <span class="normal">1505</span>
 <span class="normal">1506</span>
@@ -8037,7 +8038,24 @@ distribution <code>D</code> is transformed into <code>(1-p)*D + p*dirac(e)</code
 <span class="normal">1569</span>
 <span class="normal">1570</span>
 <span class="normal">1571</span>
-<span class="normal">1572</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
+<span class="normal">1572</span>
+<span class="normal">1573</span>
+<span class="normal">1574</span>
+<span class="normal">1575</span>
+<span class="normal">1576</span>
+<span class="normal">1577</span>
+<span class="normal">1578</span>
+<span class="normal">1579</span>
+<span class="normal">1580</span>
+<span class="normal">1581</span>
+<span class="normal">1582</span>
+<span class="normal">1583</span>
+<span class="normal">1584</span>
+<span class="normal">1585</span>
+<span class="normal">1586</span>
+<span class="normal">1587</span>
+<span class="normal">1588</span>
+<span class="normal">1589</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">classify</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
     <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
@@ -8161,13 +8179,13 @@ distribution <code>D</code> is transformed into <code>(1-p)*D + p*dirac(e)</code
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1393</span>
-<span class="normal">1394</span>
-<span class="normal">1395</span>
-<span class="normal">1396</span>
-<span class="normal">1397</span>
-<span class="normal">1398</span>
-<span class="normal">1399</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1410</span>
+<span class="normal">1411</span>
+<span class="normal">1412</span>
+<span class="normal">1413</span>
+<span class="normal">1414</span>
+<span class="normal">1415</span>
+<span class="normal">1416</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ProbInfo</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">SearchMeta</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Distribution probability, guaranteed to be nonempty and to sum to 1.</span>
@@ -8285,7 +8303,23 @@ distribution <code>D</code> is transformed into <code>(1-p)*D + p*dirac(e)</code
 <span class="normal">1213</span>
 <span class="normal">1214</span>
 <span class="normal">1215</span>
-<span class="normal">1216</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">1216</span>
+<span class="normal">1217</span>
+<span class="normal">1218</span>
+<span class="normal">1219</span>
+<span class="normal">1220</span>
+<span class="normal">1221</span>
+<span class="normal">1222</span>
+<span class="normal">1223</span>
+<span class="normal">1224</span>
+<span class="normal">1225</span>
+<span class="normal">1226</span>
+<span class="normal">1227</span>
+<span class="normal">1228</span>
+<span class="normal">1229</span>
+<span class="normal">1230</span>
+<span class="normal">1231</span>
+<span class="normal">1232</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExampleSelector</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrapper around a function for selecting examples.</span>
@@ -8310,7 +8344,7 @@ distribution <code>D</code> is transformed into <code>(1-p)*D + p*dirac(e)</code
             <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Example</span><span class="p">]:</span>
             <span class="n">examples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fn</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">examples</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">examples</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">ExampleSelector</span><span class="p">(</span><span class="n">select</span><span class="p">)</span>
 
@@ -8320,6 +8354,22 @@ distribution <code>D</code> is transformed into <code>(1-p)*D + p*dirac(e)</code
 <span class="sd">        number of examples.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">take_random</span><span class="p">(</span><span class="n">num_examples</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">exclude_identical_queries</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExampleSelector&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a new example selector that excludes examples whose</span>
+<span class="sd">        query is identical to the input query.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">select</span><span class="p">(</span>
+            <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
+            <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+            <span class="n">examples</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Example</span><span class="p">],</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Example</span><span class="p">]:</span>
+            <span class="n">serialized</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">SerializedQuery</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">ex</span> <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">examples</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">ex</span><span class="o">.</span><span class="n">query</span> <span class="o">==</span> <span class="n">serialized</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">select</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">cached</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExampleSelector&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -8408,7 +8458,7 @@ examples selected by this selector.</p>
         <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Example</span><span class="p">]:</span>
         <span class="n">examples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fn</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">examples</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">examples</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">ExampleSelector</span><span class="p">(</span><span class="n">select</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -8461,6 +8511,65 @@ number of examples.</p>
 <div class="doc doc-object doc-function">
 
 
+<h4 id="delphyne.ExampleSelector.exclude_identical_queries" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">exclude_identical_queries</span>
+
+
+</h4>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">exclude_identical_queries</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="ExampleSelector
+
+
+  
+      dataclass
+   (delphyne.stdlib.queries.ExampleSelector)" href="#delphyne.ExampleSelector">ExampleSelector</a></span>
+</code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Return a new example selector that excludes examples whose
+query is identical to the input query.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1194</span>
+<span class="normal">1195</span>
+<span class="normal">1196</span>
+<span class="normal">1197</span>
+<span class="normal">1198</span>
+<span class="normal">1199</span>
+<span class="normal">1200</span>
+<span class="normal">1201</span>
+<span class="normal">1202</span>
+<span class="normal">1203</span>
+<span class="normal">1204</span>
+<span class="normal">1205</span>
+<span class="normal">1206</span>
+<span class="normal">1207</span>
+<span class="normal">1208</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">exclude_identical_queries</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExampleSelector&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a new example selector that excludes examples whose</span>
+<span class="sd">    query is identical to the input query.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">select</span><span class="p">(</span>
+        <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+        <span class="n">examples</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Example</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Example</span><span class="p">]:</span>
+        <span class="n">serialized</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">SerializedQuery</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">ex</span> <span class="k">for</span> <span class="n">ex</span> <span class="ow">in</span> <span class="n">examples</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">ex</span><span class="o">.</span><span class="n">query</span> <span class="o">==</span> <span class="n">serialized</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">select</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h4 id="delphyne.ExampleSelector.cached" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">cached</span>
 
@@ -8486,29 +8595,29 @@ set of examples.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1194</span>
-<span class="normal">1195</span>
-<span class="normal">1196</span>
-<span class="normal">1197</span>
-<span class="normal">1198</span>
-<span class="normal">1199</span>
-<span class="normal">1200</span>
-<span class="normal">1201</span>
-<span class="normal">1202</span>
-<span class="normal">1203</span>
-<span class="normal">1204</span>
-<span class="normal">1205</span>
-<span class="normal">1206</span>
-<span class="normal">1207</span>
-<span class="normal">1208</span>
-<span class="normal">1209</span>
-<span class="normal">1210</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1210</span>
 <span class="normal">1211</span>
 <span class="normal">1212</span>
 <span class="normal">1213</span>
 <span class="normal">1214</span>
 <span class="normal">1215</span>
-<span class="normal">1216</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cached</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExampleSelector&quot;</span><span class="p">:</span>
+<span class="normal">1216</span>
+<span class="normal">1217</span>
+<span class="normal">1218</span>
+<span class="normal">1219</span>
+<span class="normal">1220</span>
+<span class="normal">1221</span>
+<span class="normal">1222</span>
+<span class="normal">1223</span>
+<span class="normal">1224</span>
+<span class="normal">1225</span>
+<span class="normal">1226</span>
+<span class="normal">1227</span>
+<span class="normal">1228</span>
+<span class="normal">1229</span>
+<span class="normal">1230</span>
+<span class="normal">1231</span>
+<span class="normal">1232</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cached</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExampleSelector&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a new example selector that caches its output the first</span>
 <span class="sd">    time it is called and then always returns the cached result</span>
@@ -8568,21 +8677,21 @@ set of examples.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1219</span>
-<span class="normal">1220</span>
-<span class="normal">1221</span>
-<span class="normal">1222</span>
-<span class="normal">1223</span>
-<span class="normal">1224</span>
-<span class="normal">1225</span>
-<span class="normal">1226</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@ExampleSelector</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1235</span>
+<span class="normal">1236</span>
+<span class="normal">1237</span>
+<span class="normal">1238</span>
+<span class="normal">1239</span>
+<span class="normal">1240</span>
+<span class="normal">1241</span>
+<span class="normal">1242</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@ExampleSelector</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">all_examples</span><span class="p">(</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Example</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Select all examples relevant to a query.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">examples</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">env</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">examples_for</span><span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">query_name</span><span class="p">())</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -8614,23 +8723,7 @@ tuples, sorted by decreasing similarity.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1229</span>
-<span class="normal">1230</span>
-<span class="normal">1231</span>
-<span class="normal">1232</span>
-<span class="normal">1233</span>
-<span class="normal">1234</span>
-<span class="normal">1235</span>
-<span class="normal">1236</span>
-<span class="normal">1237</span>
-<span class="normal">1238</span>
-<span class="normal">1239</span>
-<span class="normal">1240</span>
-<span class="normal">1241</span>
-<span class="normal">1242</span>
-<span class="normal">1243</span>
-<span class="normal">1244</span>
-<span class="normal">1245</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1245</span>
 <span class="normal">1246</span>
 <span class="normal">1247</span>
 <span class="normal">1248</span>
@@ -8644,7 +8737,23 @@ tuples, sorted by decreasing similarity.</p>
 <span class="normal">1256</span>
 <span class="normal">1257</span>
 <span class="normal">1258</span>
-<span class="normal">1259</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">closest_examples</span><span class="p">(</span>
+<span class="normal">1259</span>
+<span class="normal">1260</span>
+<span class="normal">1261</span>
+<span class="normal">1262</span>
+<span class="normal">1263</span>
+<span class="normal">1264</span>
+<span class="normal">1265</span>
+<span class="normal">1266</span>
+<span class="normal">1267</span>
+<span class="normal">1268</span>
+<span class="normal">1269</span>
+<span class="normal">1270</span>
+<span class="normal">1271</span>
+<span class="normal">1272</span>
+<span class="normal">1273</span>
+<span class="normal">1274</span>
+<span class="normal">1275</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">closest_examples</span><span class="p">(</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -8671,7 +8780,7 @@ tuples, sorted by decreasing similarity.</p>
         <span class="p">)</span>
         <span class="c1"># Get top-k indices.</span>
         <span class="n">top_k_indices</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="n">sims</span><span class="p">)[:</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
-        <span class="n">examples</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">all_examples</span><span class="p">(</span><span class="n">qname</span><span class="p">)</span>
+        <span class="n">examples</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">examples_for</span><span class="p">(</span><span class="n">qname</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">examples</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">top_k_indices</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">ExampleSelector</span><span class="p">(</span><span class="n">select</span><span class="p">)</span>
