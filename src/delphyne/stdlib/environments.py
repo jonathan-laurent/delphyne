@@ -532,6 +532,13 @@ class PolicyEnv:
             self.info("llm_override", meta)
             return ret.answer
 
+    def unique_log_message_id(self) -> str:
+        """
+        Generate a unique identifier, which can be used to tie several
+        log messages together.
+        """
+        return self.tracer.unique_log_message_id()
+
     def log(
         self,
         level: dp.LogLevel,

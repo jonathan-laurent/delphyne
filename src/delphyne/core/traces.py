@@ -622,12 +622,12 @@ class ExportableLogMessage:
 
     message: str
     level: LogLevel
+    id: str | None = None
+    related: Sequence[str] | None = None
     time: datetime | None = None
     node: int | None = None
     space: int | None = None
     metadata: object | None = None  # JSON value
-    id: str | None = None
-    related: Sequence[str] | None = None
 
 
 class Tracer:
@@ -657,10 +657,20 @@ class Tracer:
         self.trace = Trace()
         self.messages: list[LogMessage] = []
         self.log_level: LogLevel = log_level
+        self._last_unique_message_id: int = 0
 
         # Different threads may be logging information or appending to
         # the trace in parallel.
         self.lock = threading.RLock()
+
+    def unique_log_message_id(self) -> str:
+        """
+        Generate a unique identifier, which can be used to tie several
+        log messages together.
+        """
+        with self.lock:
+            self._last_unique_message_id += 1
+            return f"{self._last_unique_message_id}"
 
     def global_node_id(self, node: refs.GlobalNodeRef) -> irefs.NodeId:
         """
@@ -770,15 +780,3 @@ def tracer_hook(tracer: Tracer) -> Callable[[Tree[Any, Any, Any]], None]:
     visited nodes into a trace.
     """
     return lambda tree: tracer.trace_node(tree.ref)
-
-
-def generate_unique_log_message_id() -> str:
-    """
-    Return a unique random identifier with 6 characters, which can be
-    used to tie log messages together.
-    """
-
-    # Generate a uuid and take a prefix
-    import uuid
-
-    return str(uuid.uuid4())[:6]

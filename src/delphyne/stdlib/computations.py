@@ -211,7 +211,7 @@ def elim_compute(
             lid = None
             if log_computations:
                 if lid is None:
-                    lid = dp.generate_unique_log_message_id()
+                    lid = env.unique_log_message_id()
                 env.log(
                     log_computations,
                     "computation_started",

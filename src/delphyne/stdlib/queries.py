@@ -1259,7 +1259,7 @@ def closest_examples(
         qname = query.query_name()
         env.info(
             f"Selecting {k} closest examples for query '{qname}'...",
-            id=(lid := dp.generate_unique_log_message_id()),
+            id=(lid := env.unique_log_message_id()),
         )
         embeddings = env.examples.embeddings_for_query_type(qname, model_name)
         model = em.standard_openai_embedding_model(model_name)
@@ -1450,7 +1450,7 @@ def _log_request(
     query: dp.AttachedQuery[Any],
     request: md.LLMRequest,
 ):
-    id = dp.generate_unique_log_message_id()
+    id = env.unique_log_message_id()
     req_json = ty.pydantic_dump(md.LLMRequest, request)
     info = {
         "query": query.query.query_name(),

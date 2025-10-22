@@ -90,7 +90,6 @@ from delphyne.core.traces import (
     Trace,
     Tracer,
     TraceReverseMap,
-    generate_unique_log_message_id,
     tracer_hook,
     valid_log_level,
 )

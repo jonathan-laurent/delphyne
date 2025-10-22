@@ -56,6 +56,7 @@ outcome:
     log:
       - message: llm_request
         level: info
+        id: '1'
         space: 1
         metadata:
           query: AskNumber
@@ -66,9 +67,10 @@ outcome:
               - role: user
                 content: '{}'
             options: {}
-        id: f4fe66
       - message: llm_response
         level: info
+        related:
+          - '1'
         space: 1
         metadata:
           response:
@@ -111,10 +113,9 @@ outcome:
               prompt_tokens_details:
                 audio_tokens: 0
                 cached_tokens: 0
-        related:
-          - f4fe66
       - message: llm_request
         level: info
+        id: '2'
         space: 2
         metadata:
           query: AskNumber
@@ -136,9 +137,10 @@ outcome:
                   Expected '83'. Please answer with 83 instead.
                   """
             options: {}
-        id: 0d54ac
       - message: llm_response
         level: info
+        related:
+          - '2'
         space: 2
         metadata:
           response:
@@ -181,5 +183,3 @@ outcome:
               prompt_tokens_details:
                 audio_tokens: 0
                 cached_tokens: 0
-        related:
-          - 0d54ac

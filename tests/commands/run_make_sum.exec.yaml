@@ -49,6 +49,7 @@ outcome:
     log:
       - message: llm_request
         level: info
+        id: '1'
         space: 1
         metadata:
           query: MakeSum
@@ -79,9 +80,10 @@ outcome:
                   List: [9, 6, 2]
                   Target: 11
             options: {}
-        id: 91839d
       - message: llm_response
         level: info
+        related:
+          - '1'
         space: 1
         metadata:
           response:
@@ -126,5 +128,3 @@ outcome:
               prompt_tokens_details:
                 audio_tokens: 0
                 cached_tokens: 0
-        related:
-          - 91839d
