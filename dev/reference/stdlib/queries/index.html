@@ -7411,10 +7411,7 @@ the standard <a class="autorefs autorefs-internal" title="interact" href="../alg
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1649</span>
-<span class="normal">1650</span>
-<span class="normal">1651</span>
-<span class="normal">1652</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1652</span>
 <span class="normal">1653</span>
 <span class="normal">1654</span>
 <span class="normal">1655</span>
@@ -7570,7 +7567,10 @@ the standard <a class="autorefs autorefs-internal" title="interact" href="../alg
 <span class="normal">1805</span>
 <span class="normal">1806</span>
 <span class="normal">1807</span>
-<span class="normal">1808</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
+<span class="normal">1808</span>
+<span class="normal">1809</span>
+<span class="normal">1810</span>
+<span class="normal">1811</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">few_shot</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
     <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
@@ -7951,10 +7951,7 @@ distribution <code>D</code> is transformed into <code>(1-p)*D + p*dirac(e)</code
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1516</span>
-<span class="normal">1517</span>
-<span class="normal">1518</span>
-<span class="normal">1519</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1519</span>
 <span class="normal">1520</span>
 <span class="normal">1521</span>
 <span class="normal">1522</span>
@@ -8037,7 +8034,10 @@ distribution <code>D</code> is transformed into <code>(1-p)*D + p*dirac(e)</code
 <span class="normal">1599</span>
 <span class="normal">1600</span>
 <span class="normal">1601</span>
-<span class="normal">1602</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
+<span class="normal">1602</span>
+<span class="normal">1603</span>
+<span class="normal">1604</span>
+<span class="normal">1605</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@prompting_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">classify</span><span class="p">[</span><span class="n">T</span><span class="p">](</span>
     <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AttachedQuery</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
@@ -8161,13 +8161,13 @@ distribution <code>D</code> is transformed into <code>(1-p)*D + p*dirac(e)</code
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/queries.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1428</span>
-<span class="normal">1429</span>
-<span class="normal">1430</span>
-<span class="normal">1431</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1431</span>
 <span class="normal">1432</span>
 <span class="normal">1433</span>
-<span class="normal">1434</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">1434</span>
+<span class="normal">1435</span>
+<span class="normal">1436</span>
+<span class="normal">1437</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ProbInfo</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">SearchMeta</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Distribution probability, guaranteed to be nonempty and to sum to 1.</span>
@@ -8753,7 +8753,10 @@ tuples, sorted by decreasing similarity.</p>
 <span class="normal">1290</span>
 <span class="normal">1291</span>
 <span class="normal">1292</span>
-<span class="normal">1293</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">closest_examples</span><span class="p">(</span>
+<span class="normal">1293</span>
+<span class="normal">1294</span>
+<span class="normal">1295</span>
+<span class="normal">1296</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">closest_examples</span><span class="p">(</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -8773,6 +8776,9 @@ tuples, sorted by decreasing similarity.</p>
             <span class="nb">id</span><span class="o">=</span><span class="p">(</span><span class="n">lid</span> <span class="o">:=</span> <span class="n">env</span><span class="o">.</span><span class="n">unique_log_message_id</span><span class="p">()),</span>
         <span class="p">)</span>
         <span class="n">embeddings</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">embeddings_for_query_type</span><span class="p">(</span><span class="n">qname</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">embeddings</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># There are no examples in the database.</span>
+            <span class="k">return</span> <span class="p">[]</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">em</span><span class="o">.</span><span class="n">standard_openai_embedding_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
         <span class="n">query_embedding</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">embed</span><span class="p">(</span>
             <span class="p">[</span><span class="n">env</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">embedding_text</span><span class="p">(</span><span class="n">query</span><span class="p">)],</span> <span class="n">cache</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">cache</span>
