@@ -8,7 +8,7 @@ answers and nodes.
 
 import threading
 from collections import defaultdict
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Literal, TypeGuard
@@ -599,6 +599,9 @@ class LogMessage:
             object that can be serialized to JSON using Pydantic.
         location: An optional location in the strategy tree where the
             message was logged, if applicable.
+        id: Optionally, a unique identifier for the message, which can
+            be used to tie related messages together.
+        related: Optionally, a list of identifiers of related messages.
     """
 
     message: str
@@ -606,6 +609,8 @@ class LogMessage:
     time: datetime
     metadata: object | None = None
     location: ShortLocation | None = None
+    id: str | None = None
+    related: Sequence[str] | None = None
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -621,6 +626,8 @@ class ExportableLogMessage:
     node: int | None = None
     space: int | None = None
     metadata: object | None = None  # JSON value
+    id: str | None = None
+    related: Sequence[str] | None = None
 
 
 class Tracer:
@@ -698,6 +705,8 @@ class Tracer:
         message: str,
         metadata: object | None = None,
         location: Location | None = None,
+        id: str | None = None,
+        related: Sequence[str] | None = None,
     ):
         """
         Log a message, with optional metadata and location information.
@@ -717,6 +726,8 @@ class Tracer:
                     time=time,
                     metadata=metadata,
                     location=short_location,
+                    id=id,
+                    related=related,
                 )
             )
 
@@ -741,6 +752,8 @@ class Tracer:
                     node=node,
                     space=space,
                     metadata=pydantic_dump(object, m.metadata),
+                    id=m.id,
+                    related=m.related,
                 )
 
     def export_trace(self) -> ExportableTrace:
@@ -757,3 +770,15 @@ def tracer_hook(tracer: Tracer) -> Callable[[Tree[Any, Any, Any]], None]:
     visited nodes into a trace.
     """
     return lambda tree: tracer.trace_node(tree.ref)
+
+
+def generate_unique_log_message_id() -> str:
+    """
+    Return a unique random identifier with 6 characters, which can be
+    used to tie log messages together.
+    """
+
+    # Generate a uuid and take a prefix
+    import uuid
+
+    return str(uuid.uuid4())[:6]

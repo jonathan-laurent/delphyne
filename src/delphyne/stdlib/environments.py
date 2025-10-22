@@ -534,6 +534,8 @@ class PolicyEnv:
         metadata: object | None = None,
         *,
         loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
+        id: str | None = None,
+        related: Sequence[str] | None = None,
     ) -> None:
         """
         Log a message.
@@ -547,7 +549,7 @@ class PolicyEnv:
                 relevant.
         """
         location = loc.ref if loc is not None else None
-        self.tracer.log(level, message, metadata, location)
+        self.tracer.log(level, message, metadata, location, id, related)
 
     def trace(
         self,
@@ -555,13 +557,15 @@ class PolicyEnv:
         metadata: object | None = None,
         *,
         loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
+        id: str | None = None,
+        related: Sequence[str] | None = None,
     ) -> None:
         """
         Log a message with "trace" severity level.
 
         See `log` method.
         """
-        self.log("trace", message, metadata, loc=loc)
+        self.log("trace", message, metadata, loc=loc, id=id, related=related)
 
     def debug(
         self,
@@ -569,13 +573,15 @@ class PolicyEnv:
         metadata: object | None = None,
         *,
         loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
+        id: str | None = None,
+        related: Sequence[str] | None = None,
     ) -> None:
         """
         Log a message with "debug" severity level.
 
         See `log` method.
         """
-        self.log("debug", message, metadata, loc=loc)
+        self.log("debug", message, metadata, loc=loc, id=id, related=related)
 
     def info(
         self,
@@ -583,13 +589,15 @@ class PolicyEnv:
         metadata: object | None = None,
         *,
         loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
+        id: str | None = None,
+        related: Sequence[str] | None = None,
     ) -> None:
         """
         Log a message with "info" severity level.
 
         See `log` method.
         """
-        self.log("info", message, metadata, loc=loc)
+        self.log("info", message, metadata, loc=loc, id=id, related=related)
 
     def warn(
         self,
@@ -597,13 +605,15 @@ class PolicyEnv:
         metadata: object | None = None,
         *,
         loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
+        id: str | None = None,
+        related: Sequence[str] | None = None,
     ) -> None:
         """
         Log a message with "warn" severity level.
 
         See `log` method.
         """
-        self.log("warn", message, metadata, loc=loc)
+        self.log("warn", message, metadata, loc=loc, id=id, related=related)
 
     def error(
         self,
@@ -611,10 +621,12 @@ class PolicyEnv:
         metadata: object | None = None,
         *,
         loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
+        id: str | None = None,
+        related: Sequence[str] | None = None,
     ) -> None:
         """
         Log a message with "error" severity level.
 
         See `log` method.
         """
-        self.log("error", message, metadata, loc=loc)
+        self.log("error", message, metadata, loc=loc, id=id, related=related)

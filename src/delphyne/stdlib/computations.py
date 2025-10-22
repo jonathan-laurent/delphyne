@@ -14,7 +14,6 @@ import delphyne.core_and_base as dp
 import delphyne.stdlib.models as md
 import delphyne.utils.typing as ty
 from delphyne.core_and_base import PolicyEnv, spawn_node
-from delphyne.stdlib.queries import json_object_digest
 from delphyne.utils.yaml import dump_yaml
 
 
@@ -209,13 +208,16 @@ def elim_compute(
                 cache = env.cache
             query = tree.node.query.attached.query
             assert isinstance(query, __Computation__), str(type(query))
-            digest = json_object_digest(ty.pydantic_dump(Any, query))
+            lid = None
             if log_computations:
+                if lid is None:
+                    lid = dp.generate_unique_log_message_id()
                 env.log(
                     log_computations,
                     "computation_started",
-                    {"hash": digest, "details": query},
+                    {"computation": query},
                     loc=tree,
+                    id=lid,
                 )
             overriden: dict[str, Any] = override_args or {}
             if tree.node.override_args is not None:
@@ -228,19 +230,20 @@ def elim_compute(
             )
             _elapsed = time.time() - start
             if log_computations:
+                assert lid is not None
                 env.log(
                     log_computations,
                     "computation_finished",
-                    {"hash": digest, "elapsed": _elapsed, "result": answer},
+                    {"elapsed": _elapsed, "result": answer},
                     loc=tree,
+                    related=[lid],
                 )
             if log_long_computations and _elapsed > log_long_computations[1]:
                 env.log(
                     log_long_computations[0],
                     "long_computation",
                     {
-                        "hash": digest,
-                        "details": query,
+                        "computation": query,
                         "elapsed": _elapsed,
                         "result": answer,
                     },

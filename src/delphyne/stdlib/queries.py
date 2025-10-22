@@ -1257,6 +1257,10 @@ def closest_examples(
         env: PolicyEnv, query: dp.AbstractQuery[Any]
     ) -> Sequence[Example]:
         qname = query.query_name()
+        env.info(
+            f"Selecting {k} closest examples for query '{qname}'...",
+            id=(lid := dp.generate_unique_log_message_id()),
+        )
         embeddings = env.examples.embeddings_for_query_type(qname, model_name)
         model = em.standard_openai_embedding_model(model_name)
         query_embedding = model.embed(
@@ -1270,6 +1274,20 @@ def closest_examples(
         # Get top-k indices.
         top_k_indices = cast(list[int], np.argsort(-sims)[:k].tolist())
         examples = env.examples.examples_for(qname)
+        env.info(
+            f"Similar examples identified for query of type '{qname}'",
+            related=[lid],
+            metadata={
+                "query": query.serialize_args(),
+                "selected": [
+                    {
+                        "similarity": sims[k],
+                        "query": examples[k].query.args_dict,
+                    }
+                    for k in top_k_indices
+                ],
+            },
+        )
         return [examples[i] for i in top_k_indices]
 
     return ExampleSelector(select)
@@ -1426,45 +1444,30 @@ def _parse_or_log_and_raise[T](
     return parsed
 
 
-type _RequestDigest = str
-
-
-def json_object_digest(obj: Any) -> str:
-    import hashlib
-    import json
-
-    obj_str = json.dumps(obj).encode("utf-8")
-    return hashlib.md5(obj_str).hexdigest()[:8]
-
-
 def _log_request(
     env: PolicyEnv,
     *,
     query: dp.AttachedQuery[Any],
     request: md.LLMRequest,
 ):
+    id = dp.generate_unique_log_message_id()
     req_json = ty.pydantic_dump(md.LLMRequest, request)
-    req_digest = json_object_digest(req_json)
     info = {
-        "hash": req_digest,
         "query": query.query.query_name(),
         "request": req_json,
     }
-    env.info("llm_request", info, loc=query)
-    return req_digest
+    env.info("llm_request", info, loc=query, id=id)
+    return id
 
 
 def _log_response(
     env: PolicyEnv,
     *,
     query: dp.AttachedQuery[Any],
-    request: md.LLMRequest,
     response: md.LLMResponse,
+    request_log_id: str,
 ):
-    req_json = ty.pydantic_dump(md.LLMRequest, request)
-    req_digest = json_object_digest(req_json)
     info = {
-        "request": req_digest,
         "response": ty.pydantic_dump(md.LLMResponse, response),
     }
     if response.usage_info is not None:
@@ -1473,10 +1476,15 @@ def _log_response(
             "usage": response.usage_info,
         }
         info["usage"] = usage
-    env.info("llm_response", info, loc=query)
+    env.info("llm_response", info, loc=query, related=[request_log_id])
     for extra in response.log_items:
-        meta = {"request": req_digest, "details": extra.metadata}
-        env.log(extra.level, extra.message, meta, loc=query)
+        env.log(
+            extra.level,
+            extra.message,
+            extra.metadata,
+            loc=query,
+            related=[request_log_id],
+        )
 
 
 def _send_request(
@@ -1491,12 +1499,17 @@ def _send_request(
         assert resp.budget is not None
         return (resp, resp.budget)
 
-    _log_request(env, query=query, request=request)
+    req_id = _log_request(env, query=query, request=request)
     response = yield from spend_on(
         expensive, estimate=model.estimate_budget(request)
     )
     if not isinstance(response, SpendingDeclined):
-        _log_response(env, query=query, request=request, response=response)
+        _log_response(
+            env,
+            query=query,
+            response=response,
+            request_log_id=req_id,
+        )
     return response
 
 
