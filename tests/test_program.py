@@ -562,3 +562,16 @@ def test_example_embeddings():
         ),
     )
     print("\n" + _log_yaml(_log))
+
+
+def test_example_embeddings_empty():
+    question = "What is the most populated country in Europe?"
+    _res, _log = _eval_query(
+        ex.AnswerTriviaQuestion(question),
+        "example_embeddings_empty",
+        demo_files=[],  # No demo file is given
+        select_examples=dp.closest_examples(
+            k=2, model_name="text-embedding-3-large"
+        ),
+    )
+    print("\n" + _log_yaml(_log))

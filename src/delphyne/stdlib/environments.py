@@ -96,7 +96,7 @@ def _load_data(data_dirs: Sequence[Path]) -> dict[str, Any]:
 type _QueryName = str
 
 
-type _EmbeddingModelMame = str
+type _EmbeddingModelName = str
 
 
 @dataclass(kw_only=True)
@@ -143,8 +143,12 @@ class ExampleDatabase:
         self._templates_manager = templates_manager
         self._object_loader = object_loader
         self._examples: dict[_QueryName, list[Example]] = defaultdict(list)
+
+        # We store None if the embeddings were computed but there were
+        # zero examples. This is the equivalent of a numpy array with
+        # zero lines.
         self._embeddings: dict[
-            tuple[_QueryName, _EmbeddingModelMame], NDArray[np.float64]
+            tuple[_QueryName, _EmbeddingModelName], NDArray[np.float64] | None
         ] = {}
 
     def add_query_demonstration(self, demo: dp.QueryDemo):
@@ -213,8 +217,8 @@ class ExampleDatabase:
     def embeddings_for_query_type(
         self,
         name: _QueryName,
-        model: _EmbeddingModelMame,
-    ) -> NDArray[np.float64]:
+        model: _EmbeddingModelName,
+    ) -> NDArray[np.float64] | None:
         """
         Obtain the embeddings for all examples of a given query type.
 
@@ -229,7 +233,7 @@ class ExampleDatabase:
     def load_embeddings_for_query_type(
         self,
         name: _QueryName,
-        model: _EmbeddingModelMame,
+        model: _EmbeddingModelName,
     ) -> None:
         """
         Get emebdings for all examples of a given query type.
@@ -259,9 +263,9 @@ class ExampleDatabase:
 
     def _load_embeddings(
         self,
-        model_name: _EmbeddingModelMame,
+        model_name: _EmbeddingModelName,
         examples: Sequence[Example],
-    ) -> NDArray[np.float64]:
+    ) -> NDArray[np.float64] | None:
         model = em.standard_openai_embedding_model(model_name)
         to_embed = [
             self._embedding_text_from_serialized(ex.query) for ex in examples
@@ -269,6 +273,8 @@ class ExampleDatabase:
         cache_file = self.embeddings_cache_file
         with md.load_request_cache(cache_file, mode="read_write") as cache:
             res = model.embed(to_embed, cache)
+        if not res:
+            return None
         embeddings = np.array([r.embedding for r in res], dtype=np.float64)
         # We ignore spending for the global cache.
         return embeddings

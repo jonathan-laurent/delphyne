@@ -1262,6 +1262,9 @@ def closest_examples(
             id=(lid := env.unique_log_message_id()),
         )
         embeddings = env.examples.embeddings_for_query_type(qname, model_name)
+        if embeddings is None:
+            # There are no examples in the database.
+            return []
         model = em.standard_openai_embedding_model(model_name)
         query_embedding = model.embed(
             [env.examples.embedding_text(query)], cache=env.cache
