@@ -58,7 +58,6 @@ outcome:
         level: info
         space: 1
         metadata:
-          hash: 787bc401
           query: AskNumber
           request:
             chat:
@@ -67,11 +66,11 @@ outcome:
               - role: user
                 content: '{}'
             options: {}
+        id: f4fe66
       - message: llm_response
         level: info
         space: 1
         metadata:
-          request: 787bc401
           response:
             outputs:
               - content: '0'
@@ -112,11 +111,12 @@ outcome:
               prompt_tokens_details:
                 audio_tokens: 0
                 cached_tokens: 0
+        related:
+          - f4fe66
       - message: llm_request
         level: info
         space: 2
         metadata:
-          hash: 49e8c817
           query: AskNumber
           request:
             chat:
@@ -136,11 +136,11 @@ outcome:
                   Expected '83'. Please answer with 83 instead.
                   """
             options: {}
+        id: 0d54ac
       - message: llm_response
         level: info
         space: 2
         metadata:
-          request: 49e8c817
           response:
             outputs:
               - content: '83'
@@ -181,3 +181,5 @@ outcome:
               prompt_tokens_details:
                 audio_tokens: 0
                 cached_tokens: 0
+        related:
+          - 0d54ac

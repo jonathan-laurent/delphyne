@@ -51,7 +51,6 @@ from delphyne.stdlib.models import (
     AbstractTool,
     AssistantMessage,
     BudgetCategory,
-    CachedModel,
     Chat,
     ChatMessage,
     FinishReason,

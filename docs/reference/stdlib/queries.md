@@ -84,8 +84,6 @@
 
 ::: delphyne.stdlib.models.WithRetry
 
-::: delphyne.stdlib.models.CachedModel
-
 ::: delphyne.stdlib.models.LLMCache
 
 ::: delphyne.stdlib.models.load_request_cache

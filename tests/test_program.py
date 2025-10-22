@@ -2,9 +2,6 @@
 Testing oracular programs in an end-to-end fashion
 """
 
-# TODO: use the PolicyEnv caching mechanism instead of wrapping models
-# with `CachedModel` manually.
-
 from collections.abc import Callable, Sequence
 from functools import partial
 from pathlib import Path
@@ -16,6 +13,8 @@ import pytest
 import delphyne as dp
 from delphyne.utils.yaml import dump_yaml
 
+DEFAULT_TEST_MODEL = "gpt-4.1-mini"
+
 PROMPT_DIR = Path(__file__).parent / "prompts"
 DATA_DIR = Path(__file__).parent / "data"
 CACHE_DIR = Path(__file__).parent / "cache"
@@ -24,7 +23,7 @@ DEMO_DIR = Path(__file__).parent
 STRATEGY_MODULES = ("example_strategies",)
 
 
-def _make_policy_env(demo_files: Sequence[str] = ()):
+def _make_policy_env(*, cache: dp.LLMCache, demo_files: Sequence[str] = ()):
     object_loader = dp.ObjectLoader(
         strategy_dirs=STRATEGY_DIRS, modules=STRATEGY_MODULES
     )
@@ -32,6 +31,7 @@ def _make_policy_env(demo_files: Sequence[str] = ()):
         demonstration_files=tuple(DEMO_DIR / f for f in demo_files),
         prompt_dirs=(PROMPT_DIR,),
         data_dirs=(DATA_DIR,),
+        cache=cache,
         embeddings_cache_file=CACHE_DIR / "__embeddings__.yaml",
         object_loader=object_loader,
     )
@@ -74,12 +74,11 @@ def _eval_query(
     select_examples: dp.ExampleSelector | None = None,
     mode: dp.AnswerMode = None,
 ):
-    env = _make_policy_env(demo_files=demo_files)
     with _load_cache(cache_name) as cache:
-        base_model = dp.standard_model(
+        env = _make_policy_env(cache=cache, demo_files=demo_files)
+        model = dp.standard_model(
             model_name, options=model_options, model_class=model_class
         )
-        model = dp.CachedModel(base_model, cache)
         bl = dp.BudgetLimit({dp.NUM_REQUESTS: budget})
         pp = dp.with_budget(bl) @ dp.few_shot(
             model,
@@ -99,11 +98,11 @@ def _eval_strategy[N: dp.Node, P, T](
     cache_name: str,
     max_requests: int = 1,
     max_res: int = 1,
-    model_name: dp.StandardModelName | str = "gpt-4.1-mini",
+    model_name: dp.StandardModelName | str = DEFAULT_TEST_MODEL,
 ) -> tuple[Sequence[dp.Solution[T]], Sequence[dp.ExportableLogMessage]]:
-    env = _make_policy_env()
     with _load_cache(cache_name) as cache:
-        model = dp.CachedModel(dp.standard_model(model_name), cache)
+        env = _make_policy_env(cache=cache)
+        model = dp.standard_model(model_name)
         stream = strategy.run_toplevel(env, policy(model))
         budget = dp.BudgetLimit({dp.NUM_REQUESTS: max_requests})
         ret, _spent = stream.collect(budget=budget, num_generated=max_res)
@@ -122,9 +121,9 @@ def test_concurrent():
 
 
 def test_basic_llm_call():
-    env = _make_policy_env()
     with _load_cache("basic_llm_call") as cache:
-        model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
+        env = _make_policy_env(cache=cache)
+        model = dp.openai_model("gpt-4.1-mini")
         pp = dp.few_shot(model)
         bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
         policy = dp.take(1) @ dp.with_budget(bl) @ dp.dfs() & ex.MakeSumIP(pp)
@@ -159,9 +158,9 @@ def test_assistant_priming():
 
 
 def test_interact():
-    env = _make_policy_env()
     with _load_cache("interact") as cache:
-        model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
+        env = _make_policy_env(cache=cache)
+        model = dp.openai_model("gpt-4.1-mini")
         pp = dp.few_shot(model)
         bl = dp.BudgetLimit({dp.NUM_REQUESTS: 2})
         policy = dp.take(1) @ dp.with_budget(bl) @ dp.dfs() & pp
@@ -204,9 +203,9 @@ def _eval_classifier_query(
     temperature: float = 1.0,
     bias: tuple[str, float] | None = None,
 ):
-    env = _make_policy_env()
     with _load_cache(cache_name) as cache:
-        model = dp.CachedModel(dp.openai_model("gpt-4.1-mini"), cache)
+        env = _make_policy_env(cache=cache)
+        model = dp.openai_model("gpt-4.1-mini")
         bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
         pp = dp.with_budget(bl) @ dp.classify(
             model, temperature=temperature, bias=bias
@@ -407,7 +406,10 @@ def test_embedded_tree_and_transformers():
     # environment level and wraps individual models instead,
     # computations are not cached here.
     res, log = _eval_strategy(
-        strategy, policy, cache_name="no_need_for_caching", max_res=1
+        strategy,
+        policy,
+        cache_name="embedded_tree_and_transformers",
+        max_res=1,
     )
     print(_log_messages(log))
     assert res
@@ -559,5 +561,4 @@ def test_example_embeddings():
             k=2, model_name="text-embedding-3-large"
         ),
     )
-    print()
-    print(_log_yaml(_log))
+    print("\n" + _log_yaml(_log))

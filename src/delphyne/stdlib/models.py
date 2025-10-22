@@ -647,32 +647,3 @@ def fetch_or_answer(
     num_seen = cache.num_seen[req]
     full_req = CachedRequest(req, num_seen)
     return cache.cache(lambda full: f(full.request))(full_req)
-
-
-@dataclass
-class CachedModel(LLM):
-    """
-    Wrap a model to use a given cache.
-
-    !!! note
-        The `LLM.send_request` method has a `cache` argument that can be
-        used as a replacement for the `CachedModel` wrapper. In
-        addition, all standard prompting policies use a global request
-        cache (see `PolicyEnv`) when available. Thus, external users
-        should rarely need to manually wrap models with `CachedModel`.
-    """
-
-    model: LLM
-    cache: LLMCache
-
-    @override
-    def _send_final_request(self, req: LLMRequest) -> LLMResponse:
-        return fetch_or_answer(self.cache, req, self.model._send_final_request)
-
-    @override
-    def estimate_budget(self, req: LLMRequest) -> Budget:
-        return self.model.estimate_budget(req)
-
-    @override
-    def add_model_defaults(self, req: LLMRequest) -> LLMRequest:
-        return self.model.add_model_defaults(req)

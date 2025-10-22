@@ -51,7 +51,6 @@ outcome:
         level: info
         space: 1
         metadata:
-          hash: 6585cccc
           query: MakeSum
           request:
             chat:
@@ -80,11 +79,11 @@ outcome:
                   List: [9, 6, 2]
                   Target: 11
             options: {}
+        id: 91839d
       - message: llm_response
         level: info
         space: 1
         metadata:
-          request: 6585cccc
           response:
             outputs:
               - content: |-
@@ -127,3 +126,5 @@ outcome:
               prompt_tokens_details:
                 audio_tokens: 0
                 cached_tokens: 0
+        related:
+          - 91839d
