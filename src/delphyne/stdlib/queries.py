@@ -17,6 +17,7 @@ import numpy as np
 import delphyne.core as dp
 import delphyne.core.chats as ct
 import delphyne.core.inspect as dpi
+import delphyne.stdlib.embeddings as em
 import delphyne.stdlib.models as md
 import delphyne.stdlib.policies as pol
 from delphyne.core.refs import Answer
@@ -1223,6 +1224,39 @@ def all_examples(
     Select all examples relevant to a query.
     """
     return list(env.examples.examples(query))
+
+
+def closest_examples(
+    *,
+    k: int,
+    model_name: str,
+) -> ExampleSelector:
+    """
+    Obtain the `k` closest examples to the given query, based on
+    embedding similarity. Return a list of `(example, similarity)`
+    tuples, sorted by decreasing similarity.
+    """
+
+    def select(
+        env: PolicyEnv, query: dp.AbstractQuery[Any]
+    ) -> Sequence[Example]:
+        qname = query.query_name()
+        embeddings = env.examples.embeddings_for_query_type(qname, model_name)
+        model = em.standard_openai_embedding_model(model_name)
+        query_embedding = model.embed(
+            [env.examples.embedding_text(query)], cache=env.cache
+        )[0].embedding
+        # Compute cosine similarities.
+        sims = np.dot(embeddings, query_embedding) / (
+            np.linalg.norm(embeddings, axis=1)
+            * np.linalg.norm(query_embedding)
+        )
+        # Get top-k indices.
+        top_k_indices = cast(list[int], np.argsort(-sims)[:k].tolist())
+        examples = env.examples.all_examples(qname)
+        return [examples[i] for i in top_k_indices]
+
+    return ExampleSelector(select)
 
 
 def take_random(num_examples: int) -> ExampleFilter:

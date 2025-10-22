@@ -127,6 +127,7 @@ from delphyne.stdlib.queries import (
     all_examples,
     answer_with,
     classify,
+    closest_examples,
     extract_final_block,
     few_shot,
     final_tool_call,

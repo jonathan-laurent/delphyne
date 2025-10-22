@@ -199,6 +199,12 @@ class ExampleDatabase:
                     continue
             yield ex
 
+    def all_examples(self, query_name: str) -> Sequence[Example]:
+        """
+        Obtain examples by their indices for a given query name.
+        """
+        return self._examples[query_name]
+
     ### Useful accessors
 
     @property
@@ -225,11 +231,29 @@ class ExampleDatabase:
 
     ### Loading embeddings
 
+    def embeddings_for_query_type(
+        self,
+        name: _QueryName,
+        model: _EmbeddingModelMame,
+    ) -> NDArray[np.float64]:
+        """
+        Obtain the embeddings for all examples of a given query type.
+
+        If the embeddings are not loaded yet, they are loaded from
+        cache or computed on the fly.
+        """
+        key = (name, model)
+        if key not in self._embeddings:
+            self.load_embeddings_for_query_type(name, model)
+        return self._embeddings[key]
+
     def load_embeddings_for_query_type(
-        self, name: _QueryName, model: _EmbeddingModelMame
+        self,
+        name: _QueryName,
+        model: _EmbeddingModelMame,
     ) -> None:
         """
-        Load emebdings for all examples of a given query type.
+        Get emebdings for all examples of a given query type.
 
         This method takes a global file lock so as to avoid concurrent
         accesses to the embeddings cache file.
@@ -242,11 +266,14 @@ class ExampleDatabase:
             res = self._load_embeddings(model, examples)
         self._embeddings[(name, model)] = res
 
-    def _embedding_text(self, query: dp.SerializedQuery) -> str:
-        return _query_embedding_text(
-            self.templates_manager,
-            self.object_loader.load_query(query.name, query.args_dict),
-        )
+    def embedding_text(self, query: dp.AbstractQuery[Any]) -> str:
+        return _query_embedding_text(self.templates_manager, query)
+
+    def _embedding_text_from_serialized(
+        self, query: dp.SerializedQuery
+    ) -> str:
+        loaded = self.object_loader.load_query(query.name, query.args_dict)
+        return self.embedding_text(loaded)
 
     def _load_embeddings(
         self,
@@ -254,27 +281,15 @@ class ExampleDatabase:
         examples: Sequence[Example],
     ) -> NDArray[np.float64]:
         model = em.standard_openai_embedding_model(model_name)
-        to_embed = [self._embedding_text(ex.query) for ex in examples]
+        to_embed = [
+            self._embedding_text_from_serialized(ex.query) for ex in examples
+        ]
         cache_file = self.embeddings_cache_file
         with md.load_request_cache(cache_file, mode="read_write") as cache:
-            res = model.embed_with_cache(to_embed, cache)
+            res = model.embed(to_embed, cache)
         embeddings = np.array([r.embedding for r in res], dtype=np.float64)
         # We ignore spending for the global cache.
         return embeddings
-
-    ### Accessing with embeddings
-
-    def closest_examples(
-        self, query: dp.AbstractQuery[Any], k: int
-    ) -> list[tuple[Example, float]]:
-        """
-        Obtain the `k` closest examples to the given query, based on
-        embedding similarity. Return a list of `(example, similarity)`
-        tuples, sorted by decreasing similarity.
-        """
-        raise NotImplementedError(
-            "ExampleDatabase.closest_examples is not implemented yet."
-        )
 
 
 def _embeddings_cache_lockfile(cache_file: Path) -> Path:

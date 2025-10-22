@@ -48,6 +48,8 @@
 
 ::: delphyne.all_examples
 
+::: delphyne.closest_examples
+
 ## Models
 
 ::: delphyne.stdlib.models.LLM

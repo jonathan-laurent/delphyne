@@ -48,7 +48,9 @@ class EmbeddingModel(ABC):
         pass
 
     @final
-    def embed(self, batch: Sequence[str]) -> Sequence[EmbeddingResponse]:
+    def _split_and_embed(
+        self, batch: Sequence[str]
+    ) -> Sequence[EmbeddingResponse]:
         m = self.get_max_batch_size()
         if len(batch) <= m:
             return self._embed(batch)
@@ -61,7 +63,7 @@ class EmbeddingModel(ABC):
         return results
 
     @final
-    def embed_with_cache(
+    def embed(
         self, batch: Sequence[str], cache: md.LLMCache | None
     ) -> Sequence[EmbeddingResponse]:
         """
@@ -72,7 +74,7 @@ class EmbeddingModel(ABC):
         be reused.
         """
         if cache is None:
-            return self.embed(batch)
+            return self._split_and_embed(batch)
 
         def compute_batch(
             reqs: Sequence[md.CachedRequest],
