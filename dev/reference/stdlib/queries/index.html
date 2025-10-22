@@ -8810,7 +8810,7 @@ tuples, sorted by decreasing similarity.</p>
                 <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">query</span><span class="o">.</span><span class="n">serialize_args</span><span class="p">(),</span>
                 <span class="s2">&quot;selected&quot;</span><span class="p">:</span> <span class="p">[</span>
                     <span class="p">{</span>
-                        <span class="s2">&quot;similarity&quot;</span><span class="p">:</span> <span class="n">sims</span><span class="p">[</span><span class="n">k</span><span class="p">],</span>
+                        <span class="s2">&quot;similarity&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">sims</span><span class="p">[</span><span class="n">k</span><span class="p">]),</span>
                         <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">examples</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">args_dict</span><span class="p">,</span>
                     <span class="p">}</span>
                     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">top_k_indices</span>
@@ -11417,7 +11417,7 @@ context manager.</p>
 <li><code>read_write</code>: values can be read and written to the cache (no extra
       check is made).</li>
 <li><code>create</code>: the cache is used in write-only mode, and an exception is
-      raided if a cached value already exists.</li>
+      raised if a cached value already exists.</li>
 <li><code>replay</code>: all requests must hit the cache or an exception is raised.</li>
 </ul>
     </div>
