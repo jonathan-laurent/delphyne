@@ -38,7 +38,9 @@ def _make_policy_env(*, cache: dp.LLMCache, demo_files: Sequence[str] = ()):
 
 
 def _log_yaml(log: Sequence[dp.ExportableLogMessage]) -> str:
-    return dump_yaml(Sequence[dp.ExportableLogMessage], log)
+    return dump_yaml(
+        Sequence[dp.ExportableLogMessage], log, exclude_defaults=True
+    )
 
 
 def _log_messages(log: Sequence[dp.ExportableLogMessage]) -> str:
@@ -553,7 +555,7 @@ def test_strategy_loading_data():
 
 def test_example_embeddings():
     question = "What is the most populated country in Europe?"
-    _res, _log = _eval_query(
+    res, _log = _eval_query(
         ex.AnswerTriviaQuestion(question),
         "example_embeddings",
         demo_files=["example_embeddings"],
@@ -562,11 +564,12 @@ def test_example_embeddings():
         ),
     )
     print("\n" + _log_yaml(_log))
+    assert res is not None
 
 
 def test_example_embeddings_empty():
     question = "What is the most populated country in Europe?"
-    _res, _log = _eval_query(
+    res, _log = _eval_query(
         ex.AnswerTriviaQuestion(question),
         "example_embeddings_empty",
         demo_files=[],  # No demo file is given
@@ -575,3 +578,4 @@ def test_example_embeddings_empty():
         ),
     )
     print("\n" + _log_yaml(_log))
+    assert res is not None

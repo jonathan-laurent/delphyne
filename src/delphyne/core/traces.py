@@ -587,6 +587,13 @@ def valid_log_level(level: str) -> TypeGuard[LogLevel]:
     return False
 
 
+type LogMessageId = int
+"""
+Each log message is assigned an identifier, which can be used to tie
+several log messages together.
+"""
+
+
 @dataclass(frozen=True, kw_only=True)
 class LogMessage:
     """
@@ -599,7 +606,7 @@ class LogMessage:
             object that can be serialized to JSON using Pydantic.
         location: An optional location in the strategy tree where the
             message was logged, if applicable.
-        id: Optionally, a unique identifier for the message, which can
+        message_id: Optionally, a unique identifier for the message, which can
             be used to tie related messages together.
         related: Optionally, a list of identifiers of related messages.
     """
@@ -609,8 +616,8 @@ class LogMessage:
     time: datetime
     metadata: object | None = None
     location: ShortLocation | None = None
-    id: str | None = None
-    related: Sequence[str] | None = None
+    message_id: LogMessageId | None = None
+    related: Sequence[LogMessageId] = ()
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -622,8 +629,8 @@ class ExportableLogMessage:
 
     message: str
     level: LogLevel
-    id: str | None = None
-    related: Sequence[str] | None = None
+    message_id: int | None = None
+    related: tuple[int, ...] = ()
     time: datetime | None = None
     node: int | None = None
     space: int | None = None
@@ -657,20 +664,10 @@ class Tracer:
         self.trace = Trace()
         self.messages: list[LogMessage] = []
         self.log_level: LogLevel = log_level
-        self._last_unique_message_id: int = 0
 
         # Different threads may be logging information or appending to
         # the trace in parallel.
         self.lock = threading.RLock()
-
-    def unique_log_message_id(self) -> str:
-        """
-        Generate a unique identifier, which can be used to tie several
-        log messages together.
-        """
-        with self.lock:
-            self._last_unique_message_id += 1
-            return f"{self._last_unique_message_id}"
 
     def global_node_id(self, node: refs.GlobalNodeRef) -> irefs.NodeId:
         """
@@ -714,18 +711,19 @@ class Tracer:
         level: LogLevel,
         message: str,
         metadata: object | None = None,
+        *,
         location: Location | None = None,
-        id: str | None = None,
-        related: Sequence[str] | None = None,
-    ):
+        related: Sequence[LogMessageId | None] = (),
+    ) -> LogMessageId | None:
         """
         Log a message, with optional metadata and location information.
         The metadata must be exportable to JSON using Pydantic.
         """
         if not log_level_greater_or_equal(level, self.log_level):
-            return
+            return None
         time = datetime.now()
         with self.lock:
+            id = len(self.messages)
             short_location = None
             if location is not None:
                 short_location = self.trace.convert_location(location)
@@ -736,10 +734,11 @@ class Tracer:
                     time=time,
                     metadata=metadata,
                     location=short_location,
-                    id=id,
-                    related=related,
+                    message_id=id,
+                    related=[r for r in related if r is not None],
                 )
             )
+            return id
 
     def export_log(
         self, *, remove_timing_info: bool = False
@@ -762,8 +761,8 @@ class Tracer:
                     node=node,
                     space=space,
                     metadata=pydantic_dump(object, m.metadata),
-                    id=m.id,
-                    related=m.related,
+                    message_id=m.message_id,
+                    related=tuple(m.related),
                 )
 
     def export_trace(self) -> ExportableTrace:

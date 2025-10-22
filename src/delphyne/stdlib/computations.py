@@ -210,14 +210,11 @@ def elim_compute(
             assert isinstance(query, __Computation__), str(type(query))
             lid = None
             if log_computations:
-                if lid is None:
-                    lid = env.unique_log_message_id()
-                env.log(
+                lid = env.log(
                     log_computations,
                     "computation_started",
                     {"computation": query},
                     loc=tree,
-                    id=lid,
                 )
             overriden: dict[str, Any] = override_args or {}
             if tree.node.override_args is not None:

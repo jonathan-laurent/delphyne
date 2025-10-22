@@ -1257,9 +1257,9 @@ def closest_examples(
         env: PolicyEnv, query: dp.AbstractQuery[Any]
     ) -> Sequence[Example]:
         qname = query.query_name()
-        env.info(
-            f"Selecting {k} closest examples for query '{qname}'...",
-            id=(lid := env.unique_log_message_id()),
+        lid = env.info(
+            "closest_examples_request",
+            {"query": qname},
         )
         embeddings = env.examples.embeddings_for_query_type(qname, model_name)
         if embeddings is None:
@@ -1278,14 +1278,15 @@ def closest_examples(
         top_k_indices = cast(list[int], np.argsort(-sims)[:k].tolist())
         examples = env.examples.examples_for(qname)
         env.info(
-            f"Similar examples identified for query of type '{qname}'",
+            "closest_examples_response",
             related=[lid],
             metadata={
-                "query": query.serialize_args(),
+                "query": qname,
+                "args": query.serialize_args(),
                 "selected": [
                     {
                         "similarity": float(sims[k]),
-                        "query": examples[k].query.args_dict,
+                        "args": examples[k].query.args_dict,
                     }
                     for k in top_k_indices
                 ],
@@ -1453,14 +1454,12 @@ def _log_request(
     query: dp.AttachedQuery[Any],
     request: md.LLMRequest,
 ):
-    id = env.unique_log_message_id()
     req_json = ty.pydantic_dump(md.LLMRequest, request)
     info = {
         "query": query.query.query_name(),
         "request": req_json,
     }
-    env.info("llm_request", info, loc=query, id=id)
-    return id
+    return env.info("llm_request", info, loc=query)
 
 
 def _log_response(
@@ -1468,7 +1467,7 @@ def _log_response(
     *,
     query: dp.AttachedQuery[Any],
     response: md.LLMResponse,
-    request_log_id: str,
+    request_log_id: dp.LogMessageId | None,
 ):
     info = {
         "response": ty.pydantic_dump(md.LLMResponse, response),

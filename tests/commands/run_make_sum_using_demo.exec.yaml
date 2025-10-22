@@ -27,6 +27,7 @@ outcome:
     log:
       - message: llm_override
         level: info
+        message_id: 0
         metadata:
           source: example_strategies.demo.yaml:make_sum_demo:0:0
           query_name: MakeSum

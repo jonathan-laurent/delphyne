@@ -49,7 +49,7 @@ outcome:
     log:
       - message: llm_request
         level: info
-        id: '1'
+        message_id: 0
         space: 1
         metadata:
           query: MakeSum
@@ -82,8 +82,9 @@ outcome:
             options: {}
       - message: llm_response
         level: info
+        message_id: 1
         related:
-          - '1'
+          - 0
         space: 1
         metadata:
           response:

@@ -56,7 +56,7 @@ outcome:
     log:
       - message: llm_request
         level: info
-        id: '1'
+        message_id: 0
         space: 1
         metadata:
           query: AskNumber
@@ -69,8 +69,9 @@ outcome:
             options: {}
       - message: llm_response
         level: info
+        message_id: 1
         related:
-          - '1'
+          - 0
         space: 1
         metadata:
           response:
@@ -115,7 +116,7 @@ outcome:
                 cached_tokens: 0
       - message: llm_request
         level: info
-        id: '2'
+        message_id: 2
         space: 2
         metadata:
           query: AskNumber
@@ -139,8 +140,9 @@ outcome:
             options: {}
       - message: llm_response
         level: info
+        message_id: 3
         related:
-          - '2'
+          - 2
         space: 2
         metadata:
           response:

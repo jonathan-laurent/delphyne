@@ -538,13 +538,6 @@ class PolicyEnv:
             self.info("llm_override", meta)
             return ret.answer
 
-    def unique_log_message_id(self) -> str:
-        """
-        Generate a unique identifier, which can be used to tie several
-        log messages together.
-        """
-        return self.tracer.unique_log_message_id()
-
     def log(
         self,
         level: dp.LogLevel,
@@ -552,9 +545,8 @@ class PolicyEnv:
         metadata: object | None = None,
         *,
         loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
-        id: str | None = None,
-        related: Sequence[str] | None = None,
-    ) -> None:
+        related: Sequence[dp.LogMessageId | None] = (),
+    ) -> dp.LogMessageId | None:
         """
         Log a message.
 
@@ -567,7 +559,9 @@ class PolicyEnv:
                 relevant.
         """
         location = loc.ref if loc is not None else None
-        self.tracer.log(level, message, metadata, location, id, related)
+        return self.tracer.log(
+            level, message, metadata, location=location, related=related
+        )
 
     def trace(
         self,
@@ -575,15 +569,14 @@ class PolicyEnv:
         metadata: object | None = None,
         *,
         loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
-        id: str | None = None,
-        related: Sequence[str] | None = None,
-    ) -> None:
+        related: Sequence[dp.LogMessageId | None] = (),
+    ) -> dp.LogMessageId | None:
         """
         Log a message with "trace" severity level.
 
         See `log` method.
         """
-        self.log("trace", message, metadata, loc=loc, id=id, related=related)
+        return self.log("trace", message, metadata, loc=loc, related=related)
 
     def debug(
         self,
@@ -591,15 +584,14 @@ class PolicyEnv:
         metadata: object | None = None,
         *,
         loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
-        id: str | None = None,
-        related: Sequence[str] | None = None,
-    ) -> None:
+        related: Sequence[dp.LogMessageId | None] = (),
+    ) -> dp.LogMessageId | None:
         """
         Log a message with "debug" severity level.
 
         See `log` method.
         """
-        self.log("debug", message, metadata, loc=loc, id=id, related=related)
+        return self.log("debug", message, metadata, loc=loc, related=related)
 
     def info(
         self,
@@ -607,15 +599,14 @@ class PolicyEnv:
         metadata: object | None = None,
         *,
         loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
-        id: str | None = None,
-        related: Sequence[str] | None = None,
-    ) -> None:
+        related: Sequence[dp.LogMessageId | None] = (),
+    ) -> dp.LogMessageId | None:
         """
         Log a message with "info" severity level.
 
         See `log` method.
         """
-        self.log("info", message, metadata, loc=loc, id=id, related=related)
+        return self.log("info", message, metadata, loc=loc, related=related)
 
     def warn(
         self,
@@ -623,15 +614,14 @@ class PolicyEnv:
         metadata: object | None = None,
         *,
         loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
-        id: str | None = None,
-        related: Sequence[str] | None = None,
-    ) -> None:
+        related: Sequence[dp.LogMessageId | None] = (),
+    ) -> dp.LogMessageId | None:
         """
         Log a message with "warn" severity level.
 
         See `log` method.
         """
-        self.log("warn", message, metadata, loc=loc, id=id, related=related)
+        return self.log("warn", message, metadata, loc=loc, related=related)
 
     def error(
         self,
@@ -639,12 +629,11 @@ class PolicyEnv:
         metadata: object | None = None,
         *,
         loc: dp.Tree[Any, Any, Any] | dp.AttachedQuery[Any] | None = None,
-        id: str | None = None,
-        related: Sequence[str] | None = None,
-    ) -> None:
+        related: Sequence[dp.LogMessageId | None] = (),
+    ) -> dp.LogMessageId | None:
         """
         Log a message with "error" severity level.
 
         See `log` method.
         """
-        self.log("error", message, metadata, loc=loc, id=id, related=related)
+        return self.log("error", message, metadata, loc=loc, related=related)
