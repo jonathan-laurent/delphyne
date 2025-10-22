@@ -6170,7 +6170,7 @@ than those specified with the <code>override_args</code> argument of
             <span class="n">lid</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">log_computations</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">lid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">lid</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">generate_unique_log_message_id</span><span class="p">()</span>
+                    <span class="n">lid</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">unique_log_message_id</span><span class="p">()</span>
                 <span class="n">env</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
                     <span class="n">log_computations</span><span class="p">,</span>
                     <span class="s2">&quot;computation_started&quot;</span><span class="p">,</span>
