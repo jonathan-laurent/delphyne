@@ -1740,15 +1740,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#delphyne.stdlib.models.CachedModel" class="md-nav__link">
-    <span class="md-ellipsis">
-      CachedModel
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#delphyne.stdlib.models.LLMCache" class="md-nav__link">
     <span class="md-ellipsis">
       LLMCache
@@ -2899,15 +2890,6 @@
   <a href="#delphyne.stdlib.models.WithRetry" class="md-nav__link">
     <span class="md-ellipsis">
       WithRetry
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#delphyne.stdlib.models.CachedModel" class="md-nav__link">
-    <span class="md-ellipsis">
-      CachedModel
     </span>
   </a>
   
@@ -11098,132 +11080,6 @@ generally does not).</p>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">retry_delay</span><span class="p">)</span>
         <span class="k">assert</span> <span class="kc">False</span>
-</code></pre></div></td></tr></table></div>
-              </details>
-
-
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h3 id="delphyne.stdlib.models.CachedModel" class="doc doc-heading">
-            <span class="doc doc-object-name doc-class-name">CachedModel</span>
-
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
-  </span>
-
-</h3>
-
-
-    <div class="doc doc-contents first">
-            <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-internal" title="LLM (delphyne.stdlib.models.LLM)" href="#delphyne.stdlib.models.LLM">LLM</a></code></p>
-
-
-        <p>Wrap a model to use a given cache.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The <code>LLM.send_request</code> method has a <code>cache</code> argument that can be
-used as a replacement for the <a class="autorefs autorefs-internal" title="CachedModel
-
-
-  
-      dataclass
-  " href="#delphyne.stdlib.models.CachedModel"><code>CachedModel</code></a> wrapper. In
-addition, all standard prompting policies use a global request
-cache (see <a class="autorefs autorefs-internal" title="PolicyEnv" href="../environments/#delphyne.PolicyEnv"><code>PolicyEnv</code></a>) when available. Thus, external users
-should rarely need to manually wrap models with <a class="autorefs autorefs-internal" title="CachedModel
-
-
-  
-      dataclass
-  " href="#delphyne.stdlib.models.CachedModel"><code>CachedModel</code></a>.</p>
-</div>
-
-
-
-
-
-
-
-
-              <details class="quote">
-                <summary>Source code in <code>src/delphyne/stdlib/models.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">652</span>
-<span class="normal">653</span>
-<span class="normal">654</span>
-<span class="normal">655</span>
-<span class="normal">656</span>
-<span class="normal">657</span>
-<span class="normal">658</span>
-<span class="normal">659</span>
-<span class="normal">660</span>
-<span class="normal">661</span>
-<span class="normal">662</span>
-<span class="normal">663</span>
-<span class="normal">664</span>
-<span class="normal">665</span>
-<span class="normal">666</span>
-<span class="normal">667</span>
-<span class="normal">668</span>
-<span class="normal">669</span>
-<span class="normal">670</span>
-<span class="normal">671</span>
-<span class="normal">672</span>
-<span class="normal">673</span>
-<span class="normal">674</span>
-<span class="normal">675</span>
-<span class="normal">676</span>
-<span class="normal">677</span>
-<span class="normal">678</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">CachedModel</span><span class="p">(</span><span class="n">LLM</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Wrap a model to use a given cache.</span>
-
-<span class="sd">    !!! note</span>
-<span class="sd">        The `LLM.send_request` method has a `cache` argument that can be</span>
-<span class="sd">        used as a replacement for the `CachedModel` wrapper. In</span>
-<span class="sd">        addition, all standard prompting policies use a global request</span>
-<span class="sd">        cache (see `PolicyEnv`) when available. Thus, external users</span>
-<span class="sd">        should rarely need to manually wrap models with `CachedModel`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">model</span><span class="p">:</span> <span class="n">LLM</span>
-    <span class="n">cache</span><span class="p">:</span> <span class="n">LLMCache</span>
-
-    <span class="nd">@override</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_send_final_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">LLMRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LLMResponse</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">fetch_or_answer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_send_final_request</span><span class="p">)</span>
-
-    <span class="nd">@override</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">estimate_budget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">LLMRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Budget</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">estimate_budget</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
-
-    <span class="nd">@override</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_model_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">:</span> <span class="n">LLMRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LLMRequest</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">add_model_defaults</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
