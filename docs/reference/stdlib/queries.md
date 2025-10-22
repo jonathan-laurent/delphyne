@@ -44,6 +44,10 @@
 
 ::: delphyne.ProbInfo
 
+::: delphyne.ExampleSelector
+
+::: delphyne.all_examples
+
 ## Models
 
 ::: delphyne.stdlib.models.LLM

@@ -124,6 +124,7 @@ from delphyne.stdlib.queries import (
     Response,
     ToolRequests,
     WrappedParseError,
+    all_examples,
     answer_with,
     classify,
     extract_final_block,
@@ -133,9 +134,6 @@ from delphyne.stdlib.queries import (
     first_word,
     get_text,
     last_code_block,
-    select_all_examples,
-    select_random_examples,
-    select_with_either_tags,
     structured,
     structured_as,
 )

@@ -1138,7 +1138,15 @@ class PseudoQuery[T](dp.AbstractQuery[T]):
 #####
 
 
-type ExampleSelector = Callable[
+type _ExampleSelectorFn = Callable[
+    [PolicyEnv, dp.AbstractQuery[Any]], Sequence[Example]
+]
+"""
+Function for selecting examples for a given query.
+"""
+
+
+type ExampleFilter = Callable[
     [PolicyEnv, Sequence[Example]], Sequence[Example]
 ]
 """
@@ -1146,19 +1154,56 @@ A function for selecting a subset of examples from a given sequence.
 """
 
 
-def select_all_examples(
-    env: PolicyEnv,
-    examples: Sequence[Example],
+@dataclass(frozen=True)
+class ExampleSelector:
+    """
+    Wrapper around a function for selecting examples.
+    """
+
+    _fn: _ExampleSelectorFn
+
+    def __call__(
+        self, env: PolicyEnv, query: dp.AbstractQuery[Any]
+    ) -> Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]]:
+        raw = self._fn(env, query)
+        return [(ex.query.parse(type(query)), ex.answer) for ex in raw]
+
+    def filter(self, f: ExampleFilter) -> "ExampleSelector":
+        """
+        Return a new example selector that applies a filter to the
+        examples selected by this selector.
+        """
+
+        def select(
+            env: PolicyEnv,
+            query: dp.AbstractQuery[Any],
+        ) -> Sequence[Example]:
+            examples = self._fn(env, query)
+            return f(env, examples)
+
+        return ExampleSelector(select)
+
+    def random(self, num_examples: int) -> "ExampleSelector":
+        """
+        Return a new example selector that randomly selects a given
+        number of examples.
+        """
+        return self.filter(take_random(num_examples))
+
+
+@ExampleSelector
+def all_examples(
+    env: PolicyEnv, query: dp.AbstractQuery[Any]
 ) -> Sequence[Example]:
     """
-    Example selector that returns all available examples.
+    Select all examples relevant to a query.
     """
-    return examples
+    return list(env.examples.examples(query))
 
 
-def select_random_examples(num_examples: int) -> ExampleSelector:
+def take_random(num_examples: int) -> ExampleFilter:
     """
-    Example selector that randomly selects a given number of examples.
+    Filter that randomly selects a given number of examples.
 
     All examples are selected if less examples are available than
     requested.
@@ -1176,34 +1221,9 @@ def select_random_examples(num_examples: int) -> ExampleSelector:
     return select
 
 
-def select_with_either_tags(tags: Sequence[str]):
-    """
-    Select examples that are annotated with at least one of a provided
-    set of tags.
-    """
-
-    def select(
-        examples: Sequence[Example],
-    ) -> Sequence[Example]:
-        return [ex for ex in examples if any(t in ex.tags for t in tags)]
-
-    return select
-
-
 #####
 ##### Prompting Policies
 #####
-
-
-def fetch_examples(
-    env: PolicyEnv,
-    query: dp.AbstractQuery[Any],
-    selectors: Sequence[ExampleSelector],
-) -> Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]]:
-    raw = list(env.examples.examples(query))
-    for sel in selectors:
-        raw = sel(env, raw)
-    return [(ex.query.parse(type(query)), ex.answer) for ex in raw]
 
 
 def _priming_split(prompt: str) -> tuple[str, str | None]:
@@ -1411,7 +1431,7 @@ def classify[T](
     env: PolicyEnv,
     model: md.LLM,
     params: dict[str, object] | None = None,
-    select_examples: Sequence[ExampleSelector] = (),
+    select_examples: ExampleSelector | None = None,
     mode: dp.AnswerMode = None,
     top_logprobs: int = 20,
     temperature: float = 1.0,
@@ -1426,7 +1446,8 @@ def classify[T](
         env: The global policy environment.
         model: The LLM to use for answering the query.
         params: Prompt hyperparameters.
-        select_examples: Example selector.
+        select_examples: Example selector. By default, `all_examples` is
+            used.
         mode: The answer mode to use for parsing the query answer.
         top_logprobs: The number of top logprobs to request from the
             LLM, putting an upper bound on the support size of the
@@ -1440,7 +1461,9 @@ def classify[T](
     See `few_shot` for details on some of the arguments above.
     """
     env.tracer.trace_query(query)
-    examples = fetch_examples(env, query.query, select_examples)
+    if select_examples is None:
+        select_examples = all_examples
+    examples = select_examples(env, query.query)
     mngr = env.templates
     if params is None:
         params = {}
@@ -1542,7 +1565,7 @@ def few_shot[T](
     model: md.LLM,
     *,
     params: dict[str, object] | None = None,
-    select_examples: Sequence[ExampleSelector] = (),
+    select_examples: ExampleSelector | None = None,
     mode: dp.AnswerMode = None,
     temperature: float | None = None,
     num_completions: int = 1,
@@ -1563,9 +1586,7 @@ def few_shot[T](
         model: The LLM to use for answering the query
         params: Prompt hyperparameters, which are passed to prompt
             templates as a `params` dictionary.
-        select_examples: A series of filters for selecting examples, to
-            be applied in sequence. By default, no filter is used and so
-            all available examples are fetched.
+        select_examples: Example selector (default: `all_examples`).
         mode: The answer mode to use for parsing the query answer.
         temperature: The temperature parameter to use with the LLM, as a
             number from 0 to 2.
@@ -1615,7 +1636,9 @@ def few_shot[T](
         yield dp.Solution(overriden_parsed)
         return
 
-    examples = fetch_examples(env, query.query, select_examples)
+    if select_examples is None:
+        select_examples = all_examples
+    examples = select_examples(env, query.query)
     mngr = env.templates
     if params is None:
         params = {}
