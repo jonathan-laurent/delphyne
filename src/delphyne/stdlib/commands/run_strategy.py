@@ -99,7 +99,6 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
         override_answers=answer_database,
         log_level=args.log_level,
         log_long_computations=args.log_long_computations,
-        do_not_match_identical_queries=True,
     )
     lock = threading.Lock()  # to protect state that can be pulled
     # We do not need to cache all tree nodes (which can cost a lot of

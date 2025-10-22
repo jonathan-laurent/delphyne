@@ -1148,7 +1148,7 @@ Function for selecting examples for a given query.
 
 
 type ExampleFilter = Callable[
-    [PolicyEnv, Sequence[Example]], Sequence[Example]
+    [PolicyEnv, dp.AbstractQuery[Any], Sequence[Example]], Sequence[Example]
 ]
 """
 A function for selecting a subset of examples from a given sequence.
@@ -1180,7 +1180,7 @@ class ExampleSelector:
             query: dp.AbstractQuery[Any],
         ) -> Sequence[Example]:
             examples = self._fn(env, query)
-            return f(env, examples)
+            return f(env, query, examples)
 
         return ExampleSelector(select)
 
@@ -1190,6 +1190,22 @@ class ExampleSelector:
         number of examples.
         """
         return self.filter(take_random(num_examples))
+
+    def exclude_identical_queries(self) -> "ExampleSelector":
+        """
+        Return a new example selector that excludes examples whose
+        query is identical to the input query.
+        """
+
+        def select(
+            env: PolicyEnv,
+            query: dp.AbstractQuery[Any],
+            examples: Sequence[Example],
+        ) -> Sequence[Example]:
+            serialized = dp.SerializedQuery.make(query)
+            return [ex for ex in examples if not ex.query == serialized]
+
+        return self.filter(select)
 
     def cached(self) -> "ExampleSelector":
         """
@@ -1223,7 +1239,7 @@ def all_examples(
     """
     Select all examples relevant to a query.
     """
-    return list(env.examples.examples(query))
+    return env.examples.examples_for(query.query_name())
 
 
 def closest_examples(
@@ -1253,7 +1269,7 @@ def closest_examples(
         )
         # Get top-k indices.
         top_k_indices = cast(list[int], np.argsort(-sims)[:k].tolist())
-        examples = env.examples.all_examples(qname)
+        examples = env.examples.examples_for(qname)
         return [examples[i] for i in top_k_indices]
 
     return ExampleSelector(select)
@@ -1269,6 +1285,7 @@ def take_random(num_examples: int) -> ExampleFilter:
 
     def select(
         env: PolicyEnv,
+        query: dp.AbstractQuery[Any],
         examples: Sequence[Example],
     ) -> Sequence[Example]:
         if num_examples >= len(examples):

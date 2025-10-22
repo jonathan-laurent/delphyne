@@ -6,7 +6,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from functools import partial
 
-import delphyne.core as dp
+import delphyne.core_and_base as dp
 import delphyne.stdlib.environments as en
 import delphyne.stdlib.models as md
 import delphyne.stdlib.models as mo
@@ -67,14 +67,12 @@ def answer_query_with_cache(
     cmd: AnswerQueryArgs,
     cache_spec: md.LLMCache | None,
 ):
-    # TODO: support adding examples?
     loader = exe.object_loader(extra_objects=stdlib_globals())
     query = loader.load_query(cmd.query, cmd.args)
     env = en.PolicyEnv(
         prompt_dirs=exe.prompt_dirs,
         data_dirs=exe.data_dirs,
         demonstration_files=exe.demo_files,
-        do_not_match_identical_queries=True,
         cache=cache_spec,
         log_level=cmd.log_level,
     )
@@ -83,7 +81,15 @@ def answer_query_with_cache(
     model = stdm.standard_model(model_name)
     if cmd.prompt_only:
         model = mo.DummyModel()
-    policy = qu.few_shot(model=model, iterative_mode=cmd.iterative_mode)
+    policy = qu.few_shot(
+        model=model,
+        iterative_mode=cmd.iterative_mode,
+        # We exclude examples related to the exact same query, since
+        # `answer_query` is typically used to inepect model behavior and
+        # there is little to see if the answer is directly copied from
+        # an example.
+        select_examples=dp.all_examples.exclude_identical_queries(),
+    )
     stream = policy(attached, env)
     if cmd.budget is not None:
         stream = stream.with_budget(dp.BudgetLimit(cmd.budget))

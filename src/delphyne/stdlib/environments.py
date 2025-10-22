@@ -129,7 +129,6 @@ class ExampleDatabase:
         embeddings_cache_file: Path | None = None,
         templates_manager: dp.AbstractTemplatesManager | None = None,
         object_loader: ObjectLoader | None = None,
-        do_not_match_identical_queries: bool = False,
     ):
         """
         Arguments:
@@ -139,18 +138,10 @@ class ExampleDatabase:
                 embeddings.
             object_loader: An object loader, necessary when using
                 embeddings.
-            do_not_match_identical_queries: If set to `True`, the
-                `examples` method won't return examples that match
-                identical queries (i.e., with the exact same arguments).
-                This is useful in the context of writing demonstrations,
-                where one may want to see how an LLM would answer a
-                query, even when a ground-truth answer is provided
-                already.
         """
         self._embeddings_cache_file = embeddings_cache_file
         self._templates_manager = templates_manager
         self._object_loader = object_loader
-        self._do_not_match_identical_queries = do_not_match_identical_queries
         self._examples: dict[_QueryName, list[Example]] = defaultdict(list)
         self._embeddings: dict[
             tuple[_QueryName, _EmbeddingModelMame], NDArray[np.float64]
@@ -187,19 +178,7 @@ class ExampleDatabase:
             for q in demo.queries:
                 self.add_query_demonstration(q)
 
-    def examples(self, query: dp.AbstractQuery[Any]) -> Iterable[Example]:
-        """
-        Obtain all potential examples that can be used for few-shot
-        prompting with a given query.
-        """
-        serialized = dp.SerializedQuery.make(query)
-        for ex in self._examples[serialized.name]:
-            if self._do_not_match_identical_queries:
-                if ex.query == serialized:
-                    continue
-            yield ex
-
-    def all_examples(self, query_name: str) -> Sequence[Example]:
+    def examples_for(self, query_name: str) -> Sequence[Example]:
         """
         Obtain examples by their indices for a given query name.
         """
@@ -469,7 +448,6 @@ class PolicyEnv:
         override_answers: dp.AnswerDatabase | None = None,
         log_level: dp.LogLevel = "info",
         log_long_computations: tuple[dp.LogLevel, float] | None = None,
-        do_not_match_identical_queries: bool = False,
         random_seed: int = 0,
     ):
         """
@@ -498,15 +476,13 @@ class PolicyEnv:
                 than the given number of seconds at the given severity
                 level. This settings can be locally overriden by
                 `elim_compute`.
-            do_not_match_identical_queries: See `ExampleDatabase`.
             random_seed: The seed with which to initialize the random
                 number generator.
         """
         self.data_manager = DataManager(data_dirs)
         self.templates = TemplatesManager(prompt_dirs, self.data_manager)
         self.examples = ExampleDatabase(
-            embeddings_cache_file=embeddings_cache_file,
-            do_not_match_identical_queries=do_not_match_identical_queries,
+            embeddings_cache_file=embeddings_cache_file
         )
         self._object_loader = object_loader
         self.tracer = dp.Tracer(log_level=log_level)
