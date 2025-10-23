@@ -117,6 +117,7 @@ class Example:
     query: dp.AbstractQuery[Any]
     answer: dp.Answer
     tags: Sequence[str]
+    meta: dict[str, Any]
 
 
 class ExampleDatabase:
@@ -192,7 +193,12 @@ class ExampleDatabase:
         demo_answer = demo.answers[0]
         answer = dm.translate_answer(demo_answer)
         query = self.object_loader.load_query(demo.query, demo.args)
-        example = Example(query=query, answer=answer, tags=demo_answer.tags)
+        example = Example(
+            query=query,
+            answer=answer,
+            tags=demo_answer.tags,
+            meta=demo_answer.meta or {},
+        )
         self._examples[demo.query].append(example)
 
     def examples_for(self, query_name: str) -> Sequence[Example]:

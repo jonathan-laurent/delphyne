@@ -64,9 +64,9 @@
       "title": "Cache Root"
     },
     "global_embeddings_cache_file": {
-      "default": "embeddings.cache.yaml",
+      "default": "embeddings.cache.h5",
       "format": "path",
-      "title": "Embeddings Cache File",
+      "title": "Global Embeddings Cache File",
       "type": "string"
     },
     "init": {

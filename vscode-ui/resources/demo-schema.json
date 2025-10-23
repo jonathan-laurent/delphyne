@@ -63,6 +63,19 @@
           "default": null,
           "title": "Example"
         },
+        "meta": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Meta"
+        },
         "tags": {
           "default": [],
           "items": {

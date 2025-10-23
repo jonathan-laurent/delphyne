@@ -54,6 +54,8 @@ class Answer:
             strategy tree and thus should not be used as examples).
         tags: A sequence of example tags that can be used by policies to
             select appropriate examples.
+        meta: An optional metadata dictionary for the associated
+            example, which can be used by policies (similar to `tags`).
         justification: An optional justification for the answer (see
             [`delphyne.core.refs.Answer`][]).
     """
@@ -65,6 +67,7 @@ class Answer:
     label: str | None = None
     example: bool | None = None
     tags: Sequence[str] = ()
+    meta: dict[str, Any] | None = None
     justification: str | None = None
 
 
