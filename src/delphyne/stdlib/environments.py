@@ -7,7 +7,7 @@ examples, caching LLM requests, and logging information.
 
 import random
 from collections import defaultdict
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal, cast, override
@@ -24,7 +24,7 @@ import delphyne.stdlib.answer_loaders as loaders
 import delphyne.stdlib.embeddings as em
 import delphyne.stdlib.models as md
 from delphyne.analysis import ObjectLoader
-from delphyne.utils.yaml import dump_yaml_object
+from delphyne.utils.yaml import dump_yaml_object, pretty_yaml
 
 ####
 #### Data Manager
@@ -152,8 +152,25 @@ class ExampleDatabase:
         self._query_embeddings: dict[
             tuple[_QueryName, _EmbeddingModelName], NDArray[np.float64] | None
         ] = {}
+        # Embeddings for full examples, classified by type
+        self._example_embeddings: dict[
+            tuple[_QueryName, _EmbeddingModelName], NDArray[np.float64] | None
+        ] = {}
 
-    def add_query_demonstration(self, demo: dp.QueryDemo):
+    def add_demonstration(self, demo: dp.Demo):
+        """
+        Add all examples from a demonstration to the database.
+        """
+        if isinstance(demo, dp.QueryDemo):
+            self._add_query_demonstration(demo)
+        else:
+            assert isinstance(demo, dp.StrategyDemo)
+            for q in demo.queries:
+                self._add_query_demonstration(q)
+        # Embeddings are cleared since new examples were added.
+        self._query_embeddings.clear()
+
+    def _add_query_demonstration(self, demo: dp.QueryDemo):
         """
         Add all examples from a standalone query demonstration to the
         database.
@@ -170,17 +187,6 @@ class ExampleDatabase:
         query = self.object_loader.load_query(demo.query, demo.args)
         example = Example(query=query, answer=answer, tags=demo_answer.tags)
         self._examples[demo.query].append(example)
-
-    def add_demonstration(self, demo: dp.Demo):
-        """
-        Add all examples from a demonstration to the database.
-        """
-        if isinstance(demo, dp.QueryDemo):
-            self.add_query_demonstration(demo)
-        else:
-            assert isinstance(demo, dp.StrategyDemo)
-            for q in demo.queries:
-                self.add_query_demonstration(q)
 
     def examples_for(self, query_name: str) -> Sequence[Example]:
         """
@@ -211,54 +217,76 @@ class ExampleDatabase:
     def query_embedding_text(self, query: dp.AbstractQuery[Any]) -> str:
         return _query_embedding_text(self.templates_manager, query)
 
+    def example_embedding_text(self, example: Example) -> str:
+        return _example_embedding_text(self.templates_manager, example)
+
     def fetch_query_embeddings(
         self,
         name: _QueryName,
         model: _EmbeddingModelName,
     ) -> NDArray[np.float64] | None:
         """
-        Obtain the embeddings for all examples of a given query type.
+        Obtain the query embeddings for all examples of a given type.
 
         If the embeddings are not loaded yet, they are loaded from
         cache or computed on the fly.
         """
         key = (name, model)
         if key not in self._query_embeddings:
-            self.load_embeddings_for_query_type(name, model)
+            embs = self._load_embeddings(
+                model,
+                self.examples_for(name),
+                lambda e: self.query_embedding_text(e.query),
+            )
+            self._query_embeddings[key] = embs
         return self._query_embeddings[key]
 
-    def load_embeddings_for_query_type(
+    def fetch_example_embeddings(
         self,
         name: _QueryName,
         model: _EmbeddingModelName,
-    ) -> None:
+    ) -> NDArray[np.float64] | None:
         """
-        Get emebdings for all examples of a given query type.
+        Obtain the embeddings of all examples of a given type.
 
-        This method takes a global file lock so as to avoid concurrent
-        accesses to the embeddings cache file.
+        If the embeddings are not loaded yet, they are loaded from
+        cache or computed on the fly.
         """
-        import filelock
-
-        # Note: on Unix systems, the lockfile may not be automatically
-        # deleted. See https://stackoverflow.com/questions/58098634/
-
-        lock_file = _embeddings_cache_lockfile(self.embeddings_cache_file)
-        examples = self._examples[name]
-        with filelock.FileLock(lock_file):
-            res = self._load_embeddings(model, examples)
-        self._query_embeddings[(name, model)] = res
+        key = (name, model)
+        if key not in self._example_embeddings:
+            embs = self._load_embeddings(
+                model,
+                self.examples_for(name),
+                self.example_embedding_text,
+            )
+            self._example_embeddings[key] = embs
+        return self._example_embeddings[key]
 
     def _load_embeddings(
         self,
         model_name: _EmbeddingModelName,
         examples: Sequence[Example],
+        embed_fun: Callable[[Example], str],
     ) -> NDArray[np.float64] | None:
+        """
+        Get embeddings for all examples of a given query type.
+
+        This method takes a global file lock so as to avoid concurrent
+        accesses to the embeddings cache file.
+        """
+
+        import filelock
+
+        # Note: on Unix systems, the lockfile may not be automatically
+        # deleted. See https://stackoverflow.com/questions/58098634/
+
         model = em.standard_openai_embedding_model(model_name)
-        to_embed = [self.query_embedding_text(e.query) for e in examples]
+        to_embed = [embed_fun(e) for e in examples]
         cache_file = self.embeddings_cache_file
-        with md.load_request_cache(cache_file, mode="read_write") as cache:
-            res = model.embed(to_embed, cache)
+        lock_file = _embeddings_cache_lockfile(self.embeddings_cache_file)
+        with filelock.FileLock(lock_file):
+            with md.load_request_cache(cache_file, mode="read_write") as cache:
+                res = model.embed(to_embed, cache)
         if not res:
             return None
         embeddings = np.array([r.embedding for r in res], dtype=np.float64)
@@ -279,6 +307,24 @@ def _query_embedding_text(
         mode=None,
         params={},
         extra_args=None,
+        env=templates_manager,
+    )
+
+
+def _example_embedding_text(
+    templates_manager: dp.AbstractTemplatesManager,
+    example: Example,
+) -> str:
+    answer = example.answer
+    if isinstance(answer.content, str):
+        rendered = answer.content
+    else:
+        rendered = pretty_yaml(answer.content.structured)
+    return example.query.generate_prompt(
+        kind=em.EXAMPLE_EMBEDDING_PROMPT_NAME,
+        mode=None,
+        params={},
+        extra_args={"answer": rendered},
         env=templates_manager,
     )
 
