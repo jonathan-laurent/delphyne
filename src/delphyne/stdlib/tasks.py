@@ -225,7 +225,7 @@ class CommandExecutionContext:
     def object_loader(
         self,
         *,
-        extra_objects: dict[str, Any] | None = None,
+        extra_objects: dict[str, Any] | None,
     ) -> ObjectLoader:
         return ObjectLoader(
             strategy_dirs=self.strategy_dirs,

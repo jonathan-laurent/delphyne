@@ -1033,5 +1033,5 @@ class AnswerTriviaQuestion(dp.Query[str]):
     question: str
 
     __parser__ = dp.get_text
-    __embed_prompt__: ClassVar[str] = "{{query.question}}"
+    __embed_query_prompt__: ClassVar[str] = "{{query.question}}"
     __instance_prompt__: ClassVar[str] = "{{query.question}}"

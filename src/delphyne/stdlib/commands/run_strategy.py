@@ -20,6 +20,7 @@ import delphyne.stdlib.tasks as ta
 import delphyne.utils.caching as ca
 from delphyne.core import irefs, refs
 from delphyne.core.streams import Barrier, Solution, Spent
+from delphyne.stdlib.globals import stdlib_globals
 from delphyne.utils.typing import pydantic_dump
 
 
@@ -95,7 +96,7 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
         demonstration_files=exe.demo_files,
         cache=request_cache,
         embeddings_cache_file=exe.embeddings_cache_file,
-        object_loader=exe.object_loader(),
+        object_loader=exe.object_loader(extra_objects=stdlib_globals()),
         override_answers=answer_database,
         log_level=args.log_level,
         log_long_computations=args.log_long_computations,
@@ -322,7 +323,7 @@ def run_strategy(
     Command for running an oracular program from a serialized
     specification.
     """
-    loader = exe.object_loader()
+    loader = exe.object_loader(extra_objects=stdlib_globals())
     strategy = loader.load_strategy_instance(args.strategy, args.args)
     policy = loader.load_and_call_function(args.policy, args.policy_args)
     answer_loader = None

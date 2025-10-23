@@ -1165,9 +1165,8 @@ class ExampleSelector:
 
     def __call__(
         self, env: PolicyEnv, query: dp.AbstractQuery[Any]
-    ) -> Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]]:
-        raw = self._fn(env, query)
-        return [(ex.query.parse(type(query)), ex.answer) for ex in raw]
+    ) -> Sequence[Example]:
+        return self._fn(env, query)
 
     def filter(self, f: ExampleFilter) -> "ExampleSelector":
         """
@@ -1203,7 +1202,11 @@ class ExampleSelector:
             examples: Sequence[Example],
         ) -> Sequence[Example]:
             serialized = dp.SerializedQuery.make(query)
-            return [ex for ex in examples if not ex.query == serialized]
+            return [
+                ex
+                for ex in examples
+                if not dp.SerializedQuery.make(ex.query) == serialized
+            ]
 
         return self.filter(select)
 
@@ -1261,13 +1264,13 @@ def closest_examples(
             "closest_examples_request",
             {"query": qname},
         )
-        embeddings = env.examples.embeddings_for_query_type(qname, model_name)
+        embeddings = env.examples.fetch_query_embeddings(qname, model_name)
         if embeddings is None:
             # There are no examples in the database.
             return []
         model = em.standard_openai_embedding_model(model_name)
         query_embedding = model.embed(
-            [env.examples.embedding_text(query)], cache=env.cache
+            [env.examples.query_embedding_text(query)], cache=env.cache
         )[0].embedding
         # Compute cosine similarities.
         sims = np.dot(embeddings, query_embedding) / (
@@ -1286,7 +1289,7 @@ def closest_examples(
                 "selected": [
                     {
                         "similarity": float(sims[k]),
-                        "args": examples[k].query.args_dict,
+                        "args": examples[k].query.serialize_args(),
                     }
                     for k in top_k_indices
                 ],
@@ -1387,7 +1390,7 @@ def _instance_prompt(
 
 def create_prompt(
     query: dp.AbstractQuery[Any],
-    examples: Sequence[tuple[dp.AbstractQuery[Any], dp.Answer]],
+    examples: Sequence[Example],
     params: dict[str, object],
     mode: dp.AnswerMode,
     env: dp.AbstractTemplatesManager | None,
@@ -1397,8 +1400,9 @@ def create_prompt(
         kind="system", mode=mode, params=params, env=env
     )
     msgs.append(md.SystemMessage(sys))
-    for i, (q, ans) in enumerate(examples):
-        msgs.extend(_instance_prompt(q, env, params, ans.mode, i + 1))
+    for i, e in enumerate(examples):
+        ans = e.answer
+        msgs.extend(_instance_prompt(e.query, env, params, ans.mode, i + 1))
         msgs.append(md.AssistantMessage(ans))
     msgs.extend(_instance_prompt(query, env, params, mode, None))
     return tuple(msgs)

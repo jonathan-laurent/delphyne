@@ -10,7 +10,8 @@ from typing import Literal, final, override
 import delphyne.core as dp
 import delphyne.stdlib.models as md
 
-EMBEDDING_PROMPT_NAME = "embed"
+QUERY_EMBEDDING_PROMPT_NAME = "embed_query"
+EXAMPLE_EMBEDDING_PROMPT_NAME = "embed_example"
 
 
 #####

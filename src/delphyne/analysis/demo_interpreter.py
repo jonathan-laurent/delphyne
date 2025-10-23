@@ -145,6 +145,14 @@ class ObjectLoader:
                     _GLOBAL_OBJECT_LOADER_EXECUTED_INITIALIZERS.add(id(f))
                     f(**args)
 
+    @staticmethod
+    def trivial() -> "ObjectLoader":
+        """
+        Create a trivial object loader that always fails at loading
+        objects.
+        """
+        return ObjectLoader(strategy_dirs=[], modules=[])
+
     def find_object(self, name: str) -> Any:
         """
         Find an object with a given name.

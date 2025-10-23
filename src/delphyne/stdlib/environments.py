@@ -105,13 +105,13 @@ class Example:
     An example, usable for few-shot prompting.
 
     Attributes:
-        query: The corresponding serialized query.
+        query: The corresponding query.
         answer: The answer to the query.
         tags: A sequence of tags associated with the example, which
             policies can use to select appropriate examples.
     """
 
-    query: dp.SerializedQuery
+    query: dp.AbstractQuery[Any]
     answer: dp.Answer
     tags: Sequence[str]
 
@@ -126,28 +126,30 @@ class ExampleDatabase:
     def __init__(
         self,
         *,
+        object_loader: ObjectLoader,
         embeddings_cache_file: Path | None = None,
         templates_manager: dp.AbstractTemplatesManager | None = None,
-        object_loader: ObjectLoader | None = None,
     ):
         """
         Arguments:
+            object_loader: An object loader for loading query objects.
             embeddings_cache_file: Global cache file that stores
                 common embeddings (e.g. embeddings of examples).
             templates_manager: A templates manager, necessary when using
                 embeddings.
-            object_loader: An object loader, necessary when using
-                embeddings.
         """
         self._embeddings_cache_file = embeddings_cache_file
+        self.object_loader = object_loader
         self._templates_manager = templates_manager
-        self._object_loader = object_loader
         self._examples: dict[_QueryName, list[Example]] = defaultdict(list)
 
-        # We store None if the embeddings were computed but there were
+        # For both `_query_embeddings` and `_example_embeddings`, we
+        # store `None` if the embeddings were computed but there were
         # zero examples. This is the equivalent of a numpy array with
         # zero lines.
-        self._embeddings: dict[
+
+        # Embeddings for queries, classified by type
+        self._query_embeddings: dict[
             tuple[_QueryName, _EmbeddingModelName], NDArray[np.float64] | None
         ] = {}
 
@@ -165,10 +167,8 @@ class ExampleDatabase:
             return
         demo_answer = demo.answers[0]
         answer = dm.translate_answer(demo_answer)
-        serialized = dp.SerializedQuery.from_json(demo.query, demo.args)
-        example = Example(
-            query=serialized, answer=answer, tags=demo_answer.tags
-        )
+        query = self.object_loader.load_query(demo.query, demo.args)
+        example = Example(query=query, answer=answer, tags=demo_answer.tags)
         self._examples[demo.query].append(example)
 
     def add_demonstration(self, demo: dp.Demo):
@@ -199,12 +199,6 @@ class ExampleDatabase:
         return self._templates_manager
 
     @property
-    def object_loader(self) -> ObjectLoader:
-        if self._object_loader is None:
-            raise ValueError("ExampleDatabase.object_loader was not provided.")
-        return self._object_loader
-
-    @property
     def embeddings_cache_file(self) -> Path:
         if self._embeddings_cache_file is None:
             raise ValueError(
@@ -214,7 +208,10 @@ class ExampleDatabase:
 
     ### Loading embeddings
 
-    def embeddings_for_query_type(
+    def query_embedding_text(self, query: dp.AbstractQuery[Any]) -> str:
+        return _query_embedding_text(self.templates_manager, query)
+
+    def fetch_query_embeddings(
         self,
         name: _QueryName,
         model: _EmbeddingModelName,
@@ -226,9 +223,9 @@ class ExampleDatabase:
         cache or computed on the fly.
         """
         key = (name, model)
-        if key not in self._embeddings:
+        if key not in self._query_embeddings:
             self.load_embeddings_for_query_type(name, model)
-        return self._embeddings[key]
+        return self._query_embeddings[key]
 
     def load_embeddings_for_query_type(
         self,
@@ -250,16 +247,7 @@ class ExampleDatabase:
         examples = self._examples[name]
         with filelock.FileLock(lock_file):
             res = self._load_embeddings(model, examples)
-        self._embeddings[(name, model)] = res
-
-    def embedding_text(self, query: dp.AbstractQuery[Any]) -> str:
-        return _query_embedding_text(self.templates_manager, query)
-
-    def _embedding_text_from_serialized(
-        self, query: dp.SerializedQuery
-    ) -> str:
-        loaded = self.object_loader.load_query(query.name, query.args_dict)
-        return self.embedding_text(loaded)
+        self._query_embeddings[(name, model)] = res
 
     def _load_embeddings(
         self,
@@ -267,9 +255,7 @@ class ExampleDatabase:
         examples: Sequence[Example],
     ) -> NDArray[np.float64] | None:
         model = em.standard_openai_embedding_model(model_name)
-        to_embed = [
-            self._embedding_text_from_serialized(ex.query) for ex in examples
-        ]
+        to_embed = [self.query_embedding_text(e.query) for e in examples]
         cache_file = self.embeddings_cache_file
         with md.load_request_cache(cache_file, mode="read_write") as cache:
             res = model.embed(to_embed, cache)
@@ -289,7 +275,7 @@ def _query_embedding_text(
     query: dp.AbstractQuery[Any],
 ) -> str:
     return query.generate_prompt(
-        kind=em.EMBEDDING_PROMPT_NAME,
+        kind=em.QUERY_EMBEDDING_PROMPT_NAME,
         mode=None,
         params={},
         extra_args=None,
@@ -448,12 +434,12 @@ class PolicyEnv:
     def __init__(
         self,
         *,
+        object_loader: ObjectLoader,
         prompt_dirs: Sequence[Path] = (),
         demonstration_files: Sequence[Path] = (),
         data_dirs: Sequence[Path] = (),
         cache: md.LLMCache | None = None,
         embeddings_cache_file: Path | None = None,
-        object_loader: ObjectLoader | None = None,
         override_answers: dp.AnswerDatabase | None = None,
         log_level: dp.LogLevel = "info",
         log_long_computations: tuple[dp.LogLevel, float] | None = None,
@@ -461,6 +447,9 @@ class PolicyEnv:
     ):
         """
         Args:
+            object_loader: An object loader. This is useful in
+                particular for loading query objects from their
+                serialized representation.
             prompt_dirs: A sequence of directories where Jinja prompt
                 templates can be found.
             demonstration_files: A sequence of paths to demonstration
@@ -476,9 +465,6 @@ class PolicyEnv:
                 Individual prompting policies such as `few_shot` are
                 responsible for consulting this global database using
                 the `overriden_answer` method.
-            object_loader: An object loader. This is useful for
-                computing query embeddings, which requires parsing
-                serialized queries.
             log_level: The minimum log level to record. Messages with a
                 lower level will be ignored.
             log_long_computations: if set, log computations taking more
@@ -495,7 +481,7 @@ class PolicyEnv:
             templates_manager=self.templates,
             object_loader=object_loader,
         )
-        self._object_loader = object_loader
+        self.object_loader = object_loader
         self.tracer = dp.Tracer(log_level=log_level)
         self.log_long_computations = log_long_computations
         self.cache = cache
@@ -504,17 +490,6 @@ class PolicyEnv:
         for path in demonstration_files:
             for demo in loaders.load_demo_file(path):
                 self.examples.add_demonstration(demo)
-
-    @property
-    def object_loader(self) -> ObjectLoader:
-        """
-        The object loader associated with this environment.
-
-        A runtime error is raised if no object loader was provided.
-        """
-        if self._object_loader is None:
-            raise ValueError("PolicyEnv.object_loader was not provided.")
-        return self._object_loader
 
     def overriden_answer(
         self, query: dp.AbstractQuery[Any]

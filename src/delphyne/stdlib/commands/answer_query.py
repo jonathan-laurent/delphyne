@@ -70,6 +70,7 @@ def answer_query_with_cache(
     loader = exe.object_loader(extra_objects=stdlib_globals())
     query = loader.load_query(cmd.query, cmd.args)
     env = en.PolicyEnv(
+        object_loader=loader,
         prompt_dirs=exe.prompt_dirs,
         data_dirs=exe.data_dirs,
         demonstration_files=exe.demo_files,

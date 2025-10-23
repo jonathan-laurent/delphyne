@@ -9,12 +9,19 @@ import delphyne as dp
 import delphyne.stdlib.mock as mock
 
 
+def _trivial_policy_env() -> dp.PolicyEnv:
+    return dp.PolicyEnv(
+        object_loader=dp.ObjectLoader.trivial(),
+        prompt_dirs=(),
+        demonstration_files=(),
+        data_dirs=(),
+    )
+
+
 def test_search_synthesis():
     demo = load_demo("synthetize_fun_demo")
     assert isinstance(demo, dp.StrategyDemo)
-    env = dp.PolicyEnv(
-        prompt_dirs=(), demonstration_files=(), data_dirs=()
-    )  # Won't be used
+    env = _trivial_policy_env()
     vars = ["x", "y"]
     prop = (["a", "b"], "F(a, b) == F(b, a) and F(0, 1) == 2")
     pp = mock.demo_mock_oracle(demo)
@@ -31,7 +38,7 @@ def test_search_synthesis():
 
 
 def test_cached_computations():
-    env = dp.PolicyEnv(demonstration_files=(), prompt_dirs=(), data_dirs=())
+    env = _trivial_policy_env()
     # tr = Trans[N, M](dp.elim_compute)
     policy = dp.dfs() @ dp.elim_compute() & None
     stream = ex.test_cached_computations(1).run_toplevel(env, policy)
@@ -52,9 +59,7 @@ def test_bestfs():
             yield dp.Answer(None, str(i))
             i += 1
 
-    env = dp.PolicyEnv(
-        prompt_dirs=(), demonstration_files=(), data_dirs=()
-    )  # Won't be used
+    env = _trivial_policy_env()
     pp = mock.fixed_oracle(oracle)
     policy = ex.generate_pairs_policy(pp)
     stream = ex.generate_pairs().run_toplevel(env, policy)
