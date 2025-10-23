@@ -163,6 +163,11 @@ class DelphyneCLI:
             )
             if not args.cache_file:
                 args.cache_file = file_path.stem + ".yaml"
+            assert hasattr(args, "embeddings_cache_file"), (
+                "Command does not have an `embeddings_cache_file` argument."
+            )
+            if not args.embeddings_cache_file:
+                args.embeddings_cache_file = file_path.stem + ".embeddings.h5"
         if log_level:
             if not hasattr(args, "log_level"):
                 raise ValueError(

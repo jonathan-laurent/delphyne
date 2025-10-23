@@ -18,6 +18,7 @@ from delphyne.stdlib.embeddings import (
     OpenAICompatibleEmbeddingModel,
     StandardOpenAIEmbeddingModel,
     load_embeddings_cache,
+    load_optional_embeddings_cache,
     standard_openai_embedding_model,
 )
 from delphyne.stdlib.environments import (
@@ -71,6 +72,7 @@ from delphyne.stdlib.models import (
     UserMessage,
     WithRetry,
     budget_entry,
+    load_optional_request_cache,
     load_request_cache,
 )
 from delphyne.stdlib.nodes import (

@@ -172,6 +172,19 @@ def load_embeddings_cache(file: Path, mode: caching.CacheMode):
             cache.save(file)
 
 
+@contextmanager
+def load_optional_embeddings_cache(file: Path | None, mode: caching.CacheMode):
+    """
+    Load an optional embeddings cache from a file. If `file` is `None`,
+    yields `None`.
+    """
+    if file is None:
+        yield None
+        return
+    with load_embeddings_cache(file, mode) as cache:
+        yield cache
+
+
 #####
 ##### Base Models and Caching
 #####

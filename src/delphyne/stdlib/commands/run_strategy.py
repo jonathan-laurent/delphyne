@@ -65,6 +65,7 @@ class RunLoadedStrategyArgs[N: dp.Node, P, T]:
     budget: dict[str, float] | None = None
     using: Sequence[dp.AnswerSource] | None = None
     cache_file: str | None = None
+    embeddings_cache_file: str | None = None
     cache_mode: ca.CacheMode = "read_write"
     log_level: dp.LogLevel = "info"
     log_long_computations: tuple[dp.LogLevel, float] | None = None
@@ -75,11 +76,12 @@ class RunLoadedStrategyArgs[N: dp.Node, P, T]:
     remove_timing_info: bool = False
 
 
-def run_loaded_strategy_with_cache[N: dp.Node, P, T](
+def run_loaded_strategy_with_caches[N: dp.Node, P, T](
     task: ta.TaskContext[ta.CommandResult[RunStrategyResponse]],
     exe: ta.CommandExecutionContext,
     args: RunLoadedStrategyArgs[N, P, T],
     request_cache: md.LLMCache | None,
+    embeddings_cache: dp.EmbeddingsCache | None,
 ):
     answer_database = None
     if args.using is not None:
@@ -95,6 +97,7 @@ def run_loaded_strategy_with_cache[N: dp.Node, P, T](
         data_dirs=exe.data_dirs,
         demonstration_files=exe.demo_files,
         cache=request_cache,
+        embeddings_cache=embeddings_cache,
         global_embeddings_cache_file=exe.global_embeddings_cache_file,
         object_loader=exe.object_loader(extra_objects=stdlib_globals()),
         override_answers=answer_database,
@@ -235,28 +238,46 @@ def run_loaded_strategy[N: dp.Node, P, T](
     """
     Command for running an oracular program.
     """
+
     with_cache_spec(
-        partial(run_loaded_strategy_with_cache, task, exe, args),
+        partial(run_loaded_strategy_with_caches, task, exe, args),
         cache_root=exe.cache_root,
         cache_file=args.cache_file,
+        embeddings_cache_file=args.embeddings_cache_file,
         cache_mode=args.cache_mode,
     )
 
 
 def with_cache_spec[T](
-    f: Callable[[md.LLMCache | None], T],
+    f: Callable[[dp.LLMCache | None, dp.EmbeddingsCache | None], T],
     *,
     cache_root: Path | None,
     cache_file: str | None,
+    embeddings_cache_file: str | None,
     cache_mode: ca.CacheMode,
 ) -> T:
+    """
+    Utility function for loading request and embeddings caches
+    before calling `f`.
+    """
+
+    request_cache_path = None
+    embeddings_cache_path = None
+    unspecified_message = "Nonspecified cache root."
+
     if cache_file is not None:
-        assert cache_root is not None, "Nonspecified cache root."
-        cache_file_path = cache_root / cache_file
-        with md.load_request_cache(cache_file_path, mode=cache_mode) as rc:
-            return f(rc)
-    else:
-        return f(None)
+        assert cache_root is not None, unspecified_message
+        request_cache_path = cache_root / cache_file
+    if embeddings_cache_file is not None:
+        assert cache_root is not None, unspecified_message
+        embeddings_cache_path = cache_root / embeddings_cache_file
+    with md.load_optional_request_cache(
+        request_cache_path, mode=cache_mode
+    ) as request_cache:
+        with dp.load_optional_embeddings_cache(
+            embeddings_cache_path, mode=cache_mode
+        ) as embeddings_cache:
+            return f(request_cache, embeddings_cache)
 
 
 @dataclass(kw_only=True)
@@ -277,6 +298,9 @@ class RunStrategyArgs:
             auto-completing demonstrations.
         cache_file: File within the global cache directory to use for
             request caching, or `None` to disable caching.
+        embeddings_cache_file: File within the global cache directory to
+            use for embeddings caching, or `None` to disable embeddings
+            caching.
         cache_mode: Cache mode to use.
         log_level: Minimum log level to record. Messages with a lower
             level will be ignored.
@@ -304,6 +328,7 @@ class RunStrategyArgs:
     using: Sequence[dp.AnswerSource] | None = None
     num_generated: int = 1
     cache_file: str | None = None
+    embeddings_cache_file: str | None = None
     cache_mode: ca.CacheMode = "read_write"
     log_level: dp.LogLevel = "info"
     log_long_computations: tuple[dp.LogLevel, float] | None = None
@@ -343,6 +368,7 @@ def run_strategy(
             budget=args.budget,
             using=args.using,
             cache_file=args.cache_file,
+            embeddings_cache_file=args.embeddings_cache_file,
             cache_mode=args.cache_mode,
             log_level=args.log_level,
             log_long_computations=args.log_long_computations,

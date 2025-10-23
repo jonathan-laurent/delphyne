@@ -51,6 +51,7 @@ class AnswerQueryArgs:
     iterative_mode: bool = False
     budget: dict[str, float] | None = None
     cache_file: str | None = None
+    embeddings_cache_file: str | None = None
     cache_mode: ca.CacheMode = "read_write"
     log_level: dp.LogLevel = "info"
 
@@ -65,7 +66,8 @@ def answer_query_with_cache(
     task: ta.TaskContext[ta.CommandResult[AnswerQueryResponse]],
     exe: ta.CommandExecutionContext,
     cmd: AnswerQueryArgs,
-    cache_spec: md.LLMCache | None,
+    cache: md.LLMCache | None,
+    embeddings_cache: dp.EmbeddingsCache | None,
 ):
     loader = exe.object_loader(extra_objects=stdlib_globals())
     query = loader.load_query(cmd.query, cmd.args)
@@ -74,7 +76,8 @@ def answer_query_with_cache(
         prompt_dirs=exe.prompt_dirs,
         data_dirs=exe.data_dirs,
         demonstration_files=exe.demo_files,
-        cache=cache_spec,
+        cache=cache,
+        embeddings_cache=embeddings_cache,
         log_level=cmd.log_level,
     )
     attached = dp.spawn_standalone_query(query)
@@ -137,5 +140,6 @@ def answer_query(
         partial(answer_query_with_cache, task, exe, cmd),
         cache_root=exe.cache_root,
         cache_file=cmd.cache_file,
+        embeddings_cache_file=cmd.embeddings_cache_file,
         cache_mode=cmd.cache_mode,
     )

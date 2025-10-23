@@ -631,6 +631,21 @@ def load_request_cache(file: Path, *, mode: CacheMode):
         yield LLMCache(cache)
 
 
+@contextmanager
+def load_optional_request_cache(file: Path | None, *, mode: CacheMode):
+    """
+    Context manager that loads an optional LLM request cache from a YAML
+    file. If `file` is `None`, yields `None`.
+    """
+    if file is None:
+        yield None
+        return
+    with load_cache(
+        file, mode=mode, input_type=CachedRequest, output_type=LLMResponse
+    ) as cache:
+        yield LLMCache(cache)
+
+
 def fetch_or_answer(
     cache: LLMCache | None,
     req: LLMRequest,

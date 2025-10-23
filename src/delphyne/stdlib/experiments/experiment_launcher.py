@@ -30,6 +30,7 @@ RESULT_FILE = "result.yaml"
 LOG_FILE = "log.txt"
 EXCEPTION_FILE = "exception.txt"
 CACHE_FILE = "cache.yaml"
+EMBEDDINGS_CACHE_FILE = "embeddings.cache.h5"
 RESULTS_SUMMARY = "results_summary.csv"
 CONFIGS_SUBDIR = "configs"
 SNAPSHOTS_DIR = "snapshots"
@@ -44,6 +45,12 @@ def _config_dir_path(output_dir: Path, config_name: str) -> Path:
 
 def _relative_cache_path(config_name: str) -> str:
     return str(_config_dir_path(Path("."), config_name) / CACHE_FILE)
+
+
+def _relative_embeddings_cache_path(config_name: str) -> str:
+    return str(
+        _config_dir_path(Path("."), config_name) / EMBEDDINGS_CACHE_FILE
+    )
 
 
 @dataclass
@@ -525,6 +532,9 @@ class Experiment[Config]:
         info = state.configs[config_name]
         cmdargs = self.experiment(info.params)
         cmdargs.cache_file = _relative_cache_path(config_name)
+        cmdargs.embeddings_cache_file = _relative_embeddings_cache_path(
+            config_name
+        )
         cmdargs.cache_mode = "replay"
         run_command(
             command=cmd.run_strategy,
@@ -802,11 +812,6 @@ def _run_config[Config](
     threading.Thread(target=monitor).start()
 
     # Create and launch the main command
-    cache_file = None
-    if cache_requests:
-        cache_file = config_dir / CACHE_FILE
-        if cache_file.exists():
-            cache_file.unlink(missing_ok=True)
     for f in (STATUS_FILE, RESULT_FILE, LOG_FILE):
         file_path = config_dir / f
         if file_path.exists():
@@ -815,6 +820,14 @@ def _run_config[Config](
     if cache_requests:
         # A relative path is expected!
         cmdargs.cache_file = _relative_cache_path(config_name)
+        cmdargs.embeddings_cache_file = _relative_embeddings_cache_path(
+            config_name
+        )
+        assert context.cache_root is not None  # guaranteed by Experiment
+        (context.cache_root / cmdargs.cache_file).unlink(missing_ok=True)
+        (context.cache_root / cmdargs.embeddings_cache_file).unlink(
+            missing_ok=True
+        )
     cmdargs.cache_mode = "create"
     cmdargs.export_browsable_trace = export_browsable_trace
     cmdargs.export_log = export_log
