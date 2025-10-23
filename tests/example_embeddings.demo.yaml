@@ -17,3 +17,8 @@
 - query: AnswerTriviaQuestion
   args: {question: "How many states does the USA have?"}
   answers: [{answer: "50"}]
+
+# Almost the same than question 2!
+- query: AnswerTriviaQuestion
+  args: {question: "What is the capital of Spain?"}
+  answers: [{answer: "Madrid"}]

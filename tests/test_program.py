@@ -23,7 +23,9 @@ DEMO_DIR = Path(__file__).parent
 STRATEGY_MODULES = ("example_strategies",)
 
 
-def _make_policy_env(*, cache: dp.LLMCache, demo_files: Sequence[str] = ()):
+def _make_policy_env(
+    *, cache: dp.LLMCache | None, demo_files: Sequence[str] = ()
+):
     object_loader = dp.ObjectLoader(
         strategy_dirs=STRATEGY_DIRS, modules=STRATEGY_MODULES
     )
@@ -553,6 +555,33 @@ def test_strategy_loading_data():
 #####
 
 
+def test_similarity_matrix():
+    env = _make_policy_env(cache=None, demo_files=["example_embeddings"])
+    sim = env.examples.fetch_example_similarity_matrix(
+        "AnswerTriviaQuestion", "text-embedding-3-large"
+    )
+    assert sim is not None
+    assert sim.shape == (5, 5)
+    assert (sim.T == sim).all()
+    print("\n", sim)
+
+
+def test_maximum_marginally_relevant():
+    with _load_cache("maximum_marginally_relevant") as cache:
+        env = _make_policy_env(cache=cache, demo_files=["example_embeddings"])
+        question = "What is the most populated country in Europe?"
+        query = ex.AnswerTriviaQuestion(question)
+        selector = dp.maximum_marginally_relevant(
+            # If setting lambda=1, the two first examples are almost identical
+            k=5,
+            model_name="text-embedding-3-large",
+            lambda_param=0.7,
+            always_compute_mmr=True,
+        )
+        _res = selector(env, query)
+        print(_log_yaml(list(env.tracer.export_log())))
+
+
 def test_example_embeddings():
     question = "What is the most populated country in Europe?"
     res, _log = _eval_query(
@@ -560,9 +589,11 @@ def test_example_embeddings():
         "example_embeddings",
         demo_files=["example_embeddings"],
         select_examples=dp.closest_examples(
-            k=2, model_name="text-embedding-3-large"
+            k=3, model_name="text-embedding-3-large"
         ),
     )
+    # In this case, because we use `closest_examples`, the first two
+    # examples are trivial rewordings of the same thing.
     print("\n" + _log_yaml(_log))
     assert res is not None
 
@@ -574,7 +605,7 @@ def test_example_embeddings_empty():
         "example_embeddings_empty",
         demo_files=[],  # No demo file is given
         select_examples=dp.closest_examples(
-            k=2, model_name="text-embedding-3-large"
+            k=3, model_name="text-embedding-3-large"
         ),
     )
     print("\n" + _log_yaml(_log))

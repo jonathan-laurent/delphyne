@@ -99,6 +99,9 @@ type _QueryName = str
 type _EmbeddingModelName = str
 
 
+type _EmbeddingsBucket = tuple[_QueryName, _EmbeddingModelName]
+
+
 @dataclass(kw_only=True)
 class Example:
     """
@@ -150,11 +153,15 @@ class ExampleDatabase:
 
         # Embeddings for queries, classified by type
         self._query_embeddings: dict[
-            tuple[_QueryName, _EmbeddingModelName], NDArray[np.float64] | None
+            _EmbeddingsBucket, NDArray[np.float64] | None
         ] = {}
         # Embeddings for full examples, classified by type
         self._example_embeddings: dict[
-            tuple[_QueryName, _EmbeddingModelName], NDArray[np.float64] | None
+            _EmbeddingsBucket, NDArray[np.float64] | None
+        ] = {}
+        # Similarity matrix
+        self._example_similarity_matrix: dict[
+            _EmbeddingsBucket, NDArray[np.float64] | None
         ] = {}
 
     def add_demonstration(self, demo: dp.Demo):
@@ -261,6 +268,32 @@ class ExampleDatabase:
             )
             self._example_embeddings[key] = embs
         return self._example_embeddings[key]
+
+    def fetch_example_similarity_matrix(
+        self,
+        name: _QueryName,
+        model: _EmbeddingModelName,
+    ) -> NDArray[np.float64] | None:
+        """
+        Obtain the similarity matrix of all examples of a given type.
+
+        If the similarity matrix is not loaded yet, it is computed on
+        the fly from the example embeddings.
+        """
+        key = (name, model)
+        if key not in self._example_similarity_matrix:
+            embs = self.fetch_example_embeddings(name, model)
+            if embs is None:
+                sim_matrix = None
+            else:
+                # Compute cosine similarity matrix
+                norms = np.linalg.norm(embs, axis=1, keepdims=True)
+                normalized_embs = embs / np.clip(
+                    norms, a_min=1e-10, a_max=None
+                )
+                sim_matrix = normalized_embs @ normalized_embs.T
+            self._example_similarity_matrix[key] = sim_matrix
+        return self._example_similarity_matrix[key]
 
     def _load_embeddings(
         self,

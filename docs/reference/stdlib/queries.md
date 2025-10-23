@@ -50,6 +50,8 @@
 
 ::: delphyne.closest_examples
 
+::: delphyne.maximum_marginally_relevant
+
 ## Models
 
 ::: delphyne.stdlib.models.LLM

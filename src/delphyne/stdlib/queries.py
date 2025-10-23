@@ -1254,6 +1254,10 @@ def closest_examples(
     Obtain the `k` closest examples to the given query, based on
     embedding similarity. Return a list of `(example, similarity)`
     tuples, sorted by decreasing similarity.
+
+    Arguments:
+        k: Number of examples to select.
+        model_name: Name of the embedding model to use.
     """
 
     def select(
@@ -1296,6 +1300,128 @@ def closest_examples(
             },
         )
         return [examples[i] for i in top_k_indices]
+
+    return ExampleSelector(select)
+
+
+def maximum_marginally_relevant(
+    *,
+    k: int,
+    lambda_param: float,
+    model_name: str,
+    always_compute_mmr: bool = False,
+) -> ExampleSelector:
+    """
+    Obtain `k` examples that are maximally relevant to the query while
+    being diverse among themselves, using the Maximal Marginally
+    Relevant (MMR) algorithm.
+
+    Arguments:
+        k: Number of examples to select.
+        lambda_param: Trade-off parameter between relevance and
+            diversity, in [0, 1]. Higher values favor relevance.
+        model_name: Name of the embedding model to use.
+            always_compute_mmr: If `True`, the MMR algorithm is run even
+            when all examples need to be returned. This is useful for
+            debugging purposes.
+    """
+
+    def select(
+        env: PolicyEnv, query: dp.AbstractQuery[Any]
+    ) -> Sequence[Example]:
+        if k == 0:
+            return []
+
+        qname = query.query_name()
+        examples = env.examples.examples_for(qname)
+        num_examples = len(examples)
+        if k >= num_examples and not always_compute_mmr:
+            # Return all examples if we need more than available
+            return examples
+
+        lid = env.info(
+            "mmr_request",
+            {"query": qname, "k": k, "lambda": lambda_param},
+        )
+        embeddings = env.examples.fetch_query_embeddings(qname, model_name)
+        similarity_matrix = env.examples.fetch_example_similarity_matrix(
+            qname, model_name
+        )
+        if embeddings is None or similarity_matrix is None:
+            return []
+
+        model = em.standard_openai_embedding_model(model_name)
+        query_embedding = model.embed(
+            [env.examples.query_embedding_text(query)], cache=env.cache
+        )[0].embedding
+
+        # Compute cosine similarities to the query for all examples
+        query_sims = np.dot(embeddings, query_embedding) / (
+            np.linalg.norm(embeddings, axis=1)
+            * np.linalg.norm(query_embedding)
+        )
+
+        # MMR algorithm
+        selected_indices: list[int] = []
+        remaining_indices = set(range(num_examples))
+        max_similarities: dict[
+            int, float
+        ] = {}  # Store max similarity for each selected index
+        mmr_scores: dict[
+            int, float
+        ] = {}  # Store MMR score for each selected index
+
+        # Select the first example with highest query similarity
+        first_idx = int(np.argmax(query_sims))
+        selected_indices.append(first_idx)
+        remaining_indices.remove(first_idx)
+        max_similarities[first_idx] = 0.0
+        mmr_scores[first_idx] = query_sims[first_idx]
+
+        # Iteratively select remaining examples
+        for _ in range(k - 1):
+            if not remaining_indices:
+                break
+            best_score = float("-inf")
+            best_idx = -1
+            best_max_similarity = 0.0
+            for idx in remaining_indices:
+                relevance = query_sims[idx]
+                assert selected_indices
+                max_similarity = np.max(
+                    similarity_matrix[idx, selected_indices]
+                )
+                mmr_score = (
+                    lambda_param * relevance
+                    - (1 - lambda_param) * max_similarity
+                )
+                if mmr_score > best_score:
+                    best_score = mmr_score
+                    best_idx = idx
+                    best_max_similarity = max_similarity
+            selected_indices.append(best_idx)
+            remaining_indices.remove(best_idx)
+            max_similarities[best_idx] = best_max_similarity
+            mmr_scores[best_idx] = best_score
+
+        env.info(
+            "mmr_response",
+            related=[lid],
+            metadata={
+                "query": qname,
+                "args": query.serialize_args(),
+                "selected": [
+                    {
+                        "score": float(mmr_scores[idx]),
+                        "query_similarity": float(query_sims[idx]),
+                        "max_example_similarity": float(max_similarities[idx]),
+                        "args": examples[idx].query.serialize_args(),
+                    }
+                    for idx in selected_indices
+                ],
+            },
+        )
+        return [examples[i] for i in selected_indices]
 
     return ExampleSelector(select)
 

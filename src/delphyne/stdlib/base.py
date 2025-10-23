@@ -134,6 +134,7 @@ from delphyne.stdlib.queries import (
     first_word,
     get_text,
     last_code_block,
+    maximum_marginally_relevant,
     structured,
     structured_as,
 )
