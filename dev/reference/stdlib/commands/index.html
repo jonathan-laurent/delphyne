@@ -2977,32 +2977,7 @@ specification.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/commands/run_strategy.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">317</span>
-<span class="normal">318</span>
-<span class="normal">319</span>
-<span class="normal">320</span>
-<span class="normal">321</span>
-<span class="normal">322</span>
-<span class="normal">323</span>
-<span class="normal">324</span>
-<span class="normal">325</span>
-<span class="normal">326</span>
-<span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span>
-<span class="normal">330</span>
-<span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span>
-<span class="normal">334</span>
-<span class="normal">335</span>
-<span class="normal">336</span>
-<span class="normal">337</span>
-<span class="normal">338</span>
-<span class="normal">339</span>
-<span class="normal">340</span>
-<span class="normal">341</span>
-<span class="normal">342</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">342</span>
 <span class="normal">343</span>
 <span class="normal">344</span>
 <span class="normal">345</span>
@@ -3015,7 +2990,33 @@ specification.</p>
 <span class="normal">352</span>
 <span class="normal">353</span>
 <span class="normal">354</span>
-<span class="normal">355</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_strategy</span><span class="p">(</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_strategy</span><span class="p">(</span>
     <span class="n">task</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">TaskContext</span><span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">CommandResult</span><span class="p">[</span><span class="n">RunStrategyResponse</span><span class="p">]],</span>
     <span class="n">exe</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">CommandExecutionContext</span><span class="p">,</span>
     <span class="n">args</span><span class="p">:</span> <span class="n">RunStrategyArgs</span><span class="p">,</span>
@@ -3044,6 +3045,7 @@ specification.</p>
             <span class="n">budget</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">budget</span><span class="p">,</span>
             <span class="n">using</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">using</span><span class="p">,</span>
             <span class="n">cache_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cache_file</span><span class="p">,</span>
+            <span class="n">embeddings_cache_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">embeddings_cache_file</span><span class="p">,</span>
             <span class="n">cache_mode</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cache_mode</span><span class="p">,</span>
             <span class="n">log_level</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">log_level</span><span class="p">,</span>
             <span class="n">log_long_computations</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">log_long_computations</span><span class="p">,</span>
@@ -3184,6 +3186,19 @@ request caching, or <code>None</code> to disable caching.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><span title="delphyne.stdlib.commands.run_strategy.RunStrategyArgs.embeddings_cache_file">embeddings_cache_file</span></code></td>
+            <td>
+                  <code><span title="str">str</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>File within the global cache directory to
+use for embeddings caching, or <code>None</code> to disable embeddings
+caching.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><span title="delphyne.stdlib.commands.run_strategy.RunStrategyArgs.cache_mode">cache_mode</span></code></td>
             <td>
                   <code><a class="autorefs autorefs-internal" title="CacheMode (delphyne.utils.caching.CacheMode)" href="../queries/#delphyne.utils.caching.CacheMode">CacheMode</a></code>
@@ -3297,28 +3312,7 @@ particularly useful for making commands deterministic.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/commands/run_strategy.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span>
-<span class="normal">277</span>
-<span class="normal">278</span>
-<span class="normal">279</span>
-<span class="normal">280</span>
-<span class="normal">281</span>
-<span class="normal">282</span>
-<span class="normal">283</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">283</span>
 <span class="normal">284</span>
 <span class="normal">285</span>
 <span class="normal">286</span>
@@ -3349,7 +3343,32 @@ particularly useful for making commands deterministic.</p>
 <span class="normal">311</span>
 <span class="normal">312</span>
 <span class="normal">313</span>
-<span class="normal">314</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">RunStrategyArgs</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments for the `run_strategy` command that runs an oracular</span>
@@ -3367,6 +3386,9 @@ particularly useful for making commands deterministic.</p>
 <span class="sd">            auto-completing demonstrations.</span>
 <span class="sd">        cache_file: File within the global cache directory to use for</span>
 <span class="sd">            request caching, or `None` to disable caching.</span>
+<span class="sd">        embeddings_cache_file: File within the global cache directory to</span>
+<span class="sd">            use for embeddings caching, or `None` to disable embeddings</span>
+<span class="sd">            caching.</span>
 <span class="sd">        cache_mode: Cache mode to use.</span>
 <span class="sd">        log_level: Minimum log level to record. Messages with a lower</span>
 <span class="sd">            level will be ignored.</span>
@@ -3394,6 +3416,7 @@ particularly useful for making commands deterministic.</p>
     <span class="n">using</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">AnswerSource</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">num_generated</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">cache_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">embeddings_cache_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">cache_mode</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">CacheMode</span> <span class="o">=</span> <span class="s2">&quot;read_write&quot;</span>
     <span class="n">log_level</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">LogLevel</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span>
     <span class="n">log_long_computations</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">LogLevel</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -3463,10 +3486,7 @@ particularly useful for making commands deterministic.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/commands/answer_query.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">131</span>
 <span class="normal">132</span>
 <span class="normal">133</span>
 <span class="normal">134</span>
@@ -3476,7 +3496,11 @@ particularly useful for making commands deterministic.</p>
 <span class="normal">138</span>
 <span class="normal">139</span>
 <span class="normal">140</span>
-<span class="normal">141</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">answer_query</span><span class="p">(</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">answer_query</span><span class="p">(</span>
     <span class="n">task</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">TaskContext</span><span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">CommandResult</span><span class="p">[</span><span class="n">AnswerQueryResponse</span><span class="p">]],</span>
     <span class="n">exe</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">CommandExecutionContext</span><span class="p">,</span>
     <span class="n">cmd</span><span class="p">:</span> <span class="n">AnswerQueryArgs</span><span class="p">,</span>
@@ -3488,6 +3512,7 @@ particularly useful for making commands deterministic.</p>
         <span class="n">partial</span><span class="p">(</span><span class="n">answer_query_with_cache</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">exe</span><span class="p">,</span> <span class="n">cmd</span><span class="p">),</span>
         <span class="n">cache_root</span><span class="o">=</span><span class="n">exe</span><span class="o">.</span><span class="n">cache_root</span><span class="p">,</span>
         <span class="n">cache_file</span><span class="o">=</span><span class="n">cmd</span><span class="o">.</span><span class="n">cache_file</span><span class="p">,</span>
+        <span class="n">embeddings_cache_file</span><span class="o">=</span><span class="n">cmd</span><span class="o">.</span><span class="n">embeddings_cache_file</span><span class="p">,</span>
         <span class="n">cache_mode</span><span class="o">=</span><span class="n">cmd</span><span class="o">.</span><span class="n">cache_mode</span><span class="p">,</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3684,7 +3709,8 @@ level will be ignored.</p>
 <span class="normal">52</span>
 <span class="normal">53</span>
 <span class="normal">54</span>
-<span class="normal">55</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">55</span>
+<span class="normal">56</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AnswerQueryArgs</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments for the `answer_query` command.</span>
@@ -3714,6 +3740,7 @@ level will be ignored.</p>
     <span class="n">iterative_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">budget</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">cache_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">embeddings_cache_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">cache_mode</span><span class="p">:</span> <span class="n">ca</span><span class="o">.</span><span class="n">CacheMode</span> <span class="o">=</span> <span class="s2">&quot;read_write&quot;</span>
     <span class="n">log_level</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">LogLevel</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span>
 </code></pre></div></td></tr></table></div>
