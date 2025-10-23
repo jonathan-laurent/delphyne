@@ -1139,8 +1139,35 @@ class PseudoQuery[T](dp.AbstractQuery[T]):
 #####
 
 
+@dataclass(frozen=True, kw_only=True)
+class SelectedExample:
+    """
+    Wrapper around an example selected for a query.
+
+    Attributes:
+        example: The selected example.
+        index: Index of the example in the database, relative to the
+            query type.
+        similarity: Similarity score between the example and the query,
+            if applicable (e.g., when using embedding-based selection).
+    """
+
+    example: Example
+    index: int
+    similarity: float | None
+
+    def get_similarity(self) -> float:
+        """
+        Obtain the similarity score, raising an error if not
+        available.
+        """
+        if self.similarity is None:
+            raise ValueError("Similarity score not available.")
+        return self.similarity
+
+
 type _ExampleSelectorFn = Callable[
-    [PolicyEnv, dp.AbstractQuery[Any]], Sequence[Example]
+    [PolicyEnv, dp.AbstractQuery[Any]], Sequence[SelectedExample]
 ]
 """
 Function for selecting examples for a given query.
@@ -1148,7 +1175,8 @@ Function for selecting examples for a given query.
 
 
 type ExampleFilter = Callable[
-    [PolicyEnv, dp.AbstractQuery[Any], Sequence[Example]], Sequence[Example]
+    [PolicyEnv, dp.AbstractQuery[Any], Sequence[SelectedExample]],
+    Sequence[SelectedExample],
 ]
 """
 A function for selecting a subset of examples from a given sequence.
@@ -1166,7 +1194,7 @@ class ExampleSelector:
     def __call__(
         self, env: PolicyEnv, query: dp.AbstractQuery[Any]
     ) -> Sequence[Example]:
-        return self._fn(env, query)
+        return [e.example for e in self._fn(env, query)]
 
     def filter(self, f: ExampleFilter) -> "ExampleSelector":
         """
@@ -1177,11 +1205,54 @@ class ExampleSelector:
         def select(
             env: PolicyEnv,
             query: dp.AbstractQuery[Any],
-        ) -> Sequence[Example]:
+        ) -> Sequence[SelectedExample]:
             examples = self._fn(env, query)
             return f(env, query, examples)
 
         return ExampleSelector(select)
+
+    def concat(self, other: "ExampleSelector") -> "ExampleSelector":
+        """
+        Return a new example selector that concatenates the examples
+        selected by this selector and another selector.
+        """
+
+        def select(
+            env: PolicyEnv,
+            query: dp.AbstractQuery[Any],
+        ) -> Sequence[SelectedExample]:
+            examples1 = self._fn(env, query)
+            examples2 = other._fn(env, query)
+            return [*examples1, *examples2]
+
+        return ExampleSelector(select)
+
+    def deduplicate(self) -> "ExampleSelector":
+        """
+        Return a new example selector that removes duplicate examples
+        while preserving order.
+        """
+
+        def select(
+            env: PolicyEnv,
+            query: dp.AbstractQuery[Any],
+            examples: Sequence[SelectedExample],
+        ) -> Sequence[SelectedExample]:
+            seen: set[int] = set()
+            deduped: list[SelectedExample] = []
+            for ex in examples:
+                if ex.index not in seen:
+                    seen.add(ex.index)
+                    deduped.append(ex)
+            return deduped
+
+        return self.filter(select)
+
+    def __add__(self, other: "ExampleSelector") -> "ExampleSelector":
+        """
+        Concatenate two example selectors and deduplicate the result.
+        """
+        return self.concat(other).deduplicate()
 
     def random(self, num_examples: int) -> "ExampleSelector":
         """
@@ -1199,13 +1270,13 @@ class ExampleSelector:
         def select(
             env: PolicyEnv,
             query: dp.AbstractQuery[Any],
-            examples: Sequence[Example],
-        ) -> Sequence[Example]:
+            examples: Sequence[SelectedExample],
+        ) -> Sequence[SelectedExample]:
             serialized = dp.SerializedQuery.make(query)
             return [
                 ex
                 for ex in examples
-                if not dp.SerializedQuery.make(ex.query) == serialized
+                if not dp.SerializedQuery.make(ex.example.query) == serialized
             ]
 
         return self.filter(select)
@@ -1221,12 +1292,12 @@ class ExampleSelector:
         set of examples.
         """
 
-        cached: Sequence[Example] | None = None
+        cached: Sequence[SelectedExample] | None = None
 
         def select(
             env: PolicyEnv,
             query: dp.AbstractQuery[Any],
-        ) -> Sequence[Example]:
+        ) -> Sequence[SelectedExample]:
             nonlocal cached
             if cached is None:
                 cached = self._fn(env, query)
@@ -1238,11 +1309,15 @@ class ExampleSelector:
 @ExampleSelector
 def all_examples(
     env: PolicyEnv, query: dp.AbstractQuery[Any]
-) -> Sequence[Example]:
+) -> Sequence[SelectedExample]:
     """
     Select all examples relevant to a query.
     """
-    return env.examples.examples_for(query.query_name())
+    examples = env.examples.examples_for(query.query_name())
+    return [
+        SelectedExample(example=e, index=i, similarity=None)
+        for i, e in enumerate(examples)
+    ]
 
 
 def closest_examples(
@@ -1262,7 +1337,7 @@ def closest_examples(
 
     def select(
         env: PolicyEnv, query: dp.AbstractQuery[Any]
-    ) -> Sequence[Example]:
+    ) -> Sequence[SelectedExample]:
         qname = query.query_name()
         lid = env.info(
             "closest_examples_request",
@@ -1300,7 +1375,12 @@ def closest_examples(
                 ],
             },
         )
-        return [examples[i] for i in top_k_indices]
+        return [
+            SelectedExample(
+                example=examples[i], index=i, similarity=float(sims[i])
+            )
+            for i in top_k_indices
+        ]
 
     return ExampleSelector(select)
 
@@ -1324,12 +1404,13 @@ def maximum_marginally_relevant(
         model_name: Name of the embedding model to use.
             always_compute_mmr: If `True`, the MMR algorithm is run even
             when all examples need to be returned. This is useful for
-            debugging purposes.
+            debugging purposes or to ensure similarity scores are
+            attached to the output.
     """
 
     def select(
         env: PolicyEnv, query: dp.AbstractQuery[Any]
-    ) -> Sequence[Example]:
+    ) -> Sequence[SelectedExample]:
         if k == 0:
             return []
 
@@ -1338,7 +1419,10 @@ def maximum_marginally_relevant(
         num_examples = len(examples)
         if k >= num_examples and not always_compute_mmr:
             # Return all examples if we need more than available
-            return examples
+            return [
+                SelectedExample(example=e, index=i, similarity=None)
+                for i, e in enumerate(examples)
+            ]
 
         lid = env.info(
             "mmr_request",
@@ -1423,7 +1507,12 @@ def maximum_marginally_relevant(
                 ],
             },
         )
-        return [examples[i] for i in selected_indices]
+        return [
+            SelectedExample(
+                example=examples[i], index=i, similarity=float(query_sims[i])
+            )
+            for i in selected_indices
+        ]
 
     return ExampleSelector(select)
 
@@ -1439,8 +1528,8 @@ def take_random(num_examples: int) -> ExampleFilter:
     def select(
         env: PolicyEnv,
         query: dp.AbstractQuery[Any],
-        examples: Sequence[Example],
-    ) -> Sequence[Example]:
+        examples: Sequence[SelectedExample],
+    ) -> Sequence[SelectedExample]:
         if num_examples >= len(examples):
             return examples
         selected = env.random.sample(examples, num_examples)
