@@ -2125,9 +2125,7 @@
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/environments.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">493</span>
-<span class="normal">494</span>
-<span class="normal">495</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">495</span>
 <span class="normal">496</span>
 <span class="normal">497</span>
 <span class="normal">498</span>
@@ -2325,7 +2323,13 @@
 <span class="normal">690</span>
 <span class="normal">691</span>
 <span class="normal">692</span>
-<span class="normal">693</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PolicyEnv</span><span class="p">:</span>
+<span class="normal">693</span>
+<span class="normal">694</span>
+<span class="normal">695</span>
+<span class="normal">696</span>
+<span class="normal">697</span>
+<span class="normal">698</span>
+<span class="normal">699</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PolicyEnv</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The global environment accessible to policies.</span>
 
@@ -2353,7 +2357,8 @@
         <span class="n">demonstration_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
         <span class="n">data_dirs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
         <span class="n">cache</span><span class="p">:</span> <span class="n">md</span><span class="o">.</span><span class="n">LLMCache</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">embeddings_cache_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">embeddings_cache</span><span class="p">:</span> <span class="n">em</span><span class="o">.</span><span class="n">EmbeddingsCache</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">global_embeddings_cache_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">override_answers</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerDatabase</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">log_level</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">LogLevel</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
         <span class="n">log_long_computations</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">LogLevel</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2372,7 +2377,9 @@
 <span class="sd">            data_dirs: A sequence of directories where data files can be</span>
 <span class="sd">                found.</span>
 <span class="sd">            cache: A request cache, or `None` to disable caching.</span>
-<span class="sd">            embeddings_cache_file: Global cache file that stores</span>
+<span class="sd">            embeddings_cache: An embeddings cache, or `None` to disable</span>
+<span class="sd">                embeddings caching.</span>
+<span class="sd">            global_embeddings_cache_file: Global cache file that stores</span>
 <span class="sd">                common embeddings (e.g. embeddings of examples).</span>
 <span class="sd">            override_answers: If provided, a database of answers that</span>
 <span class="sd">                must be used to override LLM calls whenever possible.</span>
@@ -2391,7 +2398,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">data_manager</span> <span class="o">=</span> <span class="n">DataManager</span><span class="p">(</span><span class="n">data_dirs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">templates</span> <span class="o">=</span> <span class="n">TemplatesManager</span><span class="p">(</span><span class="n">prompt_dirs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_manager</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">examples</span> <span class="o">=</span> <span class="n">ExampleDatabase</span><span class="p">(</span>
-            <span class="n">embeddings_cache_file</span><span class="o">=</span><span class="n">embeddings_cache_file</span><span class="p">,</span>
+            <span class="n">global_embeddings_cache_file</span><span class="o">=</span><span class="n">global_embeddings_cache_file</span><span class="p">,</span>
             <span class="n">templates_manager</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">,</span>
             <span class="n">object_loader</span><span class="o">=</span><span class="n">object_loader</span><span class="p">,</span>
         <span class="p">)</span>
@@ -2399,6 +2406,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tracer</span><span class="p">(</span><span class="n">log_level</span><span class="o">=</span><span class="n">log_level</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_long_computations</span> <span class="o">=</span> <span class="n">log_long_computations</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embeddings_cache</span> <span class="o">=</span> <span class="n">embeddings_cache</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">override_answers</span> <span class="o">=</span> <span class="n">override_answers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">demonstration_files</span><span class="p">:</span>
@@ -2562,7 +2570,8 @@
   
       dataclass
    (delphyne.stdlib.models.LLMCache)" href="../queries/#delphyne.stdlib.models.LLMCache">LLMCache</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">embeddings_cache_file</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">embeddings_cache</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.embeddings.EmbeddingsCache">EmbeddingsCache</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">global_embeddings_cache_file</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">override_answers</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerDatabase">AnswerDatabase</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">log_level</span><span class="p">:</span> <span class="n"><span title="delphyne.core.LogLevel">LogLevel</span></span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
     <span class="n">log_long_computations</span><span class="p">:</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="delphyne.core.LogLevel">LogLevel</span></span><span class="p">,</span> <span class="n"><span title="float">float</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2678,7 +2687,24 @@ found.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>embeddings_cache_file</code>
+                <code>embeddings_cache</code>
+            </td>
+            <td>
+                  <code><span title="delphyne.stdlib.embeddings.EmbeddingsCache">EmbeddingsCache</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An embeddings cache, or <code>None</code> to disable
+embeddings caching.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>global_embeddings_cache_file</code>
             </td>
             <td>
                   <code><span title="pathlib.Path">Path</span> | None</code>
@@ -2772,9 +2798,7 @@ number generator.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/environments.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">513</span>
-<span class="normal">514</span>
-<span class="normal">515</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">515</span>
 <span class="normal">516</span>
 <span class="normal">517</span>
 <span class="normal">518</span>
@@ -2830,7 +2854,13 @@ number generator.</p>
 <span class="normal">568</span>
 <span class="normal">569</span>
 <span class="normal">570</span>
-<span class="normal">571</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">571</span>
+<span class="normal">572</span>
+<span class="normal">573</span>
+<span class="normal">574</span>
+<span class="normal">575</span>
+<span class="normal">576</span>
+<span class="normal">577</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">object_loader</span><span class="p">:</span> <span class="n">ObjectLoader</span><span class="p">,</span>
@@ -2838,7 +2868,8 @@ number generator.</p>
     <span class="n">demonstration_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
     <span class="n">data_dirs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
     <span class="n">cache</span><span class="p">:</span> <span class="n">md</span><span class="o">.</span><span class="n">LLMCache</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">embeddings_cache_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">embeddings_cache</span><span class="p">:</span> <span class="n">em</span><span class="o">.</span><span class="n">EmbeddingsCache</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">global_embeddings_cache_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">override_answers</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerDatabase</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">log_level</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">LogLevel</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
     <span class="n">log_long_computations</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">LogLevel</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2857,7 +2888,9 @@ number generator.</p>
 <span class="sd">        data_dirs: A sequence of directories where data files can be</span>
 <span class="sd">            found.</span>
 <span class="sd">        cache: A request cache, or `None` to disable caching.</span>
-<span class="sd">        embeddings_cache_file: Global cache file that stores</span>
+<span class="sd">        embeddings_cache: An embeddings cache, or `None` to disable</span>
+<span class="sd">            embeddings caching.</span>
+<span class="sd">        global_embeddings_cache_file: Global cache file that stores</span>
 <span class="sd">            common embeddings (e.g. embeddings of examples).</span>
 <span class="sd">        override_answers: If provided, a database of answers that</span>
 <span class="sd">            must be used to override LLM calls whenever possible.</span>
@@ -2876,7 +2909,7 @@ number generator.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">data_manager</span> <span class="o">=</span> <span class="n">DataManager</span><span class="p">(</span><span class="n">data_dirs</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">templates</span> <span class="o">=</span> <span class="n">TemplatesManager</span><span class="p">(</span><span class="n">prompt_dirs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_manager</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">examples</span> <span class="o">=</span> <span class="n">ExampleDatabase</span><span class="p">(</span>
-        <span class="n">embeddings_cache_file</span><span class="o">=</span><span class="n">embeddings_cache_file</span><span class="p">,</span>
+        <span class="n">global_embeddings_cache_file</span><span class="o">=</span><span class="n">global_embeddings_cache_file</span><span class="p">,</span>
         <span class="n">templates_manager</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">,</span>
         <span class="n">object_loader</span><span class="o">=</span><span class="n">object_loader</span><span class="p">,</span>
     <span class="p">)</span>
@@ -2884,6 +2917,7 @@ number generator.</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">tracer</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tracer</span><span class="p">(</span><span class="n">log_level</span><span class="o">=</span><span class="n">log_level</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">log_long_computations</span> <span class="o">=</span> <span class="n">log_long_computations</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">cache</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">embeddings_cache</span> <span class="o">=</span> <span class="n">embeddings_cache</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">override_answers</span> <span class="o">=</span> <span class="n">override_answers</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">demonstration_files</span><span class="p">:</span>
@@ -2919,13 +2953,7 @@ it if it exists, while logging the event.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/environments.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">573</span>
-<span class="normal">574</span>
-<span class="normal">575</span>
-<span class="normal">576</span>
-<span class="normal">577</span>
-<span class="normal">578</span>
-<span class="normal">579</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">579</span>
 <span class="normal">580</span>
 <span class="normal">581</span>
 <span class="normal">582</span>
@@ -2939,7 +2967,13 @@ it if it exists, while logging the event.</p>
 <span class="normal">590</span>
 <span class="normal">591</span>
 <span class="normal">592</span>
-<span class="normal">593</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">overriden_answer</span><span class="p">(</span>
+<span class="normal">593</span>
+<span class="normal">594</span>
+<span class="normal">595</span>
+<span class="normal">596</span>
+<span class="normal">597</span>
+<span class="normal">598</span>
+<span class="normal">599</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">overriden_answer</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Answer</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -3092,13 +3126,7 @@ relevant.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/environments.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">595</span>
-<span class="normal">596</span>
-<span class="normal">597</span>
-<span class="normal">598</span>
-<span class="normal">599</span>
-<span class="normal">600</span>
-<span class="normal">601</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">601</span>
 <span class="normal">602</span>
 <span class="normal">603</span>
 <span class="normal">604</span>
@@ -3115,7 +3143,13 @@ relevant.</p>
 <span class="normal">615</span>
 <span class="normal">616</span>
 <span class="normal">617</span>
-<span class="normal">618</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span>
+<span class="normal">618</span>
+<span class="normal">619</span>
+<span class="normal">620</span>
+<span class="normal">621</span>
+<span class="normal">622</span>
+<span class="normal">623</span>
+<span class="normal">624</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">level</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">LogLevel</span><span class="p">,</span>
     <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -3180,20 +3214,20 @@ relevant.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/environments.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">620</span>
-<span class="normal">621</span>
-<span class="normal">622</span>
-<span class="normal">623</span>
-<span class="normal">624</span>
-<span class="normal">625</span>
-<span class="normal">626</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">626</span>
 <span class="normal">627</span>
 <span class="normal">628</span>
 <span class="normal">629</span>
 <span class="normal">630</span>
 <span class="normal">631</span>
 <span class="normal">632</span>
-<span class="normal">633</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">trace</span><span class="p">(</span>
+<span class="normal">633</span>
+<span class="normal">634</span>
+<span class="normal">635</span>
+<span class="normal">636</span>
+<span class="normal">637</span>
+<span class="normal">638</span>
+<span class="normal">639</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">trace</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3248,20 +3282,20 @@ relevant.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/environments.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">635</span>
-<span class="normal">636</span>
-<span class="normal">637</span>
-<span class="normal">638</span>
-<span class="normal">639</span>
-<span class="normal">640</span>
-<span class="normal">641</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">641</span>
 <span class="normal">642</span>
 <span class="normal">643</span>
 <span class="normal">644</span>
 <span class="normal">645</span>
 <span class="normal">646</span>
 <span class="normal">647</span>
-<span class="normal">648</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">debug</span><span class="p">(</span>
+<span class="normal">648</span>
+<span class="normal">649</span>
+<span class="normal">650</span>
+<span class="normal">651</span>
+<span class="normal">652</span>
+<span class="normal">653</span>
+<span class="normal">654</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">debug</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3316,20 +3350,20 @@ relevant.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/environments.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">650</span>
-<span class="normal">651</span>
-<span class="normal">652</span>
-<span class="normal">653</span>
-<span class="normal">654</span>
-<span class="normal">655</span>
-<span class="normal">656</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">656</span>
 <span class="normal">657</span>
 <span class="normal">658</span>
 <span class="normal">659</span>
 <span class="normal">660</span>
 <span class="normal">661</span>
 <span class="normal">662</span>
-<span class="normal">663</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span>
+<span class="normal">663</span>
+<span class="normal">664</span>
+<span class="normal">665</span>
+<span class="normal">666</span>
+<span class="normal">667</span>
+<span class="normal">668</span>
+<span class="normal">669</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3384,20 +3418,20 @@ relevant.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/environments.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">665</span>
-<span class="normal">666</span>
-<span class="normal">667</span>
-<span class="normal">668</span>
-<span class="normal">669</span>
-<span class="normal">670</span>
-<span class="normal">671</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">671</span>
 <span class="normal">672</span>
 <span class="normal">673</span>
 <span class="normal">674</span>
 <span class="normal">675</span>
 <span class="normal">676</span>
 <span class="normal">677</span>
-<span class="normal">678</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">warn</span><span class="p">(</span>
+<span class="normal">678</span>
+<span class="normal">679</span>
+<span class="normal">680</span>
+<span class="normal">681</span>
+<span class="normal">682</span>
+<span class="normal">683</span>
+<span class="normal">684</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">warn</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3452,20 +3486,20 @@ relevant.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/environments.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">680</span>
-<span class="normal">681</span>
-<span class="normal">682</span>
-<span class="normal">683</span>
-<span class="normal">684</span>
-<span class="normal">685</span>
-<span class="normal">686</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">686</span>
 <span class="normal">687</span>
 <span class="normal">688</span>
 <span class="normal">689</span>
 <span class="normal">690</span>
 <span class="normal">691</span>
 <span class="normal">692</span>
-<span class="normal">693</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">error</span><span class="p">(</span>
+<span class="normal">693</span>
+<span class="normal">694</span>
+<span class="normal">695</span>
+<span class="normal">696</span>
+<span class="normal">697</span>
+<span class="normal">698</span>
+<span class="normal">699</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">error</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">metadata</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3929,7 +3963,9 @@ policies can use to select appropriate examples.</p>
 <span class="normal">324</span>
 <span class="normal">325</span>
 <span class="normal">326</span>
-<span class="normal">327</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExampleDatabase</span><span class="p">:</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExampleDatabase</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A simple example database.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3940,18 +3976,18 @@ policies can use to select appropriate examples.</p>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">object_loader</span><span class="p">:</span> <span class="n">ObjectLoader</span><span class="p">,</span>
-        <span class="n">embeddings_cache_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">global_embeddings_cache_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">templates_manager</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AbstractTemplatesManager</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Arguments:</span>
 <span class="sd">            object_loader: An object loader for loading query objects.</span>
-<span class="sd">            embeddings_cache_file: Global cache file that stores</span>
+<span class="sd">            global_embeddings_cache_file: Global cache file that stores</span>
 <span class="sd">                common embeddings (e.g. embeddings of examples).</span>
 <span class="sd">            templates_manager: A templates manager, necessary when using</span>
 <span class="sd">                embeddings.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_cache_file</span> <span class="o">=</span> <span class="n">embeddings_cache_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_cache_file</span> <span class="o">=</span> <span class="n">global_embeddings_cache_file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">object_loader</span> <span class="o">=</span> <span class="n">object_loader</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_templates_manager</span> <span class="o">=</span> <span class="n">templates_manager</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_examples</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">_QueryName</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Example</span><span class="p">]]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
@@ -3963,15 +3999,15 @@ policies can use to select appropriate examples.</p>
 
         <span class="c1"># Embeddings for queries, classified by type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_query_embeddings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span>
-            <span class="n">_EmbeddingsBucket</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+            <span class="n">_EmbeddingsBucket</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
         <span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1"># Embeddings for full examples, classified by type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_example_embeddings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span>
-            <span class="n">_EmbeddingsBucket</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+            <span class="n">_EmbeddingsBucket</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
         <span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1"># Similarity matrix</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_example_similarity_matrix</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span>
-            <span class="n">_EmbeddingsBucket</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+            <span class="n">_EmbeddingsBucket</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
         <span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">add_demonstration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">demo</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Demo</span><span class="p">):</span>
@@ -4022,10 +4058,10 @@ policies can use to select appropriate examples.</p>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_templates_manager</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">embeddings_cache_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">global_embeddings_cache_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_cache_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;ExampleDatabase.embeddings_cache_file was not provided.&quot;</span>
+                <span class="s2">&quot;ExampleDatabase.global_embeddings_cache_file was not provided.&quot;</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_cache_file</span>
 
@@ -4041,7 +4077,7 @@ policies can use to select appropriate examples.</p>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="n">_QueryName</span><span class="p">,</span>
         <span class="n">model</span><span class="p">:</span> <span class="n">_EmbeddingModelName</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Obtain the query embeddings for all examples of a given type.</span>
 
@@ -4062,7 +4098,7 @@ policies can use to select appropriate examples.</p>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="n">_QueryName</span><span class="p">,</span>
         <span class="n">model</span><span class="p">:</span> <span class="n">_EmbeddingModelName</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Obtain the embeddings of all examples of a given type.</span>
 
@@ -4083,7 +4119,7 @@ policies can use to select appropriate examples.</p>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="n">_QueryName</span><span class="p">,</span>
         <span class="n">model</span><span class="p">:</span> <span class="n">_EmbeddingModelName</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Obtain the similarity matrix of all examples of a given type.</span>
 
@@ -4110,7 +4146,7 @@ policies can use to select appropriate examples.</p>
         <span class="n">model_name</span><span class="p">:</span> <span class="n">_EmbeddingModelName</span><span class="p">,</span>
         <span class="n">examples</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Example</span><span class="p">],</span>
         <span class="n">embed_fun</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Example</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get embeddings for all examples of a given query type.</span>
 
@@ -4125,14 +4161,16 @@ policies can use to select appropriate examples.</p>
 
         <span class="n">model</span> <span class="o">=</span> <span class="n">em</span><span class="o">.</span><span class="n">standard_openai_embedding_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
         <span class="n">to_embed</span> <span class="o">=</span> <span class="p">[</span><span class="n">embed_fun</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">examples</span><span class="p">]</span>
-        <span class="n">cache_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings_cache_file</span>
-        <span class="n">lock_file</span> <span class="o">=</span> <span class="n">_embeddings_cache_lockfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">embeddings_cache_file</span><span class="p">)</span>
+        <span class="n">cache_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_embeddings_cache_file</span>
+        <span class="n">lock_file</span> <span class="o">=</span> <span class="n">_embeddings_cache_lockfile</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">global_embeddings_cache_file</span>
+        <span class="p">)</span>
         <span class="k">with</span> <span class="n">filelock</span><span class="o">.</span><span class="n">FileLock</span><span class="p">(</span><span class="n">lock_file</span><span class="p">):</span>
-            <span class="k">with</span> <span class="n">md</span><span class="o">.</span><span class="n">load_request_cache</span><span class="p">(</span><span class="n">cache_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;read_write&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cache</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">em</span><span class="o">.</span><span class="n">load_embeddings_cache</span><span class="p">(</span><span class="n">cache_file</span><span class="p">,</span> <span class="s2">&quot;read_write&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cache</span><span class="p">:</span>
                 <span class="n">res</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">embed</span><span class="p">(</span><span class="n">to_embed</span><span class="p">,</span> <span class="n">cache</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">res</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="n">embeddings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">embedding</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">embeddings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span><span class="o">.</span><span class="n">embedding</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
         <span class="c1"># We ignore spending for the global cache.</span>
         <span class="k">return</span> <span class="n">embeddings</span>
 </code></pre></div></td></tr></table></div>
@@ -4162,7 +4200,7 @@ policies can use to select appropriate examples.</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">__init__</span><span class="p">(</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">object_loader</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="ObjectLoader (delphyne.analysis.ObjectLoader)" href="../../demos/interpreter/#delphyne.ObjectLoader">ObjectLoader</a></span><span class="p">,</span>
-    <span class="n">embeddings_cache_file</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">global_embeddings_cache_file</span><span class="p">:</span> <span class="n"><span title="pathlib.Path">Path</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">templates_manager</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="AbstractTemplatesManager (delphyne.core.AbstractTemplatesManager)" href="../../strategies/queries/#delphyne.AbstractTemplatesManager">AbstractTemplatesManager</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
@@ -4200,7 +4238,7 @@ policies can use to select appropriate examples.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>embeddings_cache_file</code>
+                <code>global_embeddings_cache_file</code>
             </td>
             <td>
                   <code><span title="pathlib.Path">Path</span> | None</code>
@@ -4278,18 +4316,18 @@ embeddings.</p>
     <span class="bp">self</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">object_loader</span><span class="p">:</span> <span class="n">ObjectLoader</span><span class="p">,</span>
-    <span class="n">embeddings_cache_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">global_embeddings_cache_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">templates_manager</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AbstractTemplatesManager</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        object_loader: An object loader for loading query objects.</span>
-<span class="sd">        embeddings_cache_file: Global cache file that stores</span>
+<span class="sd">        global_embeddings_cache_file: Global cache file that stores</span>
 <span class="sd">            common embeddings (e.g. embeddings of examples).</span>
 <span class="sd">        templates_manager: A templates manager, necessary when using</span>
 <span class="sd">            embeddings.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_cache_file</span> <span class="o">=</span> <span class="n">embeddings_cache_file</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings_cache_file</span> <span class="o">=</span> <span class="n">global_embeddings_cache_file</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">object_loader</span> <span class="o">=</span> <span class="n">object_loader</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_templates_manager</span> <span class="o">=</span> <span class="n">templates_manager</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_examples</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">_QueryName</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Example</span><span class="p">]]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
@@ -4301,15 +4339,15 @@ embeddings.</p>
 
     <span class="c1"># Embeddings for queries, classified by type</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_query_embeddings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span>
-        <span class="n">_EmbeddingsBucket</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+        <span class="n">_EmbeddingsBucket</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
     <span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="c1"># Embeddings for full examples, classified by type</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_example_embeddings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span>
-        <span class="n">_EmbeddingsBucket</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+        <span class="n">_EmbeddingsBucket</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
     <span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="c1"># Similarity matrix</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_example_similarity_matrix</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span>
-        <span class="n">_EmbeddingsBucket</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+        <span class="n">_EmbeddingsBucket</span><span class="p">,</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
     <span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -4412,7 +4450,7 @@ embeddings.</p>
 </h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">fetch_query_embeddings</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.environments._QueryName">_QueryName</span></span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.environments._EmbeddingModelName">_EmbeddingModelName</span></span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy.float64">float64</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy.float32">float32</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4447,7 +4485,7 @@ cache or computed on the fly.</p>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">_QueryName</span><span class="p">,</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">_EmbeddingModelName</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Obtain the query embeddings for all examples of a given type.</span>
 
@@ -4479,7 +4517,7 @@ cache or computed on the fly.</p>
 </h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">fetch_example_embeddings</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.environments._QueryName">_QueryName</span></span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.environments._EmbeddingModelName">_EmbeddingModelName</span></span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy.float64">float64</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy.float32">float32</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4514,7 +4552,7 @@ cache or computed on the fly.</p>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">_QueryName</span><span class="p">,</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">_EmbeddingModelName</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Obtain the embeddings of all examples of a given type.</span>
 
@@ -4546,7 +4584,7 @@ cache or computed on the fly.</p>
 </h4>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">fetch_example_similarity_matrix</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.environments._QueryName">_QueryName</span></span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.environments._EmbeddingModelName">_EmbeddingModelName</span></span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy.float64">float64</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="numpy.typing.NDArray">NDArray</span></span><span class="p">[</span><span class="n"><span title="numpy.float32">float32</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4586,7 +4624,7 @@ the fly from the example embeddings.</p>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="n">_QueryName</span><span class="p">,</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">_EmbeddingModelName</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Obtain the similarity matrix of all examples of a given type.</span>
 
@@ -4974,9 +5012,7 @@ objects:</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/environments.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">377</span>
-<span class="normal">378</span>
-<span class="normal">379</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">379</span>
 <span class="normal">380</span>
 <span class="normal">381</span>
 <span class="normal">382</span>
@@ -5056,7 +5092,9 @@ objects:</p>
 <span class="normal">456</span>
 <span class="normal">457</span>
 <span class="normal">458</span>
-<span class="normal">459</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TemplatesManager</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractTemplatesManager</span><span class="p">):</span>
+<span class="normal">459</span>
+<span class="normal">460</span>
+<span class="normal">461</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">TemplatesManager</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">AbstractTemplatesManager</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class for managing Jinja prompt templates.</span>
 
@@ -5221,9 +5259,7 @@ found.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/environments.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">406</span>
-<span class="normal">407</span>
-<span class="normal">408</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">408</span>
 <span class="normal">409</span>
 <span class="normal">410</span>
 <span class="normal">411</span>
@@ -5245,7 +5281,9 @@ found.</p>
 <span class="normal">427</span>
 <span class="normal">428</span>
 <span class="normal">429</span>
-<span class="normal">430</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt_dirs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">data_manager</span><span class="p">:</span> <span class="n">DataManager</span><span class="p">):</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt_dirs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">data_manager</span><span class="p">:</span> <span class="n">DataManager</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Args:</span>
 <span class="sd">        prompt_dirs: A sequence of directories where Jinja prompt</span>

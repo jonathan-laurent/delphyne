@@ -1678,7 +1678,7 @@ subdirectories.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>embeddings_cache_file</code>
+                <code>global_embeddings_cache_file</code>
             </td>
             <td>
                   <code><span title="pathlib.Path">Path</span></code>
@@ -1690,7 +1690,7 @@ common embeddings (e.g. embeddings of examples).</p>
               </div>
             </td>
             <td>
-                  <code><span title="delphyne.stdlib.tasks.DEFAULT_EMBEDDINGS_CACHE_FILE">DEFAULT_EMBEDDINGS_CACHE_FILE</span></code>
+                  <code><span title="delphyne.stdlib.tasks.DEFAULT_GLOBAL_EMBEDDINGS_CACHE_FILE">DEFAULT_GLOBAL_EMBEDDINGS_CACHE_FILE</span></code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -1923,7 +1923,9 @@ possibly after other comments.</p>
 <span class="normal">232</span>
 <span class="normal">233</span>
 <span class="normal">234</span>
-<span class="normal">235</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CommandExecutionContext</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Context information available to all commands.</span>
@@ -1947,7 +1949,7 @@ possibly after other comments.</p>
 <span class="sd">            files.</span>
 <span class="sd">        cache_root: The directory in which to store all request cache</span>
 <span class="sd">            subdirectories.</span>
-<span class="sd">        embeddings_cache_file: Global cache file that stores</span>
+<span class="sd">        global_embeddings_cache_file: Global cache file that stores</span>
 <span class="sd">            common embeddings (e.g. embeddings of examples).</span>
 <span class="sd">        init: A sequence of initialization functions to call</span>
 <span class="sd">            before any object is loaded. Each element specifies a</span>
@@ -1995,7 +1997,7 @@ possibly after other comments.</p>
     <span class="n">prompt_dirs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_PROMPTS_DIRS</span>
     <span class="n">data_dirs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_DATA_DIRS</span>
     <span class="n">cache_root</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">embeddings_cache_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">DEFAULT_EMBEDDINGS_CACHE_FILE</span>
+    <span class="n">global_embeddings_cache_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">DEFAULT_GLOBAL_EMBEDDINGS_CACHE_FILE</span>
     <span class="n">init</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">result_refresh_period</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">status_refresh_period</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -2028,7 +2030,9 @@ possibly after other comments.</p>
             <span class="n">prompt_dirs</span><span class="o">=</span><span class="p">[</span><span class="n">root</span> <span class="o">/</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_dirs</span><span class="p">],</span>
             <span class="n">data_dirs</span><span class="o">=</span><span class="p">[</span><span class="n">root</span> <span class="o">/</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_dirs</span><span class="p">],</span>
             <span class="n">cache_root</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_root</span><span class="p">,</span>
-            <span class="n">embeddings_cache_file</span><span class="o">=</span><span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings_cache_file</span><span class="p">),</span>
+            <span class="n">global_embeddings_cache_file</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">root</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_embeddings_cache_file</span>
+            <span class="p">),</span>
             <span class="n">init</span><span class="o">=</span><span class="p">[</span><span class="n">_expand_initializer</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">],</span>
             <span class="n">result_refresh_period</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">result_refresh_period</span><span class="p">,</span>
             <span class="n">status_refresh_period</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">status_refresh_period</span><span class="p">,</span>
@@ -2117,7 +2121,9 @@ possibly after other comments.</p>
 <span class="normal">220</span>
 <span class="normal">221</span>
 <span class="normal">222</span>
-<span class="normal">223</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">with_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;CommandExecutionContext&quot;</span><span class="p">:</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">with_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;CommandExecutionContext&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Make all paths absolute given a path to the workspace root.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -2144,7 +2150,9 @@ possibly after other comments.</p>
         <span class="n">prompt_dirs</span><span class="o">=</span><span class="p">[</span><span class="n">root</span> <span class="o">/</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_dirs</span><span class="p">],</span>
         <span class="n">data_dirs</span><span class="o">=</span><span class="p">[</span><span class="n">root</span> <span class="o">/</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_dirs</span><span class="p">],</span>
         <span class="n">cache_root</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_root</span><span class="p">,</span>
-        <span class="n">embeddings_cache_file</span><span class="o">=</span><span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings_cache_file</span><span class="p">),</span>
+        <span class="n">global_embeddings_cache_file</span><span class="o">=</span><span class="p">(</span>
+            <span class="n">root</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">global_embeddings_cache_file</span>
+        <span class="p">),</span>
         <span class="n">init</span><span class="o">=</span><span class="p">[</span><span class="n">_expand_initializer</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">],</span>
         <span class="n">result_refresh_period</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">result_refresh_period</span><span class="p">,</span>
         <span class="n">status_refresh_period</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">status_refresh_period</span><span class="p">,</span>
@@ -2611,9 +2619,7 @@ instead of abruptly interrupting it.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/tasks.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">309</span>
-<span class="normal">310</span>
-<span class="normal">311</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">311</span>
 <span class="normal">312</span>
 <span class="normal">313</span>
 <span class="normal">314</span>
@@ -2732,7 +2738,9 @@ instead of abruptly interrupting it.</p>
 <span class="normal">427</span>
 <span class="normal">428</span>
 <span class="normal">429</span>
-<span class="normal">430</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_command</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_command</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="n">command</span><span class="p">:</span> <span class="n">Command</span><span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
     <span class="n">args</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span>
     <span class="n">ctx</span><span class="p">:</span> <span class="n">CommandExecutionContext</span><span class="p">,</span>
@@ -2891,14 +2899,14 @@ instead of abruptly interrupting it.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/tasks.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">245</span>
 <span class="normal">246</span>
 <span class="normal">247</span>
 <span class="normal">248</span>
 <span class="normal">249</span>
-<span class="normal">250</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CommandResult</span><span class="p">(</span><span class="n">typing</span><span class="o">.</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Outcome of executing a command.</span>
