@@ -4,26 +4,177 @@ Tools to manipulate embeddings
 
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
+from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import Literal, final, override
+from pathlib import Path
+from typing import Any, Literal, cast, final, override
+
+import numpy as np
+from numpy.typing import NDArray
 
 import delphyne.core as dp
 import delphyne.stdlib.models as md
+import delphyne.utils.caching as caching
 
 QUERY_EMBEDDING_PROMPT_NAME = "embed_query"
 EXAMPLE_EMBEDDING_PROMPT_NAME = "embed_example"
 
 
 #####
-##### Base Models and Caching
+##### Embeddings Caches
 #####
 
 
-@dataclass
-class EmbeddingResponse:
+@dataclass(frozen=True)
+class EmbeddingRequest:
+    """
+    A text embedding request
+
+    Attributes:
+        model: The embedding model to use.
+        text: The text to embed.
+    """
+
     model: str
-    embedding: Sequence[float]
+    text: str
+
+
+@dataclass(frozen=True)
+class EmbeddingResponse:
+    """
+    Response to an embedding request
+
+    Attributes:
+        model: The embedding model used.
+        embedding: The resulting embedding, as a one-dimensional array.
+        total_tokens: The total number of tokens used to compute
+    """
+
+    model: str
+    embedding: NDArray[np.float32]
     total_tokens: int
+
+
+@dataclass(frozen=True)
+class EmbeddingsCache(caching.Cache[EmbeddingRequest, EmbeddingResponse]):
+    """
+    An embedding cache, backed by an H5 file.
+    """
+
+    def save(self, file: Path) -> None:
+        """
+        Save all entries to the given file.
+
+        We use the following H5 format: For each model name M, we have
+        the following datasets, each with equal first dimension:
+          - "$M/text": np-array of strings for `EmbeddingRequest.text`
+          - "$M/model": np-array of strings for `EmbeddingResponse.model`
+          - "$M/embedding": 2D np-array for `EmbeddingResponse.embedding`
+          - "$M/total_tokens": np-array of ints
+        """
+        import h5py  # type: ignore
+
+        # Group entries by model name
+        model_groups: dict[
+            str, list[tuple[EmbeddingRequest, EmbeddingResponse]]
+        ] = {}
+        for req, resp in self.dict.items():
+            model = req.model
+            if model not in model_groups:
+                model_groups[model] = []
+            model_groups[model].append((req, resp))
+
+        # Save to H5 file
+        with h5py.File(file, "w") as f:
+            for model, entries in model_groups.items():
+                if not entries:
+                    continue
+                # Extract data for this model
+                texts = [req.text for req, _ in entries]
+                models = [resp.model for _, resp in entries]
+                embeddings = [resp.embedding for _, resp in entries]
+                total_tokens = [resp.total_tokens for _, resp in entries]
+                # Create group for this model
+                f = cast(Any, f)
+                group = f.create_group(model)
+                # Create datasets
+                # Text as variable-length strings
+                dt = h5py.string_dtype(encoding="utf-8")  # type: ignore
+                group.create_dataset("text", data=texts, dtype=dt)
+                group.create_dataset("model", data=models, dtype=dt)
+                # Embeddings as 2D array - stack all embeddings for this model
+                embeddings_array = np.stack(embeddings, axis=0)
+                group.create_dataset("embedding", data=embeddings_array)
+                # Total tokens as integers
+                group.create_dataset(
+                    "total_tokens", data=total_tokens, dtype=np.int64
+                )
+
+    @staticmethod
+    def load(file: Path, mode: caching.CacheMode) -> "EmbeddingsCache":
+        """
+        Load the cache from the given file.
+        """
+        import h5py  # type: ignore
+
+        entries: dict[EmbeddingRequest, EmbeddingResponse] = {}
+
+        with h5py.File(file, "r") as f:
+            f = cast(Any, f)
+            for model_name in f.keys():
+                group = f[model_name]
+                texts = group["text"][:]
+                models = group["model"][:]
+                embeddings = group["embedding"][:]
+                total_tokens = group["total_tokens"][:]
+                texts = [
+                    t.decode("utf-8") if isinstance(t, bytes) else str(t)
+                    for t in texts
+                ]
+                models = [
+                    m.decode("utf-8") if isinstance(m, bytes) else str(m)
+                    for m in models
+                ]
+                for i in range(len(texts)):
+                    request = EmbeddingRequest(model=model_name, text=texts[i])
+                    response = EmbeddingResponse(
+                        model=models[i],
+                        embedding=embeddings[i].astype(np.float32),
+                        total_tokens=int(total_tokens[i]),
+                    )
+                    entries[request] = response
+
+        return EmbeddingsCache(entries, mode)
+
+
+@contextmanager
+def load_embeddings_cache(file: Path, mode: caching.CacheMode):
+    """
+    Load an embeddings cache from a file.
+
+    Usage:
+
+    ```python
+    with load_embeddings_cache(path, mode) as cache:
+        ...
+    ```
+    """
+
+    if file.exists():
+        cache = EmbeddingsCache.load(file, mode)
+    else:
+        cache = EmbeddingsCache({}, mode)
+    try:
+        yield cache
+    finally:
+        if cache.dict or file.exists():
+            file.parent.mkdir(parents=True, exist_ok=True)
+            cache.save(file)
+
+
+#####
+##### Base Models and Caching
+#####
 
 
 @dataclass
@@ -68,7 +219,7 @@ class EmbeddingModel(ABC):
 
     @final
     def embed(
-        self, batch: Sequence[str], cache: md.LLMCache | None
+        self, batch: Sequence[str], cache: EmbeddingsCache | None
     ) -> Sequence[EmbeddingResponse]:
         """
         Compute a batch of embeddings, using an LLM request cache.
@@ -79,62 +230,10 @@ class EmbeddingModel(ABC):
         """
         if cache is None:
             return self._split_and_embed(batch)
-
-        def compute_batch(
-            reqs: Sequence[md.CachedRequest],
-        ) -> Sequence[md.LLMResponse]:
-            batch = [_decode_embedding_request(r) for r in reqs]
-            resps = self._embed(batch)
-            return [_encode_embedding_response(r) for r in resps]
-
-        reqs = _encode_embedding_requests(batch, self.get_model_name())
-        resps = cache.cache.batched(compute_batch)(reqs)
-        return [_decode_embedding_response(r) for r in resps]
-
-
-def _encode_embedding_requests(
-    batch: Sequence[str], model: str
-) -> Sequence[md.CachedRequest]:
-    # Embeddings are cached once and for all (we set `iter` to a constant).
-    return [
-        md.CachedRequest(
-            md.LLMRequest(
-                chat=(md.UserMessage(content=elt),),
-                num_completions=1,
-                options={"model": model},
-            ),
-            iter=0,
-        )
-        for elt in batch
-    ]
-
-
-def _decode_embedding_request(req: md.CachedRequest) -> str:
-    message = req.request.chat[0]
-    assert isinstance(message, md.UserMessage)
-    return message.content
-
-
-def _encode_embedding_response(resp: EmbeddingResponse) -> md.LLMResponse:
-    output = md.LLMOutput(dp.Structured(resp.embedding))
-    return md.LLMResponse(
-        [output],
-        model_name=resp.model,
-        usage_info={"total_tokens": resp.total_tokens},
-    )
-
-
-def _decode_embedding_response(resp: md.LLMResponse) -> EmbeddingResponse:
-    content = resp.outputs[0].content
-    assert isinstance(content, dp.Structured)
-    embedding = content.structured
-    assert resp.model_name is not None
-    assert resp.usage_info is not None
-    return EmbeddingResponse(
-        model=resp.model_name,
-        embedding=embedding,
-        total_tokens=resp.usage_info["total_tokens"],
-    )
+        model = self.get_model_name()
+        reqs = [EmbeddingRequest(model, text) for text in batch]
+        cached_f = cache.batched(lambda rs: self._embed([r.text for r in rs]))
+        return cached_f(reqs)
 
 
 #####
@@ -192,7 +291,7 @@ class OpenAICompatibleEmbeddingModel(EmbeddingModel):
         return [
             EmbeddingResponse(
                 model=response.model,
-                embedding=embeddings[i],
+                embedding=np.array(embeddings[i], dtype=np.float32),
                 total_tokens=sizes[i],
             )
             for i in range(len(batch))

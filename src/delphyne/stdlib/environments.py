@@ -130,18 +130,18 @@ class ExampleDatabase:
         self,
         *,
         object_loader: ObjectLoader,
-        embeddings_cache_file: Path | None = None,
+        global_embeddings_cache_file: Path | None = None,
         templates_manager: dp.AbstractTemplatesManager | None = None,
     ):
         """
         Arguments:
             object_loader: An object loader for loading query objects.
-            embeddings_cache_file: Global cache file that stores
+            global_embeddings_cache_file: Global cache file that stores
                 common embeddings (e.g. embeddings of examples).
             templates_manager: A templates manager, necessary when using
                 embeddings.
         """
-        self._embeddings_cache_file = embeddings_cache_file
+        self._embeddings_cache_file = global_embeddings_cache_file
         self.object_loader = object_loader
         self._templates_manager = templates_manager
         self._examples: dict[_QueryName, list[Example]] = defaultdict(list)
@@ -153,15 +153,15 @@ class ExampleDatabase:
 
         # Embeddings for queries, classified by type
         self._query_embeddings: dict[
-            _EmbeddingsBucket, NDArray[np.float64] | None
+            _EmbeddingsBucket, NDArray[np.float32] | None
         ] = {}
         # Embeddings for full examples, classified by type
         self._example_embeddings: dict[
-            _EmbeddingsBucket, NDArray[np.float64] | None
+            _EmbeddingsBucket, NDArray[np.float32] | None
         ] = {}
         # Similarity matrix
         self._example_similarity_matrix: dict[
-            _EmbeddingsBucket, NDArray[np.float64] | None
+            _EmbeddingsBucket, NDArray[np.float32] | None
         ] = {}
 
     def add_demonstration(self, demo: dp.Demo):
@@ -212,10 +212,10 @@ class ExampleDatabase:
         return self._templates_manager
 
     @property
-    def embeddings_cache_file(self) -> Path:
+    def global_embeddings_cache_file(self) -> Path:
         if self._embeddings_cache_file is None:
             raise ValueError(
-                "ExampleDatabase.embeddings_cache_file was not provided."
+                "ExampleDatabase.global_embeddings_cache_file was not provided."
             )
         return self._embeddings_cache_file
 
@@ -231,7 +231,7 @@ class ExampleDatabase:
         self,
         name: _QueryName,
         model: _EmbeddingModelName,
-    ) -> NDArray[np.float64] | None:
+    ) -> NDArray[np.float32] | None:
         """
         Obtain the query embeddings for all examples of a given type.
 
@@ -252,7 +252,7 @@ class ExampleDatabase:
         self,
         name: _QueryName,
         model: _EmbeddingModelName,
-    ) -> NDArray[np.float64] | None:
+    ) -> NDArray[np.float32] | None:
         """
         Obtain the embeddings of all examples of a given type.
 
@@ -273,7 +273,7 @@ class ExampleDatabase:
         self,
         name: _QueryName,
         model: _EmbeddingModelName,
-    ) -> NDArray[np.float64] | None:
+    ) -> NDArray[np.float32] | None:
         """
         Obtain the similarity matrix of all examples of a given type.
 
@@ -300,7 +300,7 @@ class ExampleDatabase:
         model_name: _EmbeddingModelName,
         examples: Sequence[Example],
         embed_fun: Callable[[Example], str],
-    ) -> NDArray[np.float64] | None:
+    ) -> NDArray[np.float32] | None:
         """
         Get embeddings for all examples of a given query type.
 
@@ -315,14 +315,16 @@ class ExampleDatabase:
 
         model = em.standard_openai_embedding_model(model_name)
         to_embed = [embed_fun(e) for e in examples]
-        cache_file = self.embeddings_cache_file
-        lock_file = _embeddings_cache_lockfile(self.embeddings_cache_file)
+        cache_file = self.global_embeddings_cache_file
+        lock_file = _embeddings_cache_lockfile(
+            self.global_embeddings_cache_file
+        )
         with filelock.FileLock(lock_file):
-            with md.load_request_cache(cache_file, mode="read_write") as cache:
+            with em.load_embeddings_cache(cache_file, "read_write") as cache:
                 res = model.embed(to_embed, cache)
         if not res:
             return None
-        embeddings = np.array([r.embedding for r in res], dtype=np.float64)
+        embeddings = np.array([r.embedding for r in res], dtype=np.float32)
         # We ignore spending for the global cache.
         return embeddings
 
@@ -518,7 +520,8 @@ class PolicyEnv:
         demonstration_files: Sequence[Path] = (),
         data_dirs: Sequence[Path] = (),
         cache: md.LLMCache | None = None,
-        embeddings_cache_file: Path | None = None,
+        embeddings_cache: em.EmbeddingsCache | None = None,
+        global_embeddings_cache_file: Path | None = None,
         override_answers: dp.AnswerDatabase | None = None,
         log_level: dp.LogLevel = "info",
         log_long_computations: tuple[dp.LogLevel, float] | None = None,
@@ -537,7 +540,9 @@ class PolicyEnv:
             data_dirs: A sequence of directories where data files can be
                 found.
             cache: A request cache, or `None` to disable caching.
-            embeddings_cache_file: Global cache file that stores
+            embeddings_cache: An embeddings cache, or `None` to disable
+                embeddings caching.
+            global_embeddings_cache_file: Global cache file that stores
                 common embeddings (e.g. embeddings of examples).
             override_answers: If provided, a database of answers that
                 must be used to override LLM calls whenever possible.
@@ -556,7 +561,7 @@ class PolicyEnv:
         self.data_manager = DataManager(data_dirs)
         self.templates = TemplatesManager(prompt_dirs, self.data_manager)
         self.examples = ExampleDatabase(
-            embeddings_cache_file=embeddings_cache_file,
+            global_embeddings_cache_file=global_embeddings_cache_file,
             templates_manager=self.templates,
             object_loader=object_loader,
         )
@@ -564,6 +569,7 @@ class PolicyEnv:
         self.tracer = dp.Tracer(log_level=log_level)
         self.log_long_computations = log_long_computations
         self.cache = cache
+        self.embeddings_cache = embeddings_cache
         self.override_answers = override_answers
         self.random = random.Random(random_seed)
         for path in demonstration_files:

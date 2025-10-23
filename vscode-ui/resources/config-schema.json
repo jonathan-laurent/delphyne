@@ -63,7 +63,7 @@
       "default": null,
       "title": "Cache Root"
     },
-    "embeddings_cache_file": {
+    "global_embeddings_cache_file": {
       "default": "embeddings.cache.yaml",
       "format": "path",
       "title": "Embeddings Cache File",

@@ -1274,7 +1274,8 @@ def closest_examples(
             return []
         model = em.standard_openai_embedding_model(model_name)
         query_embedding = model.embed(
-            [env.examples.query_embedding_text(query)], cache=env.cache
+            [env.examples.query_embedding_text(query)],
+            cache=env.embeddings_cache,
         )[0].embedding
         # Compute cosine similarities.
         sims = np.dot(embeddings, query_embedding) / (
@@ -1352,7 +1353,8 @@ def maximum_marginally_relevant(
 
         model = em.standard_openai_embedding_model(model_name)
         query_embedding = model.embed(
-            [env.examples.query_embedding_text(query)], cache=env.cache
+            [env.examples.query_embedding_text(query)],
+            cache=env.embeddings_cache,
         )[0].embedding
 
         # Compute cosine similarities to the query for all examples
@@ -1401,7 +1403,7 @@ def maximum_marginally_relevant(
                     best_max_similarity = max_similarity
             selected_indices.append(best_idx)
             remaining_indices.remove(best_idx)
-            max_similarities[best_idx] = best_max_similarity
+            max_similarities[best_idx] = float(best_max_similarity)
             mmr_scores[best_idx] = best_score
 
         env.info(

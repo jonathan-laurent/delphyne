@@ -24,7 +24,10 @@ STRATEGY_MODULES = ("example_strategies",)
 
 
 def _make_policy_env(
-    *, cache: dp.LLMCache | None, demo_files: Sequence[str] = ()
+    *,
+    cache: dp.LLMCache | None,
+    embeddings_cache: dp.EmbeddingsCache | None,
+    demo_files: Sequence[str] = (),
 ):
     object_loader = dp.ObjectLoader(
         strategy_dirs=STRATEGY_DIRS, modules=STRATEGY_MODULES
@@ -34,7 +37,8 @@ def _make_policy_env(
         prompt_dirs=(PROMPT_DIR,),
         data_dirs=(DATA_DIR,),
         cache=cache,
-        embeddings_cache_file=CACHE_DIR / "__embeddings__.yaml",
+        embeddings_cache=embeddings_cache,
+        global_embeddings_cache_file=CACHE_DIR / "__embeddings__.h5",
         object_loader=object_loader,
     )
 
@@ -52,6 +56,11 @@ def _log_messages(log: Sequence[dp.ExportableLogMessage]) -> str:
 def _load_cache(name: str):
     file = CACHE_DIR / (name + ".yaml")
     return dp.load_request_cache(file, mode="read_write")
+
+
+def _load_embeddings_cache(name: str):
+    file = CACHE_DIR / (name + ".embeddings.h5")
+    return dp.load_embeddings_cache(file, mode="read_write")
 
 
 def test_query_properties():
@@ -78,22 +87,28 @@ def _eval_query(
     select_examples: dp.ExampleSelector | None = None,
     mode: dp.AnswerMode = None,
 ):
+    # embeddings_cache_name = ...
     with _load_cache(cache_name) as cache:
-        env = _make_policy_env(cache=cache, demo_files=demo_files)
-        model = dp.standard_model(
-            model_name, options=model_options, model_class=model_class
-        )
-        bl = dp.BudgetLimit({dp.NUM_REQUESTS: budget})
-        pp = dp.with_budget(bl) @ dp.few_shot(
-            model,
-            num_completions=num_completions,
-            mode=mode,
-            select_examples=select_examples,
-        )
-        stream = query.run_toplevel(env, pp)
-        res, _ = stream.collect()
-        log = list(env.tracer.export_log())
-        return res, log
+        with _load_embeddings_cache(cache_name) as embeddings_cache:
+            env = _make_policy_env(
+                cache=cache,
+                embeddings_cache=embeddings_cache,
+                demo_files=demo_files,
+            )
+            model = dp.standard_model(
+                model_name, options=model_options, model_class=model_class
+            )
+            bl = dp.BudgetLimit({dp.NUM_REQUESTS: budget})
+            pp = dp.with_budget(bl) @ dp.few_shot(
+                model,
+                num_completions=num_completions,
+                mode=mode,
+                select_examples=select_examples,
+            )
+            stream = query.run_toplevel(env, pp)
+            res, _ = stream.collect()
+            log = list(env.tracer.export_log())
+            return res, log
 
 
 def _eval_strategy[N: dp.Node, P, T](
@@ -105,13 +120,16 @@ def _eval_strategy[N: dp.Node, P, T](
     model_name: dp.StandardModelName | str = DEFAULT_TEST_MODEL,
 ) -> tuple[Sequence[dp.Solution[T]], Sequence[dp.ExportableLogMessage]]:
     with _load_cache(cache_name) as cache:
-        env = _make_policy_env(cache=cache)
-        model = dp.standard_model(model_name)
-        stream = strategy.run_toplevel(env, policy(model))
-        budget = dp.BudgetLimit({dp.NUM_REQUESTS: max_requests})
-        ret, _spent = stream.collect(budget=budget, num_generated=max_res)
-        log = list(env.tracer.export_log())
-        return ret, log
+        with _load_embeddings_cache(cache_name) as embeddings_cache:
+            env = _make_policy_env(
+                cache=cache, embeddings_cache=embeddings_cache
+            )
+            model = dp.standard_model(model_name)
+            stream = strategy.run_toplevel(env, policy(model))
+            budget = dp.BudgetLimit({dp.NUM_REQUESTS: max_requests})
+            ret, _spent = stream.collect(budget=budget, num_generated=max_res)
+            log = list(env.tracer.export_log())
+            return ret, log
 
 
 def test_concurrent():
@@ -126,7 +144,7 @@ def test_concurrent():
 
 def test_basic_llm_call():
     with _load_cache("basic_llm_call") as cache:
-        env = _make_policy_env(cache=cache)
+        env = _make_policy_env(cache=cache, embeddings_cache=None)
         model = dp.openai_model("gpt-4.1-mini")
         pp = dp.few_shot(model)
         bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
@@ -163,7 +181,7 @@ def test_assistant_priming():
 
 def test_interact():
     with _load_cache("interact") as cache:
-        env = _make_policy_env(cache=cache)
+        env = _make_policy_env(cache=cache, embeddings_cache=None)
         model = dp.openai_model("gpt-4.1-mini")
         pp = dp.few_shot(model)
         bl = dp.BudgetLimit({dp.NUM_REQUESTS: 2})
@@ -208,7 +226,7 @@ def _eval_classifier_query(
     bias: tuple[str, float] | None = None,
 ):
     with _load_cache(cache_name) as cache:
-        env = _make_policy_env(cache=cache)
+        env = _make_policy_env(cache=cache, embeddings_cache=None)
         model = dp.openai_model("gpt-4.1-mini")
         bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
         pp = dp.with_budget(bl) @ dp.classify(
@@ -556,30 +574,43 @@ def test_strategy_loading_data():
 
 
 def test_similarity_matrix():
-    env = _make_policy_env(cache=None, demo_files=["example_embeddings"])
-    sim = env.examples.fetch_example_similarity_matrix(
-        "AnswerTriviaQuestion", "text-embedding-3-large"
-    )
-    assert sim is not None
-    assert sim.shape == (5, 5)
-    assert (sim.T == sim).all()
-    print("\n", sim)
+    with _load_embeddings_cache("similarity_matrix") as cache:
+        env = _make_policy_env(
+            cache=None,
+            embeddings_cache=cache,
+            demo_files=["example_embeddings"],
+        )
+        sim = env.examples.fetch_example_similarity_matrix(
+            "AnswerTriviaQuestion", "text-embedding-3-large"
+        )
+        assert sim is not None
+        assert sim.shape == (5, 5)
+        assert (sim.T == sim).all()
+        print("\n", sim)
 
 
 def test_maximum_marginally_relevant():
     with _load_cache("maximum_marginally_relevant") as cache:
-        env = _make_policy_env(cache=cache, demo_files=["example_embeddings"])
-        question = "What is the most populated country in Europe?"
-        query = ex.AnswerTriviaQuestion(question)
-        selector = dp.maximum_marginally_relevant(
-            # If setting lambda=1, the two first examples are almost identical
-            k=5,
-            model_name="text-embedding-3-large",
-            lambda_param=0.7,
-            always_compute_mmr=True,
-        )
-        _res = selector(env, query)
-        print(_log_yaml(list(env.tracer.export_log())))
+        with _load_embeddings_cache(
+            "maximum_marginally_relevant"
+        ) as embeddings_cache:
+            env = _make_policy_env(
+                cache=cache,
+                embeddings_cache=embeddings_cache,
+                demo_files=["example_embeddings"],
+            )
+            question = "What is the most populated country in Europe?"
+            query = ex.AnswerTriviaQuestion(question)
+            selector = dp.maximum_marginally_relevant(
+                # If setting lambda=1, the two first examples are almost
+                # identical
+                k=5,
+                model_name="text-embedding-3-large",
+                lambda_param=0.7,
+                always_compute_mmr=True,
+            )
+            _res = selector(env, query)
+            print(_log_yaml(list(env.tracer.export_log())))
 
 
 def test_example_embeddings():

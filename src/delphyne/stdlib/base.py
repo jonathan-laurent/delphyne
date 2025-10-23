@@ -14,8 +14,10 @@ from delphyne.stdlib.answer_loaders import (
 from delphyne.stdlib.embeddings import (
     EmbeddingModel,
     EmbeddingResponse,
+    EmbeddingsCache,
     OpenAICompatibleEmbeddingModel,
     StandardOpenAIEmbeddingModel,
+    load_embeddings_cache,
     standard_openai_embedding_model,
 )
 from delphyne.stdlib.environments import (

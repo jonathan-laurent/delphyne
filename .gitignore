@@ -4,4 +4,4 @@ repomix-output.xml
 delphyne.egg-info
 .DS_Store
 __pycache__
-*.yaml.lock
+*.h5.lock
