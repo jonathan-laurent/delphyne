@@ -21,7 +21,7 @@ def make_experiment[C: dp.ExperimentConfig](
     output_dir: str,
     exp_file: str,
 ) -> dp.Experiment[C]:
-    # The `exp_file` parameter is typically assigned to `__file__`` in
+    # The `exp_file` parameter is typically assigned to `__file__` in
     # the caller, which can be either a relative or absolute path
     # depending on how the script is invoked. Thus, we convert it to
     # an absolute path with `absolute` first.
@@ -35,7 +35,7 @@ def make_experiment[C: dp.ExperimentConfig](
         context=context,
         configs=configs,
         name=exp_name,
-        output_dir=workspace_root / "experiments" / output_dir / exp_name,
+        output_dir=Path("experiments") / output_dir / exp_name,
     )
 
 

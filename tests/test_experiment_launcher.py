@@ -88,7 +88,7 @@ def test_experiment_launcher[C: dp.ExperimentConfig](
         context=context,
         configs=configs,
         name=name,
-        output_dir=root / "output" / name,
+        output_dir=f"output/{name}",
         workers_setup=dp.WorkersSetup(
             common=lambda: "Hello World", per_worker=_init_worker
         ),

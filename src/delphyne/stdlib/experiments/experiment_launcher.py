@@ -162,14 +162,15 @@ class Experiment[C: ExperimentConfig]:
         config_class: The associated configuration class, which defines
             the hyperparameters of the experiment and how to map them to
             arguments of the `run_strategy` command.
-        output_dir: The directory where all experiment data is stored
-            (persistent state, results, logs, caches...). The directory
-            is created if it does not alredy exist.
         context: Command execution context, which contains the kind of
             information usually provided in the `delphyne.yaml` file
             (experiments do not recognize such files). Note that the
             `cache_root` argument should not be set, since it is
             disregarded and overriden by the `Experiment` class.
+        output_dir: The directory where all experiment data is stored
+            (persistent state, results, logs, caches...), relative to
+            the workspace root specified in `context`. The directory
+            is created if it does not alredy exist.
         configs: A sequence of configurations to run. If `None` is
             provided and the experiment already has a persistent state
             stored on disk, the list of configurations is loaded from
@@ -209,8 +210,8 @@ class Experiment[C: ExperimentConfig]:
     """
 
     config_class: type[C]
-    output_dir: Path  # absolute path expected
     context: ExecutionContext
+    output_dir: Path | str  # relative path expected
     configs: Sequence[C] | None = None
     name: str | None = None
     description: str | None = None
@@ -225,7 +226,19 @@ class Experiment[C: ExperimentConfig]:
 
     def __post_init__(self):
         # We override the cache root directory.
-        self.context = replace(self.context, cache_root=self.output_dir)
+        self.context = replace(
+            self.context, cache_root=self.absolute_output_dir
+        )
+
+    @property
+    def absolute_output_dir(self) -> Path:
+        """
+        Get the absolute output directory, by combining the
+        `context.root` and `output_dir` paths.
+        """
+        if self.context.workspace_root is None:
+            raise ValueError("No workspace root is specified.")
+        return self.context.workspace_root / self.output_dir
 
     def load(self) -> Self:
         """
@@ -245,8 +258,9 @@ class Experiment[C: ExperimentConfig]:
         """
         if not self._dir_exists():
             # If we create the experiment for the first time
-            print(f"Creating experiment directory: {self.output_dir}.")
-            self.output_dir.mkdir(parents=True, exist_ok=True)
+            output_dir = self.absolute_output_dir
+            print(f"Creating experiment directory: {output_dir}.")
+            output_dir.mkdir(parents=True, exist_ok=True)
             state = ExperimentState[C](self.name, self.description, {})
             self._save_state(state)
         if self.configs is not None:
@@ -394,7 +408,9 @@ class Experiment[C: ExperimentConfig]:
             snapshot_name = str(datetime.now()).replace(" ", "_")
             snapshot_name = snapshot_name.replace(":", "-")
             snapshot_name = snapshot_name.replace(".", "_")
-            snapshot_dir = self.output_dir / SNAPSHOTS_DIR / snapshot_name
+            snapshot_dir = (
+                self.absolute_output_dir / SNAPSHOTS_DIR / snapshot_name
+            )
             snapshot_dir.mkdir(parents=True, exist_ok=True)
             # Generate snapshot index
             index: list[str] = []
@@ -466,7 +482,6 @@ class Experiment[C: ExperimentConfig]:
             futures = [
                 executor.submit(
                     _run_config,
-                    config_class=self.config_class,
                     context=self.context,
                     worker_send=worker_send,
                     worker_receive=manager.Queue(),
@@ -575,13 +590,14 @@ class Experiment[C: ExperimentConfig]:
                 each configuration.
         """
 
+        output_dir = self.absolute_output_dir
         data = _results_summary(
-            self.output_dir,
+            output_dir,
             ignore_missing=ignore_missing,
             add_timing=add_timing,
         )
         frame = pd.DataFrame(data)
-        summary_file = self.output_dir / RESULTS_SUMMARY
+        summary_file = output_dir / RESULTS_SUMMARY
         frame.to_csv(summary_file, index=False)  # type: ignore
 
     def load_summary(self):
@@ -592,7 +608,8 @@ class Experiment[C: ExperimentConfig]:
         `save_summary` method.
         """
 
-        summary_file = self.output_dir / RESULTS_SUMMARY
+        output_dir = self.absolute_output_dir
+        summary_file = output_dir / RESULTS_SUMMARY
         data = pd.DataFrame, pd.read_csv(summary_file)  # type: ignore
         return data
 
@@ -620,7 +637,7 @@ class Experiment[C: ExperimentConfig]:
         fire.Fire(ExperimentCLI(self))  # type: ignore
 
     def _config_dir(self, config_name: str) -> Path:
-        return _config_dir_path(self.output_dir, config_name)
+        return _config_dir_path(self.absolute_output_dir, config_name)
 
     def _add_configs_if_needed(self, configs: Sequence[C]) -> None:
         state = self._load_state()
@@ -644,18 +661,21 @@ class Experiment[C: ExperimentConfig]:
         self._save_state(state)
 
     def _dir_exists(self) -> bool:
-        return self.output_dir.exists() and self.output_dir.is_dir()
+        return (
+            self.absolute_output_dir.exists()
+            and self.absolute_output_dir.is_dir()
+        )
 
     def _state_type(self) -> type[ExperimentState[C]]:
         return ExperimentState[self.config_class]
 
     def _load_state(self) -> ExperimentState[C] | None:
-        with open(self.output_dir / EXPERIMENT_STATE_FILE, "r") as f:
+        with open(self.absolute_output_dir / EXPERIMENT_STATE_FILE, "r") as f:
             parsed = yaml.safe_load(f)
             return pydantic_load(self._state_type(), parsed)
 
     def _save_state(self, state: ExperimentState[C]) -> None:
-        with open(self.output_dir / EXPERIMENT_STATE_FILE, "w") as f:
+        with open(self.absolute_output_dir / EXPERIMENT_STATE_FILE, "w") as f:
             to_save = pydantic_dump(self._state_type(), state)
             yaml.safe_dump(to_save, f, sort_keys=False)
 
@@ -755,15 +775,14 @@ class _ConfigSnapshot:
     result: str | None
 
 
-def _run_config[C: ExperimentConfig](
+def _run_config(
     *,
     context: ExecutionContext,
-    config_class: type[C],
     worker_send: Queue[_WorkerSent],
     worker_receive: Queue[_WorkerReceived],
     config_name: str,
     config_dir: Path,
-    config: C,
+    config: ExperimentConfig,
     cache_requests: bool,
     log_level: dp.LogLevel | None,
     export_raw_trace: bool,
