@@ -84,6 +84,7 @@ from delphyne.stdlib.nodes import (
     Join,
     Message,
     NodeMeta,
+    Run,
     Skippable,
     TypedSpaceElementRef,
     Value,
@@ -96,6 +97,7 @@ from delphyne.stdlib.nodes import (
     fail,
     join,
     message,
+    run,
     spawn_node,
     value,
 )

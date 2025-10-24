@@ -6,7 +6,7 @@ import delphyne.stdlib.policies as pol
 from delphyne.core.streams import Solution, StreamGen
 from delphyne.core.trees import Success, Tree
 from delphyne.stdlib.environments import PolicyEnv
-from delphyne.stdlib.nodes import Branch, Fail, Skippable
+from delphyne.stdlib.nodes import Branch, Fail, Run, Skippable
 from delphyne.stdlib.policies import search_policy, unsupported_node
 from delphyne.stdlib.streams import Stream
 
@@ -24,6 +24,7 @@ def dfs[P, T](
 
     Whenever a branching node is encountered, branching candidates are
     lazily enumerated and the corresponding child recursively searched.
+    `Run` nodes do not count towards the depth.
 
     Attributes:
         max_depth (optional): maximum number of branching nodes
@@ -42,6 +43,13 @@ def dfs[P, T](
             )(tree.child(None), env, policy)
         case Fail():
             pass
+        case Run(cands):
+            cand = yield from tree.node.cands.stream(env, policy).first()
+            if cand is not None:
+                yield from dfs(
+                    max_depth=max_depth,
+                    max_branching=max_branching,
+                )(tree.child(cand.tracked), env, policy)
         case Branch(cands):
             if max_depth is not None and max_depth <= 0:
                 return
@@ -76,6 +84,10 @@ def par_dfs[P, T](
             yield Solution(x)
         case Fail():
             pass
+        case Run():
+            cand = yield from tree.node.cands.stream(env, policy).first()
+            if cand is not None:
+                yield from par_dfs()(tree.child(cand.tracked), env, policy)
         case Branch(cands):
             cands = yield from cands.stream(env, policy).all()
             yield from Stream.parallel(
@@ -87,7 +99,7 @@ def par_dfs[P, T](
 
 @pol.nonparametric_search_policy
 def exec[P, T](
-    tree: Tree[Fail | Skippable, P, T], env: PolicyEnv, policy: P
+    tree: Tree[Run | Fail | Skippable, P, T], env: PolicyEnv, policy: P
 ) -> StreamGen[T]:
     """
     Degenerate version of DFS in the absence of branching nodes.
@@ -101,6 +113,10 @@ def exec[P, T](
             yield Solution(x)
         case Skippable():
             yield from exec(tree.child(None), env, policy)
+        case Run():
+            cand = yield from tree.node.cands.stream(env, policy).first()
+            if cand is not None:
+                yield from exec(tree.child(cand.tracked), env, policy)
         case Fail():
             pass
         case _:

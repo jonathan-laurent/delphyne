@@ -18,6 +18,10 @@
 
 ::: delphyne.stdlib.nodes.branch
 
+::: delphyne.stdlib.nodes.Run
+
+::: delphyne.stdlib.nodes.run
+
 ## Fail
 
 ::: delphyne.stdlib.nodes.Fail

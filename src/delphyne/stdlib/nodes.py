@@ -188,6 +188,48 @@ def branch[P, T](
 
 
 #####
+##### Run Node
+#####
+
+
+@dataclass(frozen=True)
+class Run(Branch):
+    """
+    A degenerate branching node for which only one candidate is to be
+    explored, allowing to extract an element from an opaque space without
+    actual branching.
+
+    Spawning such a node instead of a `Branch` node provides a
+    semantic hint to search policies that no actual branching should be
+    performed (policies can choose to disregard this hint).
+    """
+
+
+def run[P, T](
+    cands: Opaque[P, T],
+    *,
+    meta: Callable[[P], NodeMeta] | None = None,
+    inner_policy_type: type[P] | None = None,
+) -> dp.Strategy[Run, P, T]:
+    """
+    Obtain a single element from an opaque space without branching.
+
+    See `Run` for more details.
+
+    Arguments:
+        cands: An opaque space, which can be defined from either a query
+            or a strategy via the `using` method.
+        meta: An optional mapping from the ambient inner policy to
+            arbitrary metadata accessible to search policies.
+        inner_policy_type: Ambient inner policy type. This information
+            is not used at runtime but it can be provided to help type
+            inference when necessary.
+    """
+    recv = yield spawn_node(Run, cands=cands, meta=meta)
+    return cast(T, recv.action)
+
+
+#####
 ##### Fail Node
 #####
 
