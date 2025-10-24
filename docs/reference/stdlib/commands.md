@@ -1,14 +1,16 @@
 # Commands
 
-## Tasks and Commands
+## Execution Contexts
 
 ::: delphyne.ExecutionContext
 
-::: delphyne.stdlib.tasks.DEFAULT_STRATEGY_DIRS
+::: delphyne.stdlib.execution_contexts.DEFAULT_STRATEGY_DIRS
 
-::: delphyne.stdlib.tasks.DEFAULT_PROMPTS_DIRS
+::: delphyne.stdlib.execution_contexts.DEFAULT_PROMPTS_DIRS
 
-::: delphyne.stdlib.tasks.DEFAULT_DATA_DIRS
+::: delphyne.stdlib.execution_contexts.DEFAULT_DATA_DIRS
+
+## Tasks and Commands
 
 ::: delphyne.TaskContext
 

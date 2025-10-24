@@ -62,10 +62,10 @@
 
 ## Object Loader Exceptions
 
-::: delphyne.analysis.demo_interpreter.ModuleNotFound
+::: delphyne.ModuleNotFound
 
-::: delphyne.analysis.demo_interpreter.ObjectNotFound
+::: delphyne.ObjectNotFound
 
-::: delphyne.analysis.demo_interpreter.StrategyLoadingError
+::: delphyne.StrategyLoadingError
 
-::: delphyne.analysis.demo_interpreter.AmbiguousObjectIdentifier
+::: delphyne.AmbiguousObjectIdentifier
