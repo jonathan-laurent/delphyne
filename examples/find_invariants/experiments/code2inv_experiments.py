@@ -9,22 +9,18 @@ from pathlib import Path
 import code2inv
 import delphyne as dp
 import delphyne.stdlib.commands as cmd
-from delphyne.stdlib.experiments.experiment_launcher import (
-    Experiment,
-    ExperimentFun,
-)
 
 BENCHS = code2inv.load_all_benchmarks()
 MODULES = ["abduct_and_saturate", "baseline"]
 DEMO_FILES = [Path(m) for m in MODULES]
 
 
-def make_experiment[C](
-    experiment: ExperimentFun[C],
+def make_experiment[C: dp.ExperimentConfig](
+    config_class: type[C],
     configs: Sequence[C],
     output_dir: str,
     exp_file: str,
-) -> Experiment[C]:
+) -> dp.Experiment[C]:
     # The `exp_file` parameter is typically assigned to `__file__`` in
     # the caller, which can be either a relative or absolute path
     # depending on how the script is invoked. Thus, we convert it to
@@ -34,18 +30,13 @@ def make_experiment[C](
     context = dp.ExecutionContext(
         modules=MODULES, demo_files=DEMO_FILES
     ).with_root(workspace_root)
-    return Experiment(
-        experiment=experiment,
+    return dp.Experiment(
+        config_class=config_class,
         context=context,
         configs=configs,
         name=exp_name,
         output_dir=workspace_root / "experiments" / output_dir / exp_name,
     )
-
-
-#####
-##### Abduction Experiment
-#####
 
 
 @dataclass
@@ -60,27 +51,20 @@ class AbductionConfig:
     max_propagation_steps: int
     seed: int
 
-
-def abduction_experiment(config: AbductionConfig):
-    return cmd.RunStrategyArgs(
-        strategy="prove_program_by_recursive_abduction",
-        args={"prog": BENCHS[config.bench_name]},
-        policy="prove_program_by_saturation",
-        policy_args={
-            "model_cycle": config.model_cycle,
-            "temperature": config.temperature,
-            "num_completions": config.num_completions,
-            "max_requests_per_attempt": config.max_requests_per_attempt,
-        },
-        num_generated=1,
-        budget={dp.DOLLAR_PRICE: config.max_dollar_budget},
-        log_long_computations=("info", 1.0),
-    )
-
-
-#####
-##### Baseline Experiment
-#####
+    def instantiate(self):
+        return cmd.RunStrategyArgs(
+            strategy="prove_program_by_recursive_abduction",
+            args={"prog": BENCHS[self.bench_name]},
+            policy="prove_program_by_saturation",
+            policy_args={
+                "model_cycle": self.model_cycle,
+                "temperature": self.temperature,
+                "num_completions": self.num_completions,
+                "max_requests_per_attempt": self.max_requests_per_attempt,
+            },
+            budget={dp.DOLLAR_PRICE: self.max_dollar_budget},
+            log_long_computations=("info", 1.0),
+        )
 
 
 @dataclass
@@ -93,21 +77,19 @@ class BaselineConfig:
     loop: bool = False
     max_dollar_budget: float | None = 0.2
 
-
-def baseline_experiment(config: BaselineConfig):
-    budget: dict[str, float] = {}
-    if config.max_dollar_budget is not None:
-        budget[dp.DOLLAR_PRICE] = config.max_dollar_budget
-    return cmd.RunStrategyArgs(
-        strategy="prove_program_interactive",
-        args={"prog": BENCHS[config.bench_name]},
-        policy="prove_program_interactive_policy",
-        policy_args={
-            "model_name": config.model_name,
-            "temperature": config.temperature,
-            "max_feedback_cycles": config.max_feedback_cycles,
-            "loop": config.loop,
-        },
-        num_generated=1,
-        budget=budget,
-    )
+    def instantiate(self):
+        budget: dict[str, float] = {}
+        if self.max_dollar_budget is not None:
+            budget[dp.DOLLAR_PRICE] = self.max_dollar_budget
+        return cmd.RunStrategyArgs(
+            strategy="prove_program_interactive",
+            args={"prog": BENCHS[self.bench_name]},
+            policy="prove_program_interactive_policy",
+            policy_args={
+                "model_name": self.model_name,
+                "temperature": self.temperature,
+                "max_feedback_cycles": self.max_feedback_cycles,
+                "loop": self.loop,
+            },
+            budget=budget,
+        )

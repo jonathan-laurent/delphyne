@@ -23,7 +23,7 @@ import delphyne.core as dp
 import delphyne.stdlib.commands as cmd
 from delphyne.stdlib.execution_contexts import ExecutionContext
 from delphyne.stdlib.tasks import run_command
-from delphyne.utils.typing import NoTypeInfo, pydantic_dump, pydantic_load
+from delphyne.utils.typing import pydantic_dump, pydantic_load
 
 EXPERIMENT_STATE_FILE = "experiment.yaml"
 STATUS_FILE = "statuses.txt"
@@ -54,8 +54,21 @@ def _relative_embeddings_cache_path(config_name: str) -> str:
     )
 
 
+class ExperimentConfig(Protocol):
+    """
+    A configuration is a dataclass that holds a set of hyperparameters,
+    which induce a `run_strategy` call.
+
+    !!! note
+        Caching-related arguments do not need to be set since they are
+        overriden by the `Experiment` class.
+    """
+
+    def instantiate(self) -> cmd.RunStrategyArgs: ...
+
+
 @dataclass
-class ConfigInfo[Config]:
+class ConfigInfo[C: ExperimentConfig]:
     """
     Information stored in the persistent configuration state for each
     configuration.
@@ -70,7 +83,7 @@ class ConfigInfo[Config]:
             must then be `todo`).
     """
 
-    params: Config
+    params: C
     status: Literal["todo", "done", "failed"]
     start_time: datetime | None = None
     end_time: datetime | None = None
@@ -78,16 +91,16 @@ class ConfigInfo[Config]:
 
 
 @dataclass
-class ExperimentState[Config]:
+class ExperimentState[C: ExperimentConfig]:
     """
     Persistent state of an experiment, stored on disk as a YAML file.
     """
 
     name: str | None
     description: str | None
-    configs: dict[str, ConfigInfo[Config]]
+    configs: dict[str, ConfigInfo[C]]
 
-    def inverse_mapping(self) -> Callable[[Config], str | None]:
+    def inverse_mapping(self) -> Callable[[C], str | None]:
         """
         Compute an inverse function mapping configurations to their
         unique names (or None if not in the state).
@@ -96,21 +109,10 @@ class ExperimentState[Config]:
         for name, info in self.configs.items():
             tab[_config_unique_repr(info.params)] = name
 
-        def reverse(config: Config) -> str | None:
+        def reverse(config: C) -> str | None:
             return tab.get(_config_unique_repr(config), None)
 
         return reverse
-
-
-class ExperimentFun[Config](Protocol):
-    """
-    A function defining an experiment, which maps a configuration (i.e.,
-    a set of parameters) to a set of arguments for the `run_strategy`
-    command. Note that caching-related arguments do not need to be set
-    since they are overriden by the `Experiment` class.
-    """
-
-    def __call__(self, config: Config, /) -> cmd.RunStrategyArgs: ...
 
 
 @dataclass
@@ -139,7 +141,7 @@ class WorkersSetup[T]:
 
 
 @dataclass(kw_only=True)
-class Experiment[Config]:
+class Experiment[C: ExperimentConfig]:
     """
     An experiment that consists in running an oracular program on a set of
     different hyperparameter combinations.
@@ -153,12 +155,13 @@ class Experiment[Config]:
     calls to LLMs or to tools with non-replicable outputs.
 
     Type Parameters:
-        Config: Type parameter for the configuration type, which is a
+        C: Type parameter for the configuration type, which is a
             dataclass that holds all experiment hyperparameters.
 
     Attributes:
-        experiment: The experiment function, which defines a run of an
-            oracular program for each configuration.
+        config_class: The associated configuration class, which defines
+            the hyperparameters of the experiment and how to map them to
+            arguments of the `run_strategy` command.
         output_dir: The directory where all experiment data is stored
             (persistent state, results, logs, caches...). The directory
             is created if it does not alredy exist.
@@ -171,8 +174,6 @@ class Experiment[Config]:
             provided and the experiment already has a persistent state
             stored on disk, the list of configurations is loaded from
             there upon loading.
-        config_type: The `Config` type, which is either passed
-            explicitly or deduced from the `configs` argument.
         name: Experiment name, which is stored in the persistent state
             file when provided and is otherwise not used.
         description: Experiment description, which is stored in the
@@ -202,19 +203,18 @@ class Experiment[Config]:
 
     ## Tips
 
-    - New hyperparameters can be added to the `Config` type without
+    - New hyperparameters can be added to the `C` type without
       invalidating an existing experiment's persistent state, by
       providing default values for them.
     """
 
-    experiment: ExperimentFun[Config]
+    config_class: type[C]
     output_dir: Path  # absolute path expected
     context: ExecutionContext
-    configs: Sequence[Config] | None = None
-    config_type: type[Config] | NoTypeInfo = NoTypeInfo()
+    configs: Sequence[C] | None = None
     name: str | None = None
     description: str | None = None
-    config_naming: Callable[[Config, uuid.UUID], str] | None = None
+    config_naming: Callable[[C, uuid.UUID], str] | None = None
     cache_requests: bool = True
     workers_setup: WorkersSetup[Any] | None = None
     log_level: dp.LogLevel | None = None
@@ -225,11 +225,7 @@ class Experiment[Config]:
 
     def __post_init__(self):
         # We override the cache root directory.
-        assert self.context.cache_root is None
         self.context = replace(self.context, cache_root=self.output_dir)
-        if isinstance(self.config_type, NoTypeInfo):
-            if self.configs:
-                self.config_type = type(self.configs[0])
 
     def load(self) -> Self:
         """
@@ -251,7 +247,7 @@ class Experiment[Config]:
             # If we create the experiment for the first time
             print(f"Creating experiment directory: {self.output_dir}.")
             self.output_dir.mkdir(parents=True, exist_ok=True)
-            state = ExperimentState[Config](self.name, self.description, {})
+            state = ExperimentState[C](self.name, self.description, {})
             self._save_state(state)
         if self.configs is not None:
             self._add_configs_if_needed(self.configs)
@@ -470,10 +466,10 @@ class Experiment[Config]:
             futures = [
                 executor.submit(
                     _run_config,
+                    config_class=self.config_class,
                     context=self.context,
                     worker_send=worker_send,
                     worker_receive=manager.Queue(),
-                    experiment=self.experiment,
                     config_name=name,
                     config_dir=self._config_dir(name),
                     config=info.params,
@@ -531,7 +527,7 @@ class Experiment[Config]:
         assert state is not None
         assert config_name is not None
         info = state.configs[config_name]
-        cmdargs = self.experiment(info.params)
+        cmdargs = info.params.instantiate()
         cmdargs.cache_file = _relative_cache_path(config_name)
         cmdargs.embeddings_cache_file = _relative_embeddings_cache_path(
             config_name
@@ -546,7 +542,7 @@ class Experiment[Config]:
             dump_log=None,
         )
 
-    def replay_config(self, config: Config) -> None:
+    def replay_config(self, config: C) -> None:
         """
         Replay a configuration. See `replay_config_by_name` for details.
         """
@@ -626,7 +622,7 @@ class Experiment[Config]:
     def _config_dir(self, config_name: str) -> Path:
         return _config_dir_path(self.output_dir, config_name)
 
-    def _add_configs_if_needed(self, configs: Sequence[Config]) -> None:
+    def _add_configs_if_needed(self, configs: Sequence[C]) -> None:
         state = self._load_state()
         assert state is not None
         rev = state.inverse_mapping()
@@ -650,23 +646,20 @@ class Experiment[Config]:
     def _dir_exists(self) -> bool:
         return self.output_dir.exists() and self.output_dir.is_dir()
 
-    def _state_type(self) -> type[ExperimentState[Config]]:
-        assert not isinstance(self.config_type, NoTypeInfo), (
-            "Please set `Experiment.config_type`."
-        )
-        return ExperimentState[self.config_type]
+    def _state_type(self) -> type[ExperimentState[C]]:
+        return ExperimentState[self.config_class]
 
-    def _load_state(self) -> ExperimentState[Config] | None:
+    def _load_state(self) -> ExperimentState[C] | None:
         with open(self.output_dir / EXPERIMENT_STATE_FILE, "r") as f:
             parsed = yaml.safe_load(f)
             return pydantic_load(self._state_type(), parsed)
 
-    def _save_state(self, state: ExperimentState[Config]) -> None:
+    def _save_state(self, state: ExperimentState[C]) -> None:
         with open(self.output_dir / EXPERIMENT_STATE_FILE, "w") as f:
             to_save = pydantic_dump(self._state_type(), state)
             yaml.safe_dump(to_save, f, sort_keys=False)
 
-    def _existing_config_name(self, config: Config) -> str | None:
+    def _existing_config_name(self, config: C) -> str | None:
         state = self._load_state()
         assert state is not None
         for name, info in state.configs.items():
@@ -762,14 +755,15 @@ class _ConfigSnapshot:
     result: str | None
 
 
-def _run_config[Config](
+def _run_config[C: ExperimentConfig](
+    *,
     context: ExecutionContext,
-    experiment: ExperimentFun[Config],
+    config_class: type[C],
     worker_send: Queue[_WorkerSent],
     worker_receive: Queue[_WorkerReceived],
     config_name: str,
     config_dir: Path,
-    config: Config,
+    config: C,
     cache_requests: bool,
     log_level: dp.LogLevel | None,
     export_raw_trace: bool,
@@ -817,7 +811,7 @@ def _run_config[Config](
         file_path = config_dir / f
         if file_path.exists():
             file_path.unlink(missing_ok=True)
-    cmdargs = experiment(config)
+    cmdargs = config.instantiate()
     if cache_requests:
         # A relative path is expected!
         cmdargs.cache_file = _relative_cache_path(config_name)

@@ -17,5 +17,5 @@ configs = [
 
 if __name__ == "__main__":
     c2i.make_experiment(
-        c2i.abduction_experiment, configs, "test-output", __file__
+        c2i.AbductionConfig, configs, "test-output", __file__
     ).run_cli()

@@ -2,10 +2,9 @@
 Test the experiment launcher functionality.
 """
 
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
 import pytest
 
@@ -22,32 +21,28 @@ class MakeSumConfig:
     allowed: list[int]
     goal: int
 
-
-def make_sum_experiment(config: MakeSumConfig) -> cmd.RunStrategyArgs:
-    return cmd.RunStrategyArgs(
-        strategy="make_sum",
-        args={"allowed": config.allowed, "goal": config.goal},
-        policy="make_sum_policy",
-        policy_args={},
-        num_generated=1,
-        budget={dp.DOLLAR_PRICE: 0.05},  # Small budget for testing
-    )
+    def instantiate(self):
+        return cmd.RunStrategyArgs(
+            strategy="make_sum",
+            args={"allowed": self.allowed, "goal": self.goal},
+            policy="make_sum_policy",
+            policy_args={},
+            num_generated=1,
+            budget={dp.DOLLAR_PRICE: 0.05},  # Small budget for testing
+        )
 
 
 @dataclass
 class CachedComputationsConfig:
-    pass
-
-
-def cached_computations_experiment(config: object):
-    return cmd.RunStrategyArgs(
-        strategy="test_cached_computations",
-        args={"n": 3},
-        policy="test_cached_computations_policy",
-        policy_args={},
-        num_generated=1,
-        budget={dp.DOLLAR_PRICE: 0},
-    )
+    def instantiate(self):
+        return cmd.RunStrategyArgs(
+            strategy="test_cached_computations",
+            args={"n": 3},
+            policy="test_cached_computations_policy",
+            policy_args={},
+            num_generated=1,
+            budget={dp.DOLLAR_PRICE: 0},
+        )
 
 
 #####
@@ -62,11 +57,11 @@ def _init_worker(msg: str):
 
 
 @pytest.mark.parametrize(
-    "name,exp_fun,configs",
+    "name,config_class,configs",
     [
         (
             "test_make_sum_experiment",
-            make_sum_experiment,
+            MakeSumConfig,
             [
                 MakeSumConfig(allowed=[1, 2, 3, 4, 5], goal=5),
                 MakeSumConfig(allowed=[9, 6, 2], goal=11),
@@ -74,22 +69,22 @@ def _init_worker(msg: str):
         ),
         (
             "test_cached_computation_experiment",
-            cached_computations_experiment,
+            CachedComputationsConfig,
             [CachedComputationsConfig()],
         ),
     ],
 )
-def test_experiment_launcher(
+def test_experiment_launcher[C: dp.ExperimentConfig](
     name: str,
-    exp_fun: Callable[[Any], cmd.RunStrategyArgs],
-    configs: Sequence[Any],
+    config_class: type[dp.ExperimentConfig],
+    configs: Sequence[C],
 ):
     root = Path(__file__).parent
     context = dp.ExecutionContext(
         modules=["example_strategies"],
     ).with_root(root)
     experiment = dp.Experiment(
-        experiment=exp_fun,
+        config_class=config_class,
         context=context,
         configs=configs,
         name=name,

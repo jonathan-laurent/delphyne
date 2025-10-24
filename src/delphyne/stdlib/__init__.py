@@ -95,5 +95,6 @@ from delphyne.stdlib.universal_queries import (
 
 from delphyne.stdlib.experiments.experiment_launcher import (
     Experiment,
+    ExperimentConfig,
     WorkersSetup,
 )
