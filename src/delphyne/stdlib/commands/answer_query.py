@@ -64,7 +64,7 @@ class AnswerQueryResponse:
 
 def answer_query_with_cache(
     task: ta.TaskContext[ta.CommandResult[AnswerQueryResponse]],
-    exe: ta.CommandExecutionContext,
+    exe: ta.ExecutionContext,
     cmd: AnswerQueryArgs,
     cache: md.LLMCache | None,
     embeddings_cache: dp.EmbeddingsCache | None,
@@ -130,7 +130,7 @@ def answer_query_with_cache(
 
 def answer_query(
     task: ta.TaskContext[ta.CommandResult[AnswerQueryResponse]],
-    exe: ta.CommandExecutionContext,
+    exe: ta.ExecutionContext,
     cmd: AnswerQueryArgs,
 ):
     """

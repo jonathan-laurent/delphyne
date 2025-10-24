@@ -16,9 +16,12 @@ import delphyne.stdlib as std
 import delphyne.utils.typing as ty
 from delphyne.scripts.command_utils import command_file_header
 from delphyne.scripts.demonstrations import check_demo_file
-from delphyne.scripts.load_configs import find_workspace_dir, load_config
 from delphyne.server.execute_command import CommandSpec
 from delphyne.stdlib.commands import STD_COMMANDS
+from delphyne.stdlib.execution_contexts import (
+    load_execution_context,
+    surrounding_workspace_dir,
+)
 from delphyne.utils.misc import StatusIndicator
 from delphyne.utils.yaml import pretty_yaml
 
@@ -89,7 +92,7 @@ class DelphyneCLI:
         """
         workspace_dir = self.workspace_dir
         if workspace_dir is None:
-            workspace_dir = find_workspace_dir(file)
+            workspace_dir = surrounding_workspace_dir(file)
         if workspace_dir is None:
             workspace_dir = Path.cwd()
         return workspace_dir
@@ -100,7 +103,7 @@ class DelphyneCLI:
         """
         file_path = Path(file)
         workspace_dir = self._workspace_dir_for(file_path)
-        config = load_config(workspace_dir, local_config_from=file_path)
+        config = load_execution_context(workspace_dir, local=file_path)
         feedback = check_demo_file(file_path, config, workspace_dir)
         self._process_diagnostics(feedback.warnings, feedback.errors)
 
@@ -139,7 +142,7 @@ class DelphyneCLI:
         """
         file_path = Path(file)
         workspace_dir = self._workspace_dir_for(file_path)
-        config = load_config(workspace_dir, local_config_from=file_path)
+        config = load_execution_context(workspace_dir, local=file_path)
         config = replace(
             config,
             status_refresh_period=STATUS_REFRESH_PERIOD_IN_SECONDS,

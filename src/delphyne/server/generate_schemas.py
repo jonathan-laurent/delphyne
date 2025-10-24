@@ -10,7 +10,7 @@ import sys
 import pydantic
 
 from delphyne.core.demos import DemoFile
-from delphyne.stdlib import CommandExecutionContext
+from delphyne.stdlib.execution_contexts import ExecutionContext
 
 
 def demo_file_schema():
@@ -20,7 +20,7 @@ def demo_file_schema():
 
 
 def config_file_schema():
-    schema = pydantic.TypeAdapter(CommandExecutionContext).json_schema()
+    schema = pydantic.TypeAdapter(ExecutionContext).json_schema()
     schema["title"] = "Delphyne Configuration File"
     assert "workspace_root" in schema["properties"]
     del schema["properties"]["workspace_root"]

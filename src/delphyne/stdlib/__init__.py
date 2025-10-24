@@ -11,6 +11,11 @@ from delphyne.stdlib.computations import (
     compute,
     elim_compute,
 )
+from delphyne.stdlib.execution_contexts import (
+    ExecutionContext,
+    load_execution_context,
+    surrounding_workspace_dir,
+)
 from delphyne.stdlib.flags import (
     Flag,
     FlagQuery,
@@ -74,7 +79,6 @@ from delphyne.stdlib.standard_models import (
 )
 from delphyne.stdlib.tasks import (
     Command,
-    CommandExecutionContext,
     CommandResult,
     StreamingTask,
     TaskContext,

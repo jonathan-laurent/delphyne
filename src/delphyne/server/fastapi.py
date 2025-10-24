@@ -30,7 +30,7 @@ def make_server(launcher: TaskLauncher):
         request: Request,
         # Strangely: `demo: dp.Demo` does not work with fastapi...
         demo: dp.QueryDemo | dp.StrategyDemo,
-        context: ta.CommandExecutionContext,
+        context: std.ExecutionContext,
         workspace_root: Annotated[str, Body(embed=True)],
     ):
         stream_eval = ta.stream_of_fun(analysis.evaluate_demo)
@@ -60,7 +60,7 @@ def make_server(launcher: TaskLauncher):
     async def _(
         request: Request,
         spec: cm.CommandSpec,
-        context: ta.CommandExecutionContext,
+        context: std.ExecutionContext,
         workspace_root: Annotated[str, Body(embed=True)],
     ):
         stream = launcher(

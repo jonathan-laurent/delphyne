@@ -21,7 +21,8 @@ import yaml
 
 import delphyne.core as dp
 import delphyne.stdlib.commands as cmd
-from delphyne.stdlib.tasks import CommandExecutionContext, run_command
+from delphyne.stdlib.execution_contexts import ExecutionContext
+from delphyne.stdlib.tasks import run_command
 from delphyne.utils.typing import NoTypeInfo, pydantic_dump, pydantic_load
 
 EXPERIMENT_STATE_FILE = "experiment.yaml"
@@ -208,7 +209,7 @@ class Experiment[Config]:
 
     experiment: ExperimentFun[Config]
     output_dir: Path  # absolute path expected
-    context: CommandExecutionContext
+    context: ExecutionContext
     configs: Sequence[Config] | None = None
     config_type: type[Config] | NoTypeInfo = NoTypeInfo()
     name: str | None = None
@@ -762,7 +763,7 @@ class _ConfigSnapshot:
 
 
 def _run_config[Config](
-    context: CommandExecutionContext,
+    context: ExecutionContext,
     experiment: ExperimentFun[Config],
     worker_send: Queue[_WorkerSent],
     worker_receive: Queue[_WorkerReceived],

@@ -67,7 +67,7 @@ The `Delphyne: Show Root Directory for Current File` command can be used to show
 
 ### Global and Local Configuration {#config}
 
-Both [demonstration](#editing-demonstrations) and [command](#commands) files are evaluated in the context of a given [configuration record][delphyne.CommandExecutionContext], which specifies information such as the location and names of Python modules in which strategies can be found, the location of prompting templates and demonstration files, etc... This information can be stored in the project's `delphyne.yaml` file, whose content may look like:
+Both [demonstration](#editing-demonstrations) and [command](#commands) files are evaluated in the context of a given [configuration record][delphyne.ExecutionContext], which specifies information such as the location and names of Python modules in which strategies can be found, the location of prompting templates and demonstration files, etc... This information can be stored in the project's `delphyne.yaml` file, whose content may look like:
 
 ```yaml
 strategy_dirs: ["."]
@@ -75,7 +75,7 @@ modules: ["module_1", "module_2"]
 demo_files: ["demo_1", "demo_2"]
 ```
 
-See the [Reference][delphyne.CommandExecutionContext] for the list and description of all available settings. All settings have default values so empty `delphyne.yaml` files are allowed (or no file at all if the project root coincides with the VSCode workspace). In addition, any subset of global settings from the `delphyne.yaml` file can be locally overriden in individual demonstration or command files by prefixing it with a [`@config` comment block][delphyne.CommandExecutionContext].
+See the [Reference][delphyne.ExecutionContext] for the list and description of all available settings. All settings have default values so empty `delphyne.yaml` files are allowed (or no file at all if the project root coincides with the VSCode workspace). In addition, any subset of global settings from the `delphyne.yaml` file can be locally overriden in individual demonstration or command files by prefixing it with a [`@config` comment block][delphyne.ExecutionContext].
 
 ## Editing Demonstrations {#editing-demonstrations}
 

@@ -78,7 +78,7 @@ class RunLoadedStrategyArgs[N: dp.Node, P, T]:
 
 def run_loaded_strategy_with_caches[N: dp.Node, P, T](
     task: ta.TaskContext[ta.CommandResult[RunStrategyResponse]],
-    exe: ta.CommandExecutionContext,
+    exe: ta.ExecutionContext,
     args: RunLoadedStrategyArgs[N, P, T],
     request_cache: md.LLMCache | None,
     embeddings_cache: dp.EmbeddingsCache | None,
@@ -232,7 +232,7 @@ def run_loaded_strategy_with_caches[N: dp.Node, P, T](
 
 def run_loaded_strategy[N: dp.Node, P, T](
     task: ta.TaskContext[ta.CommandResult[RunStrategyResponse]],
-    exe: ta.CommandExecutionContext,
+    exe: ta.ExecutionContext,
     args: RunLoadedStrategyArgs[N, P, T],
 ):
     """
@@ -341,7 +341,7 @@ class RunStrategyArgs:
 
 def run_strategy(
     task: ta.TaskContext[ta.CommandResult[RunStrategyResponse]],
-    exe: ta.CommandExecutionContext,
+    exe: ta.ExecutionContext,
     args: RunStrategyArgs,
 ):
     """

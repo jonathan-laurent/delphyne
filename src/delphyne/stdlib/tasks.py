@@ -19,14 +19,8 @@ from typing import Any, Concatenate, Literal, Never, Protocol
 import delphyne.analysis.feedback as fb
 import delphyne.stdlib.tasks as ta
 import delphyne.utils.typing as ty
-from delphyne.analysis import ObjectLoader
+from delphyne.stdlib.execution_contexts import ExecutionContext
 from delphyne.utils.yaml import pretty_yaml
-
-DEFAULT_STRATEGY_DIRS = (Path("."),)
-DEFAULT_PROMPTS_DIRS = (Path("prompts"),)
-DEFAULT_DATA_DIRS = (Path("data"),)
-DEFAULT_GLOBAL_EMBEDDINGS_CACHE_FILE = Path("embeddings.cache.h5")
-
 
 #####
 ##### Tasks
@@ -110,133 +104,6 @@ def counting_generator(task: TaskContext[Never], n: int):
 #####
 
 
-@dataclass(frozen=True, kw_only=True)
-class CommandExecutionContext:
-    """
-    Context information available to all commands.
-
-    This information is usually specified in `delphyne.yaml` project
-    files, and also locally in `@config` blocks. All values have
-    defaults. All paths are usually expressed relative to a single
-    workspace root directory, and can be made absolute using the
-    `with_root` method.
-
-    Parameters:
-        strategy_dirs: A sequence of directories in which strategy
-            modules can be found.
-        modules: A sequence of module in which Python object identifiers
-            can be resolved (module names can feature `.`).
-        demo_files: A sequence of demonstration files (either including or
-            excluding the `*.demo.yaml` extension).
-        prompt_dirs: A sequence of directories in which to look for
-            prompt templates.
-        data_dirs: A sequence of directories in which to look for data
-            files.
-        cache_root: The directory in which to store all request cache
-            subdirectories.
-        global_embeddings_cache_file: Global cache file that stores
-            common embeddings (e.g. embeddings of examples).
-        init: A sequence of initialization functions to call
-            before any object is loaded. Each element specifies a
-            qualified function name, or a pair of a qualified function
-            name and of a dictionary of arguments to pass. Each
-            initializer function is called at most once per Python
-            process (subsequent calls with possibly different arguments
-            are ignored). For all string arguments, the "%workspace"
-            substring is replaced by the path of the workspace root
-            directory (without trailing slash).
-        result_refresh_period: The period in seconds at which the
-            current result is computed and communicated to the UI (e.g.,
-            the period at which the current trace is exported when
-            running oracular programs). If `None`, the result is never
-            refreshed (until the command terminates).
-        status_refresh_period: The period in seconds at which the
-            current status message is communicated to the UI. If `None`,
-            the status is never refreshed (until the command
-            terminates).
-        workspace_root: The root directory of the workspace. This value
-            is not meant to be provided in configuration files. Rather,
-            it is set when using the `with_root` method. This setting is
-            useful for interpreting some relative paths in demonstration
-            and command files (e.g. `using` directives).
-
-    !!! info "Local conguration blocks"
-        Demonstration and command files can override some configuration
-        information from the `delphyne.yaml` file by featuring a comment
-        block such as:
-
-        ```yaml
-        # @config
-        # modules: ["my_strategy_module"]
-        # demo_files: ["demo.yaml"]
-        # @end
-        ```
-
-        The comment block must be placed at the start of the file,
-        possibly after other comments.
-    """
-
-    strategy_dirs: Sequence[Path] = DEFAULT_STRATEGY_DIRS
-    modules: Sequence[str] = ()
-    demo_files: Sequence[Path] = ()
-    prompt_dirs: Sequence[Path] = DEFAULT_PROMPTS_DIRS
-    data_dirs: Sequence[Path] = DEFAULT_DATA_DIRS
-    cache_root: Path | None = None
-    global_embeddings_cache_file: Path = DEFAULT_GLOBAL_EMBEDDINGS_CACHE_FILE
-    init: Sequence[str | tuple[str, dict[str, Any]]] = ()
-    result_refresh_period: float | None = None
-    status_refresh_period: float | None = None
-    workspace_root: Path | None = None
-
-    def with_root(self, root: Path) -> "CommandExecutionContext":
-        """
-        Make all paths absolute given a path to the workspace root.
-        """
-
-        def _expand_initializer(
-            init: str | tuple[str, dict[str, Any]],
-        ) -> str | tuple[str, dict[str, Any]]:
-            if isinstance(init, str):
-                return init
-            else:
-                name, args = init
-                args = {
-                    k: v.replace("%workspace", str(root))
-                    if isinstance(v, str)
-                    else v
-                    for k, v in args.items()
-                }
-                return (name, args)
-
-        return CommandExecutionContext(
-            modules=self.modules,
-            demo_files=[root / f for f in self.demo_files],
-            strategy_dirs=[root / d for d in self.strategy_dirs],
-            prompt_dirs=[root / d for d in self.prompt_dirs],
-            data_dirs=[root / d for d in self.data_dirs],
-            cache_root=None if self.cache_root is None else self.cache_root,
-            global_embeddings_cache_file=(
-                root / self.global_embeddings_cache_file
-            ),
-            init=[_expand_initializer(i) for i in self.init],
-            result_refresh_period=self.result_refresh_period,
-            status_refresh_period=self.status_refresh_period,
-            workspace_root=root,
-        )
-
-    def object_loader(
-        self,
-        *,
-        extra_objects: dict[str, Any] | None,
-    ) -> ObjectLoader:
-        return ObjectLoader(
-            strategy_dirs=self.strategy_dirs,
-            modules=self.modules,
-            extra_objects=extra_objects,
-            initializers=self.init,
-        )
-
-
 # Somehow, pyright sometimes infers the wrong variance for `T` in
 # `CommandResult` so we specify it manually.
 T = typing.TypeVar("T", covariant=True)
@@ -256,7 +123,7 @@ class Command[A, T](Protocol):
     def __call__(
         self,
         task: ta.TaskContext[CommandResult[T]],
-        exe: CommandExecutionContext,
+        exe: ExecutionContext,
         args: A,
     ) -> None:
         """
@@ -311,7 +178,7 @@ def command_name(cmd: Command[Any, Any]) -> str:
 def run_command[A, T](
     command: Command[A, T],
     args: A,
-    ctx: CommandExecutionContext,
+    ctx: ExecutionContext,
     dump_statuses: Path | None = None,
     dump_result: Path | None = None,
     dump_log: Path | None = None,
@@ -467,7 +334,7 @@ class TestCommandArgs:
 
 def test_command(
     task: ta.TaskContext[CommandResult[list[int]]],
-    exe: ta.CommandExecutionContext,
+    exe: ExecutionContext,
     args: TestCommandArgs,
 ):
     task.set_status("counting...")

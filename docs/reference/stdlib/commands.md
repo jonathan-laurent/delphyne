@@ -2,7 +2,7 @@
 
 ## Tasks and Commands
 
-::: delphyne.CommandExecutionContext
+::: delphyne.ExecutionContext
 
 ::: delphyne.stdlib.tasks.DEFAULT_STRATEGY_DIRS
 

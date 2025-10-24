@@ -15,7 +15,7 @@ def test_counting_command(delay: float = 1e-4):
     dp.run_command(
         ta.test_command,
         ta.TestCommandArgs(10, delay=delay),
-        dp.CommandExecutionContext(),
+        ta.ExecutionContext(),
         dump_statuses=TEMP_OUT_DIR / "counting_statuses.txt",
         dump_result=TEMP_OUT_DIR / "counting_result.yaml",
         dump_log=TEMP_OUT_DIR / "counting_log.txt",
@@ -36,7 +36,7 @@ def test_run_strategy():
             policy_args={},
             budget={},
         ),
-        dp.CommandExecutionContext(
+        ta.ExecutionContext(
             modules=[STRATEGY_FILE],
         ).with_root(TESTS_FOLDER),
         dump_statuses=TEMP_OUT_DIR / "strategy_statuses.txt",

@@ -85,7 +85,7 @@ def test_experiment_launcher(
     configs: Sequence[Any],
 ):
     root = Path(__file__).parent
-    context = dp.CommandExecutionContext(
+    context = dp.ExecutionContext(
         modules=["example_strategies"],
     ).with_root(root)
     experiment = dp.Experiment(

@@ -31,7 +31,7 @@ def make_experiment[C](
     # an absolute path with `absolute` first.
     workspace_root = Path(exp_file).absolute().parent.parent
     exp_name = Path(exp_file).stem
-    context = dp.CommandExecutionContext(
+    context = dp.ExecutionContext(
         modules=MODULES, demo_files=DEMO_FILES
     ).with_root(workspace_root)
     return Experiment(

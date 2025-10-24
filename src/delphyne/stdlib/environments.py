@@ -130,7 +130,7 @@ class ExampleDatabase:
     def __init__(
         self,
         *,
-        object_loader: ObjectLoader,
+        object_loader: ObjectLoader | None,
         global_embeddings_cache_file: Path | None = None,
         templates_manager: dp.AbstractTemplatesManager | None = None,
     ):
@@ -192,6 +192,10 @@ class ExampleDatabase:
             return
         demo_answer = demo.answers[0]
         answer = dm.translate_answer(demo_answer)
+        if self.object_loader is None:
+            raise ValueError(
+                "ExampleDatabase was not provided with an ObjectLoader."
+            )
         query = self.object_loader.load_query(demo.query, demo.args)
         example = Example(
             query=query,
@@ -521,7 +525,7 @@ class PolicyEnv:
     def __init__(
         self,
         *,
-        object_loader: ObjectLoader,
+        object_loader: ObjectLoader | None = None,
         prompt_dirs: Sequence[Path] = (),
         demonstration_files: Sequence[Path] = (),
         data_dirs: Sequence[Path] = (),

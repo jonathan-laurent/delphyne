@@ -49,7 +49,9 @@ class DemoFileFeedback:
 
 
 def check_demo_file(
-    file: Path, context: stdlib.CommandExecutionContext, workspace_root: Path
+    file: Path,
+    context: stdlib.ExecutionContext,
+    workspace_root: Path,
 ) -> DemoFileFeedback:
     # TODO: we should better report line numbers.
     demos_json = yaml.safe_load(open(file, "r").read())

@@ -31,7 +31,7 @@ class CommandSpec:
 
 def execute_command(
     task: ta.TaskContext[ta.CommandResult[Any]],
-    exe: ta.CommandExecutionContext,
+    exe: ta.ExecutionContext,
     workspace_root: Path,
     cmd: CommandSpec,
 ):
