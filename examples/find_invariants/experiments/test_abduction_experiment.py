@@ -1,4 +1,5 @@
 import code2inv_experiments as c2i
+import delphyne as dp
 
 configs = [
     c2i.AbductionConfig(
@@ -16,6 +17,9 @@ configs = [
 ]
 
 if __name__ == "__main__":
-    c2i.make_experiment(
-        c2i.AbductionConfig, configs, "test-output", __file__
+    dp.Experiment(
+        config_class=c2i.AbductionConfig,
+        context=dp.workspace_execution_context(__file__),
+        configs=configs,
+        output_dir=f"experiments/test-output/{dp.path_stem(__file__)}",
     ).run_cli()

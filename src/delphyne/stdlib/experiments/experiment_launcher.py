@@ -981,3 +981,20 @@ class ExperimentCLI:
         self.experiment.load().save_summary(
             ignore_missing=True, add_timing=add_timing
         )
+
+
+#####
+##### Convenience utilities
+#####
+
+
+def path_stem(path: Path | str) -> str:
+    """
+    Convenience function to get the stem of a path, which is useful to
+    automatically derive experiment names without importing `Path`.
+
+    Example usage:
+
+        experiment_name = dp.path_stem(__file__)
+    """
+    return Path(path).stem

@@ -1,8 +1,8 @@
 # Experiments
 
-::: delphyne.stdlib.experiments.experiment_launcher.Experiment
+::: delphyne.stdlib.Experiment
 
-::: delphyne.stdlib.experiments.experiment_launcher.ExperimentFun
+::: delphyne.stdlib.ExperimentConfig
 
 ::: delphyne.stdlib.experiments.experiment_launcher.ExperimentState
 

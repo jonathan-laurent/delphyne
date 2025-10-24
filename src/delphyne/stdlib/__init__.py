@@ -15,6 +15,7 @@ from delphyne.stdlib.execution_contexts import (
     ExecutionContext,
     load_execution_context,
     surrounding_workspace_dir,
+    workspace_execution_context,
 )
 from delphyne.stdlib.flags import (
     Flag,
@@ -97,4 +98,5 @@ from delphyne.stdlib.experiments.experiment_launcher import (
     Experiment,
     ExperimentConfig,
     WorkersSetup,
+    path_stem,
 )

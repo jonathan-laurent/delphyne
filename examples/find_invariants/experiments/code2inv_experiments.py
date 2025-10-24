@@ -4,39 +4,12 @@ Code2Inv Experiments
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from pathlib import Path
 
 import code2inv
 import delphyne as dp
 import delphyne.stdlib.commands as cmd
 
 BENCHS = code2inv.load_all_benchmarks()
-MODULES = ["abduct_and_saturate", "baseline"]
-DEMO_FILES = [Path(m) for m in MODULES]
-
-
-def make_experiment[C: dp.ExperimentConfig](
-    config_class: type[C],
-    configs: Sequence[C],
-    output_dir: str,
-    exp_file: str,
-) -> dp.Experiment[C]:
-    # The `exp_file` parameter is typically assigned to `__file__` in
-    # the caller, which can be either a relative or absolute path
-    # depending on how the script is invoked. Thus, we convert it to
-    # an absolute path with `absolute` first.
-    workspace_root = Path(exp_file).absolute().parent.parent
-    exp_name = Path(exp_file).stem
-    context = dp.ExecutionContext(
-        modules=MODULES, demo_files=DEMO_FILES
-    ).with_root(workspace_root)
-    return dp.Experiment(
-        config_class=config_class,
-        context=context,
-        configs=configs,
-        name=exp_name,
-        output_dir=Path("experiments") / output_dir / exp_name,
-    )
 
 
 @dataclass

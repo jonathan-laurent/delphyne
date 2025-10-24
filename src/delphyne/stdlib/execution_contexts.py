@@ -181,7 +181,7 @@ class ExecutionContext:
 
 
 def load_execution_context(
-    workspace_dir: Path, local: Path | None
+    workspace_dir: Path, local: Path | None = None
 ) -> ExecutionContext:
     """
     Load an execution context from a workspace directory.
@@ -267,3 +267,21 @@ def surrounding_workspace_dir(starting_dir: Path) -> Path | None:
             return current_dir
         current_dir = current_dir.parent
     return None
+
+
+def workspace_execution_context(
+    current_dir: Path | str,
+) -> ExecutionContext:
+    """
+    Load the execution context by looking for a `delphyne.yaml` file in
+    a parent directory.
+
+    This is a convenience wrapper that combines
+    `surrounding_workspace_dir` and `load_execution_context`.
+    """
+    if isinstance(current_dir, str):
+        current_dir = Path(current_dir)
+    workspace_dir = surrounding_workspace_dir(current_dir)
+    if workspace_dir is None:
+        raise ValueError("No delphyne.yaml found in parent directories.")
+    return load_execution_context(workspace_dir)
