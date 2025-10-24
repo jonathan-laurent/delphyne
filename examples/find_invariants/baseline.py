@@ -67,8 +67,7 @@ def prove_program_interactive_policy(
 ):
     model = dp.standard_model(model_name)
 
-    # `interact` branches twice per feedback cycle
-    sp = dfs(max_depth=2*(max_feedback_cycles+1))
+    sp = dfs(max_depth=max_feedback_cycles+1)
     if loop:
         sp = dp.loop() @ sp
     pp = dp.few_shot(model, temperature=temperature, max_requests=1)

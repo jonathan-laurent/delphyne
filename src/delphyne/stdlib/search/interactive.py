@@ -9,7 +9,7 @@ from typing import Any, Literal, overload
 
 import delphyne.core_and_base as dp
 from delphyne.stdlib import models as md
-from delphyne.stdlib.nodes import Branch, branch
+from delphyne.stdlib.nodes import Branch, branch, run
 from delphyne.stdlib.opaque import Opaque
 from delphyne.stdlib.queries import WrappedParseError
 
@@ -102,6 +102,13 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
         inner_policy_type: Ambient inner policy type. This information
             is not used at runtime but it can be provided to help type
             inference when necessary.
+
+    !!! note
+        This strategy issues normal `Branch` nodes for calls to `step`
+        but `Run` nodes for calls to `process` and tool calls. Thus, if
+        using `dfs` as a policy for example, the `max_depth` setting
+        corresponds to the number of conversation rounds (or one plus
+        the number of feedback cycles).
     """
 
     prefix: dp.AnswerPrefix = []
@@ -122,7 +129,7 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
             tc = resp.parsed.tool_calls
             for i, t in enumerate(tc):
                 assert tools is not None
-                tres = yield from branch(tools[type(t)](t))
+                tres = yield from run(tools[type(t)](t))
                 msg = dp.ToolResult(
                     "tool",
                     resp.answer.tool_calls[i],
@@ -146,7 +153,7 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
             prefix.append(msg)
             continue
 
-        res = yield from branch(process(ans, stats))
+        res = yield from run(process(ans, stats))
 
         # Case where the parsed answer cannot be processed.
         if isinstance(res, dp.Error):
