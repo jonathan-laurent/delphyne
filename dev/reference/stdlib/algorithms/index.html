@@ -2181,6 +2181,24 @@ inference when necessary.</p>
           </tr>
       </tbody>
     </table>
+        <div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This strategy issues normal <a class="autorefs autorefs-internal" title="Branch
+
+
+  
+      dataclass
+  " href="../effects/#delphyne.stdlib.nodes.Branch"><code>Branch</code></a> nodes for calls to <code>step</code>
+but <a class="autorefs autorefs-internal" title="Run
+
+
+  
+      dataclass
+  " href="../effects/#delphyne.stdlib.nodes.Run"><code>Run</code></a> nodes for calls to <code>process</code> and tool calls. Thus, if
+using <a class="autorefs autorefs-internal" title="dfs" href="#delphyne.stdlib.search.dfs.dfs"><code>dfs</code></a> as a policy for example, the <code>max_depth</code> setting
+corresponds to the number of conversation rounds (or one plus
+the number of feedback cycles).</p>
+</div>
 
 
             <details class="quote">
@@ -2319,7 +2337,14 @@ inference when necessary.</p>
 <span class="normal">193</span>
 <span class="normal">194</span>
 <span class="normal">195</span>
-<span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">interact</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">T</span><span class="p">:</span> <span class="n">md</span><span class="o">.</span><span class="n">AbstractTool</span><span class="p">[</span><span class="n">Any</span><span class="p">]](</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">interact</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">T</span><span class="p">:</span> <span class="n">md</span><span class="o">.</span><span class="n">AbstractTool</span><span class="p">[</span><span class="n">Any</span><span class="p">]](</span>
     <span class="n">step</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span>
         <span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">AnswerPrefix</span><span class="p">,</span> <span class="n">InteractStats</span><span class="p">],</span>
         <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">Response</span><span class="p">[</span><span class="n">A</span> <span class="o">|</span> <span class="n">WrappedParseError</span><span class="p">,</span> <span class="n">T</span><span class="p">]],</span>
@@ -2362,6 +2387,13 @@ inference when necessary.</p>
 <span class="sd">        inner_policy_type: Ambient inner policy type. This information</span>
 <span class="sd">            is not used at runtime but it can be provided to help type</span>
 <span class="sd">            inference when necessary.</span>
+
+<span class="sd">    !!! note</span>
+<span class="sd">        This strategy issues normal `Branch` nodes for calls to `step`</span>
+<span class="sd">        but `Run` nodes for calls to `process` and tool calls. Thus, if</span>
+<span class="sd">        using `dfs` as a policy for example, the `max_depth` setting</span>
+<span class="sd">        corresponds to the number of conversation rounds (or one plus</span>
+<span class="sd">        the number of feedback cycles).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">prefix</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerPrefix</span> <span class="o">=</span> <span class="p">[]</span>
@@ -2382,7 +2414,7 @@ inference when necessary.</p>
             <span class="n">tc</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">parsed</span><span class="o">.</span><span class="n">tool_calls</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tc</span><span class="p">):</span>
                 <span class="k">assert</span> <span class="n">tools</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                <span class="n">tres</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">branch</span><span class="p">(</span><span class="n">tools</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">t</span><span class="p">)](</span><span class="n">t</span><span class="p">))</span>
+                <span class="n">tres</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">run</span><span class="p">(</span><span class="n">tools</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">t</span><span class="p">)](</span><span class="n">t</span><span class="p">))</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">ToolResult</span><span class="p">(</span>
                     <span class="s2">&quot;tool&quot;</span><span class="p">,</span>
                     <span class="n">resp</span><span class="o">.</span><span class="n">answer</span><span class="o">.</span><span class="n">tool_calls</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
@@ -2406,7 +2438,7 @@ inference when necessary.</p>
             <span class="n">prefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">continue</span>
 
-        <span class="n">res</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">branch</span><span class="p">(</span><span class="n">process</span><span class="p">(</span><span class="n">ans</span><span class="p">,</span> <span class="n">stats</span><span class="p">))</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">run</span><span class="p">(</span><span class="n">process</span><span class="p">(</span><span class="n">ans</span><span class="p">,</span> <span class="n">stats</span><span class="p">))</span>
 
         <span class="c1"># Case where the parsed answer cannot be processed.</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">dp</span><span class="o">.</span><span class="n">Error</span><span class="p">):</span>
