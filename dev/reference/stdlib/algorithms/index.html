@@ -2623,7 +2623,13 @@ message that can contain several tool call requests).</p>
 
         <p>The Standard Depth-First Search Algorithm.</p>
 <p>Whenever a branching node is encountered, branching candidates are
-lazily enumerated and the corresponding child recursively searched.</p>
+lazily enumerated and the corresponding child recursively searched.
+<a class="autorefs autorefs-internal" title="Run
+
+
+  
+      dataclass
+  " href="../effects/#delphyne.stdlib.nodes.Run"><code>Run</code></a> nodes do not count towards the depth.</p>
 
 
 <p><span class="doc-section-title">Attributes:</span></p>
@@ -2710,7 +2716,15 @@ each branching node.</p>
 <span class="normal">55</span>
 <span class="normal">56</span>
 <span class="normal">57</span>
-<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">dfs</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="n">tree</span><span class="p">:</span> <span class="n">Tree</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span> <span class="o">|</span> <span class="n">Skippable</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
@@ -2723,6 +2737,7 @@ each branching node.</p>
 
 <span class="sd">    Whenever a branching node is encountered, branching candidates are</span>
 <span class="sd">    lazily enumerated and the corresponding child recursively searched.</span>
+<span class="sd">    `Run` nodes do not count towards the depth.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        max_depth (optional): maximum number of branching nodes</span>
@@ -2741,6 +2756,13 @@ each branching node.</p>
             <span class="p">)(</span><span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span>
         <span class="k">case</span> <span class="n">Fail</span><span class="p">():</span>
             <span class="k">pass</span>
+        <span class="k">case</span> <span class="n">Run</span><span class="p">(</span><span class="n">cands</span><span class="p">):</span>
+            <span class="n">cand</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">cands</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">cand</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">yield from</span> <span class="n">dfs</span><span class="p">(</span>
+                    <span class="n">max_depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">,</span>
+                    <span class="n">max_branching</span><span class="o">=</span><span class="n">max_branching</span><span class="p">,</span>
+                <span class="p">)(</span><span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">cand</span><span class="o">.</span><span class="n">tracked</span><span class="p">),</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span>
         <span class="k">case</span> <span class="n">Branch</span><span class="p">(</span><span class="n">cands</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">max_depth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">max_depth</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">return</span>
@@ -2797,15 +2819,7 @@ parallel.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/search/dfs.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">69</span>
 <span class="normal">70</span>
 <span class="normal">71</span>
 <span class="normal">72</span>
@@ -2821,7 +2835,19 @@ parallel.</p>
 <span class="normal">82</span>
 <span class="normal">83</span>
 <span class="normal">84</span>
-<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">par_dfs</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="n">tree</span><span class="p">:</span> <span class="n">Tree</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
@@ -2839,6 +2865,10 @@ parallel.</p>
             <span class="k">yield</span> <span class="n">Solution</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="k">case</span> <span class="n">Fail</span><span class="p">():</span>
             <span class="k">pass</span>
+        <span class="k">case</span> <span class="n">Run</span><span class="p">():</span>
+            <span class="n">cand</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">cands</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">cand</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">yield from</span> <span class="n">par_dfs</span><span class="p">()(</span><span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">cand</span><span class="o">.</span><span class="n">tracked</span><span class="p">),</span> <span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span>
         <span class="k">case</span> <span class="n">Branch</span><span class="p">(</span><span class="n">cands</span><span class="p">):</span>
             <span class="n">cands</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">cands</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
             <span class="k">yield from</span> <span class="n">Stream</span><span class="o">.</span><span class="n">parallel</span><span class="p">(</span>
@@ -4118,7 +4148,13 @@ towards increasing the depth.</p>
 <span class="normal">157</span>
 <span class="normal">158</span>
 <span class="normal">159</span>
-<span class="normal">160</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@search_policy</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">best_first_search</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Factor</span> <span class="o">|</span> <span class="n">Value</span> <span class="o">|</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
     <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
@@ -4185,6 +4221,12 @@ towards increasing the depth.</p>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">confidence</span> <span class="o">*=</span> <span class="n">penalty_fun</span><span class="p">(</span><span class="nb">eval</span><span class="o">.</span><span class="n">tracked</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
                 <span class="k">yield from</span> <span class="n">push_fresh_node</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="n">confidence</span><span class="p">,</span> <span class="n">depth</span><span class="p">)</span>
+            <span class="k">case</span> <span class="n">Run</span><span class="p">():</span>
+                <span class="n">cand</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">cands</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">policy</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">cand</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">yield from</span> <span class="n">push_fresh_node</span><span class="p">(</span>
+                        <span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">cand</span><span class="o">.</span><span class="n">tracked</span><span class="p">),</span> <span class="n">confidence</span><span class="p">,</span> <span class="n">depth</span>
+                    <span class="p">)</span>
             <span class="k">case</span> <span class="n">Branch</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">max_depth</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="n">max_depth</span><span class="p">:</span>
                     <span class="k">return</span>
