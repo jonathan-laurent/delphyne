@@ -2,9 +2,9 @@
 Miscellaneous utilities for Delphyne's standard library.
 """
 
-from collections.abc import Callable, Sequence
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Iterable, Literal, Never, cast
+from typing import Literal, Never
 
 import delphyne.core_and_base as dp
 from delphyne.core_and_base import Opaque
@@ -12,10 +12,9 @@ from delphyne.stdlib.computations import Compute, elim_compute
 from delphyne.stdlib.environments import PolicyEnv
 from delphyne.stdlib.flags import Flag, FlagQuery, elim_flag, get_flag
 from delphyne.stdlib.nodes import Branch, branch
-from delphyne.stdlib.policies import Policy, PromptingPolicy, SearchPolicy
+from delphyne.stdlib.policies import Policy, PromptingPolicy
 from delphyne.stdlib.search.dfs import dfs
 from delphyne.stdlib.strategies import strategy
-from delphyne.stdlib.streams import Stream
 
 
 @strategy(name="const")
@@ -82,93 +81,6 @@ def ambient[F](policy: F) -> F:
     sub-policy (or as a sub-prompting policy).
     """
     return policy
-
-
-type _AnyPolicy = PromptingPolicy | SearchPolicy[Any] | Policy[Any, Any]
-
-
-#####
-##### Sequencing
-#####
-
-
-def sequence_prompting_policies(
-    policies: Iterable[PromptingPolicy], *, stop_on_reject: bool = True
-) -> PromptingPolicy:
-    def policy[T](
-        query: dp.AttachedQuery[T], env: PolicyEnv
-    ) -> dp.StreamGen[T]:
-        yield from Stream.sequence(
-            (pp(query, env) for pp in policies), stop_on_reject=stop_on_reject
-        )
-
-    return PromptingPolicy(policy)
-
-
-def sequence_search_policies[N: dp.Node](
-    policies: Iterable[SearchPolicy[N]], *, stop_on_reject: bool = True
-) -> SearchPolicy[N]:
-    def policy[T](
-        tree: dp.Tree[N, Any, T], env: PolicyEnv, policy: Any
-    ) -> dp.StreamGen[T]:
-        yield from Stream.sequence(
-            (sp(tree, env, policy) for sp in policies),
-            stop_on_reject=stop_on_reject,
-        )
-
-    return SearchPolicy(policy)
-
-
-def sequence_policies[N: dp.Node, P](
-    policies: Iterable[Policy[N, P]], *, stop_on_reject: bool = True
-) -> Policy[N, P]:
-    def aux[T](tree: dp.Tree[N, Any, T], env: PolicyEnv) -> dp.StreamGen[T]:
-        yield from Stream.sequence(
-            (p(tree, env) for p in policies),
-            stop_on_reject=stop_on_reject,
-        )
-
-    return Policy(aux)
-
-
-#####
-##### Parallel combination
-#####
-
-
-def parallel_prompting_policies(
-    policies: Sequence[PromptingPolicy],
-) -> PromptingPolicy:
-    def policy[T](
-        query: dp.AttachedQuery[T], env: PolicyEnv
-    ) -> dp.StreamGen[T]:
-        yield from Stream.parallel([pp(query, env) for pp in policies])
-
-    return PromptingPolicy(policy)
-
-
-def parallel_search_policies[N: dp.Node](
-    policies: Sequence[SearchPolicy[N]],
-) -> SearchPolicy[N]:
-    def policy[T](
-        tree: dp.Tree[N, Any, T], env: PolicyEnv, policy: Any
-    ) -> dp.StreamGen[T]:
-        yield from Stream.parallel([sp(tree, env, policy) for sp in policies])
-
-    return SearchPolicy(policy)
-
-
-def parallel_policies[N: dp.Node, P](
-    policies: Sequence[Policy[N, P]],
-) -> Policy[N, P]:
-    @dp.search_policy
-    def search[T](
-        tree: dp.Tree[N, Any, T], env: PolicyEnv, policy: Any
-    ) -> dp.StreamGen[T]:
-        assert policy is None
-        yield from Stream.parallel([p(tree, env) for p in policies])
-
-    return search() & cast(P, None)
 
 
 #####
