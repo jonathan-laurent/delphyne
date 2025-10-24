@@ -128,6 +128,12 @@ type Chat = tuple[ChatMessage, ...]
 # We specifically require tuples so that Chat is hashable.
 
 
+type ReasoningEffort = Literal["minimal", "low", "medium", "high"]
+"""
+Reasoning effort for reasoning-capable models.
+"""
+
+
 class RequestOptions(typing.TypedDict, total=False):
     """
     LLM request options, inspired from the OpenAI chat API.
@@ -158,7 +164,7 @@ class RequestOptions(typing.TypedDict, total=False):
     """
 
     model: str
-    reasoning_effort: Literal["minimal", "low", "medium", "high"]
+    reasoning_effort: ReasoningEffort
     tool_choice: Literal["auto", "none", "required"]
     temperature: float
     max_completion_tokens: int

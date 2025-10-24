@@ -255,6 +255,13 @@ def search_policy[N: Node, **A](
     return parametric
 
 
+nonparametric_search_policy = SearchPolicy
+"""
+Decorator similar to `search_policy`, but for non-parametric search
+policies.
+"""
+
+
 #####
 ##### Prompting Policies
 #####

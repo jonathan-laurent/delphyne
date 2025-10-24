@@ -62,6 +62,7 @@ from delphyne.stdlib.search.classification_based import (
 from delphyne.stdlib.search.dfs import (
     dfs,
     par_dfs,
+    exec,
 )
 from delphyne.stdlib.search.interactive import (
     InteractStats,

@@ -125,8 +125,8 @@ def _get_pricing(model_name: str) -> md.ModelPricing | None:
 
 def _openai_compatible_model(
     model: str,
-    *,
     options: md.RequestOptions | None = None,
+    *,
     pricing: md.ModelPricing | None | Literal["auto"] = "auto",
     model_class: str | None = None,
     base_url: str,
@@ -167,8 +167,8 @@ def _openai_compatible_model(
 
 def openai_model(
     model: OpenAIModelName | str,
-    *,
     options: md.RequestOptions | None = None,
+    *,
     pricing: md.ModelPricing | None | Literal["auto"] = "auto",
     model_class: str | None = None,
 ):
@@ -189,8 +189,8 @@ def openai_model(
 
 def mistral_model(
     model: MistralModelName | str,
-    *,
     options: md.RequestOptions | None = None,
+    *,
     pricing: md.ModelPricing | None | Literal["auto"] = "auto",
     model_class: str | None = None,
 ):
@@ -211,8 +211,8 @@ def mistral_model(
 
 def deepseek_model(
     model: DeepSeekModelName | str,
-    *,
     options: md.RequestOptions | None = None,
+    *,
     pricing: md.ModelPricing | None | Literal["auto"] = "auto",
     model_class: str | None = None,
 ):
@@ -233,8 +233,8 @@ def deepseek_model(
 
 def gemini_model(
     model: GeminiModelName | str,
-    *,
     options: md.RequestOptions | None = None,
+    *,
     pricing: md.ModelPricing | None | Literal["auto"] = "auto",
     model_class: str | None = None,
 ):
@@ -255,8 +255,8 @@ def gemini_model(
 
 def standard_model(
     model: StandardModelName | str,
-    *,
     options: md.RequestOptions | None = None,
+    *,
     pricing: md.ModelPricing | None | Literal["auto"] = "auto",
     model_class: str | None = None,
 ) -> OpenAICompatibleModel:

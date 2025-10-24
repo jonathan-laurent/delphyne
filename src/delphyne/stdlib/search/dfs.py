@@ -2,6 +2,7 @@
 Depth-First Search Algorithm
 """
 
+import delphyne.stdlib.policies as pol
 from delphyne.core.streams import Solution, StreamGen
 from delphyne.core.trees import Success, Tree
 from delphyne.stdlib.environments import PolicyEnv
@@ -80,5 +81,27 @@ def par_dfs[P, T](
             yield from Stream.parallel(
                 [par_dfs()(tree.child(a.tracked), env, policy) for a in cands]
             )
+        case _:
+            unsupported_node(tree.node)
+
+
+@pol.nonparametric_search_policy
+def exec[P, T](
+    tree: Tree[Fail | Skippable, P, T], env: PolicyEnv, policy: P
+) -> StreamGen[T]:
+    """
+    Degenerate version of DFS in the absence of branching nodes.
+
+    Since ther is no branching, this amounts to simply executing a
+    program.
+    """
+
+    match tree.node:
+        case Success(x):
+            yield Solution(x)
+        case Skippable():
+            yield from exec(tree.child(None), env, policy)
+        case Fail():
+            pass
         case _:
             unsupported_node(tree.node)
