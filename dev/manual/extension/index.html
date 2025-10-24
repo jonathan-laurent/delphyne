@@ -1523,27 +1523,27 @@
 </ol>
 <p>The <code>Delphyne: Show Root Directory for Current File</code> command can be used to show the current project root. The rules above allow browsing and editing multiple Delphyne projects within a single VSCode workspace.</p>
 <h3 id="config">Global and Local Configuration</h3>
-<p>Both <a href="#editing-demonstrations">demonstration</a> and <a href="#commands">command</a> files are evaluated in the context of a given <a class="autorefs autorefs-internal" title="CommandExecutionContext
+<p>Both <a href="#editing-demonstrations">demonstration</a> and <a href="#commands">command</a> files are evaluated in the context of a given <a class="autorefs autorefs-internal" title="ExecutionContext
 
 
   
       dataclass
-  " href="../../reference/stdlib/commands/#delphyne.CommandExecutionContext">configuration record</a>, which specifies information such as the location and names of Python modules in which strategies can be found, the location of prompting templates and demonstration files, etc... This information can be stored in the project's <code>delphyne.yaml</code> file, whose content may look like:</p>
+  " href="../../reference/stdlib/commands/#delphyne.ExecutionContext">configuration record</a>, which specifies information such as the location and names of Python modules in which strategies can be found, the location of prompting templates and demonstration files, etc... This information can be stored in the project's <code>delphyne.yaml</code> file, whose content may look like:</p>
 <div class="highlight"><pre><span></span><code><span class="nt">strategy_dirs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;.&quot;</span><span class="p p-Indicator">]</span>
 <span class="nt">modules</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;module_1&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;module_2&quot;</span><span class="p p-Indicator">]</span>
 <span class="nt">demo_files</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;demo_1&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;demo_2&quot;</span><span class="p p-Indicator">]</span>
 </code></pre></div>
-<p>See the <a class="autorefs autorefs-internal" title="CommandExecutionContext
+<p>See the <a class="autorefs autorefs-internal" title="ExecutionContext
 
 
   
       dataclass
-  " href="../../reference/stdlib/commands/#delphyne.CommandExecutionContext">Reference</a> for the list and description of all available settings. All settings have default values so empty <code>delphyne.yaml</code> files are allowed (or no file at all if the project root coincides with the VSCode workspace). In addition, any subset of global settings from the <code>delphyne.yaml</code> file can be locally overriden in individual demonstration or command files by prefixing it with a <a class="autorefs autorefs-internal" title="CommandExecutionContext
+  " href="../../reference/stdlib/commands/#delphyne.ExecutionContext">Reference</a> for the list and description of all available settings. All settings have default values so empty <code>delphyne.yaml</code> files are allowed (or no file at all if the project root coincides with the VSCode workspace). In addition, any subset of global settings from the <code>delphyne.yaml</code> file can be locally overriden in individual demonstration or command files by prefixing it with a <a class="autorefs autorefs-internal" title="ExecutionContext
 
 
   
       dataclass
-  " href="../../reference/stdlib/commands/#delphyne.CommandExecutionContext"><code>@config</code> comment block</a>.</p>
+  " href="../../reference/stdlib/commands/#delphyne.ExecutionContext"><code>@config</code> comment block</a>.</p>
 <h2 id="editing-demonstrations">Editing Demonstrations</h2>
 <p>Once activated, the Delphyne extension recognizes demonstration files via their extension <code>*.demo.yaml</code>. A proper YAML schema is automatically loaded and syntax errors are displayed within the editor. To quickly add a new demonstration, you can use the <code>demo</code> snippet (by typing <code>demo</code> and clicking on <span class="keys"><kbd class="key-tab">Tab</kbd></span>). All available snippets are listed in <a href="https://github.com/jonathan-laurent/delphyne/blob/main/vscode-ui/snippets.json"><code>vscode-ui/snippets.json</code></a>.</p>
 <p>To evaluate a demonstration, put your cursor anywhere in its scope. A light bulb should then appear, suggesting that code actions are available. Use <span class="keys"><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-period">.</kbd></span> to see available code actions and select <code>Evaluate Demonstration</code>. Diagnostics should then appear, possibly after a moment of waiting (in which case a pending task should be displayed in Delphyne's <code>Tasks</code> view). If the demonstration was successfully evaluated, an <code>info</code> diagnostic should be shown for every test. Otherwise, warnings and errors can be displayed. These diagnostics will stay displayed until the demo file is closed or the demonstration gets updated. Note that adding comments or modifying other demonstrations does <em>not</em> invalidate them.</p>
