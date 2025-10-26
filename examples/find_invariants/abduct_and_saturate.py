@@ -9,11 +9,11 @@ import itertools
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-import delphyne as dp
-from delphyne import Branch, Compute, Fail, Strategy, strategy
-
 import why3_utils as why3
 from why3_utils import File, Formula
+
+import delphyne as dp
+from delphyne import Branch, Compute, Fail, Strategy, strategy
 
 # fmt: off
 
@@ -198,14 +198,14 @@ def prove_program_by_saturation(
     *,
     model_name: str | None = None,
     model_cycle: Sequence[tuple[str, int]] | None = None,
+    temperature: float | None = None,
     num_completions: int = 8,
     max_rollout_depth: int = 3,
     max_requests_per_attempt: int = 4,
-    max_retries_per_step: int = 8,
-    max_propagation_steps: int = 4,
-    max_candidates: int = 12,
-    max_proved: int = 8,
-    temperature: float | None = None,
+    max_candidates: int | None = 64,
+    max_proved: int | None = 64,
+    max_retries_per_step: int | None = None,
+    max_propagation_steps: int | None = None,
 ):
     """
     A policy that uses advanced saturation-based search, as featured and
@@ -230,7 +230,7 @@ def prove_program_by_saturation(
     sp = dp.with_budget(per_attempt) @ dp.abduct_and_saturate(
         log_steps="info",
         max_rollout_depth=max_rollout_depth,
-        max_raw_suggestions_per_step=3*num_completions,
+        max_raw_suggestions_per_step=8*num_completions,
         max_reattempted_candidates_per_propagation_step=max_retries_per_step,
         max_consecutive_propagation_steps=max_propagation_steps,
         remember_disproved=False,

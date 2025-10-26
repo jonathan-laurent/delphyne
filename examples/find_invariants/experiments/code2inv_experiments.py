@@ -6,6 +6,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 
 import code2inv
+
 import delphyne as dp
 import delphyne.stdlib.commands as cmd
 
@@ -20,8 +21,6 @@ class AbductionConfig:
     num_completions: int
     max_requests_per_attempt: int
     max_dollar_budget: float
-    max_retries_per_step: int
-    max_propagation_steps: int
     seed: int
 
     def instantiate(self):
