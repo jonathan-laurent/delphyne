@@ -121,9 +121,9 @@ def split_final_assertion(prog: File) -> tuple[File, Formula]:
     import re
 
     # Pattern to match "assert { <formula> }" with flexible whitespace
-    pattern = r"assert\s*\{\s*([^}]+)\s*\}"
+    pattern = r"^\s*assert\s*\{\s*([^}]+?)\s*\}"
 
-    matches = list(re.finditer(pattern, prog))
+    matches = list(re.finditer(pattern, prog, re.MULTILINE))
 
     # Ensure there is exactly one match
     if len(matches) != 1:
@@ -135,10 +135,8 @@ def split_final_assertion(prog: File) -> tuple[File, Formula]:
     match = matches[0]
     formula = match.group(1).strip()
 
-    # Replace the assert statement with "assert { true }"
-    modified_prog = (
-        prog[: match.start()] + "assert { true }" + prog[match.end() :]
-    )
+    # Replace the formula inside the assert with "true"
+    modified_prog = prog[:match.start(1)] + "true" + prog[match.end(1):]
 
     return modified_prog, formula
 
