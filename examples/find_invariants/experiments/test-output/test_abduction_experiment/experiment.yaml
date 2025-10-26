@@ -1,7 +1,7 @@
-name: test_abduction_experiment
+name: null
 description: null
 configs:
-  93b20c74-94c6-4651-9166-b3b9dbf70532:
+  a3d9af83-8590-4aef-aecd-436dae98438b:
     params:
       bench_name: '1'
       model_cycle:
@@ -13,13 +13,11 @@ configs:
       num_completions: 4
       max_requests_per_attempt: 4
       max_dollar_budget: 0.1
-      max_retries_per_step: 6
-      max_propagation_steps: 2
       seed: 0
     status: done
-    start_time: 2025-10-06 22:15:46.829928
-    end_time: 2025-10-06 22:15:50.871770
-  392b5096-0a7b-4fdb-8c2c-8ab55186c039:
+    start_time: 2025-10-26 10:47:22.626614
+    end_time: 2025-10-26 10:47:41.903907
+  f8aec7f9-2b3a-44f6-bb89-70411a8d1339:
     params:
       bench_name: '7'
       model_cycle:
@@ -31,9 +29,7 @@ configs:
       num_completions: 4
       max_requests_per_attempt: 4
       max_dollar_budget: 0.1
-      max_retries_per_step: 6
-      max_propagation_steps: 2
       seed: 0
     status: done
-    start_time: 2025-10-06 22:15:46.829960
-    end_time: 2025-10-06 22:15:51.022638
+    start_time: 2025-10-26 10:47:22.629503
+    end_time: 2025-10-26 10:47:43.504051
