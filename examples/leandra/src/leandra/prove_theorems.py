@@ -30,11 +30,12 @@ def prove_theorem(
     LeanProof,
 ]:
     if (yield from dp.get_flag(ProofTechniqueFlag)) == "direct":
-        # ret = yield from dp.compute(run_lean_command)(theorem)
-        assert False
-    sketch, goals = yield from dp.branch(
-        sketch_proof(theorem).using(lambda p: p.sketch, ProveTheoremIP)
-    )
+        sketch, goals = yield from direct_proof(theorem)
+    else:
+        sketch, goals = yield from dp.branch(
+            sketch_proof(theorem).using(lambda p: p.sketch, ProveTheoremIP)
+        )
+    # Even an empty sketch results in one goal.
     assert goals
     subproofs = yield from dp.join(
         [fill_hole(theorem, sketch, i, goal) for i, goal in enumerate(goals)]
@@ -53,12 +54,23 @@ def prove_theorem(
     return full_proof
 
 
-type Goals = Sequence[str]
-
-
 @dataclass
 class ProofTechniqueFlag(dp.FlagQuery[Literal["sketch", "direct"]]):
     pass
+
+
+type Goals = Sequence[str]
+
+
+def direct_proof(
+    theorem: LeanTheorem,
+) -> Strategy[Compute, "ProveTheoremIP", tuple[ProofSketch, Goals]]:
+    sketch = ProofSketch(steps=(), comment=None)
+    compiled = compile_sketch(theorem, sketch, [None])
+    response = yield from dp.compute(run_lean_command)(compiled)
+    assert not _has_errors(response)
+    assert len(response.sorries) == 1
+    return sketch, [response.sorries[0].goal]
 
 
 #####
