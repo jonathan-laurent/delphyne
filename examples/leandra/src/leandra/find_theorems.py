@@ -26,7 +26,7 @@ Number of hits showed in the output of the Loogle tool.
 
 
 @dataclass
-class TheoremRequest:
+class TheoremRequest(dp.AbstractTool[loogle.LoogleHit | None]):
     """
     Request for finding a particular theorem.
 
@@ -119,8 +119,6 @@ def unique_loogle_hit_or_fail(
 ##### Policies
 #####
 
-# fmt: on
-
 
 @dataclass
 class FindTheoremIP:
@@ -133,12 +131,13 @@ class FindTheoremIP:
 def find_theorem_policy(
     model_name: str = "gpt-5-mini",
     effort: dp.ReasoningEffort = "low",
-    num_rounds: int = 3,
+    max_requests: int = 3,
 ):
     model = dp.standard_model(model_name, {"reasoning_effort": effort})
     ip = FindTheoremIP(
         step=dp.few_shot(model),
         process=dp.exec @ dp.elim_compute() & None,
-        loogle=dp.exec @ dp.elim_compute() & None,
-    )
-    return (dp.dfs() @ dp.elim_compute()) & ip
+        loogle=dp.exec @ dp.elim_compute() & None)
+    requests_limit = dp.BudgetLimit({dp.NUM_REQUESTS: max_requests})
+    sp = dp.with_budget(requests_limit) @ dp.dfs() @ dp.elim_compute()
+    return sp & ip

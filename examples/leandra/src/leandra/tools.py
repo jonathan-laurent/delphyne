@@ -6,8 +6,8 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
-import lean_interact as li  # type: ignore
-import lean_interact.interface as li_intf  # type: ignore
+import lean_interact as li
+import lean_interact.interface as li_intf
 
 DEFAULT_MEMORY_HARD_LIMIT_MB = 4096
 DEFAULT_TIMEOUT_IN_SECONDS = 5.0

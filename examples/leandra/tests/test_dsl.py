@@ -70,13 +70,14 @@ def test_compile(input: str, num_proofs: int, expected: str | None):
 
     from delphyne.utils.yaml import load_yaml
 
-    from leandra.dsl import ProofSketch, compile_dsl
+    from leandra.dsl import ProofSketch, compile_sketch
 
     input = textwrap.dedent(input).strip()
     thm = "theorem my_theorem: 1 + 1 = 2 := by sorry"
     sketch = load_yaml(ProofSketch, input)
-    res = compile_dsl(thm, sketch, num_proofs * [None])
-    res_with_proofs = compile_dsl(thm, sketch, num_proofs * ["sorry"])
+    assert num_proofs == sketch.num_holes()
+    res = compile_sketch(thm, sketch, num_proofs * [None])
+    res_with_proofs = compile_sketch(thm, sketch, num_proofs * ["sorry"])
     print()
     print(res)
     print()

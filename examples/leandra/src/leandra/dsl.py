@@ -43,6 +43,13 @@ class ProofSketch:
     steps: Sequence[ProofSketchStep] = ()
     comment: str | None = None
 
+    def num_holes(self) -> int:
+        """
+        Return the number of holes (i.e., unproven subgoals) in this
+        proof sketch.
+        """
+        return _num_holes(self.steps)
+
 
 @dataclass
 class Define:
@@ -69,7 +76,7 @@ class Suppose:
 #####
 
 
-def compile_dsl(
+def compile_sketch(
     theorem: LeanTheorem,
     sketch: ProofSketch,
     proofs: Sequence[LeanProof | None],
@@ -143,6 +150,19 @@ def compile_dsl(
     assert not cur_proofs, "Too many proofs provided."
 
     return "\n".join(lines)
+
+
+def _num_holes(sketch: Sequence[ProofSketchStep]) -> int:
+    count = 0
+    for step in sketch:
+        match step:
+            case Prove():
+                count += 1
+            case Suppose(do=do_steps):
+                count += _num_holes(do_steps)
+            case Define():
+                pass
+    return count + 1
 
 
 #####
