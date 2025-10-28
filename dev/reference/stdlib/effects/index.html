@@ -2829,7 +2829,7 @@ over elements of an opaque space.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">cands</span><span class="p">:</span> <span class="n">OpaqueSpace</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
-    <span class="n">meta</span><span class="p">:</span> <span class="n">FromPolicy</span><span class="p">[</span><span class="n">NodeMeta</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="n">FromPolicy</span><span class="p">[</span><span class="n">NodeMeta</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
 
     <span class="nd">@override</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">navigate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Navigation</span><span class="p">:</span>
@@ -2874,7 +2874,7 @@ over elements of an opaque space.</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">branch</span><span class="p">(</span>
     <span class="n">cands</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.branch[T]">T</span></span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">meta</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a></span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Branch
 
@@ -2885,7 +2885,7 @@ over elements of an opaque space.</p>
 </code></pre></div><div class="doc-signature highlight"><pre><span></span><code><span class="nf">branch</span><span class="p">(</span>
     <span class="n">cands</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.branch[T]">T</span></span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">meta</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a></span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">return_ref</span><span class="p">:</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="kc">True</span><span class="p">],</span>
     <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Branch
@@ -2903,7 +2903,7 @@ over elements of an opaque space.</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">branch</span><span class="p">(</span>
     <span class="n">cands</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.branch[T]">T</span></span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">meta</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a></span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">return_ref</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.branch[P]">P</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Branch
@@ -2957,7 +2957,7 @@ or a strategy via the <code>using</code> method.</p>
                 <code>meta</code>
             </td>
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.nodes.branch[P]">P</span>], <a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a>] | None</code>
+                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.nodes.branch[P]">P</span>], <a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a> | None]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2966,7 +2966,7 @@ arbitrary metadata accessible to search policies.</p>
               </div>
             </td>
             <td>
-                  <code>None</code>
+                  <code>lambda _: None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -3048,7 +3048,7 @@ space of candidates along with the chosen element.</p>
 <span class="normal">187</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">branch</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="n">cands</span><span class="p">:</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">meta</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">NodeMeta</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">NodeMeta</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">return_ref</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">TypedSpaceElementRef</span><span class="p">[</span><span class="n">T</span><span class="p">]]]:</span>
@@ -3189,7 +3189,7 @@ performed (policies can choose to disregard this hint).</p>
 <div class="doc-signature highlight"><pre><span></span><code><span class="nf">run</span><span class="p">(</span>
     <span class="n">cands</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.run[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.run[T]">T</span></span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">meta</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.run[P]">P</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.run[P]">P</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a></span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">inner_policy_type</span><span class="p">:</span> <span class="n"><span title="type">type</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.run[P]">P</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Run
 
@@ -3243,7 +3243,7 @@ or a strategy via the <code>using</code> method.</p>
                 <code>meta</code>
             </td>
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.nodes.run[P]">P</span>], <a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a>] | None</code>
+                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.nodes.run[P]">P</span>], <a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a> | None]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -3252,7 +3252,7 @@ arbitrary metadata accessible to search policies.</p>
               </div>
             </td>
             <td>
-                  <code>None</code>
+                  <code>lambda _: None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -3303,7 +3303,7 @@ inference when necessary.</p>
 <span class="normal">229</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="n">cands</span><span class="p">:</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">meta</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">NodeMeta</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">NodeMeta</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">inner_policy_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">P</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Run</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5494,7 +5494,7 @@ acceptable.</p>
                     <span class="p">)</span>
 
             <span class="k">return</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span> <span class="o">|</span> <span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
-                <span class="n">Branch</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">eval</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">branch_child</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">ref</span>
+                <span class="n">Branch</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">eval</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="kc">None</span><span class="p">),</span> <span class="n">branch_child</span><span class="p">,</span> <span class="n">tree</span><span class="o">.</span><span class="n">ref</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">tree</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">node</span><span class="p">,</span> <span class="n">transform</span><span class="p">)</span>
 
@@ -5576,7 +5576,7 @@ node features a sequence of embedded trees.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">subs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">EmbeddedTree</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
-    <span class="n">meta</span><span class="p">:</span> <span class="n">FromPolicy</span><span class="p">[</span><span class="n">NodeMeta</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="n">FromPolicy</span><span class="p">[</span><span class="n">NodeMeta</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span>
 
     <span class="nd">@override</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">navigate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Navigation</span><span class="p">:</span>
@@ -5623,7 +5623,7 @@ node features a sequence of embedded trees.</p>
   
       dataclass
    (delphyne.core.StrategyComp)" href="../../strategies/strategies/#delphyne.StrategyComp">StrategyComp</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.join[N]">N</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.join[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.join[T]">T</span></span><span class="p">]],</span>
-    <span class="n">meta</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.join[P]">P</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="n"><span title="collections.abc.Callable">Callable</span></span><span class="p">[[</span><span class="n"><span title="delphyne.stdlib.nodes.join[P]">P</span></span><span class="p">],</span> <span class="n"><a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a></span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Strategy (delphyne.core.Strategy)" href="../../strategies/strategies/#delphyne.Strategy">Strategy</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.join[N]">N</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.nodes.join[P]">P</span></span><span class="p">,</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.nodes.join[T]">T</span></span><span class="p">]]</span>
 </code></pre></div>
 
@@ -5670,7 +5670,7 @@ in parallel.</p>
                 <code>meta</code>
             </td>
             <td>
-                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.nodes.join[P]">P</span>], <a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a>] | None</code>
+                  <code><span title="collections.abc.Callable">Callable</span>[[<span title="delphyne.stdlib.nodes.join[P]">P</span>], <a class="autorefs autorefs-internal" title="NodeMeta (delphyne.stdlib.nodes.NodeMeta)" href="#delphyne.stdlib.nodes.NodeMeta">NodeMeta</a> | None]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -5679,7 +5679,7 @@ arbitrary metadata accessible to search policies.</p>
               </div>
             </td>
             <td>
-                  <code>None</code>
+                  <code>lambda _: None</code>
             </td>
           </tr>
       </tbody>
@@ -5730,7 +5730,7 @@ arbitrary metadata accessible to search policies.</p>
 <span class="normal">641</span>
 <span class="normal">642</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">join</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="n">subs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">dp</span><span class="o">.</span><span class="n">StrategyComp</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]],</span>
-    <span class="n">meta</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">NodeMeta</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">NodeMeta</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">T</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluate a sequence of independent strategy computations, possibly</span>

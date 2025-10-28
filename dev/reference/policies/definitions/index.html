@@ -1307,6 +1307,11 @@
 
         <p>A policy maps a tree with a given signature (contravariant parameter
 N) and inner policy type (covariant parameter P) to a search stream.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We use an abstract class instead of a protocol to allow
+<code>isinstance</code> checks when loading policies dynamically.</p>
+</div>
 
 
 
@@ -1325,10 +1330,18 @@ N) and inner policy type (covariant parameter P) to a search stream.</p>
 <span class="normal">23</span>
 <span class="normal">24</span>
 <span class="normal">25</span>
-<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractPolicy</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">E</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractPolicy</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">E</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A policy maps a tree with a given signature (contravariant parameter</span>
 <span class="sd">    N) and inner policy type (covariant parameter P) to a search stream.</span>
+
+<span class="sd">    !!! note</span>
+<span class="sd">        We use an abstract class instead of a protocol to allow</span>
+<span class="sd">        `isinstance` checks when loading policies dynamically.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@abstractmethod</span>
@@ -1387,18 +1400,18 @@ inner policy with appropriate type, and returns a search stream.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">33</span>
 <span class="normal">34</span>
 <span class="normal">35</span>
 <span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span>
 <span class="normal">39</span>
-<span class="normal">40</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractSearchPolicy</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">E</span><span class="p">,</span> <span class="n">N</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractSearchPolicy</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">E</span><span class="p">,</span> <span class="n">N</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A search policy takes as arguments a tree with a given signature</span>
 <span class="sd">    (covariant type parameter `N`), a global policy environment, and an</span>
@@ -1463,18 +1476,18 @@ stream.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/core/policies.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">47</span>
 <span class="normal">48</span>
 <span class="normal">49</span>
 <span class="normal">50</span>
 <span class="normal">51</span>
 <span class="normal">52</span>
 <span class="normal">53</span>
-<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractPromptingPolicy</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">E</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AbstractPromptingPolicy</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">E</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A prompting policy takes as arguments a query (attached to a</span>
 <span class="sd">    specific node) and a global policy environment, and returns a search</span>
