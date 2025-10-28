@@ -19,6 +19,10 @@ class AbstractPolicy(Generic[E, N, P], ABC):
     """
     A policy maps a tree with a given signature (contravariant parameter
     N) and inner policy type (covariant parameter P) to a search stream.
+
+    !!! note
+        We use an abstract class instead of a protocol to allow
+        `isinstance` checks when loading policies dynamically.
     """
 
     @abstractmethod

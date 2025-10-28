@@ -59,7 +59,7 @@ class RunLoadedStrategyArgs[N: dp.Node, P, T]:
     """
 
     strategy: dp.StrategyComp[N, P, T]
-    policy: pol.Policy[N, P]
+    policy: pol.StandardPolicy[N, P]
     answer_loader: dp.AnswerDatabaseLoader | None
     num_generated: int = 1
     budget: dict[str, float] | None = None
@@ -356,7 +356,7 @@ def run_strategy(
         assert exe.workspace_root is not None
         answer_loader = dp.standard_answer_loader(exe.workspace_root, loader)
     assert isinstance(policy, dp.AbstractPolicy)
-    policy = cast(pol.Policy[Any, Any], policy)
+    policy = cast(pol.StandardPolicy[Any, Any], policy)
     run_loaded_strategy(
         task=task,
         exe=exe,

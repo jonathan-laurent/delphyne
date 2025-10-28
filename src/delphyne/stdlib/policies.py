@@ -2,9 +2,11 @@
 Standard policy types and wrappers
 """
 
+import typing
+from abc import abstractmethod
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any, Generic, Iterable, NoReturn, Protocol, TypeVar
+from typing import Any, Generic, Iterable, Protocol, TypeVar, override
 
 import delphyne.core as dp
 import delphyne.stdlib.streams as st
@@ -17,6 +19,19 @@ from delphyne.stdlib.streams import Stream, StreamTransformer
 #####
 
 
+class StandardPolicy[N: Node, P](dp.AbstractPolicy[PolicyEnv, N, P]):
+    """
+    Protocol for standard policies.
+
+    This class specializes `AbstractPolicy` and is implemented by
+    `Policy` and `PolicyRecord` in particular.
+    """
+
+    @abstractmethod
+    def __call__[T](self, tree: dp.Tree[N, P, T], env: PolicyEnv) -> Stream[T]:
+        pass
+
+
 N = TypeVar("N", bound=Node, contravariant=True)
 P = TypeVar("P", covariant=True)
 
@@ -24,7 +39,7 @@ P = TypeVar("P", covariant=True)
 @dataclass(frozen=True)
 class Policy(
     Generic[N, P],
-    dp.AbstractPolicy[PolicyEnv, N, P],
+    StandardPolicy[N, P],
     st.SupportsStreamCombinators,
 ):
     """
@@ -655,10 +670,28 @@ def query_dependent(
     return PromptingPolicy(policy)
 
 
-def unsupported_node(node: dp.Node) -> NoReturn:
+def unsupported_node(node: dp.Node) -> typing.NoReturn:
     """
     Raise an exception indicating that a node has an unsupported type.
 
     See `dfs` for an example usage.
     """
     assert False, f"Unsupported node type: {type(node)}."
+
+
+class PolicyRecord[N: Node, P](StandardPolicy[N, P]):
+    """
+    Base class for policy records.
+
+    Policy records are dataclasses that can be instantiated into
+    policies. This is useful for building serializable policy
+    representations that can be loaded and saved from disk.
+    """
+
+    @abstractmethod
+    def instantiate(self) -> Policy[N, P]:
+        pass
+
+    @override
+    def __call__[T](self, tree: dp.Tree[N, P, T], env: PolicyEnv) -> Stream[T]:
+        return self.instantiate()(tree, env)
