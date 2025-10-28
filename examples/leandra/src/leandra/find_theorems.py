@@ -1,5 +1,5 @@
 """
-Strategy for finding Lean theorems
+Strategy for finding Lean theorems.
 """
 
 from collections.abc import Sequence
@@ -49,6 +49,10 @@ class TheoremRequest(dp.AbstractTool[loogle.LoogleHit | None]):
 
 @dataclass
 class BlacklistedTheorem:
+    """
+    Theorem blacklisted from consideration in a `TheoremRequest`.
+    """
+
     theorem: str
     reason: str
 
@@ -58,7 +62,13 @@ def find_theorem(
     request: TheoremRequest,
 ) -> Strategy[Compute | Branch, "FindTheoremIP", loogle.LoogleHit]:
     """
-    Strategy for implementing theorem finding requests.
+    Strategy for finding a Lean theorem.
+
+    This strategy first tries to find a unique hit on Loogle using the
+    guessed name. If successful, it returns immediately. Otherwise, a
+    conversation is started where the LLM can make arbitrary Loogle
+    requests and must eventually return the name of a valid theorem
+    (which itself results in a unique Loogle hit).
     """
     IP = FindTheoremIP
     res = yield from unique_loogle_hit(request.name_guess)
@@ -69,27 +79,44 @@ def find_theorem(
             FindTheorem(request, prefix).using(lambda p: p.step, IP),
         process=lambda ans, _:
             unique_loogle_hit_or_fail(ans).using(lambda p: p.process, IP),
-        tools={LoogleTool: lambda call:
+        tools={LoogleCall: lambda call:
             call_loogle(call.loogle_request).using(lambda p: p.loogle, IP)})
     return loogle_hit
 
 
 @dataclass
-class LoogleTool(dp.AbstractTool[loogle.LoogleResults]):
+class LoogleCall(dp.AbstractTool[loogle.LoogleResults]):
+    """
+    Loogle tool call.
+    """
+
     loogle_request: str
 
 
 @dataclass
-class FindTheorem(dp.Query[dp.Response[str, LoogleTool]]):
+class FindTheorem(dp.Query[dp.Response[str, LoogleCall]]):
+    """
+    Main query underlying the `find_theorem` strategy.
+
+    Loogle tool calls can return error or success values. Returning a
+    theorem name that does not exist (i.e. does not result in a unique
+    Loogle hit) results in a failure. Thus, no feedback prompt is
+    necessary.
+    """
+
     request: TheoremRequest
     prefix: dp.AnswerPrefix
-    __parser__ = dp.get_text.trim
+    __parser__ = dp.get_text.trim.response
 
 
 @strategy
 def call_loogle(
     request: str,
 ) -> Strategy[dp.Compute, object, loogle.LoogleResults]:
+    """
+    Strategy for calling Loogle. Only the first few results are
+    returned (as does the #loogle command in Lean).
+    """
     res = yield from dp.compute(loogle.query_loogle)(request)
     if isinstance(res, loogle.LoogleHits):
         res = replace(res, hits=res.hits[:MAX_LOOGLE_HITS])
@@ -99,6 +126,14 @@ def call_loogle(
 def unique_loogle_hit(
     theorem_name: str,
 ) -> Strategy[dp.Compute, object, loogle.LoogleHit | None]:
+    """
+    Wrapper around `call_loogle` that returns a unique hit if there is one.
+
+    !!! note
+        This strategy is meant to be inlined, which is why it is not
+        decorated with `@strategy` and why it is compatible with
+        arbitrary inner policy types (`object`).
+    """
     res = yield from call_loogle(theorem_name).inline()
     if isinstance(res, loogle.LoogleHits) and len(res.hits) == 1:
         return res.hits[0]
@@ -108,7 +143,10 @@ def unique_loogle_hit(
 @strategy
 def unique_loogle_hit_or_fail(
     theorem_name: str,
-) -> Strategy[dp.Compute | Fail, object, loogle.LoogleHit]:
+) -> Strategy[dp.Compute | Fail, None, loogle.LoogleHit]:
+    """
+    Wrapper around `call_loogle` that fails unless there is a unique hit.
+    """
     res = yield from unique_loogle_hit(theorem_name)
     if res is None:
         assert_never((yield from dp.fail("selected_absent_theorem")))
@@ -133,6 +171,16 @@ def find_theorem_policy(
     effort: dp.ReasoningEffort = "low",
     max_requests: int = 3,
 ):
+    """
+    Standard policy for the `find_theorem` strategy.
+
+    Arguments:
+        model_name: Model used for crafting Loogle queries.
+        effort: Reasoning effort for the model.
+        max_requests: Maximum number of LLM requests allowed to find a
+            theorem (each new tool call or round of feedback requires an
+            additional request).
+    """
     model = dp.standard_model(model_name, {"reasoning_effort": effort})
     ip = FindTheoremIP(
         step=dp.few_shot(model),
