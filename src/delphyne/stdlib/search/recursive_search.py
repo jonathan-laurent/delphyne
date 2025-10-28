@@ -79,8 +79,8 @@ def recursive_search[P, T](
         case Fail():
             return
         case Branch(cands):
-            assert tree.node.meta is not None
             meta = tree.node.meta(policy)
+            assert meta is not None
             cands_space = cands.stream(env, policy)
             if isinstance(meta, GiveUp):
                 return

@@ -119,7 +119,7 @@ class Branch(dp.Node):
     """
 
     cands: OpaqueSpace[Any, Any]
-    meta: FromPolicy[NodeMeta] | None
+    meta: FromPolicy[NodeMeta | None]
 
     @override
     def navigate(self) -> dp.Navigation:
@@ -134,7 +134,7 @@ class Branch(dp.Node):
 def branch[P, T](
     cands: Opaque[P, T],
     *,
-    meta: Callable[[P], NodeMeta] | None = None,
+    meta: Callable[[P], NodeMeta | None] = lambda _: None,
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Branch, P, T]: ...
 
@@ -143,7 +143,7 @@ def branch[P, T](
 def branch[P, T](
     cands: Opaque[P, T],
     *,
-    meta: Callable[[P], NodeMeta] | None = None,
+    meta: Callable[[P], NodeMeta | None] = lambda _: None,
     return_ref: Literal[True],
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Branch, P, tuple[T, TypedSpaceElementRef[T]]]: ...
@@ -152,7 +152,7 @@ def branch[P, T](
 def branch[P, T](
     cands: Opaque[P, T],
     *,
-    meta: Callable[[P], NodeMeta] | None = None,
+    meta: Callable[[P], NodeMeta | None] = lambda _: None,
     return_ref: bool = False,
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Branch, P, T | tuple[T, TypedSpaceElementRef[T]]]:
@@ -208,7 +208,7 @@ class Run(Branch):
 def run[P, T](
     cands: Opaque[P, T],
     *,
-    meta: Callable[[P], NodeMeta] | None = None,
+    meta: Callable[[P], NodeMeta | None] = lambda _: None,
     inner_policy_type: type[P] | None = None,
 ) -> dp.Strategy[Run, P, T]:
     """
@@ -590,7 +590,7 @@ def binarize_values(
                     )
 
             return dp.Tree[Branch | Fail | N, P, T](
-                Branch(node.eval, meta=None), branch_child, tree.ref
+                Branch(node.eval, meta=lambda _: None), branch_child, tree.ref
             )
         return tree.transform(tree.node, transform)
 
@@ -612,7 +612,7 @@ class Join(dp.Node):
     """
 
     subs: Sequence[dp.EmbeddedTree[Any, Any, Any]]
-    meta: FromPolicy[NodeMeta] | None
+    meta: FromPolicy[NodeMeta | None]
 
     @override
     def navigate(self) -> dp.Navigation:
@@ -624,7 +624,7 @@ class Join(dp.Node):
 
 def join[N: dp.Node, P, T](
     subs: Sequence[dp.StrategyComp[N, P, T]],
-    meta: Callable[[P], NodeMeta] | None = None,
+    meta: Callable[[P], NodeMeta | None] = lambda _: None,
 ) -> dp.Strategy[N, P, Sequence[T]]:
     """
     Evaluate a sequence of independent strategy computations, possibly
@@ -640,3 +640,42 @@ def join[N: dp.Node, P, T](
     """
     recv = yield spawn_node(Join, subs=subs, meta=meta)
     return cast(Sequence[T], recv.action)
+
+
+@pol.contextual_tree_transformer
+def elim_join(
+    env: PolicyEnv,
+    policy: Any,
+) -> pol.PureTreeTransformerFn[Join, Never]:
+    def transform[N: dp.Node, P, T](
+        tree: dp.Tree[Join | N, P, T],
+    ) -> dp.Tree[N, P, T]:
+        node = tree.node
+        if isinstance(node, Join):
+
+            def aux(computed: tuple[Any, ...]) -> dp.Tree[N, P, T]:
+                if len(computed) == len(node.subs):
+                    # Once all joined values are computed, continue
+                    return transform(tree.child(computed))
+                # Otherwise, compute the next joined value and then all
+                # remaining ones.
+                compute_next = transform(node.subs[len(computed)].spawn_tree())
+                return bind_tree(compute_next, lambda v: aux(computed + (v,)))
+
+            return aux(())
+        return tree.transform(node, transform)
+
+    return transform
+
+
+def bind_tree[N: dp.Node, P, A, B](
+    tree: dp.Tree[N, P, A], f: Callable[[dp.Tracked[A]], dp.Tree[N, P, B]]
+) -> dp.Tree[N, P, B]:
+    node = tree.node
+    if isinstance(node, dp.Success):
+        return f(node.success)
+
+    def child(action: dp.Value) -> dp.Tree[N, P, B]:
+        return bind_tree(tree.child(action), f)
+
+    return dp.Tree[N, P, B](node, child, tree.ref)

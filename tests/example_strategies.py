@@ -737,7 +737,7 @@ def recursive_joins(
     depth: int,
 ) -> Strategy[
     dp.Join | dp.Message | dp.Compute | dp.Flag[MethodFlag],
-    dp.NodeMeta,
+    dp.NodeMeta | None,
     int,
 ]:
     if depth == 0:
@@ -752,6 +752,7 @@ def recursive_joins(
         return sum(res)
 
 
+@dp.ensure_compatible(recursive_joins)
 def recursive_joins_policy():
     from delphyne.stdlib.search import recursive_search as dprs
 
@@ -762,6 +763,18 @@ def recursive_joins_policy():
         @ dp.elim_flag(MethodFlag, "def")
     )
     return sp & dprs.OneOfEachSequentially()
+
+
+@dp.ensure_compatible(recursive_joins)
+def recursive_joins_policy_using_elim_join():
+    return (
+        dp.dfs()
+        @ dp.elim_messages()
+        @ dp.elim_compute()
+        @ dp.elim_join()
+        @ dp.elim_flag(MethodFlag, "def")
+        & None
+    )
 
 
 #####

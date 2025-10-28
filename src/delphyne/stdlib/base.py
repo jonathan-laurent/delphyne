@@ -90,6 +90,7 @@ from delphyne.stdlib.nodes import (
     Value,
     binarize_values,
     branch,
+    elim_join,
     elim_messages,
     elim_values,
     ensure,

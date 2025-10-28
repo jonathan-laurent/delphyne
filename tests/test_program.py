@@ -419,19 +419,20 @@ def test_sequence():
 
 
 def test_embedded_tree_and_transformers():
-    strategy = ex.recursive_joins(3)
-
-    def policy(_: dp.LLM):
-        return ex.recursive_joins_policy()
-
-    # Since _eval_strategy does not configure a cache at the policy
-    # environment level and wraps individual models instead,
-    # computations are not cached here.
     res, log = _eval_strategy(
-        strategy,
-        policy,
+        strategy=ex.recursive_joins(3),
+        policy=lambda _: ex.recursive_joins_policy(),
         cache_name="embedded_tree_and_transformers",
-        max_res=1,
+    )
+    print(_log_messages(log))
+    assert res
+
+
+def test_elim_join():
+    res, log = _eval_strategy(
+        strategy=ex.recursive_joins(3),
+        policy=lambda _: ex.recursive_joins_policy_using_elim_join(),
+        cache_name="elim_join",
     )
     print(_log_messages(log))
     assert res
