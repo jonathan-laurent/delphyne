@@ -165,27 +165,30 @@ class FindTheoremIP:
     loogle: dp.Policy[Compute, None]
 
 
-@dp.ensure_compatible(find_theorem)
-def find_theorem_policy(
-    model_name: str = "gpt-5-mini",
-    effort: dp.ReasoningEffort = "low",
-    max_requests: int = 3,
-):
+@dataclass
+class FindTheoremPolicy(dp.PolicyRecord[Compute | Branch, FindTheoremIP]):
     """
     Standard policy for the `find_theorem` strategy.
 
-    Arguments:
+    Attributes:
         model_name: Model used for crafting Loogle queries.
         effort: Reasoning effort for the model.
         max_requests: Maximum number of LLM requests allowed to find a
             theorem (each new tool call or round of feedback requires an
             additional request).
     """
-    model = dp.standard_model(model_name, {"reasoning_effort": effort})
-    ip = FindTheoremIP(
-        step=dp.few_shot(model),
-        process=dp.exec @ dp.elim_compute() & None,
-        loogle=dp.exec @ dp.elim_compute() & None)
-    requests_limit = dp.BudgetLimit({dp.NUM_REQUESTS: max_requests})
-    sp = dp.with_budget(requests_limit) @ dp.dfs() @ dp.elim_compute()
-    return sp & ip
+
+    model_name: str = "gpt-5-mini"
+    effort: dp.ReasoningEffort = "low"
+    max_requests: int = 3
+
+    def instantiate(self):
+        model = dp.standard_model(
+            self.model_name, {"reasoning_effort": self.effort})
+        ip = FindTheoremIP(
+            step=dp.few_shot(model),
+            process=dp.exec @ dp.elim_compute() & None,
+            loogle=dp.exec @ dp.elim_compute() & None)
+        requests_limit = dp.BudgetLimit({dp.NUM_REQUESTS: self.max_requests})
+        sp = dp.with_budget(requests_limit) @ dp.dfs() @ dp.elim_compute()
+        return sp & ip

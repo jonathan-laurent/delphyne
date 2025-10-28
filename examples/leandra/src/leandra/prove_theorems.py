@@ -10,8 +10,9 @@ import delphyne as dp
 import lean_interact.interface as li_intf
 from delphyne import Branch, Compute, Fail, Strategy, strategy
 
+import leandra.find_theorems as lft
 from leandra.dsl import LeanProof, LeanTheorem, ProofSketch, compile_sketch
-from leandra.find_theorems import FindTheoremIP, TheoremRequest, find_theorem
+from leandra.find_theorems import TheoremRequest, find_theorem
 from leandra.tools import run_lean_command
 
 # fmt: off
@@ -25,11 +26,7 @@ from leandra.tools import run_lean_command
 @strategy
 def prove_theorem(
     theorem: LeanTheorem,
-) -> Strategy[
-    Branch | Fail | Compute | dp.Flag["ProofTechniqueFlag"] | dp.Join,
-    "ProveTheoremIP",
-    LeanProof,
-]:
+) -> Strategy["_ProveTheoremSig", "ProveTheoremIP", LeanProof]:
     """
     Top-level Strategy for proving a Lean theorem.
 
@@ -62,6 +59,13 @@ def prove_theorem(
         err = dp.Error(label="stitching_failure", meta=meta)
         assert_never((yield from dp.fail(error=err)))
     return full_proof
+
+
+type _ProveTheoremSig = (
+    Branch | Fail | Compute | dp.Join | dp.Flag[ProofTechniqueFlag])
+"""
+Signature for the `prove_theorem` strategy.
+"""
 
 
 @dataclass
@@ -299,8 +303,10 @@ def _lean_error_metadata_without_line_info(
 
 
 #####
-##### Policies
+##### Internal Policy Types
 #####
+
+# fmt: on
 
 
 @dataclass
@@ -319,4 +325,37 @@ class SketchProofIP:
 class ProveSubgoalIP:
     step: dp.PromptingPolicy
     check: dp.Policy[Compute, None]
-    find_thm: dp.Policy[Compute | Branch, FindTheoremIP]
+    find_thm: dp.Policy[Compute | Branch, lft.FindTheoremIP]
+
+
+#####
+##### Policies
+#####
+
+
+@dataclass
+class ProveTheoremPolicy(dp.PolicyRecord[_ProveTheoremSig, ProveTheoremIP]):
+    """
+    Standard policy for `prove_theorem`.
+
+    Attributes:
+        find_theorem: Policy for finding theorems.
+        lean_timeout: Timeout in seconds for checking sketches or proofs
+            in direct modes.
+    """
+
+    find_theorem: lft.FindTheoremPolicy
+    lean_timeout: float = 8.0
+
+    def instantiate(self):
+        lean_compute_args = {"timeout_in_seconds": self.lean_timeout}
+        elim_lean_compute = dp.elim_compute(override_args=lean_compute_args)
+
+        ip = ProveTheoremIP()  # type: ignore
+        sp = (
+            dp.dfs()
+            @ dp.elim_join()
+            @ dp.elim_flag(ProofTechniqueFlag, "sketch")
+            @ elim_lean_compute
+        )
+        return sp & ip
