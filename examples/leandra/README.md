@@ -8,3 +8,7 @@ For example:
 ```sh
 export LOOGLE_URL="http://localhost:8088"
 ```
+
+## Future Improvements
+
+- Spend more resources when proving something is really worth it. For example, if all holes except one have been filled, maybe more effort should be put into proving it.

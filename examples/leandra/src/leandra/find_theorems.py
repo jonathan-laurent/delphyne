@@ -19,6 +19,8 @@ MAX_LOOGLE_HITS = 8
 Number of hits showed in the output of the Loogle tool.
 """
 
+FIND_THEOREM_MODEL_CLASS = "find_theorem"
+
 
 #####
 ##### Strategies
@@ -180,11 +182,12 @@ class FindTheoremPolicy(dp.PolicyRecord[Compute | Branch, FindTheoremIP]):
 
     model_name: str = "gpt-5-mini"
     effort: dp.ReasoningEffort = "low"
-    max_requests: int = 3
+    max_requests: int = 4
 
     def instantiate(self):
         model = dp.standard_model(
-            self.model_name, {"reasoning_effort": self.effort})
+            self.model_name, {"reasoning_effort": self.effort},
+            model_class=FIND_THEOREM_MODEL_CLASS)
         ip = FindTheoremIP(
             step=dp.few_shot(model),
             process=dp.exec @ dp.elim_compute() & None,

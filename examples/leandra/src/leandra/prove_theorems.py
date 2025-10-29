@@ -2,7 +2,9 @@
 Main Strategy for Proving Lean Theorems.
 """
 
-from collections.abc import Sequence
+import itertools
+import random
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from typing import Any, Literal, Never, assert_never
 
@@ -15,8 +17,13 @@ from leandra.dsl import LeanProof, LeanTheorem, ProofSketch, compile_sketch
 from leandra.find_theorems import TheoremRequest, find_theorem
 from leandra.tools import run_lean_command
 
-# fmt: off
+DEFAULT_LEAN_TIMEOUT = 8.0
+MAX_HOLES = 20
+PERMANENT_EXAMPLE_TAG = "permanent"
+SKETCH_PROOF_MODEL_CLASS = "sketch_proof"
+PROVE_SUBGOAL_MODEL_CLASS = "prove_subgoal"
 
+# fmt: off
 
 #####
 #####  Top-Level Strategy
@@ -141,7 +148,8 @@ class SketchProof(dp.Query[dp.Response[ProofSketch, Never]]):
     """
     Main query underlying the `sketch_proof` strategy.
 
-    Feedback messages with label `sketch_has_errors` are possible.
+    Feedback messages with label `sketch_has_errors` and
+    `too_many_holes` are possible.
     """
 
     theorem: LeanTheorem
@@ -159,7 +167,10 @@ def check_sketch(
     A sketch is valid if it results in no errors (although it may still
     contain sorries).
     """
-    compiled = compile_sketch(theorem, sketch, [None] * sketch.num_holes())
+    num_holes = sketch.num_holes()
+    if num_holes > MAX_HOLES:
+        return dp.Error(label="too_many_holes", meta={"max_holes": MAX_HOLES})
+    compiled = compile_sketch(theorem, sketch, [None] * num_holes)
     response = yield from dp.compute(run_lean_command)(compiled)
     if _has_errors(response):
         return dp.Error(
@@ -168,7 +179,7 @@ def check_sketch(
         )
     # If both our sketch compiler and the Lean REPL are correct, there
     # should be as many remaining sorries as goals in the sketch.
-    assert len(response.sorries) == sketch.num_holes()
+    assert len(response.sorries) == num_holes
     goals = [s.goal for s in response.sorries]
     return sketch, goals
 
@@ -333,29 +344,181 @@ class ProveSubgoalIP:
 #####
 
 
-@dataclass
+@dataclass(kw_only=True)
 class ProveTheoremPolicy(dp.PolicyRecord[_ProveTheoremSig, ProveTheoremIP]):
     """
     Standard policy for `prove_theorem`.
 
     Attributes:
-        find_theorem: Policy for finding theorems.
+        sketch: policy for sketching proofs.
+        subgoal: policy for proving subgoals.
         lean_timeout: Timeout in seconds for checking sketches or proofs
             in direct modes.
+
+    !!! note
+        This policy does not leverage the "direct" proof mode. In the
+        future, we might want to consider a variant where for each
+        proof, a direct attempt is made before a sketch is made.
     """
 
-    find_theorem: lft.FindTheoremPolicy
-    lean_timeout: float = 8.0
+    sketch: "SketchProofPolicy | None" = None
+    subgoal: "ProveSubgoalPolicy | None" = None
+    lean_timeout: float = DEFAULT_LEAN_TIMEOUT
 
     def instantiate(self):
-        lean_compute_args = {"timeout_in_seconds": self.lean_timeout}
-        elim_lean_compute = dp.elim_compute(override_args=lean_compute_args)
-
-        ip = ProveTheoremIP()  # type: ignore
+        ip = ProveTheoremIP(
+            sketch=(self.sketch or SketchProofPolicy()).instantiate(),
+            subgoal=(self.subgoal or ProveSubgoalPolicy()).instantiate(),
+        )
         sp = (
             dp.dfs()
             @ dp.elim_join()
             @ dp.elim_flag(ProofTechniqueFlag, "sketch")
-            @ elim_lean_compute
+            @ _elim_lean_compute(self.lean_timeout)
         )
         return sp & ip
+
+
+@dataclass(kw_only=True)
+class SketchProofPolicy(dp.PolicyRecord[Branch, SketchProofIP]):
+    """
+    Standard policy for `sketch_proof`.
+
+    Attributes:
+        model_name: Model used for sketching proofs.
+        effort: Reasoning effort for the model.
+        max_full_attempts: Maximum number of full sketching attempts.
+            Each sketching attempt proceeds from an empty context, with
+            a fixed set of random examples.
+        max_feedback_rounds_per_attempt: Maximum number of opportunities
+            that are provided for repairing a sketch during each attempt.
+        examples: Policy for selecting few-shot examples.
+        lean_timeout: Timeout in seconds for checking sketches.
+    """
+
+    model_name: dp.StandardModelName | str = "gpt-5"
+    effort: dp.ReasoningEffort = "medium"
+    max_full_attempts: int = 2
+    max_feedback_rounds_per_attempt: int = 4
+    examples: "ExampleSelector | None" = None
+    lean_timeout: float = DEFAULT_LEAN_TIMEOUT
+
+    def instantiate_with(self, env: dp.PolicyEnv):
+        def with_selector(selector: dp.ExampleSelector):
+            model = dp.standard_model(
+                self.model_name,
+                options={"reasoning_effort": self.effort},
+                model_class=SKETCH_PROOF_MODEL_CLASS,
+            )
+            ip = SketchProofIP(
+                step=dp.few_shot(model, select_examples=selector),
+                check=dp.exec @ _elim_lean_compute(self.lean_timeout) & None,
+            )
+            sp = dp.dfs(max_depth=self.max_feedback_rounds_per_attempt + 1)
+            return sp & ip
+
+        examples = self.examples or ExampleSelector()
+        selectors = examples.instantiate(env.random)
+        selectors = itertools.islice(selectors, self.max_full_attempts)
+        return dp.sequence((with_selector(sel.cached()) for sel in selectors))
+
+
+@dataclass(kw_only=True)
+class ProveSubgoalPolicy(dp.PolicyRecord[Branch, ProveSubgoalIP]):
+    """
+    Standard policy for `prove_subgoal`.
+
+    Attributes:
+        model_name: Model used for proving subgoals.
+        effort: Reasoning effort for the model.
+        max_full_attempts: Maximum number of full proving attempts.
+            Each proving attempt proceeds from an empty context, with
+            a fixed set of random examples.
+        max_feedback_rounds_per_attempt: Maximum number of opportunities
+            that are provided for repairing a proof during each attempt.
+        max_requests_per_attempt: Maximum number of requests to the
+            proving model during each attempt (corresponding to the the
+            number of feedback and tool calling rounds).
+        examples: Policy for selecting few-shot examples.
+        find_theorem: Policy for finding theorems.
+        lean_timeout: Timeout in seconds for checking proofs.
+    """
+
+    model_name: dp.StandardModelName | str = "gpt-5-mini"
+    effort: dp.ReasoningEffort = "low"
+    max_full_attempts: int = 3
+    max_feedback_rounds_per_attempt: int = 3
+    max_requests_per_attempt: int = 6
+    examples: "ExampleSelector | None" = None
+    find_theorem: lft.FindTheoremPolicy | None = None
+    lean_timeout: float = DEFAULT_LEAN_TIMEOUT
+
+    def instantiate_with(self, env: dp.PolicyEnv):
+        def with_selector(selector: dp.ExampleSelector):
+            model = dp.standard_model(
+                self.model_name,
+                options={"reasoning_effort": self.effort},
+                model_class=PROVE_SUBGOAL_MODEL_CLASS,
+            )
+            ip = ProveSubgoalIP(
+                step=dp.few_shot(model, select_examples=selector),
+                check=dp.exec @ _elim_lean_compute(self.lean_timeout) & None,
+                find_thm=(
+                    self.find_theorem or lft.FindTheoremPolicy()
+                ).instantiate(),
+            )
+            numr = dp.budget_entry(dp.NUM_REQUESTS, PROVE_SUBGOAL_MODEL_CLASS)
+            blimit = {numr: self.max_requests_per_attempt}
+            sp = dp.dfs(max_depth=self.max_feedback_rounds_per_attempt + 1)
+            return dp.with_budget(dp.BudgetLimit(blimit)) @ sp & ip
+
+        examples = self.examples or ExampleSelector()
+        selectors = examples.instantiate(env.random)
+        selectors = itertools.islice(selectors, self.max_full_attempts)
+        return dp.sequence((with_selector(sel.cached()) for sel in selectors))
+
+
+@dataclass(frozen=True)
+class Randomized[T]:
+    """
+    Specification for a hyperparameter that is first picked
+    deterministically and then randomly.
+    """
+
+    first: T
+    then: Sequence[T]
+
+    def stream(self, rng: random.Random) -> Iterable[T]:
+        yield self.first
+        while True:
+            yield rng.choice(self.then)
+
+
+@dataclass(frozen=True)
+class ExampleSelector:
+    """
+    Specification for an example selector that includes a certain amount
+    of standard examples along with extra ones selected using MMR.
+    """
+
+    model_name: dp.StandardOpenAIEmbeddingModel = "text-embedding-3-large"
+    num_selected: Randomized[int] = Randomized(5, [5])
+    num_included: Randomized[int] = Randomized(5, [5, 15])
+    mmr_lambda: Randomized[float] = Randomized(0.5, [0.3, 0.5, 0.7])
+
+    def instantiate(self, rng: random.Random) -> Iterable[dp.ExampleSelector]:
+        nss = self.num_selected.stream(rng)
+        nis = self.num_included.stream(rng)
+        mls = self.mmr_lambda.stream(rng)
+        for ns, ni, ml in zip(nss, nis, mls):
+            permanent = dp.all_examples.with_tags([PERMANENT_EXAMPLE_TAG])
+            extra = dp.maximum_marginally_relevant(
+                k=ns, lambda_param=ml, model_name=self.model_name
+            ).random(ni)
+            # We want the closest examples returned by MMR to appear last
+            yield (extra + permanent).reverse()
+
+
+def _elim_lean_compute(timeout: float):
+    lean_compute_args = {"timeout_in_seconds": timeout}
+    return dp.elim_compute(override_args=lean_compute_args)
