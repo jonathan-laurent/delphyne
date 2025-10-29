@@ -57,6 +57,14 @@ class Policy(
     ) -> Stream[T]:
         return Stream(lambda: self._fn(tree, env))
 
+    def __rmatmul__(self, other: StreamTransformer) -> "Policy[N, P]":
+        """
+        Compose a search policy with a stream transformer.
+        """
+        if not isinstance(other, StreamTransformer):  # pyright: ignore[reportUnnecessaryIsInstance]
+            return NotImplemented
+        return self._compose_with_stream_transformer(other)
+
     def or_else[M: Node, Q](
         self: "Policy[M, Q]", other: "Policy[M, Q]"
     ) -> "Policy[M, Q]":
@@ -71,6 +79,20 @@ class Policy(
             yield from self(tree, env).or_else(other(tree, env))
 
         return Policy(policy)
+
+    @classmethod
+    def with_env[M: Node, Q](
+        cls, f: Callable[[PolicyEnv], "Policy[M, Q]"], /
+    ) -> "Policy[M, Q]":
+        """
+        Create a policy that depends on the global policy environment.
+        """
+
+        def aux[T](tree: dp.Tree[M, Q, T], env: PolicyEnv) -> dp.StreamGen[T]:
+            policy = f(env)
+            yield from policy(tree, env)
+
+        return Policy(aux)
 
     @classmethod
     def sequence[M: Node, Q](
@@ -92,6 +114,16 @@ class Policy(
             yield from Stream.parallel([p(tree, env) for p in policies])
 
         return Policy(aux)
+
+    def _compose_with_stream_transformer(
+        self, trans: StreamTransformer
+    ) -> "Policy[N, P]":
+        def policy[T](
+            tree: dp.Tree[N, P, T], env: PolicyEnv
+        ) -> dp.StreamGen[T]:
+            return iter(trans(self(tree, env), env))
+
+        return Policy(policy)
 
 
 class _PolicyFn[N: Node, P](Protocol):
@@ -182,6 +214,23 @@ class SearchPolicy[N: Node](
             )
 
         return SearchPolicy(policy)
+
+    @classmethod
+    def with_env[M: Node](
+        cls, f: Callable[[PolicyEnv], "SearchPolicy[M]"], /
+    ) -> "SearchPolicy[M]":
+        """
+        Create a search policy that depends on the global policy
+        environment.
+        """
+
+        def aux[P, T](
+            tree: dp.Tree[M, P, T], env: PolicyEnv, policy: P
+        ) -> dp.StreamGen[T]:
+            search_policy = f(env)
+            yield from search_policy(tree, env, policy)
+
+        return SearchPolicy(aux)
 
     @classmethod
     def sequence[M: Node](
@@ -321,6 +370,23 @@ class PromptingPolicy(
             yield from self(query, env).or_else(other(query, env))
 
         return PromptingPolicy(policy)
+
+    @classmethod
+    def with_env(
+        cls, f: Callable[[PolicyEnv], "PromptingPolicy"], /
+    ) -> "PromptingPolicy":
+        """
+        Create a prompting policy that depends on the global policy
+        environment.
+        """
+
+        def aux[T](
+            query: dp.AttachedQuery[T], env: PolicyEnv
+        ) -> dp.StreamGen[T]:
+            prompting_policy = f(env)
+            yield from prompting_policy(query, env)
+
+        return PromptingPolicy(aux)
 
     @classmethod
     def sequence(
@@ -688,10 +754,15 @@ class PolicyRecord[N: Node, P](StandardPolicy[N, P]):
     representations that can be loaded and saved from disk.
     """
 
-    @abstractmethod
+    def instantiate_with(self, env: PolicyEnv) -> Policy[N, P]:
+        raise ValueError(
+            "You must implement `instantiate` or `instantiate_with` "
+            + f"for class `{type(self)}`."
+        )
+
     def instantiate(self) -> Policy[N, P]:
-        pass
+        return Policy.with_env(self.instantiate_with)
 
     @override
     def __call__[T](self, tree: dp.Tree[N, P, T], env: PolicyEnv) -> Stream[T]:
-        return self.instantiate()(tree, env)
+        return self.instantiate_with(env)(tree, env)

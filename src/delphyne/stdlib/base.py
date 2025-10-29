@@ -164,4 +164,6 @@ from delphyne.stdlib.streams import (
     stream_transformer,
     take,
     with_budget,
+    with_env,
+    with_rng,
 )

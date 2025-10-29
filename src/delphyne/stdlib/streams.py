@@ -3,6 +3,7 @@ Search streams and stream combinators.
 """
 
 import itertools
+import random
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from typing import Protocol, Self, override
@@ -806,6 +807,11 @@ class SupportsStreamCombinators(Protocol):
     @classmethod
     def parallel(cls: type[Self], elts: Sequence[Self], /) -> Self: ...
 
+    @classmethod
+    def with_env(
+        cls: type[Self], f: Callable[[PolicyEnv], Self], /
+    ) -> Self: ...
+
 
 def sequence[T: SupportsStreamCombinators](
     elts: Iterable[T], /, *, stop_on_reject: bool = True
@@ -841,3 +847,33 @@ def parallel[T: SupportsStreamCombinators](elts: Sequence[T], /) -> T:
         raise ValueError("Called `parallel` on an empty collection.")
     first = elts[0]
     return first.parallel(elts)
+
+
+def with_env[T: SupportsStreamCombinators](
+    cls: type[T], f: Callable[[PolicyEnv], T], /
+) -> T:
+    """
+    Create a stream, policy, search policy, or prompting policy that
+    depends on the global policy environment.
+
+    Arguments:
+        cls: The class of the object to create.
+        f: A function that takes a policy environment and returns a
+            stream, policy, search policy, or prompting policy.
+    """
+    return cls.with_env(f)
+
+
+def with_rng[T: SupportsStreamCombinators](
+    cls: type[T], f: Callable[[random.Random], T], /
+) -> T:
+    """
+    Create a stream, policy, search policy, or prompting policy that
+    uses the global random number generator.
+
+    Arguments:
+        cls: The class of the object to create.
+        f: A function that takes a random number generator and returns a
+            stream, policy, search policy, or prompting policy.
+    """
+    return cls.with_env(lambda env: f(env.random))
