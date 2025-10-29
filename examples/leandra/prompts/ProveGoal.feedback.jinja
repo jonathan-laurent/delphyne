@@ -1,0 +1,6 @@
+{% if feedback.label == "sub_proof_has_errors" %}
+{# feedback.meta.errors / feedback.meta.warnings #}
+{% elif feedback.label == "sub_proof_with_sorry" %}
+{% else %}
+{{ fail("Unknown feedback label for ProveGoal: " ~ feedback.label) }}
+{% endif %}
