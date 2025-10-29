@@ -1248,6 +1248,21 @@ class ExampleSelector:
 
         return self.filter(select)
 
+    def reverse(self) -> "ExampleSelector":
+        """
+        Return a new example selector that reverses the order of the
+        selected examples.
+        """
+
+        def select(
+            env: PolicyEnv,
+            query: dp.AbstractQuery[Any],
+            examples: Sequence[SelectedExample],
+        ) -> Sequence[SelectedExample]:
+            return list(reversed(examples))
+
+        return self.filter(select)
+
     def __add__(self, other: "ExampleSelector") -> "ExampleSelector":
         """
         Concatenate two example selectors and deduplicate the result.
@@ -1260,6 +1275,25 @@ class ExampleSelector:
         number of examples.
         """
         return self.filter(take_random(num_examples))
+
+    def with_tags(self, tags: Sequence[str]) -> "ExampleSelector":
+        """
+        Return a new example selector that only includes examples
+        having all the given tags.
+        """
+
+        def select(
+            env: PolicyEnv,
+            query: dp.AbstractQuery[Any],
+            examples: Sequence[SelectedExample],
+        ) -> Sequence[SelectedExample]:
+            return [
+                ex
+                for ex in examples
+                if all(tag in ex.example.tags for tag in tags)
+            ]
+
+        return self.filter(select)
 
     def exclude_identical_queries(self) -> "ExampleSelector":
         """
