@@ -10,7 +10,7 @@ from typing import Any, Literal, Never, assert_never
 
 import delphyne as dp
 import lean_interact.interface as li_intf
-from delphyne import Branch, Compute, Fail, Strategy, strategy
+from delphyne import Branch, Compute, Fail, Feedback, Join, Strategy, strategy
 
 import leandra.find_theorems as lft
 from leandra.dsl import LeanProof, LeanTheorem, ProofSketch, compile_sketch
@@ -69,7 +69,7 @@ def prove_theorem(
 
 
 type _ProveTheoremSig = (
-    Branch | Fail | Compute | dp.Join | dp.Flag[ProofTechniqueFlag])
+    Branch | Fail | Compute | Join | Feedback | dp.Flag[ProofTechniqueFlag])
 """
 Signature for the `prove_theorem` strategy.
 """
@@ -109,13 +109,18 @@ def direct_proof(
 @strategy
 def fill_hole(
     theorem: LeanTheorem, sketch: ProofSketch, hole_index: int, goal: str
-) -> Strategy[Branch, "ProveTheoremIP", LeanProof]:
+) -> Strategy[Branch | Feedback, "ProveTheoremIP", LeanProof]:
     """
     Fill a specific hole via the `prove_subgoal` strategy.
     """
-    proof = yield from dp.branch(
+    proof, proof_ref = yield from dp.branch(
         prove_subgoal(theorem, sketch, hole_index, goal)
-            .using(lambda p: p.subgoal, ProveTheoremIP))
+            .using(lambda p: p.subgoal, ProveTheoremIP),
+        return_ref=True)
+    # Even if the surrounding proof fails, feedback can be generated
+    # already from the fact that a subgoal was successfully proven.
+    yield from dp.feedback("subproof", [
+        dp.send(dp.GoodValue(), proof_ref)])
     return proof
 
 
@@ -127,7 +132,7 @@ def fill_hole(
 @strategy
 def sketch_proof(
     theorem: LeanTheorem,
-) -> Strategy[Branch, "SketchProofIP", tuple[ProofSketch, Goals]]:
+) -> Strategy[Branch | Feedback, "SketchProofIP", tuple[ProofSketch, Goals]]:
     """
     Interactively try to find a proof sketch.
 
@@ -139,7 +144,9 @@ def sketch_proof(
         step=lambda prefix, _:
             SketchProof(theorem, prefix).using(lambda p: p.step, IP),
         process=lambda sketch, _:
-            check_sketch(theorem, sketch).using(lambda p: p.check, IP))
+            check_sketch(theorem, sketch).using(lambda p: p.check, IP),
+        produce_feedback=True,
+        unprocess = lambda sketch_and_goals: sketch_and_goals[0])
     return sketch_and_goals
 
 
@@ -233,7 +240,7 @@ def _has_errors(response: li_intf.BaseREPLResponse) -> bool:
 @strategy
 def prove_subgoal(
     theorem: LeanTheorem, sketch: ProofSketch, hole_index: int, goal: str
-) -> Strategy[Branch, "ProveSubgoalIP", LeanProof]:
+) -> Strategy[Branch | Feedback, "ProveSubgoalIP", LeanProof]:
     """
     Prove a subgoal corresponding to a goal in the sketch.
 
@@ -273,7 +280,9 @@ def prove_subgoal(
             # entire search and just report a tool call failure.
             dp.nofail(
                 find_theorem(call).using(lambda p: p.find_thm, ProveSubgoalIP),
-                default=None)})
+                default=None)},
+        produce_feedback=True,
+        unprocess=lambda proof: proof)
     return proof
 
 
@@ -322,8 +331,8 @@ def _lean_error_metadata_without_line_info(
 
 @dataclass
 class ProveTheoremIP:
-    sketch: dp.Policy[Branch, "SketchProofIP"]
-    subgoal: dp.Policy[Branch, "ProveSubgoalIP"]
+    sketch: dp.Policy[Branch | Feedback, "SketchProofIP"]
+    subgoal: dp.Policy[Branch | Feedback, "ProveSubgoalIP"]
 
 
 @dataclass
@@ -380,7 +389,7 @@ class ProveTheoremPolicy(dp.PolicyRecord[_ProveTheoremSig, ProveTheoremIP]):
 
 
 @dataclass(kw_only=True)
-class SketchProofPolicy(dp.PolicyRecord[Branch, SketchProofIP]):
+class SketchProofPolicy(dp.PolicyRecord[Branch | Feedback, SketchProofIP]):
     """
     Standard policy for `sketch_proof`.
 
@@ -424,7 +433,7 @@ class SketchProofPolicy(dp.PolicyRecord[Branch, SketchProofIP]):
 
 
 @dataclass(kw_only=True)
-class ProveSubgoalPolicy(dp.PolicyRecord[Branch, ProveSubgoalIP]):
+class ProveSubgoalPolicy(dp.PolicyRecord[Branch | Feedback, ProveSubgoalIP]):
     """
     Standard policy for `prove_subgoal`.
 
