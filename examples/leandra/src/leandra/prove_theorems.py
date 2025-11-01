@@ -18,7 +18,7 @@ from leandra.find_theorems import TheoremRequest, find_theorem
 from leandra.tools import run_lean_command
 
 DEFAULT_LEAN_TIMEOUT = 8.0
-MAX_HOLES = 20
+MAX_HOLES = 10
 PERMANENT_EXAMPLE_TAG = "permanent"
 SKETCH_PROOF_MODEL_CLASS = "sketch_proof"
 PROVE_SUBGOAL_MODEL_CLASS = "prove_subgoal"
@@ -26,7 +26,7 @@ PROVE_SUBGOAL_MODEL_CLASS = "prove_subgoal"
 # fmt: off
 
 #####
-#####  Top-Level Strategy
+##### Top-Level Strategy
 #####
 
 
@@ -233,7 +233,7 @@ def _has_errors(response: li_intf.BaseREPLResponse) -> bool:
 
 
 #####
-#####  Hole-Filling Strategy
+##### Hole-Filling Strategy
 #####
 
 
@@ -358,34 +358,34 @@ class ProveTheoremPolicy(dp.PolicyRecord[_ProveTheoremSig, ProveTheoremIP]):
     """
     Standard policy for `prove_theorem`.
 
+    This policies proceeds in two steps. First, it attempts a direct
+    proof and only if this fails, it tries to use sketching.
+
     Attributes:
+        direct: policy for trying  first direct proof before sketching.
         sketch: policy for sketching proofs.
         subgoal: policy for proving subgoals.
         lean_timeout: Timeout in seconds for checking sketches or proofs
             in direct modes.
-
-    !!! note
-        This policy does not leverage the "direct" proof mode. In the
-        future, we might want to consider a variant where for each
-        proof, a direct attempt is made before a sketch is made.
     """
 
+    direct: "ProveSubgoalPolicy | None" = None
     sketch: "SketchProofPolicy | None" = None
     subgoal: "ProveSubgoalPolicy | None" = None
     lean_timeout: float = DEFAULT_LEAN_TIMEOUT
 
     def instantiate(self):
-        ip = ProveTheoremIP(
-            sketch=(self.sketch or SketchProofPolicy()).instantiate(),
-            subgoal=(self.subgoal or ProveSubgoalPolicy()).instantiate(),
-        )
-        sp = (
-            dp.dfs()
-            @ dp.elim_join()
-            @ dp.elim_flag(ProofTechniqueFlag, "sketch")
-            @ _elim_lean_compute(self.lean_timeout)
-        )
-        return sp & ip
+        direct = (self.direct or ProveSubgoalPolicy()).instantiate()
+        sketch = (self.sketch or SketchProofPolicy()).instantiate()
+        subgoal = (self.subgoal or ProveSubgoalPolicy()).instantiate()
+        sp = dp.dfs() @ dp.elim_join() @ _elim_lean_compute(self.lean_timeout)
+        first = sp @ dp.elim_flag(
+            ProofTechniqueFlag, "direct"
+        ) & ProveTheoremIP(sketch, direct)
+        second = sp @ dp.elim_flag(
+            ProofTechniqueFlag, "sketch"
+        ) & ProveTheoremIP(sketch, subgoal)
+        return first.or_else(second)
 
 
 @dataclass(kw_only=True)
