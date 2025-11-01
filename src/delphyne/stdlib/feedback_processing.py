@@ -17,7 +17,7 @@ from delphyne.core.irefs import AnswerId, NodeId, SpaceId
 
 
 @dataclass
-class QueryFeedback:
+class AnswerFeedback:
     query: dp.AbstractQuery[Any]
     space_id: dp.irefs.SpaceId
     answer_id: AnswerId
@@ -36,7 +36,7 @@ def process_feedback(
     filter_sources: FeedbackFilter | None = None,
     filter_backprop_handlers: FeedbackFilter | None = None,
     verbose: bool = True,
-) -> Iterable[QueryFeedback]:
+) -> Iterable[AnswerFeedback]:
     """
     Propagate feedback within a trace.
 
@@ -83,7 +83,7 @@ def process_feedback(
 
     def propagate_good_value_message(
         node_id: NodeId,
-    ) -> Iterable[QueryFeedback]:
+    ) -> Iterable[AnswerFeedback]:
         # For every action, we look at the space elements that it
         # contains. If the element is an answer, we send a message to
         # it. If it is a nested tree, we send a message to the
@@ -115,7 +115,7 @@ def process_feedback(
         answer_id: AnswerId,
         space_id: SpaceId,
         message: hf.ValueFeedback[Any],
-    ) -> Iterable[QueryFeedback]:
+    ) -> Iterable[AnswerFeedback]:
         # log(f"Sending {type(message).__name__} to answer {answer_id}.")
         # Send a message to an answer, yielding a feedback item.
         space = resolver.resolve_space(space_id)
@@ -124,7 +124,7 @@ def process_feedback(
         source = space.source()
         assert isinstance(source, dp.AttachedQuery)
         query = source.query
-        yield QueryFeedback(
+        yield AnswerFeedback(
             query=query,
             space_id=space_id,
             answer_id=answer_id,
@@ -134,7 +134,7 @@ def process_feedback(
 
     def send_to_success_node(
         node_id: NodeId, message: hf.ValueFeedback[Any]
-    ) -> Iterable[QueryFeedback]:
+    ) -> Iterable[AnswerFeedback]:
         log(f"Sending {type(message).__name__} to success node {node_id}.")
         # We do not process a GoodValue message multiple times at a
         # given success node.
@@ -154,7 +154,7 @@ def process_feedback(
 
     def send_attached_message(
         attached: hf.AttachedFeedback[Any],
-    ) -> Iterable[QueryFeedback]:
+    ) -> Iterable[AnswerFeedback]:
         ref = attached.dst
         nref = resolver.trace.convert_global_node_ref(ref.node)
         eref = resolver.trace.convert_space_element_ref(nref, ref.element)

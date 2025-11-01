@@ -66,6 +66,7 @@ where = ["src"]
 # Formatting with ruff
 [tool.ruff]
 line-length = 79
+ignore = ["E731"]  # allow inline lambdas
 
 # Currently tested with pyright==1.1.406
 [tool.pyright]

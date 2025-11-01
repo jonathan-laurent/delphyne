@@ -78,14 +78,7 @@ def standard_answer_loader(
                 node_ids = [trace_data.success_nodes[0]]
             else:
                 node_ids = []
-        trace = dp.Trace.load(trace_data.trace)
-        strategy = object_loader.load_strategy_instance(
-            trace_data.strategy, trace_data.args
-        )
-        resolver = an.IRefResolver(
-            trace,
-            root=dp.reify(strategy),
-        )
+        resolver = trace_data.resolver(object_loader)
         raw_examples = fp.extract_examples(
             resolver,
             roots=[dp.irefs.NodeId(i) for i in node_ids],
@@ -179,14 +172,21 @@ def demo_with_name(demos: Sequence[dm.Demo], name: str) -> dm.Demo:
 
 
 @dataclass
-class _TraceData:
+class TraceData:
     strategy: str
     args: dict[str, Any]
     trace: dp.ExportableTrace
     success_nodes: Sequence[int]
 
+    def resolver(self, object_loader: an.ObjectLoader) -> an.IRefResolver:
+        trace = dp.Trace.load(self.trace)
+        strategy = object_loader.load_strategy_instance(
+            self.strategy, self.args
+        )
+        return an.IRefResolver(trace, root=dp.reify(strategy))
 
-def load_trace_data_from_command_file(path: Path) -> _TraceData:
+
+def load_trace_data_from_command_file(path: Path) -> TraceData:
     """
     Load trace-related data from a command file.
     """
@@ -206,4 +206,4 @@ def load_trace_data_from_command_file(path: Path) -> _TraceData:
     success_value = content.get(COMMAND_RESULT_SUCCESS_NODES_FIELD, [])
     trace = ty.pydantic_load(dp.ExportableTrace, trace_raw)
     success_nodes = ty.pydantic_load(Sequence[int], success_value)
-    return _TraceData(strategy, args, trace, success_nodes)
+    return TraceData(strategy, args, trace, success_nodes)
