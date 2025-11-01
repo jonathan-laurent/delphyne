@@ -32,6 +32,7 @@ from delphyne.stdlib.hindsight_feedback import (
     AttachedFeedback,
     BackpropagateFeedback,
     BadValue,
+    BadValueAlso,
     BetterValue,
     Feedback,
     GoodValue,

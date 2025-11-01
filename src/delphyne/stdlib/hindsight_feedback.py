@@ -39,6 +39,15 @@ class BetterValue[T](ValueFeedback[T]):
 
 
 @dataclass(frozen=True)
+class BadValueAlso[T](ValueFeedback[T]):
+    # This is for BadValue what BetterValue is for GoodValue.
+    # This communicates that a specific answer is another wrong answer,
+    # with a justification.
+    value: T
+    error: dp.Error
+
+
+@dataclass(frozen=True)
 class AttachedFeedback[T]:
     msg: ValueFeedback[T]
     dst: nd.TypedSpaceElementRef[T]

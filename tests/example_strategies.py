@@ -929,9 +929,9 @@ class AskNumber(dp.Query[dp.Response[int | dp.WrappedParseError, Never]]):
     __parser__ = dp.get_text.map(parse_83).wrap_errors.response
 
     @override
-    def unparse(self, value: dp.Response[Any, Any]):
-        assert isinstance(value.parsed, dp.FinalAnswer)
-        return dp.Answer(None, str(value.parsed.final))
+    def unparse(self, value: dp.Response[int | dp.WrappedParseError, Never]):
+        assert isinstance(val := value.unwrap(), int)
+        return dp.Answer(None, str(val))
 
 
 @strategy

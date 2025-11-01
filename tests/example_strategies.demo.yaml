@@ -613,7 +613,7 @@
     - run | success
   using:
     - command: "commands/run_get_magic_number"
-      backprop_with: [shortcut]
+      backprop_with: [first]
   queries: []
   expect:
     test_feedback:

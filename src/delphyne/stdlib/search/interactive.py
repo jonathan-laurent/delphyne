@@ -109,6 +109,18 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
         using `dfs` as a policy for example, the `max_depth` setting
         corresponds to the number of conversation rounds (or one plus
         the number of feedback cycles).
+
+    !!! note "Generated feedback"
+        If `produce_feedback` is `True`, this strategy produces two
+        kinds of feedback sources and two backpropagation handlers.
+        Feedback sources are emitted for every processing error,
+        targetting the last message in the conversation (for the source
+        with tag "last") or the first one (for the source with tag
+        "first"). Backpropagation handlers are also tagged with "last"
+        and "first" respectively, depending on whether `GoodValue` and
+        `BadValue` messages should be sent to the last answer in the
+        conversation or the very first one (as `BetterValue` or
+        `WrongValueAlso` messages).
     """
 
     prefix: dp.AnswerPrefix = []
@@ -167,37 +179,38 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
             prefix.append(msg)
             if produce_feedback:
                 err_f = dp.send(dp.BadValue(res), resp_ref)
-                yield from dp.feedback("error", [err_f])
+                yield from dp.feedback("last", [err_f])
+                err_f = dp.send(dp.BadValueAlso(resp, res), init_resp_ref)
+                yield from dp.feedback("first", [err_f])
             continue
 
         # Case where we have a final good answer.
         # We define a backward feedback function and then return the answer.
 
-        def backward(msg: dp.ValueFeedback[B], *, shortcut: bool = False):
+        def backward(shortcut: bool, msg: dp.ValueFeedback[B]):
+            # The `shortcut` argument determines whether feedback should
+            # be propagated to the last response in the conversation or
+            # to the first one.
             if isinstance(msg, dp.GoodValue):
                 if shortcut:
                     yield dp.send(dp.BetterValue(resp), init_resp_ref)
                 else:
                     yield dp.send(msg, resp_ref)
-            elif isinstance(msg, dp.BetterValue) and unprocess:
-                # We send a shortcut to the initial response, knowing
-                # that the raw answer will be discarded and only the
-                # parsed answer will matter.
-                v = unprocess(msg.value)
-                if v is not None:
-                    better = dp.Response[A, T](
-                        resp.answer,  # irrelevant
-                        dp.FinalAnswer(v),
-                    )
-                    yield dp.send(dp.BetterValue(better), init_resp_ref)
             elif isinstance(msg, dp.BadValue):
-                yield dp.send(msg, resp_ref)
+                if shortcut:
+                    yield dp.send(msg, resp_ref)
+                else:
+                    yield dp.send(dp.BadValueAlso(resp, msg.error), resp_ref)
+            elif isinstance(msg, dp.BetterValue) and unprocess:
+                if (v := unprocess(msg.value)) is not None:
+                    better = dp.BetterValue(dp.Response.pure(v))
+                    yield dp.send(better, init_resp_ref)
+            elif isinstance(msg, dp.BadValueAlso) and unprocess:
+                if (v := unprocess(msg.value)) is not None:
+                    bad = dp.BadValueAlso(dp.Response.pure(v), msg.error)
+                    yield dp.send(bad, init_resp_ref)
 
         if produce_feedback:
-            yield from dp.backward(
-                "last", res, partial(backward, shortcut=False)
-            )
-            yield from dp.backward(
-                "shortcut", res, partial(backward, shortcut=True)
-            )
+            yield from dp.backward("last", res, partial(backward, False))
+            yield from dp.backward("first", res, partial(backward, True))
         return res

@@ -121,6 +121,30 @@ class Response[F, T: md.AbstractTool[Any]]:
     answer: dp.Answer
     parsed: FinalAnswer[F] | ToolRequests[T]
 
+    @staticmethod
+    def pure[G](value: G) -> "Response[G, Any]":
+        """
+        A response with an dummy value for the `answer` field.
+
+        This is useful in particular for providing feedback for queries
+        that have a `Response` answer type. In this case, only the final
+        parsed answer matters.
+        """
+        answer = dp.Answer(None, dp.Structured(None))
+        parsed = FinalAnswer(value)
+        return Response(answer, parsed)
+
+    def unwrap(self) -> F:
+        """
+        Extract a final parsed answer.
+
+        Error if the response contains tool calls instead.
+        """
+        if isinstance(self.parsed, FinalAnswer):
+            return self.parsed.final
+        else:
+            raise RuntimeError("Not a final answer.")
+
 
 @dataclass
 class WrappedParseError:
