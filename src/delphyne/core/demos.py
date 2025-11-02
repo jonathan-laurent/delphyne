@@ -394,6 +394,26 @@ def translate_answer(ans: Answer) -> refs.Answer:
     return refs.Answer(ans.mode, content, tool_calls, ans.justification)
 
 
+def reverse_translate_answer(ans: refs.Answer) -> Answer:
+    structured = "auto"
+    if isinstance(ans.content, refs.Structured):
+        content = ans.content.structured
+        if isinstance(content, str):
+            structured = True
+    else:
+        content = ans.content
+    tool_calls = tuple(
+        [ToolCall(c.name, dict(c.args)) for c in ans.tool_calls]
+    )
+    return Answer(
+        answer=content,
+        call=tool_calls,
+        structured=structured,
+        mode=ans.mode,
+        justification=ans.justification,
+    )
+
+
 #####
 ##### Printing tests
 #####
