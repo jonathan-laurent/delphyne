@@ -24,6 +24,7 @@ COMMAND_ARGS_PATH = ("args",)
 COMMAND_STRATEGY_NAME_FIELD = "strategy"
 COMMAND_STRATEGY_ARGS_FIELD = "args"
 COMMAND_RESULT_PATH = ("outcome", "result")
+COMMAND_RESULT_SUCCESS_VALUES_FIELD = "values"
 COMMAND_RESULT_TRACE_FIELD = "raw_trace"
 COMMAND_RESULT_SUCCESS_NODES_FIELD = "success_nodes"
 
@@ -207,3 +208,20 @@ def load_trace_data_from_command_file(path: Path) -> TraceData:
     trace = ty.pydantic_load(dp.ExportableTrace, trace_raw)
     success_nodes = ty.pydantic_load(Sequence[int], success_value)
     return TraceData(strategy, args, trace, success_nodes)
+
+
+def load_success_values_from_command_file(
+    path: Path, type: Any
+) -> Sequence[Any]:
+    """
+    Load all success values from a command file, using the `type`
+    argument to properly deserialize them.
+    """
+    if not path.suffix:
+        path = path.with_suffix(COMMAND_FILE_EXT)
+    with open(path, "r") as f:
+        content: Any = yaml.safe_load(f)
+    for key in COMMAND_RESULT_PATH:
+        content = content[key]
+    success_values_raw = content[COMMAND_RESULT_SUCCESS_VALUES_FIELD]
+    return ty.pydantic_load(Sequence[type], success_values_raw)

@@ -20,6 +20,7 @@ import pandas as pd  # type: ignore
 import yaml
 
 import delphyne.core as dp
+import delphyne.stdlib.answer_loaders as al
 import delphyne.stdlib.commands as cmd
 from delphyne.stdlib.execution_contexts import ExecutionContext
 from delphyne.stdlib.tasks import run_command
@@ -52,6 +53,22 @@ def _relative_embeddings_cache_path(config_name: str) -> str:
     return str(
         _config_dir_path(Path("."), config_name) / EMBEDDINGS_CACHE_FILE
     )
+
+
+def summary_file_path(output_dir: Path) -> Path:
+    """
+    Public function to get the path to the summary file, given an
+    experiment's output directory.
+    """
+    return output_dir / RESULTS_SUMMARY
+
+
+def result_file_path(output_dir: Path, config_name: str) -> Path:
+    """
+    Public function to get the path to a configuration's result file,
+    given an experiment's output directory and the configuration name.
+    """
+    return _config_dir_path(output_dir, config_name) / RESULT_FILE
 
 
 class ExperimentConfig(Protocol):
@@ -590,6 +607,27 @@ class Experiment[C: ExperimentConfig]:
             print(f"Replaying configuration: {config_name}...")
             self.replay_config_by_name(config_name)
 
+    def config_success_values_by_name(
+        self, config_name: str, *, type: Any
+    ) -> Sequence[Any]:
+        """
+        Load the success values associated with a given configuration,
+        identified by name.
+        """
+        result_file = (
+            _config_dir_path(self.absolute_output_dir, config_name)
+            / RESULT_FILE
+        )
+        return al.load_success_values_from_command_file(result_file, type)
+
+    def config_success_values(self, config: C, *, type: Any) -> Sequence[Any]:
+        """
+        Load the success values associated with a given configuration.
+        """
+        config_name = self._existing_config_name(config)
+        assert config_name is not None
+        return self.config_success_values_by_name(config_name, type=type)
+
     def save_summary(
         self, ignore_missing: bool = False, add_timing: bool = False
     ):
@@ -938,6 +976,7 @@ class ExperimentCLI:
             verbose_snapshots: If `True`, snapshots are verbose regardless
                 of the `verbose_output` setting.
         """
+        # TODO: by default, we disregard experiment.export_raw_trace...
         self.experiment.cache_requests = cache
         self.experiment.export_raw_trace = verbose_output
         self.experiment.export_browsable_trace = verbose_output
