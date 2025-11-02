@@ -23,6 +23,7 @@ Iteration numbers start at 1.
 
 import random
 from collections.abc import Sequence
+from concurrent.futures import Future, ProcessPoolExecutor, as_completed
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Literal, Protocol, TypedDict, cast
@@ -40,11 +41,10 @@ import delphyne.utils.typing as ty
 from delphyne.utils.yaml import dump_yaml
 
 GLOBAL_EMBEDDINGS_CACHE_FILE = ec.DEFAULT_GLOBAL_EMBEDDINGS_CACHE_FILE
-EXPERIMENTS_RESULTS_SUMMARY_FILE = el.RESULTS_SUMMARY
 ITERATIONS_DIR = "iterations"
 FEEDBACK_FILE = "feedback.yaml"
 TRAINING_EXP_DIR = "train"
-TEST_EXP_DIR = "eval"
+TEST_EXP_DIR = "test"
 ANALYZE_EXP_DIR = "analyze"
 SUMMARIZE_EXP_DIR = "summarize"
 LEARNED_DIR = "learned"
@@ -66,18 +66,30 @@ performance.
 
 
 class SolveProblemFn(Protocol):
+    """
+    Function protocol for solving train or test problems.
+    """
+
     def __call__(
         self, problem_kind: ProblemKind, problem_name: str
     ) -> cmd.RunStrategyArgs: ...
 
 
 class GenerateTipsFn(Protocol):
+    """
+    Function protocol for generating tips from feedback.
+    """
+
     def __call__(
         self, feedback: "SerializedQueryFeedback"
     ) -> cmd.RunStrategyArgs: ...
 
 
 class SummarizeTipsFn(Protocol):
+    """
+    Function protocol for summarizing tips.
+    """
+
     def __call__(self, tips: "Sequence[Tip]") -> cmd.RunStrategyArgs: ...
 
 
@@ -89,7 +101,8 @@ class LearningExperiment:
     """
 
     context: ec.ExecutionContext
-    problems: Sequence[str]
+    training_problems: Sequence[str]
+    testing_problems: Sequence[str]
     directory: Path
     solve_problem: SolveProblemFn
     generate_tips: GenerateTipsFn
@@ -97,6 +110,11 @@ class LearningExperiment:
     feedback_filters: "FeedbackFilteringSettingsDict"
     enabled_feedback_nodes: Sequence[str]
     workers_setup: el.WorkersSetup[Any] | None = None
+
+    def run_cli(self):
+        import fire  # type: ignore
+
+        fire.Fire(LearningExperimentCLI(self))  # type: ignore
 
     @property
     def configs_context(self) -> "LearningExperimentContext":
@@ -128,13 +146,15 @@ class LearningExperiment:
         solved = df[df["success"]]["problem"]
         return set(solved)
 
-    def problems_to_solve_for_iteration(self, iteration: int) -> set[str]:
+    def training_problems_to_solve_for_iteration(
+        self, iteration: int
+    ) -> set[str]:
         """
         Return the set of problems to solve during a given iteration,
         which are the set of all problems that are unsolved so far.
         """
         prior_iterations = range(1, iteration)
-        problems = set(self.problems)
+        problems = set(self.training_problems)
         for it in prior_iterations:
             solved = self.solved_problems_at_iteration(it)
             problems.difference_update(solved)
@@ -170,7 +190,8 @@ class LearningExperiment:
     ##### Obtaining Experiments #####
 
     def training_experiment(self, iteration: int):
-        to_solve = self.problems_to_solve_for_iteration(iteration)
+        assert iteration >= 1
+        to_solve = self.training_problems_to_solve_for_iteration(iteration)
         configs = [SolveProblemConfig("train", p) for p in to_solve]
         return el.Experiment[SolveProblemConfig](
             config_class=SolveProblemConfig,
@@ -186,7 +207,28 @@ class LearningExperiment:
             export_raw_trace=True,
         )
 
+    def testing_experiment(self, iteration: int):
+        # We can have `iteration=0` here if we want to run tests before
+        # any learning happened.
+        assert iteration >= 0
+        to_solve = self.testing_problems
+        configs = [SolveProblemConfig("test", p) for p in to_solve]
+        return el.Experiment[SolveProblemConfig](
+            config_class=SolveProblemConfig,
+            configs=configs,
+            # Important: use a custom context that includes learned
+            # facts and demonstrations.
+            context=self.iteration_execution_context(iteration + 1),
+            output_dir=_iteration_folder(self.directory, iteration)
+            / TEST_EXP_DIR,
+            configs_context=self.configs_context,
+            config_naming=lambda c, _: c.problem,
+            workers_setup=self.workers_setup,
+            export_raw_trace=True,
+        )
+
     def generate_tips_experiment(self, iteration: int):
+        assert iteration >= 1
         feedback_entries = self.load_feedback_entries(iteration)
         configs = [
             GenerateTipsConfig(iteration=iteration, index=i)
@@ -205,6 +247,7 @@ class LearningExperiment:
         )
 
     def summarize_tips_experiment(self, iteration: int):
+        assert iteration >= 1
         configs = [
             SummarizeTipsConfig(iteration=iteration, query_type=qt)
             for qt in self.query_types
@@ -223,31 +266,53 @@ class LearningExperiment:
 
     ##### Processing Steps #####
 
-    def generate_feedback_file(self, iteration: int):
+    def generate_feedback_file(
+        self, iteration: int, max_workers: int, show_progress: bool
+    ) -> None:
         """
         Generate a feedback file for a given iteration by gathering
         feedback from all training experiment results and filtering them
         according to the configured settings.
         """
         # Gather feedback from all training experiment results
-        all_feedback: list[QueryFeedback] = []
         iteration_dir = _iteration_folder(self.directory, iteration)
         train_dir = iteration_dir / TRAINING_EXP_DIR
 
         # Iterate through all problems that were attempted
-        problems_to_solve = self.problems_to_solve_for_iteration(iteration)
-        for problem_name in problems_to_solve:
-            command_file = el.result_file_path(train_dir, problem_name)
-            assert command_file.exists()
-            # Extract feedback from this command file
-            # Get enabled feedback nodes from filter settings
-            problem_feedback = feedback_from_command_file(
-                command_file,
-                object_loader=self.context.object_loader(extra_objects=None),
-                problem_name=problem_name,
-                enabled_feedback_nodes=self.enabled_feedback_nodes,
-            )
-            all_feedback.extend(problem_feedback)
+        problems_to_solve = self.training_problems_to_solve_for_iteration(
+            iteration
+        )
+        problems_list = list(problems_to_solve)
+
+        all_feedback: list[QueryFeedback] = []
+        with ProcessPoolExecutor(max_workers=max_workers) as executor:
+            # Submit all tasks
+            futures: list[Future[Sequence[QueryFeedback]]] = []
+            for problem_name in problems_list:
+                command_file = el.result_file_path(train_dir, problem_name)
+                assert command_file.exists()
+                future = executor.submit(
+                    _process_single_problem_feedback,
+                    problem_name,
+                    command_file,
+                    self.context,
+                    self.enabled_feedback_nodes,
+                )
+                futures.append(future)
+            completed = 0
+            for future in as_completed(futures):
+                completed += 1
+                if show_progress:
+                    prog = f"{completed}/{len(problems_list)}"
+                    print(
+                        f"\rProcessing feedback: {prog} problems",
+                        end="",
+                        flush=True,
+                    )
+                problem_feedback = future.result()
+                all_feedback.extend(problem_feedback)
+            if show_progress:
+                print()  # New line after progress
 
         rng = random.Random(42)  # Use a fixed seed for reproducibility
         filtered_feedback = filter_feedback(
@@ -260,7 +325,7 @@ class LearningExperiment:
         )
         feedback_path.write_text(feedback_content)
 
-    def generate_learned_data(self, iteration: int):
+    def generate_learned_data(self, iteration: int) -> None:
         """
         Generate learned data (tips and demonstrations) for a given
         iteration. Tips are generated by copying the output of the
@@ -392,7 +457,97 @@ def _gather_tips(
 
 
 class LearningExperimentCLI:
-    pass
+    def __init__(self, experiment: LearningExperiment):
+        self.experiment = experiment
+
+    def train(
+        self,
+        *,
+        iter: int,
+        max_workers: int = 1,
+        retry_errors: bool = False,
+        interactive: bool = False,
+    ):
+        """
+        Solve training problems.
+        """
+        exp = self.experiment.training_experiment(iter)
+        exp.load()
+        if retry_errors:
+            exp.mark_errors_as_todos()
+        exp.resume(max_workers=max_workers, interactive=interactive)
+
+    def feedback(
+        self,
+        *,
+        iter: int,
+        max_workers: int = 1,
+    ):
+        """
+        Process training problem traces for producing feedback. This
+        does not issue LLM queries.
+        """
+        self.experiment.generate_feedback_file(
+            iter, max_workers=max_workers, show_progress=True
+        )
+
+    def analyze(
+        self,
+        *,
+        iter: int,
+        max_workers: int = 1,
+        retry_errors: bool = False,
+        interactive: bool = False,
+    ):
+        """
+        Generate tips from feedback.
+        """
+        exp = self.experiment.generate_tips_experiment(iter)
+        exp.load()
+        if retry_errors:
+            exp.mark_errors_as_todos()
+        exp.resume(max_workers=max_workers, interactive=interactive)
+
+    def summarize(
+        self,
+        *,
+        iter: int,
+        max_workers: int = 1,
+        retry_errors: bool = False,
+        interactive: bool = False,
+    ):
+        """
+        Summarize all generated tips.
+        """
+        exp = self.experiment.summarize_tips_experiment(iter)
+        exp.load()
+        if retry_errors:
+            exp.mark_errors_as_todos()
+        exp.resume(max_workers=max_workers, interactive=interactive)
+
+    def learn(self, *, iter: int):
+        """
+        Generate the learned data for a given iteration. This should be
+        relatively fast.
+        """
+        self.experiment.generate_learned_data(iter)
+
+    def test(
+        self,
+        *,
+        iter: int,
+        max_workers: int = 1,
+        retry_errors: bool = False,
+        interactive: bool = False,
+    ):
+        """
+        Solve testing problems.
+        """
+        exp = self.experiment.testing_experiment(iter)
+        exp.load()
+        if retry_errors:
+            exp.mark_errors_as_todos()
+        exp.resume(max_workers=max_workers, interactive=interactive)
 
 
 #####
@@ -483,6 +638,25 @@ def feedback_from_command_file(
             filter_sources=filter,
             filter_backprop_handlers=filter,
         )
+    )
+
+
+def _process_single_problem_feedback(
+    problem_name: str,
+    command_file: Path,
+    context: ec.ExecutionContext,
+    enabled_feedback_nodes: Sequence[str],
+) -> Sequence[QueryFeedback]:
+    """
+    Helper function to extract feedback from a single problem.
+    This is a top-level function to support pickling for ProcessPoolExecutor.
+    """
+    object_loader = context.object_loader(extra_objects=None)
+    return feedback_from_command_file(
+        command_file,
+        object_loader=object_loader,
+        problem_name=problem_name,
+        enabled_feedback_nodes=enabled_feedback_nodes,
     )
 
 
@@ -614,8 +788,17 @@ def filter_feedback(
 
 
 #####
-##### Demonstration Generation
+##### Learned Data
 #####
+
+
+class Tip(TypedDict):
+    """
+    A tip for how to answer a query, which can be stored in a data file.
+    """
+
+    name: str
+    content: str
 
 
 def generate_demonstrations(feedback: QueryFeedback) -> dm.QueryDemo | None:
@@ -656,13 +839,3 @@ def write_demonstration_file(
     path.parent.mkdir(parents=True, exist_ok=True)
     demo_file_content = dump_yaml(dm.DemoFile, demos, exclude_defaults=True)
     path.write_text(demo_file_content)
-
-
-#####
-##### Tips
-#####
-
-
-class Tip(TypedDict):
-    name: str
-    content: str
