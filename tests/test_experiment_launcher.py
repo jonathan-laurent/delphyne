@@ -21,7 +21,7 @@ class MakeSumConfig:
     allowed: list[int]
     goal: int
 
-    def instantiate(self):
+    def instantiate(self, context: object):
         return cmd.RunStrategyArgs(
             strategy="make_sum",
             args={"allowed": self.allowed, "goal": self.goal},
@@ -34,7 +34,7 @@ class MakeSumConfig:
 
 @dataclass
 class CachedComputationsConfig:
-    def instantiate(self):
+    def instantiate(self, context: object):
         return cmd.RunStrategyArgs(
             strategy="test_cached_computations",
             args={"n": 3},
@@ -76,14 +76,14 @@ def _init_worker(msg: str):
 )
 def test_experiment_launcher[C: dp.ExperimentConfig](
     name: str,
-    config_class: type[dp.ExperimentConfig],
+    config_class: type[C],
     configs: Sequence[C],
 ):
     root = Path(__file__).parent
     context = dp.ExecutionContext(
         modules=["example_strategies"],
     ).with_root(root)
-    experiment = dp.Experiment(
+    experiment = dp.Experiment[C](
         config_class=config_class,
         context=context,
         configs=configs,

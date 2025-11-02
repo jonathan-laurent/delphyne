@@ -6,7 +6,6 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 
 import code2inv
-
 import delphyne as dp
 import delphyne.stdlib.commands as cmd
 
@@ -23,7 +22,7 @@ class AbductionConfig:
     max_dollar_budget: float
     seed: int
 
-    def instantiate(self):
+    def instantiate(self, context: object):
         return cmd.RunStrategyArgs(
             strategy="prove_program_by_recursive_abduction",
             args={"prog": BENCHS[self.bench_name]},
@@ -49,7 +48,7 @@ class BaselineConfig:
     loop: bool = False
     max_dollar_budget: float | None = 0.2
 
-    def instantiate(self):
+    def instantiate(self, context: object):
         budget: dict[str, float] = {}
         if self.max_dollar_budget is not None:
             budget[dp.DOLLAR_PRICE] = self.max_dollar_budget

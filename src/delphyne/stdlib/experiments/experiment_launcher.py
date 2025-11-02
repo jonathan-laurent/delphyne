@@ -64,7 +64,17 @@ class ExperimentConfig(Protocol):
         overriden by the `Experiment` class.
     """
 
-    def instantiate(self) -> cmd.RunStrategyArgs: ...
+    def instantiate(self, context: object) -> cmd.RunStrategyArgs:
+        """
+        Instantiate the configuration into a `run_strategy` command
+        instance.
+
+        Arguments:
+            context: Additional global context information that can be
+                optionally passed by the experiment. By default,
+                experiments just pass `None`.
+        """
+        ...
 
 
 @dataclass
@@ -175,6 +185,9 @@ class Experiment[C: ExperimentConfig]:
             provided and the experiment already has a persistent state
             stored on disk, the list of configurations is loaded from
             there upon loading.
+        configs_context: A global context parameter to be passed to all
+            configurations' instantiation method. This value must be
+            picklable since it is sent to remote worker processes.
         name: Experiment name, which is stored in the persistent state
             file when provided and is otherwise not used.
         description: Experiment description, which is stored in the
@@ -213,6 +226,7 @@ class Experiment[C: ExperimentConfig]:
     context: ExecutionContext
     output_dir: Path | str  # relative path expected
     configs: Sequence[C] | None = None
+    configs_context: object | None = None
     name: str | None = None
     description: str | None = None
     config_naming: Callable[[C, uuid.UUID], str] | None = None
@@ -483,6 +497,7 @@ class Experiment[C: ExperimentConfig]:
                 executor.submit(
                     _run_config,
                     context=self.context,
+                    configs_context=self.configs_context,
                     worker_send=worker_send,
                     worker_receive=manager.Queue(),
                     config_name=name,
@@ -542,7 +557,7 @@ class Experiment[C: ExperimentConfig]:
         assert state is not None
         assert config_name is not None
         info = state.configs[config_name]
-        cmdargs = info.params.instantiate()
+        cmdargs = info.params.instantiate(self.configs_context)
         cmdargs.cache_file = _relative_cache_path(config_name)
         cmdargs.embeddings_cache_file = _relative_embeddings_cache_path(
             config_name
@@ -778,6 +793,7 @@ class _ConfigSnapshot:
 def _run_config(
     *,
     context: ExecutionContext,
+    configs_context: object | None,
     worker_send: Queue[_WorkerSent],
     worker_receive: Queue[_WorkerReceived],
     config_name: str,
@@ -830,7 +846,7 @@ def _run_config(
         file_path = config_dir / f
         if file_path.exists():
             file_path.unlink(missing_ok=True)
-    cmdargs = config.instantiate()
+    cmdargs = config.instantiate(configs_context)
     if cache_requests:
         # A relative path is expected!
         cmdargs.cache_file = _relative_cache_path(config_name)
