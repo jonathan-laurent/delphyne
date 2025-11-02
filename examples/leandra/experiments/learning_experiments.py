@@ -1,5 +1,6 @@
 from collections.abc import Sequence
-from dataclasses import replace
+from dataclasses import dataclass, replace
+from functools import partial
 from pathlib import Path
 
 import delphyne as dp
@@ -11,8 +12,17 @@ import minif2f
 TRAINING_THEOREMS = minif2f.load_minif2f("valid")
 TESTING_THEOREMS = minif2f.load_minif2f("test")
 INIT_COMMANDS = ["import MiniF2F.Minif2fImport"]
-MAX_DOLLARS_PER_PROBLEM = 2
-MAX_REQUESTS_PER_PROBLEM = 100
+
+
+@dataclass(kw_only=True)
+class ExperimentSettings:
+    training_problems: list[str]
+    testing_problems: list[str]
+    output: str
+    max_dollars_per_training_problem: float
+    max_requests_per_training_problem: int
+    max_dollars_per_testing_problem: float
+    max_requests_per_testing_problem: int
 
 
 def load_problem(problem_kind: dl.ProblemKind, problem_name: str):
@@ -22,15 +32,25 @@ def load_problem(problem_kind: dl.ProblemKind, problem_name: str):
         return TRAINING_THEOREMS[problem_name]
 
 
-def solve_problem(problem_kind: dl.ProblemKind, problem_name: str):
+def solve_problem(
+    settings: ExperimentSettings,
+    problem_kind: dl.ProblemKind,
+    problem_name: str,
+):
+    if problem_kind == "test":
+        max_dollars_per_problem = settings.max_dollars_per_testing_problem
+        max_requests_per_problem = settings.max_requests_per_testing_problem
+    else:
+        max_dollars_per_problem = settings.max_dollars_per_training_problem
+        max_requests_per_problem = settings.max_requests_per_training_problem
     return cmd.RunStrategyArgs(
         strategy="prove_theorem",
         args={"theorem": load_problem(problem_kind, problem_name)},
         policy="ProveTheoremPolicy",
         policy_args={},  # We use default arguments
         budget={
-            dp.DOLLAR_PRICE: MAX_DOLLARS_PER_PROBLEM,
-            dp.NUM_REQUESTS: MAX_REQUESTS_PER_PROBLEM,
+            dp.DOLLAR_PRICE: max_dollars_per_problem,
+            dp.NUM_REQUESTS: max_requests_per_problem,
         },
     )
 
@@ -60,18 +80,18 @@ def worker_init(config: li.LeanREPLConfig):
 
 
 def make_experiment(
-    training_problems: list[str], testing_problems: list[str], output: str
+    settings: ExperimentSettings,
 ):
     context = dp.workspace_execution_context(__file__)
     # We want custom initialization compatible with multiprocessing
     context = replace(context, init=())
-    output_directory = Path(__file__).absolute().parent / output
+    output_directory = Path(__file__).absolute().parent / settings.output
     return dl.LearningExperiment(
         context=context,
-        training_problems=training_problems,
-        testing_problems=testing_problems,
+        training_problems=settings.training_problems,
+        testing_problems=settings.testing_problems,
         directory=output_directory,
-        solve_problem=solve_problem,
+        solve_problem=partial(solve_problem, settings),
         generate_tips=generate_tips,
         summarize_tips=summarize_tips,
         feedback_filters={
