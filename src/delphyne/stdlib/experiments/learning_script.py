@@ -90,7 +90,9 @@ class SummarizeTipsFn(Protocol):
     Function protocol for summarizing tips.
     """
 
-    def __call__(self, tips: "Sequence[Tip]") -> cmd.RunStrategyArgs: ...
+    def __call__(
+        self, query_type: str, tips: "Sequence[Tip]"
+    ) -> cmd.RunStrategyArgs: ...
 
 
 @dataclass(kw_only=True)
@@ -482,7 +484,7 @@ class SummarizeTipsConfig(el.ExperimentConfig):
         tips = _gather_tips(
             context.directory, self.iteration, query_type=self.query_type
         )
-        return context.summarize_tips(tips)
+        return context.summarize_tips(self.query_type, tips)
 
 
 def _iteration_folder(top_dir: Path, iteration: int) -> Path:
@@ -525,9 +527,9 @@ def _solved_problems_from_summary_file(summary_path: Path) -> set[str]:
     """
     Load a summary CSV file and return the set of solved problems.
     """
-    import pandas as pd
+    import pandas as pd  # type: ignore
 
-    df = pd.read_csv(summary_path)  # type: ignore
+    df = cast(Any, pd.read_csv(summary_path))  # type: ignore
     solved = df[df["success"]]["problem"]
     return set(solved)
 

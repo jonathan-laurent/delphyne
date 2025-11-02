@@ -80,14 +80,18 @@ class GenerateProofTip(dp.Query[Tips]):
 
 @strategy
 def summarize_tips(
+    query_type: str,
     tips: Sequence[dl.Tip],
 ) -> Strategy[Branch, dp.PromptingPolicy, Sequence[dl.Tip]]:
-    summarized = yield from dp.branch(SummarizeTips(tips).using(dp.ambient_pp))
+    summarized = yield from dp.branch(
+        SummarizeTips(query_type, tips).using(dp.ambient_pp)
+    )
     return summarized.tips
 
 
 @dataclass
 class SummarizeTips(dp.Query[Tips]):
+    query_type: str
     tips: Sequence[dl.Tip]
     __parser__ = dp.structured
 
