@@ -1,6 +1,7 @@
 {% if feedback.label == "sketch_has_errors" %}
 {# feedback.meta.command / feedback.meta.errors / feedback.meta.warnings #}
 {% elif feedback.label == "too_many_holes" %}
+{# feedback.meta.num_holes / feedback.meta.max_holes #}
 {% else %}
 {{ fail("Unknown feedback label for SketchProof: " ~ feedback.label) }}
 {% endif %}

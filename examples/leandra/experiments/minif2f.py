@@ -18,9 +18,13 @@ Mapping problem names to theorem commands with a `sorry` proof.
 """
 
 
-def load_minif2f_file(split: Split):
+def repo_path() -> Path:
     delphyne_repo = Path(__file__).absolute().parent.parent
-    repo = delphyne_repo / "benchmarks" / "minif2f"
+    return delphyne_repo / "benchmarks" / "minif2f"
+
+
+def load_minif2f_file(split: Split):
+    repo = repo_path()
     file = "Test.lean" if split == "test" else "Valid.lean"
     path = repo / "MiniF2F" / file
     with open(path, "r") as f:

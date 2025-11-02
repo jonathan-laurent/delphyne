@@ -6,7 +6,7 @@ import itertools
 import random
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from typing import Any, Literal, Never, assert_never
+from typing import Any, Literal, Never, assert_never, override
 
 import delphyne as dp
 import lean_interact.interface as li_intf
@@ -163,6 +163,10 @@ class SketchProof(dp.Query[dp.Response[ProofSketch, Never]]):
     prefix: dp.AnswerPrefix
     __parser__ = dp.structured.response
 
+    @override
+    def globals(self) -> dict[str, object]:
+        return {"max_holes": MAX_HOLES}
+
 
 @strategy
 def check_sketch(
@@ -176,7 +180,8 @@ def check_sketch(
     """
     num_holes = sketch.num_holes()
     if num_holes > MAX_HOLES:
-        return dp.Error(label="too_many_holes", meta={"max_holes": MAX_HOLES})
+        return dp.Error(label="too_many_holes", meta={
+            "num_holes": num_holes, "max_holes": MAX_HOLES})
     compiled = compile_sketch(theorem, sketch, [None] * num_holes)
     response = yield from dp.compute(run_lean_command)(compiled)
     if _has_errors(response):

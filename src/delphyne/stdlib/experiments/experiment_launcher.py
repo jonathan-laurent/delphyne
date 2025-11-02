@@ -195,9 +195,10 @@ class Experiment[C: ExperimentConfig]:
             `cache_root` argument should not be set, since it is
             disregarded and overriden by the `Experiment` class.
         output_dir: The directory where all experiment data is stored
-            (persistent state, results, logs, caches...), relative to
-            the workspace root specified in `context`. The directory
-            is created if it does not alredy exist.
+            (persistent state, results, logs, caches...), either as an
+            absolute path or relative to the workspace root specified in
+            `context`. The directory is created if it does not alredy
+            exist.
         configs: A sequence of configurations to run. If `None` is
             provided and the experiment already has a persistent state
             stored on disk, the list of configurations is loaded from

@@ -111,6 +111,13 @@ class LearningExperiment:
     enabled_feedback_nodes: Sequence[str]
     workers_setup: el.WorkersSetup[Any] | None = None
 
+    def __post_init__(self):
+        # Check that directory is absolute
+        if not self.directory.is_absolute():
+            raise ValueError(
+                "LearningExperiment 'directory' must be an absolute path"
+            )
+
     def run_cli(self):
         import fire  # type: ignore
 

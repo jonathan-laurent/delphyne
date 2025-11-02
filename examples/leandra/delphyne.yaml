@@ -1,6 +1,7 @@
 strategy_dirs: []  # We expect Leandra to be installed using `pip install -e .`
 prompt_dirs: ["prompts/solver", "prompts/learner"]
 modules:
-  - "leandra.strategies"
-  - "leandra.policies"
+  - "leandra.find_theorems"
+  - "leandra.prove_theorems"
+  - "leandra.learning"
 demo_files: []
