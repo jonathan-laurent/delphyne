@@ -133,18 +133,16 @@ class LearningExperiment:
         """
         return list(self.feedback_filters.keys())
 
-    def solved_problems_at_iteration(self, iteration: int) -> set[str]:
+    def solved_training_problems_at_iteration(
+        self, iteration: int
+    ) -> set[str]:
         """
         Return the set of all problems solved during a given iteration.
         """
-        import pandas as pd
-
         iteration_dir = _iteration_folder(self.directory, iteration)
         train_dir = iteration_dir / TRAINING_EXP_DIR
         summary_path = el.summary_file_path(train_dir)
-        df = pd.read_csv(summary_path)  # type: ignore
-        solved = df[df["success"]]["problem"]
-        return set(solved)
+        return _solved_problems_from_summary_file(summary_path)
 
     def training_problems_to_solve_for_iteration(
         self, iteration: int
@@ -156,7 +154,7 @@ class LearningExperiment:
         prior_iterations = range(1, iteration)
         problems = set(self.training_problems)
         for it in prior_iterations:
-            solved = self.solved_problems_at_iteration(it)
+            solved = self.solved_training_problems_at_iteration(it)
             problems.difference_update(solved)
         return problems
 
@@ -354,6 +352,71 @@ class LearningExperiment:
             tips_file_content = dump_yaml(Sequence[Tip], tips)
             tips_file.write_text(tips_file_content)
 
+    ##### Analyze status #####
+
+    def print_training_results(self, final_iteration: int):
+        """
+        For all iterations from 1 to `final_iteration`, show how many
+        problems were solved during the iteration and the cumulative
+        total. Also show those figures as percentages of the total number of
+        training problems.
+        """
+
+        total_training = len(self.training_problems)
+        cumulative_solved: set[str] = set()
+        print("Training Results:")
+        print("-" * 80)
+        print(
+            f"{'Iter':<6} {'Solved':<10} {'%':<8} {'Cumulative':<12} {'%':<8}"
+        )
+        print("-" * 80)
+        for iteration in range(1, final_iteration + 1):
+            iteration_dir = _iteration_folder(self.directory, iteration)
+            train_dir = iteration_dir / TRAINING_EXP_DIR
+            summary_path = el.summary_file_path(train_dir)
+            if not summary_path.exists():
+                print(
+                    f"{iteration:<6} {'N/A':<10} {'N/A':<8} "
+                    f"{'N/A':<12} {'N/A':<8}"
+                )
+                continue
+            solved = _solved_problems_from_summary_file(summary_path)
+            num_solved = len(solved)
+            pct_solved = num_solved / total_training * 100
+            cumulative_solved.update(solved)
+            num_cumulative = len(cumulative_solved)
+            pct_cumulative = num_cumulative / total_training * 100
+            print(
+                f"{iteration:<6} {num_solved:<10} {pct_solved:<8.1f} "
+                f"{num_cumulative:<12} {pct_cumulative:<8.1f}"
+            )
+        print("-" * 80)
+
+    def print_testing_results(self, final_iteration: int):
+        """
+        For all iterations from 0 to `final_iteration` and if testing
+        was performed during this iteration, show how many problems were
+        solved, in absolute and as a percentage of the total number of
+        testing problems.
+        """
+
+        total_testing = len(self.testing_problems)
+        print("Testing Results:")
+        print("-" * 60)
+        print(f"{'Iter':<6} {'Solved':<10} {'%':<8}")
+        print("-" * 60)
+        for iteration in range(0, final_iteration + 1):
+            iteration_dir = _iteration_folder(self.directory, iteration)
+            test_dir = iteration_dir / TEST_EXP_DIR
+            summary_path = el.summary_file_path(test_dir)
+            if not summary_path.exists():
+                continue
+            solved = _solved_problems_from_summary_file(summary_path)
+            num_solved = len(solved)
+            pct_solved = num_solved / total_testing * 100
+            print(f"{iteration:<6} {num_solved:<10} {pct_solved:<8.1f}")
+        print("-" * 60)
+
 
 @dataclass
 class LearningExperimentContext:
@@ -449,6 +512,17 @@ def _gather_tips(
         tips = al.load_success_values_from_command_file(result_file, Tip)
         all_tips.extend(tips)
     return all_tips
+
+
+def _solved_problems_from_summary_file(summary_path: Path) -> set[str]:
+    """
+    Load a summary CSV file and return the set of solved problems.
+    """
+    import pandas as pd
+
+    df = pd.read_csv(summary_path)  # type: ignore
+    solved = df[df["success"]]["problem"]
+    return set(solved)
 
 
 #####
@@ -548,6 +622,14 @@ class LearningExperimentCLI:
         if retry_errors:
             exp.mark_errors_as_todos()
         exp.resume(max_workers=max_workers, interactive=interactive)
+
+    def results(self, *, final_iter: int):
+        """
+        Print a summary of training and testing results up to a given
+        iteration.
+        """
+        self.experiment.print_training_results(final_iter)
+        self.experiment.print_testing_results(final_iter)
 
 
 #####
