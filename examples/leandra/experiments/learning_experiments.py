@@ -56,11 +56,23 @@ def solve_problem(
 
 
 def generate_tips(feedback: dl.SerializedQueryFeedback) -> cmd.RunStrategyArgs:
-    assert False
+    return cmd.RunStrategyArgs(
+        strategy="generate_tips",
+        args={"feedback": feedback},
+        policy="generate_tips_policy",
+        policy_args={"model_name": "gpt-5", "effort": "low"},
+        budget={dp.NUM_REQUESTS: 2},  # 1 should be enough in theory
+    )
 
 
 def summarize_tips(tips: Sequence[dl.Tip]):
-    assert False
+    return cmd.RunStrategyArgs(
+        strategy="summarize_tips",
+        args={"tips": tips},
+        policy="generate_tips_policy",
+        policy_args={"model_name": "gpt-5", "effort": "medium"},
+        budget={dp.NUM_REQUESTS: 2},  # 1 should be enough in theory
+    )
 
 
 def global_init() -> li.LeanREPLConfig:
@@ -79,9 +91,7 @@ def worker_init(config: li.LeanREPLConfig):
     init_global_lean_server_with_config(config, INIT_COMMANDS)
 
 
-def make_experiment(
-    settings: ExperimentSettings,
-):
+def make_experiment(settings: ExperimentSettings):
     context = dp.workspace_execution_context(__file__)
     # We want custom initialization compatible with multiprocessing
     context = replace(context, init=())
@@ -94,6 +104,7 @@ def make_experiment(
         solve_problem=partial(solve_problem, settings),
         generate_tips=generate_tips,
         summarize_tips=summarize_tips,
+        # We generate 100 tips of each kind at much at each iteration
         feedback_filters={
             "SketchProof": dl.FeedbackFilteringSettings(
                 max_per_problem=(1, 1),
