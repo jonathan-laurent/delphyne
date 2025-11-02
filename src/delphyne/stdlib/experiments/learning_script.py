@@ -35,6 +35,7 @@ import delphyne.stdlib.execution_contexts as ec
 import delphyne.stdlib.experiments.experiment_launcher as el
 import delphyne.stdlib.feedback_processing as fp
 import delphyne.stdlib.hindsight_feedback as hf
+import delphyne.utils.typing as ty
 
 GLOBAL_EMBEDDINGS_CACHE_FILE = ec.DEFAULT_GLOBAL_EMBEDDINGS_CACHE_FILE
 EXPERIMENTS_RESULTS_SUMMARY_FILE = el.RESULTS_SUMMARY
@@ -91,6 +92,8 @@ class LearningExperiment:
     solve_problem: SolveProblemFn
     generate_tips: GenerateTipsFn
     summarize_tips: SummarizeTipsFn
+    feedback_filters: "FeedbackFilteringSettingsDict"
+    enabled_feedback_nodes: Sequence[str]
     workers_setup: el.WorkersSetup[Any] | None = None
 
     @property
@@ -204,6 +207,49 @@ class LearningExperiment:
             workers_setup=self.workers_setup,
             export_raw_trace=False,
         )
+
+    ##### Processing Steps #####
+
+    def generate_feedback_file(self, iteration: int):
+        """
+        Generate a feedback file for a given iteration by gathering
+        feedback from all training experiment results and filtering them
+        according to the configured settings.
+        """
+        import yaml
+
+        # Gather feedback from all training experiment results
+        all_feedback: list[QueryFeedback] = []
+        iteration_dir = _iteration_folder(self.directory, iteration)
+        train_dir = iteration_dir / TRAINING_EXP_DIR
+
+        # Iterate through all problems that were attempted
+        problems_to_solve = self.problems_to_solve_for_iteration(iteration)
+        for problem_name in problems_to_solve:
+            command_file = el.result_file_path(train_dir, problem_name)
+            assert command_file.exists()
+            # Extract feedback from this command file
+            # Get enabled feedback nodes from filter settings
+            problem_feedback = feedback_from_command_file(
+                command_file,
+                object_loader=self.context.object_loader(extra_objects=None),
+                problem_name=problem_name,
+                enabled_feedback_nodes=self.enabled_feedback_nodes,
+            )
+            all_feedback.extend(problem_feedback)
+
+        rng = random.Random(42)  # Use a fixed seed for reproducibility
+        filtered_feedback = filter_feedback(
+            all_feedback, rng=rng, settings=self.feedback_filters
+        )
+        serialized = [
+            ty.pydantic_dump(QueryFeedback, fb, exclude_defaults=False)
+            for fb in filtered_feedback
+        ]
+        feedback_path = iteration_dir / FEEDBACK_FILE
+        feedback_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(feedback_path, "w") as f:
+            yaml.dump(serialized, f, sort_keys=False)
 
 
 @dataclass
