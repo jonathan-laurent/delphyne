@@ -56,35 +56,42 @@ def _load_data(data_dirs: Sequence[Path]) -> dict[str, Any]:
 
     Find all files with extension `*.data.yaml` in the data_dirs,
     parse them and save everything in a big dict. If two files have
-    the same name, raise an error.
+    the same name, raise an error, unless these both represent lists, in
+    which cases the lists are concatenated.
     """
+
     result: dict[str, Any] = {}
-    seen_filenames: set[str] = set()
 
     for data_dir in data_dirs:
         if not data_dir.exists():
             continue
-
         for yaml_file in data_dir.glob("*.data.yaml"):
-            filename = yaml_file.name
-
-            # Check for duplicate filenames
-            if filename in seen_filenames:
-                raise ValueError(f"Duplicate data file found: {filename}")
-
-            seen_filenames.add(filename)
-
             # Parse the YAML file and add its contents to the result
             try:
                 with yaml_file.open() as f:
                     data = yaml.safe_load(f)
-                    if data is not None:
-                        # Use the filename (without extension) as the key
-                        key = yaml_file.stem.replace(".data", "")
-                        result[key] = data
             except Exception as e:
                 raise ValueError(f"Error parsing YAML file {yaml_file}: {e}")
-
+            if data is None:
+                # In case the YAML file is empty, we ignore it
+                continue
+            # Use the filename (without extension) as the key
+            key = yaml_file.stem.replace(".data", "")
+            if key in result:
+                # If the data already exists
+                current = result[key]
+                if isinstance(current, list) and isinstance(data, list):
+                    current = cast(list[Any], current)
+                    data = cast(list[Any], data)
+                    current.extend(data)
+                else:
+                    raise ValueError(
+                        f"Data key '{key}' already exists from a "
+                        f"previous file; cannot overwrite it from "
+                        f"{yaml_file}."
+                    )
+            else:
+                result[key] = data
     return result
 
 
