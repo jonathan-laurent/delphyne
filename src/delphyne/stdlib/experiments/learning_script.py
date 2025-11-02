@@ -10,12 +10,11 @@ Script for running learning experiments with Delphyne.
 <learning_experiment_name>/
   - embeddings.cache.h5
   - iterations/<iteration_i>
-    - problems.yaml: list of problems to look at for this iteration
-    - solved.yaml: list of problems solved at the end of the iteration
-    - feedback.yaml: feedback produced after inspecting traces
-    - runs: directory containing the main experiment's output
-    - eval: directory containing the evaluation experiment output
-    - learn: directory containing the learning experiment's output
+    - feedback.yaml:
+    - train
+    - test
+    - analyze
+    - summarize
     - data
       - <SketchProof>.tips.data.yaml
     - demos
@@ -27,24 +26,116 @@ import random
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Literal, Protocol, TypedDict
 
 import delphyne.analysis as an
 import delphyne.core_and_base as dp
 import delphyne.stdlib.answer_loaders as al
+import delphyne.stdlib.commands as cmd
 import delphyne.stdlib.execution_contexts as ec
+import delphyne.stdlib.experiments.experiment_launcher as el
 import delphyne.stdlib.feedback_processing as fp
 import delphyne.stdlib.hindsight_feedback as hf
 
 GLOBAL_EMBEDDINGS_CACHE_FILE = ec.DEFAULT_GLOBAL_EMBEDDINGS_CACHE_FILE
+EXPERIMENTS_RESULTS_SUMMARY_FILE = el.RESULTS_SUMMARY
 ITERATIONS_DIR = "iterations"
-PROBLEM_FILE = "problems.yaml"
-SOLVED_FILE = "solved.yaml"
 FEEDBACK_FILE = "feedback.yaml"
+TRAINING_EXP_DIR = "train"
+TEST_EXP_DIR = "eval"
+ANALYZE_EXP_DIR = "analyze"
+SUMMARIZE_EXP_DIR = "summarize"
+
+
+type ProblemKind = Literal["train", "test"]
+
+
+class SolveProblemFn(Protocol):
+    def __call__(
+        self, problem_kind: ProblemKind, problem_name: str
+    ) -> cmd.RunStrategyArgs: ...
+
+
+class GenerateTipsFn(Protocol):
+    def __call__(
+        self, feedback: "SerializedQueryFeedback"
+    ) -> cmd.RunStrategyArgs: ...
+
+
+class SummarizeTipsFn(Protocol):
+    def __call__(self, tips: "Sequence[Tip]") -> cmd.RunStrategyArgs: ...
 
 
 @dataclass
 class LearningExperiment:
     context: ec.ExecutionContext
+    problems: Sequence[str]
+    directory: Path
+    solve_problem: SolveProblemFn
+    generate_tips: GenerateTipsFn
+    summarize_tips: SummarizeTipsFn
+    workers_setup: el.WorkersSetup[Any] | None = None
+
+    @property
+    def configs_context(self) -> "LearningExperimentContext":
+        return LearningExperimentContext(
+            directory=self.directory,
+            solve_problem=self.solve_problem,
+            generate_tips=self.generate_tips,
+            summarize_tips=self.summarize_tips,
+        )
+
+    ##### Obtaining Experiments #####
+
+    pass
+
+
+@dataclass
+class LearningExperimentContext:
+    directory: Path
+    solve_problem: SolveProblemFn
+    generate_tips: GenerateTipsFn
+    summarize_tips: SummarizeTipsFn
+
+
+@dataclass
+class SolveProblemConfig(el.ExperimentConfig):
+    """
+    Configuration for solving a train or test problem.
+    """
+
+    kind: Literal["train", "eval"]
+    problem: str
+    iteration: int
+
+
+@dataclass
+class GenerateTipsConfig(el.ExperimentConfig):
+    """
+    Configuration for generating tips from feedback.
+    """
+
+    iteration: int
+    index: int
+
+
+@dataclass
+class SummarizeTipsConfig(el.ExperimentConfig):
+    """
+    Configuration for summarizing tips.
+    """
+
+    iteration: int
+
+
+#####
+##### Tips
+#####
+
+
+class Tip(TypedDict):
+    name: str
+    content: str
 
 
 #####
@@ -62,6 +153,12 @@ class QueryFeedback:
     query: dp.SerializedQuery
     good_answers: list[dp.Answer]
     bad_answers: list[tuple[dp.Answer, dp.Error]]
+
+
+type SerializedQueryFeedback = Any
+"""
+JSON representation of a `QueryFeedback` object.
+"""
 
 
 def gather_feedback_per_query(
