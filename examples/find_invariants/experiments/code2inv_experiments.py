@@ -7,7 +7,6 @@ from dataclasses import dataclass
 
 import code2inv
 import delphyne as dp
-import delphyne.stdlib.commands as cmd
 
 BENCHS = code2inv.load_all_benchmarks()
 
@@ -23,7 +22,7 @@ class AbductionConfig:
     seed: int
 
     def instantiate(self, context: object):
-        return cmd.RunStrategyArgs(
+        return dp.RunStrategyArgs(
             strategy="prove_program_by_recursive_abduction",
             args={"prog": BENCHS[self.bench_name]},
             policy="prove_program_by_saturation",
@@ -52,7 +51,7 @@ class BaselineConfig:
         budget: dict[str, float] = {}
         if self.max_dollar_budget is not None:
             budget[dp.DOLLAR_PRICE] = self.max_dollar_budget
-        return cmd.RunStrategyArgs(
+        return dp.RunStrategyArgs(
             strategy="prove_program_interactive",
             args={"prog": BENCHS[self.bench_name]},
             policy="prove_program_interactive_policy",

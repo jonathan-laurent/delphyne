@@ -6,6 +6,12 @@ Delphyne standard library.
 # pyright: reportUnusedImport=false
 
 from delphyne.stdlib.base import *
+from delphyne.stdlib.commands.run_strategy import (
+    RunStrategyArgs,
+    run_strategy,
+    RunLoadedStrategyArgs,
+    run_loaded_strategy,
+)
 from delphyne.stdlib.computations import (
     Compute,
     compute,
