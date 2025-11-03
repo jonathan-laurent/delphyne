@@ -1,0 +1,9 @@
+- name_guess: Finset.sum_add
+  description: "∑_i (A_i + B_i) = ∑_i A_i + ∑_i B_i"
+  blacklist: []
+- name_guess: lobg_b_eq_one
+  description: "log_b(b) = 1"
+  blacklist: []
+- name_guess: geom_mean_le_arith_mean
+  description: "Inequality of arithmetic and geometric means for n real variables"
+  blacklist: []

@@ -1,0 +1,5 @@
+{% if feedback.label == "not_unique_loogle_hit" %}
+No theorem with this name exists in Mathlib. Please answer with the identifier of a Mathlib theorem and nothing else.
+{% else %}
+{{ fail("Unknown feedback label for FindTheorem: " ~ feedback.label) }}
+{% endif %}

@@ -4,10 +4,9 @@ Strategy for finding Lean theorems.
 
 from collections.abc import Sequence
 from dataclasses import dataclass, replace
-from typing import assert_never
 
 import delphyne as dp
-from delphyne import Branch, Compute, Fail, Strategy, strategy
+from delphyne import Branch, Compute, Strategy, strategy
 
 from leandra import loogle_utils as loogle
 
@@ -80,7 +79,7 @@ def find_theorem(
         step=lambda prefix, _:
             FindTheorem(request, prefix).using(lambda p: p.step, IP),
         process=lambda ans, _:
-            unique_loogle_hit_or_fail(ans).using(lambda p: p.process, IP),
+            unique_loogle_hit_or_error(ans).using(lambda p: p.process, IP),
         tools={LoogleCall: lambda call:
             call_loogle(call.loogle_request).using(lambda p: p.loogle, IP)})
     return loogle_hit
@@ -102,8 +101,7 @@ class FindTheorem(dp.Query[dp.Response[str, LoogleCall]]):
 
     Loogle tool calls can return error or success values. Returning a
     theorem name that does not exist (i.e. does not result in a unique
-    Loogle hit) results in a failure. Thus, no feedback prompt is
-    necessary.
+    Loogle hit) results in an error with label `not_unique_loogle_hit`.
     """
 
     request: TheoremRequest
@@ -143,15 +141,16 @@ def unique_loogle_hit(
 
 
 @strategy
-def unique_loogle_hit_or_fail(
+def unique_loogle_hit_or_error(
     theorem_name: str,
-) -> Strategy[dp.Compute | Fail, None, loogle.LoogleHit]:
+) -> Strategy[dp.Compute, None, loogle.LoogleHit | dp.Error]:
     """
-    Wrapper around `call_loogle` that fails unless there is a unique hit.
+    Wrapper around `call_loogle` that returns an error unless there is a
+    unique hit.
     """
     res = yield from unique_loogle_hit(theorem_name)
     if res is None:
-        assert_never((yield from dp.fail("selected_absent_theorem")))
+        return dp.Error(label="not_unique_loogle_hit")
     return res
 
 
@@ -163,7 +162,7 @@ def unique_loogle_hit_or_fail(
 @dataclass
 class FindTheoremIP:
     step: dp.PromptingPolicy
-    process: dp.Policy[Compute | Fail, None]
+    process: dp.Policy[Compute, None]
     loogle: dp.Policy[Compute, None]
 
 
