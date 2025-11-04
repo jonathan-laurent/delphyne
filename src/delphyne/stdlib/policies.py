@@ -765,4 +765,4 @@ class PolicyRecord[N: Node, P](StandardPolicy[N, P]):
 
     @override
     def __call__[T](self, tree: dp.Tree[N, P, T], env: PolicyEnv) -> Stream[T]:
-        return self.instantiate_with(env)(tree, env)
+        return self.instantiate()(tree, env)
