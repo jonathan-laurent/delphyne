@@ -2,6 +2,7 @@
 Object Loaders
 """
 
+import importlib
 import sys
 import threading
 from collections import defaultdict
@@ -117,7 +118,7 @@ class ObjectLoader:
             with _append_path(strategy_dirs):
                 for module_name in modules:
                     try:
-                        module = __import__(module_name)
+                        module = importlib.import_module(module_name)
                         self.modules.append(module)
                     except AttributeError:
                         raise ModuleNotFound(module_name)
