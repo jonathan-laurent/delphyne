@@ -1,0 +1,12 @@
+command: run_strategy
+args:
+  strategy: find_theorem
+  args:
+    request:
+      name_guess: Finset.sum_add
+      description: "∑_i (A_i + B_i) = ∑_i A_i + ∑_i B_i"
+      blacklist: []
+  policy: FindTheoremPolicy
+  policy_args: {}
+  budget:
+    num_requests: 4

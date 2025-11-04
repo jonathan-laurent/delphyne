@@ -18,6 +18,7 @@ class ServerConfig:
     timeout: int = 1
     retry_base_delay: int = 10
     max_retries: int = 3
+    max_shown_hits: int | None = 8
 
     @staticmethod
     def from_env() -> "ServerConfig":
@@ -74,7 +75,13 @@ def query_loogle(request: str) -> LoogleResults:
             if response.status_code == 200:
                 data = response.json()
                 adapter = pydantic.TypeAdapter[LoogleResults](LoogleResults)
-                return adapter.validate_python(data)
+                results = adapter.validate_python(data)
+                if (
+                    isinstance(results, LoogleHits)
+                    and config.max_shown_hits is not None
+                ):
+                    results.hits = results.hits[: config.max_shown_hits]
+                return results
             else:
                 raise Exception(
                     f"Loogle Error {response.status_code}: {response.text}"

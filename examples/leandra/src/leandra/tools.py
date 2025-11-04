@@ -77,6 +77,7 @@ def init_global_lean_server_with_config(
     When using multiprocessing, this function should be called in each
     worker process.
     """
+    global _global_lean_server
     if _global_lean_server is not None:
         return
     server = li.AutoLeanServer(config)
@@ -91,7 +92,6 @@ def init_global_lean_server_with_config(
                 f"Failed to run init command '{cmd}': {res.message}"
             )
         env = res.env
-    global _global_lean_server
     _global_lean_server = _LeanServer(server=server, env=env)
 
 

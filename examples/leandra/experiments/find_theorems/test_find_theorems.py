@@ -24,7 +24,7 @@ class FindTheoremConfig:
 
     def instantiate(self, context: object):
         return dp.RunStrategyArgs(
-            strategy="find_theorems",
+            strategy="find_theorem",
             args={"request": BENCHS[self.problem]},
             policy="FindTheoremPolicy",
             policy_args={"model_name": self.model, "effort": self.effort},
