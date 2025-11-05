@@ -43,13 +43,12 @@ PRICING: dict[str, tuple[float, float, float]] = {
     "gpt-5": (1.25, 0.125, 10.00),  # cached input 10x less expensive!
     "gpt-5-mini": (0.250, 0.025, 2.00),
     "gpt-5-nano": (0.050, 0.005, 0.40),
-    "gpt-4.1": (1.10, 0.275, 4.40),
-    "gpt-4.1-mini": (0.80, 0.20, 3.20),
-    "gpt-4.1-nano": (0.20, 0.05, 0.80),
+    "gpt-4.1": (2.00, 0.50, 8.00),
+    "gpt-4.1-mini": (0.40, 0.10, 1.60),
+    "gpt-4.1-nano": (0.10, 0.025, 0.40),
     "gpt-4o": (2.50, 1.25, 10.00),
     "gpt-4o-mini": (0.15, 0.075, 0.60),  # cached input = input ×50% ⇒ 0.075
-    "o4-mini": (4.00, 1.00, 16.00),
-    "o3": (10.00, 2.50, 40.00),
+    "o3": (2.00, 0.50, 8.00),
     "mistral-small-2503": (0.10, 0.10, 0.30),
     "magistral-small-2506": (0.5, 0.5, 1.5),
     "deepseek-chat": (0.27, 0.07, 1.10),
@@ -114,10 +113,10 @@ def _get_pricing(model_name: str) -> md.ModelPricing | None:
     Returns None if the model is not found.
     """
     if model_name in PRICING:
-        inp, out, out_cached = PRICING[model_name]
+        inp, cached_inp, out = PRICING[model_name]
         return md.ModelPricing(
-            dollars_per_cached_input_token=out_cached * md.PER_MILLION,
             dollars_per_input_token=inp * md.PER_MILLION,
+            dollars_per_cached_input_token=cached_inp * md.PER_MILLION,
             dollars_per_output_token=out * md.PER_MILLION,
         )
     return None
