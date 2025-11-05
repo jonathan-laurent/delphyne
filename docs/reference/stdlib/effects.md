@@ -84,6 +84,8 @@
 
 ::: delphyne.stdlib.nodes.join
 
+::: delphyne.stdlib.nodes.elim_join
+
 ## Compute
 
 ::: delphyne.stdlib.computations.Compute

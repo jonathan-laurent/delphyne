@@ -77,8 +77,21 @@ class ExperimentConfig(Protocol):
     which induce a `run_strategy` call.
 
     !!! note
-        Caching-related arguments do not need to be set since they are
-        overriden by the `Experiment` class.
+        The following arguments must not be set since they are managed
+        by the `Experiment` class. Any specified value may be discarded.
+
+        - `cache_file`
+        - `embeddings_cache_file`
+        - `cache_mode`
+
+        The following arguments may be set, but the `Experiment` class
+        offers options to override them.
+
+        - `log_level`
+        - `export_raw_trace`
+        - `export_log`
+        - `export_browsable_trace`
+        - `export_all_on_pull`
     """
 
     def instantiate(self, context: object) -> cmd.RunStrategyArgs:
@@ -219,16 +232,21 @@ class Experiment[C: ExperimentConfig]:
             issuing LLM calls.
         workers_setup: If provided, specifies the setup work to be
             performed on all processes (see `WorkersSetup`).
-        log_level: If provided, overrides the `log_level` argument of
-            the command returned by the `experiment` function.
+        log_level: Minimum log level to record. Messages with a lower
+            level will be ignored. (Override the corresponding
+            `RunStrategyArgs` setting if provided.)
         export_raw_trace: Whether to export the raw trace for all
-            configuration runs.
+            configuration runs. (Override the corresponding
+            `RunStrategyArgs` setting if provided.)
         export_log: Whether to export the log messages for all
-            configuration runs.
+            configuration runs. (Override the corresponding
+            `RunStrategyArgs` setting if provided.)
         export_browsable_trace: Whether to export a browsable trace for
             all configuration runs, which can be visualized in the VSCode
-            extension (see `delphyne.analysis.feedback.Trace`). However,
-            such traces can be large.
+            extension (see `delphyne.analysis.feedback.Trace`). Note that
+            such traces can be large and can be generated after the fact
+            using the Delphyne CLI. (Override the corresponding
+            `RunStrategyArgs` setting if provided.)
         verbose_snapshots: If `True`, when a snapshot is requested, all
             result information (raw trace, log, browsable trace) is
             dumped, regardless of other settings.
@@ -251,10 +269,10 @@ class Experiment[C: ExperimentConfig]:
     cache_requests: bool = True
     workers_setup: WorkersSetup[Any] | None = None
     log_level: dp.LogLevel | None = None
-    export_raw_trace: bool = True
-    export_log: bool = True
-    export_browsable_trace: bool = True
-    verbose_snapshots: bool = False
+    export_raw_trace: bool | None = None
+    export_log: bool | None = None
+    export_browsable_trace: bool | None = None
+    verbose_snapshots: bool | None = None
 
     def __post_init__(self):
         # We override the cache root directory.
@@ -840,10 +858,10 @@ def _run_config(
     config: ExperimentConfig,
     cache_requests: bool,
     log_level: dp.LogLevel | None,
-    export_raw_trace: bool,
-    export_log: bool,
-    export_browsable_trace: bool,
-    verbose_snapshots: bool,
+    export_raw_trace: bool | None,
+    export_log: bool | None,
+    export_browsable_trace: bool | None,
+    verbose_snapshots: bool | None,
 ) -> tuple[str, bool]:
     # Setup a monitor
     started = _ConfigStarted(config_name, worker_receive, datetime.now())
@@ -898,10 +916,14 @@ def _run_config(
             missing_ok=True
         )
     cmdargs.cache_mode = "create"
-    cmdargs.export_browsable_trace = export_browsable_trace
-    cmdargs.export_log = export_log
-    cmdargs.export_raw_trace = export_raw_trace
-    cmdargs.export_all_on_pull = verbose_snapshots
+    if export_browsable_trace is not None:
+        cmdargs.export_browsable_trace = export_browsable_trace
+    if export_log is not None:
+        cmdargs.export_log = export_log
+    if export_raw_trace is not None:
+        cmdargs.export_raw_trace = export_raw_trace
+    if verbose_snapshots is not None:
+        cmdargs.export_all_on_pull = verbose_snapshots
     if log_level is not None:
         cmdargs.log_level = log_level
     try:
@@ -952,11 +974,13 @@ class ExperimentCLI:
         *,
         max_workers: int = 1,
         retry_errors: bool = False,
-        cache: bool = True,
-        verbose_output: bool = False,
-        log_level: str | None = None,
         interactive: bool = False,
-        verbose_snapshots: bool = False,
+        log: bool | None = None,
+        log_level: str | None = None,
+        cache: bool | None = None,
+        raw_trace: bool | None = None,
+        browsable_trace: bool | None = None,
+        verbose_snapshots: bool | None = None,
     ):
         """
         Start or resume the experiment.
@@ -964,25 +988,34 @@ class ExperimentCLI:
         Attributes:
             max_workers: Number of parallel process workers to use.
             retry_errors: Mark failed configurations to be retried.
-            cache: Enable caching of LLM requests and potentially
-                non-replicable computations.
-            verbose_output: Export raw traces and browsable traces in
-                result files, enabling inspection by the Delphyne VSCode
-                extension's tree view.
             log_level: If provided, overrides the `log_level` argument of
                 the command returned by the `experiment` function.
             interactive: If `True`, pressing `Enter` at any point during
                 execution prints the current status of all workers and
                 dumps a snapshot of ongoing tasks on disk.
-            verbose_snapshots: If `True`, snapshots are verbose regardless
-                of the `verbose_output` setting.
+            cache: If provided, override the `cache_requests` setting of
+                the experiment.
+            log: If provided, override the `export_log` setting of the
+                experiment.
+            log_level: If provided, override the `log_level` setting of
+                the experiment.
+            raw_trace: If provided, override the `export_raw_trace`
+                setting of the experiment.
+            browsable_trace: If provided, override the
+                `export_browsable_trace` setting of the experiment.
+            verbose_snapshots: If provided, override the
+                `verbose_snapshots` setting of the experiment.
         """
-        # TODO: by default, we disregard experiment.export_raw_trace...
-        self.experiment.cache_requests = cache
-        self.experiment.export_raw_trace = verbose_output
-        self.experiment.export_browsable_trace = verbose_output
-        self.experiment.export_log = True
-        self.experiment.verbose_snapshots = verbose_snapshots
+        if cache is not None:
+            self.experiment.cache_requests = cache
+        if raw_trace is not None:
+            self.experiment.export_raw_trace = raw_trace
+        if browsable_trace is not None:
+            self.experiment.export_browsable_trace = browsable_trace
+        if log is not None:
+            self.experiment.export_log = log
+        if verbose_snapshots is not None:
+            self.experiment.verbose_snapshots = verbose_snapshots
         if log_level is not None:
             assert dp.valid_log_level(log_level), (
                 f"Invalid log level: {log_level}"
