@@ -31,32 +31,32 @@
     outputs:
       - content:
           structured:
-            title: The Many Facets of Love
+            title: 'Understanding Love: The Essence of Human Connection'
             authors:
               - Jane Doe
               - John Smith
         tool_calls: []
       - content:
           structured:
-            title: 'The Many Faces of Love: Exploring Its Depths and Dimensions'
+            title: The Multifaceted Nature of Love
             authors:
               - Jane Doe
               - John Smith
         tool_calls: []
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 2.0
-        input_tokens: 89.0
-        output_tokens: 44.0
-        cached_input_tokens: 0.0
-        price: 7.999999999999999e-05
+        num_requests: 1
+        num_completions: 2
+        input_tokens: 89
+        output_tokens: 40
+        cached_input_tokens: 0
+        price: 9.96e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
-      completion_tokens: 44
+      completion_tokens: 40
       prompt_tokens: 89
-      total_tokens: 133
+      total_tokens: 129
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
@@ -105,25 +105,25 @@
         tool_calls: []
       - content:
           structured:
-            title: Exploring the Multifaceted Nature of Love
+            title: The Many Facets of Love
             authors:
               - Jane Doe
               - John Smith
         tool_calls: []
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 2.0
-        input_tokens: 89.0
-        output_tokens: 40.0
-        cached_input_tokens: 0.0
-        price: 7.92e-05
+        num_requests: 1
+        num_completions: 2
+        input_tokens: 89
+        output_tokens: 38
+        cached_input_tokens: 0
+        price: 9.64e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
-      completion_tokens: 40
+      completion_tokens: 38
       prompt_tokens: 89
-      total_tokens: 129
+      total_tokens: 127
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
@@ -172,25 +172,25 @@
         tool_calls: []
       - content:
           structured:
-            title: 'Understanding Love: A Multifaceted Emotion'
+            title: The Multifaceted Nature of Love
             authors:
-              - Alex Morgan
-              - Jamie Lee
+              - Alex Johnson
+              - Maria Gonzalez
         tool_calls: []
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 2.0
-        input_tokens: 89.0
-        output_tokens: 41.0
-        cached_input_tokens: 0.0
-        price: 7.939999999999999e-05
+        num_requests: 1
+        num_completions: 2
+        input_tokens: 89
+        output_tokens: 40
+        cached_input_tokens: 0
+        price: 9.96e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
-      completion_tokens: 41
+      completion_tokens: 40
       prompt_tokens: 89
-      total_tokens: 130
+      total_tokens: 129
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
@@ -232,31 +232,32 @@
     outputs:
       - content:
           structured:
-            title: The Many Dimensions of Love
+            title: 'Exploring the Depths of Love: Its Meaning and Impact'
             authors:
-              - Alex Johnson
+              - Jane Doe
+              - John Smith
         tool_calls: []
       - content:
           structured:
-            title: The Many Dimensions of Love
+            title: The Multifaceted Nature of Love
             authors:
               - Jane Doe
               - John Smith
         tool_calls: []
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 2.0
-        input_tokens: 89.0
-        output_tokens: 33.0
-        cached_input_tokens: 0.0
-        price: 7.78e-05
+        num_requests: 1
+        num_completions: 2
+        input_tokens: 89
+        output_tokens: 44
+        cached_input_tokens: 0
+        price: 0.000106
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
-      completion_tokens: 33
+      completion_tokens: 44
       prompt_tokens: 89
-      total_tokens: 122
+      total_tokens: 133
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0

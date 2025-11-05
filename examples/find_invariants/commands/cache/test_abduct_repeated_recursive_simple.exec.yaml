@@ -43,10 +43,6 @@
                   done;
                   assert { x >= 0 }  (* GOAL *)
               goal_formula: x >= 0
-        tool_calls: []
-    budget:
-      values: {}
-    log_items: []
 - input:
     request:
       chat:
@@ -408,7 +404,7 @@
         num_completions: 1
         input_tokens: 3090
         output_tokens: 36
-        price: 0.00031259999999999995
+        price: 0.00031979999999999997
     log_items: []
     model_name: mistral-small-2503
     usage_info:
@@ -489,10 +485,6 @@
                   done;
                   assert { true }  (* GOAL *)
               goal_formula: 'true'
-        tool_calls: []
-    budget:
-      values: {}
-    log_items: []
 - input:
     request:
       chat:
@@ -567,7 +559,3 @@
                   done;
                   assert { x >= 0 }  (* GOAL *)
               goal_formula: x >= 0
-        tool_calls: []
-    budget:
-      values: {}
-    log_items: []

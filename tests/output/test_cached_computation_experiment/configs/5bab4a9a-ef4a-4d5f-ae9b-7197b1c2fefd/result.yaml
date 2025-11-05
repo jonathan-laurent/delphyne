@@ -9,7 +9,8 @@ args:
   policy_args: {}
   budget:
     price: 0
-  cache_file: configs/a96a8a26-8f5a-4ae9-ba59-00f8cbe9e9b9/cache.yaml
+  cache_file: configs/5bab4a9a-ef4a-4d5f-ae9b-7197b1c2fefd/cache.yaml
+  embeddings_cache_file: configs/5bab4a9a-ef4a-4d5f-ae9b-7197b1c2fefd/embeddings.cache.h5
   cache_mode: create
 outcome:
   diagnostics: []
@@ -22,35 +23,37 @@ outcome:
       - 4
     raw_trace:
       nodes:
-        1: nested(0, $main)
-        2: child(1, query{@1})
-        3: child(2, query{@2})
-        4: child(3, query{@3})
-      queries:
-        - node: 1
-          space: query
-          answers:
-            1:
-              mode: null
-              content: |
-                - 3
-                - 4
-        - node: 2
-          space: query
-          answers:
-            2:
-              mode: null
-              content: |
-                - 3
-                - 4
-        - node: 3
-          space: query
-          answers:
-            3:
-              mode: null
-              content: |
-                - 4
-                - 5
+        1: nested($0)
+        2: child(%1, $1{@1})
+        3: child(%2, $2{@2})
+        4: child(%3, $3{@3})
+      spaces:
+        0: main
+        1: local(%1, query)
+        2: local(%2, query)
+        3: local(%3, query)
+      answers:
+        1:
+          space: 1
+          answer:
+            mode: null
+            content: |
+              - 3
+              - 4
+        2:
+          space: 2
+          answer:
+            mode: null
+            content: |
+              - 3
+              - 4
+        3:
+          space: 3
+          answer:
+            mode: null
+            content: |
+              - 4
+              - 5
     log: []
     browsable_trace:
       nodes:
@@ -64,6 +67,7 @@ outcome:
           properties:
             - - with_ids: query
                 with_hints: null
+              - 1
               - kind: query
                 name: __Computation__
                 args:
@@ -84,7 +88,7 @@ outcome:
                         - 4
           actions:
             - ref:
-                with_ids: query{@1}
+                with_ids: $1{@1}
                 with_hints: null
               hints: null
               related_success_nodes: []
@@ -109,6 +113,7 @@ outcome:
           properties:
             - - with_ids: query
                 with_hints: null
+              - 2
               - kind: query
                 name: __Computation__
                 args:
@@ -129,7 +134,7 @@ outcome:
                         - 4
           actions:
             - ref:
-                with_ids: query{@2}
+                with_ids: $2{@2}
                 with_hints: null
               hints: null
               related_success_nodes: []
@@ -157,6 +162,7 @@ outcome:
           properties:
             - - with_ids: query
                 with_hints: null
+              - 3
               - kind: query
                 name: __Computation__
                 args:
@@ -177,7 +183,7 @@ outcome:
                         - 5
           actions:
             - ref:
-                with_ids: query{@3}
+                with_ids: $3{@3}
                 with_hints: null
               hints: null
               related_success_nodes: []
@@ -212,3 +218,13 @@ outcome:
             - child
             - 3
             - 0
+      spaces:
+        1:
+          - 1
+          - 0
+        2:
+          - 2
+          - 0
+        3:
+          - 3
+          - 0

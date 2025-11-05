@@ -1,0 +1,2689 @@
+# delphyne-command
+
+command: run_strategy
+args:
+  strategy: make_sum
+  args:
+    allowed:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+    goal: 5
+  policy: make_sum_policy
+  policy_args: {}
+  budget:
+    price: 0.05
+  cache_file: configs/aa9ff4b7-a4c4-4e60-a367-7ddc53bebd2a/cache.yaml
+  embeddings_cache_file: configs/aa9ff4b7-a4c4-4e60-a367-7ddc53bebd2a/embeddings.cache.h5
+  cache_mode: create
+outcome:
+  diagnostics: []
+  result:
+    success: true
+    values:
+      - - 2
+        - 3
+    spent_budget:
+      num_requests: 26
+      num_completions: 26
+      input_tokens: 3458
+      output_tokens: 282
+      cached_input_tokens: 0
+      price: 0.0006879
+    success_nodes:
+      - 2
+    raw_trace:
+      nodes:
+        1: nested($0)
+        2: child(%1, $1{@2})
+      spaces:
+        0: main
+        1: local(%1, cands)
+      answers:
+        1:
+          space: 1
+          answer:
+            mode: null
+            content: |-
+              list:
+                - 2
+                - 3
+        2:
+          space: 1
+          answer:
+            mode: null
+            content: |-
+              - 2
+              - 3
+    log:
+      - message: llm_request
+        level: info
+        message_id: 0
+        time: 2025-11-05 19:03:23.478895
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 1
+        related:
+          - 0
+        time: 2025-11-05 19:03:24.600775
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 2
+        time: 2025-11-05 19:03:24.601698
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 3
+        time: 2025-11-05 19:03:24.605647
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 4
+        related:
+          - 3
+        time: 2025-11-05 19:03:25.519558
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 5
+        time: 2025-11-05 19:03:25.520941
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 6
+        time: 2025-11-05 19:03:25.528843
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 7
+        related:
+          - 6
+        time: 2025-11-05 19:03:26.628037
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 8
+        time: 2025-11-05 19:03:26.629456
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 9
+        time: 2025-11-05 19:03:26.634233
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 10
+        related:
+          - 9
+        time: 2025-11-05 19:03:27.758585
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 11
+        time: 2025-11-05 19:03:27.759572
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 12
+        time: 2025-11-05 19:03:27.763101
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 13
+        related:
+          - 12
+        time: 2025-11-05 19:03:28.675176
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 14
+        time: 2025-11-05 19:03:28.676572
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 15
+        time: 2025-11-05 19:03:28.684340
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 16
+        related:
+          - 15
+        time: 2025-11-05 19:03:29.906363
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 17
+        time: 2025-11-05 19:03:29.907424
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 18
+        time: 2025-11-05 19:03:29.911436
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 19
+        related:
+          - 18
+        time: 2025-11-05 19:03:30.830192
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 20
+        time: 2025-11-05 19:03:30.831063
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 21
+        time: 2025-11-05 19:03:30.834529
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 22
+        related:
+          - 21
+        time: 2025-11-05 19:03:31.746043
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 23
+        time: 2025-11-05 19:03:31.747325
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 24
+        time: 2025-11-05 19:03:31.754795
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 25
+        related:
+          - 24
+        time: 2025-11-05 19:03:32.777296
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 26
+        time: 2025-11-05 19:03:32.778710
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 27
+        time: 2025-11-05 19:03:32.783984
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 28
+        related:
+          - 27
+        time: 2025-11-05 19:03:34.008328
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 29
+        time: 2025-11-05 19:03:34.009492
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 30
+        time: 2025-11-05 19:03:34.013931
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 31
+        related:
+          - 30
+        time: 2025-11-05 19:03:35.739753
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 32
+        time: 2025-11-05 19:03:35.740637
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 33
+        time: 2025-11-05 19:03:35.746357
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 34
+        related:
+          - 33
+        time: 2025-11-05 19:03:36.748180
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 35
+        time: 2025-11-05 19:03:36.749251
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 36
+        time: 2025-11-05 19:03:36.753909
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 37
+        related:
+          - 36
+        time: 2025-11-05 19:03:38.101748
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 38
+        time: 2025-11-05 19:03:38.102522
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 39
+        time: 2025-11-05 19:03:38.105831
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 40
+        related:
+          - 39
+        time: 2025-11-05 19:03:39.098915
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 41
+        time: 2025-11-05 19:03:39.099624
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 42
+        time: 2025-11-05 19:03:39.105380
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 43
+        related:
+          - 42
+        time: 2025-11-05 19:03:39.836343
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 44
+        time: 2025-11-05 19:03:39.837583
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 45
+        time: 2025-11-05 19:03:39.842399
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 46
+        related:
+          - 45
+        time: 2025-11-05 19:03:40.762439
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 47
+        time: 2025-11-05 19:03:40.763217
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 48
+        time: 2025-11-05 19:03:40.766601
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 49
+        related:
+          - 48
+        time: 2025-11-05 19:03:41.782692
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 50
+        time: 2025-11-05 19:03:41.783897
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 51
+        time: 2025-11-05 19:03:41.791673
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 52
+        related:
+          - 51
+        time: 2025-11-05 19:03:43.504215
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 53
+        time: 2025-11-05 19:03:43.505083
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 54
+        time: 2025-11-05 19:03:43.509194
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 55
+        related:
+          - 54
+        time: 2025-11-05 19:03:44.414172
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 56
+        time: 2025-11-05 19:03:44.414764
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 57
+        time: 2025-11-05 19:03:44.417567
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 58
+        related:
+          - 57
+        time: 2025-11-05 19:03:45.366281
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 59
+        time: 2025-11-05 19:03:45.367347
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 60
+        time: 2025-11-05 19:03:45.374411
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 61
+        related:
+          - 60
+        time: 2025-11-05 19:03:46.493155
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 62
+        time: 2025-11-05 19:03:46.494177
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 63
+        time: 2025-11-05 19:03:46.498300
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 64
+        related:
+          - 63
+        time: 2025-11-05 19:03:47.417612
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 65
+        time: 2025-11-05 19:03:47.418234
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 66
+        time: 2025-11-05 19:03:47.420740
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 67
+        related:
+          - 66
+        time: 2025-11-05 19:03:49.361240
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 68
+        time: 2025-11-05 19:03:49.362085
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 69
+        time: 2025-11-05 19:03:49.368093
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 70
+        related:
+          - 69
+        time: 2025-11-05 19:03:50.385591
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 71
+        time: 2025-11-05 19:03:50.386380
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 72
+        time: 2025-11-05 19:03:50.390254
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 73
+        related:
+          - 72
+        time: 2025-11-05 19:03:51.725250
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  list:
+                    - 2
+                    - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 11
+                cached_input_tokens: 0
+                price: 2.655e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 11
+              prompt_tokens: 133
+              total_tokens: 144
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: parse_error
+        level: info
+        message_id: 74
+        time: 2025-11-05 19:03:51.726155
+        space: 1
+        metadata:
+          error:
+            label: parse_error
+            description: |-
+              1 validation error for list[int]
+                Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                  For further information visit https://errors.pydantic.dev/2.11/v/list_type
+            meta: null
+      - message: llm_request
+        level: info
+        message_id: 75
+        time: 2025-11-05 19:03:51.730459
+        space: 1
+        metadata:
+          query: MakeSum
+          request:
+            chat:
+              - role: system
+                content: |
+                  Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+                  Answer with the following and nothing else (no need for quotes or a code block):
+                  A YAML object that matches the following JSON schema.
+
+                  Schema:
+                  ```
+                  {
+                    "name": "list[int]",
+                    "description": null,
+                    "schema": {
+                      "items": {
+                        "type": "integer"
+                      },
+                      "type": "array"
+                    }
+                  }
+                  ```
+              - role: user
+                content: |-
+                  List: [1, 2, 3, 4, 5]
+                  Target: 5
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 76
+        related:
+          - 75
+        time: 2025-11-05 19:03:52.433873
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  - 2
+                  - 3
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 133
+                output_tokens: 7
+                cached_input_tokens: 0
+                price: 2.415e-05
+            log_items: []
+            model_name: gpt-4o-mini-2024-07-18
+            usage_info:
+              completion_tokens: 7
+              prompt_tokens: 133
+              total_tokens: 140
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-4o-mini-2024-07-18
+            usage:
+              completion_tokens: 7
+              prompt_tokens: 133
+              total_tokens: 140
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 0
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+    browsable_trace:
+      nodes:
+        1:
+          kind: Branch
+          success_value: null
+          summary_message: null
+          leaf_node: false
+          label: MakeSum
+          tags:
+            - MakeSum
+          properties:
+            - - with_ids: cands
+                with_hints: null
+              - 1
+              - kind: query
+                name: MakeSum
+                args:
+                  allowed:
+                    - 1
+                    - 2
+                    - 3
+                    - 4
+                    - 5
+                  goal: 5
+                tags:
+                  - MakeSum
+                answers:
+                  - id: 1
+                    hint: null
+                    value:
+                      short: |-
+                        parse_error
+
+                        1 validation error for list[int]
+                          Input should be a valid list [type=list_type, input_value={'list': [2, 3]}, input_type=dict]
+                            For further information visit https://errors.pydantic.dev/2.11/v/list_type
+                      long: |-
+                        ParseError(label='parse_error',
+                                   description='1 validation error for list[int]\n'
+                                               '  Input should be a valid list [type=list_type, '
+                                               "input_value={'list': [2, 3]}, input_type=dict]\n"
+                                               '    For further information visit '
+                                               'https://errors.pydantic.dev/2.11/v/list_type',
+                                   meta=None)
+                      json_provided: false
+                      json: null
+                  - id: 2
+                    hint: null
+                    value:
+                      short: '[2, 3]'
+                      long: '[2, 3]'
+                      json_provided: true
+                      json:
+                        - 2
+                        - 3
+          actions:
+            - ref:
+                with_ids: $1{@2}
+                with_hints: null
+              hints: null
+              related_success_nodes: []
+              related_answers:
+                - 2
+              value:
+                short: '[2, 3]'
+                long: '[2, 3]'
+                json_provided: true
+                json:
+                  - 2
+                  - 3
+              destination: 2
+          origin: root
+        2:
+          kind: Success
+          success_value:
+            short: '[2, 3]'
+            long: '[2, 3]'
+            json_provided: true
+            json:
+              - 2
+              - 3
+          summary_message: null
+          leaf_node: true
+          label: null
+          tags: []
+          properties: []
+          actions: []
+          origin:
+            - child
+            - 1
+            - 0
+      spaces:
+        1:
+          - 1
+          - 0

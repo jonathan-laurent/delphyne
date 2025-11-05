@@ -31,19 +31,19 @@
         num_requests: 1
         num_completions: 1
         input_tokens: 63
-        output_tokens: 530
+        output_tokens: 402
         cached_input_tokens: 0
-        price: 5.8e-06
+        price: 0.00016395
     log_items: []
     model_name: gpt-5-nano-2025-08-07
     usage_info:
-      completion_tokens: 530
+      completion_tokens: 402
       prompt_tokens: 63
-      total_tokens: 593
+      total_tokens: 465
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
-        reasoning_tokens: 512
+        reasoning_tokens: 384
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0
@@ -89,19 +89,19 @@
         num_requests: 1
         num_completions: 1
         input_tokens: 89
-        output_tokens: 339
+        output_tokens: 466
         cached_input_tokens: 0
-        price: 6.145e-06
+        price: 0.00019085
     log_items: []
     model_name: gpt-5-nano-2025-08-07
     usage_info:
-      completion_tokens: 339
+      completion_tokens: 466
       prompt_tokens: 89
-      total_tokens: 428
+      total_tokens: 555
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
-        reasoning_tokens: 320
+        reasoning_tokens: 448
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0

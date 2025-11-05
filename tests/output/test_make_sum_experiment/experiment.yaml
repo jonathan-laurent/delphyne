@@ -1,7 +1,7 @@
 name: test_make_sum_experiment
 description: null
 configs:
-  64d3fc8c-d676-4464-8a4b-15883228e779:
+  aa9ff4b7-a4c4-4e60-a367-7ddc53bebd2a:
     params:
       allowed:
       - 1
@@ -11,9 +11,9 @@ configs:
       - 5
       goal: 5
     status: done
-    start_time: 2025-09-17 10:25:49.177759
-    end_time: 2025-09-17 10:26:03.410985
-  a4512309-f0aa-4c5d-8502-74323135bf60:
+    start_time: 2025-11-05 19:03:23.052204
+    end_time: 2025-11-05 19:03:52.542218
+  2b1ea363-fd72-459d-ae90-61ab00a85062:
     params:
       allowed:
       - 9
@@ -21,5 +21,5 @@ configs:
       - 2
       goal: 11
     status: done
-    start_time: 2025-09-17 10:25:49.177760
-    end_time: 2025-09-17 10:25:52.640154
+    start_time: 2025-11-05 19:03:23.052268
+    end_time: 2025-11-05 19:03:24.512349

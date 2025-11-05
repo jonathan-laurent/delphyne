@@ -19,7 +19,7 @@
         input_tokens: 19
         output_tokens: 202
         cached_input_tokens: 0
-        price: 1.96e-06
+        price: 8.175e-05
     log_items: []
     model_name: gpt-5-nano-2025-08-07
     usage_info:
@@ -66,7 +66,7 @@
         input_tokens: 49
         output_tokens: 74
         cached_input_tokens: 0
-        price: 2.8199999999999997e-06
+        price: 3.205e-05
     log_items: []
     model_name: gpt-5-nano-2025-08-07
     usage_info:

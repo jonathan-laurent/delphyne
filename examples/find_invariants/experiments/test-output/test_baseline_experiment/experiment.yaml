@@ -1,7 +1,7 @@
 name: null
 description: null
 configs:
-  c216f104-3309-417b-9578-a7f199c46c2c:
+  c230edb5-3c2d-464d-855c-dd228e71c44f:
     params:
       bench_name: '1'
       model_name: mistral-small-2503
@@ -9,5 +9,5 @@ configs:
       max_feedback_cycles: 3
       seed: 0
     status: done
-    start_time: 2025-10-26 10:47:44.774532
-    end_time: 2025-10-26 10:47:52.091567
+    start_time: 2025-11-05 19:23:57.433575
+    end_time: 2025-11-05 19:24:08.053875

@@ -37,28 +37,28 @@
         tool_calls: []
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        num_requests__high_reasoning: 1.0
-        num_completions__high_reasoning: 1.0
-        input_tokens: 129.0
-        input_tokens__high_reasoning: 129.0
-        output_tokens: 976.0
-        output_tokens__high_reasoning: 976.0
-        cached_input_tokens: 0.0
-        cached_input_tokens__high_reasoning: 0.0
-        price: 5.6649999999999995e-05
-        price__high_reasoning: 5.6649999999999995e-05
+        num_requests: 1
+        num_completions: 1
+        num_requests__high_reasoning: 1
+        num_completions__high_reasoning: 1
+        input_tokens: 129
+        input_tokens__high_reasoning: 129
+        output_tokens: 656
+        output_tokens__high_reasoning: 656
+        cached_input_tokens: 0
+        cached_input_tokens__high_reasoning: 0
+        price: 0.00134425
+        price__high_reasoning: 0.00134425
     log_items: []
     model_name: gpt-5-mini-2025-08-07
     usage_info:
-      completion_tokens: 976
+      completion_tokens: 656
       prompt_tokens: 129
-      total_tokens: 1105
+      total_tokens: 785
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
-        reasoning_tokens: 960
+        reasoning_tokens: 640
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0

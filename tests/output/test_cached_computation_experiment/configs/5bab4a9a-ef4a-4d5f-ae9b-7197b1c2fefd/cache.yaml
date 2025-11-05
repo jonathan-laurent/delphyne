@@ -14,10 +14,6 @@
       - content: |
           - 3
           - 4
-        tool_calls: []
-    budget:
-      values: {}
-    log_items: []
 - input:
     request:
       chat:
@@ -34,10 +30,6 @@
       - content: |
           - 3
           - 4
-        tool_calls: []
-    budget:
-      values: {}
-    log_items: []
 - input:
     request:
       chat:
@@ -54,7 +46,3 @@
       - content: |
           - 4
           - 5
-        tool_calls: []
-    budget:
-      values: {}
-    log_items: []

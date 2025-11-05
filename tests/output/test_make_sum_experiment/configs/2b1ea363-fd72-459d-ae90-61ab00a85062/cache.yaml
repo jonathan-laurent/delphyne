@@ -23,31 +23,31 @@
             ```
         - role: user
           content: |-
-            List: [1, 2, 3, 4]
-            Target: 7
+            List: [9, 6, 2]
+            Target: 11
       options:
-        model: gpt-4.1-mini
+        model: gpt-4o-mini
     iter: 1
   output:
     outputs:
       - content: |-
-          - 3
-          - 4
+          - 9
+          - 2
         tool_calls: []
     budget:
       values:
         num_requests: 1
         num_completions: 1
-        input_tokens: 130
+        input_tokens: 127
         output_tokens: 7
         cached_input_tokens: 0
-        price: 6.319999999999999e-05
+        price: 2.325e-05
     log_items: []
-    model_name: gpt-4.1-mini-2025-04-14
+    model_name: gpt-4o-mini-2024-07-18
     usage_info:
       completion_tokens: 7
-      prompt_tokens: 130
-      total_tokens: 137
+      prompt_tokens: 127
+      total_tokens: 134
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0

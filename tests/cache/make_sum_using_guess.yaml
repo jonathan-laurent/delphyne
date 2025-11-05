@@ -60,12 +60,12 @@
         tool_calls: []
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 379.0
-        output_tokens: 148.0
-        cached_input_tokens: 0.0
-        price: 9.845e-05
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 379
+        output_tokens: 148
+        cached_input_tokens: 0
+        price: 0.00039075
     log_items: []
     model_name: gpt-5-mini-2025-08-07
     usage_info:

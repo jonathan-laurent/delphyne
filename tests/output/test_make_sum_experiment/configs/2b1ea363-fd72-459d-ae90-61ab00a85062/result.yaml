@@ -1,20 +1,21 @@
-# Run the `make_sum` strategy, for testing purposes. 
+# delphyne-command
 
 command: run_strategy
 args:
   strategy: make_sum
   args:
-    allowed: [9, 6, 2]
+    allowed:
+      - 9
+      - 6
+      - 2
     goal: 11
   policy: make_sum_policy
-  policy_args:
-    model_name: gpt-5-mini
-  num_generated: 1
+  policy_args: {}
   budget:
-    num_requests: 1
-  export_browsable_trace: false
-  export_raw_trace: true
-  remove_timing_info: true
+    price: 0.05
+  cache_file: configs/2b1ea363-fd72-459d-ae90-61ab00a85062/cache.yaml
+  embeddings_cache_file: configs/2b1ea363-fd72-459d-ae90-61ab00a85062/embeddings.cache.h5
+  cache_mode: create
 outcome:
   diagnostics: []
   result:
@@ -25,10 +26,10 @@ outcome:
     spent_budget:
       num_requests: 1
       num_completions: 1
-      input_tokens: 126
-      output_tokens: 273
+      input_tokens: 127
+      output_tokens: 7
       cached_input_tokens: 0
-      price: 0.0005774999999999999
+      price: 2.325e-05
     success_nodes:
       - 2
     raw_trace:
@@ -50,6 +51,7 @@ outcome:
       - message: llm_request
         level: info
         message_id: 0
+        time: 2025-11-05 19:03:23.478858
         space: 1
         metadata:
           query: MakeSum
@@ -85,6 +87,7 @@ outcome:
         message_id: 1
         related:
           - 0
+        time: 2025-11-05 19:03:24.490315
         space: 1
         metadata:
           response:
@@ -97,35 +100,109 @@ outcome:
               values:
                 num_requests: 1
                 num_completions: 1
-                input_tokens: 126
-                output_tokens: 273
+                input_tokens: 127
+                output_tokens: 7
                 cached_input_tokens: 0
-                price: 0.0005774999999999999
+                price: 2.325e-05
             log_items: []
-            model_name: gpt-5-mini-2025-08-07
+            model_name: gpt-4o-mini-2024-07-18
             usage_info:
-              completion_tokens: 273
-              prompt_tokens: 126
-              total_tokens: 399
+              completion_tokens: 7
+              prompt_tokens: 127
+              total_tokens: 134
               completion_tokens_details:
                 accepted_prediction_tokens: 0
                 audio_tokens: 0
-                reasoning_tokens: 256
+                reasoning_tokens: 0
                 rejected_prediction_tokens: 0
               prompt_tokens_details:
                 audio_tokens: 0
                 cached_tokens: 0
           usage:
-            model: gpt-5-mini-2025-08-07
+            model: gpt-4o-mini-2024-07-18
             usage:
-              completion_tokens: 273
-              prompt_tokens: 126
-              total_tokens: 399
+              completion_tokens: 7
+              prompt_tokens: 127
+              total_tokens: 134
               completion_tokens_details:
                 accepted_prediction_tokens: 0
                 audio_tokens: 0
-                reasoning_tokens: 256
+                reasoning_tokens: 0
                 rejected_prediction_tokens: 0
               prompt_tokens_details:
                 audio_tokens: 0
                 cached_tokens: 0
+    browsable_trace:
+      nodes:
+        1:
+          kind: Branch
+          success_value: null
+          summary_message: null
+          leaf_node: false
+          label: MakeSum
+          tags:
+            - MakeSum
+          properties:
+            - - with_ids: cands
+                with_hints: null
+              - 1
+              - kind: query
+                name: MakeSum
+                args:
+                  allowed:
+                    - 9
+                    - 6
+                    - 2
+                  goal: 11
+                tags:
+                  - MakeSum
+                answers:
+                  - id: 1
+                    hint: null
+                    value:
+                      short: '[9, 2]'
+                      long: '[9, 2]'
+                      json_provided: true
+                      json:
+                        - 9
+                        - 2
+          actions:
+            - ref:
+                with_ids: $1{@1}
+                with_hints: null
+              hints: null
+              related_success_nodes: []
+              related_answers:
+                - 1
+              value:
+                short: '[9, 2]'
+                long: '[9, 2]'
+                json_provided: true
+                json:
+                  - 9
+                  - 2
+              destination: 2
+          origin: root
+        2:
+          kind: Success
+          success_value:
+            short: '[9, 2]'
+            long: '[9, 2]'
+            json_provided: true
+            json:
+              - 9
+              - 2
+          summary_message: null
+          leaf_node: true
+          label: null
+          tags: []
+          properties: []
+          actions: []
+          origin:
+            - child
+            - 1
+            - 0
+      spaces:
+        1:
+          - 1
+          - 0

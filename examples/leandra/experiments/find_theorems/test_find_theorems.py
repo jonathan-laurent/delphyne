@@ -34,10 +34,10 @@ class FindTheoremConfig:
 
 CONFIGS = [
     FindTheoremConfig(problem, model, effort)
-    for problem in list(BENCHS.keys())[:1]
+    for problem in BENCHS.keys()
     for model, effort in [
         ("gpt-5-mini", "low"),
-        # ("gpt-5", "low"),
+        ("gpt-5", "low"),
     ]
 ]
 
@@ -48,4 +48,5 @@ if __name__ == "__main__":
         context=dp.workspace_execution_context(__file__),
         configs=CONFIGS,
         output_dir=Path(__file__).absolute().parent / "output",
+        export_browsable_trace=True,
     ).run_cli()

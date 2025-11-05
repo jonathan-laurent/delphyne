@@ -14,16 +14,16 @@
     iter: 1
   output:
     outputs:
-      - content: '37'
+      - content: '27'
         tool_calls: []
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 44.0
-        output_tokens: 1.0
-        cached_input_tokens: 0.0
-        price: 3.54e-05
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 44
+        output_tokens: 1
+        cached_input_tokens: 0
+        price: 1.92e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
@@ -58,52 +58,12 @@
         tool_calls: []
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 44.0
-        output_tokens: 1.0
-        cached_input_tokens: 0.0
-        price: 3.54e-05
-    log_items: []
-    model_name: gpt-4.1-mini-2025-04-14
-    usage_info:
-      completion_tokens: 1
-      prompt_tokens: 44
-      total_tokens: 45
-      completion_tokens_details:
-        accepted_prediction_tokens: 0
-        audio_tokens: 0
-        reasoning_tokens: 0
-        rejected_prediction_tokens: 0
-      prompt_tokens_details:
-        audio_tokens: 0
-        cached_tokens: 0
-- input:
-    request:
-      chat:
-        - role: system
-          content: |-
-            Generate a number between min_val and max_val (inclusive). Just
-            answer with the number and nothing else.
-        - role: user
-          content: |-
-            min_val: 51
-            max_val: 100
-      options:
-        model: gpt-4.1-mini
-    iter: 2
-  output:
-    outputs:
-      - content: '73'
-        tool_calls: []
-    budget:
-      values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 44.0
-        output_tokens: 1.0
-        cached_input_tokens: 0.0
-        price: 3.54e-05
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 44
+        output_tokens: 1
+        cached_input_tokens: 0
+        price: 1.92e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
@@ -134,16 +94,16 @@
     iter: 1
   output:
     outputs:
-      - content: '74'
+      - content: '78'
         tool_calls: []
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 44.0
-        output_tokens: 1.0
-        cached_input_tokens: 0.0
-        price: 3.54e-05
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 44
+        output_tokens: 1
+        cached_input_tokens: 0
+        price: 1.92e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
@@ -171,19 +131,19 @@
             max_val: 100
       options:
         model: gpt-4.1-mini
-    iter: 4
+    iter: 2
   output:
     outputs:
-      - content: '78'
+      - content: '74'
         tool_calls: []
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 44.0
-        output_tokens: 1.0
-        cached_input_tokens: 0.0
-        price: 3.54e-05
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 44
+        output_tokens: 1
+        cached_input_tokens: 0
+        price: 1.92e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
@@ -214,16 +174,56 @@
     iter: 3
   output:
     outputs:
-      - content: '83'
+      - content: '72'
         tool_calls: []
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 44.0
-        output_tokens: 1.0
-        cached_input_tokens: 0.0
-        price: 3.54e-05
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 44
+        output_tokens: 1
+        cached_input_tokens: 0
+        price: 1.92e-05
+    log_items: []
+    model_name: gpt-4.1-mini-2025-04-14
+    usage_info:
+      completion_tokens: 1
+      prompt_tokens: 44
+      total_tokens: 45
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 0
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            Generate a number between min_val and max_val (inclusive). Just
+            answer with the number and nothing else.
+        - role: user
+          content: |-
+            min_val: 51
+            max_val: 100
+      options:
+        model: gpt-4.1-mini
+    iter: 4
+  output:
+    outputs:
+      - content: '77'
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 44
+        output_tokens: 1
+        cached_input_tokens: 0
+        price: 1.92e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:

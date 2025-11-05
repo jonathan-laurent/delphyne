@@ -37,7 +37,7 @@
         input_tokens: 76
         output_tokens: 9
         cached_input_tokens: 0
-        price: 6.26e-05
+        price: 4.48e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:

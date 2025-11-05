@@ -49,6 +49,7 @@ PRICING: dict[str, tuple[float, float, float]] = {
     "gpt-4o": (2.50, 1.25, 10.00),
     "gpt-4o-mini": (0.15, 0.075, 0.60),  # cached input = input ×50% ⇒ 0.075
     "o3": (2.00, 0.50, 8.00),
+    "o4-mini": (1.10, 0.275, 4.40),
     "mistral-small-2503": (0.10, 0.10, 0.30),
     "magistral-small-2506": (0.5, 0.5, 1.5),
     "deepseek-chat": (0.27, 0.07, 1.10),

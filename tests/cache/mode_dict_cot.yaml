@@ -15,38 +15,39 @@
   output:
     outputs:
       - content: |-
-          Jonathan Laurent's favorite dish is a classic French ratatouille. This hearty vegetable stew features a vibrant mix of seasonal vegetables such as eggplant, zucchini, bell peppers, tomatoes, onions, and garlic, all slowly simmered with herbs like thyme and basil. It's typically served warm and enjoyed as a comforting and nutritious meal.
+          Jonathan Laurent's favorite dish is a classic French Ratatouille. This delicious and hearty vegetable stew showcases a blend of fresh, colorful vegetables like eggplant, zucchini, bell peppers, tomatoes, onions, and garlic, all simmered together with fragrant herbs such as thyme, rosemary, and basil. It embodies traditional Provençal flavors, making it both healthy and comforting.
 
           ```yaml
           name: Ratatouille
           ingredients:
-            - Eggplant
-            - Zucchini
-            - Bell peppers
-            - Tomatoes
-            - Onions
-            - Garlic
-            - Olive oil
-            - Thyme
-            - Basil
-            - Salt
-            - Pepper
+            - eggplant
+            - zucchini
+            - bell peppers
+            - tomatoes
+            - onions
+            - garlic
+            - olive oil
+            - thyme
+            - rosemary
+            - basil
+            - salt
+            - pepper
           ```
         tool_calls: []
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 55.0
-        output_tokens: 128.0
-        cached_input_tokens: 0.0
-        price: 6.96e-05
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 55
+        output_tokens: 136
+        cached_input_tokens: 0
+        price: 0.00023959999999999997
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
-      completion_tokens: 128
+      completion_tokens: 136
       prompt_tokens: 55
-      total_tokens: 183
+      total_tokens: 191
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0

@@ -30,25 +30,25 @@
     outputs:
       - content:
           structured:
-            title: The Rise and Impact of Artificial Intelligence
+            title: The Transformative Impact of Artificial Intelligence
             authors:
-              - Dr. Jane Smith
-              - Prof. Alan Turing
+              - Jane Doe
+              - John Smith
         tool_calls: []
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 89.0
-        output_tokens: 25.0
-        cached_input_tokens: 0.0
-        price: 7.62e-05
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 89
+        output_tokens: 20
+        cached_input_tokens: 0
+        price: 6.759999999999999e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
-      completion_tokens: 25
+      completion_tokens: 20
       prompt_tokens: 89
-      total_tokens: 114
+      total_tokens: 109
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0

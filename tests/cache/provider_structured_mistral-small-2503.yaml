@@ -30,21 +30,21 @@
     outputs:
       - content:
           structured:
-            title: 'The Future of Artificial Intelligence: Opportunities and Challenges'
+            title: The Transformative Impact of Artificial Intelligence
             authors:
               - Jane Doe
               - John Smith
         tool_calls: []
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 22.0
-        output_tokens: 36.0
-        price: 5.8e-06
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 22
+        output_tokens: 33
+        price: 1.21e-05
     log_items: []
     model_name: mistral-small-2503
     usage_info:
-      completion_tokens: 36
+      completion_tokens: 33
       prompt_tokens: 22
-      total_tokens: 58
+      total_tokens: 55

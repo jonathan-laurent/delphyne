@@ -59,12 +59,12 @@
         finish_reason: tool_calls
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 161.0
-        output_tokens: 17.0
-        cached_input_tokens: 0.0
-        price: 0.0001322
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 161
+        output_tokens: 17
+        cached_input_tokens: 0
+        price: 9.159999999999999e-05
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
@@ -148,19 +148,18 @@
     outputs:
       - content:
           structured:
-            title: The Evolution and Global Impact of Soccer
+            title: 'The Evolution of Soccer: From Ancient Times to the Modern Game'
             authors:
-              - John D. Smith
-              - Maria Gonzalez
+              - Alex Morgan
         tool_calls: []
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 190.0
-        output_tokens: 26.0
-        cached_input_tokens: 0.0
-        price: 0.00015719999999999997
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 190
+        output_tokens: 26
+        cached_input_tokens: 0
+        price: 0.00011759999999999999
     log_items: []
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:

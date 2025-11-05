@@ -52,10 +52,6 @@
                   done;
                   assert { x >= 0 }  (* GOAL *)
               goal_formula: x >= 0
-        tool_calls: []
-    budget:
-      values: {}
-    log_items: []
 - input:
     request:
       chat:
@@ -312,36 +308,31 @@
     iter: 1
   output:
     outputs:
-      - content: |-
-          To prove the final assertion `x >= 0`, we need to establish that this condition is maintained throughout the loop. Considering the update operation inside the loop and `x` being initialized to `0`, we can see that `x` is always non-negative if it starts as non-negative and it is non-negative through each iteration.
-
-          Given that `x` starts at `0`, it suggests that `x >= 0` may indeed be an invariant of the loop. Let's see if each loop update preserves the invariant `x >= 0`:
-
-          1. Initially, `x = 0`, so `x >= 0`.
-          2. In each iteration, `x` is updated via `x <- x * (b - 1) + 1`. Importantly, the term `x * (b - 1)` will not introduce a negative value to `x` if it is non-negative at the start of the iteration since `b - 1` is positive as long as `b > 1`, which must be true for `b` at least once until it reaches 50 or more.
-
-          Consequently, `x >= 0` is a loop invariant that is still true after each iteration.
-
-          So, the suggested invariant is:
-
-          ```yaml
-          - "x >= 0"
-          ```
+      - content: "To ensure that `x >= 0` holds after the loop, it is important to establish and maintain\
+          \ invariants that reflect the relation between `x` and the other variable `b` throughout the\
+          \ loop. Initially, `x` is initialized to `0`, which satisfies `x >= 0`. During each loop iteration,\
+          \ the value of `x` is updated using the formula `x <- x * (b - 1) + 1`. \n\nNow, notice that:\n\
+          \n- Initially, `x = 0`, so `x >= 0` holds.\n- If before the loop iteration, `x >= 0`, then after\
+          \ the loop iteration, `x * (b - 1) + 1` will also be `>= 0` because `x * (b - 1) >= 0`. This\
+          \ holds as long as `b >= 1`.\n\nGiven that `b` starts at `a * a + 2` and assuming the loop invariant\
+          \ `b >= 2`, we can show that `x >= 0` holds at the end of the loop because `b` can only increase\
+          \ from its initial positive value.\n\nThus, we can use `x >= 0` directly as an invariant. Therefore,\
+          \ the list of proposed invariants is:\n\n```\n- \"x >= 0\"\n- \"b >= 2\"\n``` "
         tool_calls: []
     budget:
       values:
         num_requests: 1
         num_completions: 1
         input_tokens: 2591
-        output_tokens: 266
+        output_tokens: 281
         cached_input_tokens: 0
-        price: 0.00681
+        price: 0.009287499999999999
     log_items: []
     model_name: gpt-4o-2024-08-06
     usage_info:
-      completion_tokens: 266
+      completion_tokens: 281
       prompt_tokens: 2591
-      total_tokens: 2857
+      total_tokens: 2872
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
@@ -378,6 +369,7 @@
                   let ref x = 0 in
                   while b < 50 do
                     invariant { x >= 0 }
+                    invariant { b >= 2 }
                     x <- x * (b - 1) + 1;
                     b <- b + 1;
                   done;
@@ -401,389 +393,12 @@
                   let ref x = 0 in  (* GOAL *)
                   while b < 50 do
                     invariant { x >= 0 }  (* GOAL *)
+                    invariant { b >= 2 }
                     x <- x * (b - 1) + 1;
                     b <- b + 1;
                   done;
                   assert { x >= 0 }
               goal_formula: 0 >= 0
-            - name: VC for main (loop invariant preservation)
-              proved: false
-              relevance_hints: |-
-                use int.Int
-
-                let main () diverges =  (* GOAL *)
-                  let ref a = any int in
-                  let ref b = a * a + 2 in
-                  let ref x = 0 in
-                  while b < 50 do  (* premise *)
-                    invariant { x >= 0 }  (* GOAL, premise *)
-                    x <- x * (b - 1) + 1;  (* premise *)
-                    b <- b + 1;
-                  done;
-                  assert { x >= 0 }
-              goal_formula: ((x * (b - 1)) + 1) >= 0
-            - name: VC for main (assertion)
-              proved: true
-              relevance_hints: |-
-                use int.Int
-
-                let main () diverges =  (* GOAL *)
-                  let ref a = any int in
-                  let ref b = a * a + 2 in
-                  let ref x = 0 in
-                  while b < 50 do  (* premise *)
-                    invariant { x >= 0 }  (* premise *)
-                    x <- x * (b - 1) + 1;
-                    b <- b + 1;
-                  done;
-                  assert { x >= 0 }  (* GOAL *)
-              goal_formula: x >= 0
-        tool_calls: []
-    budget:
-      values: {}
-    log_items: []
-- input:
-    request:
-      chat:
-        - role: system
-          content: |-
-            Your goal is to prove the correctness of WhyML programs using the Why3 theorem prover. To do so, you must annotate programs with loop invariants in such a way that all assertions in the program can be proved automatically via the weakest-precondition calculus.
-
-            We only allow invariants that feature logical combinations of **linear** arithmetic expressions. In particular, we only accept multiplication by constant numerical literals. Thus, we accept invariants such as `x + y > 0` or `a > 0 || 2*x + y < n` but not `x * y > 0` or `x >= y * (y + 1) / 2`. I insist, and this is **VERY IMPORTANT**, you must **NOT** propose invariants involving complex arithmetic such as `2 * x >= y * (y + 1)`.
-
-            I will show you an annotated program in which Why3 did not manage to prove a particular assertion or invariant. Your task is to suggest one or several missing invariants that may help finish the proof.
-
-            In order to help you diagnose the problem, I added comments to the WhyML program indicating what assertion or invariant failed to be proved (`GOAL`) and what parts of the program provide relevant assumptions (`premise`).
-
-            I will also show you the conclusion of the proof obligation that failed to be proved. This information is not always meaningful since it may contain anonymous variables produced by the obligation generator. However, if it describes a valid invariant, simplifying it and suggesting it as a missing invariant may be a good idea.
-
-            Finally, I will summarize a list of changes that were tried already and did not prove successful. You must try and suggest something different.
-
-            You should **carefully** check the proposed examples and organize your answer in a similar way. First, try to understand the problem and identify missing invariants that may help complete the proof. Then, terminate your answer with a triple-quoted YAML code block that denotes a list of strings, each of which corresponding to an invariant.
-        - role: user
-          content: |
-            Here is the program that Why3 was tasked to verify.
-
-            ```mlw
-            use int.Int
-
-            let example1 () diverges =  (* GOAL *)
-              let ref x = any int in  (* premise *)
-              let ref y = 3 in
-              let ref z = 0 in
-              assume { x < 0 };  (* premise *)
-              while x < 10 do  (* premise *)
-                x <- x + 1;
-                z <- z - 1;
-                if z < 0 then y <- y + 1
-              done;
-              assert { x <> y }  (* GOAL *)
-            ```
-
-            The name of the proof obligation that failed is: `VC for example1 (assertion)`.
-
-            The conclusion of this obligation is: `not x = y`.
-
-            Can you fix this by suggesting a list of new invariants?
-        - role: assistant
-          answer:
-            mode: null
-            content: |
-              The final assertion `x <> y` failed to prove, meaning that Why3 could not deduce it after assuming the provided loop invariants (none) and the negation of the loop guard. Let's see if `x <> y` itself might be an invariant. For this to hold, it has to be true before the loop and preserved by each loop iteration.
-
-              Right before the loop, `x <> y` holds thanks to the `x < 0` assumption. Assuming `x <> y` holds at the start of a loop iteration, can it be shown to hold afterwards? What happens to `x` and `y` in the loop body depends on whether or not the conditional statement is executed, which in turns depends on the value of `z`. Looking at `z`, it starts with value `0` at the beginning of the program and it is then never increased. Thus, `z <= 0` is an invariant and the conditional statement is always executed. Thus, at each loop iteration, both `x` and `y` are increased by 1 and so `x <> y` is preserved.
-
-              Summarizing, we can prove `x <> y` to be an invariant, assuming that `z <= 0` is added as an invariant too. Thus, we propose to update the program by adding the following two invariants:
-
-              ```
-              - "z <= 0"
-              - "x <> y"
-              ```
-        - role: user
-          content: |
-            Here is the program that Why3 was tasked to verify.
-
-            ```mlw
-            use int.Int
-
-            let example1 () diverges =  (* GOAL *)
-              let ref x = any int in  (* premise *)
-              let ref y = 3 in
-              let ref z = 0 in
-              assume { x < 0 };  (* premise *)
-              while x < 10 do  (* premise *)
-                invariant { x <> y }  (* GOAL, premise *)
-                x <- x + 1;  (* premise *)
-                z <- z - 1;  (* premise *)
-                if z < 0 then y <- y + 1  (* premise *)
-              done;
-              assert { x <> y }
-            ```
-
-            The name of the proof obligation that failed is: `VC for example1 (loop invariant preservation)`.
-
-            The conclusion of this obligation is: `not (x + 1) = y`.
-
-            Can you fix this by suggesting a list of new invariants?
-        - role: assistant
-          answer:
-            mode: null
-            content: |
-              Why3 wasn't able to prove that the invariant `x <> y` is preserved by the loop body. Let's dig into this. Within the loop body, `x` is incremented. What happens to `y` depends on whether the conditional statement is executed or not, which in turns depends on `z`. However, we can see that `z = 0` initially and then `z` never increases. Thus, `z <= 0` is an invariant and the conditional statement always executes. As a consequence, both `x` and `y` increase by the same amount at each loop iteration and thus `x <> y` is preserved.
-
-              As a consequence, we propose adding `z <= 0` as an invariant:
-
-              ```
-              - "z <= 0"
-              ```
-        - role: user
-          content: |
-            Here is the program that Why3 was tasked to verify.
-
-            ```mlw
-            use int.Int
-
-            let main () diverges =  (* GOAL *)
-              let n = any int in
-              let ref x = 0 in
-              while x < n do  (* premise *)
-                x <- x + 1;
-              done;
-              assume { n > 0 };  (* premise *)
-              assert { x = n }  (* GOAL *)
-            ```
-
-            The name of the proof obligation that failed is: `VC for main (assertion)`.
-
-            The conclusion of this obligation is: `x = n`.
-
-            Can you fix this by suggesting a list of new invariants?
-        - role: assistant
-          answer:
-            mode: null
-            content: |
-              Why3 did not manage to deduce the final assertion `x = n` from the preceding assumption `n > 0` and the negation of the loop guard `x >= n`. What remains to establish indeed is that `x <= n` at the end of the program. Note that the `n > 0` assumption involves a variable `n` that is constant throughout the program. Thus, assuming `n > 0` after the loop, we also have `n > 0` before the loop. Also, assuming `n > 0`, then `x <= n` is a loop invariant. Indeed, `x <= n` is true before entering the loop thanks to the `n > 0` assumption. Moreover, before the loop body executes, we have `x < n` by the loop guard and so `x <= n` after the loop body executes since `x` is incremented. As a consequence, `x <= n` is preserved by the loop body.
-
-              Thus, we propose `n > 0 -> x <= n` as an invariant. Note that the `n > 0` assumption is important. Otherwise, the invariant would not hold initially!
-
-              ```
-              - "n > 0 -> x <= n"
-              ```
-        - role: user
-          content: |
-            Here is the program that Why3 was tasked to verify.
-
-            ```mlw
-            use int.Int
-
-            let main () diverges =  (* GOAL *)
-              let ref x = 0 in
-              let ref y = any int in
-              let ref z = any int in  (* GOAL *)
-              while x < 500 do  (* premise *)
-                x <- x + 1;
-                if z <= y then
-                  y <- z
-              done;
-              assert { z >= y }  (* GOAL *)
-            ```
-
-            The name of the proof obligation that failed is: `VC for main (assertion)`.
-
-            The conclusion of this obligation is: `o2 >= y`.
-
-            Can you fix this by suggesting a list of new invariants?
-        - role: assistant
-          answer:
-            mode: null
-            content: |
-              Why3 did not manage to prove the final assertion `z >= y`. The formula `z >= y` is clearly not a loop invariant because it is not necessarily true before the loop. The reason `z >= y` really holds at the end is that executing any loop iteration will make it true (if `z >= y` is false at the start of an iteration, the conditional statement will execute and make it true). In turn, at least one loop iteration will execute since `x < 500` is true initially.
-
-              Thus, we propose to add invariant `z >= y || x < 500`, meaning that `z >= y` is true already or the loop guard is true, meaning one more loop iteration at least will execute.
-
-              ```
-              - "z >= y || x < 500"
-              ```
-        - role: user
-          content: |
-            Here is the program that Why3 was tasked to verify.
-
-            ```mlw
-            use int.Int
-
-            let example1 () diverges =  (* GOAL *)
-              let ref x = any int in  (* premise *)
-              let ref y = 3 in
-              let ref z = 0 in
-              assume { x < 0 };  (* premise *)
-              while x < 10 do  (* premise *)
-                x <- x + 1;
-                z <- z - 1;
-                if z < 0 then y <- y + 1
-              done;
-              assert { x <> y }  (* GOAL *)
-            ```
-
-            The name of the proof obligation that failed is: `VC for example1 (assertion)`.
-
-            The conclusion of this obligation is: `not x = y`.
-
-            Can you fix this by suggesting a list of new invariants?
-        - role: assistant
-          answer:
-            mode: null
-            content: |
-              Long explanation...
-              ```
-              - "x <> y"
-              ```
-        - role: user
-          content: |
-            Here is the program that Why3 was tasked to verify.
-
-            ```mlw
-            use int.Int
-
-            let example1 () diverges =  (* GOAL *)
-              let ref x = any int in  (* premise *)
-              let ref y = 3 in
-              let ref z = 0 in
-              assume { x < 0 };  (* premise *)
-              while x < 10 do  (* premise *)
-                invariant { x <> y }  (* GOAL, premise *)
-                x <- x + 1;  (* premise *)
-                z <- z - 1;  (* premise *)
-                if z < 0 then y <- y + 1  (* premise *)
-              done;
-              assert { x <> y }
-            ```
-
-            The name of the proof obligation that failed is: `VC for example1 (loop invariant preservation)`.
-
-            The conclusion of this obligation is: `not (x + 1) = y`.
-
-            Can you fix this by suggesting a list of new invariants?
-        - role: assistant
-          answer:
-            mode: null
-            content: |
-              ```
-              - "z <= 0"
-              ```
-        - role: user
-          content: |
-            Here is the program that Why3 was tasked to verify.
-
-            ```mlw
-            use int.Int
-
-            let main () diverges =  (* GOAL *)
-              let ref a = any int in
-              let ref b = a * a + 2 in
-              let ref x = 0 in
-              while b < 50 do  (* premise *)
-                invariant { x >= 0 }  (* GOAL, premise *)
-                x <- x * (b - 1) + 1;  (* premise *)
-                b <- b + 1;
-              done;
-              assert { x >= 0 }
-            ```
-
-            The name of the proof obligation that failed is: `VC for main (loop invariant preservation)`.
-
-            The conclusion of this obligation is: `((x * (b - 1)) + 1) >= 0`.
-
-            Can you fix this by suggesting a list of new invariants?
-      options:
-        model: gpt-4o
-    iter: 1
-  output:
-    outputs:
-      - content: |-
-          To address the failed proof obligation, let's analyze the loop and its operations. Initially, we observe that the invariant `x >= 0` is expected to hold throughout the loop.
-
-          Initially, `x = 0`, which satisfies `x >= 0`.
-
-          During each loop iteration:
-          - `x` is updated using the formula `x <- x * (b - 1) + 1`.
-          - `b` is incremented by 1.
-
-          The goal is to establish conditions under which this transformation of `x` continues to maintain the invariant `x >= 0`:
-
-          - The operation `x * (b - 1) + 1` should result in a non-negative value.
-          - Given `x` starts at 0 and any positive number multiplied by non-negative numbers (like `b - 1` when `b >= 1`) will remain non-negative.
-
-          To ensure preservation of the invariant, we can add an invariant that keeps track of the positivity of relevant expressions. Since `b` starts off as `a * a + 2`, which is always positive, `b` is initially greater than or equal to 2 with any `a`. Thus `b - 1` is always non-negative throughout the loop.
-
-          Therefore, an invariant `b >= 2` will ensure that `x * (b - 1) + 1` is non-negative since `(b - 1) >= 1` implies `x * (b - 1) + 1 >= 1` for `x >= 0`. Here is the invariant to add:
-
-          ```
-          - "b >= 2"
-          ```
-        tool_calls: []
-    budget:
-      values:
-        num_requests: 1
-        num_completions: 1
-        input_tokens: 2618
-        output_tokens: 335
-        cached_input_tokens: 2432
-        price: 0.025203749999999997
-    log_items: []
-    model_name: gpt-4o-2024-08-06
-    usage_info:
-      completion_tokens: 335
-      prompt_tokens: 2618
-      total_tokens: 2953
-      completion_tokens_details:
-        accepted_prediction_tokens: 0
-        audio_tokens: 0
-        reasoning_tokens: 0
-        rejected_prediction_tokens: 0
-      prompt_tokens_details:
-        audio_tokens: 0
-        cached_tokens: 2432
-- input:
-    request:
-      chat:
-        - role: user
-          content: |
-            fun: check
-            args:
-              prog: |
-                use int.Int
-
-                let main () diverges =
-                  let ref a = any int in
-                  let ref b = a * a + 2 in
-                  let ref x = 0 in
-                  while b < 50 do
-                    x <- x * (b - 1) + 1;
-                    b <- b + 1;
-                  done;
-                  assert { x >= 0 }
-              annotated: |-
-                use int.Int
-
-                let main () diverges =
-                  let ref a = any int in
-                  let ref b = a * a + 2 in
-                  let ref x = 0 in
-                  while b < 50 do
-                    invariant { b >= 2 }
-                    invariant { x >= 0 }
-                    x <- x * (b - 1) + 1;
-                    b <- b + 1;
-                  done;
-                  assert { x >= 0 }
-      options:
-        model: __compute__
-    iter: 1
-  output:
-    outputs:
-      - content: |
-          error: null
-          obligations:
             - name: VC for main (loop invariant init)
               proved: true
               relevance_hints: |-
@@ -792,32 +407,15 @@
                 let main () diverges =  (* GOAL *)
                   let ref a = any int in  (* GOAL *)
                   let ref b = a * a + 2 in  (* GOAL *)
-                  let ref x = 0 in
+                  let ref x = 0 in  (* premise *)
                   while b < 50 do
+                    invariant { x >= 0 }  (* premise *)
                     invariant { b >= 2 }  (* GOAL *)
-                    invariant { x >= 0 }
                     x <- x * (b - 1) + 1;
                     b <- b + 1;
                   done;
                   assert { x >= 0 }
               goal_formula: ((o * o) + 2) >= 2
-            - name: VC for main (loop invariant init)
-              proved: true
-              relevance_hints: |-
-                use int.Int
-
-                let main () diverges =  (* GOAL *)
-                  let ref a = any int in  (* premise *)
-                  let ref b = a * a + 2 in  (* premise *)
-                  let ref x = 0 in  (* GOAL *)
-                  while b < 50 do
-                    invariant { b >= 2 }  (* premise *)
-                    invariant { x >= 0 }  (* GOAL *)
-                    x <- x * (b - 1) + 1;
-                    b <- b + 1;
-                  done;
-                  assert { x >= 0 }
-              goal_formula: 0 >= 0
             - name: VC for main (loop invariant preservation)
               proved: true
               relevance_hints: |-
@@ -828,30 +426,30 @@
                   let ref b = a * a + 2 in
                   let ref x = 0 in
                   while b < 50 do  (* premise *)
-                    invariant { b >= 2 }  (* GOAL, premise *)
-                    invariant { x >= 0 }  (* premise *)
-                    x <- x * (b - 1) + 1;  (* premise *)
-                    b <- b + 1;  (* premise *)
-                  done;
-                  assert { x >= 0 }
-              goal_formula: (b + 1) >= 2
-            - name: VC for main (loop invariant preservation)
-              proved: true
-              relevance_hints: |-
-                use int.Int
-
-                let main () diverges =  (* GOAL *)
-                  let ref a = any int in
-                  let ref b = a * a + 2 in
-                  let ref x = 0 in
-                  while b < 50 do  (* premise *)
-                    invariant { b >= 2 }  (* premise *)
                     invariant { x >= 0 }  (* GOAL, premise *)
+                    invariant { b >= 2 }  (* premise *)
                     x <- x * (b - 1) + 1;  (* premise *)
                     b <- b + 1;  (* premise *)
                   done;
                   assert { x >= 0 }
               goal_formula: ((x * (b - 1)) + 1) >= 0
+            - name: VC for main (loop invariant preservation)
+              proved: true
+              relevance_hints: |-
+                use int.Int
+
+                let main () diverges =  (* GOAL *)
+                  let ref a = any int in
+                  let ref b = a * a + 2 in
+                  let ref x = 0 in
+                  while b < 50 do  (* premise *)
+                    invariant { x >= 0 }  (* premise *)
+                    invariant { b >= 2 }  (* GOAL, premise *)
+                    x <- x * (b - 1) + 1;  (* premise *)
+                    b <- b + 1;  (* premise *)
+                  done;
+                  assert { x >= 0 }
+              goal_formula: (b + 1) >= 2
             - name: VC for main (assertion)
               proved: true
               relevance_hints: |-
@@ -862,14 +460,10 @@
                   let ref b = a * a + 2 in
                   let ref x = 0 in
                   while b < 50 do  (* premise *)
-                    invariant { b >= 2 }  (* premise *)
                     invariant { x >= 0 }  (* premise *)
+                    invariant { b >= 2 }  (* premise *)
                     x <- x * (b - 1) + 1;
                     b <- b + 1;
                   done;
                   assert { x >= 0 }  (* GOAL *)
               goal_formula: x >= 0
-        tool_calls: []
-    budget:
-      values: {}
-    log_items: []

@@ -39,19 +39,19 @@
         num_requests: 1
         num_completions: 1
         input_tokens: 126
-        output_tokens: 336
+        output_tokens: 273
         cached_input_tokens: 0
-        price: 3.99e-05
+        price: 0.0005774999999999999
     log_items: []
     model_name: gpt-5-mini-2025-08-07
     usage_info:
-      completion_tokens: 336
+      completion_tokens: 273
       prompt_tokens: 126
-      total_tokens: 462
+      total_tokens: 399
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
-        reasoning_tokens: 320
+        reasoning_tokens: 256
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0

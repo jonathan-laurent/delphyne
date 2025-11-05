@@ -38,11 +38,11 @@
         tool_calls: []
     budget:
       values:
-        num_requests: 1.0
-        num_completions: 1.0
-        input_tokens: 124.0
-        output_tokens: 16.0
-        price: 1.4e-05
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 124
+        output_tokens: 16
+        price: 1.7199999999999998e-05
     log_items: []
     model_name: mistral-small-2503
     usage_info:
