@@ -11,6 +11,7 @@ from typing import Any
 import fire  # type: ignore
 import yaml
 
+import delphyne.analysis.feedback as fb
 import delphyne.core as dp
 import delphyne.stdlib as std
 import delphyne.utils.typing as ty
@@ -221,6 +222,92 @@ class DelphyneCLI:
             content = f.read()
         new_content = command_file_header(content)
         with open(path, "w") as f:
+            f.write(new_content)
+
+    def browse(self, file: str, clear: bool = False):
+        """
+        Add browsable trace information to a command file's outcome if a
+        `raw_trace` field is found.
+
+        Arguments:
+            file: Path to the command file to update.
+            clear: If `True`, clear the browsable trace instead of
+                adding it (convenience shortcut for `clear_browsable`
+                method).
+        """
+
+        if clear:
+            self.clear_browsable(file)
+            return
+
+        # TODO: introduce cleaner ways to load information from command files
+
+        import delphyne.analysis as analysis
+        from delphyne.scripts.command_utils import update_command_file_outcome
+
+        file_path = Path(file)
+        workspace_dir = self._workspace_dir_for(file_path)
+        config = load_execution_context(workspace_dir, local=file_path)
+
+        with open(file_path, "r") as f:
+            content = f.read()
+
+        # Load the tree root from the header
+        file_data = yaml.safe_load(content)
+        strategy_name = file_data["args"]["strategy"]
+        strategy_args = file_data["args"]["args"]
+        loader = config.object_loader(extra_objects=STD_COMMANDS)
+        strategy = loader.load_strategy_instance(strategy_name, strategy_args)
+        root = dp.reify(strategy)
+
+        def add_browsable_trace(outcome_data: Any) -> Any:
+            if outcome_data is None:
+                return outcome_data
+            result = outcome_data.get("result")
+            if result is None:
+                return outcome_data
+            raw_trace = result.get("raw_trace")
+            if raw_trace is None:
+                print(
+                    "No raw_trace found in command outcome.", file=sys.stderr
+                )
+                return outcome_data
+            trace = ty.pydantic_load(dp.ExportableTrace, raw_trace)
+            loaded_trace = dp.Trace.load(trace)
+
+            btrace = analysis.compute_browsable_trace(loaded_trace, root=root)
+            result["browsable_trace"] = ty.pydantic_dump(fb.Trace, btrace)
+            return outcome_data
+
+        new_content = update_command_file_outcome(content, add_browsable_trace)
+        with open(file_path, "w") as f:
+            f.write(new_content)
+
+    def clear_browsable(self, file: str):
+        """
+        Clear the browsable trace from a command file's outcome if a
+        `browsable_trace` field is found.
+        """
+        from delphyne.scripts.command_utils import update_command_file_outcome
+
+        file_path = Path(file)
+        with open(file_path, "r") as f:
+            content = f.read()
+
+        def remove_browsable_trace(outcome_data: Any) -> Any:
+            if outcome_data is None:
+                return outcome_data
+            result = outcome_data.get("result")
+            if result is None:
+                return outcome_data
+            if "browsable_trace" in result:
+                del result["browsable_trace"]
+            return outcome_data
+
+        new_content = update_command_file_outcome(
+            content, remove_browsable_trace
+        )
+        with open(file_path, "w") as f:
             f.write(new_content)
 
     def serve(self, *, port: int = 3008):

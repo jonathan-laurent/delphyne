@@ -546,7 +546,9 @@ def evaluate_strategy_demo_and_return_trace(
     trace.check_roundabout_consistency()
     hresolver.set_reachability_diagnostics(feedback)
     simplifier = br.RefSimplifier(cache, rm)
-    feedback.trace = br.compute_browsable_trace(trace, cache, simplifier)
+    feedback.trace = br.compute_browsable_trace(
+        trace, cache=cache, simplifier=simplifier
+    )
     feedback.answer_refs = {
         trace.convert_answer_ref(k).id: v
         for k, v in hresolver.get_answer_refs().items()

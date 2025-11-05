@@ -149,7 +149,9 @@ def run_loaded_strategy_with_caches[N: dp.Node, P, T](
             ]
         if export_browsable_trace:
             assert cache is not None
-            browsable_trace = analysis.compute_browsable_trace(trace, cache)
+            browsable_trace = analysis.compute_browsable_trace(
+                trace, cache=cache
+            )
         log = None
         if export_log:
             log = list(

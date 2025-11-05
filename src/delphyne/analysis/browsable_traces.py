@@ -145,7 +145,9 @@ def _value_repr[T](
 
 def compute_browsable_trace(
     trace: dp.Trace,
-    cache: dp.TreeCache,
+    *,
+    cache: dp.TreeCache | None = None,
+    root: dp.AnyTree | None = None,
     simplifier: RefSimplifier | None = None,
 ) -> fb.Trace:
     """
@@ -153,8 +155,13 @@ def compute_browsable_trace(
 
     A simplifier is typically only available for demonstrations.
     """
-    resolver = IRefResolver(trace, root=None)
-    resolver.load_tree_cache(cache)
+    assert root is not None or cache is not None, (
+        "Either `root` or `cache` must be provided "
+        "to `compute_browsable_trace`."
+    )
+    resolver = IRefResolver(trace, root=root)
+    if cache is not None:
+        resolver.load_tree_cache(cache)
     tr = _TraceTranslator(trace, resolver, simplifier)
     return tr.translate_trace()
 

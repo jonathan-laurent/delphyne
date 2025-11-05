@@ -139,6 +139,8 @@ Whether they originate from evaluating demonstrations or running commands, [trac
 
 Navigation operations can be undone by clicking on the `Undo` icon on the header of the tree view or by using shortcut ++cmd+d++ followed by ++cmd+z++. In addition, to jump to a node with a given identifier (node identifier numbers are shown in the title of the "Node" view and in references in some command outputs), you can use shortcut ++cmd+d+cmd+n++. To jump to a space with a given identifier, you can use shortcut ++cmd+d+cmd+s++.
 
+!!! note "Generating Browsable Traces"
+    In order to visualize the trace contained in a command file, Delphyne looks at the `outcome.result.browsable_trace` field, which contains all information about a trace needed to visualize it in VSCode. However, not all commands output this field since it can be very heavy. If it is not present but raw trace information is still available (in field `outcome.result.raw_trace`), it can be generated using the [`delphyne browse <command_file.exec.yaml>`][delphyne.__main__.DelphyneCLI.browse] command from the Delphyne CLI.
 
 ## Tips and Shortcuts
 
