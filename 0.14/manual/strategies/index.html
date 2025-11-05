@@ -1,0 +1,1714 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../overview/">
+      
+      
+        <link rel="next" href="../policies/">
+      
+      
+      <link rel="icon" href="../../None">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>Strategy Language - Delphyne</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="https://unpkg.com/katex@0/dist/katex.min.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#the-strategy-language" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Delphyne" class="md-header__button md-logo" aria-label="Delphyne" data-md-component="logo">
+      
+  <img src="../../assets/logos/white/mini.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Delphyne
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Strategy Language
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Delphyne" class="md-nav__button md-logo" aria-label="Delphyne" data-md-component="logo">
+      
+  <img src="../../assets/logos/white/mini.png" alt="logo">
+
+    </a>
+    Delphyne
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Manual
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Manual
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Strategy Language
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Strategy Language
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#defining-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defining Strategies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Defining Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Queries
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trees-and-reification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trees and Reification
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trees and Reification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding New Effects
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../policies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Policy Language
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../demos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Demonstration Language
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../extension/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    VSCode Extension
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to-guides/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    How-To Guides
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Strategy Language
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_1">
+            <span class="md-nav__icon md-icon"></span>
+            Strategy Language
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/strategies/trees/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Trees and Spaces
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/strategies/strategies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Strategies and Reification
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/strategies/queries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Queries and Chats
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/strategies/traces/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    References and Traces
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/strategies/misc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Miscellaneous
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Policy Language
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Policy Language
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/policies/definitions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Definitions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/policies/streams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Search Streams
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Demonstration Language
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Demonstration Language
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/demos/definitions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Definitions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/demos/interpreter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Interpreter
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Standard Library
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            Standard Library
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/stdlib/basic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Basic
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/stdlib/queries/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Queries
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/stdlib/streams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Streams
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/stdlib/environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Environments
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/stdlib/effects/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Effects
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/stdlib/algorithms/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Algorithms
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/stdlib/commands/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Commands
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/stdlib/experiments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Experiments
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Delphyne CLI
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#defining-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Defining Strategies
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Defining Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Queries
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#trees-and-reification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trees and Reification
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Trees and Reification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding New Effects
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="the-strategy-language">The Strategy Language</h1>
+<p>Following the previous <a href="../overview/">Overview</a> chapter, we now provide more details on Delphyne's <em>strategy language</em>. We provide a quick overview of the most useful techniques and concepts and refer to the <a href="../../reference/strategies/trees/">Reference</a> for more details and explanations (follow the hypertext links).</p>
+<h2 id="defining-strategies">Defining Strategies</h2>
+<p>A <em>strategy</em> is a program with unresolved choice points, which can be reified into a search tree. Delphyne allows writing strategies as Python <a href="https://wiki.python.org/moin/Generators">generators</a> that yield internal tree nodes and receive associated actions in return. The <a class="autorefs autorefs-internal" title="Strategy" href="../../reference/strategies/strategies/#delphyne.Strategy"><code>Strategy</code></a> type has three type parameters, corresponding to the strategy's <em>signature</em> (i.e., the type of nodes it can emit), its associated <em>inner policy type</em> and its <em>return type</em>. Strategy functions are typically defined via the <a class="autorefs autorefs-internal" title="strategy" href="../../reference/stdlib/basic/#delphyne.strategy"><code>strategy</code></a> decorator, which creates functions that return <a class="autorefs autorefs-internal" title="StrategyInstance
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/basic/#delphyne.StrategyInstance"><code>StrategyInstance</code></a> values, wrapping the underlying generator while adding some metadata and convenience methods (e.g., <a class="autorefs autorefs-internal" title="using" href="../../reference/stdlib/basic/#delphyne.StrategyInstance.using"><code>using</code></a>).</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@strategy</span> <span class="c1"># (1)!</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_param_value</span><span class="p">(</span>
+    <span class="n">expr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">FindParamValueIP</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span> <span class="o">...</span>
+</code></pre></div>
+<ol>
+<li>Example from the <a href="../overview/">previous chapter</a>.</li>
+</ol>
+<p>Query functions can have arguments of arbitrary type (including functions). When launching strategies from <a href="../extension/#commands">commands</a> and in the presence of type annotations, arguments are automatically unserialized using Pydantic. Thus, it is <em>useful</em> for <em>top-level strategies</em> to have serializable argument types that are properly annotated.</p>
+<p>Branching nodes can be yielded via the <a class="autorefs autorefs-internal" title="branch" href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.branch"><code>branch</code></a> function:</p>
+<!-- , whose type is worth examining (we ignore some optional arguments): -->
+
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">branch</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span><span class="n">cands</span><span class="p">:</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
+</code></pre></div>
+<p>Crucially, <code>branch</code> does not take a query as an argument but an <strong>opaque space</strong> (<a class="autorefs autorefs-internal" title="Opaque" href="../../reference/stdlib/basic/#delphyne.Opaque"><code>Opaque</code></a>). An opaque space can be seen as a mapping from the ambient inner policy to an iterator of values (more precisely, a <a href="../policies/">search stream</a>). Opaque spaces can be produced from queries or strategy instances, by mapping the ambient inner policy to a prompting policy or a policy respectively:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Query</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">[</span><span class="n">Pout</span><span class="p">](</span><span class="bp">self</span><span class="p">,</span>
+        <span class="n">get_policy</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Pout</span><span class="p">],</span> <span class="n">PromptingPolicy</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">Pout</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">StrategyInstance</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">using</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+        <span class="n">get_policy</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Pout</span><span class="p">],</span> <span class="n">Policy</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">Pout</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
+</code></pre></div>
+<p>Importantly, search policies such as <a class="autorefs autorefs-internal" title="dfs" href="../../reference/stdlib/algorithms/#delphyne.stdlib.search.dfs.dfs"><code>dfs</code></a> are unaware of whether an opaque space originates from a query or a strategy. This guarantees modularity and allows queries to be transparently refined into dedicated strategies whenever more guidance is desired. Opaque spaces also allow queries with different signatures (i.e., yielding different kinds of tree nodes) to be composed, while being associated independent search policies.</p>
+<div class="admonition info">
+<p class="admonition-title">Strategy Inlining</p>
+<p>It is also possible to <em>inline</em> a strategy call within another strategy, provided that both strategies share the same signature and inner policy type. This can be done using the <a class="autorefs autorefs-internal" title="inline" href="../../reference/strategies/strategies/#delphyne.StrategyComp.inline"><code>inline</code></a> method, which <em>unwraps</em> a <a class="autorefs autorefs-internal" title="StrategyInstance
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/basic/#delphyne.StrategyInstance"><code>StrategyInstance</code></a> value and gives access to the underlying generator.</p>
+</div>
+<p>For an example of a strategy that branches over results of a sub-strategy, see the <code>prove_program_via_abduction_and_branching</code> strategy from the <code>find_invariants</code> example. In particular, see how doing so results in nested inner policy records.</p>
+<details class="info">
+<summary>Source for <code>examples/find_invariants/abduct_and_branch.py</code></summary>
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A simple Delphyne strategy to discover loop invariants with Why3.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">delphyne</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">delphyne</span><span class="w"> </span><span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Compute</span><span class="p">,</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">Strategy</span><span class="p">,</span> <span class="n">Value</span><span class="p">,</span> <span class="n">strategy</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">why3_utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">why3</span>
+
+<span class="c1"># fmt: off</span>
+
+
+<span class="c1">#####</span>
+<span class="c1">##### Inner Policy Types</span>
+<span class="c1">#####</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProposeInvsIP</span><span class="p">:</span>
+    <span class="n">propose</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PromptingPolicy</span>
+    <span class="n">novel</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PromptingPolicy</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProveProgIP</span><span class="p">:</span>
+    <span class="n">propose</span><span class="p">:</span> <span class="s2">&quot;dp.Policy[Branch | Fail, ProposeInvsIP]&quot;</span>
+    <span class="nb">eval</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">PromptingPolicy</span>
+    <span class="n">quantify_eval</span><span class="p">:</span> <span class="s2">&quot;Callable[[ProofStateMetrics], float] | None&quot;</span>
+
+
+<span class="c1">#####</span>
+<span class="c1">##### Type Definitions</span>
+<span class="c1">#####</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProofStateMetrics</span><span class="p">:</span>
+    <span class="n">has_redundant_invs</span><span class="p">:</span> <span class="nb">bool</span>
+
+
+<span class="nb">type</span> <span class="n">Proposal</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">why3</span><span class="o">.</span><span class="n">Formula</span><span class="p">]</span>
+
+
+<span class="nb">type</span> <span class="n">Blacklist</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Proposal</span><span class="p">]</span>
+
+
+
+<span class="c1">#####</span>
+<span class="c1">##### Strategies</span>
+<span class="c1">#####</span>
+
+
+<span class="nd">@strategy</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">prove_program_via_abduction_and_branching</span><span class="p">(</span>
+    <span class="n">prog</span><span class="p">:</span> <span class="n">why3</span><span class="o">.</span><span class="n">File</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Value</span> <span class="o">|</span> <span class="n">Fail</span> <span class="o">|</span> <span class="n">Compute</span><span class="p">,</span> <span class="n">ProveProgIP</span><span class="p">,</span> <span class="n">why3</span><span class="o">.</span><span class="n">File</span><span class="p">]:</span>
+    <span class="n">annotated</span><span class="p">:</span> <span class="n">why3</span><span class="o">.</span><span class="n">File</span> <span class="o">=</span> <span class="n">prog</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">feedback</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">why3</span><span class="o">.</span><span class="n">check</span><span class="p">)(</span><span class="n">prog</span><span class="p">,</span> <span class="n">annotated</span><span class="p">)</span>
+        <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">feedback</span><span class="o">.</span><span class="n">error</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;invalid program&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">feedback</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">annotated</span>
+        <span class="n">remaining</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">feedback</span><span class="o">.</span><span class="n">obligations</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">o</span><span class="o">.</span><span class="n">proved</span><span class="p">]</span>
+        <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">remaining</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;too many remaining obligations&quot;</span><span class="p">)</span>
+        <span class="n">unproved</span> <span class="o">=</span> <span class="n">remaining</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span>
+            <span class="ow">not</span> <span class="n">why3</span><span class="o">.</span><span class="n">invariant_init_obligation</span><span class="p">(</span><span class="n">unproved</span><span class="p">),</span> <span class="s2">&quot;init&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">annotated</span> <span class="o">!=</span> <span class="n">prog</span><span class="p">:</span>  <span class="c1"># if invariant annotations are present</span>
+            <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">value</span><span class="p">(</span>
+                <span class="n">EvaluateProofState</span><span class="p">(</span><span class="n">unproved</span><span class="p">)</span>
+                    <span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">eval</span><span class="p">,</span> <span class="n">ProveProgIP</span><span class="p">),</span>
+                <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">quantify_eval</span><span class="p">)</span>
+        <span class="n">new_invariants</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">branch</span><span class="p">(</span>
+            <span class="n">dp</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">prior</span><span class="p">:</span>
+                    <span class="n">propose_invariants</span><span class="p">(</span><span class="n">unproved</span><span class="p">,</span> <span class="n">prior</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">propose</span><span class="p">,</span> <span class="n">ProveProgIP</span><span class="p">)))</span>
+        <span class="n">annotated</span> <span class="o">=</span> <span class="n">why3</span><span class="o">.</span><span class="n">add_invariants</span><span class="p">(</span><span class="n">annotated</span><span class="p">,</span> <span class="n">new_invariants</span><span class="p">)</span>
+
+
+<span class="nd">@strategy</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">propose_invariants</span><span class="p">(</span>
+    <span class="n">obligation</span><span class="p">:</span> <span class="n">why3</span><span class="o">.</span><span class="n">Obligation</span><span class="p">,</span>
+    <span class="n">blacklist</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Proposal</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Strategy</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Fail</span><span class="p">,</span> <span class="n">ProposeInvsIP</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Proposal</span><span class="p">,</span> <span class="n">Blacklist</span><span class="p">]]:</span>
+    <span class="k">if</span> <span class="n">blacklist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">blacklist</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">proposal</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">branch</span><span class="p">(</span>
+        <span class="n">ProposeInvariants</span><span class="p">(</span><span class="n">obligation</span><span class="p">,</span> <span class="n">blacklist</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">propose</span><span class="p">,</span> <span class="n">ProposeInvsIP</span><span class="p">))</span>
+    <span class="n">sanity_check</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span><span class="n">why3</span><span class="o">.</span><span class="n">no_invalid_formula_symbol</span><span class="p">(</span><span class="n">inv</span><span class="p">)</span> <span class="k">for</span> <span class="n">inv</span> <span class="ow">in</span> <span class="n">proposal</span><span class="p">)</span>
+    <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">sanity_check</span><span class="p">,</span> <span class="s2">&quot;sanity check failed&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">blacklist</span><span class="p">:</span>
+        <span class="n">novel</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">branch</span><span class="p">(</span>
+            <span class="n">IsProposalNovel</span><span class="p">(</span><span class="n">proposal</span><span class="p">,</span> <span class="n">blacklist</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">novel</span><span class="p">,</span> <span class="n">ProposeInvsIP</span><span class="p">))</span>
+        <span class="k">yield from</span> <span class="n">dp</span><span class="o">.</span><span class="n">ensure</span><span class="p">(</span><span class="n">novel</span><span class="p">,</span> <span class="s2">&quot;proposal is not novel&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">proposal</span><span class="p">,</span> <span class="p">[</span><span class="o">*</span><span class="n">blacklist</span><span class="p">,</span> <span class="n">proposal</span><span class="p">]</span>
+
+
+<span class="c1">#####</span>
+<span class="c1">##### Queries</span>
+<span class="c1">#####</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProposeInvariants</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Query</span><span class="p">[</span><span class="n">Proposal</span><span class="p">]):</span>
+    <span class="n">unproved</span><span class="p">:</span> <span class="n">why3</span><span class="o">.</span><span class="n">Obligation</span>
+    <span class="n">blacklist</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Proposal</span><span class="p">]</span>
+
+    <span class="n">__parser__</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">last_code_block</span><span class="o">.</span><span class="n">yaml</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">IsProposalNovel</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Query</span><span class="p">[</span><span class="nb">bool</span><span class="p">]):</span>
+    <span class="n">proposal</span><span class="p">:</span> <span class="n">Proposal</span>
+    <span class="n">blacklist</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Proposal</span><span class="p">]</span>
+
+    <span class="n">__parser__</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">last_code_block</span><span class="o">.</span><span class="n">yaml</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvaluateProofState</span><span class="p">(</span><span class="n">dp</span><span class="o">.</span><span class="n">Query</span><span class="p">[</span><span class="n">ProofStateMetrics</span><span class="p">]):</span>
+    <span class="n">unproved</span><span class="p">:</span> <span class="n">why3</span><span class="o">.</span><span class="n">Obligation</span>
+
+    <span class="n">__parser__</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">last_code_block</span><span class="o">.</span><span class="n">yaml</span>
+
+
+<span class="c1">#####</span>
+<span class="c1">##### Policies</span>
+<span class="c1">#####</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">prove_program_via_abduction_and_branching_policy</span><span class="p">(</span>
+    <span class="n">fancy_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span>
+    <span class="n">base_model</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span>
+    <span class="n">max_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="n">max_requests_per_proposal</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="n">root_proposal_penalty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span>
+    <span class="n">nonroot_proposal_penalty</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">max_nonroot_proposals</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="n">enable_state_evaluation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">min_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Policy</span><span class="p">[</span><span class="n">Branch</span> <span class="o">|</span> <span class="n">Value</span> <span class="o">|</span> <span class="n">Fail</span> <span class="o">|</span> <span class="n">Compute</span><span class="p">,</span> <span class="n">ProveProgIP</span><span class="p">]:</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_value</span><span class="p">(</span><span class="n">metrics</span><span class="p">:</span> <span class="n">ProofStateMetrics</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="n">prob</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">metrics</span><span class="o">.</span><span class="n">has_redundant_invs</span><span class="p">:</span>
+            <span class="n">prob</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">min_value</span><span class="p">,</span> <span class="n">prob</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">child_confidence_prior</span><span class="p">(</span><span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">prev_gen</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">prev_gen</span> <span class="o">&gt;=</span> <span class="n">max_nonroot_proposals</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="n">nonroot_proposal_penalty</span> <span class="o">**</span> <span class="n">prev_gen</span>
+        <span class="k">return</span> <span class="n">root_proposal_penalty</span> <span class="o">**</span> <span class="n">prev_gen</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">NUM_REQUESTS</span>
+    <span class="n">fancy</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">openai_model</span><span class="p">(</span><span class="n">fancy_model</span><span class="p">)</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">openai_model</span><span class="p">(</span><span class="n">base_model</span><span class="p">)</span>
+
+    <span class="n">propose_ip</span> <span class="o">=</span> <span class="n">ProposeInvsIP</span><span class="p">(</span>
+        <span class="n">propose</span><span class="o">=</span><span class="n">dp</span><span class="o">.</span><span class="n">few_shot</span><span class="p">(</span><span class="n">fancy</span><span class="p">),</span>
+        <span class="n">novel</span><span class="o">=</span><span class="n">dp</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">@</span> <span class="n">dp</span><span class="o">.</span><span class="n">few_shot</span><span class="p">(</span><span class="n">base</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">proposal_limit</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">BudgetLimit</span><span class="p">({</span><span class="n">n</span><span class="p">:</span> <span class="n">max_requests_per_proposal</span><span class="p">})</span>
+    <span class="n">prove_prog_ip</span> <span class="o">=</span> <span class="n">ProveProgIP</span><span class="p">(</span>
+        <span class="n">propose</span><span class="o">=</span><span class="n">dp</span><span class="o">.</span><span class="n">with_budget</span><span class="p">(</span><span class="n">proposal_limit</span><span class="p">)</span> <span class="o">@</span> <span class="n">dp</span><span class="o">.</span><span class="n">dfs</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">propose_ip</span><span class="p">,</span>
+        <span class="nb">eval</span><span class="o">=</span><span class="n">dp</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">@</span> <span class="n">dp</span><span class="o">.</span><span class="n">few_shot</span><span class="p">(</span><span class="n">base</span><span class="p">),</span>
+        <span class="n">quantify_eval</span><span class="o">=</span><span class="n">compute_value</span> <span class="k">if</span> <span class="n">enable_state_evaluation</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">bestfs</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">best_first_search</span><span class="p">(</span>
+        <span class="n">child_confidence_prior</span><span class="o">=</span><span class="n">child_confidence_prior</span><span class="p">,</span>
+        <span class="n">max_depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">bestfs</span> <span class="o">@</span> <span class="n">dp</span><span class="o">.</span><span class="n">elim_compute</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">prove_prog_ip</span>
+</code></pre></div>
+</details>
+<h3 id="queries">Queries</h3>
+<p>New query types can be defined by subclassing the <a class="autorefs autorefs-internal" title="Query" href="../../reference/stdlib/queries/#delphyne.Query"><code>Query</code></a> class. We refer to the associated <a class="autorefs autorefs-internal" title="Query" href="../../reference/stdlib/queries/#delphyne.Query">API documentation</a> for details. Some highlights:</p>
+<ul>
+<li>Queries can be associated <em>system prompts</em> and <em>instance prompts</em>. Prompts can be defined inline or in separate <a href="https://jinja.palletsprojects.com/en/stable/">Jinja</a> files (see <code>find_invariants</code> example).</li>
+<li>Query types can have fields of any type as long as they can be serialized and unserialized using Pydantic (this includes custom dataclasses).</li>
+<li>Prompts can be parameterized, and parameters instantiated on the policy side (e.g., <code>params</code> argument of <a class="autorefs autorefs-internal" title="few_shot" href="../../reference/stdlib/queries/#delphyne.few_shot"><code>few_shot</code></a>). This is useful for testing prompt variations, specializing specific prompt fragments for particular, etc...</li>
+<li>It is possible to define several <a class="autorefs autorefs-internal" title="AnswerMode" href="../../reference/strategies/traces/#delphyne.AnswerMode"><em>answer modes</em></a> for a query, each mode being associated a distinct parser (see <code>tests/example_strategies.py:GetFavoriteDish</code> for an example).</li>
+<li>Queries support <a href="https://platform.openai.com/docs/guides/structured-outputs">structured output</a> and <a href="https://platform.openai.com/docs/guides/function-calling">tool calls</a>.</li>
+</ul>
+<h2 id="trees-and-reification">Trees and Reification</h2>
+<p>Strategies can be reified (i.e. compiled) into trees using the <a class="autorefs autorefs-internal" title="reify" href="../../reference/strategies/strategies/#delphyne.reify"><code>reify</code></a> function (see <a class="autorefs autorefs-internal" title="reify" href="../../reference/strategies/strategies/#delphyne.reify">reference documentation</a> for details and caveats). The <a class="autorefs autorefs-internal" title="Tree
+
+
+  
+      dataclass
+  " href="../../reference/strategies/trees/#delphyne.Tree"><code>Tree</code></a> class is defined as follows:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Tree</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+    <span class="n">node</span><span class="p">:</span> <span class="n">N</span> <span class="o">|</span> <span class="n">Success</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+    <span class="n">child</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Value</span><span class="p">],</span> <span class="n">Tree</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]]</span>
+    <span class="n">ref</span><span class="p">:</span> <span class="n">GlobalNodeRef</span> <span class="c1"># (1)!</span>
+</code></pre></div>
+<ol>
+<li>To ignore on first reading. See <a href="../../reference/strategies/traces/">documentation on references</a>.</li>
+</ol>
+<p>A tree contains either a node (<a class="autorefs autorefs-internal" title="Node" href="../../reference/strategies/trees/#delphyne.Node"><code>Node</code></a>) or a success leaf (<a class="autorefs autorefs-internal" title="Success
+
+
+  
+      dataclass
+  " href="../../reference/strategies/trees/#delphyne.Success"><code>Node</code></a>). When applicable, children trees are indexed by <em>actions</em> (<a class="autorefs autorefs-internal" title="Value" href="../../reference/strategies/traces/#delphyne.core.refs.Value"><code>Value</code></a>). Actions result from combining elements of local spaces (<a class="autorefs autorefs-internal" title="Space" href="../../reference/strategies/trees/#delphyne.Space"><code>Space</code></a>). For example, if <code>node</code> has type <a class="autorefs autorefs-internal" title="Branch
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.Branch"><code>Branch</code></a>, then an action corresponds to a branching candidate.</p>
+<h3 id="adding-effects">Adding New Effects</h3>
+<p>New types of effects beyond <a class="autorefs autorefs-internal" title="Branch
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.Branch"><code>Branch</code></a> and <a class="autorefs autorefs-internal" title="Fail
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.Fail"><code>Fail</code></a> can be added easily, by subclassing <a class="autorefs autorefs-internal" title="Node" href="../../reference/strategies/trees/#delphyne.Node"><code>Node</code></a>. Here are a number of additional effects defined in the Delphyne standard library:</p>
+<ul>
+<li><a class="autorefs autorefs-internal" title="Join
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.Join"><code>Join</code></a>: allows evaluating a sequence of independent sub-strategies, possibly in parallel.</li>
+<li><a class="autorefs autorefs-internal" title="Compute
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/effects/#delphyne.stdlib.computations.Compute"><code>Compute</code></a>: allows performing expensive and possibly non-replicable/nondeterministic computations in strategies (see details in <a href="../../how-to-guides/#compute">How-To Guide</a>).</li>
+<li><a class="autorefs autorefs-internal" title="Value
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.Value"><code>Value</code></a>: allows adding value information into strategy trees. Such information can be leveraged by search policies (e.g. <a class="autorefs autorefs-internal" title="best_first_search" href="../../reference/stdlib/algorithms/#delphyne.best_first_search"><code>best_first_search</code></a>).</li>
+<li><a class="autorefs autorefs-internal" title="Flag
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/effects/#delphyne.Flag"><code>Flag</code></a>: allows providing a finite number of alternative implementations for sub-tasks, to be selected either offline or at runtime.</li>
+<li><a class="autorefs autorefs-internal" title="Message
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/effects/#delphyne.stdlib.nodes.Message"><code>Message</code></a>: allows decorating trees with debugging messages.</li>
+</ul>
+<p>Node types are dataclasses whose fields can be of several kinds:</p>
+<ul>
+<li><strong>Nonparametric local spaces</strong> (<a class="autorefs autorefs-internal" title="Space" href="../../reference/strategies/trees/#delphyne.Space"><code>Space</code></a>), the main types of which are <em>opaque spaces</em> (<a class="autorefs autorefs-internal" title="OpaqueSpace
+
+
+  
+      dataclass
+  " href="../../reference/stdlib/basic/#delphyne.OpaqueSpace"><code>OpaqueSpace</code></a>) and <em>embedded trees</em> (<a class="autorefs autorefs-internal" title="EmbeddedTree
+
+
+  
+      dataclass
+  " href="../../reference/strategies/trees/#delphyne.EmbeddedTree"><code>EmbeddedTree</code></a>).</li>
+<li><strong>Parametric local spaces</strong>, which are functions from local <a class="autorefs autorefs-internal" title="Value" href="../../reference/strategies/traces/#delphyne.core.refs.Value">values</a> (i.e. assembly of elements from local spaces) to local spaces.</li>
+<li><strong>Data fields</strong> that contain policy metadata, debugging information, etc...</li>
+</ul>
+<p>More details are available in the <a class="autorefs autorefs-internal" title="Node" href="../../reference/strategies/trees/#delphyne.Node">API Reference</a>. For examples of defining new effects, you can refer to the source code of the aforementioned effects in the Delphyne standard library (in the <code>delphyne.stdlib.nodes</code> module).</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tabs.link", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+        <script src="../../javascript/katex.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/contrib/auto-render.min.js"></script>
+      
+    
+  </body>
+</html>
