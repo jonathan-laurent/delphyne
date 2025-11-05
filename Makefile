@@ -174,7 +174,7 @@ serve-doc:
 # is valid for the latest stable release.
 deploy-doc-release:
 	git fetch origin gh-pages
-	mike deploy 0.13 latest --update-aliases --push
+	mike deploy 0.14 latest --update-aliases --push
 
 
 # Build and deploy the documentation for the dev version

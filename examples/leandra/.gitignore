@@ -4,3 +4,4 @@
 __pycache__
 experiments/output
 experiments/test-output
+experiments/find_theorems/output
