@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.14.1 (2025-11-05)
+
+- Fix bug in inference spending computations.
+
 ## Version 0.14.0 (2025-11-05)
 
 - VSCode Extension: when a test is stuck on a query, a new command allows seeing diffs with all unreachable queries of the same type, which is very useful for repairing demonstrations after a strategy change.

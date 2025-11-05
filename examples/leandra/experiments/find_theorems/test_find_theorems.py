@@ -27,7 +27,11 @@ class FindTheoremConfig:
             strategy="find_theorem",
             args={"request": BENCHS[self.problem]},
             policy="FindTheoremPolicy",
-            policy_args={"model_name": self.model, "effort": self.effort},
+            policy_args={
+                "model_name": self.model,
+                "effort": self.effort,
+                "max_requests": 8,  # try more than usual
+            },
             budget={},
         )
 
