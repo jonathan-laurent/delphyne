@@ -1487,6 +1487,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.nodes.elim_join" class="md-nav__link">
+    <span class="md-ellipsis">
+      elim_join
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2206,6 +2215,15 @@
   <a href="#delphyne.stdlib.nodes.join" class="md-nav__link">
     <span class="md-ellipsis">
       join
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.stdlib.nodes.elim_join" class="md-nav__link">
+    <span class="md-ellipsis">
+      elim_join
     </span>
   </a>
   
@@ -5746,6 +5764,80 @@ arbitrary metadata accessible to search policies.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">recv</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">spawn_node</span><span class="p">(</span><span class="n">Join</span><span class="p">,</span> <span class="n">subs</span><span class="o">=</span><span class="n">subs</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">Sequence</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">recv</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="delphyne.stdlib.nodes.elim_join" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">elim_join</span>
+
+
+</h3>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">elim_join</span><span class="p">(</span><span class="n">env</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="PolicyEnv (delphyne.stdlib.environments.PolicyEnv)" href="../environments/#delphyne.PolicyEnv">PolicyEnv</a></span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="PureTreeTransformerFn (delphyne.stdlib.policies.PureTreeTransformerFn)" href="../basic/#delphyne.stdlib.policies.PureTreeTransformerFn">PureTreeTransformerFn</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="Join
+
+
+  
+      dataclass
+   (delphyne.stdlib.nodes.Join)" href="#delphyne.stdlib.nodes.Join">Join</a></span><span class="p">,</span> <span class="n"><span title="typing.Never">Never</span></span><span class="p">]</span>
+</code></pre></div>
+
+    <div class="doc doc-contents first">
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">645</span>
+<span class="normal">646</span>
+<span class="normal">647</span>
+<span class="normal">648</span>
+<span class="normal">649</span>
+<span class="normal">650</span>
+<span class="normal">651</span>
+<span class="normal">652</span>
+<span class="normal">653</span>
+<span class="normal">654</span>
+<span class="normal">655</span>
+<span class="normal">656</span>
+<span class="normal">657</span>
+<span class="normal">658</span>
+<span class="normal">659</span>
+<span class="normal">660</span>
+<span class="normal">661</span>
+<span class="normal">662</span>
+<span class="normal">663</span>
+<span class="normal">664</span>
+<span class="normal">665</span>
+<span class="normal">666</span>
+<span class="normal">667</span>
+<span class="normal">668</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@pol</span><span class="o">.</span><span class="n">contextual_tree_transformer</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">elim_join</span><span class="p">(</span>
+    <span class="n">env</span><span class="p">:</span> <span class="n">PolicyEnv</span><span class="p">,</span>
+    <span class="n">policy</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pol</span><span class="o">.</span><span class="n">PureTreeTransformerFn</span><span class="p">[</span><span class="n">Join</span><span class="p">,</span> <span class="n">Never</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">[</span><span class="n">N</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Node</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+        <span class="n">tree</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">Join</span> <span class="o">|</span> <span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">node</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">Join</span><span class="p">):</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">aux</span><span class="p">(</span><span class="n">computed</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Tree</span><span class="p">[</span><span class="n">N</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">computed</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">subs</span><span class="p">):</span>
+                    <span class="c1"># Once all joined values are computed, continue</span>
+                    <span class="k">return</span> <span class="n">transform</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">computed</span><span class="p">))</span>
+                <span class="c1"># Otherwise, compute the next joined value and then all</span>
+                <span class="c1"># remaining ones.</span>
+                <span class="n">compute_next</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">subs</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">computed</span><span class="p">)]</span><span class="o">.</span><span class="n">spawn_tree</span><span class="p">())</span>
+                <span class="k">return</span> <span class="n">bind_tree</span><span class="p">(</span><span class="n">compute_next</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">aux</span><span class="p">(</span><span class="n">computed</span> <span class="o">+</span> <span class="p">(</span><span class="n">v</span><span class="p">,)))</span>
+
+            <span class="k">return</span> <span class="n">aux</span><span class="p">(())</span>
+        <span class="k">return</span> <span class="n">tree</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">transform</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">transform</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

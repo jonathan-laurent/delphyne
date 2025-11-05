@@ -3054,9 +3054,7 @@ specification.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/commands/run_strategy.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">342</span>
-<span class="normal">343</span>
-<span class="normal">344</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">344</span>
 <span class="normal">345</span>
 <span class="normal">346</span>
 <span class="normal">347</span>
@@ -3093,7 +3091,9 @@ specification.</p>
 <span class="normal">378</span>
 <span class="normal">379</span>
 <span class="normal">380</span>
-<span class="normal">381</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_strategy</span><span class="p">(</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_strategy</span><span class="p">(</span>
     <span class="n">task</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">TaskContext</span><span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">CommandResult</span><span class="p">[</span><span class="n">RunStrategyResponse</span><span class="p">]],</span>
     <span class="n">exe</span><span class="p">:</span> <span class="n">ta</span><span class="o">.</span><span class="n">ExecutionContext</span><span class="p">,</span>
     <span class="n">args</span><span class="p">:</span> <span class="n">RunStrategyArgs</span><span class="p">,</span>
@@ -3389,9 +3389,7 @@ particularly useful for making commands deterministic.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/commands/run_strategy.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">283</span>
-<span class="normal">284</span>
-<span class="normal">285</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">285</span>
 <span class="normal">286</span>
 <span class="normal">287</span>
 <span class="normal">288</span>
@@ -3445,7 +3443,9 @@ particularly useful for making commands deterministic.</p>
 <span class="normal">336</span>
 <span class="normal">337</span>
 <span class="normal">338</span>
-<span class="normal">339</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">RunStrategyArgs</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments for the `run_strategy` command that runs an oracular</span>
