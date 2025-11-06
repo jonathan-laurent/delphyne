@@ -23,7 +23,10 @@ PERMANENT_EXAMPLE_TAG = "permanent"
 SKETCH_PROOF_MODEL_CLASS = "sketch_proof"
 PROVE_SUBGOAL_MODEL_CLASS = "prove_subgoal"
 
+CLOSING_TACTICS = ["rfl", "norm_num", "simp", "ring", "linarith", "grind"]
+
 # fmt: off
+
 
 #####
 ##### Top-Level Strategy
@@ -62,7 +65,7 @@ def prove_theorem(
     # the full proof is not accepted (naming clashes, improper use of
     # metavariables...). This should be very rare though.
     if _has_errors(response):
-        meta = (_lean_error_metadata(full_proof, response),)
+        meta = _lean_error_metadata(full_proof, response)
         err = dp.Error(label="stitching_failure", meta=meta)
         assert_never((yield from dp.fail(error=err)))
     return full_proof
@@ -234,7 +237,7 @@ def _annotate_with_line_numbers(lean_code: str) -> str:
 
 
 def _has_errors(response: li_intf.BaseREPLResponse) -> bool:
-    return not any(m.severity == "error" for m in response.messages)
+    return any(m.severity == "error" for m in response.messages)
 
 
 #####
@@ -257,6 +260,8 @@ def prove_subgoal(
     tool for finding theorems (implemented via the `find_theorem`
     strategy). Feedback is provided when incorrect proofs are proposed.
     """
+
+    # We first try to use a hammer tactic to close the goal directly.
     
     @strategy
     def process_proof(
@@ -274,6 +279,12 @@ def prove_subgoal(
                 label="sub_proof_has_errors",
                 meta=_lean_error_metadata_without_line_info(response))
         return proof
+    
+    hammer_proof = "; ".join("try " + t for t in CLOSING_TACTICS)
+    hammer_response = yield from dp.branch(
+        process_proof(hammer_proof).using(lambda p: p.check, ProveSubgoalIP))
+    if not isinstance(hammer_response, dp.Error):
+        return hammer_proof
 
     proof = yield from dp.interact(
         step=lambda prefix, _:
@@ -363,15 +374,15 @@ class ProveTheoremPolicy(dp.PolicyRecord[_ProveTheoremSig, ProveTheoremIP]):
     """
     Standard policy for `prove_theorem`.
 
-    This policies proceeds in two steps. First, it attempts a direct
-    proof and only if this fails, it tries to use sketching.
+    This policy proceeds in two steps. First, it attempts a direct
+    proof. If it fails, it then tries to use sketching.
 
     Attributes:
-        direct: policy for trying  first direct proof before sketching.
-        sketch: policy for sketching proofs.
-        subgoal: policy for proving subgoals.
+        direct: Policy for the first direct proof attempt.
+        sketch: Policy for sketching proofs.
+        subgoal: Policy for proving subgoals.
         lean_timeout: Timeout in seconds for checking sketches or proofs
-            in direct modes.
+            in direct mode.
     """
 
     direct: "ProveSubgoalPolicy | None" = None
@@ -412,7 +423,7 @@ class SketchProofPolicy(dp.PolicyRecord[Branch | Feedback, SketchProofIP]):
 
     model_name: dp.StandardModelName | str = "gpt-5"
     effort: dp.ReasoningEffort = "medium"
-    max_full_attempts: int = 2
+    max_full_attempts: int = 4
     max_feedback_rounds_per_attempt: int = 4
     examples: "ExampleSelector | None" = None
     lean_timeout: float = DEFAULT_LEAN_TIMEOUT
@@ -451,8 +462,8 @@ class ProveSubgoalPolicy(dp.PolicyRecord[Branch | Feedback, ProveSubgoalIP]):
         max_feedback_rounds_per_attempt: Maximum number of opportunities
             that are provided for repairing a proof during each attempt.
         max_requests_per_attempt: Maximum number of requests to the
-            proving model during each attempt (corresponding to the the
-            number of feedback and tool calling rounds).
+            proving model during each attempt (corresponding to the
+            number of feedback and tool calling rounds, plus one).
         examples: Policy for selecting few-shot examples.
         find_theorem: Policy for finding theorems.
         lean_timeout: Timeout in seconds for checking proofs.
@@ -462,7 +473,7 @@ class ProveSubgoalPolicy(dp.PolicyRecord[Branch | Feedback, ProveSubgoalIP]):
     effort: dp.ReasoningEffort = "low"
     max_full_attempts: int = 3
     max_feedback_rounds_per_attempt: int = 3
-    max_requests_per_attempt: int = 6
+    max_requests_per_attempt: int = 7
     examples: "ExampleSelector | None" = None
     find_theorem: lft.FindTheoremPolicy | None = None
     lean_timeout: float = DEFAULT_LEAN_TIMEOUT
@@ -512,7 +523,7 @@ class Randomized[T]:
 class ExampleSelector:
     """
     Specification for an example selector that includes a certain amount
-    of standard examples along with extra ones selected using MMR.
+    of permanent examples along with extra ones selected using MMR.
     """
 
     model_name: dp.StandardOpenAIEmbeddingModel = "text-embedding-3-large"

@@ -87,23 +87,23 @@ def compile_sketch(
     Attributes:
         theorem: The theorem statement. Everything after `by` is
             ignored.
-        sketch: The prooof sketch.
+        sketch: The proof sketch.
         proofs: A list of (optional) proofs for every hole in the
             sketch. Proofs are presented in the order they appear in the
             compiled sketch.
     """
 
     lines: list[str] = [*_extract_theorem_lines(theorem)]
-    ident = 1
+    indent = 1
     cur_proofs = [*proofs]
 
     def write(line: str) -> None:
         # assert "\n" not in line
-        lines.append("  " * ident + line)
+        lines.append("  " * indent + line)
 
     def write_proof(binding: tuple[str, str] | None):
         decl = f"have {binding[0]}: {binding[1]}" if binding else None
-        nonlocal ident
+        nonlocal indent
         assert cur_proofs, "Not enough proofs provided."
         proof = cur_proofs.pop(0)
         if decl is None:
@@ -117,13 +117,13 @@ def compile_sketch(
                 write(f"{decl} := by sorry")
             else:
                 write(f"{decl} := by")
-                ident += 1
+                indent += 1
                 for proof_line in proof.splitlines():
                     write(proof_line)
-                ident -= 1
+                indent -= 1
 
     def compile_step(step: ProofSketchStep) -> None:
-        nonlocal ident
+        nonlocal indent
         if isinstance(step, Define):
             rhs = _one_liner(step.define[1])
             write(f"let {step.define[0]} := {rhs}")
@@ -137,12 +137,12 @@ def compile_sketch(
             concl = _one_liner(step.conclude[1])
             proved = f"({assum}) → {concl}"
             write(f"have {concl_name}: {proved} := by")
-            ident += 1
+            indent += 1
             write(f"intro {assum_name}")
             for substep in step.do:
                 compile_step(substep)
             write_proof(None)
-            ident -= 1
+            indent -= 1
 
     for step in sketch.steps:
         compile_step(step)
@@ -162,6 +162,8 @@ def _num_holes(sketch: Sequence[ProofSketchStep]) -> int:
                 count += _num_holes(do_steps)
             case Define():
                 pass
+    # +1 for the final hole that establishes the conclusion after
+    # assuming all the steps.
     return count + 1
 
 
