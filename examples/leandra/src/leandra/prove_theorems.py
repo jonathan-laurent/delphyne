@@ -15,7 +15,7 @@ from delphyne import Branch, Compute, Fail, Feedback, Join, Strategy, strategy
 import leandra.find_theorems as lft
 from leandra.dsl import LeanProof, LeanTheorem, ProofSketch, compile_sketch
 from leandra.find_theorems import TheoremRequest, find_theorem
-from leandra.tools import run_lean_command
+from leandra.tools import LeanResponse, run_lean_command
 
 DEFAULT_LEAN_TIMEOUT = 8.0
 MAX_HOLES = 10
@@ -200,7 +200,7 @@ def check_sketch(
 
 
 def _lean_error_metadata(
-    lean_command: str, response: li_intf.BaseREPLResponse
+    lean_command: str, response: LeanResponse
 ) -> dict[str, Any]:
     """
     Produce feedback metadata for when a Lean command fails.
@@ -236,7 +236,7 @@ def _annotate_with_line_numbers(lean_code: str) -> str:
     return "\n".join(f"{line}  # line {i}" for i, line in enumerate(lines))
 
 
-def _has_errors(response: li_intf.BaseREPLResponse) -> bool:
+def _has_errors(response: LeanResponse) -> bool:
     return any(m.severity == "error" for m in response.messages)
 
 
@@ -319,7 +319,7 @@ class ProveGoal(dp.Query[dp.Response[LeanProof, TheoremRequest]]):
 
 
 def _lean_error_metadata_without_line_info(
-    response: li_intf.BaseREPLResponse
+    response: LeanResponse
 ) -> dict[str, Any]:
     """
     Produce feedback metadata without location information.

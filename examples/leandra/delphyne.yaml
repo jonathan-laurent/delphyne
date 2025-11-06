@@ -11,4 +11,4 @@ init:
   - function: init_global_lean_server
     args:
       repo_path: "%workspace/benchmarks/minif2f"
-      init_commands: "import MiniF2F.Minif2fImport"
+      init_commands: ["import MiniF2F.Minif2fImport"]

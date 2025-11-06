@@ -4,5 +4,5 @@
       theorem case_analysis
         (f: ℝ → ℝ) (h₀: ∀ x, f x = x ^ 2 - 5 * x + 6) (x: ℝ) (h₁: f x = 0): x > 0 := by sorry
   tests:
-    - run | success
+    - run '#direct' | success
   queries: []

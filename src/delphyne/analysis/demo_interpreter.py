@@ -644,7 +644,8 @@ def safe_evaluate_demo(
             implicit_answer_generators=implicit_answer_generators(loader),
         )
     except Exception as e:
-        return _error_feedback(demo, str(e))
+        msg = f"{str(e)}\n\n{traceback.format_exc()}"
+        return _error_feedback(demo, msg)
 
 
 def _error_feedback(demo: dm.Demo, msg: str) -> fb.DemoFeedback:

@@ -9,13 +9,18 @@ from pathlib import Path
 import lean_interact as li
 import lean_interact.interface as li_intf
 
-DEFAULT_MEMORY_HARD_LIMIT_MB = 4096
+DEFAULT_MEMORY_HARD_LIMIT_MB = 8192
 DEFAULT_TIMEOUT_IN_SECONDS = 5.0
-
+DEBUG_MODE = True
 
 #####
 ##### Global Server Initialization
 #####
+
+
+def dbg(s: str) -> None:
+    if DEBUG_MODE:
+        print("[leandra.tools]", s, flush=True)
 
 
 @dataclass
@@ -52,6 +57,7 @@ def lean_server_config(
             server worker.
     """
 
+    dbg("Creating Lean REPL config...")
     if memory_hard_limit_mb is None:
         memory_hard_limit_mb = DEFAULT_MEMORY_HARD_LIMIT_MB
     if repo_path is None:
@@ -60,11 +66,13 @@ def lean_server_config(
         )
     else:
         project = li.LocalProject(directory=repo_path, auto_build=False)
-    return li.LeanREPLConfig(
+    config = li.LeanREPLConfig(
         project=project,
         memory_hard_limit_mb=memory_hard_limit_mb,
         verbose=True,
     )
+    dbg("Lean REPL config created.")
+    return config
 
 
 def init_global_lean_server_with_config(
@@ -80,9 +88,16 @@ def init_global_lean_server_with_config(
     global _global_lean_server
     if _global_lean_server is not None:
         return
+    dbg("Creating Lean Server...")
     server = li.AutoLeanServer(config)
+    dbg("Lean server created.")
     env = None
+    # We do not want the user to mistakenly pass a string here.
+    assert isinstance(init_commands, (list, tuple)) and all(
+        isinstance(cmd, str) for cmd in init_commands
+    ), "Invalid init_commands argument when initializing Lean server."
     for cmd in init_commands:
+        dbg(f"Run initialization command:\n{cmd}")
         res = server.run(
             li.Command(cmd=cmd, env=env),
             add_to_session_cache=True,
@@ -125,9 +140,19 @@ def _get_global_server() -> _LeanServer:
 #####
 
 
+@dataclass
+class LeanResponse:
+    messages: list[li_intf.Message]
+    sorries: list[li_intf.Sorry]
+
+    @staticmethod
+    def make(resp: li_intf.BaseREPLResponse) -> "LeanResponse":
+        return LeanResponse(messages=resp.messages, sorries=resp.sorries)
+
+
 def run_lean_command(
     command: str, *, timeout_in_seconds: float | None = None
-) -> li_intf.BaseREPLResponse:
+) -> LeanResponse:
     """
     Run a Lean command.
 
@@ -141,13 +166,14 @@ def run_lean_command(
         timeout_in_seconds = DEFAULT_TIMEOUT_IN_SECONDS
     server = _get_global_server()
     try:
+        dbg(f"Running Lean command:\n{command}")
         cmd = li.Command(cmd=command, env=server.env)
-        resp = server.server.run(cmd, timeout=1e-4)
+        resp = server.server.run(cmd, timeout=timeout_in_seconds)
         if isinstance(resp, li_intf.LeanError):
             raise RuntimeError(
                 f"Failed to run command:\n\n{command}\n\nError: {resp.message}"
             )
-        return resp
+        return LeanResponse.make(resp)
     except TimeoutError:
         dummy_pos = li_intf.Pos(line=0, column=0)
         message = li_intf.Message(
@@ -156,4 +182,4 @@ def run_lean_command(
             severity="error",
             data="Timeout",
         )
-        return li_intf.BaseREPLResponse(messages=[message], sorries=[])
+        return LeanResponse(messages=[message], sorries=[])
