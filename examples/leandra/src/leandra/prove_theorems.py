@@ -423,7 +423,7 @@ class SketchProofPolicy(dp.PolicyRecord[Branch | Feedback, SketchProofIP]):
 
     model_name: dp.StandardModelName | str = "gpt-5"
     effort: dp.ReasoningEffort = "medium"
-    max_full_attempts: int = 4
+    max_full_attempts: int = 3
     max_feedback_rounds_per_attempt: int = 4
     examples: "ExampleSelector | None" = None
     lean_timeout: float = DEFAULT_LEAN_TIMEOUT

@@ -4,4 +4,11 @@ modules:
   - "leandra.find_theorems"
   - "leandra.prove_theorems"
   - "leandra.learning"
-demo_files: []
+  - "leandra.tools"  # to find the Lean server initializer
+demo_files:
+  - "demos/prove_theorems.demo.yaml"
+init:
+  - function: init_global_lean_server
+    args:
+      repo_path: "%workspace/benchmarks/minif2f"
+      init_commands: "import MiniF2F.Minif2fImport"

@@ -98,8 +98,8 @@ def init_global_lean_server_with_config(
 def init_global_lean_server(
     *,
     repo_path: Path | None,
-    memory_hard_limit_mb: int | None,
     init_commands: Sequence[str],
+    memory_hard_limit_mb: int | None = None,
 ) -> None:
     """
     Shortcut for configuring an REPL and launching a single server.
