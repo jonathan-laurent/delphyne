@@ -14,7 +14,10 @@ import delphyne.stdlib.embeddings as em
 import delphyne.stdlib.environments as en
 import delphyne.stdlib.models as md
 import delphyne.utils.typing as ty
-from delphyne.analysis import ObjectLoader
+from delphyne.analysis.object_loaders import (
+    ObjectLoader,
+    ObjectLoaderInitializer,
+)
 from delphyne.stdlib.globals import stdlib_globals
 
 WORKSPACE_FILE = "delphyne.yaml"
@@ -98,7 +101,7 @@ class ExecutionContext:
     data_dirs: Sequence[Path] = DEFAULT_DATA_DIRS
     cache_root: Path | None = None
     global_embeddings_cache_file: Path = DEFAULT_GLOBAL_EMBEDDINGS_CACHE_FILE
-    init: Sequence[str | tuple[str, dict[str, Any]]] = ()
+    init: Sequence[str | ObjectLoaderInitializer] = ()
     result_refresh_period: float | None = None
     status_refresh_period: float | None = None
     workspace_root: Path | None = None
@@ -109,19 +112,18 @@ class ExecutionContext:
         """
 
         def _expand_initializer(
-            init: str | tuple[str, dict[str, Any]],
-        ) -> str | tuple[str, dict[str, Any]]:
+            init: str | ObjectLoaderInitializer,
+        ) -> str | ObjectLoaderInitializer:
             if isinstance(init, str):
                 return init
             else:
-                name, args = init
                 args = {
                     k: v.replace("%workspace", str(root))
                     if isinstance(v, str)
                     else v
-                    for k, v in args.items()
+                    for k, v in init.args.items()
                 }
-                return (name, args)
+                return ObjectLoaderInitializer(init.function, args)
 
         return ExecutionContext(
             modules=self.modules,

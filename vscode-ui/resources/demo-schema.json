@@ -63,6 +63,14 @@
           "default": null,
           "title": "Example"
         },
+        "tags": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Tags",
+          "type": "array"
+        },
         "meta": {
           "anyOf": [
             {
@@ -75,14 +83,6 @@
           ],
           "default": null,
           "title": "Meta"
-        },
-        "tags": {
-          "default": [],
-          "items": {
-            "type": "string"
-          },
-          "title": "Tags",
-          "type": "array"
         },
         "justification": {
           "anyOf": [

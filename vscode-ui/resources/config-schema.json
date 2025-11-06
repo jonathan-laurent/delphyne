@@ -1,4 +1,25 @@
 {
+  "$defs": {
+    "ObjectLoaderInitializer": {
+      "properties": {
+        "function": {
+          "title": "Function",
+          "type": "string"
+        },
+        "args": {
+          "additionalProperties": true,
+          "title": "Args",
+          "type": "object"
+        }
+      },
+      "required": [
+        "function",
+        "args"
+      ],
+      "title": "ObjectLoaderInitializer",
+      "type": "object"
+    }
+  },
   "properties": {
     "strategy_dirs": {
       "default": [
@@ -77,18 +98,7 @@
             "type": "string"
           },
           {
-            "maxItems": 2,
-            "minItems": 2,
-            "prefixItems": [
-              {
-                "type": "string"
-              },
-              {
-                "additionalProperties": true,
-                "type": "object"
-              }
-            ],
-            "type": "array"
+            "$ref": "#/$defs/ObjectLoaderInitializer"
           }
         ]
       },

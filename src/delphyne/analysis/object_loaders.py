@@ -72,6 +72,17 @@ no initializer is executed several times.
 """
 
 
+@dataclass
+class ObjectLoaderInitializer:
+    """
+    Specification of a function to be called upon creation of an object
+    loader.
+    """
+
+    function: str
+    args: dict[str, Any]
+
+
 class ObjectLoader:
     """
     Utility class for loading Python objects.
@@ -90,7 +101,7 @@ class ObjectLoader:
         strategy_dirs: Sequence[Path],
         modules: Sequence[str],
         extra_objects: dict[str, object] | None = None,
-        initializers: Sequence[str | tuple[str, dict[str, Any]]] = (),
+        initializers: Sequence[str | ObjectLoaderInitializer] = (),
     ):
         """
         Attributes:
@@ -127,7 +138,7 @@ class ObjectLoader:
                     case str() as name:
                         f = self.find_object(name)
                         args = {}
-                    case (str() as name, dict() as args):
+                    case ObjectLoaderInitializer(name, args):
                         f = self.find_object(name)
                 if not callable(f):
                     raise TypeError(f"Initializer {name} is not callable.")

@@ -58,6 +58,8 @@
 
 ::: delphyne.ObjectLoader
 
+::: delphyne.ObjectLoaderInitializer
+
 ::: delphyne.ImplicitAnswerGenerator
 
 ## Object Loader Exceptions

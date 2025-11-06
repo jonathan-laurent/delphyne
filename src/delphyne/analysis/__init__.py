@@ -27,6 +27,7 @@ from delphyne.analysis.object_loaders import (
     AmbiguousObjectIdentifier,
     ModuleNotFound,
     ObjectLoader,
+    ObjectLoaderInitializer,
     ObjectNotFound,
     StrategyLoadingError,
 )
