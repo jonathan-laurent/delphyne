@@ -1728,7 +1728,12 @@ common embeddings (e.g. embeddings of examples).</p>
                 <code>init</code>
             </td>
             <td>
-                  <code><span title="collections.abc.Sequence">Sequence</span>[<span title="str">str</span> | <span title="tuple">tuple</span>[<span title="str">str</span>, <span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>]]]</code>
+                  <code><span title="collections.abc.Sequence">Sequence</span>[<span title="str">str</span> | <a class="autorefs autorefs-internal" title="ObjectLoaderInitializer
+
+
+  
+      dataclass
+   (delphyne.analysis.object_loaders.ObjectLoaderInitializer)" href="../../demos/interpreter/#delphyne.ObjectLoaderInitializer">ObjectLoaderInitializer</a>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1831,10 +1836,7 @@ possibly after other comments.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/stdlib/execution_contexts.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 28</span>
-<span class="normal"> 29</span>
-<span class="normal"> 30</span>
-<span class="normal"> 31</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 31</span>
 <span class="normal"> 32</span>
 <span class="normal"> 33</span>
 <span class="normal"> 34</span>
@@ -1978,7 +1980,9 @@ possibly after other comments.</p>
 <span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span>
-<span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExecutionContext</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Context information available to all commands.</span>
@@ -2051,7 +2055,7 @@ possibly after other comments.</p>
     <span class="n">data_dirs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_DATA_DIRS</span>
     <span class="n">cache_root</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">global_embeddings_cache_file</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">DEFAULT_GLOBAL_EMBEDDINGS_CACHE_FILE</span>
-    <span class="n">init</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="n">init</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">ObjectLoaderInitializer</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">result_refresh_period</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">status_refresh_period</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">workspace_root</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -2062,19 +2066,18 @@ possibly after other comments.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">_expand_initializer</span><span class="p">(</span>
-            <span class="n">init</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+            <span class="n">init</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">ObjectLoaderInitializer</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">ObjectLoaderInitializer</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">init</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">init</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">name</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">init</span>
                 <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;%workspace&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
                     <span class="k">else</span> <span class="n">v</span>
-                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">init</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
                 <span class="p">}</span>
-                <span class="k">return</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">ObjectLoaderInitializer</span><span class="p">(</span><span class="n">init</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">ExecutionContext</span><span class="p">(</span>
             <span class="n">modules</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modules</span><span class="p">,</span>
@@ -2165,10 +2168,7 @@ possibly after other comments.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/stdlib/execution_contexts.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
 <span class="normal">110</span>
 <span class="normal">111</span>
 <span class="normal">112</span>
@@ -2199,25 +2199,26 @@ possibly after other comments.</p>
 <span class="normal">137</span>
 <span class="normal">138</span>
 <span class="normal">139</span>
-<span class="normal">140</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">with_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExecutionContext&quot;</span><span class="p">:</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">with_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ExecutionContext&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Make all paths absolute given a path to the workspace root.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_expand_initializer</span><span class="p">(</span>
-        <span class="n">init</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+        <span class="n">init</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">ObjectLoaderInitializer</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">ObjectLoaderInitializer</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">init</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">init</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">name</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">init</span>
             <span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;%workspace&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">))</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
                 <span class="k">else</span> <span class="n">v</span>
-                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">init</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
             <span class="p">}</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ObjectLoaderInitializer</span><span class="p">(</span><span class="n">init</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">ExecutionContext</span><span class="p">(</span>
         <span class="n">modules</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">modules</span><span class="p">,</span>
