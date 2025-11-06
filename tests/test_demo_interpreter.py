@@ -64,8 +64,8 @@ class DemoExpectTest(dp.StrategyDemo):
             answer_database_loader=dp.standard_answer_loader(
                 TESTS_FOLDER, loader
             ),
-            load_implicit_answer_generators=(
-                dp.stdlib_implicit_answer_generators_loader((DATA_FOLDER,))
+            implicit_answer_generators=(
+                dp.stdlib_implicit_answer_generators((DATA_FOLDER,))
             ),
         )
         if trace is not None:

@@ -31,7 +31,7 @@ from delphyne.stdlib.flags import (
 )
 from delphyne.stdlib.globals import (
     stdlib_globals,
-    stdlib_implicit_answer_generators_loader,
+    stdlib_implicit_answer_generators,
 )
 from delphyne.stdlib.data import (
     Data,

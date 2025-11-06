@@ -60,7 +60,7 @@ class RunLoadedStrategyArgs[N: dp.Node, P, T]:
 
     strategy: dp.StrategyComp[N, P, T]
     policy: pol.StandardPolicy[N, P]
-    answer_loader: dp.AnswerDatabaseLoader | None
+    answer_loader: dp.AnswerLoader | None
     num_generated: int = 1
     budget: dict[str, float] | None = None
     using: Sequence[dp.AnswerSource] | None = None

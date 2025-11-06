@@ -194,7 +194,9 @@ def elim_data(
     return transform
 
 
-def load_implicit_answer_generator(data_dirs: Sequence[Path]):
+def implicit_answer_generator(
+    data_dirs: Sequence[Path],
+) -> dp.ImplicitAnswerGenerator:
     manager = dp.DataManager(data_dirs)
 
     def generator(

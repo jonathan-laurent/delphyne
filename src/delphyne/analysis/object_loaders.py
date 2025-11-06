@@ -143,8 +143,13 @@ class ObjectLoader:
                 if not callable(f):
                     raise TypeError(f"Initializer {name} is not callable.")
                 if id(f) not in _GLOBAL_OBJECT_LOADER_EXECUTED_INITIALIZERS:
-                    _GLOBAL_OBJECT_LOADER_EXECUTED_INITIALIZERS.add(id(f))
                     f(**args)
+                    # We only count the initializer as executed after a
+                    # successful call. This way, if the initializer
+                    # raises an exception, the parent command can be run
+                    # again after fixing the issue (e.g., modifying
+                    # `delphyne.yaml`).
+                    _GLOBAL_OBJECT_LOADER_EXECUTED_INITIALIZERS.add(id(f))
 
     @staticmethod
     def trivial() -> "ObjectLoader":

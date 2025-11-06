@@ -13,7 +13,7 @@ from delphyne.core import (
 )
 from delphyne.core.answer_databases import (
     AnswerDatabase,
-    AnswerDatabaseLoader,
+    AnswerLoader,
     FromCommandResult,
     FromStandaloneQueryDemo,
     FromStrategyDemo,

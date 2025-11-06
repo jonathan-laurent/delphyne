@@ -154,7 +154,7 @@ class SeveralAnswerMatches(Exception):
         return "\n".join(lines)
 
 
-type AnswerDatabaseLoader = Callable[
+type AnswerLoader = Callable[
     [AnswerSource], Iterable[tuple[SerializedQuery, LocatedAnswer]]
 ]
 """
@@ -183,7 +183,7 @@ class AnswerDatabase:
     answers: dict[SerializedQuery, list[LocatedAnswer]]
 
     def __init__(
-        self, sources: Sequence[AnswerSource], *, loader: AnswerDatabaseLoader
+        self, sources: Sequence[AnswerSource], *, loader: AnswerLoader
     ):
         """
         Initialize the database by loading answers from a number of

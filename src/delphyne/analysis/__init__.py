@@ -10,10 +10,10 @@ from delphyne.analysis.browsable_traces import (
 )
 from delphyne.analysis.demo_interpreter import (
     ImplicitAnswerGenerator,
-    ImplicitAnswerGeneratorsLoader,
     evaluate_demo,
     evaluate_standalone_query_demo,
     evaluate_strategy_demo_and_return_trace,
+    safe_evaluate_demo,
 )
 from delphyne.analysis.feedback import (
     DemoFeedback,

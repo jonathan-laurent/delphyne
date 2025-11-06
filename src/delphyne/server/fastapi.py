@@ -33,20 +33,24 @@ def make_server(launcher: TaskLauncher):
         context: std.ExecutionContext,
         workspace_root: Annotated[str, Body(embed=True)],
     ):
-        stream_eval = ta.stream_of_fun(analysis.evaluate_demo)
         context = context.with_root(Path(workspace_root))
-        loader = context.object_loader(extra_objects=std.stdlib_globals())
         stream = launcher(
             request,
             fb.DemoFeedback,
-            stream_eval,
-            demo,
-            object_loader=loader,
-            answer_database_loader=dp.standard_answer_loader(
-                Path(workspace_root), loader
+            ta.stream_of_fun(analysis.safe_evaluate_demo),
+            demo=demo,
+            object_loader=(
+                lambda: context.object_loader(
+                    extra_objects=std.stdlib_globals()
+                )
             ),
-            load_implicit_answer_generators=(
-                std.stdlib_implicit_answer_generators_loader(context.data_dirs)
+            answer_database_loader=(
+                lambda loader: dp.standard_answer_loader(
+                    Path(workspace_root), loader
+                )
+            ),
+            implicit_answer_generators=lambda loader: (
+                std.stdlib_implicit_answer_generators(context.data_dirs)
             ),
         )
         return StreamingResponse(stream, media_type="text/event-stream")

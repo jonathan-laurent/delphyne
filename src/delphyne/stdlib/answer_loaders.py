@@ -1,5 +1,5 @@
 """
-A concrete implementation of `AnswerDatabaseLoader`.
+A concrete implementation of `AnswerLoader`.
 """
 
 from collections.abc import Iterable, Sequence
@@ -31,7 +31,7 @@ COMMAND_RESULT_SUCCESS_NODES_FIELD = "success_nodes"
 
 def standard_answer_loader(
     workspace_root: Path, object_loader: an.ObjectLoader
-) -> dp.AnswerDatabaseLoader:
+) -> dp.AnswerLoader:
     """
     Standard answer loader.
     """

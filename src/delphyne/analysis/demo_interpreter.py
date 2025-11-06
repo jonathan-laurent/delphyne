@@ -40,15 +40,6 @@ for supporting `Compute` nodes in demonstrations.
 """
 
 
-type ImplicitAnswerGeneratorsLoader = Callable[
-    [], Sequence[ImplicitAnswerGenerator]
-]
-"""
-A zero-arry function that loads a sequence of implicit answer
-generators, to be tried in sequence.
-"""
-
-
 class DemoHintResolver(nv.HintResolver):
     def __init__(
         self,
@@ -472,8 +463,8 @@ def evaluate_strategy_demo_and_return_trace(
     demo: dm.StrategyDemo,
     *,
     object_loader: ObjectLoader,
-    answer_database_loader: dp.AnswerDatabaseLoader,
-    load_implicit_answer_generators: ImplicitAnswerGeneratorsLoader,
+    answer_database_loader: dp.AnswerLoader,
+    implicit_answer_generators: Sequence[ImplicitAnswerGenerator],
 ) -> tuple[fb.StrategyDemoFeedback, dp.Trace | None]:
     feedback = fb.StrategyDemoFeedback(
         kind="strategy",
@@ -509,12 +500,6 @@ def evaluate_strategy_demo_and_return_trace(
         )
     except dp.SourceLoadingError as e:
         feedback.global_diagnostics.append(fb.Diagnostic("error", str(e)))
-        return feedback, trace
-    try:
-        implicit_answer_generators = load_implicit_answer_generators()
-    except Exception as e:
-        msg = f"Failed to load implicit answer generators:\n{e}"
-        feedback.global_diagnostics.append(fb.Diagnostic("error", msg))
         return feedback, trace
     try:
         hresolver = DemoHintResolver(
@@ -598,8 +583,8 @@ def evaluate_demo(
     demo: dm.Demo,
     *,
     object_loader: ObjectLoader,
-    answer_database_loader: dp.AnswerDatabaseLoader,
-    load_implicit_answer_generators: ImplicitAnswerGeneratorsLoader,
+    answer_database_loader: dp.AnswerLoader,
+    implicit_answer_generators: Sequence[ImplicitAnswerGenerator],
 ) -> fb.DemoFeedback:
     """
     Evaluate a query or strategy demonstration.
@@ -612,10 +597,9 @@ def evaluate_demo(
             query and strategy names.
         extra_objects: Additional objects that can be resolved by name
             (with higher precedence).
-        load_implicit_answer_generators: Load the implicit answer
+        implicit_answer_generators: Load the implicit answer
             generators (e.g. including the one handling `Compute`
-            nodes). This function is allowed to raise exceptions, which
-            are then reported as errors.
+            nodes).
 
     Returns:
         A feedback object containing the results of the evaluation.
@@ -629,10 +613,60 @@ def evaluate_demo(
             demo,
             object_loader=object_loader,
             answer_database_loader=answer_database_loader,
-            load_implicit_answer_generators=load_implicit_answer_generators,
+            implicit_answer_generators=implicit_answer_generators,
         )
         return feedback
     else:
         return evaluate_standalone_query_demo(
             demo, object_loader=object_loader
+        )
+
+
+def safe_evaluate_demo(
+    demo: dm.Demo,
+    *,
+    object_loader: Callable[[], ObjectLoader],
+    answer_database_loader: Callable[[ObjectLoader], dp.AnswerLoader],
+    implicit_answer_generators: Callable[
+        [ObjectLoader], Sequence[ImplicitAnswerGenerator]
+    ],
+) -> fb.DemoFeedback:
+    """
+    A version of `evaluate_demo` that internally creates object loaders
+    and implicit answer generators and catches all exceptions.
+    """
+    try:
+        loader = object_loader()
+        return evaluate_demo(
+            demo,
+            object_loader=loader,
+            answer_database_loader=answer_database_loader(loader),
+            implicit_answer_generators=implicit_answer_generators(loader),
+        )
+    except Exception as e:
+        return _error_feedback(demo, str(e))
+
+
+def _error_feedback(demo: dm.Demo, msg: str) -> fb.DemoFeedback:
+    """
+    Produce demonstration feedback that only wraps an error message.
+    """
+    diagnostic = fb.Diagnostic("error", msg)
+    if isinstance(demo, dm.StrategyDemo):
+        return fb.StrategyDemoFeedback(
+            kind="strategy",
+            trace=fb.Trace(nodes={}, spaces={}),
+            answer_refs={},
+            saved_nodes={},
+            test_feedback=[],
+            global_diagnostics=[diagnostic],
+            query_diagnostics=[],
+            answer_diagnostics=[],
+            implicit_answers={},
+        )
+    else:
+        return fb.QueryDemoFeedback(
+            kind="query",
+            diagnostics=[diagnostic],
+            answer_diagnostics=[],
         )

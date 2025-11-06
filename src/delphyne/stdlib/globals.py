@@ -21,13 +21,10 @@ def stdlib_globals() -> dict[str, object]:
     return {q.__name__: q for q in queries}
 
 
-def stdlib_implicit_answer_generators_loader(
+def stdlib_implicit_answer_generators(
     data_dirs: Sequence[Path],
-) -> dp.ImplicitAnswerGeneratorsLoader:
-    def loader():
-        return [
-            computations.generate_implicit_answer,
-            data.load_implicit_answer_generator(data_dirs),
-        ]
-
-    return loader
+) -> Sequence[dp.ImplicitAnswerGenerator]:
+    return [
+        computations.generate_implicit_answer,
+        data.implicit_answer_generator(data_dirs),
+    ]
