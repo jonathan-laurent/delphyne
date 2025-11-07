@@ -56,6 +56,7 @@ class RefSimplifier:
             if action_hints is None:
                 raise ValueError("RefSimplifier: incomplete hint_rev_map.")
             hints.extend(action_hints)
+            cur = cur.child(action)
         return tuple(hints)
 
     def space_element_ref(
