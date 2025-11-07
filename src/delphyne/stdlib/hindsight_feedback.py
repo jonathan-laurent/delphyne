@@ -96,7 +96,7 @@ class BackpropagateFeedback(Feedback):
 #####
 
 
-def feedback(
+def emit_feedback(
     label: str, messages: Iterable[AttachedFeedback[Any]]
 ) -> dp.Strategy[Feedback, object, None]:
     yield nd.spawn_node(ThrowFeedback, label=label, messages=messages)

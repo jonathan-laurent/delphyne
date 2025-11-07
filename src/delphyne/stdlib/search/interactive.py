@@ -179,9 +179,9 @@ def interact[P, A, B, T: md.AbstractTool[Any]](
             prefix.append(msg)
             if produce_feedback:
                 err_f = dp.send(dp.BadValue(res), resp_ref)
-                yield from dp.feedback("last", [err_f])
+                yield from dp.emit_feedback("last", [err_f])
                 err_f = dp.send(dp.BadValueAlso(resp, res), init_resp_ref)
-                yield from dp.feedback("first", [err_f])
+                yield from dp.emit_feedback("first", [err_f])
             continue
 
         # Case where we have a final good answer.

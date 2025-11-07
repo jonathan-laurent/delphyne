@@ -40,7 +40,7 @@ from delphyne.stdlib.hindsight_feedback import (
     ValueFeedback,
     backward,
     elim_feedback,
-    feedback,
+    emit_feedback,
     send,
 )
 from delphyne.stdlib.models import (
