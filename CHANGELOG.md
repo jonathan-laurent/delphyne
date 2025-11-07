@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.14.2 (2025-11-07)
+
+- Fix bug in demonstration interpreter.
+
 ## Version 0.14.1 (2025-11-05)
 
 - Fix bug in inference spending computations.
