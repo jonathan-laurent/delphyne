@@ -27,6 +27,15 @@ from typing import Any, Generic, Literal, TypeVar, cast, overload
 import delphyne.core.inspect as insp
 from delphyne.utils.typing import NoTypeInfo, TypeAnnot
 
+_ANSWER_DIGEST_SIZE = 6
+"""
+Size of the hashes used to represent answers when showing digests of
+references.
+"""
+
+_MAIN_SPACE_DEBUG_NAME = "main"
+
+
 #####
 ##### Query Answers
 #####
@@ -124,6 +133,9 @@ class Answer:
     tool_calls: tuple[ToolCall, ...] = ()
     justification: str | None = None
 
+    def digest(self) -> str:
+        return _answer_digest(self)
+
 
 #####
 ##### References
@@ -168,6 +180,9 @@ class IndexedRef:
     ref: AtomicValueRef
     index: int
 
+    def digest(self) -> str:
+        return f"{self.digest()}[{self.index}]"
+
 
 type ValueRef = Assembly[AtomicValueRef]
 """
@@ -202,6 +217,10 @@ class NodePath:
     def append(self, action: ValueRef) -> "NodePath":
         return NodePath((*self.actions, action))
 
+    def digest(self) -> str:
+        body = ", ".join(value_digest(action) for action in self.actions)
+        return f"<{body}>"
+
 
 @dataclass(frozen=True)
 class SpaceRef:
@@ -215,6 +234,12 @@ class SpaceRef:
 
     name: SpaceName
     args: tuple[ValueRef, ...]
+
+    def digest(self) -> str:
+        if not self.args:
+            return str(self.name)
+        args_str = ", ".join(value_digest(a) for a in self.args)
+        return f"{self.name}({args_str})"
 
 
 @dataclass(frozen=True)
@@ -243,6 +268,12 @@ class GlobalSpacePath:
     def local_ref(self) -> "SpaceRef | None":
         return self.split()[1]
 
+    def digest(self) -> str:
+        elts = [
+            f"{path.digest()} / {space.digest()}" for path, space in self.steps
+        ]
+        return " / ".join([_MAIN_SPACE_DEBUG_NAME, *elts])
+
 
 @dataclass(frozen=True)
 class SpaceElementRef:
@@ -257,6 +288,18 @@ class SpaceElementRef:
 
     space: SpaceRef | None
     element: Answer | NodePath
+
+    def digest(self) -> str:
+        space = (
+            _MAIN_SPACE_DEBUG_NAME
+            if self.space is None
+            else self.space.digest()
+        )
+        if isinstance(self.element, Answer):
+            element = _answer_digest(self.element)
+        else:
+            element = self.element.digest()
+        return f"{space}{{{element}}}"
 
 
 @dataclass(frozen=True)
@@ -276,6 +319,9 @@ class GlobalNodeRef:
 
     def nested_tree(self, space: SpaceRef) -> "GlobalNodeRef":
         return GlobalNodeRef(self.nested_space(space), NodePath(()))
+
+    def digest(self) -> str:
+        return f"{self.space.digest()} / {self.path.digest()}"
 
 
 type GlobalAnswerRef = tuple[GlobalSpacePath, Answer]
@@ -462,3 +508,21 @@ def show_assembly[T](show_element: Callable[[T], str], a: Assembly[T]) -> str:
         return NONE_REF_REPR
     else:
         return show_element(a)
+
+
+def _answer_digest(answer: Answer) -> str:
+    import hashlib
+    import json
+
+    import delphyne.utils.typing as dty
+
+    h = hashlib.sha256(
+        json.dumps(dty.pydantic_dump(Answer, answer), sort_keys=True).encode(
+            "utf-8"
+        )
+    ).hexdigest()
+    return h[:_ANSWER_DIGEST_SIZE]
+
+
+def value_digest(vr: ValueRef) -> str:
+    return show_assembly(lambda x: x.digest(), vr)
