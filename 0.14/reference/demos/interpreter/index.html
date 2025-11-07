@@ -1219,6 +1219,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#delphyne.ObjectLoaderInitializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      ObjectLoaderInitializer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#delphyne.ImplicitAnswerGenerator" class="md-nav__link">
     <span class="md-ellipsis">
       ImplicitAnswerGenerator
@@ -1926,6 +1935,15 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delphyne.ObjectLoaderInitializer" class="md-nav__link">
+    <span class="md-ellipsis">
+      ObjectLoaderInitializer
+    </span>
+  </a>
   
 </li>
         
@@ -4583,8 +4601,8 @@ nested tree or some data.</p>
     <span class="n">demo</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="Demo (delphyne.core.demos.Demo)" href="../definitions/#delphyne.core.demos.Demo">Demo</a></span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">object_loader</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="ObjectLoader (delphyne.analysis.object_loaders.ObjectLoader)" href="#delphyne.ObjectLoader">ObjectLoader</a></span><span class="p">,</span>
-    <span class="n">answer_database_loader</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerDatabaseLoader">AnswerDatabaseLoader</span></span><span class="p">,</span>
-    <span class="n">load_implicit_answer_generators</span><span class="p">:</span> <span class="n"><span title="delphyne.analysis.demo_interpreter.ImplicitAnswerGeneratorsLoader">ImplicitAnswerGeneratorsLoader</span></span><span class="p">,</span>
+    <span class="n">answer_database_loader</span><span class="p">:</span> <span class="n"><span title="delphyne.core.AnswerLoader">AnswerLoader</span></span><span class="p">,</span>
+    <span class="n">implicit_answer_generators</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="ImplicitAnswerGenerator (delphyne.analysis.demo_interpreter.ImplicitAnswerGenerator)" href="#delphyne.ImplicitAnswerGenerator">ImplicitAnswerGenerator</a></span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="DemoFeedback (delphyne.analysis.feedback.DemoFeedback)" href="#delphyne.analysis.feedback.DemoFeedback">DemoFeedback</a></span>
 </code></pre></div>
 
@@ -4637,7 +4655,7 @@ query and strategy names.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code><span title="delphyne.analysis.demo_interpreter.evaluate_demo.load_implicit_answer_generators">load_implicit_answer_generators</span></code></td>
+            <td><code><span title="delphyne.analysis.demo_interpreter.evaluate_demo.implicit_answer_generators">implicit_answer_generators</span></code></td>
             <td>
             </td>
             <td>
@@ -4649,8 +4667,7 @@ generators (e.g. including the one handling <a class="autorefs autorefs-internal
   
       dataclass
   " href="../../stdlib/effects/#delphyne.stdlib.computations.Compute"><code>Compute</code></a>
-nodes). This function is allowed to raise exceptions, which
-are then reported as errors.</p>
+nodes).</p>
               </div>
             </td>
           </tr>
@@ -4688,7 +4705,22 @@ therefore not thread-safe.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/analysis/demo_interpreter.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">597</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">582</span>
+<span class="normal">583</span>
+<span class="normal">584</span>
+<span class="normal">585</span>
+<span class="normal">586</span>
+<span class="normal">587</span>
+<span class="normal">588</span>
+<span class="normal">589</span>
+<span class="normal">590</span>
+<span class="normal">591</span>
+<span class="normal">592</span>
+<span class="normal">593</span>
+<span class="normal">594</span>
+<span class="normal">595</span>
+<span class="normal">596</span>
+<span class="normal">597</span>
 <span class="normal">598</span>
 <span class="normal">599</span>
 <span class="normal">600</span>
@@ -4713,28 +4745,12 @@ therefore not thread-safe.</p>
 <span class="normal">619</span>
 <span class="normal">620</span>
 <span class="normal">621</span>
-<span class="normal">622</span>
-<span class="normal">623</span>
-<span class="normal">624</span>
-<span class="normal">625</span>
-<span class="normal">626</span>
-<span class="normal">627</span>
-<span class="normal">628</span>
-<span class="normal">629</span>
-<span class="normal">630</span>
-<span class="normal">631</span>
-<span class="normal">632</span>
-<span class="normal">633</span>
-<span class="normal">634</span>
-<span class="normal">635</span>
-<span class="normal">636</span>
-<span class="normal">637</span>
-<span class="normal">638</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate_demo</span><span class="p">(</span>
+<span class="normal">622</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">evaluate_demo</span><span class="p">(</span>
     <span class="n">demo</span><span class="p">:</span> <span class="n">dm</span><span class="o">.</span><span class="n">Demo</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">object_loader</span><span class="p">:</span> <span class="n">ObjectLoader</span><span class="p">,</span>
-    <span class="n">answer_database_loader</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerDatabaseLoader</span><span class="p">,</span>
-    <span class="n">load_implicit_answer_generators</span><span class="p">:</span> <span class="n">ImplicitAnswerGeneratorsLoader</span><span class="p">,</span>
+    <span class="n">answer_database_loader</span><span class="p">:</span> <span class="n">dp</span><span class="o">.</span><span class="n">AnswerLoader</span><span class="p">,</span>
+    <span class="n">implicit_answer_generators</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">ImplicitAnswerGenerator</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">fb</span><span class="o">.</span><span class="n">DemoFeedback</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluate a query or strategy demonstration.</span>
@@ -4747,10 +4763,9 @@ therefore not thread-safe.</p>
 <span class="sd">            query and strategy names.</span>
 <span class="sd">        extra_objects: Additional objects that can be resolved by name</span>
 <span class="sd">            (with higher precedence).</span>
-<span class="sd">        load_implicit_answer_generators: Load the implicit answer</span>
+<span class="sd">        implicit_answer_generators: Load the implicit answer</span>
 <span class="sd">            generators (e.g. including the one handling `Compute`</span>
-<span class="sd">            nodes). This function is allowed to raise exceptions, which</span>
-<span class="sd">            are then reported as errors.</span>
+<span class="sd">            nodes).</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A feedback object containing the results of the evaluation.</span>
@@ -4764,7 +4779,7 @@ therefore not thread-safe.</p>
             <span class="n">demo</span><span class="p">,</span>
             <span class="n">object_loader</span><span class="o">=</span><span class="n">object_loader</span><span class="p">,</span>
             <span class="n">answer_database_loader</span><span class="o">=</span><span class="n">answer_database_loader</span><span class="p">,</span>
-            <span class="n">load_implicit_answer_generators</span><span class="o">=</span><span class="n">load_implicit_answer_generators</span><span class="p">,</span>
+            <span class="n">implicit_answer_generators</span><span class="o">=</span><span class="n">implicit_answer_generators</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">feedback</span>
     <span class="k">else</span><span class="p">:</span>
@@ -4807,18 +4822,7 @@ can be found in several modules.</p>
 
               <details class="quote">
                 <summary>Source code in <code>src/delphyne/analysis/object_loaders.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 75</span>
-<span class="normal"> 76</span>
-<span class="normal"> 77</span>
-<span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 86</span>
 <span class="normal"> 87</span>
 <span class="normal"> 88</span>
 <span class="normal"> 89</span>
@@ -4965,7 +4969,23 @@ can be found in several modules.</p>
 <span class="normal">230</span>
 <span class="normal">231</span>
 <span class="normal">232</span>
-<span class="normal">233</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ObjectLoader</span><span class="p">:</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ObjectLoader</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Utility class for loading Python objects.</span>
 
@@ -4983,7 +5003,7 @@ can be found in several modules.</p>
         <span class="n">strategy_dirs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span>
         <span class="n">modules</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">extra_objects</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">initializers</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">(),</span>
+        <span class="n">initializers</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">ObjectLoaderInitializer</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Attributes:</span>
@@ -5020,13 +5040,18 @@ can be found in several modules.</p>
                     <span class="k">case</span> <span class="nb">str</span><span class="p">()</span> <span class="k">as</span> <span class="n">name</span><span class="p">:</span>
                         <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_object</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
                         <span class="n">args</span> <span class="o">=</span> <span class="p">{}</span>
-                    <span class="k">case</span> <span class="p">(</span><span class="nb">str</span><span class="p">()</span> <span class="k">as</span> <span class="n">name</span><span class="p">,</span> <span class="nb">dict</span><span class="p">()</span> <span class="k">as</span> <span class="n">args</span><span class="p">):</span>
+                    <span class="k">case</span> <span class="n">ObjectLoaderInitializer</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
                         <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_object</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
                     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initializer </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not callable.&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_GLOBAL_OBJECT_LOADER_EXECUTED_INITIALIZERS</span><span class="p">:</span>
-                    <span class="n">_GLOBAL_OBJECT_LOADER_EXECUTED_INITIALIZERS</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
                     <span class="n">f</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
+                    <span class="c1"># We only count the initializer as executed after a</span>
+                    <span class="c1"># successful call. This way, if the initializer</span>
+                    <span class="c1"># raises an exception, the parent command can be run</span>
+                    <span class="c1"># again after fixing the issue (e.g., modifying</span>
+                    <span class="c1"># `delphyne.yaml`).</span>
+                    <span class="n">_GLOBAL_OBJECT_LOADER_EXECUTED_INITIALIZERS</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">trivial</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="s2">&quot;ObjectLoader&quot;</span><span class="p">:</span>
@@ -5153,7 +5178,12 @@ can be found in several modules.</p>
     <span class="n">strategy_dirs</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="pathlib.Path">Path</span></span><span class="p">],</span>
     <span class="n">modules</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">],</span>
     <span class="n">extra_objects</span><span class="p">:</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="object">object</span></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">initializers</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="n"><span title="tuple">tuple</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">]]]</span> <span class="o">=</span> <span class="p">(),</span>
+    <span class="n">initializers</span><span class="p">:</span> <span class="n"><span title="collections.abc.Sequence">Sequence</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="ObjectLoaderInitializer
+
+
+  
+      dataclass
+   (delphyne.analysis.object_loaders.ObjectLoaderInitializer)" href="#delphyne.ObjectLoaderInitializer">ObjectLoaderInitializer</a></span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
 <span class="p">)</span>
 </code></pre></div>
 
@@ -5255,18 +5285,7 @@ arguments are ignored).</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/analysis/object_loaders.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
 <span class="normal">101</span>
@@ -5304,13 +5323,29 @@ arguments are ignored).</p>
 <span class="normal">133</span>
 <span class="normal">134</span>
 <span class="normal">135</span>
-<span class="normal">136</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">strategy_dirs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span>
     <span class="n">modules</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">extra_objects</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">initializers</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">(),</span>
+    <span class="n">initializers</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">ObjectLoaderInitializer</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attributes:</span>
@@ -5347,13 +5382,18 @@ arguments are ignored).</p>
                 <span class="k">case</span> <span class="nb">str</span><span class="p">()</span> <span class="k">as</span> <span class="n">name</span><span class="p">:</span>
                     <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_object</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
                     <span class="n">args</span> <span class="o">=</span> <span class="p">{}</span>
-                <span class="k">case</span> <span class="p">(</span><span class="nb">str</span><span class="p">()</span> <span class="k">as</span> <span class="n">name</span><span class="p">,</span> <span class="nb">dict</span><span class="p">()</span> <span class="k">as</span> <span class="n">args</span><span class="p">):</span>
+                <span class="k">case</span> <span class="n">ObjectLoaderInitializer</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
                     <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_object</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initializer </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> is not callable.&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_GLOBAL_OBJECT_LOADER_EXECUTED_INITIALIZERS</span><span class="p">:</span>
-                <span class="n">_GLOBAL_OBJECT_LOADER_EXECUTED_INITIALIZERS</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
                 <span class="n">f</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
+                <span class="c1"># We only count the initializer as executed after a</span>
+                <span class="c1"># successful call. This way, if the initializer</span>
+                <span class="c1"># raises an exception, the parent command can be run</span>
+                <span class="c1"># again after fixing the issue (e.g., modifying</span>
+                <span class="c1"># `delphyne.yaml`).</span>
+                <span class="n">_GLOBAL_OBJECT_LOADER_EXECUTED_INITIALIZERS</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -5383,13 +5423,13 @@ objects.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/analysis/object_loaders.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">trivial</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="s2">&quot;ObjectLoader&quot;</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a trivial object loader that always fails at loading</span>
@@ -5467,23 +5507,7 @@ i.e. it is found in several modules.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/analysis/object_loaders.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span>
-<span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">162</span>
 <span class="normal">163</span>
 <span class="normal">164</span>
 <span class="normal">165</span>
@@ -5504,7 +5528,23 @@ i.e. it is found in several modules.</p>
 <span class="normal">180</span>
 <span class="normal">181</span>
 <span class="normal">182</span>
-<span class="normal">183</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">find_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">find_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find an object with a given name.</span>
 
@@ -5566,13 +5606,13 @@ i.e. it is found in several modules.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/analysis/object_loaders.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_and_call_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_and_call_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load and call a function by wrapping a call to `find_object`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -5667,29 +5707,29 @@ or if the arguments are invalid.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/analysis/object_loaders.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">193</span>
-<span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span>
-<span class="normal">197</span>
-<span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span>
-<span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">209</span>
 <span class="normal">210</span>
 <span class="normal">211</span>
 <span class="normal">212</span>
 <span class="normal">213</span>
 <span class="normal">214</span>
-<span class="normal">215</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_strategy_instance</span><span class="p">(</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_strategy_instance</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">StrategyComp</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5789,23 +5829,23 @@ or if the arguments are invalid.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/delphyne/analysis/object_loaders.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
-<span class="normal">221</span>
-<span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_query</span><span class="p">(</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_query</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">AbstractQuery</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5827,6 +5867,77 @@ or if the arguments are invalid.</p>
     </div>
 
 </div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="delphyne.ObjectLoaderInitializer" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">ObjectLoaderInitializer</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+
+
+        <p>Specification of a function to be called upon creation of an object
+loader.</p>
+
+
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/delphyne/analysis/object_loaders.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ObjectLoaderInitializer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specification of a function to be called upon creation of an object</span>
+<span class="sd">    loader.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">function</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
 
 
 
