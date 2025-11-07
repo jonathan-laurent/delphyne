@@ -13,8 +13,149 @@
             (f: ℝ → ℝ) (h₀: ∀ x, f x = x ^ 2 - 5 * x + 6) (x: ℝ) (h₁: f x = 0): x > 0 := by sorry
         prefix: []
       answers:
-        - tags: [permanent]
-          answer:
+        - answer:
             steps:
               - prove: ["x_eq", "(x - 2) * (x - 3) = 0"]
               - prove: ["x_cands", "x = 2 ∨ x = 3"]
+
+
+- strategy: prove_theorem
+  args:
+    theorem: |
+      theorem mathd_algebra_22 : Real.logb (5 ^ 2) (5 ^ 4) = 2 := by sorry
+  tests:
+    - run | success
+  queries: 
+    - query: SketchProof
+      args:
+        theorem: |
+          theorem mathd_algebra_22 : Real.logb (5 ^ 2) (5 ^ 4) = 2 := by sorry
+        prefix: []
+      answers:
+        - answer:
+            steps:
+              - prove: [is_pow, "((5: ℝ) ^ 4) = ((5: ℝ) ^ 2) ^ 2"]
+          justification: |
+            We first rewrite 5^4 as (5^2)^2, and then conclude using log identities. It is important to annotate constants with ℝ in the intermediate proof step, without which they would be interpreted as natural numbers and not reals.
+    - query: ProveGoal
+      args:
+        goal: |-
+          is_pow : 5 ^ 4 = (5 ^ 2) ^ 2
+          ⊢ Real.logb (5 ^ 2) (5 ^ 4) = 2
+        prefix: []
+      answers:
+        - answer: |-
+            simp [is_pow, Real.logb_pow, Real.logb_self_eq_one]
+
+
+- strategy: prove_theorem
+  args:
+    theorem: |
+      theorem induction_sum_odd (n : ℕ) : (∑ k ∈ Finset.range n, (2 * k + 1)) = n ^ 2 := by sorry
+  tests:
+    - run '#direct' | success  # we do the proof without a sketch
+  queries: 
+    - query: ProveGoal
+      args:
+        goal: |-
+          n : ℕ
+          ⊢ ∑ k ∈ Finset.range n, (2 * k + 1) = n ^ 2
+        prefix: []
+      answers:
+        - answer: |
+            induction n with
+              | zero => simp
+              | succ n => rw [Finset.sum_range_succ] ; grind
+
+
+- strategy: prove_theorem
+  args:
+    theorem: |
+      theorem mathd_algebra_110_direct
+        (q e : ℂ)
+        (h₀ : q = 2 - 2 * Complex.I)
+        (h₁ : e = 5 + 5 * Complex.I)
+        : q * e = 20
+      := by sorry
+  tests:
+    - run '#direct' | success
+  queries: 
+    - query: ProveGoal
+      args:
+        goal: |-
+          q e : ℂ
+          h₀ : q = 2 - 2 * Complex.I
+          h₁ : e = 5 + 5 * Complex.I
+          ⊢ q * e = 20
+        prefix: []
+      answers:
+        - answer: |
+            have i_sq: Complex.I ^ 2 = -1 := by simp
+            rw [h₁, h₀] ; grind
+          justification:
+            The `grind` tactic does not have knowledge about complex numbers but in this case, it is enough to add the fact that i^2=1 in context for automation to work.
+
+
+- strategy: prove_theorem
+  args:
+    theorem: |
+      theorem mathd_algebra_510
+        (x y : ℝ)
+        (h₀ : x + y = 13)
+        (h₁ : x * y = 24) : Real.sqrt (x ^ 2 + y ^ 2) = 11
+      := by sorry
+  tests:
+    - run | success
+  queries: 
+    - query: SketchProof
+      args:
+        theorem: |
+          theorem mathd_algebra_510
+            (x y : ℝ)
+            (h₀ : x + y = 13)
+            (h₁ : x * y = 24) : Real.sqrt (x ^ 2 + y ^ 2) = 11
+          := by sorry
+        prefix: []
+      answers:
+        - answer:
+            steps:
+              - prove: ["eq1", "x ^ 2 + y ^ 2 = (x + y)^2 - 2*(x * y)"]
+              - prove: ["eq2", "x ^ 2 + y ^ 2 = 11^2"]
+    - query: ProveGoal
+      args:
+        goal: |-
+          x y : ℝ
+          h₀ : x + y = 13
+          h₁ : x * y = 24
+          eq1 : x ^ 2 + y ^ 2 = (x + y) ^ 2 - 2 * (x * y)
+          eq2 : x ^ 2 + y ^ 2 = 11 ^ 2
+          ⊢ √(x ^ 2 + y ^ 2) = 11
+        prefix: []
+      answers:
+        - answer: "rw [eq2] ; norm_num"
+
+
+# TODO: finish this demonstration. Use copying?
+- strategy: prove_theorem
+  args:
+    theorem: |
+      theorem mathd_algebra_451
+        (σ : Equiv ℝ ℝ) (h₀ : σ.2 (-15) = 0) (h₁ : σ.2 0 = 3) (h₂ : σ.2 3 = 9)
+        (h₃ : σ.2 9 = 20) : σ.1 (σ.1 9) = 0 := by sorry
+  tests:
+    - run | success
+  queries: 
+    - query: SketchProof
+      args:
+        theorem: |
+          theorem mathd_algebra_451
+            (σ : Equiv ℝ ℝ) (h₀ : σ.2 (-15) = 0) (h₁ : σ.2 0 = 3) (h₂ : σ.2 3 = 9)
+            (h₃ : σ.2 9 = 20) : σ.1 (σ.1 9) = 0 := by sorry
+        prefix: []
+      answers:
+        - answer:
+            steps:
+              - prove: ["h4", "σ.1 9 = 3"]
+              - prove: ["h5", "σ.1 3 = 0"]
+          justification: |
+            We compute the inverse function step by step. First we find σ.1 9 by using the fact that σ.2 3 = 9 and the equivalence right inverse property. Then we find σ.1 3 similarly using σ.2 0 = 3. Finally we compose these results.
