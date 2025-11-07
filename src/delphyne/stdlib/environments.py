@@ -117,12 +117,18 @@ class Example:
     Attributes:
         query: The corresponding query.
         answer: The answer to the query.
+        demo_file: Path of the demonstration file that the
+            example originates from, if any.
+        demo_name: The name of the demonstration within the file, if
+            any.
         tags: A sequence of tags associated with the example, which
             policies can use to select appropriate examples.
     """
 
     query: dp.AbstractQuery[Any]
     answer: dp.Answer
+    demo_file: Path | None
+    demo_name: str | None
     tags: Sequence[str]
     meta: dict[str, Any]
 
@@ -172,20 +178,33 @@ class ExampleDatabase:
             _EmbeddingsBucket, NDArray[np.float32] | None
         ] = {}
 
-    def add_demonstration(self, demo: dp.Demo):
+    def add_demonstration(self, demo: dp.Demo, file: Path | None = None):
         """
         Add all examples from a demonstration to the database.
         """
         if isinstance(demo, dp.QueryDemo):
-            self._add_query_demonstration(demo)
+            self._add_query_demonstration(demo, file, None)
         else:
             assert isinstance(demo, dp.StrategyDemo)
             for q in demo.queries:
-                self._add_query_demonstration(q)
+                self._add_query_demonstration(q, file, demo.demonstration)
         # Embeddings are cleared since new examples were added.
         self._query_embeddings.clear()
 
-    def _add_query_demonstration(self, demo: dp.QueryDemo):
+    def add_demonstrations_from_file(self, file: Path):
+        """
+        Load all demonstrations from a file and add them to the
+        database.
+        """
+        for demo in loaders.load_demo_file(file):
+            self.add_demonstration(demo, file)
+
+    def _add_query_demonstration(
+        self,
+        demo: dp.QueryDemo,
+        file: Path | None,
+        surrounding_demo_name: str | None,
+    ):
         """
         Add all examples from a standalone query demonstration to the
         database.
@@ -209,6 +228,8 @@ class ExampleDatabase:
             answer=answer,
             tags=demo_answer.tags,
             meta=demo_answer.meta or {},
+            demo_file=file,
+            demo_name=surrounding_demo_name or demo.demonstration,
         )
         self._examples[demo.query].append(example)
 
@@ -590,8 +611,7 @@ class PolicyEnv:
         self.override_answers = override_answers
         self.random = random.Random(random_seed)
         for path in demonstration_files:
-            for demo in loaders.load_demo_file(path):
-                self.examples.add_demonstration(demo)
+            self.examples.add_demonstrations_from_file(path)
 
     def overriden_answer(
         self, query: dp.AbstractQuery[Any]

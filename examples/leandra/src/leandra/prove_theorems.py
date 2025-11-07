@@ -19,7 +19,7 @@ from leandra.tools import LeanResponse, run_lean_command
 
 DEFAULT_LEAN_TIMEOUT = 8.0
 MAX_HOLES = 10
-PERMANENT_EXAMPLE_TAG = "permanent"
+MAIN_DEMO_FILE = "prove_theorems"
 SKETCH_PROOF_MODEL_CLASS = "sketch_proof"
 PROVE_SUBGOAL_MODEL_CLASS = "prove_subgoal"
 
@@ -539,7 +539,10 @@ class ExampleSelector:
         nis = self.num_included.stream(rng)
         mls = self.mmr_lambda.stream(rng)
         for ns, ni, ml in zip(nss, nis, mls):
-            permanent = dp.all_examples.with_tags([PERMANENT_EXAMPLE_TAG])
+            permanent = dp.all_examples.such_that(
+                lambda ex: ex.demo_file is not None
+                and MAIN_DEMO_FILE in ex.demo_file.stem
+            )
             extra = dp.maximum_marginally_relevant(
                 k=ns, lambda_param=ml, model_name=self.model_name
             ).random(ni)

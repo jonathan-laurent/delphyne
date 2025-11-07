@@ -1319,6 +1319,23 @@ class ExampleSelector:
 
         return self.filter(select)
 
+    def such_that(
+        self, predicate: Callable[[Example], bool]
+    ) -> "ExampleSelector":
+        """
+        Return a new example selector that only includes examples
+        satisfying the given predicate.
+        """
+
+        def select(
+            env: PolicyEnv,
+            query: dp.AbstractQuery[Any],
+            examples: Sequence[SelectedExample],
+        ) -> Sequence[SelectedExample]:
+            return [ex for ex in examples if predicate(ex.example)]
+
+        return self.filter(select)
+
     def exclude_identical_queries(self) -> "ExampleSelector":
         """
         Return a new example selector that excludes examples whose
