@@ -13,7 +13,8 @@
             (f: ℝ → ℝ) (h₀: ∀ x, f x = x ^ 2 - 5 * x + 6) (x: ℝ) (h₁: f x = 0): x > 0 := by sorry
         prefix: []
       answers:
-        - answer:
+        - tags: [permanent]
+          answer:
             steps:
               - prove: ["x_eq", "(x - 2) * (x - 3) = 0"]
               - prove: ["x_cands", "x = 2 ∨ x = 3"]

@@ -23,7 +23,7 @@ PERMANENT_EXAMPLE_TAG = "permanent"
 SKETCH_PROOF_MODEL_CLASS = "sketch_proof"
 PROVE_SUBGOAL_MODEL_CLASS = "prove_subgoal"
 
-CLOSING_TACTICS = ["rfl", "norm_num", "simp", "ring", "linarith", "grind"]
+CLOSING_TACTICS = ["grind", "norm_num", "simp"]
 
 # fmt: off
 
@@ -122,7 +122,7 @@ def fill_hole(
         return_ref=True)
     # Even if the surrounding proof fails, feedback can be generated
     # already from the fact that a subgoal was successfully proven.
-    yield from dp.feedback("subproof", [
+    yield from dp.emit_feedback("subproof", [
         dp.send(dp.GoodValue(), proof_ref)])
     return proof
 
@@ -272,7 +272,9 @@ def prove_subgoal(
         proofs[hole_index] = proof
         compiled = compile_sketch(theorem, sketch, proofs)
         response = yield from dp.compute(run_lean_command)(compiled)
-        if response.sorries:
+        num_sorries = len(response.sorries)
+        assert num_sorries >= sketch.num_holes() - 1
+        if num_sorries >= sketch.num_holes():
             return dp.Error(label="sub_proof_with_sorry")
         if _has_errors(response):
             return dp.Error(
@@ -280,7 +282,8 @@ def prove_subgoal(
                 meta=_lean_error_metadata_without_line_info(response))
         return proof
     
-    hammer_proof = "; ".join("try " + t for t in CLOSING_TACTICS)
+    hammer_proof = "first | " + " | ".join(
+        f"({t} ; done)" for t in CLOSING_TACTICS)
     hammer_response = yield from dp.branch(
         process_proof(hammer_proof).using(lambda p: p.check, ProveSubgoalIP))
     if not isinstance(hammer_response, dp.Error):
