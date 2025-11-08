@@ -10,6 +10,7 @@ import delphyne.analysis as an
 import delphyne.core as dp
 import delphyne.stdlib.hindsight_feedback as hf
 from delphyne.core.irefs import AnswerId, NodeId, SpaceId
+from delphyne.stdlib.queries import PseudoQuery
 
 #####
 ##### General propagation mechanism
@@ -62,6 +63,7 @@ def process_feedback(
     def find_backprop_handlers(
         node_id: NodeId,
     ) -> Iterable[hf.BackpropagateFeedback]:
+        print(f"Search from: {node_id.id}")
         # Starting at a success node, find all feedback backpropagation
         # handlers in the tree.
         if filter_backprop_handlers is None:
@@ -69,6 +71,7 @@ def process_feedback(
         node = resolver.resolve_node(node_id)
         assert isinstance(node.node, dp.Success)
         while True:
+            print(f"Node: {type(node.node)}")
             origin = resolver.trace.nodes[node_id]
             if isinstance(origin, dp.irefs.NestedIn):
                 break
@@ -108,7 +111,9 @@ def process_feedback(
                     )
                 else:
                     assert_type(elt.element, NodeId)
-                    yield from propagate_good_value_message(elt.element)
+                    yield from send_to_success_node(
+                        elt.element, hf.GoodValue()
+                    )
             node_id = origin.node
 
     def send_to_answer(
@@ -124,6 +129,10 @@ def process_feedback(
         source = space.source()
         assert isinstance(source, dp.AttachedQuery)
         query = source.query
+        if isinstance(query, PseudoQuery):
+            # We do not want to send feedback to __Compute__ and
+            # __LoadData__ nodes.
+            return
         yield AnswerFeedback(
             query=query,
             space_id=space_id,
@@ -232,6 +241,16 @@ def match_handler_pattern(
     surrounding_space_tags: Sequence[Sequence[dp.Tag]],
     handler_label: str,
 ) -> bool:
+    """
+    Two kinds of patterns are supported:
+    - `**/label` matches all handlers with the given label, regardless
+      of surrounding spaces.
+    - `tag1&tag2/.../tagN/label` matches handlers with the given label,
+      and with surrounding spaces matching the given tags (N can be 0).
+    """
+    if pattern.startswith("**/"):
+        label = pattern[3:]
+        return handler_label == label
     comps = pattern.split("/")
     assert comps, "Empty tag pattern"
     if len(comps) >= 2:
