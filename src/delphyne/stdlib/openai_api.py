@@ -114,6 +114,28 @@ def translate_chat(
     return [translate(msg) for msg in chat]
 
 
+def _patch_prefix_items_arrays(schema: Any) -> Any:
+    """
+    Recursively patch a JSON schema *in place* so that every array with
+    `prefixItems` also has `"items": false"`. Such arrays are used to
+    represent tuples. This fixes OpenAI's "array schema missing items"
+    error.
+    """
+    if isinstance(schema, dict):
+        if (
+            schema.get("type") == "array"  # type: ignore
+            and "prefixItems" in schema
+            and "items" not in schema
+        ):
+            schema["items"] = {"type": "null"}
+        for v in schema.values():  # type: ignore
+            _patch_prefix_items_arrays(v)
+    elif isinstance(schema, list):
+        for v in schema:  # type: ignore
+            _patch_prefix_items_arrays(v)
+    return schema  # type: ignore
+
+
 def _strict_schema(schema: Any):
     from copy import deepcopy
 
@@ -121,6 +143,7 @@ def _strict_schema(schema: Any):
 
     schema = deepcopy(schema)
     _ensure_strict_json_schema(schema, path=(), root=schema)
+    _patch_prefix_items_arrays(schema)
     return schema
 
 
