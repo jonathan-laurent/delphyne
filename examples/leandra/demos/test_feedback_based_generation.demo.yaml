@@ -1,3 +1,4 @@
+# This demonstration fetches two answers from the trace attached to a command file.
 - demonstration: mathd_algebra_451_completion_test
   strategy: prove_theorem
   args:
@@ -23,6 +24,3 @@
             steps:
               - prove: ["h4", "σ.1 9 = 3"]
               - prove: ["h5", "σ.1 3 = 0"]
-          example: false
-          justification: |
-            We compute the inverse function step by step. First we find σ.1 9 by using the fact that σ.2 3 = 9 and the equivalence right inverse property. Then we find σ.1 3 similarly using σ.2 0 = 3. Finally we compose these results.

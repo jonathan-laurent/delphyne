@@ -161,6 +161,62 @@
 - strategy: prove_theorem
   args:
     theorem: |
+      theorem mathd_algebra_451
+        (σ : Equiv ℝ ℝ) (h₀ : σ.2 (-15) = 0) (h₁ : σ.2 0 = 3) (h₂ : σ.2 3 = 9)
+        (h₃ : σ.2 9 = 20) : σ.1 (σ.1 9) = 0 := by sorry
+  tests:
+    - run | success
+  using:
+    - command: commands/finish_mathd_algebra_451.exec.yaml
+      backprop_with: ["**/first"]
+  queries: 
+    - query: SketchProof
+      args:
+        theorem: |
+          theorem mathd_algebra_451
+            (σ : Equiv ℝ ℝ) (h₀ : σ.2 (-15) = 0) (h₁ : σ.2 0 = 3) (h₂ : σ.2 3 = 9)
+            (h₃ : σ.2 9 = 20) : σ.1 (σ.1 9) = 0 := by sorry
+        prefix: []
+      answers:
+        - answer:
+            steps:
+              - prove: ["h4", "σ.1 9 = 3"]
+              - prove: ["h5", "σ.1 3 = 0"]
+          justification: |
+            We compute the inverse function step by step. First we find σ.1 9 by using the fact that σ.2 3 = 9 and the equivalence right inverse property. Then we find σ.1 3 similarly using σ.2 0 = 3. Finally we compose these results.
+    - query: ProveGoal
+      args:
+        goal: |-
+          σ : ℝ ≃ ℝ
+          h₀ : σ.invFun (-15) = 0
+          h₁ : σ.invFun 0 = 3
+          h₂ : σ.invFun 3 = 9
+          h₃ : σ.invFun 9 = 20
+          ⊢ σ.toFun 9 = 3
+        prefix: []
+      answers:
+        - answer: |-
+            rw [←h₂, Equiv.right_inv]
+    - query: ProveGoal
+      args:
+        goal: |-
+          σ : ℝ ≃ ℝ
+          h₀ : σ.invFun (-15) = 0
+          h₁ : σ.invFun 0 = 3
+          h₂ : σ.invFun 3 = 9
+          h₃ : σ.invFun 9 = 20
+          h4 : σ.toFun 9 = 3
+          ⊢ σ.toFun 3 = 0
+        prefix: []
+      answers:
+        - answer: |-
+            rw [←h₁, Equiv.right_inv]
+          example: False  # to avoid redundancy with the previous one...
+
+
+- strategy: prove_theorem
+  args:
+    theorem: |
       theorem amc12b_2003_p17
         (x y : ℝ) (h₀ : 0 < x ∧ 0 < y)
         (h₁ : Real.log (x * y ^ 3) = 1)

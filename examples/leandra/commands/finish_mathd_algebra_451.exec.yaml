@@ -11,7 +11,7 @@ args:
   policy_args:
     mode: sketch
   using:
-    - demo: "demos/prove_theorems.demo.yaml:mathd_algebra_451"
+    - demo: "demos/test_feedback_based_generation.demo.yaml:mathd_algebra_451_completion_test"
   budget:
     num_requests: 20
     price: 0.2
