@@ -50,7 +50,7 @@
 
 ::: delphyne.stdlib.hindsight_feedback.send
 
-::: delphyne.stdlib.hindsight_feedback.feedback
+::: delphyne.stdlib.hindsight_feedback.emit_feedback
 
 ::: delphyne.stdlib.hindsight_feedback.backward
 
