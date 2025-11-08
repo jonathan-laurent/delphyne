@@ -464,6 +464,9 @@ class TemplatesManager(dp.AbstractTemplatesManager):
             trim_blocks=True,
             lstrip_blocks=True,
             keep_trailing_newline=False,
+            # We raise exceptions when trying to access nonexisting
+            # fields or values.
+            undefined=jinja2.StrictUndefined,
         )
         self.env.filters["yaml"] = dump_yaml_object
         self.env.filters["json"] = _dump_json_object
