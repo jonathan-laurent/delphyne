@@ -32,6 +32,7 @@ class AnswerQueryArgs:
         prompt_only: If `True`, a dummy model is used that always
             errors, so that only the prompt can be seen in the logs.
         model: The name of the model to use for answering the query.
+        options: Options to pass to the model.
         num_answers: The number of answers to generate.
         iterative_mode: Whether to answer the query in iterative mode
             (see `few_shot` for details).
@@ -47,6 +48,7 @@ class AnswerQueryArgs:
     args: dict[str, object]
     prompt_only: bool
     model: str | None = None
+    options: md.RequestOptions | None = None
     num_answers: int = 1
     iterative_mode: bool = False
     budget: dict[str, float] | None = None
@@ -82,7 +84,7 @@ def answer_query_with_cache(
     )
     attached = dp.spawn_standalone_query(query)
     model_name = cmd.model or DEFAULT_MODEL_NAME
-    model = stdm.standard_model(model_name)
+    model = stdm.standard_model(model_name, cmd.options)
     if cmd.prompt_only:
         model = mo.DummyModel()
     policy = qu.few_shot(
