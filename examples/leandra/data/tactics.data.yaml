@@ -1,0 +1,72 @@
+- tactic: grw
+  documentation: |
+      `grw [e]` works just like `rw [e]`, but `e` can be a relation other than `=` or `↔`.
+  
+      For example,
+      ```lean
+      variable {a b c d n : ℤ}
+      
+      example (h₁ : a < b) (h₂ : b ≤ c) : a + d ≤ c + d := by
+        grw [h₁, h₂]
+      
+      example (h : a ≡ b [ZMOD n]) : a ^ 2 ≡ b ^ 2 [ZMOD n] := by
+        grw [h]
+      
+      example (h₁ : a ∣ b) (h₂ : b ∣ a ^ 2 * c) : a ∣ b ^ 2 * c := by
+        grw [h₁] at *
+        exact h₂
+      ```
+
+- tactic: norm_num
+  documentation: |
+    Normalize numerical expressions. Supports the operations `+` `-` `*` `/` `⁻¹` `^` and `%`
+    over numerical types such as `ℕ`, `ℤ`, `ℚ`, `ℝ`, `ℂ` and some general algebraic types,
+    and can prove goals of the form `A = B`, `A ≠ B`, `A < B` and `A ≤ B`, where `A` and `B` are
+    numerical expressions. It also has a relatively simple primality prover.
+
+- tactic: grind
+  documentation: |
+      `grind` is a powerful automation tactic inspired by modern SMT solvers. It looks for a proof of the goal, using all assumptions in the current context. It supports the following theories.
+  
+      #### Linear integer arithmetic (`cutsat`)
+      
+      `grind` can solve goals that reduce to **linear integer arithmetic (LIA)** using an
+      integrated decision procedure called **`cutsat`**.  It understands
+      
+      * equalities: `p = 0`
+      * inequalities: `p ≤ 0`
+      * disequalities: `p ≠ 0`
+      * divisibility: `d ∣ p`
+      
+      #### Algebraic solver (`ring`)
+      
+      `grind` ships with an algebraic solver nick-named **`ring`** for goals that can
+      be phrased as polynomial equations (or disequations) over commutative rings,
+      semirings, or fields.
+            
+      What it can decide:
+      
+      * equalities of the form `p = q`
+      * disequalities `p ≠ q`
+      * basic reasoning under field inverses (`a / b := a * b⁻¹`)
+      * goals that mix ring facts with other `grind` engines
+      
+      Make sure that all expressions occuring in denominators are proved to be nonzero before calling `grind`.
+
+      #### Linear Arithmetic (`linarith`)
+
+      `grind` can solve goals that follow from linear combinations of inequalities that are present as assumptions.
+
+- tactic: interval_cases
+  documentation: |
+      `interval_cases n` searches for upper and lower bounds on a variable `n`,
+      and if bounds are found,
+      splits into separate cases for each possible value of `n`.
+      
+      As an example, in
+      ```
+      example (n : ℕ) (w₁ : n ≥ 3) (w₂ : n < 5) : n = 3 ∨ n = 4 := by
+        interval_cases n
+        all_goals simp
+      ```
+      after `interval_cases n`, the goals are `3 = 3 ∨ 3 = 4` and `4 = 3 ∨ 4 = 4`.

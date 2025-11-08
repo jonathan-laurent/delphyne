@@ -1,6 +1,15 @@
 {% if feedback.label == "sub_proof_has_errors" %}
-{# feedback.meta.errors / feedback.meta.warnings #}
+Your proof is not valid. Lean returned the following errors:
+
+"""
+{% for err in feedback.meta.errors %}
+{{ err }}
+
+{% endfor %}
+"""
+
 {% elif feedback.label == "sub_proof_with_sorry" %}
+You proof should not include `sorry`.
 {% else %}
 {{ fail("Unknown feedback label for ProveGoal: " ~ feedback.label) }}
 {% endif %}

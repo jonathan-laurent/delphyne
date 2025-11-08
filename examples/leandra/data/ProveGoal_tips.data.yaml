@@ -1,0 +1,3 @@
+- name: Proving equalities on complex numbers
+  content: |
+    The `grind` tactic has no special support for complex numbers, but many equalities on complex numbers can still be proved, simply by adding relevant facts into the context (including `Complex.I_sq`) and then leveraging `grind`'s' general field reasoning capabilities.

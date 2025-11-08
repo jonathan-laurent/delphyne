@@ -62,7 +62,7 @@
           ⊢ ∑ k ∈ Finset.range n, (2 * k + 1) = n ^ 2
         prefix: []
       answers:
-        - answer: |
+        - answer: |-
             induction n with
               | zero => simp
               | succ n => rw [Finset.sum_range_succ] ; grind
@@ -89,7 +89,7 @@
           ⊢ q * e = 20
         prefix: []
       answers:
-        - answer: |
+        - answer: |-
             have i_sq: Complex.I ^ 2 = -1 := by simp
             rw [h₁, h₀] ; grind
           justification:
@@ -135,27 +135,45 @@
         - answer: "rw [eq2] ; norm_num"
 
 
-# TODO: finish this demonstration. Use copying?
 - strategy: prove_theorem
   args:
     theorem: |
-      theorem mathd_algebra_451
-        (σ : Equiv ℝ ℝ) (h₀ : σ.2 (-15) = 0) (h₁ : σ.2 0 = 3) (h₂ : σ.2 3 = 9)
-        (h₃ : σ.2 9 = 20) : σ.1 (σ.1 9) = 0 := by sorry
+      theorem mathd_numbertheory_780
+        (m x : ℤ) (h₀ : 0 ≤ x) (h₁ : 10 ≤ m ∧ m ≤ 99) (h₂ : 6 * x % m = 1)
+        (h₃ : (x - 6 ^ 2) % m = 0) : m = 43 := by sorry
   tests:
-    - run | success
+    - run '#direct' | success
   queries: 
-    - query: SketchProof
+    - query: ProveGoal
       args:
-        theorem: |
-          theorem mathd_algebra_451
-            (σ : Equiv ℝ ℝ) (h₀ : σ.2 (-15) = 0) (h₁ : σ.2 0 = 3) (h₂ : σ.2 3 = 9)
-            (h₃ : σ.2 9 = 20) : σ.1 (σ.1 9) = 0 := by sorry
+        goal: |-
+          m x : ℤ
+          h₀ : 0 ≤ x
+          h₁ : 10 ≤ m ∧ m ≤ 99
+          h₂ : 6 * x % m = 1
+          h₃ : (x - 6 ^ 2) % m = 0
+          ⊢ m = 43
         prefix: []
       answers:
-        - answer:
-            steps:
-              - prove: ["h4", "σ.1 9 = 3"]
-              - prove: ["h5", "σ.1 3 = 0"]
-          justification: |
-            We compute the inverse function step by step. First we find σ.1 9 by using the fact that σ.2 3 = 9 and the equivalence right inverse property. Then we find σ.1 3 similarly using σ.2 0 = 3. Finally we compose these results.
+        - answer: "rcases h₁ ; interval_cases m <;> grind"
+
+
+- strategy: prove_theorem
+  args:
+    theorem: |
+      theorem amc12b_2003_p17
+        (x y : ℝ) (h₀ : 0 < x ∧ 0 < y)
+        (h₁ : Real.log (x * y ^ 3) = 1)
+        (h₂ : Real.log (x ^ 2 * y) = 1)
+        : Real.log (x * y) = 3 / 5 := by sorry
+  tests:
+    - run | success
+  queries: []
+  # have: x ≠ 0 := by grind
+  # have: y ≠ 0 := by grind
+  # have: y^3 ≠ 0 := by grind
+  # have: x^2 ≠ 0 := by grind
+  # have: Real.log x + 3 * Real.log y = 1 := by rw [Real.log_mul, Real.log_pow] at h₁ <;> grind
+  # have: 2 * Real.log x + Real.log y = 1 := by rw [Real.log_mul, Real.log_pow] at h₂ <;> grind
+  # have: Real.log x + Real.log y = 3 / 5 := by grind
+  # rw [Real.log_mul] <;> grind

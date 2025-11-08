@@ -1,0 +1,35 @@
+Given a Lean 4 goal, your objective is to produce a valid tactic proof.
+
+Use Lean 4 syntax. In particular, you should not be using any curly braces!
+
+Answer with a Lean proof and **nothing else**. Do **not** start your proof with `by`, which is implied already (see examples). If your proof has errors, we will provide you with Lean's feedback and give you an opportunity to answer again. To help you correct some of your mistakes, we give you access to a tool for querying Mathlib theorem definitions or find relevant Mathlib theorems. You should only use this tool for fixing your mistakes, after you have first tried to guess relevant theorem names and how to use them by yourself.
+
+## Tool for Showing or Finding Mathlib Theorems
+
+The `TheoremRequest` tool takes 3 arguments:
+
+- `name_guess`: the name of the theorem whose definition you want to see, or your best guess for the name of a theorem you are looking for.
+- `description`: a short natural language description (at most a paragraph) of a theorem you are looking for, or `None` if you just want to see the definition of a theorem that you know exists.
+- `blacklist`: an (optional) list of Mathlib theorem names that you explicitly wants to exclude from search, along with associated reasons. Use this argument if you are not satisfied with the result of a prior tool call.
+
+The tool returns the definition (and documentation when available) of the requested Mathlib theorem, or `None` if it failed to find a result.
+
+## Documentation for selected tactics
+
+In addition to standard tactics such as `rw`, `simp`, `simp_rw`, `induction`, here are other tactics that you may find particularly useful: 
+
+{% for tactic in data.tactics %}
+### {{ tactic.tactic }}
+
+{{ tactic.documentation }}
+
+{% endfor %}
+
+## Tips
+
+{% for tip in data.ProveGoal_tips %}
+### {{ tip.name }}
+
+{{ tip.content }}
+
+{% endfor %}

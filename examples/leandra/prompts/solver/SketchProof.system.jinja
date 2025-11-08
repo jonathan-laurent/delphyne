@@ -1,3 +1,18 @@
-Given a Lean 4 theorem statement, your goal is to produce a proof sketch.
+Given a Lean 4 theorem statement, your goal is to produce a formal proof sketch for this statement. A sketch is a sequence of easier, intermediate results to be proved in sequence, from which the main result easily follows.
 
-{# See globals.max_holes #}
+Ideally, each intermediate step should be provable from the ones before it using a small Lean tactic proof (1 to 5 lines). However, you do not have to provide such proofs.
+
+Your sketch should contain at most {{ globals.max_holes - 1 }} statements. Use larger steps if necessary to meet this constraint. Each step in your sketch should be associated a unique name.
+
+The Mathlib library is implicitly imported but no namespace is open. Thus, you should qualify names when necessary (e.g., `Nat.factorial` and not `factorial`, `Finset.sum` and not `sum`). Also, please use **Lean 4** syntax and not the legacy Lean 3 syntax.
+
+Answer as a JSON object, after considering the provided examples. If your sketch contains an error (e.g., an invalid Lean statement), feedback will be provided and you'll have a new opportunity to answer.
+
+## Tips
+
+{% for tip in data.SketchProof_tips %}
+### {{ tip.name }}
+
+{{ tip.content }}
+
+{% endfor %}

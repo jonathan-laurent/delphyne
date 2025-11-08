@@ -169,6 +169,15 @@ class SketchProof(dp.Query[dp.Response[ProofSketch, Never]]):
     @override
     def globals(self) -> dict[str, object]:
         return {"max_holes": MAX_HOLES}
+    
+    @override
+    def unparse(self, value: dp.Response[ProofSketch, Never]) -> dp.Answer:
+        # Unparsing function, provided for feedback generation
+        # TODO: have Delphyne autogenerate this in such simple cases.
+        from delphyne.utils.typing import pydantic_dump
+        assert isinstance(val := value.unwrap(), ProofSketch)
+        json = pydantic_dump(ProofSketch, val)
+        return dp.Answer(None, dp.Structured(json))
 
 
 @strategy
@@ -183,8 +192,7 @@ def check_sketch(
     """
     num_holes = sketch.num_holes()
     if num_holes > MAX_HOLES:
-        return dp.Error(label="too_many_holes", meta={
-            "num_holes": num_holes, "max_holes": MAX_HOLES})
+        return dp.Error(label="too_many_holes", meta={"num_holes": num_holes})
     compiled = compile_sketch(theorem, sketch, [None] * num_holes)
     response = yield from dp.compute(run_lean_command)(compiled)
     if _has_errors(response):
@@ -272,14 +280,14 @@ def prove_subgoal(
         proofs[hole_index] = proof
         compiled = compile_sketch(theorem, sketch, proofs)
         response = yield from dp.compute(run_lean_command)(compiled)
-        num_sorries = len(response.sorries)
-        assert num_sorries >= sketch.num_holes() - 1
-        if num_sorries >= sketch.num_holes():
-            return dp.Error(label="sub_proof_with_sorry")
         if _has_errors(response):
             return dp.Error(
                 label="sub_proof_has_errors",
                 meta=_lean_error_metadata_without_line_info(response))
+        num_sorries = len(response.sorries)
+        assert num_sorries >= sketch.num_holes() - 1
+        if num_sorries >= sketch.num_holes():
+            return dp.Error(label="sub_proof_with_sorry")
         return proof
     
     hammer_proof = "first | " + " | ".join(
@@ -319,6 +327,13 @@ class ProveGoal(dp.Query[dp.Response[LeanProof, TheoremRequest]]):
     goal: str
     prefix: dp.AnswerPrefix
     __parser__ = dp.get_text.trim.response
+
+    @override
+    def unparse(self, value: dp.Response[LeanProof, TheoremRequest]):
+        # Unparsing function, provided for feedback generation
+        # TODO: have Delphyne autogenerate this in such simple cases.
+        assert isinstance(val := value.unwrap(), str)
+        return dp.Answer(None, val)
 
 
 def _lean_error_metadata_without_line_info(
@@ -381,6 +396,8 @@ class ProveTheoremPolicy(dp.PolicyRecord[_ProveTheoremSig, ProveTheoremIP]):
     proof. If it fails, it then tries to use sketching.
 
     Attributes:
+        mode: Whether to only seek "direct" proofs, "sketch" proofs,
+            or to seek "both" (default).
         direct: Policy for the first direct proof attempt.
         sketch: Policy for sketching proofs.
         subgoal: Policy for proving subgoals.
@@ -388,6 +405,7 @@ class ProveTheoremPolicy(dp.PolicyRecord[_ProveTheoremSig, ProveTheoremIP]):
             in direct mode.
     """
 
+    mode: Literal["direct", "sketch", "both"] = "both"
     direct: "ProveSubgoalPolicy | None" = None
     sketch: "SketchProofPolicy | None" = None
     subgoal: "ProveSubgoalPolicy | None" = None
@@ -398,13 +416,17 @@ class ProveTheoremPolicy(dp.PolicyRecord[_ProveTheoremSig, ProveTheoremIP]):
         sketch = (self.sketch or SketchProofPolicy()).instantiate()
         subgoal = (self.subgoal or ProveSubgoalPolicy()).instantiate()
         sp = dp.dfs() @ dp.elim_join() @ _elim_lean_compute(self.lean_timeout)
-        first = sp @ dp.elim_flag(
+        direct = sp @ dp.elim_flag(
             ProofTechniqueFlag, "direct"
         ) & ProveTheoremIP(sketch, direct)
-        second = sp @ dp.elim_flag(
+        sketch = sp @ dp.elim_flag(
             ProofTechniqueFlag, "sketch"
         ) & ProveTheoremIP(sketch, subgoal)
-        return first.or_else(second)
+        if self.mode == "direct":
+            return direct
+        elif self.mode == "sketch":
+            return sketch
+        return direct.or_else(sketch)
 
 
 @dataclass(kw_only=True)
@@ -474,7 +496,7 @@ class ProveSubgoalPolicy(dp.PolicyRecord[Branch | Feedback, ProveSubgoalIP]):
 
     model_name: dp.StandardModelName | str = "gpt-5-mini"
     effort: dp.ReasoningEffort = "low"
-    max_full_attempts: int = 3
+    max_full_attempts: int = 5
     max_feedback_rounds_per_attempt: int = 3
     max_requests_per_attempt: int = 7
     examples: "ExampleSelector | None" = None

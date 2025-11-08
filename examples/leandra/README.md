@@ -13,3 +13,4 @@ export LOOGLE_URL="http://localhost:8088"
 
 - Spend more resources when proving something is really worth it. For example, if all holes except one have been filled, maybe more effort should be put into proving it.
 - If some goals could not be filled, then we give feedback based on the name of those that could not be proved.
+- Limit the number of holes in the sketch that cannot be trivially discharged by a hammer instead of the number of holes.

@@ -1,7 +1,22 @@
 {% if feedback.label == "sketch_has_errors" %}
+Your sketch is invalid. It was compiled into the following Lean command:
+
+```lean4
+{{ feedback.meta.command }}
+```
+
+This command resulted into the following errors:
+
+"""
+{% for err in feedback.meta.errors %}
+{{ err }}
+
+{% endfor %}
+"""
+
 {# feedback.meta.command / feedback.meta.errors / feedback.meta.warnings #}
 {% elif feedback.label == "too_many_holes" %}
-{# feedback.meta.num_holes / feedback.meta.max_holes #}
+Your sketch is too long ({{ feedback.meta.num_holes - 1 }} steps). Propose {{ globals.max_holes - 1 }} steps at most.
 {% else %}
 {{ fail("Unknown feedback label for SketchProof: " ~ feedback.label) }}
 {% endif %}

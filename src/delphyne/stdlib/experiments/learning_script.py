@@ -50,6 +50,7 @@ SUMMARIZE_EXP_DIR = "summarize"
 LEARNED_DIR = "learned"
 LEARNED_DATA_DIR = f"{LEARNED_DIR}/data"
 LEARNED_DEMOS_FILE = f"{LEARNED_DIR}/generated.demo.yaml"
+TIPS_FILE_SUFFIX = "_tips.data.yaml"  # preceded by the query type
 
 
 #####
@@ -357,7 +358,7 @@ class LearningExperiment:
             tips: Sequence[Tip] = successes[0]
             data_dir = iteration_dir / LEARNED_DATA_DIR
             data_dir.mkdir(parents=True, exist_ok=True)
-            tips_file = data_dir / f"{qt}.tips.data.yaml"
+            tips_file = data_dir / f"{qt}{TIPS_FILE_SUFFIX}"
             tips_file_content = dump_yaml(Sequence[Tip], tips)
             tips_file.write_text(tips_file_content)
 

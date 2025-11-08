@@ -31,8 +31,6 @@ class TheoremRequest(dp.AbstractTool[loogle.LoogleHit | None]):
     """
     Request for finding a particular theorem.
 
-    Serves as the input to the `find_theorem` strategy.
-
     Attributes:
         name_guess: A guess of the name of the theorem to find.
             If the guess is correct, one can return its description
@@ -42,6 +40,7 @@ class TheoremRequest(dp.AbstractTool[loogle.LoogleHit | None]):
         blacklist: A list of theorems that were proposed before but do
             not work for some explained reason.
     """
+    # Serves as the input to the `find_theorem` strategy.
 
     name_guess: str
     description: str | None = None
@@ -75,6 +74,7 @@ def find_theorem(
     res = yield from unique_loogle_hit(request.name_guess)
     if res is not None:
         return res
+
     loogle_hit = yield from dp.interact(
         step=lambda prefix, _:
             FindTheorem(request, prefix).using(lambda p: p.step, IP),
