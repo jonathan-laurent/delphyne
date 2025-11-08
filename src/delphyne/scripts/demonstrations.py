@@ -52,10 +52,22 @@ def check_demo_file(
     file: Path,
     context: stdlib.ExecutionContext,
     workspace_root: Path,
+    demo_name: str | None = None,
 ) -> DemoFileFeedback:
+    """
+    Check a demonstration file. If `demo_name` is provided, only that
+    demonstration will be checked; otherwise, all demonstrations in the
+    file will be checked.
+    """
     # TODO: we should better report line numbers.
     demos_json = yaml.safe_load(open(file, "r").read())
     demos = ty.pydantic_load(list[dp.Demo], demos_json)
+    if demo_name is not None:
+        demos = [d for d in demos if d.demonstration == demo_name]
+        if not demos:
+            raise ValueError(
+                f"Demonstration '{demo_name}' not found in file {file}"
+            )
     ret = DemoFileFeedback([], [])
     loader = context.object_loader(extra_objects=stdlib.stdlib_globals())
     for i, d in enumerate(demos):

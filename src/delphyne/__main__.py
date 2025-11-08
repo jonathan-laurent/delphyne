@@ -98,14 +98,20 @@ class DelphyneCLI:
             workspace_dir = Path.cwd()
         return workspace_dir
 
-    def check(self, file: str):
+    def check(self, file: str, *, demo: str | None = None):
         """
         Check a demonstration file.
+
+        Arguments:
+            file: Path to the demonstration file to check.
+            demo: If provided, only check the demonstration with the
+                given name. Otherwise, check all demonstrations in the
+                file.
         """
         file_path = Path(file)
         workspace_dir = self._workspace_dir_for(file_path)
         config = load_execution_context(workspace_dir, local=file_path)
-        feedback = check_demo_file(file_path, config, workspace_dir)
+        feedback = check_demo_file(file_path, config, workspace_dir, demo)
         self._process_diagnostics(feedback.warnings, feedback.errors)
 
     def run(
