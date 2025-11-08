@@ -1317,9 +1317,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#delphyne.stdlib.hindsight_feedback.feedback" class="md-nav__link">
+  <a href="#delphyne.stdlib.hindsight_feedback.emit_feedback" class="md-nav__link">
     <span class="md-ellipsis">
-      feedback
+      emit_feedback
     </span>
   </a>
   
@@ -2050,9 +2050,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#delphyne.stdlib.hindsight_feedback.feedback" class="md-nav__link">
+  <a href="#delphyne.stdlib.hindsight_feedback.emit_feedback" class="md-nav__link">
     <span class="md-ellipsis">
-      feedback
+      emit_feedback
     </span>
   </a>
   
@@ -4226,12 +4226,12 @@ result in a no-op at runtime.</p>
 <div class="doc doc-object doc-function">
 
 
-<h3 id="delphyne.stdlib.hindsight_feedback.feedback" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">feedback</span>
+<h3 id="delphyne.stdlib.hindsight_feedback.emit_feedback" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">emit_feedback</span>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">feedback</span><span class="p">(</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">emit_feedback</span><span class="p">(</span>
     <span class="n">label</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n">messages</span><span class="p">:</span> <span class="n"><span title="collections.abc.Iterable">Iterable</span></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="AttachedFeedback
 
 
@@ -4255,7 +4255,7 @@ result in a no-op at runtime.</p>
 <span class="normal">100</span>
 <span class="normal">101</span>
 <span class="normal">102</span>
-<span class="normal">103</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">feedback</span><span class="p">(</span>
+<span class="normal">103</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">emit_feedback</span><span class="p">(</span>
     <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">messages</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">AttachedFeedback</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dp</span><span class="o">.</span><span class="n">Strategy</span><span class="p">[</span><span class="n">Feedback</span><span class="p">,</span> <span class="nb">object</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
     <span class="k">yield</span> <span class="n">nd</span><span class="o">.</span><span class="n">spawn_node</span><span class="p">(</span><span class="n">ThrowFeedback</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">)</span>
