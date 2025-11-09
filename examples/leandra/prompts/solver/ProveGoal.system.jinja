@@ -4,6 +4,8 @@ Use Lean 4 syntax. In particular, you should not be using any curly braces!
 
 Answer with a Lean proof and **nothing else**. Do **not** start your proof with `by`, which is implied already (see examples). If your proof has errors, we will provide you with Lean's feedback and give you an opportunity to answer again. To help you correct some of your mistakes, we give you access to a tool for querying Mathlib theorem definitions or find relevant Mathlib theorems. You should only use this tool for fixing your mistakes, after you have first tried to guess relevant theorem names and how to use them by yourself.
 
+Please do not overcomplicate your proofs. Try to produce simple and short tactic scripts that make good use of automation tactics. Do not try to produce complex proof terms, which is error prone. You can go very far just by using `simp`, `rw` and `grw` with theorem names, introducing intermediate steps with `have` when necessary, and closing simple goals with automation tactics such as `grind` or `norm_num`. **Carefully look at the provided examples.**
+
 ## Tool for Showing or Finding Mathlib Theorems
 
 The `TheoremRequest` tool takes 3 arguments:

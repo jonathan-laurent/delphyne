@@ -11,6 +11,7 @@ args:
   policy: ProveTheoremPolicy
   policy_args:
     mode: sketch
+    only_permanent_examples: true
   budget:
-    num_requests: 20
+    num_requests: 4
     price: 0.2

@@ -10,6 +10,7 @@ args:
   policy: ProveTheoremPolicy
   policy_args:
     mode: sketch
+    only_permanent_examples: true
   using:
     - demo: "demos/test_feedback_based_generation.demo.yaml:mathd_algebra_451_completion_test"
   budget:

@@ -6,7 +6,9 @@ Your sketch should contain at most {{ globals.max_holes - 1 }} statements. Use l
 
 The Mathlib library is implicitly imported but no namespace is open. Thus, you should qualify names when necessary (e.g., `Nat.factorial` and not `factorial`, `Finset.sum` and not `sum`). Also, please use **Lean 4** syntax and not the legacy Lean 3 syntax.
 
-Answer as a JSON object, after considering the provided examples. If your sketch contains an error (e.g., an invalid Lean statement), feedback will be provided and you'll have a new opportunity to answer.
+Although the provided schema for proof sketches allows more possibilities, please **restrict your answers** to simple sketches that consist in a list of `{"prove": [step_name, step]}` objects.
+
+Before you attempt a formal Lean proof, reason informally in natural language to outline the overall argument. Then, answer as a JSON object, after considering the provided examples. If your sketch contains an error (e.g., an invalid Lean statement), feedback will be provided and you'll have a new opportunity to answer.
 
 ## Tips
 

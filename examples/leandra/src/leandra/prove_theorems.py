@@ -5,7 +5,7 @@ Main Strategy for Proving Lean Theorems.
 import itertools
 import random
 from collections.abc import Iterable, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, Literal, Never, assert_never, override
 
 import delphyne as dp
@@ -23,7 +23,7 @@ MAIN_DEMO_FILE = "prove_theorems"
 SKETCH_PROOF_MODEL_CLASS = "sketch_proof"
 PROVE_SUBGOAL_MODEL_CLASS = "prove_subgoal"
 
-CLOSING_TACTICS = ["grind", "norm_num", "simp"]
+CLOSING_TACTICS = ["grind", "norm_num", "positivity", "simp"]
 
 # fmt: off
 
@@ -403,6 +403,8 @@ class ProveTheoremPolicy(dp.PolicyRecord[_ProveTheoremSig, ProveTheoremIP]):
         subgoal: Policy for proving subgoals.
         lean_timeout: Timeout in seconds for checking sketches or proofs
             in direct mode.
+        only_permanent_examples: Whether to only use permanent examples
+            when selecting few-shot examples (overrides sub-policies).
     """
 
     mode: Literal["direct", "sketch", "both"] = "both"
@@ -410,11 +412,19 @@ class ProveTheoremPolicy(dp.PolicyRecord[_ProveTheoremSig, ProveTheoremIP]):
     sketch: "SketchProofPolicy | None" = None
     subgoal: "ProveSubgoalPolicy | None" = None
     lean_timeout: float = DEFAULT_LEAN_TIMEOUT
+    only_permanent_examples: bool = False
 
     def instantiate(self):
-        direct = (self.direct or ProveSubgoalPolicy()).instantiate()
-        sketch = (self.sketch or SketchProofPolicy()).instantiate()
-        subgoal = (self.subgoal or ProveSubgoalPolicy()).instantiate()
+        direct_spec = self.direct or ProveSubgoalPolicy()
+        sketch_spec = self.sketch or SketchProofPolicy()
+        subgoal_spec = self.subgoal or ProveSubgoalPolicy()
+        if self.only_permanent_examples:
+            direct_spec = direct_spec.with_only_permanent_examples()
+            sketch_spec = sketch_spec.with_only_permanent_examples()
+            subgoal_spec = subgoal_spec.with_only_permanent_examples()
+        direct = direct_spec.instantiate()
+        sketch = sketch_spec.instantiate()
+        subgoal = subgoal_spec.instantiate()
         sp = dp.dfs() @ dp.elim_join() @ _elim_lean_compute(self.lean_timeout)
         direct = sp @ dp.elim_flag(
             ProofTechniqueFlag, "direct"
@@ -472,6 +482,9 @@ class SketchProofPolicy(dp.PolicyRecord[Branch | Feedback, SketchProofIP]):
         selectors = itertools.islice(selectors, self.max_full_attempts)
         return dp.sequence((with_selector(sel.cached()) for sel in selectors))
 
+    def with_only_permanent_examples(self) -> "SketchProofPolicy":
+        return replace(self, examples=ExampleSelector.no_examples())
+
 
 @dataclass(kw_only=True)
 class ProveSubgoalPolicy(dp.PolicyRecord[Branch | Feedback, ProveSubgoalIP]):
@@ -527,6 +540,9 @@ class ProveSubgoalPolicy(dp.PolicyRecord[Branch | Feedback, ProveSubgoalIP]):
         selectors = itertools.islice(selectors, self.max_full_attempts)
         return dp.sequence((with_selector(sel.cached()) for sel in selectors))
 
+    def with_only_permanent_examples(self) -> "ProveSubgoalPolicy":
+        return replace(self, examples=ExampleSelector.no_examples())
+
 
 @dataclass(frozen=True)
 class Randomized[T]:
@@ -555,6 +571,14 @@ class ExampleSelector:
     num_selected: Randomized[int] = Randomized(5, [5])
     num_included: Randomized[int] = Randomized(5, [5, 15])
     mmr_lambda: Randomized[float] = Randomized(0.5, [0.3, 0.5, 0.7])
+
+    @staticmethod
+    def no_examples() -> "ExampleSelector":
+        return ExampleSelector(
+            num_selected=Randomized(0, [0]),
+            num_included=Randomized(0, [0]),
+            mmr_lambda=Randomized(0.0, [0]),
+        )
 
     def instantiate(self, rng: random.Random) -> Iterable[dp.ExampleSelector]:
         nss = self.num_selected.stream(rng)

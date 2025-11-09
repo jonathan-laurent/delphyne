@@ -223,13 +223,41 @@
         (h₂ : Real.log (x ^ 2 * y) = 1)
         : Real.log (x * y) = 3 / 5 := by sorry
   tests:
-    - run | success
-  queries: []
-  # have: x ≠ 0 := by grind
-  # have: y ≠ 0 := by grind
-  # have: y^3 ≠ 0 := by grind
-  # have: x^2 ≠ 0 := by grind
-  # have: Real.log x + 3 * Real.log y = 1 := by rw [Real.log_mul, Real.log_pow] at h₁ <;> grind
-  # have: 2 * Real.log x + Real.log y = 1 := by rw [Real.log_mul, Real.log_pow] at h₂ <;> grind
-  # have: Real.log x + Real.log y = 3 / 5 := by grind
-  # rw [Real.log_mul] <;> grind
+    - run  # we only prove the first goal
+  queries: 
+    - query: SketchProof
+      args:
+        theorem: |
+          theorem amc12b_2003_p17
+            (x y : ℝ) (h₀ : 0 < x ∧ 0 < y)
+            (h₁ : Real.log (x * y ^ 3) = 1)
+            (h₂ : Real.log (x ^ 2 * y) = 1)
+            : Real.log (x * y) = 3 / 5 := by sorry
+        prefix: []
+      answers:
+        - answer:
+            steps:
+              - prove: ["x_pos", "x > 0"]
+              - prove: ["y_pos", "y > 0"]
+              - prove: ["y3_pos", "y^3 > 0"]
+              - prove: ["x2_pos", "x^2 > 0"]
+              - prove: ["eq1", "Real.log x + 3 * Real.log y = 1"]
+              - prove: ["eq2", "2 * Real.log x + Real.log y = 1"]
+              - prove: ["eq3", "Real.log x + Real.log y = 3 / 5"]
+          justification: |
+            Having many positivity results in context is useful here since log is only defined on positive numbers.
+    - query: ProveGoal
+      args:
+        goal: |-
+          x y : ℝ
+          h₀ : 0 < x ∧ 0 < y
+          h₁ : Real.log (x * y ^ 3) = 1
+          h₂ : Real.log (x ^ 2 * y) = 1
+          x_pos : x > 0
+          y_pos : y > 0
+          y3_pos : y ^ 3 > 0
+          x2_pos : x ^ 2 > 0
+          ⊢ Real.log x + 3 * Real.log y = 1
+        prefix: []
+      answers:
+        - answer: "rw [Real.log_mul, Real.log_pow] at h₁ <;> grind"
