@@ -81,7 +81,9 @@ def global_init() -> li.LeanREPLConfig:
     repo_path = minif2f.repo_path()
     # We setup a memory limit so that 64 workers can work together on a
     # 200GB machine.
-    mem = int(200_000 / 64)
+    # mem = int(200_000 / 64)
+    # Update: Mathlib is memory hungry so having 8GB is good.
+    mem = 8000
     return lean_server_config(repo_path=repo_path, memory_hard_limit_mb=mem)
 
 
@@ -89,6 +91,9 @@ def worker_init(config: li.LeanREPLConfig):
     from leandra.tools import init_global_lean_server_with_config
 
     init_global_lean_server_with_config(config, INIT_COMMANDS)
+
+
+workers_setup = dp.WorkersSetup(common=global_init, per_worker=worker_init)
 
 
 def make_experiment(settings: ExperimentSettings):
@@ -120,7 +125,5 @@ def make_experiment(settings: ExperimentSettings):
             ),
         },
         enabled_feedback_nodes=["first", "subproof"],
-        workers_setup=dp.WorkersSetup(
-            common=global_init, per_worker=worker_init
-        ),
+        workers_setup=workers_setup,
     )
