@@ -3,11 +3,11 @@ from dataclasses import dataclass, replace
 from functools import partial
 from pathlib import Path
 
-import delphyne as dp
-import delphyne.stdlib.commands.run_strategy as cmd
-import delphyne.stdlib.experiments.learning_script as dl
 import lean_interact as li
 import minif2f
+
+import delphyne as dp
+import delphyne.stdlib.experiments.learning_script as dl
 
 TRAINING_THEOREMS = minif2f.load_minif2f("valid")
 TESTING_THEOREMS = minif2f.load_minif2f("test")
@@ -43,7 +43,7 @@ def solve_problem(
     else:
         max_dollars_per_problem = settings.max_dollars_per_training_problem
         max_requests_per_problem = settings.max_requests_per_training_problem
-    return cmd.RunStrategyArgs(
+    return dp.RunStrategyArgs(
         strategy="prove_theorem",
         args={"theorem": load_problem(problem_kind, problem_name)},
         policy="ProveTheoremPolicy",
@@ -55,8 +55,8 @@ def solve_problem(
     )
 
 
-def generate_tips(feedback: dl.SerializedQueryFeedback) -> cmd.RunStrategyArgs:
-    return cmd.RunStrategyArgs(
+def generate_tips(feedback: dl.SerializedQueryFeedback) -> dp.RunStrategyArgs:
+    return dp.RunStrategyArgs(
         strategy="generate_tips",
         args={"feedback": feedback},
         policy="generate_tips_policy",
@@ -66,7 +66,7 @@ def generate_tips(feedback: dl.SerializedQueryFeedback) -> cmd.RunStrategyArgs:
 
 
 def summarize_tips(query_type: str, tips: Sequence[dl.Tip]):
-    return cmd.RunStrategyArgs(
+    return dp.RunStrategyArgs(
         strategy="summarize_tips",
         args={"query_type": query_type, "tips": tips},
         policy="generate_tips_policy",

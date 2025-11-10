@@ -8,14 +8,14 @@ from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, replace
 from typing import Any, Literal, Never, assert_never, override
 
-import delphyne as dp
 import lean_interact.interface as li_intf
-from delphyne import Branch, Compute, Fail, Feedback, Join, Strategy, strategy
-
 import leandra.find_theorems as lft
 from leandra.dsl import LeanProof, LeanTheorem, ProofSketch, compile_sketch
 from leandra.find_theorems import TheoremRequest, find_theorem
 from leandra.tools import LeanResponse, run_lean_command
+
+import delphyne as dp
+from delphyne import Branch, Compute, Fail, Feedback, Join, Strategy, strategy
 
 DEFAULT_LEAN_TIMEOUT = 8.0
 MAX_HOLES = 10
@@ -23,7 +23,11 @@ MAIN_DEMO_FILE = "prove_theorems"
 SKETCH_PROOF_MODEL_CLASS = "sketch_proof"
 PROVE_SUBGOAL_MODEL_CLASS = "prove_subgoal"
 
-CLOSING_TACTICS = ["grind", "norm_num", "positivity", "simp"]
+CLOSING_TACTICS = ["grind", "positivity", "simp"]
+"""
+Note: we do not include norm_num since it can easily stack-overflow when
+presented very large problems.
+"""
 
 # fmt: off
 

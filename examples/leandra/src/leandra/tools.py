@@ -11,6 +11,7 @@ import lean_interact.interface as li_intf
 
 DEFAULT_MEMORY_HARD_LIMIT_MB = 8192
 DEFAULT_TIMEOUT_IN_SECONDS = 5.0
+SILENT = False
 DEBUG_MODE = True
 
 #####
@@ -18,8 +19,8 @@ DEBUG_MODE = True
 #####
 
 
-def dbg(s: str) -> None:
-    if DEBUG_MODE:
+def dbg(s: str, *, important: bool = True) -> None:
+    if DEBUG_MODE or important and not SILENT:
         print("[leandra.tools]", s, flush=True)
 
 
@@ -166,7 +167,7 @@ def run_lean_command(
         timeout_in_seconds = DEFAULT_TIMEOUT_IN_SECONDS
     server = _get_global_server()
     try:
-        dbg(f"Running Lean command:\n{command}")
+        dbg(f"Running Lean command:\n{command}", important=False)
         cmd = li.Command(cmd=command, env=server.env)
         resp = server.server.run(cmd, timeout=timeout_in_seconds)
         if isinstance(resp, li_intf.LeanError):

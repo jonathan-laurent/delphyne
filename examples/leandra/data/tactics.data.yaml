@@ -24,6 +24,8 @@
     and can prove goals of the form `A = B`, `A ≠ B`, `A < B` and `A ≤ B`, where `A` and `B` are
     numerical expressions. It also has a relatively simple primality prover.
 
+    Note: do not use `norm_num` on expression involving huge numbers such as `10^100`, at the risk of causing a stack overflow error and crashing the Lean server.
+
 - tactic: grind
   documentation: |
       `grind` is a powerful automation tactic inspired by modern SMT solvers. It looks for a proof of the goal, using all assumptions in the current context. It supports the following theories.
