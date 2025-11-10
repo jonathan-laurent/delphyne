@@ -15,7 +15,7 @@ import requests
 @dataclass
 class ServerConfig:
     base_url: str = "https://loogle.lean-lang.org/"
-    timeout: int = 1
+    timeout: int = 5
     retry_base_delay: int = 10
     max_retries: int = 3
     max_shown_hits: int | None = 8
@@ -75,7 +75,14 @@ def query_loogle(request: str) -> LoogleResults:
             if response.status_code == 200:
                 data = response.json()
                 adapter = pydantic.TypeAdapter[LoogleResults](LoogleResults)
-                results = adapter.validate_python(data)
+                try:
+                    results = adapter.validate_python(data)
+                except Exception:
+                    # TODO: there are rare cases of Loogle returning malformed
+                    # JSON responses (empty dictionaries?). We should
+                    # figure out why those happen.
+                    print(f"Failed to parse Loogle response: {data}")
+                    return LoogleError(error="Loogle Server Failure")
                 if (
                     isinstance(results, LoogleHits)
                     and config.max_shown_hits is not None

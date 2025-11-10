@@ -12,7 +12,8 @@ import lean_interact.interface as li_intf
 DEFAULT_MEMORY_HARD_LIMIT_MB = 8192
 DEFAULT_TIMEOUT_IN_SECONDS = 5.0
 SILENT = False
-DEBUG_MODE = True
+DEBUG_MODE = False
+RECOVER_FROM_SERVER_CRASHES = True
 
 #####
 ##### Global Server Initialization
@@ -26,8 +27,40 @@ def dbg(s: str, *, important: bool = True) -> None:
 
 @dataclass
 class _LeanServer:
-    server: li.AutoLeanServer
+    server: li.LeanServer
+    config: li.LeanREPLConfig
+    init_commands: Sequence[str]
     env: int | None
+
+    @staticmethod
+    def start(
+        config: li.LeanREPLConfig, init_commands: Sequence[str]
+    ) -> "_LeanServer":
+        dbg("Starting Lean server...")
+        server = li.LeanServer(config)
+        env = None
+        # We do not want the user to mistakenly pass a string here.
+        assert isinstance(init_commands, (list, tuple)) and all(
+            isinstance(cmd, str) for cmd in init_commands
+        ), "Invalid init_commands argument when initializing Lean server."
+        for cmd in init_commands:
+            dbg(f"Run initialization command:\n{cmd}", important=False)
+            res = server.run(li.Command(cmd=cmd, env=env))
+            if isinstance(res, li_intf.LeanError):
+                raise RuntimeError(
+                    f"Failed to run init command '{cmd}': {res.message}"
+                )
+            env = res.env
+        dbg("Lean server started.")
+        return _LeanServer(
+            server=server,
+            config=config,
+            init_commands=init_commands,
+            env=env,
+        )
+
+    def restart(self) -> "_LeanServer":
+        return _LeanServer.start(self.config, self.init_commands)
 
 
 _global_lean_server: _LeanServer | None = None
@@ -89,26 +122,7 @@ def init_global_lean_server_with_config(
     global _global_lean_server
     if _global_lean_server is not None:
         return
-    dbg("Creating Lean Server...")
-    server = li.AutoLeanServer(config)
-    dbg("Lean server created.")
-    env = None
-    # We do not want the user to mistakenly pass a string here.
-    assert isinstance(init_commands, (list, tuple)) and all(
-        isinstance(cmd, str) for cmd in init_commands
-    ), "Invalid init_commands argument when initializing Lean server."
-    for cmd in init_commands:
-        dbg(f"Run initialization command:\n{cmd}")
-        res = server.run(
-            li.Command(cmd=cmd, env=env),
-            add_to_session_cache=True,
-        )
-        if isinstance(res, li_intf.LeanError):
-            raise RuntimeError(
-                f"Failed to run init command '{cmd}': {res.message}"
-            )
-        env = res.env
-    _global_lean_server = _LeanServer(server=server, env=env)
+    _global_lean_server = _LeanServer.start(config, init_commands)
 
 
 def init_global_lean_server(
@@ -133,6 +147,8 @@ def _get_global_server() -> _LeanServer:
     global _global_lean_server
     if _global_lean_server is None:
         raise RuntimeError("The Lean server was not initialized.")
+    if not _global_lean_server.server.is_alive():
+        _global_lean_server = _global_lean_server.restart()
     return _global_lean_server
 
 
@@ -184,3 +200,18 @@ def run_lean_command(
             data="Timeout",
         )
         return LeanResponse(messages=[message], sorries=[])
+    except ConnectionAbortedError:
+        dbg("Internal server crash.")
+        if RECOVER_FROM_SERVER_CRASHES:
+            dummy_pos = li_intf.Pos(line=0, column=0)
+            message = li_intf.Message(
+                start_pos=dummy_pos,
+                end_pos=dummy_pos,
+                severity="error",
+                data="Lean server crashed. Did you cause a stack-overflow "
+                "by running an overly expensive computation (e.g., running "
+                "`norm_num` on an expression involving large numbers)?",
+            )
+            return LeanResponse(messages=[message], sorries=[])
+        else:
+            raise
