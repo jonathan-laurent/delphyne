@@ -2216,6 +2216,7 @@
               Bases: <code><span title="typing.Generic">Generic</span>[<span title="delphyne.core.trees.N">N</span>, <span title="delphyne.core.trees.P">P</span>, <span title="delphyne.core.trees.T">T</span>]</code></p>
 
 
+
         <p>Strategy Trees.</p>
 <p>A strategy tree can be obtained by reifying a strategy computation
 (see <a class="autorefs autorefs-internal" title="reify" href="../strategies/#delphyne.reify"><code>reify</code></a>). Its type parameters are: a type signature <code>N</code>, an
@@ -2306,7 +2307,7 @@ an oracular program).</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">788</span>
 <span class="normal">789</span>
@@ -2460,7 +2461,7 @@ of a tree.</p>
 useful to implement tree transformers such as <a class="autorefs autorefs-internal" title="elim_compute" href="../../stdlib/effects/#delphyne.stdlib.computations.elim_compute"><code>elim_compute</code></a>.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">823</span>
 <span class="normal">824</span>
@@ -2529,6 +2530,7 @@ useful to implement tree transformers such as <a class="autorefs autorefs-intern
     <div class="doc doc-contents first">
 
 
+
         <p>A success leaf, carrying a tracked value.</p>
 <details class="note">
 <summary>Implementation Note</summary>
@@ -2557,7 +2559,7 @@ rule out.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">843</span>
 <span class="normal">844</span>
@@ -2696,6 +2698,7 @@ rule out.</p>
               Bases: <code><span title="abc.ABC">ABC</span></code></p>
 
 
+
         <p>Abstract type for a tree node.</p>
 <p>New effects can be added to the strategy language by subclassing
 <a class="autorefs autorefs-internal" title="Node" href="#delphyne.Node"><code>Node</code></a> and then defining a triggering function that calls the
@@ -2753,7 +2756,7 @@ writers.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">141</span>
 <span class="normal">142</span>
@@ -3364,7 +3367,7 @@ writers.</p>
 <p>See <a class="autorefs autorefs-internal" title="Navigation" href="#delphyne.Navigation"><code>Navigation</code></a> for details.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">183</span>
 <span class="normal">184</span>
@@ -3408,7 +3411,7 @@ writers.</p>
 displayed in the Delphyne extension's Tree View.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">196</span>
 <span class="normal">197</span>
@@ -3451,7 +3454,7 @@ otherwise.</p>
 specially by the demonstration interpreter.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">203</span>
 <span class="normal">204</span>
@@ -3501,7 +3504,7 @@ default, it always returns <code>True</code> (unless the node is a leaf
 node, in which case it returns <code>False</code>).</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">213</span>
 <span class="normal">214</span>
@@ -3551,7 +3554,7 @@ especially when writing demonstration tests. For example, if
 inherited by this node (see <code>get_tags</code> method).</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">224</span>
 <span class="normal">225</span>
@@ -3604,7 +3607,7 @@ the default ones inherited from the primary space (see
 <code>get_tags</code> method).</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">239</span>
 <span class="normal">240</span>
@@ -3650,7 +3653,7 @@ metadata (e.g., whether the field denotes a local space).</p>
 <a class="autorefs autorefs-internal" title="delphyne.core.node_fields" href="#delphyne.core.node_fields"><code>node_fields</code></a> module for details.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">249</span>
 <span class="normal">250</span>
@@ -3712,7 +3715,7 @@ metadata (e.g., whether the field denotes a local space).</p>
 <p>Used for generating message errors and in the VSCode extension.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">271</span>
 <span class="normal">272</span>
@@ -3754,7 +3757,7 @@ nodes (e.g., <code>at</code> test command).</p>
 <code>get_extra_tags</code>.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">279</span>
 <span class="normal">280</span>
@@ -3811,7 +3814,7 @@ nodes (e.g., <code>at</code> test command).</p>
 primary space, if it is defined.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">296</span>
 <span class="normal">297</span>
@@ -3862,7 +3865,7 @@ parameters.</p>
 <p>This method is used by the demonstration interpreter.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">307</span>
 <span class="normal">308</span>
@@ -3964,7 +3967,7 @@ turned into embedded trees (<a class="autorefs autorefs-internal" title="Embedde
   " href="#delphyne.EmbeddedTree"><code>EmbeddedTree</code></a>).</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">335</span>
 <span class="normal">336</span>
@@ -4075,7 +4078,7 @@ implementing standard tree transformers such as <a class="autorefs autorefs-inte
 <a class="autorefs autorefs-internal" title="elim_compute" href="../../stdlib/effects/#delphyne.stdlib.computations.elim_compute"><code>elim_compute</code></a>.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">378</span>
 <span class="normal">379</span>
@@ -4260,6 +4263,7 @@ generated and returned.</p>
               Bases: <code><span title="Exception">Exception</span></code></p>
 
 
+
         <p>Exception raised when an error occurs during navigation.</p>
 <p>For internal errors that should not occur within normal use,
 assertions shoule be used instead. This exception is meant to
@@ -4303,7 +4307,7 @@ the user interface. For an example, see <a class="autorefs autorefs-internal" ti
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
 <span class="normal">125</span>
@@ -4552,6 +4556,7 @@ element.</p>
     <div class="doc doc-contents first">
 
 
+
         <p>A space field that does not correspond to an embedded nested tree.</p>
 
 
@@ -4561,7 +4566,7 @@ element.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/node_fields.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">27</span>
 <span class="normal">28</span>
@@ -4614,6 +4619,7 @@ element.</p>
     <div class="doc doc-contents first">
 
 
+
         <p>A field corresponding to a nested embedded space.</p>
 <p>Recognizing this particular case is useful so that triggering
 functions can directly accept strategy computations as arguments
@@ -4636,7 +4642,7 @@ functions can directly accept strategy computations as arguments
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/node_fields.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">34</span>
 <span class="normal">35</span>
@@ -4697,6 +4703,7 @@ functions can directly accept strategy computations as arguments
     <div class="doc doc-contents first">
 
 
+
         <p>A field corresponding to a parametric space.</p>
 
 
@@ -4741,7 +4748,7 @@ functions can directly accept strategy computations as arguments
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/node_fields.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">52</span>
 <span class="normal">53</span>
@@ -4804,6 +4811,7 @@ functions can directly accept strategy computations as arguments
     <div class="doc doc-contents first">
 
 
+
         <p>A field that corresponds to some other kind of data.</p>
 
 
@@ -4813,7 +4821,7 @@ functions can directly accept strategy computations as arguments
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/node_fields.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">45</span>
 <span class="normal">46</span>
@@ -4866,6 +4874,7 @@ functions can directly accept strategy computations as arguments
     <div class="doc doc-contents first">
 
 
+
         <p>A field corresponding to a sequence of spaces.</p>
 
 
@@ -4875,7 +4884,7 @@ functions can directly accept strategy computations as arguments
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/node_fields.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">64</span>
 <span class="normal">65</span>
@@ -4932,6 +4941,7 @@ functions can directly accept strategy computations as arguments
     <div class="doc doc-contents first">
 
 
+
         <p>A field corresponding to a sequence of spaces.</p>
 
 
@@ -4941,7 +4951,7 @@ functions can directly accept strategy computations as arguments
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/node_fields.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">73</span>
 <span class="normal">74</span>
@@ -4997,6 +5007,7 @@ functions can directly accept strategy computations as arguments
               Bases: <code><span title="abc.ABC">ABC</span></code></p>
 
 
+
         <p>Abstract type for a space.</p>
 <p>Tree nodes feature local spaces (possibly parametric), that are
 backed by either queries or nested trees. Examples of spaces
@@ -5024,7 +5035,7 @@ include <a class="autorefs autorefs-internal" title="EmbeddedTree
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">34</span>
 <span class="normal">35</span>
@@ -5129,7 +5140,7 @@ include <a class="autorefs autorefs-internal" title="EmbeddedTree
         <p>Return the tags associated with the space.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">43</span>
 <span class="normal">44</span>
@@ -5183,7 +5194,7 @@ abstraction (e.g., whether or not an opaque space is defined via
 a query or a strategy is irrelevant).</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">50</span>
 <span class="normal">51</span>
@@ -5235,7 +5246,7 @@ a query or a strategy is irrelevant).</p>
         <p>Return a global reference to the space.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">63</span>
 <span class="normal">64</span>
@@ -5299,6 +5310,7 @@ underscores, dots, and dashes.</p>
 
 
     <div class="doc doc-contents first">
+
 
 
         <p>Wrapper for a query attached to a specific space.</p>
@@ -5379,7 +5391,7 @@ which attaches proper tracking information to answers.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">70</span>
 <span class="normal">71</span>
@@ -5454,6 +5466,7 @@ which attaches proper tracking information to answers.</p>
     <div class="doc doc-contents first">
 
 
+
         <p>Wrapper for a tree attached to a particular node.</p>
 <p>The <a class="autorefs autorefs-internal" title="AttachedQuery
 
@@ -5475,7 +5488,7 @@ transformers (see <code>Node.map_embedded</code>).</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">645</span>
 <span class="normal">646</span>
@@ -5552,6 +5565,7 @@ transformers (see <code>Node.map_embedded</code>).</p>
               Bases: <code><a class="autorefs autorefs-internal" title="Space (delphyne.core.trees.Space)" href="#delphyne.Space">Space</a>[<span title="delphyne.core.trees.TransparentQuery[T]">T</span>]</code></p>
 
 
+
         <p>A space that is defined by a single, <em>transparent</em> query.</p>
 <p>As opposed to <a class="autorefs autorefs-internal" title="OpaqueSpace
 
@@ -5579,7 +5593,7 @@ nodes for example.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 88</span>
 <span class="normal"> 89</span>
@@ -5682,6 +5696,7 @@ nodes for example.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="Space (delphyne.core.trees.Space)" href="#delphyne.Space">Space</a>[<span title="delphyne.core.trees.EmbeddedTree[T]">T</span>]</code></p>
 
 
+
         <p>Space defined by a nested tree with the same signature and inner
 policy as its surrounding tree.</p>
 <p>This is useful to define effects such as <a class="autorefs autorefs-internal" title="Join
@@ -5698,7 +5713,7 @@ policy as its surrounding tree.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">663</span>
 <span class="normal">664</span>
@@ -5811,6 +5826,7 @@ policy as its surrounding tree.</p>
     <div class="doc doc-contents first">
 
 
+
         <p>Wrapper for a function that builds a space, given the ability to
 spawn nested trees and attached queries.</p>
 <p>Effect triggering functions such as <a class="autorefs autorefs-internal" title="branch" href="../../stdlib/effects/#delphyne.stdlib.nodes.branch"><code>branch</code></a> do not directly take
@@ -5861,7 +5877,7 @@ ultimately passed to the resulting space.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">724</span>
 <span class="normal">725</span>
@@ -5967,7 +5983,7 @@ ultimately passed to the resulting space.</p>
         <p>Add new tags to the space builder.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">744</span>
 <span class="normal">745</span>
@@ -6001,7 +6017,7 @@ ultimately passed to the resulting space.</p>
 current set of tags.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">750</span>
 <span class="normal">751</span>
@@ -6049,6 +6065,7 @@ current set of tags.</p>
               Bases: <code><span title="typing.Protocol">Protocol</span></code></p>
 
 
+
         <p>A function that transforms any tree with signature N into a tree
 with signature M, preserving its inner policy type and return type.</p>
 
@@ -6059,7 +6076,7 @@ with signature M, preserving its inner policy type and return type.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">913</span>
 <span class="normal">914</span>

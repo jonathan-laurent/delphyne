@@ -1821,6 +1821,7 @@ references is delegated to the <code>refine</code> function.</p>
     <div class="doc doc-contents first">
 
 
+
         <p>An action along with a reference to the node that the action is
 associated and a local reference to the value representing the action.</p>
 <p>Strategy generators expect to receive such tuples. Receiving references
@@ -1833,7 +1834,7 @@ is useful for implementing hindsight feedback.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">472</span>
 <span class="normal">473</span>
@@ -1904,6 +1905,7 @@ is useful for implementing hindsight feedback.</p>
               Bases: <code><span title="typing.Generic">Generic</span>[<span title="delphyne.core.trees.N">N</span>, <span title="delphyne.core.trees.P">P</span>]</code></p>
 
 
+
         <p>Wrapper for a function that builds a node, given the ability of
 spawning trees and attached queries (<code>AbstractBuilderExecutor</code>).</p>
 <p>Strategies do not directly yield nodes since building a node
@@ -1917,7 +1919,7 @@ requires knowing its reference along with the associated hooks.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">494</span>
 <span class="normal">495</span>
@@ -1988,6 +1990,7 @@ requires knowing its reference along with the associated hooks.</p>
               Bases: <code><span title="typing.Generic">Generic</span>[<span title="delphyne.core.trees.N">N</span>, <span title="delphyne.core.trees.P">P</span>, <span title="delphyne.core.trees.T">T</span>]</code></p>
 
 
+
         <p>A <em>strategy computation</em> that can be reified into a search tree,
 obtained by instantiating a strategy function.</p>
 <p>Such objects are usually not created directly but using the
@@ -2011,7 +2014,7 @@ annotations are inspected by methods such as <code>return_type</code> and
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">509</span>
 <span class="normal">510</span>
@@ -2310,7 +2313,7 @@ underlying coroutine.</p>
 </code></pre></div>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">538</span>
 <span class="normal">539</span>
@@ -2367,7 +2370,7 @@ method is mostly used by <a class="autorefs autorefs-internal" title="reify" hre
 should not be needed outside of Delphyne's internals.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">557</span>
 <span class="normal">558</span>
@@ -2412,7 +2415,7 @@ tags, which can later be changed (<code>tag</code> field of
   " href="../trees/#delphyne.SpaceBuilder"><code>SpaceBuilder</code></a>).</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">565</span>
 <span class="normal">566</span>
@@ -2452,7 +2455,7 @@ tags, which can later be changed (<code>tag</code> field of
 <code>name</code> attribute if provided or using <code>comp.__name__</code> otherwise.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">576</span>
 <span class="normal">577</span>
@@ -2493,7 +2496,7 @@ the underlying strategy function (using inspection for naming
 positional arguments).</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">585</span>
 <span class="normal">586</span>
@@ -2532,7 +2535,7 @@ that maps every strategy argument to its type annotation (or
 <code>NoTypeInfo</code> if none is provided).</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">593</span>
 <span class="normal">594</span>
@@ -2585,7 +2588,7 @@ for providing superior printing of values in the Delphyne tree
 view.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">606</span>
 <span class="normal">607</span>
@@ -2647,7 +2650,7 @@ the future to dynamically check the compatibility of an
 associated policy.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">624</span>
 <span class="normal">625</span>
@@ -2849,7 +2852,7 @@ closure returns the same closure unchanged).</p>
 </div>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/reification.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 59</span>
 <span class="normal"> 60</span>
@@ -2990,6 +2993,7 @@ closure returns the same closure unchanged).</p>
               Bases: <code><span title="Exception">Exception</span></code></p>
 
 
+
         <p>Raised when a strategy encounters an internal error (e.g. a failed
 assertion or an index-out-of-bounds error).</p>
 
@@ -3025,7 +3029,7 @@ assertion or an index-out-of-bounds error).</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">894</span>
 <span class="normal">895</span>
@@ -3090,6 +3094,7 @@ assertion or an index-out-of-bounds error).</p>
     <div class="doc doc-contents first">
 
 
+
         <p>A record that gathers a tree cache along with a series of hooks to
 be called on node creation.</p>
 <p>When no monitor is passed to <a class="autorefs autorefs-internal" title="reify" href="#delphyne.reify"><code>reify</code></a>, the resulting tree is a pure,
@@ -3142,7 +3147,7 @@ trace that keeps track of all visited nodes (see
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/reification.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">37</span>
 <span class="normal">38</span>
@@ -3279,6 +3284,7 @@ indexed by its global reference.</p>
               Bases: <code><span title="typing.Protocol">Protocol</span></code></p>
 
 
+
         <p>A function providing the ability to spawn nested trees attached to a
 given node.</p>
 
@@ -3289,7 +3295,7 @@ given node.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">705</span>
 <span class="normal">706</span>
@@ -3348,6 +3354,7 @@ given node.</p>
               Bases: <code><span title="typing.Protocol">Protocol</span></code></p>
 
 
+
         <p>A function providing the ability to attach queries to a given node.</p>
 
 
@@ -3357,7 +3364,7 @@ given node.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">716</span>
 <span class="normal">717</span>
@@ -3410,6 +3417,7 @@ given node.</p>
               Bases: <code><span title="abc.ABC">ABC</span></code></p>
 
 
+
         <p>Abstract class for builder executors.</p>
 <p>An executor implements the ability of converting space builders into
 actual spaces. The <a class="autorefs autorefs-internal" title="reify" href="#delphyne.reify"><code>reify</code></a> function relies on such an executor
@@ -3422,7 +3430,7 @@ internally.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/trees.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">760</span>
 <span class="normal">761</span>

@@ -1817,6 +1817,7 @@ demonstration.</p>
     <div class="doc doc-contents first">
 
 
+
         <p>A strategy demonstration.</p>
 <p>For a given strategy instance, a strategy demonstration gathers a
 sequence of relevant query demonstrations, along with a sequence of
@@ -1919,7 +1920,7 @@ can be fetched.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/demos.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">162</span>
 <span class="normal">163</span>
@@ -2020,6 +2021,7 @@ can be fetched.</p>
     <div class="doc doc-contents first">
 
 
+
         <p>A query demonstration.</p>
 <p>A query demonstration describes a query and associates answers to
 it. It can stand alone in a demonstration file, or be part of a
@@ -2096,7 +2098,7 @@ demonstration label (usully specified first in YAML syntax).</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/demos.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">139</span>
 <span class="normal">140</span>
@@ -2179,6 +2181,7 @@ demonstration label (usully specified first in YAML syntax).</p>
 
 
     <div class="doc doc-contents first">
+
 
 
         <p>A query answer.</p>
@@ -2308,7 +2311,7 @@ example, which can be used by policies (similar to <code>tags</code>).</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/demos.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">36</span>
 <span class="normal">37</span>
@@ -2423,6 +2426,7 @@ example, which can be used by policies (similar to <code>tags</code>).</p>
     <div class="doc doc-contents first">
 
 
+
         <p>A tool call, as a part of a query answer.</p>
 
 
@@ -2468,7 +2472,7 @@ example, which can be used by policies (similar to <code>tags</code>).</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/demos.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">22</span>
 <span class="normal">23</span>
@@ -2635,6 +2639,7 @@ In addition, instructions can error or get stuck.</p>
     <div class="doc doc-contents first">
 
 
+
         <p>Walk through the tree, using local node navigation functions along
 with the content of the demonstration's <code>query</code> section to answer
 queries.</p>
@@ -2661,7 +2666,7 @@ until: When provided, the walk stops when the current node
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/demos.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">265</span>
 <span class="normal">266</span>
@@ -2752,6 +2757,7 @@ until: When provided, the walk stops when the current node
     <div class="doc doc-contents first">
 
 
+
         <p>Do not move but fail if the current node is <em>not</em> a success leaf.</p>
 
 
@@ -2761,7 +2767,7 @@ until: When provided, the walk stops when the current node
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/demos.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">328</span>
 <span class="normal">329</span>
@@ -2818,6 +2824,7 @@ until: When provided, the walk stops when the current node
     <div class="doc doc-contents first">
 
 
+
         <p>Do not move but fail if the current node is <em>not</em> a failure node
 (i.e., a leaf node that is not a success leaf).</p>
 
@@ -2828,7 +2835,7 @@ until: When provided, the walk stops when the current node
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/demos.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">337</span>
 <span class="normal">338</span>
@@ -2885,6 +2892,7 @@ until: When provided, the walk stops when the current node
 
 
     <div class="doc doc-contents first">
+
 
 
         <p>Select a particular local space of the current node, using a
@@ -2946,7 +2954,7 @@ instruction fails if this space is induced by a query).</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/demos.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">291</span>
 <span class="normal">292</span>
@@ -3033,6 +3041,7 @@ instruction fails if this space is induced by a query).</p>
     <div class="doc doc-contents first">
 
 
+
         <p>Go to a child of the current node, as specified by a hint-based
 value reference.</p>
 
@@ -3068,7 +3077,7 @@ value reference.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/demos.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">315</span>
 <span class="normal">316</span>
@@ -3133,6 +3142,7 @@ value reference.</p>
     <div class="doc doc-contents first">
 
 
+
         <p>Save the current node under a given name.</p>
 
 
@@ -3142,7 +3152,7 @@ value reference.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/demos.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">347</span>
 <span class="normal">348</span>
@@ -3199,6 +3209,7 @@ value reference.</p>
     <div class="doc doc-contents first">
 
 
+
         <p>Go to a tree node that was previously saved under a given name.</p>
 
 
@@ -3208,7 +3219,7 @@ value reference.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/demos.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">356</span>
 <span class="normal">357</span>
@@ -3319,6 +3330,7 @@ which induces a space that is itself described by a series of tags
     <div class="doc doc-contents first">
 
 
+
         <p>A tag selector consists in a tag along with an optional occurence
 number.</p>
 
@@ -3367,7 +3379,7 @@ the selector does not match the first occurence of the tag
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/demos.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">231</span>
 <span class="normal">232</span>
@@ -3440,6 +3452,7 @@ the selector does not match the first occurence of the tag
     <div class="doc doc-contents first">
 
 
+
         <p>A node selector that matches a node within a particular space of the
 surrounding tree.</p>
 
@@ -3488,7 +3501,7 @@ aforementioned space.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/demos.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">248</span>
 <span class="normal">249</span>

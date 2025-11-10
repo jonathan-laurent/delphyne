@@ -1570,6 +1570,7 @@
     <div class="doc doc-contents first">
 
 
+
         <p>Context information available to all commands.</p>
 <p>This information is usually specified in <code>delphyne.yaml</code> project
 files, and also locally in <code>@config</code> blocks. All values have
@@ -1834,7 +1835,7 @@ possibly after other comments.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/execution_contexts.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 31</span>
 <span class="normal"> 32</span>
@@ -2166,7 +2167,7 @@ possibly after other comments.</p>
         <p>Make all paths absolute given a path to the workspace root.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/execution_contexts.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">109</span>
 <span class="normal">110</span>
@@ -2332,6 +2333,7 @@ possibly after other comments.</p>
               Bases: <code><span title="typing.Protocol">Protocol</span></code></p>
 
 
+
         <p>Context object accessible to all tasks for reporting progress and
 intermediate results.</p>
 <p>Most tasks operate by <em>pushing</em> status messages and intermediate (or
@@ -2347,7 +2349,7 @@ Optionally, tasks can also register functions that can be used for
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/tasks.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">30</span>
 <span class="normal">31</span>
@@ -2695,7 +2697,7 @@ instead of abruptly interrupting it.</p>
         <p>Non-existing directories are created automatically.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/tasks.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">178</span>
 <span class="normal">179</span>
@@ -2966,6 +2968,7 @@ instead of abruptly interrupting it.</p>
               Bases: <code><span title="typing.Generic">Generic</span>[<span title="delphyne.stdlib.tasks.T">T</span>]</code></p>
 
 
+
         <p>Outcome of executing a command.</p>
 
 
@@ -2975,7 +2978,7 @@ instead of abruptly interrupting it.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/tasks.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
 <span class="normal">113</span>
@@ -3053,7 +3056,7 @@ instead of abruptly interrupting it.</p>
 specification.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/commands/run_strategy.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">344</span>
 <span class="normal">345</span>
@@ -3156,6 +3159,7 @@ specification.</p>
 
 
     <div class="doc doc-contents first">
+
 
 
         <p>Arguments for the <a class="autorefs autorefs-internal" title="run_strategy" href="#delphyne.stdlib.commands.run_strategy.run_strategy"><code>run_strategy</code></a> command that runs an oracular
@@ -3388,7 +3392,7 @@ particularly useful for making commands deterministic.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/commands/run_strategy.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">285</span>
 <span class="normal">286</span>
@@ -3562,7 +3566,7 @@ particularly useful for making commands deterministic.</p>
         <p>A command for answering a query. See <code>AnswerQueryArgs</code>.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/commands/answer_query.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">133</span>
 <span class="normal">134</span>
@@ -3615,6 +3619,7 @@ particularly useful for making commands deterministic.</p>
 
 
     <div class="doc doc-contents first">
+
 
 
         <p>Arguments for the <code>answer_query</code> command.</p>
@@ -3765,7 +3770,7 @@ level will be ignored.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/commands/answer_query.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">24</span>
 <span class="normal">25</span>

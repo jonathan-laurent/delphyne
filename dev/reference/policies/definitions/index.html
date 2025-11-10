@@ -1305,6 +1305,7 @@
               Bases: <code><span title="typing.Generic">Generic</span>[<span title="delphyne.core.policies.E">E</span>, <span title="delphyne.core.policies.N">N</span>, <span title="delphyne.core.policies.P">P</span>]</code>, <code><span title="abc.ABC">ABC</span></code></p>
 
 
+
         <p>A policy maps a tree with a given signature (contravariant parameter
 N) and inner policy type (covariant parameter P) to a search stream.</p>
 <div class="admonition note">
@@ -1320,7 +1321,7 @@ N) and inner policy type (covariant parameter P) to a search stream.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/policies.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">18</span>
 <span class="normal">19</span>
@@ -1387,6 +1388,7 @@ N) and inner policy type (covariant parameter P) to a search stream.</p>
               Bases: <code><span title="typing.Generic">Generic</span>[<span title="delphyne.core.policies.E">E</span>, <span title="delphyne.core.policies.N">N</span>]</code>, <code><span title="abc.ABC">ABC</span></code></p>
 
 
+
         <p>A search policy takes as arguments a tree with a given signature
 (covariant type parameter <code>N</code>), a global policy environment, and an
 inner policy with appropriate type, and returns a search stream.</p>
@@ -1398,7 +1400,7 @@ inner policy with appropriate type, and returns a search stream.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/policies.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">33</span>
 <span class="normal">34</span>
@@ -1463,6 +1465,7 @@ inner policy with appropriate type, and returns a search stream.</p>
               Bases: <code><span title="typing.Generic">Generic</span>[<span title="delphyne.core.policies.E">E</span>]</code>, <code><span title="abc.ABC">ABC</span></code></p>
 
 
+
         <p>A prompting policy takes as arguments a query (attached to a
 specific node) and a global policy environment, and returns a search
 stream.</p>
@@ -1474,7 +1477,7 @@ stream.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/policies.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">47</span>
 <span class="normal">48</span>

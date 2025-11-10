@@ -2482,7 +2482,7 @@
     </table>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">20</span>
 <span class="normal">21</span>
@@ -2549,6 +2549,7 @@ for readability and expressing intent.</p>
     <div class="doc doc-contents first">
 
 
+
         <p>Abstract base class for node metadata.</p>
 <p>Nodes can feature fields with arbitrary metadata accessible to
 policies (e.g., <code>meta</code> field of <a class="autorefs autorefs-internal" title="Branch
@@ -2568,7 +2569,7 @@ accidentally passing uninstantiated parametric inner policy fields.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">44</span>
 <span class="normal">45</span>
@@ -2620,6 +2621,7 @@ accidentally passing uninstantiated parametric inner policy fields.</p>
               Bases: <code><span title="typing.Generic">Generic</span>[<span title="delphyne.stdlib.nodes.T_inv">T_inv</span>]</code></p>
 
 
+
         <p>A wrapper around a global space element reference that carries
 phantom type information.</p>
 <p>See <a class="autorefs autorefs-internal" title="branch" href="#delphyne.stdlib.nodes.branch"><code>branch</code></a> for an example of usage.</p>
@@ -2631,7 +2633,7 @@ phantom type information.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">66</span>
 <span class="normal">67</span>
@@ -2698,6 +2700,7 @@ phantom type information.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="Node (delphyne.core.Node)" href="../../strategies/trees/#delphyne.Node">Node</a></code></p>
 
 
+
         <p>Base class for skippable nodes that contain meta-information and can
 be safely skipped by policies.</p>
 <p>Many standard policies such as <a class="autorefs autorefs-internal" title="dfs" href="../algorithms/#delphyne.stdlib.search.dfs.dfs"><code>dfs</code></a> handle such nodes by default.
@@ -2713,7 +2716,7 @@ skippable since eliminating value information must be explicit. The
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 84</span>
 <span class="normal"> 85</span>
@@ -2801,6 +2804,7 @@ skippable since eliminating value information must be explicit. The
               Bases: <code><a class="autorefs autorefs-internal" title="Node (delphyne.core.Node)" href="../../strategies/trees/#delphyne.Node">Node</a></code></p>
 
 
+
         <p>The standard <a class="autorefs autorefs-internal" title="Branch
 
 
@@ -2817,7 +2821,7 @@ over elements of an opaque space.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
 <span class="normal">113</span>
@@ -3026,7 +3030,7 @@ space of candidates along with the chosen element.</p>
     </table>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">152</span>
 <span class="normal">153</span>
@@ -3130,6 +3134,7 @@ space of candidates along with the chosen element.</p>
    (delphyne.stdlib.nodes.Branch)" href="#delphyne.stdlib.nodes.Branch">Branch</a></code></p>
 
 
+
         <p>A degenerate branching node for which only one candidate is to be
 explored, allowing to extract an element from an opaque space without
 actual branching.</p>
@@ -3149,7 +3154,7 @@ performed (policies can choose to disregard this hint).</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">195</span>
 <span class="normal">196</span>
@@ -3295,7 +3300,7 @@ inference when necessary.</p>
     </table>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">208</span>
 <span class="normal">209</span>
@@ -3367,6 +3372,7 @@ inference when necessary.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="Node (delphyne.core.Node)" href="../../strategies/trees/#delphyne.Node">Node</a></code></p>
 
 
+
         <p>The standard <a class="autorefs autorefs-internal" title="Fail
 
 
@@ -3382,7 +3388,7 @@ inference when necessary.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">237</span>
 <span class="normal">238</span>
@@ -3497,7 +3503,7 @@ result in a no-op at runtime.</p>
 </div>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">273</span>
 <span class="normal">274</span>
@@ -3596,7 +3602,7 @@ result in a no-op at runtime.</p>
 </div>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">300</span>
 <span class="normal">301</span>
@@ -3675,6 +3681,7 @@ result in a no-op at runtime.</p>
    (delphyne.stdlib.nodes.Skippable)" href="#delphyne.stdlib.nodes.Skippable">Skippable</a></code></p>
 
 
+
         <p>The standard <a class="autorefs autorefs-internal" title="Feedback
 
 
@@ -3689,7 +3696,7 @@ result in a no-op at runtime.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/hindsight_feedback.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">67</span>
 <span class="normal">68</span>
@@ -3749,6 +3756,7 @@ result in a no-op at runtime.</p>
    (delphyne.stdlib.hindsight_feedback.Feedback)" href="#delphyne.stdlib.hindsight_feedback.Feedback">Feedback</a></code></p>
 
 
+
         <p>Feedback source.</p>
 
 
@@ -3758,7 +3766,7 @@ result in a no-op at runtime.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/hindsight_feedback.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">74</span>
 <span class="normal">75</span>
@@ -3824,6 +3832,7 @@ result in a no-op at runtime.</p>
    (delphyne.stdlib.hindsight_feedback.Feedback)" href="#delphyne.stdlib.hindsight_feedback.Feedback">Feedback</a></code></p>
 
 
+
         <p>Handler for backpropagating feedback.</p>
 
 
@@ -3833,7 +3842,7 @@ result in a no-op at runtime.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/hindsight_feedback.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">84</span>
 <span class="normal">85</span>
@@ -3899,7 +3908,8 @@ result in a no-op at runtime.</p>
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/hindsight_feedback.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">50</span>
 <span class="normal">51</span>
@@ -3959,7 +3969,8 @@ result in a no-op at runtime.</p>
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/hindsight_feedback.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">21</span>
 <span class="normal">22</span>
@@ -4022,7 +4033,8 @@ result in a no-op at runtime.</p>
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/hindsight_feedback.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">26</span>
 <span class="normal">27</span>
@@ -4085,7 +4097,8 @@ result in a no-op at runtime.</p>
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/hindsight_feedback.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">31</span>
 <span class="normal">32</span>
@@ -4148,7 +4161,8 @@ result in a no-op at runtime.</p>
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/hindsight_feedback.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">36</span>
 <span class="normal">37</span>
@@ -4208,7 +4222,7 @@ result in a no-op at runtime.</p>
     <div class="doc doc-contents first">
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/hindsight_feedback.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
 <span class="normal">57</span>
@@ -4249,7 +4263,7 @@ result in a no-op at runtime.</p>
     <div class="doc doc-contents first">
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/hindsight_feedback.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 99</span>
 <span class="normal">100</span>
@@ -4299,7 +4313,7 @@ result in a no-op at runtime.</p>
     <div class="doc doc-contents first">
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/hindsight_feedback.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">106</span>
 <span class="normal">107</span>
@@ -4346,7 +4360,7 @@ result in a no-op at runtime.</p>
   " href="#delphyne.stdlib.hindsight_feedback.Feedback"><code>Feedback</code></a> effect, by removing all feedback nodes.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/hindsight_feedback.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">120</span>
 <span class="normal">121</span>
@@ -4408,6 +4422,7 @@ result in a no-op at runtime.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="Node (delphyne.core.Node)" href="../../strategies/trees/#delphyne.Node">Node</a></code></p>
 
 
+
         <p>The standard <a class="autorefs autorefs-internal" title="Message
 
 
@@ -4429,7 +4444,7 @@ causing the same message to be repeatedly printed.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">330</span>
 <span class="normal">331</span>
@@ -4608,7 +4623,7 @@ result in a no-op at runtime.</p>
 </div>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">359</span>
 <span class="normal">360</span>
@@ -4737,7 +4752,7 @@ severity level is specified in the message node.</p>
     </table>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">382</span>
 <span class="normal">383</span>
@@ -4823,6 +4838,7 @@ severity level is specified in the message node.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="Node (delphyne.core.Node)" href="../../strategies/trees/#delphyne.Node">Node</a></code></p>
 
 
+
         <p>The standard <a class="autorefs autorefs-internal" title="Factor
 
 
@@ -4850,7 +4866,7 @@ whole node is ignored.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">418</span>
 <span class="normal">419</span>
@@ -5017,7 +5033,7 @@ result in a no-op at runtime.</p>
 </div>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">446</span>
 <span class="normal">447</span>
@@ -5106,6 +5122,7 @@ result in a no-op at runtime.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="Node (delphyne.core.Node)" href="../../strategies/trees/#delphyne.Node">Node</a></code></p>
 
 
+
         <p>The standard <a class="autorefs autorefs-internal" title="Value
 
 
@@ -5127,7 +5144,7 @@ the whole value of the branch instead of just multiplying it.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">484</span>
 <span class="normal">485</span>
@@ -5227,7 +5244,7 @@ result in a no-op at runtime.</p>
 </div>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">506</span>
 <span class="normal">507</span>
@@ -5300,7 +5317,7 @@ result in a no-op at runtime.</p>
   " href="#delphyne.stdlib.nodes.Value"><code>Value</code></a> effect.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">528</span>
 <span class="normal">529</span>
@@ -5414,7 +5431,7 @@ acceptable.</p>
     branching can happen on value estimation.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">547</span>
 <span class="normal">548</span>
@@ -5544,6 +5561,7 @@ acceptable.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="Node (delphyne.core.Node)" href="../../strategies/trees/#delphyne.Node">Node</a></code></p>
 
 
+
         <p>The standard <a class="autorefs autorefs-internal" title="Join
 
 
@@ -5565,7 +5583,7 @@ node features a sequence of embedded trees.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">605</span>
 <span class="normal">606</span>
@@ -5727,7 +5745,7 @@ arbitrary metadata accessible to search policies.</p>
     </table>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">625</span>
 <span class="normal">626</span>
@@ -5789,7 +5807,7 @@ arbitrary metadata accessible to search policies.</p>
     <div class="doc doc-contents first">
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/nodes.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">645</span>
 <span class="normal">646</span>
@@ -5865,6 +5883,7 @@ arbitrary metadata accessible to search policies.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="Node (delphyne.core_and_base.Node)" href="../../strategies/trees/#delphyne.Node">Node</a></code></p>
 
 
+
         <p>The standard <a class="autorefs autorefs-internal" title="Compute
 
 
@@ -5904,7 +5923,7 @@ Answers</code> code action from Delphyne's VSCode extension).</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 46</span>
 <span class="normal"> 47</span>
@@ -6173,7 +6192,7 @@ inference when necessary.</p>
     </table>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">119</span>
 <span class="normal">120</span>
@@ -6397,7 +6416,7 @@ than those specified with the <code>override_args</code> argument of
     </table>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
 <span class="normal">168</span>
@@ -6606,6 +6625,7 @@ than those specified with the <code>override_args</code> argument of
               Bases: <code><span title="delphyne.core_and_base.PseudoQuery">PseudoQuery</span>[<span title="object">object</span>]</code></p>
 
 
+
         <p>A special query that represents a computation.</p>
 <p>Returns a parsed JSON value.</p>
 
@@ -6652,7 +6672,7 @@ than those specified with the <code>override_args</code> argument of
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/computations.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">20</span>
 <span class="normal">21</span>
@@ -6746,6 +6766,7 @@ than those specified with the <code>override_args</code> argument of
               Bases: <code><a class="autorefs autorefs-internal" title="Node (delphyne.core_and_base.Node)" href="../../strategies/trees/#delphyne.Node">Node</a></code></p>
 
 
+
         <p>The standard "Data" effect.</p>
 <p>This effect allows loading external data. Strategies must be
 monotonic with respect to data, meaning that adding a new data file
@@ -6760,7 +6781,7 @@ growing a database of learned facts.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/data.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 94</span>
 <span class="normal"> 95</span>
@@ -6938,7 +6959,7 @@ list. If provided, Pydantic is used to load the data.</p>
     </table>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/data.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">124</span>
 <span class="normal">125</span>
@@ -7054,6 +7075,7 @@ list. If provided, Pydantic is used to load the data.</p>
               Bases: <code><span title="Exception">Exception</span></code></p>
 
 
+
         <p>Exception raised when some data is not found.</p>
 
 
@@ -7063,7 +7085,7 @@ list. If provided, Pydantic is used to load the data.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/data.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">31</span>
 <span class="normal">32</span>
@@ -7127,7 +7149,7 @@ list. If provided, Pydantic is used to load the data.</p>
     <div class="doc doc-contents first">
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/data.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">177</span>
 <span class="normal">178</span>
@@ -7191,6 +7213,7 @@ list. If provided, Pydantic is used to load the data.</p>
               Bases: <code><a class="autorefs autorefs-internal" title="Node (delphyne.core_and_base.Node)" href="../../strategies/trees/#delphyne.Node">Node</a></code></p>
 
 
+
         <p>The standard <a class="autorefs autorefs-internal" title="Flag
 
 
@@ -7223,7 +7246,7 @@ since flag queries implement <code>AbstractQuery.finite_answer_set</code>).</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/flags.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">51</span>
 <span class="normal">52</span>
@@ -7350,7 +7373,7 @@ Python does not support higher-kinded types.</p>
 </div>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/flags.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 96</span>
 <span class="normal"> 97</span>
@@ -7408,7 +7431,7 @@ Python does not support higher-kinded types.</p>
     <div class="doc doc-contents first">
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/flags.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">113</span>
 <span class="normal">114</span>
@@ -7485,6 +7508,7 @@ Python does not support higher-kinded types.</p>
               Bases: <code><span title="delphyne.stdlib.queries.PseudoQuery">PseudoQuery</span>[<span title="delphyne.stdlib.flags.FlagQuery[T]">T</span>]</code></p>
 
 
+
         <p>Base class for flag queries.</p>
 <p>Type parameter <code>T</code> must be of the form <code>Literal[s1, ..., sn]</code> where
 <code>si</code> are string literals. The first value is considered the default.</p>
@@ -7496,7 +7520,7 @@ Python does not support higher-kinded types.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/flags.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
 <span class="normal">16</span>

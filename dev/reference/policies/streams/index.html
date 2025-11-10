@@ -1611,6 +1611,7 @@ the standard library).</p>
     <div class="doc doc-contents first">
 
 
+
         <p>An immutable datastructure for tracking spent budget as an infinite
 vector with finite support. Each dimension corresponds to a
 different metric (e.g., number of requests, price in dollars...)</p>
@@ -1655,7 +1656,7 @@ integers into floats when parsing serialized budget data.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/streams.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 52</span>
 <span class="normal"> 53</span>
@@ -1804,6 +1805,7 @@ integers into floats when parsing serialized budget data.</p>
     <div class="doc doc-contents first">
 
 
+
         <p>An immutable datastructure for representing a budget limit as an
 infinite vector with finite support.</p>
 <p>Elements outside of the finite support are associated an
@@ -1827,7 +1829,7 @@ infinite vector with finite support.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/streams.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">107</span>
 <span class="normal">108</span>
@@ -1898,6 +1900,7 @@ infinite vector with finite support.</p>
               Bases: <code><span title="abc.ABC">ABC</span></code></p>
 
 
+
         <p>Base class for search streams.</p>
 <p>A search stream must be capable of producing a search stream
 generator. The standard library contains a subclass with more
@@ -1915,7 +1918,7 @@ features (<a class="autorefs autorefs-internal" title="Stream
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/streams.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">246</span>
 <span class="normal">247</span>
@@ -1985,7 +1988,7 @@ features (<a class="autorefs autorefs-internal" title="Stream
 <code>Barrier</code> and <code>Spent</code> messages along with solutions.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/core/streams.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">255</span>
 <span class="normal">256</span>
@@ -2068,6 +2071,7 @@ stream protocol.</p>
     <div class="doc doc-contents first">
 
 
+
         <p>A solution yielded by a search stream, which combines a tracked
 value with optional metadata.</p>
 
@@ -2119,7 +2123,7 @@ value with optional metadata.</p>
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/streams.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">149</span>
 <span class="normal">150</span>
@@ -2186,6 +2190,7 @@ value with optional metadata.</p>
 
 
     <div class="doc doc-contents first">
+
 
 
         <p>Ask authorization for spending a given budget amount.</p>
@@ -2265,7 +2270,7 @@ the <a class="autorefs autorefs-internal" title="Stream
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/streams.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">164</span>
 <span class="normal">165</span>
@@ -2372,6 +2377,7 @@ the <a class="autorefs autorefs-internal" title="Stream
     <div class="doc doc-contents first">
 
 
+
         <p>Indicate that an actual amount of resources has been spent.</p>
 <p>Each <code>Spent</code> message is associated with a unique prior <code>Barrier</code>
 message that shares the same identifier.</p>
@@ -2436,7 +2442,7 @@ the <a class="autorefs autorefs-internal" title="Stream
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/streams.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">198</span>
 <span class="normal">199</span>
@@ -2539,6 +2545,7 @@ second one occurs before the <code>Spent</code> message associated with the firs
     <div class="doc doc-contents first">
 
 
+
         <p>Base class for valid search metadata.</p>
 <p>Search metadata can be attached to all solutions yielded by a search
 stream. See <a class="autorefs autorefs-internal" title="ProbInfo
@@ -2555,7 +2562,7 @@ stream. See <a class="autorefs autorefs-internal" title="ProbInfo
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/core/streams.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">129</span>
 <span class="normal">130</span>

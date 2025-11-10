@@ -1734,6 +1734,7 @@
               Bases: <code><a class="autorefs autorefs-internal" title="AbstractStream (delphyne.core.AbstractStream)" href="../../policies/streams/#delphyne.AbstractStream">AbstractStream</a>[<span title="delphyne.stdlib.streams.Stream[T]">T</span>]</code></p>
 
 
+
         <p>A search stream produced by a search policy or prompting policy.</p>
 <p>This class inherits <a class="autorefs autorefs-internal" title="AbstractStream" href="../../policies/streams/#delphyne.AbstractStream"><code>AbstractStream</code></a> and supports various methods
 and combinators for assembling streams, while guaranteeing adherence
@@ -1771,7 +1772,7 @@ to the <a class="autorefs autorefs-internal" title="delphyne.core.streams" href=
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 20</span>
 <span class="normal"> 21</span>
@@ -2248,7 +2249,7 @@ parent stream). See <code>Stream.all</code>.</p>
 </div>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">41</span>
 <span class="normal">42</span>
@@ -2337,7 +2338,7 @@ error and <code>N</code> is the concurrency level of the stream (1 if
 <code>Stream.parallel</code> is never used).</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">71</span>
 <span class="normal">72</span>
@@ -2389,7 +2390,7 @@ solutions can be returned, provided that no additional budget
 must be spent for generating them.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">85</span>
 <span class="normal">86</span>
@@ -2484,7 +2485,7 @@ termination, even if <code>n</code> is <code>None</code>.</p>
     </table>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 94</span>
 <span class="normal"> 95</span>
@@ -2567,7 +2568,7 @@ concatenate the resulting streams.</p>
 </code></pre>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
 <span class="normal">116</span>
@@ -2622,7 +2623,7 @@ concatenate the resulting streams.</p>
 stream terminates without yielding any solution.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">131</span>
 <span class="normal">132</span>
@@ -2662,7 +2663,7 @@ stream terminates without yielding any solution.</p>
         <p>Obtain all solutions from a stream.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">138</span>
 <span class="normal">139</span>
@@ -2713,7 +2714,7 @@ stopping right before a second spending request is made.</p>
 budget, and the remaining stream, if any.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">144</span>
 <span class="normal">145</span>
@@ -2785,7 +2786,7 @@ granted. This allows guaranteeing termination, even if an
 infinite collection of streams is passed.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">162</span>
 <span class="normal">163</span>
@@ -2859,7 +2860,7 @@ infinite collection of streams is passed.</p>
 interleaving the resulting solutions.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">181</span>
 <span class="normal">182</span>
@@ -2907,7 +2908,7 @@ interleaving the resulting solutions.</p>
 run the <code>fallback</code> stream.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">189</span>
 <span class="normal">190</span>
@@ -3067,7 +3068,7 @@ computation. This estimate is allowed to be inaccurate. See
     </table>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">387</span>
 <span class="normal">388</span>
@@ -3146,6 +3147,7 @@ computation. This estimate is allowed to be inaccurate. See
     <div class="doc doc-contents first">
 
 
+
         <p>Sentinel value indicating that a spending request was declined.</p>
 
 
@@ -3155,7 +3157,7 @@ computation. This estimate is allowed to be inaccurate. See
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">378</span>
 <span class="normal">379</span>
@@ -3213,6 +3215,7 @@ computation. This estimate is allowed to be inaccurate. See
     <div class="doc doc-contents first">
 
 
+
         <p>Wrapper for a function that maps a stream to another one, possibly
 depending on the global policy environment. Can be composed with
 policies, search policies and other stream transformers using the
@@ -3250,7 +3253,7 @@ policies, search policies and other stream transformers using the
 
 
 
-              <details class="quote">
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">220</span>
 <span class="normal">221</span>
@@ -3363,7 +3366,7 @@ policies, search policies and other stream transformers using the
         <p>Compose this transformer with another one.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">241</span>
 <span class="normal">242</span>
@@ -3427,7 +3430,7 @@ policies, search policies and other stream transformers using the
         <p>Stream transformer version of <code>Stream.take</code>.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">344</span>
 <span class="normal">345</span>
@@ -3482,7 +3485,7 @@ policies, search policies and other stream transformers using the
         <p>Stream transformer version of <code>Stream.with_budget</code>.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">332</span>
 <span class="normal">333</span>
@@ -3537,7 +3540,7 @@ policies, search policies and other stream transformers using the
 up to an (optional) limit.</p>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">357</span>
 <span class="normal">358</span>
@@ -3670,7 +3673,7 @@ additional parameters, and returns a stream generator.</p>
     </table>
 
 
-            <details class="quote">
+            <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">257</span>
 <span class="normal">258</span>
@@ -3756,7 +3759,8 @@ additional parameters, and returns a stream generator.</p>
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">202</span>
 <span class="normal">203</span>
@@ -3816,7 +3820,8 @@ additional parameters, and returns a stream generator.</p>
 
 
 
-              <details class="quote">
+
+              <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/streams.py</code></summary>
                 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">210</span>
 <span class="normal">211</span>
