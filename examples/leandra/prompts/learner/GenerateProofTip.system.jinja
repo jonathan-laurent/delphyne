@@ -1,0 +1,7 @@
+{{query.goal}}
+{{query.good_answer}}
+
+{% for ans, error in query.bad_answer %}
+{{ ans }}
+{{ error | yaml }}
+{% endfor %}

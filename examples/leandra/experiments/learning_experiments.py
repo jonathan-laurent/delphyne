@@ -2,12 +2,12 @@ from collections.abc import Sequence
 from dataclasses import dataclass, replace
 from functools import partial
 from pathlib import Path
-
-import lean_interact as li
-import minif2f
+from typing import Literal
 
 import delphyne as dp
 import delphyne.stdlib.experiments.learning_script as dl
+import lean_interact as li
+import minif2f
 
 TRAINING_THEOREMS = minif2f.load_minif2f("valid")
 TESTING_THEOREMS = minif2f.load_minif2f("test")
@@ -19,6 +19,7 @@ class ExperimentSettings:
     training_problems: list[str]
     testing_problems: list[str]
     output: str
+    mode: Literal["direct", "sketch", "both"]
     max_dollars_per_training_problem: float
     max_requests_per_training_problem: int
     max_dollars_per_testing_problem: float
@@ -47,7 +48,9 @@ def solve_problem(
         strategy="prove_theorem",
         args={"theorem": load_problem(problem_kind, problem_name)},
         policy="ProveTheoremPolicy",
-        policy_args={},  # We use default arguments
+        policy_args={
+            "mode": settings.mode,
+        },  # We use default arguments
         budget={
             dp.DOLLAR_PRICE: max_dollars_per_problem,
             dp.NUM_REQUESTS: max_requests_per_problem,
