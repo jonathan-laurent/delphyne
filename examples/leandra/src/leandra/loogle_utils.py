@@ -82,6 +82,7 @@ def query_loogle(request: str) -> LoogleResults:
                     # JSON responses (empty dictionaries?). We should
                     # figure out why those happen.
                     print(f"Failed to parse Loogle response: {data}")
+                    print(f"Original request: {request}")
                     return LoogleError(error="Loogle Server Failure")
                 if (
                     isinstance(results, LoogleHits)
