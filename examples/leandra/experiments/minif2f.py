@@ -2,6 +2,7 @@
 Utilities to work with the MiniF2F benchmark suite.
 """
 
+import re
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Literal
@@ -36,19 +37,33 @@ def load_theorems(file_content: str) -> Sequence[str]:
     Parse theorem blocks from a Lean file and return them as a list of
     strings.
     """
-    # Split on 'theorem' and filter out empty parts
-    parts = file_content.split("theorem ")
+    # Find 'theorem' occurrences that start at the beginning of a line.
+    # We'll consider a theorem block to end at the next blank line. This
+    # avoids pulling in trailing comments or text on the same line that
+    # shouldn't be part of the theorem. We operate on the original
+    # file_content (no upfront comment stripping) as requested.
+    pattern = re.compile(r"^theorem\b", re.MULTILINE)
+    matches = list(pattern.finditer(file_content))
     theorems: list[str] = []
 
-    for part in parts[1:]:  # Skip first part (before first theorem)
-        theorem = "theorem " + part
-        # Find where this theorem ends (next theorem or end of file)
-        next_theorem_pos = theorem.find(
-            "\ntheorem ", 8
-        )  # Start after 'theorem '
-        if next_theorem_pos != -1:
-            theorem = theorem[:next_theorem_pos]
-        theorems.append(theorem.strip())
+    for i, m in enumerate(matches):
+        start = m.start()
+        # Search for the next blank line after the match; if found, cut
+        # the theorem there. Otherwise fall back to the next theorem
+        # or end of file.
+        after = file_content[m.end() :]
+        blank_match = re.search(r"\n\s*\n", after)
+        if blank_match:
+            end = m.end() + blank_match.start()
+        else:
+            end = (
+                matches[i + 1].start()
+                if i + 1 < len(matches)
+                else len(file_content)
+            )
+
+        theorem = file_content[start:end].strip()
+        theorems.append(theorem)
 
     return theorems
 
@@ -96,5 +111,5 @@ def load_minif2f(split: Split) -> Benchmark:
 
 
 if __name__ == "__main__":
-    print(load_minif2f("test"))
-    print(load_minif2f("valid"))
+    assert len(load_minif2f("test")) == 244
+    assert len(load_minif2f("valid")) == 244
