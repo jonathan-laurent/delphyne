@@ -519,7 +519,9 @@ def _gather_tips(
             continue
         iter_dir = _iteration_folder(top_dir, iteration)
         result_file = el.result_file_path(iter_dir / ANALYZE_EXP_DIR, str(i))
-        tips = al.load_success_values_from_command_file(result_file, Tip)
+        tips = al.load_success_values_from_command_file(
+            result_file, Sequence[Tip]
+        )[0]
         all_tips.extend(tips)
     return all_tips
 
