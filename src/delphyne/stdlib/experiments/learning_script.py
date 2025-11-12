@@ -692,6 +692,14 @@ def gather_feedback_per_query(
         filter_sources=filter_sources,
         filter_backprop_handlers=filter_backprop_handlers,
     ):
+
+        def unparse(v: Any) -> dp.Answer:
+            ans = f.query.unparse(v)
+            assert ans is not None, (
+                f"Cannot unparse answer to {type(f.query.query_name())}: {v}"
+            )
+            return ans
+
         if f.answer_id not in feedback:
             serialized = dp.SerializedQuery.make(f.query)
             feedback[f.answer_id] = QueryFeedback(
@@ -707,10 +715,13 @@ def gather_feedback_per_query(
                 (f.answer, f.feedback.error)
             )
         elif isinstance(f.feedback, hf.BetterValue):
-            feedback[f.answer_id].good_answers.append(f.feedback.value)
+            assert isinstance(f.answer, dp.Answer)
+            feedback[f.answer_id].good_answers.append(
+                unparse(f.feedback.value)
+            )
         elif isinstance(f.feedback, hf.BadValueAlso):
             feedback[f.answer_id].bad_answers.append(
-                (f.feedback.value, f.feedback.error)
+                (unparse(f.feedback.value), f.feedback.error)
             )
     return list(feedback.values())
 
@@ -783,9 +794,8 @@ class FeedbackFilteringSettings:
             after the `max_per_problem` filter is applied.
         max_wrong_answers: Maximum number of wrong answers per feedback
             item. If there are more, a random subset must be selected.
-        ensure_one_good_answer_exactly: Whether to ensure that exactly one
-            good answer is present for each feedback item. (A runtime
-            error must be raised if this condition is violated.)
+        ensure_one_good_answer_exactly: Discard items that have multiple
+            correct answers and select the first one if there are multiple.
     """
 
     max_per_problem: RandomSelection
@@ -842,6 +852,21 @@ def filter_feedback(
     for qtype, items in by_type.items():
         cfg = settings[qtype]
 
+        # 0) If ensure_one_good_answer_exactly is set, filter and validate
+        if cfg.ensure_one_good_answer_exactly:
+            filtered_items: list[QueryFeedback] = []
+            for it in items:
+                if len(it.good_answers) == 0:
+                    # Drop items with no good answers
+                    continue
+                elif len(it.good_answers) > 1:
+                    # Select the first good answer only
+                    it = replace(it, good_answers=[it.good_answers[0]])
+                    filtered_items.append(it)
+                else:
+                    filtered_items.append(it)
+            items = filtered_items
+
         # 1) Per-problem selection
         by_problem: dict[str, list[QueryFeedback]] = {}
         for it in items:
@@ -865,16 +890,6 @@ def filter_feedback(
             bad = it.bad_answers
             if len(bad) > cfg.max_wrong_answers:
                 bad = rng.sample(bad, cfg.max_wrong_answers)
-            # Optionally ensure exactly one good answer
-            if (
-                cfg.ensure_one_good_answer_exactly
-                and len(it.good_answers) != 1
-            ):
-                raise RuntimeError(
-                    "Expected exactly one good answer for query "
-                    f"{it.query.name} in problem '{it.problem_name}', "
-                    f"found {len(it.good_answers)}"
-                )
             # Append a fresh QueryFeedback with trimmed bad answers
             result.append(
                 QueryFeedback(
