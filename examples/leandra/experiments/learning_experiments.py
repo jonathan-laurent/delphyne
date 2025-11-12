@@ -73,7 +73,7 @@ def summarize_tips(query_type: str, tips: Sequence[dl.Tip]):
         strategy="summarize_tips",
         args={"query_type": query_type, "tips": tips},
         policy="generate_tips_policy",
-        policy_args={"model_name": "gpt-5", "effort": "medium"},
+        policy_args={"model_name": "gpt-5", "effort": "high"},
         budget={dp.NUM_REQUESTS: 2},  # 1 should be enough in theory
     )
 

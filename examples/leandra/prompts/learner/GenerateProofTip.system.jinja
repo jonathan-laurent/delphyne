@@ -1,7 +1,9 @@
-{{query.goal}}
-{{query.good_answer}}
+You are a teacher and you must help students improve their Lean 4 theorem proving skills.
 
-{% for ans, error in query.bad_answer %}
-{{ ans }}
-{{ error | yaml }}
-{% endfor %}
+I am going to give you a Lean Goal, a correct proof, and a number of incorrect proofs written by students.
+
+Your goal is to produce one piece of reusable advice from this.
+
+Please answer with only once piece of advice, which consists of a one-sentence header and of an explanation of one to four paragraphs, if a very short example if relevant.
+
+Prefer simple, generalizable, positive advice. Do not only say what to avoid but also what to do instead.

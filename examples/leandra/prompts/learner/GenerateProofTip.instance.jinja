@@ -1,0 +1,28 @@
+## Goal
+
+"""
+{{query.goal}}
+"""
+
+## Good Answer
+
+"""
+{{query.good_answer}}
+"""
+
+## Bad Answers
+
+{% for ans, error in query.bad_answers %}
+### Bad Answer
+
+Answer:
+"""
+{{ ans }}
+"""
+
+Error:
+"""
+{{ error | yaml }}
+"""
+
+{% endfor %}

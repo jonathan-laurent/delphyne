@@ -22,7 +22,7 @@ def generate_tips(
             GenerateProofTip(
                 query.goal,
                 good_answer=_answer_text(feedback.good_answers[0]),
-                bad_answer=[
+                bad_answers=[
                     (_answer_text(ans), err)
                     for ans, err in feedback.bad_answers
                 ],
@@ -74,7 +74,7 @@ class GenerateSketchTip(dp.Query[Tips]):
 class GenerateProofTip(dp.Query[Tips]):
     goal: str
     good_answer: str
-    bad_answer: Sequence[tuple[str, dp.Error]]
+    bad_answers: Sequence[tuple[str, dp.Error]]
     __parser__ = dp.structured
 
 

@@ -1,0 +1,28 @@
+## Theorem
+
+"""
+{{query.theorem}}
+"""
+
+## Good Proof Sketch
+
+"""
+{{query.good_answer | yaml}}
+"""
+
+## Bad Proof Sketches
+
+{% for ans, error in query.bad_answers %}
+### Bad Sketch
+
+Sketch:
+"""
+{{ ans | yaml }}
+"""
+
+Error:
+"""
+{{ error | yaml }}
+"""
+
+{% endfor %}

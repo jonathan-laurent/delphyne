@@ -1,0 +1,13 @@
+{% if query.query_type == "ProveGoal" %}
+I have collected a large number of tips about proving goals in Lean 4.
+{% elif query.query_type == "SketchProof" %}
+I have collected a large number of tips about producing proof sketches in Lean 4 (i.e., decomposing the proof of a theorem in a series of intermediate steps).
+{% else %}
+{{ fail("Unknown query type: " ~ query.query_type) }}
+{% endif %}
+
+I want you to look at this feedback and summarize it, in the form of 15 general tips (each tip consists of a short header and an explanation of up to six paragraphs).
+
+Good tips must be clear, simple, and not overly specific. They must either address recurring advice or make clear but nonobvious remarks.
+
+You can ignore advice that is unclear or niche, and focus on producing high-quality, insightful tips.
