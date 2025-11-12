@@ -551,12 +551,16 @@ class LearningExperimentCLI:
         max_workers: int = 1,
         retry_errors: bool = False,
         interactive: bool = False,
+        force_summary: bool = False,
     ):
         """
         Solve training problems.
         """
         exp = self.experiment.training_experiment(iter)
         exp.load()
+        if force_summary:
+            exp.save_summary(ignore_missing=True)
+            return
         if retry_errors:
             exp.mark_errors_as_todos()
         exp.resume(max_workers=max_workers, interactive=interactive)
@@ -623,12 +627,16 @@ class LearningExperimentCLI:
         max_workers: int = 1,
         retry_errors: bool = False,
         interactive: bool = False,
+        force_summary: bool = False,
     ):
         """
         Solve testing problems.
         """
         exp = self.experiment.testing_experiment(iter)
         exp.load()
+        if force_summary:
+            exp.save_summary(ignore_missing=True)
+            return
         if retry_errors:
             exp.mark_errors_as_todos()
         exp.resume(max_workers=max_workers, interactive=interactive)
