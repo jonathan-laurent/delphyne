@@ -8,14 +8,14 @@ from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, replace
 from typing import Any, Literal, Never, assert_never, override
 
+import delphyne as dp
 import lean_interact.interface as li_intf
+from delphyne import Branch, Compute, Fail, Feedback, Join, Strategy, strategy
+
 import leandra.find_theorems as lft
 from leandra.dsl import LeanProof, LeanTheorem, ProofSketch, compile_sketch
 from leandra.find_theorems import TheoremRequest, find_theorem
 from leandra.tools import LeanResponse, run_lean_command
-
-import delphyne as dp
-from delphyne import Branch, Compute, Fail, Feedback, Join, Strategy, strategy
 
 DEFAULT_LEAN_TIMEOUT = 8.0
 MAX_HOLES = 10
@@ -108,7 +108,7 @@ def direct_proof(
     sketch = ProofSketch(steps=(), comment=None)
     compiled = compile_sketch(theorem, sketch, [None])
     response = yield from dp.compute(run_lean_command)(compiled)
-    assert not _has_errors(response)
+    assert not _has_errors(response), f"Invalid theorem:\n{theorem}\n{response}"
     assert len(response.sorries) == 1
     return sketch, [response.sorries[0].goal]
 
