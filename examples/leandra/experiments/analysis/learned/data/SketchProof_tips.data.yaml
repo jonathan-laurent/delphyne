@@ -1,0 +1,63 @@
+- name: 'Avoid ℕ subtraction: rewrite to an additive invariant and induct on that'
+  content: |-
+    Natural-number subtraction is partial and awkward in Lean. When a goal has terms like a^(n+1) − (n+2), recast it as an additive equality (move the subtrahend to the other side) and prove the cleaner statement by induction. For instance, define v n := u n + (n + c) so the recurrence on u turns into a simple multiplicative or additive recurrence on v, which is easy to solve by Nat.rec.
+    This both simplifies algebra (no case splits from n − 1) and exposes the right invariant: prove a closed form for v, then convert back to u by rearranging. The same idea works with helper sequences tailored to your recurrence so that the induction step is tautological.
+- name: Reduce set/finset goals to membership ↔, use extensionality, then compute
+  content: |-
+    For equalities of sets or finsets, first derive a clean membership characterization x ∈ S ↔ P x by rewriting definitions and applying standard lemmas. Then use Set.ext or Finset.ext to turn the goal into this ↔ pointwise. Once S is identified with a canonical finset (range, Icc, divisors, a small explicit list), you can reuse library lemmas for size and sums and let simp finish calculations.
+    When summing over complicated index sets (filters, preimages), do the same: classify membership with a ↔, replace the set/finset by extensionality, then compute the sum on the simple finset. For preimages and images, immediately peel membership with rcases hy with ⟨x, hx, rfl⟩ to convert a set-level statement into a pointwise one.
+    Staying entirely in the Finset world for sums (instead of mixing Set and .toFinset) makes simp and standard sum lemmas behave predictably.
+- name: Prove divisibility via modular congruence and do algebra modulo m
+  content: |-
+    To show m ∣ t, aim first to prove t ≡ 0 [MOD m] (Nat.ModEq m t 0). ModEq is compositional: start from a simple base congruence, then transport it using structural lemmas (.pow, .mul_left/right, .add_left/right, pow_mul, pow_succ). Chain congruences to reach your target expression, then convert a zero-congruence to divisibility at the very end.
+    This mirrors hand proofs in modular arithmetic, avoids expanding large exponents, and keeps side conditions (like positivity) out of the way until the final step.
+- name: In inductive divisibility proofs, extract a step identity and use dvd_add/dvd_mul
+  content: |-
+    Before the inductive step, isolate a clean algebraic update f (n+1) = f n + k * g n with a one-off lemma (prove it by ring_nf or rewriting). In the step, rewrite by this identity, use the IH to get m ∣ f n, and combine it with m ∣ k * g n (from dvd_mul_of_dvd_left/right or a trivial multiple like m ∣ m * t) via dvd_add.
+    Classic example: rewrite a^(n+1) − 1 as a * (a^n − 1) + (a − 1). The IH gives the first term divisible by the modulus; the second is usually obvious from the congruence hypothesis. This structure separates algebraic normalization from the divisibility propagation.
+- name: 'Align for cancellation: make the common part syntactically identical, then cancel'
+  content: |-
+    Cancellation lemmas (add_right_cancel, mul_left_cancel, etc.) fire when the shared structure is literally the same on both sides. Commute/associate terms and factor as needed so you reach x + t = y + t or a * t = a * u, and supply any side conditions (e.g., a ≠ 0 on Nat) before calling the cancel lemma.
+    Prefer eliminating factors by multiplying both sides to align terms instead of dividing (which introduces nonzeroness obligations). For combinatorial lemmas stated with succ, rewrite your expressions to the succ-shape first (e.g., via Nat.succ_pred_eq_of_pos) so they apply directly. With Equiv, use the canonical apply_symm_apply/symm_apply_apply lemmas and targeted rw’s instead of “applying a function to both sides.”
+- name: Specialize after side conditions, then compute nested pieces in small steps
+  content: |-
+    When a hypothesis has side conditions, prove them first for your concrete arguments and immediately specialize. This fixes the exact expression you must simplify and prevents clutter.
+    From there, compute inner subexpressions as separate have-bindings (a quotient, a floor/ceil, a bounded absolute value), so each step is small and reusable. Rewrite the main equality with these facts and finish with a routine tool (ring, norm_num, simp). Small, linear steps are easier for Lean to check and for you to debug.
+- name: Normalize algebraic equalities mechanically, then do the structural step
+  content: |-
+    When two equalities are the same up to harmless rearrangement, apply a simple function to both sides (congrArg) to subtract constants or clear denominators, and normalize with ring_nf. If fractions remain, scale both sides to clear them. Once you have a clean polynomial equation, do the structural move: factor, apply mul_eq_zero, or split cases.
+    For systems of linear relations, coerce to a field (ℚ/ℝ), rewrite so each variable has a single coefficient, and combine equations by addition/subtraction or linear_combination. After solving in the field, use norm_cast or injectivity of casts to return to ℕ.
+- name: Get injectivity on ℤ by one‑step growth and strictMono_int_of_lt_succ
+  content: To conclude a = b from f a = f b on integers, show strict growth by proving f (z + 1) > f z
+    for all z. Compute f (z+1) − f z explicitly and show it is positive everywhere; then strictMono_int_of_lt_succ
+    gives StrictMono f and injectivity. This replaces ad‑hoc casework with a uniform argument that often
+    boils down to a positivity bound on a simple polynomial.
+- name: Reparametrize and induct on a clean index (parity, tails, subsequences)
+  content: |-
+    When side conditions fragment the domain (Odd n, Even n, n ≥ k), reindex the relevant subsequence (odds as 1 + 2k, evens as 2k) and prove the step on that subsequence. Then do induction on the new index k. This removes troublesome n − 1/n − 2 arithmetic and turns the step into a plain k → k+1 transition with no subtraction.
+    Derive the subsequence step by feeding a carefully chosen n into your hypothesis and discharging the side conditions with small parity/inequality facts. Close the full claim by rewriting the original n in your parametrization.
+- name: Package recurrences with helper sequences or shift lemmas, then iterate
+  content: |-
+    Turn fiddly recurrences into reusable facts. For second‑difference style recurrences, define d n := a (n+1) − a n; prove d (n+1) = d n once and deduce d n is constant by induction. For fixed‑width recurrences starting at a threshold (e.g., ∀ n ≥ 5, …), extract a width‑k shift rule (like x (n+5) = −x n) by checking the first block of cases, then iterate it by a simple induction on the number of shifts.
+    Keep indices tame with simp and add_sub lemmas that normalize (n+k) − j to n + (k − j) and make sure threshold hypotheses (like k ≤ n+k) are supplied automatically.
+- name: Name repeated expressions with let and record basic facts up front
+  content: |-
+    Introduce short names for bulky, repeated subexpressions (let t := …) and rewrite your hypotheses/goals in terms of them. Immediately derive the simple properties you’ll need—positivity, nonnegativity, nonzeroness—so you can use division/cancellation lemmas without scrambling for side conditions later.
+    This reduces parenthesis noise, focuses algebra on a single symbol, and makes subsequent rewrites and calculations cleaner and safer.
+- name: Rewrite sums from pointwise identities and split systematically
+  content: |-
+    If you can relate summands pointwise (u n = v n + c), rewrite inside the sum using that identity and then use Finset.sum_add_distrib to split the sum. Evaluate the constant part with standard cardinality lemmas (e.g., card_range) and simplify the variable part using the original sum or IH.
+    This turns many “sum of a shifted function” goals into a standard chain: pointwise rewrite, split, compute constants, and close with simple arithmetic.
+- name: Cast to ℤ or a field to factor cleanly, then use positivity to pick the factor and cast back
+  content: |-
+    When subtraction/signs or factoring are needed, move from ℕ to ℤ early (exact_mod_cast or by exact_mod_cast) and push everything to one side to get = 0. Factor over ℤ and apply mul_eq_zero to split cases. Use simple positivity to rule out the wrong factor, then solve the remaining factor = 0 and return to ℕ via Int.ofNat.inj.
+    Similarly, some algebra is cleaner over a field: coerce to ℚ/ℝ, normalize with ring_nf, solve the equation, and then use norm_cast or cast injectivity to move back.
+- name: 'Induct from where the statement starts: use Nat.le_induction and a strong form'
+  content: |-
+    If your claim is only for n ≥ k, prove a strong statement P n with k ≤ n as a hypothesis and apply Nat.le_induction starting at k. The step keeps k ≤ m available, so you can derive inequalities the recurrence needs without juggling many base cases.
+    The final statement then follows by instantiating the strong form with your given k ≤ n. This mirrors mathematical “for all n ≥ k” induction and keeps proofs short and targeted.
+- name: Prepare prerequisites before using sqrt/log/floor/ceil, then use their characterization lemmas
+  content: |-
+    For square roots, extract 0 ≤ x or 0 ≤ a first and use Real.sqrt_eq_iff_sq_eq and sqr_sqrt to move cleanly between x^2 = a and x = sqrt a. When bounding roots, use Real.lt_sqrt and Real.sqrt_lt to reduce to squared inequalities, supplying the necessary nonnegativity hypotheses.
+    For logs, isolate side conditions in advance (0 < base, base ≠ 1, 0 < argument). Use Real.log_rpow to take logs of powers, get the equality into a cancellable form, and cancel with mul_right_cancel₀ using log ≠ 0 (from Real.log_pos_iff).
+    For floor/ceil, sandwich the number between consecutive integers and finish with Int.floor_eq_iff or Int.ceil_eq_iff. When square roots are involved, produce the bounds via the sqrt inequalities above and then apply the floor/ceil characterization.

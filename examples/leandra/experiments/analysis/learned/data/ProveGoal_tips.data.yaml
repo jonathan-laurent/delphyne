@@ -1,0 +1,60 @@
+- name: Use ↔ lemmas via .mp/.mpr (or .1/.2), not as functions
+  content: |-
+    Many important lemmas return an equivalence A ↔ B. To use them, first instantiate any parameters to obtain the ↔, then pick a direction with .mp (A → B) or .mpr (B → A); .1 and .2 are equivalent shorthands. Don’t try to “apply the lemma to a hypothesis” like a function.
+    This pattern shows up everywhere (divisibility, order facts, Real.sqrt/log lemmas, set membership equivalences). It both fixes type errors and makes the intended direction explicit.
+- name: 'Rewriting is syntactic: line up the pattern and choose the direction'
+  content: |-
+    rw/simpa match purely by syntax. First reshape the goal (or the hypothesis) so the lemma’s left-hand side literally appears, then rewrite in the place where that subterm occurs. Use associativity/commutativity (mul_assoc, add_comm, …) or distributivity (add_mul vs mul_add) to expose the exact pattern.
+    Always pick the direction that moves the goal toward something you already know. When a proof is off by definitional equalities, prefer simpa [helpful_lemmas] using h to normalize both sides at once.
+- name: Match lemma hypotheses exactly (types and side conditions)
+  content: |-
+    Read the statement you’re applying and supply precisely what it asks for: if it wants ≠ 0, derive it from positivity via ne_of_gt; if it wants facts in ℝ, give (0 : ℝ) < 2 (not a Nat inequality). Annotate numerals with the intended type when inference is ambiguous.
+    When Lean can’t infer an implicit parameter, pass it by name (lemma (q := …)) or expose implicits with @. Checking a lemma with #print (or ctrl/cmd-click) before use pays off: you’ll avoid mismatched arguments and missing side conditions.
+- name: 'Control casts: work in one type, then come back by injectivity'
+  content: |-
+    Avoid mixing ℕ, ℤ, and ℝ mid-proof. Cast early to a single target type and do all algebra there; when you need to return to ℕ, rewrite to a single cast (e.g., ← Nat.cast_add/← Nat.cast_mul) and use Nat.cast_injective (or Rat.cast_injective) on the resulting equality. Normalize casts before ring-like tactics with simp [Nat.cast_add, …].
+    For congruences, stay in ℕ if your goal is Nat.ModEq; introducing ℤ gratuitously causes type mismatches without adding power.
+- name: Use tactics inside a tactic block—don’t mix modes
+  content: |-
+    Commands like intro, cases, interval_cases, simp at, all_goals, constructor, etc. belong in a by … block. If most of your proof is term-style, open a small by block only where you need tactics and keep all branching inside it.
+    This avoids “unexpected token” and “unknown tactic” errors and makes case-splitting proofs predictable.
+- name: Prove finset equalities with Finset.ext, then simp membership
+  content: |-
+    To show s = t, use apply Finset.ext; intro x to reduce to x ∈ s ↔ x ∈ t. Immediately simp with the right membership lemmas to expose the concrete propositions you can reason about. After simplification, your given equivalences usually close the goal.
+    This is cleaner and more robust than trying to massage both sides as raw finset expressions.
+- name: Turn set-builder membership into the predicate, then split it
+  content: |-
+    Goals of the form x ∈ {a | P a} are definitionally P x. Start by exposing the predicate (simp [Set.mem_setOf] or change P x), then split conjunctions with constructor and solve each subgoal directly (often with simp or norm_num).
+    Rewriting or constructing inside the membership wrapper is fragile; work on the underlying proposition instead.
+- name: 'For big-operator notation: open the scope or use Finset.sum explicitly'
+  content: |-
+    If ∑/∏ notation is fussy (especially inside term arguments), enable it with open scoped BigOperators (and sometimes open BigOperators), or write the explicit combinator: Finset.sum s (fun k => f k). The explicit form is robust in places like abs_nonneg (…).
+    Match the exact syntax in your goal/hypotheses (∑ k ∈ s, … vs ∑ k in s, …) to avoid parser confusion.
+- name: Let numeric automation do the work (norm_num/decide), then stop
+  content: |-
+    For concrete arithmetic (ZMod, modular arithmetic, small sums/products, primality of a numeral), norm_num is the right tool; decide can also finish fully concrete decidable goals. Prefer these over manual chains of rw/simp.
+    If a simplification already solves the goal, don’t add rfl or extra tactics afterwards. “No goals to be solved” usually means your previous step finished the proof—end there.
+- name: Shape inequalities into standard forms before applying lemmas
+  content: |-
+    Clear known positive factors with mul_lt_mul_of_pos_left/right (or the ≤ variants) instead of dividing. Turn X ≤ Y into 0 ≤ Y − X when that aligns with algebra you can control; prove nonnegativity via identities (field_simp to clear denominators, ring for algebra) and standard facts like sq_nonneg/sq_pos_of_ne_zero.
+    A small calc chain with add_le_add_left and a final simpa often reads better than ad‑hoc rewrites.
+- name: Analyze small naturals with interval_cases (after making a bound)
+  content: |-
+    Convert hypotheses like ¬ a ≤ n into n < a (lt_of_not_ge or lt_iff_not_ge.mpr), or supply bounds like n % k < k. Then run interval_cases n (or on the mod expression) to enumerate possibilities and finish branches with simp/norm_num.
+    This beats delicate arithmetic and produces short, mechanical proofs.
+- name: Set up induction so the IH matches your step, and simplify first
+  content: |-
+    Choose the induction motive so your IH has exactly the shape your step lemma needs (shift indices if necessary, e.g., prove ∀ t, P (t+1)). Generalize or revert unrelated hypotheses before starting induction so they don’t get baked into the IH.
+    In the succ case, unfold the recursive piece (e.g., sum_range_succ), apply the IH, then normalize casts/numerals with simp before calling ring/linarith.
+- name: Do modular arithmetic with Nat.ModEq and align shapes before transitivity
+  content: |-
+    Prefer Nat.ModEq (capital M) and its dot-notation operations: h.add_left/right, h.mul_left/right, h.pow, h.trans. First rearrange by ordinary equalities to make the term you want to rewrite appear, then apply the congruence. When chaining, rewrite each congruence so the shared side matches syntactically, then use .trans.
+    Stay in ℕ for Nat.ModEq; avoid mixing in ℤ unless you move the entire problem to Int.ModEq.
+- name: Use congrArg/apply_fun as lemmas, then simplify aggressively
+  content: |-
+    congrArg and apply_fun are term-level tools: produce a new equality by applying a function to both sides, then immediately simp to push the function through algebraic structure and compute constants. Close small gaps with simpa using ….
+    This pattern is especially effective with Real/Complex.re/im, inverses in ZMod, and polynomial evaluations.
+- name: Plan rewrites to match what you already have
+  content: |-
+    Before rewriting, decide which side to change so the goal becomes identical to a known hypothesis; prefer rewriting the goal over contorting the hypothesis, or vice versa, whichever aligns naturally. Use rw [h] at h₀ (or ←h) to change the statement that actually contains the subterm.
+    A few well-chosen rewrites that expose the right shape save you from brittle sequences and extra symm/rfl steps.

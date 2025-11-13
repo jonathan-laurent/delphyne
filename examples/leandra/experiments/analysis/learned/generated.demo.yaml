@@ -1,0 +1,3791 @@
+- query: ProveGoal
+  args:
+    goal: |-
+      k : ℕ
+      h₀ : k = 2008 ^ 2 + 2 ^ 2008
+      ⊢ 2008 ^ 2 ≡ 4 [MOD 10]
+    prefix: []
+  answers:
+    - answer: norm_num
+      meta:
+        problem: amc12a_2008_p15
+- query: ProveGoal
+  args:
+    goal: |-
+      n : ℕ
+      h₀ : 7 ∣ 2 ^ n - 1
+      pow3_one : 2 ^ 3 = 1
+      ord_dvd_three : orderOf 2 ∣ 3
+      two_ne_one : 2 ≠ 1
+      ⊢ orderOf 2 = 3
+    prefix: []
+  answers:
+    - answer: |-
+        have p3 : Nat.Prime 3 := by norm_num
+        have h := (Nat.dvd_prime p3).mp ord_dvd_three
+        cases h with
+          | inl h1 => have := (orderOf_eq_one_iff).mp h1; contradiction
+          | inr h2 => exact h2
+      meta:
+        problem: imo_1964_p1_1
+- query: ProveGoal
+  args:
+    goal: |-
+      a b c : ℂ
+      h₀ : a + b = 2 * c
+      h₁ : c = Complex.I
+      ⊢ a * c + b * c = -2
+    prefix: []
+  answers:
+    - answer: |-
+        rw [h₁] at h₀
+        rw [h₁]
+        rw [←add_mul]
+        rw [h₀]
+        have I_sq : Complex.I * Complex.I = -1 := by simp
+        rw [mul_assoc, I_sq]; simp
+      meta:
+        problem: algebra_manipexpr_apbeq2cceqiacpbceqm2
+- query: ProveGoal
+  args:
+    goal: |-
+      a b : ℕ
+      h₀ : Nat.Prime a
+      h₁ : Nat.Prime b
+      h₂ : Nat.Prime (a + b)
+      h₃ : Nat.Prime (a - b)
+      ⊢ b < a
+    prefix: []
+  answers:
+    - answer: |-
+        have hne : a - b ≠ 0 := Nat.Prime.ne_zero h₃
+        have hnot : ¬(b ≥ a) := by
+          intro hba
+          apply hne
+          rw [Nat.sub_eq_zero_iff_le]
+          exact hba
+        exact Nat.lt_of_not_ge hnot
+      meta:
+        problem: amc12b_2002_p11
+- query: ProveGoal
+  args:
+    goal: |-
+      n : ℕ
+      a : ℕ → ℝ
+      h₀ : ∀ (n : ℕ), |a n| < 1
+      h₁ : ∑ k ∈ Finset.range n, |a k| = 19 + |∑ k ∈ Finset.range n, a k|
+      ⊢ 19 ≤ ∑ k ∈ Finset.range n, |a k|
+    prefix: []
+  answers:
+    - answer: |-
+        have H : 0 ≤ |Finset.sum (Finset.range n) (fun k => a k)| := abs_nonneg (Finset.sum (Finset.range n) (fun k => a k))
+        rw [h₁]
+        exact le_add_of_nonneg_right H
+      meta:
+        problem: aime_1988_p4
+- query: ProveGoal
+  args:
+    goal: |-
+      S : Finset ℕ
+      h₀ : ∀ (n : ℕ), n ∈ S ↔ n ∣ 36
+      ⊢ S = Nat.divisors 36
+    prefix: []
+  answers:
+    - answer: |-
+        apply Finset.ext
+        intro n
+        simp [Nat.mem_divisors]
+        exact h₀ n
+      meta:
+        problem: mathd_numbertheory_32
+- query: ProveGoal
+  args:
+    goal: |-
+      a b : ℝ
+      h₀ : a ^ 2 + b ^ 2 = 2
+      ⊢ a * b ≤ 1
+    prefix: []
+  answers:
+    - answer: |-
+        have h1 : 0 ≤ a ^ 2 - 2 * a * b + b ^ 2 := by
+          have : 0 ≤ (a - b) ^ 2 := sq_nonneg (a - b)
+          calc
+            0 ≤ (a - b) ^ 2 := this
+            _ = a ^ 2 - 2 * a * b + b ^ 2 := by ring
+        have h2 : 2 * a * b ≤ a ^ 2 + b ^ 2 := by linarith [h1]
+        have : 2 * a * b ≤ 2 := by linarith [h2, h₀]
+        linarith
+      meta:
+        problem: algebra_sqineq_2unitcircatblt1
+- query: ProveGoal
+  args:
+    goal: |-
+      S : Finset ℕ
+      h₀ : ∀ (n : ℕ), n ∈ S ↔ 0 < n ∧ Nat.Prime (n ^ 2 + 2 - 3 * n)
+      mem3 : 3 ∈ S
+      ⊢ ∀ n ∈ S, 3 ≤ n
+    prefix: []
+  answers:
+    - answer: |-
+        intro n
+        intro hn
+        have ⟨pos, pr⟩ := (h₀ n).mp hn
+        have one_le := Nat.succ_le_of_lt pos
+        by_contra h
+        have n_le2 : n ≤ 2 := Nat.le_of_not_gt h
+        interval_cases n
+        all_goals
+          simp at *
+          exact pr.ne_zero rfl
+      meta:
+        problem: amc12b_2002_p3
+- query: ProveGoal
+  args:
+    goal: |-
+      x : ℝ
+      h₀ : 10 ^ x * 100 ^ (2 * x) = 1000 ^ 5
+      pos10 : 0 < 10
+      log_eq : Real.log (10 ^ x * 100 ^ (2 * x)) = Real.log (1000 ^ 5)
+      ⊢ Real.log (10 ^ x) + Real.log (100 ^ (2 * x)) = Real.log (1000 ^ 5)
+    prefix: []
+  answers:
+    - answer: |-
+        have hpos1 := Real.rpow_pos_of_pos (by norm_num : (10 : ℝ) > 0) x
+        have hpos2 := Real.rpow_pos_of_pos (by norm_num : (100 : ℝ) > 0) (2 * x)
+        have hnz1 := (ne_of_gt hpos1)
+        have hnz2 := (ne_of_gt hpos2)
+        rw [Real.log_mul hnz1 hnz2] at log_eq
+        exact log_eq
+      meta:
+        problem: amc12a_2016_p2
+- query: ProveGoal
+  args:
+    goal: |-
+      S : Finset ℕ
+      h₀ : ∀ (n : ℕ), n ∈ S ↔ 0 < n ∧ Nat.Prime (n ^ 2 + 2 - 3 * n)
+      mem3 : 3 ∈ S
+      ⊢ ∀ n ∈ S, 3 ≤ n
+    prefix: []
+  answers:
+    - answer: |-
+        intro n
+        intro hn
+        have ⟨npos, nprime⟩ := (h₀ n).mp hn
+        by_contra h
+        have nlt3 : n < 3 := lt_iff_not_ge.mpr h
+        interval_cases n
+        all_goals simp at *
+        all_goals contradiction
+      meta:
+        problem: amc12b_2002_p3
+- query: ProveGoal
+  args:
+    goal: |-
+      n : ℕ
+      base0 : ∑ k ∈ Finset.range 0, (2 * k + 3) = (0 + 1) ^ 2 - 1
+      ⊢ ∀ (n : ℕ), ∑ k ∈ Finset.range (n + 1), (2 * k + 3) = ∑ k ∈ Finset.range n, (2 * k + 3) + (2 * n + 3)
+    prefix: []
+  answers:
+    - answer: |-
+        intro n
+        simp [Finset.sum_range_succ]
+      meta:
+        problem: induction_sum2kp1npqsqm1
+- query: ProveGoal
+  args:
+    goal: |-
+      inv30 : 30 * 11 ≡ 1 [MOD 47]
+      to39 : 42 * 11 ≡ 39 [MOD 47]
+      ⊢ 39 ∈ {x | 30 * x ≡ 42 [MOD 47]}
+    prefix: []
+  answers:
+    - answer: |-
+        have h1 : 30 * 39 ≡ 30 * (42 * 11) [MOD 47] := by
+          grw [to39]
+        have h2 : 30 * (42 * 11) = 42 * (30 * 11) := by ring
+        rw [h2] at h1
+        grw [inv30] at h1
+        exact h1
+      meta:
+        problem: mathd_numbertheory_64
+- query: ProveGoal
+  args:
+    goal: |-
+      n : ℕ
+      base0 : ∑ k ∈ Finset.range 0, (2 * k + 3) = (0 + 1) ^ 2 - 1
+      ⊢ ∀ (n : ℕ), ∑ k ∈ Finset.range (n + 1), (2 * k + 3) = ∑ k ∈ Finset.range n, (2 * k + 3) + (2 * n + 3)
+    prefix: []
+  answers:
+    - answer: |-
+        intro m
+        rw [Finset.sum_range_succ]
+      meta:
+        problem: induction_sum2kp1npqsqm1
+- query: ProveGoal
+  args:
+    goal: |-
+      n : ℕ
+      h₀ : 0 < n
+      base_div : 9 ∣ 10 ^ 1 - 1
+      step_div : ∀ (k : ℕ), 9 ∣ 10 ^ k - 1 → 9 ∣ 10 ^ (k + 1) - 1
+      ⊢ ∀ (n : ℕ), 0 < n → 9 ∣ 10 ^ n - 1
+    prefix: []
+  answers:
+    - answer: |-
+        intro n
+        intro hn
+        cases n with
+          | zero => exact False.elim (Nat.lt_irrefl 0 hn)
+          | succ k =>
+            have helper : ∀ t, 9 ∣ 10 ^ (t + 1) - 1 := by
+              intro t
+              induction t with
+                | zero => exact base_div
+                | succ t ih => exact step_div (t + 1) ih
+            exact helper k
+      meta:
+        problem: induction_divisibility_9div10tonm1
+- query: ProveGoal
+  args:
+    goal: ⊢ 5 < √26
+    prefix: []
+  answers:
+    - answer: 'exact ( (Real.lt_sqrt (by norm_num : 0 ≤ (5 : ℝ))).mpr (by norm_num))'
+      meta:
+        problem: mathd_algebra_151
+- query: ProveGoal
+  args:
+    goal: |-
+      one_lt_a : ∀ (a b : ℝ), 1 < b ∧ b ≤ a → 1 < a
+      pos_logs : ∀ (a b : ℝ), 1 < b ∧ b ≤ a → 0 < Real.log a ∧ 0 < Real.log b
+      ⊢ ∀ (a b : ℝ),
+          1 < b ∧ b ≤ a → Real.logb a (a / b) + Real.logb b (b / a) = 2 - (Real.log b / Real.log a + Real.log a / Real.log b)
+    prefix: []
+  answers:
+    - answer: |-
+        intro a b h
+        have hb1 := h.left
+        have ha1 := one_lt_a a b h
+        have a_pos : 0 < a := by linarith
+        have b_pos : 0 < b := by linarith
+        let ⟨lapos, lbpos⟩ := pos_logs a b h
+        rw [Real.logb, Real.logb]
+        rw [Real.log_div (ne_of_gt a_pos) (ne_of_gt b_pos), Real.log_div (ne_of_gt b_pos) (ne_of_gt a_pos)]
+        field_simp [ne_of_gt lapos, ne_of_gt lbpos]
+        ring
+      meta:
+        problem: amc12a_2003_p24
+- query: ProveGoal
+  args:
+    goal: |-
+      f : ℝ → ℝ
+      k : ℝ
+      a b : ℕ
+      h₀ : ∀ (x : ℝ), f x = x ^ 2 - 63 * x + k
+      h₁ : f ↑a = 0 ∧ f ↑b = 0
+      h₂ : a ≠ b
+      h₃ : Nat.Prime a ∧ Nat.Prime b
+      sum_real : ↑a + ↑b = 63
+      k_is_prod : k = ↑a * ↑b
+      ⊢ a + b = 63
+    prefix: []
+  answers:
+    - answer: |-
+        rw [←Nat.cast_add a b] at sum_real
+        exact Nat.cast_injective sum_real
+      meta:
+        problem: amc12a_2002_p12
+- query: ProveGoal
+  args:
+    goal: |-
+      x : ℝ
+      h₀ : 10 ^ x * 100 ^ (2 * x) = 1000 ^ 5
+      ⊢ Real.log (10 ^ x) + Real.log (100 ^ (2 * x)) = Real.log (1000 ^ 5)
+    prefix: []
+  answers:
+    - answer: |-
+        have h := congrArg Real.log h₀
+        rw [Real.log_mul (by positivity) (by positivity)] at h
+        exact h
+      meta:
+        problem: amc12a_2016_p2
+- query: ProveGoal
+  args:
+    goal: |-
+      x : ℝ
+      h₀ : 10 ^ x * 100 ^ (2 * x) = 1000 ^ 5
+      pos10 : 0 < 10
+      eq_log : Real.log (10 ^ x * 100 ^ (2 * x)) = Real.log (1000 ^ 5)
+      ⊢ Real.log (10 ^ x) + Real.log (100 ^ (2 * x)) = Real.log (1000 ^ 5)
+    prefix: []
+  answers:
+    - answer: |-
+        have p1pos : 0 < (10 : ℝ) ^ x := by positivity
+        have p2pos : 0 < (100 : ℝ) ^ (2 * x) := by positivity
+        have p1nz : (10 : ℝ) ^ x ≠ 0 := ne_of_gt p1pos
+        have p2nz : (100 : ℝ) ^ (2 * x) ≠ 0 := ne_of_gt p2pos
+        rw [Real.log_mul p1nz p2nz] at eq_log
+        exact eq_log
+      meta:
+        problem: amc12a_2016_p2
+- query: ProveGoal
+  args:
+    goal: |-
+      x : NNReal
+      u : ℕ → NNReal
+      h₀ : ∀ (n : ℕ), u (n + 1) = NNReal.sqrt (x + u n)
+      h₁ : Filter.Tendsto u Filter.atTop (nhds 9)
+      cont : Continuous fun t => NNReal.sqrt (x + t)
+      tendsto_comp : Filter.Tendsto (fun n => NNReal.sqrt (x + u n)) Filter.atTop (nhds (NNReal.sqrt (x + 9)))
+      tendsto_tail : Filter.Tendsto (fun n => u (n + 1)) Filter.atTop (nhds 9)
+      tail_eq_comp : (fun n => u (n + 1)) = fun n => NNReal.sqrt (x + u n)
+      ⊢ 9 = NNReal.sqrt (x + 9)
+    prefix: []
+  answers:
+    - answer: |-
+        have h := tendsto_nhds_unique tendsto_comp (by rwa [tail_eq_comp] at tendsto_tail)
+        exact Eq.symm h
+      meta:
+        problem: mathd_algebra_31
+- query: ProveGoal
+  args:
+    goal: |-
+      S : Finset ℕ
+      h₀ : ∀ (n : ℕ), n ∈ S ↔ 0 < n ∧ Nat.Prime (n ^ 2 + 2 - 3 * n)
+      mem3 : 3 ∈ S
+      ⊢ ∀ n ∈ S, 3 ≤ n
+    prefix: []
+  answers:
+    - answer: |-
+        intro n
+        intro mem
+        have h := (h₀ n).mp mem
+        cases n with
+          | zero =>
+            have hnpos := h.left
+            exact False.elim (Nat.lt_irrefl 0 hnpos)
+          | succ k =>
+            have hkpos := h.left
+            cases k with
+              | zero =>
+                -- n = 1
+                have hprime := h.right
+                have : (1:ℕ) ^ 2 + 2 - 3 * 1 = 0 := by norm_num
+                rw [this] at hprime
+                exact False.elim (Nat.not_prime_zero hprime)
+              | succ k' =>
+                cases k' with
+                  | zero =>
+                    -- n = 2
+                    have hprime := h.right
+                    have : (2:ℕ) ^ 2 + 2 - 3 * 2 = 0 := by norm_num
+                    rw [this] at hprime
+                    exact False.elim (Nat.not_prime_zero hprime)
+                  | succ m =>
+                    -- n ≥ 3
+                    apply Nat.succ_le_succ
+                    apply Nat.succ_le_succ
+                    apply Nat.succ_le_succ
+                    apply Nat.zero_le m
+      meta:
+        problem: amc12b_2002_p3
+- query: ProveGoal
+  args:
+    goal: |-
+      x y z : ℝ
+      m : ℚ
+      h₀ : 0 < x ∧ 0 < y ∧ 0 < z
+      h₁ : x * y * z = 1
+      h₂ : x + 1 / z = 5
+      h₃ : y + 1 / x = 29
+      h₄ : z + 1 / y = ↑m
+      h₅ : 0 < m
+      eqx : x * (1 + y) = 5
+      eqy : y * (1 + z) = 29
+      prod_rel : (1 + y) * (1 + z) = 145 * z
+      r_over : (1 + z) / z = 145 / (1 + y)
+      one_plus_y : 1 + y = 25
+      x_val : x = 1 / 5
+      z_val : z = 5 / 24
+      ⊢ m = 1 / 4
+    prefix: []
+  answers:
+    - answer: |-
+        have y_eq : y = 24 := by linarith [one_plus_y]
+        have : (m : ℝ) = ↑(1 / 4 : ℚ) := by
+          rw [←h₄, z_val, y_eq]
+          norm_num
+        exact Rat.cast_injective this
+      meta:
+        problem: aimeI_2000_p7
+- query: ProveGoal
+  args:
+    goal: |-
+      a : ℕ → ℝ
+      h₀ : a 1 = 1
+      h₁ : a 2 = 1 / √3
+      h₂ : ∀ (n : ℕ), 1 ≤ n → a (n + 2) = (a n + a (n + 1)) / (1 - a n * a (n + 1))
+      base1 : a 1 = Real.tan (Real.pi / 4)
+      ⊢ a 2 = Real.tan (Real.pi / 6)
+    prefix: []
+  answers:
+    - answer: |-
+        rw [Real.tan_pi_div_six]
+        exact h₁
+      meta:
+        problem: amc12a_2009_p25
+- query: ProveGoal
+  args:
+    goal: |-
+      a : ℝ
+      h₀ : 1 / 5 * |9 + 2 * a| < 1
+      ⊢ -7 < a ∧ a < -2
+    prefix: []
+  answers:
+    - answer: |-
+        have : |9 + 2 * a| < 5 := by
+          have := mul_lt_mul_of_pos_left h₀ (by norm_num : (5 : ℝ) > 0)
+          simpa using this
+        have ⟨hneg, hpos⟩ := abs_lt.mp this
+        have left : -7 < a := by linarith [hneg]
+        have right : a < -2 := by linarith [hpos]
+        exact ⟨left, right⟩
+      meta:
+        problem: mathd_algebra_327
+- query: ProveGoal
+  args:
+    goal: |-
+      a b c : ℝ
+      h₀ : 0 < a ∧ 0 < b ∧ 0 < c
+      ⊢ 2 * (c / b) ≤ a ^ 2 / b ^ 2 + c ^ 2 / a ^ 2
+    prefix: []
+  answers:
+    - answer: |-
+        have ⟨ha, hb, hc⟩ := h₀
+        have h : a ^ 2 / b ^ 2 + c ^ 2 / a ^ 2 - 2 * (c / b) = (a / b - c / a) ^ 2 := by
+          field_simp [hb.ne', ha.ne']
+          ring
+        have : 0 ≤ a ^ 2 / b ^ 2 + c ^ 2 / a ^ 2 - 2 * (c / b) := by
+          rw [h]; apply sq_nonneg
+        exact le_of_sub_nonneg this
+      meta:
+        problem: algebra_amgm_sumasqdivbsqgeqsumbdiva
+- query: ProveGoal
+  args:
+    goal: |-
+      x y : ℝ
+      h₀ : |x + y| + |x - y| = 2
+      sumsq_le_4 : (x + y) ^ 2 + (x - y) ^ 2 ≤ 4
+      sumsq_id : (x + y) ^ 2 + (x - y) ^ 2 = 2 * (x ^ 2 + y ^ 2)
+      x2y2_le_2 : x ^ 2 + y ^ 2 ≤ 2
+      ⊢ |x| ≤ 1
+    prefix: []
+  answers:
+    - answer: |-
+        have h := abs_add (x + y) (x - y)
+        have : (x + y) + (x - y) = 2 * x := by ring
+        rw [this] at h
+        rw [h₀] at h
+        rw [abs_mul, abs_of_nonneg (by norm_num : (0:ℝ) ≤ 2)] at h
+        have : (1 / 2) * (2 * |x|) ≤ (1 / 2) * 2 := mul_le_mul_of_nonneg_left h (by norm_num : (0:ℝ) ≤ 1 / 2)
+        simp at this
+        exact this
+      meta:
+        problem: amc12a_2011_p18
+- query: ProveGoal
+  args:
+    goal: |-
+      n : ℕ
+      a : ℕ → ℕ
+      h₀ : Function.Injective a
+      h₁ : a 0 = 0
+      h₂ : 0 < n
+      ⊢ ∀ k ∈ Finset.Icc 1 n, 1 ≤ a k
+    prefix: []
+  answers:
+    - answer: |-
+        intro k hk
+        have ⟨one_le_k, _⟩ := Finset.mem_Icc.mp hk
+        have k_ne : k ≠ 0 := Nat.one_le_iff_ne_zero.mp one_le_k
+        have ak_ne0 : a k ≠ 0 := by
+          intro h
+          have : a k = a 0 := by rw [h, h₁]
+          have : k = 0 := h₀ this
+          exact k_ne this
+        have : 0 < a k := Nat.pos_iff_ne_zero.mpr ak_ne0
+        exact this
+      meta:
+        problem: imo_1978_p5
+- query: ProveGoal
+  args:
+    goal: |-
+      k x : ℝ
+      h₀ : x = (13 - √131) / 4
+      h₁ : 2 * x ^ 2 - 13 * x + k = 0
+      ⊢ k = 19 / 4
+    prefix: []
+  answers:
+    - answer: |-
+        have hk : k = 13 * x - 2 * x ^ 2 := by linarith [h₁]
+        rw [hk, h₀]
+        simp only [pow_two]
+        ring
+        norm_num
+      meta:
+        problem: mathd_algebra_116
+- query: ProveGoal
+  args:
+    goal: ⊢ 314 ∈ {a | 0 < a ∧ a ≡ 2 [MOD 3] ∧ a ≡ 4 [MOD 5] ∧ a ≡ 6 [MOD 7] ∧ a ≡ 8 [MOD 9]}
+    prefix: []
+  answers:
+    - answer: norm_num
+      meta:
+        problem: mathd_numbertheory_690
+- query: ProveGoal
+  args:
+    goal: |-
+      a b c d s : ℝ
+      h₀ : 0 < a ∧ 0 < b ∧ 0 < c ∧ 0 < d
+      h₁ : s = a / (a + b + d) + b / (a + b + c) + c / (b + c + d) + d / (a + c + d)
+      den_pos : 0 < (a + b + c + d) ^ 2 - 2 * (a * c + b * d)
+      ⊢ (a + b + c + d) ^ 2 - 2 * (a * c + b * d) < (a + b + c + d) ^ 2
+    prefix: []
+  answers:
+    - answer: |-
+        rcases h₀ with ⟨ha, hb, hc, hd⟩
+        have hsum : 0 < a * c + b * d := add_pos (mul_pos ha hc) (mul_pos hb hd)
+        have hpos2 : 0 < 2 * (a * c + b * d) := mul_pos (by norm_num : (0 : ℝ) < 2) hsum
+        linarith
+      meta:
+        problem: imo_1974_p5
+- query: ProveGoal
+  args:
+    goal: |-
+      x y z a b : ℝ
+      h₀ : 0 < x ∧ 0 < y ∧ 0 < z
+      h₁ : x ≠ y
+      h₂ : y ≠ z
+      h₃ : z ≠ x
+      h₄ : x + y + z = a
+      h₅ : x ^ 2 + y ^ 2 + z ^ 2 = b ^ 2
+      h₆ : x * y = z ^ 2
+      pos_a : 0 < a
+      eq_a2 : a ^ 2 = b ^ 2 + 2 * (x * y + y * z + z * x)
+      b_lt_a : b ^ 2 < a ^ 2
+      diff_eq : (x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2 = 2 * (b ^ 2 - (x * y + y * z + z * x))
+      ⊢ 0 < (x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2
+    prefix: []
+  answers:
+    - answer: |-
+        have p1 : 0 < (x - y) ^ 2 := sq_pos_of_ne_zero (sub_ne_zero.mpr h₁)
+        have p2 : 0 < (y - z) ^ 2 := sq_pos_of_ne_zero (sub_ne_zero.mpr h₂)
+        have p3 : 0 < (z - x) ^ 2 := sq_pos_of_ne_zero (sub_ne_zero.mpr h₃)
+        exact add_pos (add_pos p1 p2) p3
+      meta:
+        problem: imo_1961_p1
+- query: ProveGoal
+  args:
+    goal: ⊢ ∑ k ∈ (30 ^ 4).divisors, 1 = (30 ^ 4).divisors.card
+    prefix: []
+  answers:
+    - answer: rw [←Finset.card_eq_sum_ones]
+      meta:
+        problem: mathd_numbertheory_543
+- query: ProveGoal
+  args:
+    goal: |-
+      l r : ZMod 7
+      h₀ : l = (2 + 3)⁻¹
+      h₁ : r = 2⁻¹ + 3⁻¹
+      ⊢ l = 5⁻¹
+    prefix: []
+  answers:
+    - answer: rw [h₀]; norm_num
+      meta:
+        problem: mathd_numbertheory_668
+- query: ProveGoal
+  args:
+    goal: |-
+      inv30 : 30 * 11 ≡ 1 [MOD 47]
+      ⊢ 42 * 11 ≡ 39 [MOD 47]
+    prefix: []
+  answers:
+    - answer: |-
+        rw [show 42 = 30 + 12 by norm_num]
+        rw [add_mul]
+        grw [inv30]
+        norm_num
+      meta:
+        problem: mathd_numbertheory_64
+- query: ProveGoal
+  args:
+    goal: |-
+      b : ℝ
+      h₀ : 4 ^ b + 2 ^ 3 = 12
+      pow_two_three : 2 ^ 3 = 8
+      rpow_eq4 : 4 ^ b = 4
+      log_rpow_eq : b * Real.log 4 = Real.log 4
+      log4_pos : 0 < Real.log 4
+      ⊢ b = 1
+    prefix: []
+  answers:
+    - answer: |-
+        have h_eq : b * Real.log 4 = 1 * Real.log 4 := by
+          rw [log_rpow_eq]
+          simp
+        rw [mul_comm b (Real.log 4), mul_comm 1 (Real.log 4)] at h_eq
+        have : Real.log 4 ≠ 0 := ne_of_gt log4_pos
+        exact mul_left_cancel₀ this h_eq
+      meta:
+        problem: mathd_algebra_59
+- query: ProveGoal
+  args:
+    goal: |-
+      l r : ZMod 7
+      h₀ : l = (2 + 3)⁻¹
+      h₁ : r = 2⁻¹ + 3⁻¹
+      ⊢ l = 5⁻¹
+    prefix: []
+  answers:
+    - answer: |-
+        rw [h₀]
+        norm_num
+      meta:
+        problem: mathd_numbertheory_668
+- query: ProveGoal
+  args:
+    goal: ⊢ (∑ k ∈ Finset.range 11, k) % 9 = 1
+    prefix: []
+  answers:
+    - answer: norm_num
+      meta:
+        problem: mathd_numbertheory_466
+- query: ProveGoal
+  args:
+    goal: ⊢ 314 ∈ {a | 0 < a ∧ a ≡ 2 [MOD 3] ∧ a ≡ 4 [MOD 5] ∧ a ≡ 6 [MOD 7] ∧ a ≡ 8 [MOD 9]}
+    prefix: []
+  answers:
+    - answer: simp [Set.mem_setOf]; norm_num
+      meta:
+        problem: mathd_numbertheory_690
+- query: ProveGoal
+  args:
+    goal: |-
+      f : ℕ → ℝ
+      h₀ : f 1 = 2
+      h₁ : ∀ (n : ℕ), 1 < n ∧ Even n → f n = f (n - 1) + 1
+      h₂ : ∀ (n : ℕ), 1 < n ∧ Odd n → f n = f (n - 2) + 2
+      oddstep : ∀ (k : ℕ), f (1 + 2 * (k + 1)) = f (1 + 2 * k) + 2
+      ⊢ ∀ (k : ℕ), f (1 + 2 * k) = 2 + 2 * ↑k
+    prefix: []
+  answers:
+    - answer: |-
+        intro k
+        induction k with
+          | zero => simp [h₀]
+          | succ k ih =>
+            rw [oddstep k, ih]
+            simp [Nat.cast_add, Nat.cast_one]
+            ring
+      meta:
+        problem: amc12a_2017_p7
+- query: ProveGoal
+  args:
+    goal: |-
+      a : ℤ
+      even_or_not : 2 ∣ a ∨ ¬2 ∣ a
+      ⊢ 2 ∣ a → a ^ 2 % 4 = 0
+    prefix: []
+  answers:
+    - answer: |-
+        intro h
+        rcases h with ⟨b, rfl⟩
+        have : (2 * b) ^ 2 = 4 * b ^ 2 := by ring
+        rw [this]
+        simp
+      meta:
+        problem: numbertheory_sqmod4in01d
+- query: ProveGoal
+  args:
+    goal: |-
+      n : ℕ
+      h₀ : 4 ≤ n
+      base_case : 4 ^ 2 ≤ Nat.factorial 4
+      m_sq_ge_succ : ∀ (m : ℕ), 4 ≤ m → m + 1 ≤ m ^ 2
+      ⊢ ∀ (m : ℕ), 4 ≤ m → m ^ 2 ≤ m.factorial → (m + 1) ^ 2 ≤ (m + 1).factorial
+    prefix: []
+  answers:
+    - answer: |-
+        intro m
+        intro hm
+        intro hfac
+        have hsucc := m_sq_ge_succ m hm
+        have hle := le_trans hsucc hfac
+        have : (m + 1) * (m + 1) ≤ (m + 1) * m.factorial := Nat.mul_le_mul_left (m + 1) hle
+        rw [Nat.factorial_succ]
+        calc
+          (m + 1) ^ 2 = (m + 1) * (m + 1) := by ring
+          _ ≤ (m + 1) * m.factorial := this
+      meta:
+        problem: induction_ineq_nsqlefactn
+- query: ProveGoal
+  args:
+    goal: |-
+      S : Finset ℕ
+      h₀ : ∀ (n : ℕ), n ∈ S ↔ 0 < n ∧ Nat.Prime (n ^ 2 + 2 - 3 * n)
+      mem3 : 3 ∈ S
+      ⊢ ∀ n ∈ S, 3 ≤ n
+    prefix: []
+  answers:
+    - answer: |-
+        intro n hn
+        have ⟨hnpos, hprime⟩ := (h₀ n).mp hn
+        by_contra H
+        push_neg at H
+        have : n < 3 := H
+        interval_cases n
+        · -- n = 1
+          have : 1 ^ 2 + 2 - 3 * 1 = 0 := by norm_num
+          exact hprime.ne_zero this
+        · -- n = 2
+          have : 2 ^ 2 + 2 - 3 * 2 = 0 := by norm_num
+          exact hprime.ne_zero this
+      meta:
+        problem: amc12b_2002_p3
+- query: ProveGoal
+  args:
+    goal: |-
+      l r : ZMod 7
+      h₀ : l = (2 + 3)⁻¹
+      h₁ : r = 2⁻¹ + 3⁻¹
+      ⊢ l = 5⁻¹
+    prefix: []
+  answers:
+    - answer: rw [h₀]; norm_num
+      meta:
+        problem: mathd_numbertheory_668
+- query: ProveGoal
+  args:
+    goal: |-
+      inv30 : 30 * 11 ≡ 1 [MOD 47]
+      ⊢ 42 * 11 ≡ 39 [MOD 47]
+    prefix: []
+  answers:
+    - answer: |-
+        have : 42 = 30 + 12 := by norm_num
+        rw [this, add_mul]
+        grw [inv30]
+        norm_num
+      meta:
+        problem: mathd_numbertheory_64
+- query: ProveGoal
+  args:
+    goal: |-
+      a : ℕ → ℝ
+      h₀ : a 1 = 1
+      h₁ : a 2 = 1 / √3
+      h₂ : ∀ (n : ℕ), 1 ≤ n → a (n + 2) = (a n + a (n + 1)) / (1 - a n * a (n + 1))
+      base1 : a 1 = Real.tan (Real.pi / 4)
+      ⊢ a 2 = Real.tan (Real.pi / 6)
+    prefix: []
+  answers:
+    - answer: rw [h₁, Real.tan_pi_div_six]
+      meta:
+        problem: amc12a_2009_p25
+- query: ProveGoal
+  args:
+    goal: |-
+      n : ℕ
+      h₀ : 0 < n
+      eq1 : 2 * (n + 7) = 2 * n + 1 + 13
+      ⊢ (n + 7).gcd (2 * n + 1) ∣ 2 * (n + 7)
+    prefix: []
+  answers:
+    - answer: |-
+        have h := Nat.gcd_dvd_left (n + 7) (2 * n + 1)
+        have h2 := Nat.dvd_mul_left (n + 7) 2
+        exact Nat.dvd_trans h h2
+      meta:
+        problem: mathd_numbertheory_156
+- query: ProveGoal
+  args:
+    goal: |-
+      S : Finset ℝ
+      h₀ : ∀ (x : ℝ), x ∈ S ↔ 0 < x ∧ x ^ 2 ^ √2 = √2 ^ 2 ^ x
+      ⊢ √2 ∈ S
+    prefix: []
+  answers:
+    - answer: |-
+        have hf := h₀ (Real.sqrt 2)
+        exact hf.mpr ⟨Real.sqrt_pos.mpr (by norm_num : (0 : ℝ) < 2), rfl⟩
+      meta:
+        problem: amc12b_2021_p21
+- query: ProveGoal
+  args:
+    goal: |-
+      S : Finset ℝ
+      h₀ : ∀ (x : ℝ), x ∈ S ↔ 0 < x ∧ x ^ 2 ^ √2 = √2 ^ 2 ^ x
+      mem_sqrt2 : √2 ∈ S
+      ⊢ 0 < √2 ∧ √2 < 2
+    prefix: []
+  answers:
+    - answer: |-
+        have h := (h₀ √2).mp mem_sqrt2
+        cases h with
+        | intro hpos _ =>
+          constructor
+          · exact hpos
+          · apply (Real.sqrt_lt (by norm_num) (by norm_num)).mpr
+            norm_num
+      meta:
+        problem: amc12b_2021_p21
+- query: ProveGoal
+  args:
+    goal: |-
+      c : ℝ
+      f : ℝ → ℝ
+      h₀ : ∀ (x : ℝ), f x = 2 * x ^ 2 + 5 * x + c
+      h₁ : ∃ x, f x ≤ 0
+      ⊢ c ≤ 25 / 8
+    prefix: []
+  answers:
+    - answer: |-
+        rcases h₁ with ⟨x0, hx0⟩
+        have eq : 2 * (x0 + 5 / 4) ^ 2 + c - 25 / 8 = 2 * x0 ^ 2 + 5 * x0 + c := by ring
+        rw [h₀ x0] at hx0
+        rw [←eq] at hx0
+        have hA : 0 ≤ 2 * (x0 + 5 / 4) ^ 2 := by
+          apply mul_nonneg
+          norm_num
+          exact pow_two_nonneg (x0 + 5 / 4)
+        linarith [hA, hx0]
+      meta:
+        problem: mathd_algebra_28
+- query: ProveGoal
+  args:
+    goal: |-
+      f : ℝ → ℝ
+      h₀ : ∀ x < -5, f x = x ^ 2 + 5
+      h₁ : ∀ x ≥ -5, f x = 3 * x - 8
+      h₂ : Fintype ↑(f ⁻¹' {10})
+      ⊢ ∀ x < -5, f x ≠ 10
+    prefix: []
+  answers:
+    - answer: |-
+        intro x hx
+        have h1 : x + 5 < 0 := by linarith
+        have h2 : x - 5 < 0 := by linarith
+        have hprod_pos : 0 < (x - 5) * (x + 5) := by
+          apply mul_pos_of_neg_of_neg <;> assumption
+        have hmul_eq : (x - 5) * (x + 5) = x ^ 2 - 25 := by ring
+        have : 0 < x ^ 2 - 25 := by rwa [hmul_eq] at hprod_pos
+        have : x ^ 2 > 25 := by linarith
+        have : x ^ 2 + 5 > 30 := by linarith
+        intro heq
+        rw [h₀ x hx] at heq
+        linarith
+      meta:
+        problem: mathd_algebra_149
+- query: ProveGoal
+  args:
+    goal: |-
+      a b : ℝ
+      h₀ : 0 < a ∧ 0 < b
+      ineq1 : (a + b) ^ 2 ≤ 2 * (a ^ 2 + b ^ 2)
+      eq_lhs : (a + b) ^ 4 = ((a + b) ^ 2) ^ 2
+      eq_rhs : (2 * (a ^ 2 + b ^ 2)) ^ 2 = 4 * (a ^ 2 + b ^ 2) ^ 2
+      pow4_le : (a + b) ^ 4 ≤ 4 * (a ^ 2 + b ^ 2) ^ 2
+      ⊢ (a ^ 2 + b ^ 2) ^ 2 ≤ 2 * (a ^ 4 + b ^ 4)
+    prefix: []
+  answers:
+    - answer: |-
+        have h : 2 * (a ^ 4 + b ^ 4) - (a ^ 2 + b ^ 2) ^ 2 = (a ^ 2 - b ^ 2) ^ 2 := by ring
+        have hnonneg : 0 ≤ 2 * (a ^ 4 + b ^ 4) - (a ^ 2 + b ^ 2) ^ 2 := by
+          rw [h]
+          apply sq_nonneg
+        calc
+          (a ^ 2 + b ^ 2) ^ 2 = (a ^ 2 + b ^ 2) ^ 2 + 0 := by simp
+          _ ≤ (a ^ 2 + b ^ 2) ^ 2 + (2 * (a ^ 4 + b ^ 4) - (a ^ 2 + b ^ 2) ^ 2) := by
+            apply add_le_add_left hnonneg
+          _ = 2 * (a ^ 4 + b ^ 4) := by ring
+      meta:
+        problem: algebra_apb4leq8ta4pb4
+- query: ProveGoal
+  args:
+    goal: |-
+      a b c d s : ℝ
+      h₀ : 0 < a ∧ 0 < b ∧ 0 < c ∧ 0 < d
+      h₁ : s = a / (a + b + d) + b / (a + b + c) + c / (b + c + d) + d / (a + c + d)
+      den_pos : 0 < (a + b + c + d) ^ 2 - 2 * (a * c + b * d)
+      ⊢ (a + b + c + d) ^ 2 - 2 * (a * c + b * d) < (a + b + c + d) ^ 2
+    prefix: []
+  answers:
+    - answer: |-
+        rcases h₀ with ⟨ha, hb, hc, hd⟩
+        have ac_pos := mul_pos ha hc
+        have bd_pos := mul_pos hb hd
+        have sum_pos := add_pos ac_pos bd_pos
+        have two_pos : (2 : ℝ) > 0 := by norm_num
+        have two_sum_pos := mul_pos two_pos sum_pos
+        have hneg : -2 * (a * c + b * d) < 0 := by linarith [two_sum_pos]
+        simpa [add_zero] using add_lt_add_left hneg ((a + b + c + d) ^ 2)
+      meta:
+        problem: imo_1974_p5
+- query: ProveGoal
+  args:
+    goal: |-
+      m n : ℕ
+      k : ℝ
+      f : ℝ → ℝ
+      h₀ : Nat.Prime m
+      h₁ : Nat.Prime n
+      h₂ : ∀ (x : ℝ), f x = x ^ 2 - 12 * x + k
+      h₃ : f ↑m = 0
+      h₄ : f ↑n = 0
+      h₅ : m ≠ n
+      eqm : ↑m ^ 2 - 12 * ↑m + k = 0
+      eqn : ↑n ^ 2 - 12 * ↑n + k = 0
+      diff_zero : (↑m - ↑n) * (↑m + ↑n - 12) = 0
+      ⊢ ↑m ≠ ↑n
+    prefix: []
+  answers:
+    - answer: |-
+        intro h
+        apply h₅ (Nat.cast_injective h)
+      meta:
+        problem: mathd_algebra_482
+- query: ProveGoal
+  args:
+    goal: |-
+      x y : ℚ
+      h₀ : (x ^ 2 + y ^ 2).den = 1
+      ⊢ ∃ k, x ^ 2 + y ^ 2 = ↑k
+    prefix: []
+  answers:
+    - answer: |-
+        have h := @Rat.coe_int_num_of_den_eq_one (x ^ 2 + y ^ 2) h₀
+        use (x ^ 2 + y ^ 2).num
+        exact h.symm
+      meta:
+        problem: numbertheory_xsqpysqintdenomeq
+- query: ProveGoal
+  args:
+    goal: |-
+      a b : ℝ
+      h₀ : ∀ (x : ℝ), x - 3 ≠ 0 ∧ x - 5 ≠ 0 → 4 * x / (x ^ 2 - 8 * x + 15) = a / (x - 3) + b / (x - 5)
+      ⊢ a = -6 ∧ b = 10
+    prefix: []
+  answers:
+    - answer: |-
+        have h6 := h₀ 6 (by constructor; norm_num; norm_num)
+        have h4 := h₀ 4 (by constructor; norm_num; norm_num)
+        simp at h6 h4
+        norm_num at h6 h4
+        have eq1 : a + 3 * b = 24 := by linarith [h6]
+        have eq2 : a - b = -16 := by linarith [h4]
+        have b_val : b = 10 := by linarith [eq1, eq2]
+        have a_val : a = -6 := by linarith [eq2, b_val]
+        exact And.intro a_val b_val
+      meta:
+        problem: mathd_algebra_13
+- query: ProveGoal
+  args:
+    goal: |-
+      n : ℕ
+      a : ℕ → ℝ
+      h₀ : ∀ (n : ℕ), |a n| < 1
+      h₁ : ∑ k ∈ Finset.range n, |a k| = 19 + |∑ k ∈ Finset.range n, a k|
+      ⊢ 19 ≤ ∑ k ∈ Finset.range n, |a k|
+    prefix: []
+  answers:
+    - answer: |-
+        rw [h₁]
+        have habs : 0 ≤ |Finset.sum (Finset.range n) fun k => a k| := by
+          apply abs_nonneg
+        exact le_add_of_nonneg_right habs
+      meta:
+        problem: aime_1988_p4
+- query: ProveGoal
+  args:
+    goal: ⊢ 5 < √26
+    prefix: []
+  answers:
+    - answer: exact ((Real.lt_sqrt (by norm_num)).mpr (by norm_num))
+      meta:
+        problem: mathd_algebra_151
+- query: ProveGoal
+  args:
+    goal: |-
+      S : Finset ℕ
+      h₀ : ∀ (n : ℕ), n ∈ S ↔ 0 < n ∧ Nat.Prime (n ^ 2 + 2 - 3 * n)
+      mem3 : 3 ∈ S
+      ⊢ ∀ n ∈ S, 3 ≤ n
+    prefix: []
+  answers:
+    - answer: |-
+        intro n
+        intro hn
+        have ⟨hnpos, hprime⟩ := (h₀ n).mp hn
+        cases n with
+          | zero => simp at hnpos
+          | succ n' =>
+            cases n' with
+              | zero =>
+                -- n = 1, then n^2 + 2 - 3*n = 0, contradicting primality
+                have : (1 : ℕ) ^ 2 + 2 - 3 * 1 = 0 := by norm_num
+                rw [this] at hprime
+                exact (Nat.not_prime_zero hprime).elim
+              | succ m =>
+                cases m with
+                  | zero =>
+                    -- n = 2, similarly impossible
+                    have : (2 : ℕ) ^ 2 + 2 - 3 * 2 = 0 := by norm_num
+                    rw [this] at hprime
+                    exact (Nat.not_prime_zero hprime).elim
+                  | succ k =>
+                    -- n = k + 3 ≥ 3
+                    apply Nat.succ_le_succ
+                    apply Nat.succ_le_succ
+                    apply Nat.succ_le_succ
+                    apply Nat.zero_le
+      meta:
+        problem: amc12b_2002_p3
+- query: ProveGoal
+  args:
+    goal: |-
+      n : ℕ
+      h₀ : 7 ∣ 2 ^ n - 1
+      pow3_one : 2 ^ 3 = 1
+      ord_dvd_three : orderOf 2 ∣ 3
+      two_ne_one : 2 ≠ 1
+      ⊢ orderOf 2 = 3
+    prefix: []
+  answers:
+    - answer: |-
+        have hcases := (Nat.dvd_prime Nat.prime_three).1 ord_dvd_three
+        cases hcases with
+          | inl h1 =>
+            have two_eq_one := (orderOf_eq_one_iff.mp h1)
+            contradiction
+          | inr h3 => exact h3
+      meta:
+        problem: imo_1964_p1_1
+- query: ProveGoal
+  args:
+    goal: |-
+      π : ℝ
+      n : ℕ
+      x : ℝ
+      h₀ : ∀ (k : ℕ), 0 < k → ∀ (m : ℤ), x ≠ ↑m * π / 2 ^ k
+      h₁ : 0 < n
+      ⊢ ∀ (t : ℝ), 1 / Real.sin (2 * t) = 1 / Real.tan t - 1 / Real.tan (2 * t)
+    prefix: []
+  answers:
+    - answer: |-
+        intro t
+        simp [Real.tan_eq_sin_div_cos, Real.sin_two_mul, Real.cos_two_mul]
+        field_simp
+        ring
+      meta:
+        problem: imo_1966_p4
+- query: ProveGoal
+  args:
+    goal: |-
+      a b : ℝ
+      f : ℝ → ℝ
+      h₀ : 0 < b
+      h₁ : ∀ (x : ℝ), f x = √(a * x ^ 2 + b * x)
+      h₂ : {x | 0 ≤ f x} = f '' {x | 0 ≤ f x}
+      nonneg_univ : {x | 0 ≤ f x} = Set.univ
+      range_univ : f '' Set.univ = Set.univ
+      image_subset_nonneg : f '' Set.univ ⊆ {y | 0 ≤ y}
+      univ_subset_nonneg : Set.univ ⊆ {y | 0 ≤ y}
+      ⊢ False
+    prefix: []
+  answers:
+    - answer: |-
+        have h := univ_subset_nonneg (Set.mem_univ (-1 : ℝ))
+        simp at h
+        linarith
+      meta:
+        problem: amc12a_2003_p25
+- query: ProveGoal
+  args:
+    goal: |-
+      l r : ZMod 7
+      h₀ : l = (2 + 3)⁻¹
+      h₁ : r = 2⁻¹ + 3⁻¹
+      ⊢ l = 5⁻¹
+    prefix: []
+  answers:
+    - answer: rw [h₀]; norm_num
+      meta:
+        problem: mathd_numbertheory_668
+- query: ProveGoal
+  args:
+    goal: |-
+      n : ℕ
+      h₀ : 0 < n
+      h₁ : ∑ k ∈ Finset.Icc 1 n, ↑k * Complex.I ^ k = 48 + 49 * Complex.I
+      ⊢ (∑ k ∈ Finset.Icc 1 n, ↑↑k * Complex.I ^ k).re = 48
+    prefix: []
+  answers:
+    - answer: |-
+        apply_fun Complex.re at h₁
+        simp at h₁
+        simpa using h₁
+      meta:
+        problem: amc12a_2009_p15
+- query: ProveGoal
+  args:
+    goal: |-
+      x y : ℚ
+      h₀ : (x ^ 2 + y ^ 2).den = 1
+      ⊢ ∃ k, x ^ 2 + y ^ 2 = ↑k
+    prefix: []
+  answers:
+    - answer: |-
+        use (x ^ 2 + y ^ 2).num
+        have h := @Rat.coe_int_num_of_den_eq_one (x ^ 2 + y ^ 2) h₀
+        rw [←h]
+        rfl
+      meta:
+        problem: numbertheory_xsqpysqintdenomeq
+- query: ProveGoal
+  args:
+    goal: ⊢ 314 ∈ {a | 0 < a ∧ a ≡ 2 [MOD 3] ∧ a ≡ 4 [MOD 5] ∧ a ≡ 6 [MOD 7] ∧ a ≡ 8 [MOD 9]}
+    prefix: []
+  answers:
+    - answer: |-
+        constructor
+        · norm_num
+        · constructor
+          · norm_num
+          · constructor
+            · norm_num
+            · constructor
+              · norm_num
+              · norm_num
+      meta:
+        problem: mathd_numbertheory_690
+- query: ProveGoal
+  args:
+    goal: |-
+      n : ℕ
+      a : ℕ → ℕ
+      h₀ : Function.Injective a
+      h₁ : a 0 = 0
+      h₂ : 0 < n
+      ak_pos : ∀ k ∈ Finset.Icc 1 n, 0 < ↑(a k)
+      ⊢ ∀ k ∈ Finset.Icc 1 n, 0 < ↑k
+    prefix: []
+  answers:
+    - answer: |-
+        intro k hk
+        have ⟨h1, _⟩ := Finset.mem_Icc.1 hk
+        exact Nat.cast_pos.2 (Nat.lt_of_succ_le h1)
+      meta:
+        problem: imo_1978_p5
+- query: ProveGoal
+  args:
+    goal: |-
+      p q : ℕ
+      h₀ : 0 < q
+      h₁ : ∑ k ∈ Finset.Icc 1 1319, (-1) ^ (k + 1) * (1 / ↑k) = ↑p / ↑q
+      ⊢ Nat.Prime 1979
+    prefix: []
+  answers:
+    - answer: |-
+        have hp : Nat.Prime 1979 := by
+          norm_num
+        exact hp
+      meta:
+        problem: imo_1979_p1
+- query: ProveGoal
+  args:
+    goal: |-
+      x y : ℤ
+      h₀ : 0 < y
+      h₁ : y < x
+      h₂ : x + y + x * y = 80
+      eq1 : (x + 1) * (y + 1) = 81
+      y1_pos : 1 < y + 1
+      y1_lt_x1 : y + 1 < x + 1
+      ⊢ y + 1 ∣ 81
+    prefix: []
+  answers:
+    - answer: |-
+        rw [←eq1, mul_comm]
+        apply dvd_mul_right (y + 1) (x + 1)
+      meta:
+        problem: amc12a_2015_p10
+- query: ProveGoal
+  args:
+    goal: |-
+      n : ℕ
+      ⊢ ∑ k ∈ Finset.range n, 1 / ((↑k + 1) * (↑k + 2)) = ↑n / (↑n + 1)
+    prefix: []
+  answers:
+    - answer: |-
+        induction n with
+          | zero => simp
+          | succ n ih =>
+            rw [Finset.sum_range_succ, ih]
+            simp [Nat.cast_add, Nat.cast_one]
+            have hpos1 : (↑n + 1 : ℝ) ≠ 0 := by
+              have : 0 ≤ (↑n : ℝ) := Nat.cast_nonneg n
+              linarith
+            have hpos2 : (↑n + 2 : ℝ) ≠ 0 := by
+              have : 0 ≤ (↑n : ℝ) := Nat.cast_nonneg n
+              linarith
+            field_simp [hpos1, hpos2]
+            ring
+      meta:
+        problem: induction_sum_1oktkp1
+- query: ProveGoal
+  args:
+    goal: |-
+      u v : ℕ
+      S : Set ℕ
+      h₀ : ∀ (n : ℕ), n ∈ S ↔ 0 < n ∧ 14 * n % 100 = 46
+      h₁ : IsLeast S u
+      h₂ : IsLeast (S \ {u}) v
+      S_mod50 : ∀ (n : ℕ), n ∈ S ↔ 0 < n ∧ n % 50 = 39
+      mem39 : 39 ∈ S
+      S_repr : ∀ n ∈ S, ∃ k, n = 39 + 50 * k
+      ⊢ u = 39
+    prefix: []
+  answers:
+    - answer: |-
+        have u_mem : u ∈ S := h₁.1
+        obtain ⟨k, hk⟩ := S_repr u u_mem
+        have le1 : u ≤ 39 := h₁.2 mem39
+        have le2 : 39 ≤ u := by
+          rw [hk]
+          exact Nat.le_add_right 39 (50 * k)
+        exact Nat.le_antisymm le1 le2
+      meta:
+        problem: mathd_numbertheory_13
+- query: ProveGoal
+  args:
+    goal: |-
+      a b q r : ℕ
+      h₀ : r < a + b
+      h₁ : a ^ 2 + b ^ 2 = (a + b) * q + r
+      h₂ : q ^ 2 + r = 1977
+      ⊢ r = 1977 - q ^ 2
+    prefix: []
+  answers:
+    - answer: |-
+        rw [add_comm] at h₂
+        exact Nat.eq_sub_of_add_eq h₂
+      meta:
+        problem: imo_1977_p5
+- query: ProveGoal
+  args:
+    goal: ⊢ ∑ k ∈ (30 ^ 4).divisors, 1 = (30 ^ 4).divisors.card
+    prefix: []
+  answers:
+    - answer: rw [←Finset.card_eq_sum_ones]
+      meta:
+        problem: mathd_numbertheory_543
+- query: ProveGoal
+  args:
+    goal: ⊢ 18 ∈ {t | 0 < t ∧ Nat.lcm 12 t ^ 3 = (12 * t) ^ 2}
+    prefix: []
+  answers:
+    - answer: |-
+        constructor
+        · norm_num
+        · have h : Nat.lcm 12 18 = 36 := by norm_num
+          rw [h]
+          norm_num
+      meta:
+        problem: mathd_numbertheory_629
+- query: ProveGoal
+  args:
+    goal: |-
+      p q : ℕ
+      h₀ : 0 < q
+      h₁ : ∑ k ∈ Finset.Icc 1 1319, (-1) ^ (k + 1) * (1 / ↑k) = ↑p / ↑q
+      ⊢ Nat.Prime 1979
+    prefix: []
+  answers:
+    - answer: |-
+        have prime1979 : Nat.Prime 1979 := by norm_num
+        exact prime1979
+      meta:
+        problem: imo_1979_p1
+- query: ProveGoal
+  args:
+    goal: |-
+      S : Finset ℕ
+      h₀ : ∀ (x : ℕ), x ∈ S ↔ 0 < x ∧ x ^ 2 + 4 * x + 4 < 20
+      ⊢ ∀ (x : ℕ), 0 < x ∧ x ^ 2 + 4 * x + 4 < 20 ↔ 0 < x ∧ (x + 2) ^ 2 < 20
+    prefix: []
+  answers:
+    - answer: |-
+        intro x
+        constructor
+        · intro h₁
+          cases h₁ with
+          | intro hx hxy =>
+            have eq : x ^ 2 + 4 * x + 4 = (x + 2) ^ 2 := by ring
+            rw [eq] at hxy
+            exact ⟨hx, hxy⟩
+        · intro h₁
+          cases h₁ with
+          | intro hx hxy =>
+            have eq : x ^ 2 + 4 * x + 4 = (x + 2) ^ 2 := by ring
+            rw [eq.symm] at hxy
+            exact ⟨hx, hxy⟩
+      meta:
+        problem: mathd_algebra_405
+- query: ProveGoal
+  args:
+    goal: |-
+      a b : ℝ
+      f : ℝ → ℝ
+      h₀ : 0 < b
+      h₁ : ∀ (x : ℝ), f x = √(a * x ^ 2 + b * x)
+      h₂ : {x | 0 ≤ f x} = f '' {x | 0 ≤ f x}
+      ⊢ {x | 0 ≤ f x} = Set.univ
+    prefix: []
+  answers:
+    - answer: |-
+        ext x
+        constructor
+        · intro h; trivial
+        · intro _; change 0 ≤ f x; rw [h₁ x]; exact Real.sqrt_nonneg (a * x ^ 2 + b * x)
+      meta:
+        problem: amc12a_2003_p25
+- query: ProveGoal
+  args:
+    goal: ⊢ ∑ k ∈ Nat.properDivisors 198, k = 270
+    prefix: []
+  answers:
+    - answer: decide
+      meta:
+        problem: mathd_numbertheory_403
+- query: ProveGoal
+  args:
+    goal: |-
+      n : ℕ
+      pow3_one : 2 ^ 3 = 1
+      pow_mod3 : 2 ^ n = 2 ^ (n % 3)
+      ⊢ 2 ^ (n % 3) = 1 ∨ 2 ^ (n % 3) = 2 ∨ 2 ^ (n % 3) = 4
+    prefix: []
+  answers:
+    - answer: |-
+        have h : n % 3 < 3 := Nat.mod_lt n (by norm_num)
+        interval_cases (n % 3)
+        all_goals norm_num
+      meta:
+        problem: imo_1964_p1_2
+- query: ProveGoal
+  args:
+    goal: |-
+      k m n : ℕ
+      c : ℕ → ℕ
+      h₀ : 0 < k ∧ 0 < m ∧ 0 < n
+      h₁ : ∀ (s : ℕ), c s = s * (s + 1)
+      h₂ : Nat.Prime (k + m + 1)
+      h₃ : n + 1 < k + m + 1
+      ⊢ ∏ i ∈ Finset.Icc 1 n, c (m + i) = (∏ i ∈ Finset.Icc 1 n, (m + i)) * ∏ i ∈ Finset.Icc 1 n, (m + i + 1)
+    prefix: []
+  answers:
+    - answer: |-
+        have : ∏ i ∈ Finset.Icc 1 n, c (m + i) = ∏ i ∈ Finset.Icc 1 n, (m + i) * (m + i + 1) := by
+          apply Finset.prod_congr rfl
+          intros i hi
+          simp [h₁]
+        rw [this, Finset.prod_mul_distrib]
+      meta:
+        problem: imo_1967_p3
+- query: ProveGoal
+  args:
+    goal: |-
+      f : ℝ → ℝ
+      k : ℝ
+      a b : ℕ
+      h₀ : ∀ (x : ℝ), f x = x ^ 2 - 63 * x + k
+      h₁ : f ↑a = 0 ∧ f ↑b = 0
+      h₂ : a ≠ b
+      h₃ : Nat.Prime a ∧ Nat.Prime b
+      eq_a : ↑a ^ 2 - 63 * ↑a + k = 0
+      eq_b : ↑b ^ 2 - 63 * ↑b + k = 0
+      diff_factor : (↑a - ↑b) * (↑a + ↑b - 63) = 0
+      ne_cast : ↑a ≠ ↑b
+      sum_real : ↑a + ↑b = 63
+      k_prod : k = ↑a * ↑b
+      ⊢ a + b = 63
+    prefix: []
+  answers:
+    - answer: |-
+        rw [←Nat.cast_add] at sum_real
+        exact Nat.cast_injective sum_real
+      meta:
+        problem: amc12a_2002_p12
+- query: ProveGoal
+  args:
+    goal: |-
+      l r : ZMod 7
+      h₀ : l = (2 + 3)⁻¹
+      h₁ : r = 2⁻¹ + 3⁻¹
+      ⊢ l = 5⁻¹
+    prefix: []
+  answers:
+    - answer: |-
+        have h : (2 + 3 : ZMod 7) = 5 := by norm_num
+        rw [h] at h₀
+        exact h₀
+      meta:
+        problem: mathd_numbertheory_668
+- query: ProveGoal
+  args:
+    goal: ⊢ 314 ∈ {a | 0 < a ∧ a ≡ 2 [MOD 3] ∧ a ≡ 4 [MOD 5] ∧ a ≡ 6 [MOD 7] ∧ a ≡ 8 [MOD 9]}
+    prefix: []
+  answers:
+    - answer: simp [Set.mem_setOf]; norm_num
+      meta:
+        problem: mathd_numbertheory_690
+- query: ProveGoal
+  args:
+    goal: |-
+      x : ℝ
+      h₀ : 10 ^ x * 100 ^ (2 * x) = 1000 ^ 5
+      ⊢ Real.log (10 ^ x) + Real.log (100 ^ (2 * x)) = Real.log (1000 ^ 5)
+    prefix: []
+  answers:
+    - answer: |-
+        have p1pos : (10 : ℝ) ^ x > 0 := by positivity
+        have p2pos : (100 : ℝ) ^ (2 * x) > 0 := by positivity
+        have p1ne : (10 : ℝ) ^ x ≠ 0 := by exact ne_of_gt p1pos
+        have p2ne : (100 : ℝ) ^ (2 * x) ≠ 0 := by exact ne_of_gt p2pos
+        have hlog := congrArg Real.log h₀
+        rw [Real.log_mul p1ne p2ne] at hlog
+        exact hlog
+      meta:
+        problem: amc12a_2016_p2
+- query: ProveGoal
+  args:
+    goal: |-
+      f : ℝ → ℝ
+      k : ℝ
+      a b : ℕ
+      h₀ : ∀ (x : ℝ), f x = x ^ 2 - 63 * x + k
+      h₁ : f ↑a = 0 ∧ f ↑b = 0
+      h₂ : a ≠ b
+      h₃ : Nat.Prime a ∧ Nat.Prime b
+      ⊢ ↑a + ↑b = 63
+    prefix: []
+  answers:
+    - answer: |-
+        rcases h₁ with ⟨ha, hb⟩
+        set A := (↑a : ℝ)
+        set B := (↑b : ℝ)
+        have hprod : (A - B) * (A + B - 63) = 0 := by
+          calc
+            (A - B) * (A + B - 63) = A ^ 2 - B ^ 2 - 63 * (A - B) := by ring
+            _ = (A ^ 2 - 63 * A + k) - (B ^ 2 - 63 * B + k) := by ring
+            _ = f A - f B := by simp [h₀]
+            _ = 0 := by simp [ha, hb]
+        have A_ne_B : A ≠ B := by
+          intro H
+          have : a = b := Nat.cast_injective H
+          exact h₂ this
+        rcases mul_eq_zero.mp hprod with h | h
+        · exact False.elim (A_ne_B (sub_eq_zero.mp h))
+        · have : A + B - 63 = 0 := h
+          linarith
+      meta:
+        problem: amc12a_2002_p12
+- query: ProveGoal
+  args:
+    goal: |-
+      n : ℕ
+      a : ℕ → ℕ
+      h₀ : Function.Injective a
+      h₁ : a 0 = 0
+      h₂ : 0 < n
+      ⊢ ∀ k ∈ Finset.Icc 1 n, 0 < ↑(a k)
+    prefix: []
+  answers:
+    - answer: |-
+        intro k hk
+        have ⟨hk1, _⟩ := Finset.mem_Icc.mp hk
+        have k_ne_zero : k ≠ 0 := by
+          intro H
+          rw [H] at hk1
+          norm_num at hk1
+        have a_k_ne_zero : a k ≠ 0 := by
+          intro H
+          have : a k = a 0 := by rw [H, h₁]
+          have := h₀ this
+          exact k_ne_zero this
+        have : 0 < (a k : ℝ) := (Nat.cast_pos.mpr (Nat.pos_iff_ne_zero.mpr a_k_ne_zero))
+        exact this
+      meta:
+        problem: imo_1978_p5
+- query: ProveGoal
+  args:
+    goal: |-
+      a b : ℕ
+      h₀ : Nat.Prime a
+      h₁ : Nat.Prime b
+      h₂ : Nat.Prime (a + b)
+      h₃ : Nat.Prime (a - b)
+      ⊢ ¬a = 2
+    prefix: []
+  answers:
+    - answer: |-
+        intro ha
+        have b_gt1 := Nat.Prime.one_lt h₁
+        have b_ge2 := Nat.succ_le_iff.mpr b_gt1
+        have sub_zero := Nat.sub_eq_zero_of_le b_ge2
+        rw [ha] at h₃
+        have h3_ne_zero := Nat.Prime.ne_zero h₃
+        exact h3_ne_zero sub_zero
+      meta:
+        problem: amc12b_2002_p11
+- query: ProveGoal
+  args:
+    goal: ⊢ 52 + 6 * √43 = (√43 + 3) ^ 2
+    prefix: []
+  answers:
+    - answer: |-
+        have h1 : (Real.sqrt 43 + 3) ^ 2 = (Real.sqrt 43) ^ 2 + 6 * Real.sqrt 43 + 9 := by ring
+        have h2 : (Real.sqrt 43) ^ 2 = 43 := Real.sq_sqrt (by norm_num : 0 ≤ (43 : ℝ))
+        rw [h1, h2]; ring
+      meta:
+        problem: aime_1990_p2
+- query: ProveGoal
+  args:
+    goal: |-
+      p q : ℝ
+      a : ℕ → ℝ
+      h₀ : ∀ (n : ℕ), a (n + 2) - a (n + 1) = a (n + 1) - a n
+      h₁ : a 1 = p
+      h₂ : a 2 = 9
+      h₃ : a 3 = 3 * p - q
+      h₄ : a 4 = 3 * p + q
+      q_pair : q = 4 * p - 18 ∧ q = p - 3
+      p_val : p = 5
+      d_val : a 2 - a 1 = 4
+      ⊢ ∀ (n : ℕ), a (n + 1) - a n = 4
+    prefix: []
+  answers:
+    - answer: |-
+        intro n
+        induction n with
+          | zero =>
+            have H := h₀ 0
+            rw [H] at d_val
+            exact d_val
+          | succ n ih =>
+            have H := h₀ n
+            rw [H]
+            exact ih
+      meta:
+        problem: amc12a_2010_p10
+- query: ProveGoal
+  args:
+    goal: |-
+      a b n : ℕ
+      h₀ : 1 ≤ a ∧ a ≤ 9
+      h₁ : 0 ≤ b ∧ b ≤ 9
+      h₂ : n = 10 * a + b
+      h₃ : n = a * b + a + b
+      eq_mul : a * 10 = a * (b + 1)
+      a_ne_zero : a ≠ 0
+      ⊢ 10 = b + 1
+    prefix: []
+  answers:
+    - answer: |-
+        have a_pos : 0 < a := by linarith
+        apply Nat.mul_left_cancel a_pos
+        exact eq_mul
+      meta:
+        problem: amc12_2001_p2
+- query: ProveGoal
+  args:
+    goal: |-
+      x a : ℕ
+      h₀ : 0 < x ∧ 0 < a
+      h₁ : a.gcd 40 = x + 3
+      h₂ : a.lcm 40 = x * (x + 3)
+      h₃ : ∀ (b : ℕ), 0 < b → b.gcd 40 = x + 3 ∧ b.lcm 40 = x * (x + 3) → a ≤ b
+      gcd_dvd_40 : x + 3 ∣ 40
+      ⊢ 40 ∣ x * (x + 3)
+    prefix: []
+  answers:
+    - answer: |-
+        have := Nat.dvd_lcm_right a 40
+        rw [h₂] at this
+        exact this
+      meta:
+        problem: mathd_numbertheory_126
+- query: ProveGoal
+  args:
+    goal: |-
+      inv30 : 30 * 11 ≡ 1 [MOD 47]
+      mul42_11 : 42 * 11 ≡ 39 [MOD 47]
+      ⊢ ∀ (x : ℕ), 30 * x ≡ 42 [MOD 47] → x ≡ 39 [MOD 47]
+    prefix: []
+  answers:
+    - answer: |-
+        intro x h
+        have h1 := Nat.ModEq.mul_right 11 h
+        rw [mul_assoc, mul_comm x 11, ←mul_assoc] at h1
+        have h2 := Nat.ModEq.mul_right x inv30
+        rw [one_mul] at h2
+        have : x ≡ 42 * 11 [MOD 47] := Nat.ModEq.trans (Nat.ModEq.symm h2) h1
+        exact Nat.ModEq.trans this mul42_11
+      meta:
+        problem: mathd_numbertheory_64
+- query: ProveGoal
+  args:
+    goal: |-
+      f : ℝ → ℝ → ℝ
+      h₀ : ∀ (x y : ℝ), y ≠ 0 → f x y = x - y * ↑⌊x / y⌋
+      y_ne0 : -2 / 5 ≠ 0
+      def_eval : f (3 / 8) (-2 / 5) = 3 / 8 - -2 / 5 * ↑⌊3 / 8 / (-2 / 5)⌋
+      div_simplify : 3 / 8 / (-2 / 5) = -15 / 16
+      floor_val : ⌊-15 / 16⌋ = -1
+      ⊢ f (3 / 8) (-2 / 5) = -1 / 40
+    prefix: []
+  answers:
+    - answer: |-
+        rw [def_eval, div_simplify, floor_val]
+        norm_num
+      meta:
+        problem: amc12a_2016_p3
+- query: ProveGoal
+  args:
+    goal: ⊢ 314 ∈ {a | 0 < a ∧ a ≡ 2 [MOD 3] ∧ a ≡ 4 [MOD 5] ∧ a ≡ 6 [MOD 7] ∧ a ≡ 8 [MOD 9]}
+    prefix: []
+  answers:
+    - answer: |-
+        constructor
+        · norm_num
+        · constructor
+          · norm_num
+          · constructor
+            · norm_num
+            · constructor
+              · norm_num
+              · norm_num
+      meta:
+        problem: mathd_numbertheory_690
+- query: ProveGoal
+  args:
+    goal: |-
+      u v : ℕ
+      S : Set ℕ
+      h₀ : ∀ (n : ℕ), n ∈ S ↔ 0 < n ∧ 14 * n % 100 = 46
+      h₁ : IsLeast S u
+      h₂ : IsLeast (S \ {u}) v
+      S_mod50 : ∀ (n : ℕ), n ∈ S ↔ 0 < n ∧ n % 50 = 39
+      mem39 : 39 ∈ S
+      S_repr : ∀ n ∈ S, ∃ k, n = 39 + 50 * k
+      u_eq : u = 39
+      mem89 : 89 ∈ S
+      next_lb : ∀ (n : ℕ), n ∈ S ∧ n ≠ 39 → 89 ≤ n
+      ⊢ v = 89
+    prefix: []
+  answers:
+    - answer: |-
+        rcases (h₂ : IsLeast (S \ {u}) v) with ⟨v_mem, hv_le⟩
+        rcases v_mem with ⟨v_in_S, v_ne_u⟩
+        have v_ne_39 : v ≠ 39 := by intro H; apply v_ne_u; simp [u_eq, H]
+        have mem89_sdiff : 89 ∈ S \ {u} := by
+          refine ⟨mem89, ?_⟩
+          intro H; rw [u_eq] at H; norm_num at H
+        have v_le_89 := hv_le mem89_sdiff
+        have : 89 ≤ v := next_lb v ⟨v_in_S, v_ne_39⟩
+        exact Nat.le_antisymm v_le_89 this
+      meta:
+        problem: mathd_numbertheory_13
+- query: ProveGoal
+  args:
+    goal: |-
+      S : Finset ℕ
+      h₀ : ∀ (n : ℕ), n ∈ S ↔ √↑n < 7 / 2 ∧ 2 < √↑n
+      ⊢ ∀ (n : ℕ), √↑n < 7 / 2 ↔ n ≤ 12
+    prefix: []
+  answers:
+    - answer: |-
+        intro n
+        have h := Real.sqrt_lt (Nat.cast_nonneg n) (by norm_num : 0 ≤ (7:ℝ)/2)
+        rw [h]
+        constructor
+        · intro H
+          by_contra H'
+          push_neg at H' -- gives 12 < n
+          have : 13 ≤ n := Nat.succ_le_iff.mpr H'
+          have : (13 : ℝ) ≤ (n : ℝ) := by exact_mod_cast this
+          linarith
+        · intro H
+          have : (n : ℝ) ≤ 12 := by exact_mod_cast H
+          linarith
+      meta:
+        problem: mathd_algebra_224
+- query: ProveGoal
+  args:
+    goal: |-
+      S : Finset ℝ
+      h₀ : ∀ (x : ℝ), x ∈ S ↔ 0 < x ∧ x ^ 2 ^ √2 = √2 ^ 2 ^ x
+      sqrt2_pos : 0 < √2
+      ⊢ √2 < 2
+    prefix: []
+  answers:
+    - answer: |-
+        have h1 : Real.sqrt 2 < Real.sqrt 4 := (Real.sqrt_lt (by norm_num) (by norm_num)).mpr (by norm_num)
+        have h2 : Real.sqrt 4 = 2 := by norm_num
+        rw [h2] at h1
+        exact h1
+      meta:
+        problem: amc12b_2021_p21
+- query: ProveGoal
+  args:
+    goal: |-
+      a b c : ℝ
+      h₀ : 0 < a ∧ 0 < b ∧ 0 < c
+      h₁ : ∀ (x : ℝ), 24 * x ^ 2 - 19 * x - 35 = (a * x - 5) * (2 * (b * x) + c)
+      c_eq : c = 7
+      ⊢ -30 = 2 * a * b + a * c - 10 * b - 5 * c
+    prefix: []
+  answers:
+    - answer: |-
+        have h := h₁ 1
+        simp [pow_one, mul_one] at h
+        norm_num at h
+        have : (a - 5) * (2 * b + c) = 2 * a * b + a * c - 10 * b - 5 * c := by ring
+        rw [this] at h
+        exact h
+      meta:
+        problem: mathd_algebra_140
+- query: ProveGoal
+  args:
+    goal: |-
+      n : ℕ
+      a : ℕ → ℝ
+      h₀ : ∀ (n : ℕ), |a n| < 1
+      h₁ : ∑ k ∈ Finset.range n, |a k| = 19 + |∑ k ∈ Finset.range n, a k|
+      ⊢ 19 ≤ ∑ k ∈ Finset.range n, |a k|
+    prefix: []
+  answers:
+    - answer: |-
+        rw [h₁]
+        apply le_add_of_nonneg_right
+        exact abs_nonneg (∑ k ∈ Finset.range n, a k)
+      meta:
+        problem: aime_1988_p4
+- query: ProveGoal
+  args:
+    goal: |-
+      m x : ℤ
+      h₀ : 0 ≤ x
+      h₁ : 10 ≤ m ∧ m ≤ 99
+      h₂ : 6 * x % m = 1
+      h₃ : (x - 6 ^ 2) % m = 0
+      ⊢ m = 43
+    prefix: []
+  answers:
+    - answer: |-
+        have ⟨m_ge, m_le⟩ := h₁
+        interval_cases m
+        all_goals grind
+      meta:
+        problem: mathd_numbertheory_780
+- query: ProveGoal
+  args:
+    goal: |-
+      a : ℕ → ℝ
+      h₀ : a 1 = 1
+      h₁ : a 2 = 1 / √3
+      h₂ : ∀ (n : ℕ), 1 ≤ n → a (n + 2) = (a n + a (n + 1)) / (1 - a n * a (n + 1))
+      base1 : a 1 = Real.tan (Real.pi / 4)
+      ⊢ a 2 = Real.tan (Real.pi / 6)
+    prefix: []
+  answers:
+    - answer: |-
+        rw [Real.tan_pi_div_six]
+        exact h₁
+      meta:
+        problem: amc12a_2009_p25
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem induction_seq_mul2pnp1 (n : ℕ) (u : ℕ → ℕ) (h₀ : u 0 = 0)
+        (h₁ : ∀ n, u (n + 1) = 2 * u n + (n + 1)) : u n = 2 ^ (n + 1) - (n + 2) := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - base_v
+              - u 0 + (0 + 2) = 2 ^ (0 + 1)
+            comment: 'From h₀: u 0 = 0, so LHS = 2 and RHS = 2.'
+          - prove:
+              - recur_v
+              - ∀ n, u (n + 1) + ((n + 1) + 2) = 2 * (u n + (n + 2))
+            comment: 'Using h₁: u (n+1) = 2 * u n + (n+1), then add (n+2) to both sides and regroup.'
+          - prove:
+              - v_closed
+              - ∀ n, u n + (n + 2) = 2 ^ (n + 1)
+            comment: Prove by induction on n using base_v and recur_v. The transformed sequence v n :=
+              u n + (n+2) satisfies v (n+1) = 2 * v n and v 0 = 2, hence v n = 2^(n+1).
+          - prove:
+              - goal
+              - u n = 2 ^ (n + 1) - (n + 2)
+            comment: 'From v_closed at index n: u n + (n+2) = 2^(n+1). Subtract (n+2) from both sides
+              to isolate u n.'
+        comment: Set v n = u n + (n+2). Then v (n+1) = 2*u n + (n+1) + (n+2) = 2*(u n + (n+2)) = 2*v n
+          and v 0 = 2. Hence v n = 2^(n+1). Therefore u n = v n - (n+2) = 2^(n+1) - (n+2).
+      meta:
+        problem: induction_seq_mul2pnp1
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem mathd_algebra_185 (s : Finset ℤ) (f : ℤ → ℤ) (h₀ : ∀ x, f x = abs (x + 4))
+        (h₁ : ∀ x, x ∈ s ↔ f x < 9) : s.card = 17 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - mem_char
+              - '∀ x : ℤ, x ∈ s ↔ (-12 ≤ x ∧ x ≤ 4)'
+            comment: 'From h₁: x ∈ s ↔ f x < 9 and h₀: f x = |x+4|, get |x+4| < 9. Using abs_lt, this
+              is −9 < x+4 ∧ x+4 < 9, i.e. −13 < x ∧ x < 5. Over ℤ, −13 < x ↔ −12 ≤ x and x < 5 ↔ x ≤ 4.'
+          - prove:
+              - s_eq_icc
+              - s = Finset.Icc (-12) 4
+            comment: By Finset.ext using mem_char and Finset.mem_Icc.
+          - prove:
+              - card_icc
+              - (Finset.Icc (-12) 4).card = 17
+            comment: Cardinality of the integer interval [−12, 4] is 4 − (−12) + 1 = 17.
+        comment: We characterize s as the set of integers with |x+4| < 9, convert to a closed integer
+          interval, and then count its elements.
+      meta:
+        problem: mathd_algebra_185
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: 'theorem mathd_numbertheory_326 (n : ℤ) (h₀ : (n - 1) * n * (n + 1) = 720 ) : n + 1 = 10
+      := by sorry'
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - cube_eq
+              - n ^ 3 - n = 720
+            comment: Expand (n - 1) * n * (n + 1) = n * (n^2 - 1) = n^3 - n using ring and h₀.
+          - prove:
+              - nine_val
+              - '(9 : ℤ) ^ 3 - (9 : ℤ) = 720'
+            comment: Compute 9^3 - 9 = 729 - 9 = 720.
+          - prove:
+              - n_eq_9
+              - n = 9
+            comment: From cube_eq and nine_val we have n^3 - n = 9^3 - 9. The function f(z) = z^3 - z
+              is strictly increasing (f(z+1) - f(z) = 3z^2 + 3z + 1 > 0), hence injective, so n = 9.
+          - prove:
+              - goal
+              - n + 1 = 10
+            comment: Immediate from n = 9.
+        comment: Rewrite the given product of three consecutive integers as n^3 - n. Evaluate at n=9 to
+          see 9^3 - 9 = 720. Since z ↦ z^3 - z is strictly increasing on ℤ, equality of values implies
+          n=9. Conclude n+1=10.
+      meta:
+        problem: mathd_numbertheory_326
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem amc12a_2016_p3 (f : ℝ → ℝ → ℝ)
+        (h₀ : ∀ x, ∀ (y) (_ : y ≠ 0), f x y = x - y * Int.floor (x / y)) :
+        f (3 / 8) (-(2 / 5)) = -(1 / 40) := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - y_ne0
+              - '(-(2: ℝ) / 5) ≠ 0'
+          - prove:
+              - def_eval
+              - 'f ((3: ℝ) / 8) (-(2: ℝ) / 5) = (3: ℝ) / 8 - (-(2: ℝ) / 5) * Int.floor (((3: ℝ) / 8) /
+                (-(2: ℝ) / 5))'
+          - prove:
+              - div_simplify
+              - '((3: ℝ) / 8) / (-(2: ℝ) / 5) = - (15: ℝ) / 16'
+          - prove:
+              - floor_val
+              - 'Int.floor (-(15: ℝ) / 16) = (-1: ℤ)'
+          - prove:
+              - result
+              - 'f ((3: ℝ) / 8) (-(2: ℝ) / 5) = -(1: ℝ) / 40'
+        comment: 'Apply h₀ with y = -(2/5) (which is nonzero) to express f(3/8, -(2/5)) as 3/8 − (-(2/5))
+          * floor((3/8)/(-(2/5))). Compute the division as −15/16, observe floor(−15/16) = −1, and finish
+          with arithmetic: 3/8 − (-(2/5))*(−1) = 3/8 − 2/5 = −1/40.'
+      meta:
+        problem: amc12a_2016_p3
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem mathd_algebra_421 (a b c d : ℝ) (h₀ : b = a ^ 2 + 4 * a + 6)
+        (h₁ : b = 1 / 2 * a ^ 2 + a + 6) (h₂ : d = c ^ 2 + 4 * c + 6) (h₃ : d = 1 / 2 * c ^ 2 + c + 6)
+        (h₄ : a < c) : c - a = 6 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - eq_a2
+              - ((1:ℝ) / 2) * a ^ 2 + 3 * a = 0
+            comment: 'From h₀.symm.trans h₁: a^2 + 4a + 6 = (1/2)a^2 + a + 6, subtract 6 and rearrange.'
+          - prove:
+              - eq_a3
+              - a ^ 2 + 6 * a = 0
+            comment: Multiply eq_a2 by 2.
+          - prove:
+              - sol_a
+              - a = 0 ∨ a = (-6:ℝ)
+            comment: From eq_a3, factor to a*(a+6)=0 and apply mul_eq_zero.
+          - prove:
+              - eq_c2
+              - ((1:ℝ) / 2) * c ^ 2 + 3 * c = 0
+            comment: 'Analogous to a: from h₂.symm.trans h₃ and subtract 6.'
+          - prove:
+              - eq_c3
+              - c ^ 2 + 6 * c = 0
+            comment: Multiply eq_c2 by 2.
+          - prove:
+              - sol_c
+              - c = 0 ∨ c = (-6:ℝ)
+            comment: From eq_c3, factor to c*(c+6)=0 and apply mul_eq_zero.
+          - prove:
+              - result
+              - c - a = 6
+            comment: 'From sol_a and sol_c with h₄: the only possibility with a < c is a = -6 and c =
+              0, hence c - a = 6. '
+        comment: Equating the two given quadratic expressions for b forces a to satisfy (1/2)a^2 + 3a
+          = 0, hence a ∈ {0, -6}. The same argument for c shows c ∈ {0, -6}. The inequality a < c rules
+          out the equal and reversed cases, leaving a = -6 and c = 0, so c - a = 6.
+      meta:
+        problem: mathd_algebra_421
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem aime_1984_p15 (x y z w : ℝ)
+          (h₀ :
+            x ^ 2 / (2 ^ 2 - 1) + y ^ 2 / (2 ^ 2 - 3 ^ 2) + z ^ 2 / (2 ^ 2 - 5 ^ 2) +
+                w ^ 2 / (2 ^ 2 - 7 ^ 2) =
+              1)
+          (h₁ :
+            x ^ 2 / (4 ^ 2 - 1) + y ^ 2 / (4 ^ 2 - 3 ^ 2) + z ^ 2 / (4 ^ 2 - 5 ^ 2) +
+                w ^ 2 / (4 ^ 2 - 7 ^ 2) =
+              1)
+          (h₂ :
+            x ^ 2 / (6 ^ 2 - 1) + y ^ 2 / (6 ^ 2 - 3 ^ 2) + z ^ 2 / (6 ^ 2 - 5 ^ 2) +
+                w ^ 2 / (6 ^ 2 - 7 ^ 2) =
+              1)
+          (h₃ :
+            x ^ 2 / (8 ^ 2 - 1) + y ^ 2 / (8 ^ 2 - 3 ^ 2) + z ^ 2 / (8 ^ 2 - 5 ^ 2) +
+                w ^ 2 / (8 ^ 2 - 7 ^ 2) =
+              1) :
+          x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 = 36 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - coeff_identities
+              - |-
+                (((315: ℝ) / 512) / ((2: ℝ) ^ 2 - (1: ℝ)) + ((693: ℝ) / 256) / ((4: ℝ) ^ 2 - (1: ℝ)) + ((27027: ℝ) / 3584) / ((6: ℝ) ^ 2 - (1: ℝ)) + ((6435: ℝ) / 256) / ((8: ℝ) ^ 2 - (1: ℝ)) = 1)
+                ∧ (((315: ℝ) / 512) / ((2: ℝ) ^ 2 - (3: ℝ) ^ 2) + ((693: ℝ) / 256) / ((4: ℝ) ^ 2 - (3: ℝ) ^ 2) + ((27027: ℝ) / 3584) / ((6: ℝ) ^ 2 - (3: ℝ) ^ 2) + ((6435: ℝ) / 256) / ((8: ℝ) ^ 2 - (3: ℝ) ^ 2) = 1)
+                ∧ (((315: ℝ) / 512) / ((2: ℝ) ^ 2 - (5: ℝ) ^ 2) + ((693: ℝ) / 256) / ((4: ℝ) ^ 2 - (5: ℝ) ^ 2) + ((27027: ℝ) / 3584) / ((6: ℝ) ^ 2 - (5: ℝ) ^ 2) + ((6435: ℝ) / 256) / ((8: ℝ) ^ 2 - (5: ℝ) ^ 2) = 1)
+                ∧ (((315: ℝ) / 512) / ((2: ℝ) ^ 2 - (7: ℝ) ^ 2) + ((693: ℝ) / 256) / ((4: ℝ) ^ 2 - (7: ℝ) ^ 2) + ((27027: ℝ) / 3584) / ((6: ℝ) ^ 2 - (7: ℝ) ^ 2) + ((6435: ℝ) / 256) / ((8: ℝ) ^ 2 - (7: ℝ) ^ 2) = 1)
+            comment: 'These follow from a Lagrange-interpolation/partial fractions construction: choose
+              a_n = H(e_n)/D''(e_n) where D(t)=∏_{e∈{4,16,36,64}}(e-t) and H(t)=∏_{o∈{1,9,25,49}}(t-o).
+              Then ∑ a_n/(e_n - t) = 1 at t ∈ {1,9,25,49}. The explicit simplified values are used to
+              ease arithmetic in Lean.'
+          - prove:
+              - sum_coeffs
+              - '(315: ℝ) / 512 + 693 / 256 + 27027 / 3584 + 6435 / 256 = 36'
+            comment: Computed from the leading-coefficient comparison P = D - H (hence ∑ a_n equals the
+              t^3-coefficient of H minus that of D), or by direct rational arithmetic with the explicit
+              fractions.
+          - prove:
+              - linear_combination
+              - x ^ 2 + y ^ 2 + z ^ 2 + w ^ 2 = 36
+            comment: Multiply h₀, h₁, h₂, h₃ respectively by 315/512, 693/256, 27027/3584, 6435/256 and
+              add. Grouping terms by x^2, y^2, z^2, w^2 and using coeff_identities turns the LHS into
+              x^2 + y^2 + z^2 + w^2; the RHS becomes the sum of the coefficients, which equals 36 by sum_coeffs.
+        comment: 'Idea: Find constants a₂,a₄,a₆,a₈ such that for m ∈ {1,3,5,7} we have ∑ a_n/(n^2 − m^2)
+          = 1. Then the same linear combination of the four given equations yields x^2 + y^2 + z^2 + w^2
+          on the left and ∑ a_n on the right. Construct a_n via Lagrange interpolation/partial fractions;
+          explicitly, a₂=315/512, a₄=693/256, a₆=27027/3584, a₈=6435/256, which satisfy the needed identities
+          and sum to 36.'
+      meta:
+        problem: aime_1984_p15
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: 'theorem induction_divisibility_9div10tonm1 (n : ℕ) (h₀ : 0 < n) : 9 ∣ 10 ^ n - 1 := by sorry'
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - base_div
+              - 9 ∣ 10 ^ 1 - 1
+            comment: Since 10 ^ 1 - 1 = 9, clearly divisible by 9.
+          - prove:
+              - step_div
+              - ∀ k, 9 ∣ 10 ^ k - 1 → 9 ∣ 10 ^ (k + 1) - 1
+            comment: If 10^k - 1 = 9t, then 10^(k+1) - 1 = 10*(10^k) - 1 = 10*(9t + 1) - 1 = 90t + 9 =
+              9*(10t + 1).
+          - prove:
+              - pos_induction
+              - ∀ n, 0 < n → 9 ∣ 10 ^ n - 1
+            comment: By induction on n > 0. Base n=1 uses base_div. Step uses step_div.
+          - prove:
+              - result
+              - 9 ∣ 10 ^ n - 1
+            comment: Apply pos_induction to n with h₀.
+        comment: We use that 10 ≡ 1 (mod 9), formalized via an induction showing 9 | 10^n - 1 for all
+          positive n.
+      meta:
+        problem: induction_divisibility_9div10tonm1
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem amc12_2001_p2 (a b n : ℕ) (h₀ : 1 ≤ a ∧ a ≤ 9) (h₁ : 0 ≤ b ∧ b ≤ 9) (h₂ : n = 10 * a + b)
+        (h₃ : n = a * b + a + b) : b = 9 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - eq_mul
+              - a * 10 = a * (b + 1)
+            comment: 'From h₂ and h₃: 10*a + b = a*b + a + b. Cancel the + b using Nat.add_right_cancel,
+              then factor a on the right using distributivity and commute 10*a to a*10.'
+          - prove:
+              - a_ne_zero
+              - a ≠ 0
+            comment: 'From h₀ : 1 ≤ a, hence a ≠ 0.'
+          - prove:
+              - cancel_mul
+              - 10 = b + 1
+            comment: Cancel the common left factor a in eq_mul using Nat.mul_left_cancel and a_ne_zero.
+          - prove:
+              - b_eq
+              - b = 9
+            comment: From 10 = b + 1, rewrite 10 as 9 + 1 and cancel +1 on the right using Nat.add_right_cancel.
+        comment: From 10a + b = ab + a + b, cancel b to get 10a = ab + a = a(b+1). Since a ≥ 1, we cancel
+          a to obtain 10 = b + 1, hence b = 9.
+      meta:
+        problem: amc12_2001_p2
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem amc12a_2003_p25 (a b : ℝ) (f : ℝ → ℝ) (h₀ : 0 < b)
+        (h₁ : ∀ x, f x = Real.sqrt (a * x ^ 2 + b * x)) (h₂ : { x | 0 ≤ f x } = f '' { x | 0 ≤ f x }) :
+        a = 0 ∨ a = -4 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - nonneg_univ
+              - '{x : ℝ | 0 ≤ f x} = Set.univ'
+            comment: Real.sqrt is always nonnegative; use h₁ to rewrite f and Real.sqrt_nonneg to show
+              the predicate holds for all x.
+          - prove:
+              - range_univ
+              - f '' Set.univ = Set.univ
+            comment: Rewrite h₂ using nonneg_univ on both sides.
+          - prove:
+              - image_subset_nonneg
+              - 'f '''' Set.univ ⊆ {y : ℝ | 0 ≤ y}'
+            comment: If y ∈ f '' Set.univ then y = f x for some x; rewrite with h₁ and use Real.sqrt_nonneg
+              to conclude 0 ≤ y.
+          - prove:
+              - univ_subset_nonneg
+              - 'Set.univ ⊆ {y : ℝ | 0 ≤ y}'
+            comment: Combine range_univ with image_subset_nonneg.
+          - prove:
+              - contra
+              - 'False'
+            comment: 'From univ_subset_nonneg we get 0 ≤ (-1 : ℝ), contradicting (-1 : ℝ) < 0.'
+          - prove:
+              - goal
+              - a = 0 ∨ a = -4
+            comment: Conclude from False by ex falso (False.elim).
+        comment: 'Key idea: since sqrt outputs are nonnegative, {x | 0 ≤ f x} = univ, so h₂ forces f ''''
+          univ = univ. But f '''' univ consists only of nonnegative reals, yielding a contradiction. From
+          False, the disjunction follows.'
+      meta:
+        problem: amc12a_2003_p25
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem amc12a_2017_p7 (f : ℕ → ℝ) (h₀ : f 1 = 2) (h₁ : ∀ n, 1 < n ∧ Even n → f n = f (n - 1) + 1)
+        (h₂ : ∀ n, 1 < n ∧ Odd n → f n = f (n - 2) + 2) : f 2017 = 2018 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - oddstep
+              - '∀ k : ℕ, f (1 + 2 * (k + 1)) = f (1 + 2 * k) + 2'
+            comment: Apply h₂ with n = 1 + 2*(k+1); note 1 < 1 + 2*(k+1) and Odd (1 + 2*(k+1)).
+          - prove:
+              - closedform
+              - '∀ k : ℕ, f (1 + 2 * k) = (2:ℝ) + (2:ℝ) * (k:ℝ)'
+            comment: 'Prove by induction on k using base h₀ : f 1 = 2 and the recurrence oddstep.'
+          - prove:
+              - nat_arith
+              - 1 + 2 * 1008 = 2017
+            comment: Simple arithmetic on ℕ.
+          - prove:
+              - real_arith
+              - (2:ℝ) + (2:ℝ) * (1008:ℝ) = 2018
+            comment: Simple arithmetic on ℝ.
+          - prove:
+              - goal
+              - f 2017 = 2018
+            comment: From closedform with k = 1008, together with nat_arith and real_arith.
+        comment: 'Outline: Show by induction that for all k, f(1 + 2k) = 2 + 2k using the odd-step recurrence
+          from h₂ and the base h₀. Then plug k = 1008 (since 2017 = 1 + 2*1008) to obtain f 2017 = 2018.'
+      meta:
+        problem: amc12a_2017_p7
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem amc12a_2010_p10 (p q : ℝ) (a : ℕ → ℝ) (h₀ : ∀ n, a (n + 2) - a (n + 1) = a (n + 1) - a n)
+        (h₁ : a 1 = p) (h₂ : a 2 = 9) (h₃ : a 3 = 3 * p - q) (h₄ : a 4 = 3 * p + q) : a 2010 = 8041 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - q_pair
+              - q = 4 * p - 18 ∧ q = p - 3
+            comment: 'From h₀ with n=1: a 3 - a 2 = a 2 - a 1, and h₁–h₃, get 3p - q - 9 = 9 - p, hence
+              q = 4p - 18. From h₀ with n=2: a 4 - a 3 = a 3 - a 2, and h₂–h₄, get (3p+q)-(3p-q) = (3p-q)-9,
+              hence q = p - 3.'
+          - prove:
+              - p_val
+              - p = 5
+            comment: 'Equate the two expressions for q in q_pair: 4p - 18 = p - 3 ⇒ 3p = 15 ⇒ p = 5.'
+          - prove:
+              - d_val
+              - a 2 - a 1 = 4
+            comment: 'From h₂, h₁ and p_val: a 2 - a 1 = 9 - p = 9 - 5 = 4.'
+          - prove:
+              - diff_const4
+              - ∀ n, a (n + 1) - a n = 4
+            comment: Let d n := a (n+1) - a n. From h₀, d (n+1) = d n, so by induction d n = d 1 = a 2
+              - a 1 = 4 (using d_val).
+          - prove:
+              - formula_m
+              - '∀ m, a (m + 2) = 9 + (m : ℝ) * 4'
+            comment: By induction on m using base a 2 = 9 (h₂) and the step a (k+3) = a (k+2) + 4 from
+              diff_const4 with n = k+2.
+          - prove:
+              - result
+              - a 2010 = 8041
+            comment: 'Apply formula_m with m = 2008: a 2010 = 9 + (2008 : ℝ)*4 = 9 + 8032 = 8041.'
+        comment: The recurrence h₀ shows a has constant first differences, so it is an arithmetic progression.
+          Using the given values, we first solve for p (hence q) via two consecutive-difference equations,
+          finding p = 5. Thus the common difference is a 2 - a 1 = 9 - 5 = 4. Then we express a (m+2)
+          = 9 + 4 m and evaluate at m = 2008 to get a 2010 = 8041.
+      meta:
+        problem: amc12a_2010_p10
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem imo_1961_p1 (x y z a b : ℝ) (h₀ : 0 < x ∧ 0 < y ∧ 0 < z) (h₁ : x ≠ y) (h₂ : y ≠ z)
+        (h₃ : z ≠ x) (h₄ : x + y + z = a) (h₅ : x ^ 2 + y ^ 2 + z ^ 2 = b ^ 2) (h₆ : x * y = z ^ 2) :
+        0 < a ∧ b ^ 2 < a ^ 2 ∧ a ^ 2 < 3 * b ^ 2 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - pos_a
+              - 0 < a
+            comment: 'From h₀ we have 0 < x, 0 < y, 0 < z, hence 0 < x + y + z. Using h₄ : x + y + z =
+              a gives 0 < a.'
+          - prove:
+              - eq_a2
+              - a ^ 2 = b ^ 2 + 2 * (x * y + y * z + z * x)
+            comment: Expand (x + y + z)^2 = x^2 + y^2 + z^2 + 2(xy + yz + zx). Substitute h₄ and h₅ to
+              rewrite to the stated identity.
+          - prove:
+              - b_lt_a
+              - b ^ 2 < a ^ 2
+            comment: From h₀, each of x*y, y*z, z*x is positive, hence S := x*y + y*z + z*x > 0. Using
+              eq_a2, we get a^2 = b^2 + 2*S with 2*S > 0, so b^2 < a^2.
+          - prove:
+              - diff_eq
+              - (x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2 = 2 * (b ^ 2 - (x * y + y * z + z * x))
+            comment: 'Algebraic identity: (x−y)^2 + (y−z)^2 + (z−x)^2 = 2(x^2 + y^2 + z^2 − xy − yz −
+              zx). Substitute h₅ to replace x^2 + y^2 + z^2 by b^2.'
+          - prove:
+              - sumdiff_pos
+              - 0 < (x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2
+            comment: Since x ≠ y (h₁), we have (x − y)^2 > 0; the other squared terms are ≥ 0, so the
+              sum is > 0.
+          - prove:
+              - sumxy_lt_b
+              - x * y + y * z + z * x < b ^ 2
+            comment: From diff_eq and sumdiff_pos, we have 0 < 2 * (b^2 − (x*y + y*z + z*x)), hence b^2
+              − (x*y + y*z + z*x) > 0, so x*y + y*z + z*x < b^2.
+          - prove:
+              - a2_lt_3b2
+              - a ^ 2 < 3 * b ^ 2
+            comment: From eq_a2, a^2 = b^2 + 2*S where S = x*y + y*z + z*x. By sumxy_lt_b, S < b^2, hence
+              a^2 < b^2 + 2*b^2 = 3*b^2.
+        comment: We obtain 0 < a from positivity of x,y,z and the definition a = x + y + z. Next, expand
+          a^2 to relate it to b^2 and the sum of pairwise products, yielding a^2 = b^2 + 2(xy + yz + zx).
+          Since x,y,z > 0, the pairwise products sum is positive, giving b^2 < a^2. For the upper bound,
+          use the identity summing squares of pairwise differences to show b^2 > xy + yz + zx (strictly,
+          since not all equal), then substitute into the expression for a^2 to get a^2 < 3 b^2. Thus 0
+          < a ∧ b^2 < a^2 ∧ a^2 < 3 b^2.
+      meta:
+        problem: imo_1961_p1
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem mathd_numbertheory_149 :
+        (∑ k ∈ Finset.filter (fun x => x % 8 = 5 ∧ x % 6 = 3) (Finset.range 50), k) = 66 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - classify_solutions
+              - ∀ k ∈ Finset.range 50, (k % 8 = 5 ∧ k % 6 = 3) ↔ (k = 21 ∨ k = 45)
+            comment: Solve the simultaneous congruences modulo lcm(8,6)=24; within 0 ≤ k < 50 the only
+              solutions are 21 and 45.
+          - prove:
+              - filter_eq_pair
+              - 'Finset.filter (fun x => x % 8 = 5 ∧ x % 6 = 3) (Finset.range 50) = ({21, 45} : Finset
+                ℕ)'
+            comment: Use classify_solutions to extensionality-prove the filtered finset equals the two-element
+              finset {21,45}.
+          - prove:
+              - sum_pair
+              - '(∑ k ∈ ({21, 45} : Finset ℕ), k) = 66'
+            comment: Compute 21 + 45 = 66.
+        comment: Rewrite the filtered sum using filter_eq_pair, then evaluate the finite sum over the
+          two elements.
+      meta:
+        problem: mathd_numbertheory_149
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem mathd_numbertheory_35 (S : Finset ℕ) (h₀ : ∀ n : ℕ, n ∈ S ↔ n ∣ Nat.sqrt 196) :
+          (∑ k ∈ S, k) = 24 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - sqrt196
+              - Nat.sqrt 196 = 14
+            comment: '196 is a perfect square: 14^2 = 196, so its natural square root is 14.'
+          - prove:
+              - memS_div14
+              - '∀ n : ℕ, n ∈ S ↔ n ∣ 14'
+            comment: Rewrite h₀ using sqrt196.
+          - prove:
+              - divisors14
+              - '∀ n : ℕ, n ∣ 14 ↔ n = 1 ∨ n = 2 ∨ n = 7 ∨ n = 14'
+            comment: The only natural divisors of 14 are 1, 2, 7, and 14.
+          - prove:
+              - S_eq
+              - 'S = ({1, 2, 7, 14} : Finset ℕ)'
+            comment: Use Finset.ext with memS_div14 and divisors14.
+          - prove:
+              - sum_eval
+              - '(∑ k ∈ ({1, 2, 7, 14} : Finset ℕ), k) = 24'
+            comment: Compute the finite sum 1 + 2 + 7 + 14 = 24, then rewrite by S_eq to conclude.
+        comment: Identify Nat.sqrt 196 = 14, characterize S as the divisors of 14, enumerate those divisors,
+          equate S with the explicit Finset {1,2,7,14}, and evaluate the sum.
+      meta:
+        problem: mathd_numbertheory_35
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: 'theorem induction_ineq_nsqlefactn (n : ℕ) (h₀ : 4 ≤ n) : n ^ 2 ≤ (Nat.factorial n) := by
+      sorry'
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - base_case
+              - (4:ℕ) ^ 2 ≤ Nat.factorial 4
+            comment: 'Base case: 16 ≤ 24.'
+          - prove:
+              - m_sq_ge_succ
+              - ∀ m, 4 ≤ m → m + 1 ≤ m ^ 2
+            comment: For m ≥ 4, we have m ≥ 2, hence m^2 ≥ 2m ≥ m+1.
+          - prove:
+              - induction_step
+              - ∀ m, 4 ≤ m → (m ^ 2 ≤ Nat.factorial m → (m + 1) ^ 2 ≤ Nat.factorial (m + 1))
+            comment: Use (m+1)! = (m+1)·m!, multiply the IH by (m+1), and compare (m+1)^2 ≤ (m+1)·m^2
+              using m+1 ≤ m^2 from the previous step.
+          - prove:
+              - strong_form
+              - ∀ n, 4 ≤ n → n ^ 2 ≤ Nat.factorial n
+            comment: Apply Nat.le_induction starting at 4 with base_case and induction_step.
+          - prove:
+              - goal
+              - n ^ 2 ≤ Nat.factorial n
+            comment: 'Instantiate strong_form with the given h₀ : 4 ≤ n.'
+        comment: 'We prove by induction on n ≥ 4. Base: 4^2 ≤ 4! holds (16 ≤ 24). Inductive step: assuming
+          m^2 ≤ m!, then (m+1)! = (m+1)m! ≥ (m+1)m^2; for m ≥ 4, m^2 ≥ m+1, hence (m+1)m^2 ≥ (m+1)^2.
+          Thus (m+1)^2 ≤ (m+1)!. By le_induction, the claim holds for all n ≥ 4, and in particular for
+          the given n.'
+      meta:
+        problem: induction_ineq_nsqlefactn
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem amc12_2000_p15 (f : ℂ → ℂ) (h₀ : ∀ x, f (x / 3) = x ^ 2 + x + 1)
+        (h₁ : Fintype (f ⁻¹' {7})) : (∑ y ∈ (f ⁻¹' {7}).toFinset, y / 3) = -1 / 9 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - quad_factor
+              - '∀ z : ℂ, z ^ 2 + z - 6 = 0 ↔ z = (2:ℂ) ∨ z = (-3:ℂ)'
+            comment: Factor x^2 + x - 6 = (x - 2) * (x + 3) and use mul_eq_zero.
+          - prove:
+              - preimage_eq_poly
+              - '∀ y : ℂ, y ∈ (f ⁻¹'' {7}) ↔ ((3:ℂ) * y) ^ 2 + ((3:ℂ) * y) + 1 = 7'
+            comment: 'From h₀ with x = 3y: f y = (3y)^2 + (3y) + 1, so membership in the preimage {7}
+              is exactly this equality.'
+          - prove:
+              - preimage_char
+              - '∀ y : ℂ, y ∈ (f ⁻¹'' {7}) ↔ y = (2:ℂ) / 3 ∨ y = (-1:ℂ)'
+            comment: Rewrite preimage_eq_poly as ((3y)^2 + (3y) - 6 = 0), apply quad_factor to z = 3y,
+              and divide by 3 in each disjunct.
+          - prove:
+              - finset_eq
+              - '(f ⁻¹'' {7}).toFinset = ({(2:ℂ) / 3, (-1:ℂ)} : Set ℂ).toFinset'
+            comment: Use ext on elements and the characterization preimage_char.
+          - prove:
+              - sum_eval
+              - (∑ y ∈ (f ⁻¹' {7}).toFinset, y / 3) = ((2:ℂ) / 3) / 3 + ((-1:ℂ) / 3)
+            comment: Rewrite the summation over the equal finset (finset_eq) and evaluate the sum over
+              a two-element finset.
+          - prove:
+              - goal
+              - (∑ y ∈ (f ⁻¹' {7}).toFinset, y / 3) = (-1:ℂ) / 9
+            comment: Compute ((2:ℂ)/3)/3 + ((-1:ℂ)/3) = (2:ℂ)/9 - (1:ℂ)/3 = (2 - 3)/9 = (-1:ℂ)/9.
+        comment: Use the given functional identity f(x/3) = x^2 + x + 1 to characterize the preimage of
+          {7} via the quadratic x^2 + x - 6 = 0. Factor the quadratic to find its roots 2 and -3, then
+          translate back to the preimage elements y = 2/3 and y = -1. Finally, compute the sum of y/3
+          over this two-element set to obtain -1/9.
+      meta:
+        problem: amc12_2000_p15
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: 'theorem mathd_numbertheory_32 (S : Finset ℕ) (h₀ : ∀ n : ℕ, n ∈ S ↔ n ∣ 36) : (∑ k ∈ S,
+      k) = 91 := by sorry'
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - S_eq_divs
+              - S = Nat.divisors 36
+            comment: 'Use Finset.ext; for n : ℕ, n ∈ Nat.divisors 36 ↔ n ∣ 36, and h₀ gives n ∈ S ↔ n
+              ∣ 36.'
+          - prove:
+              - sum_divs_36
+              - (∑ k ∈ Nat.divisors 36, k) = 91
+            comment: 'Compute the sum of divisors of 36, e.g. via multiplicativity: 36 = 2^2 * 3^2, σ(2^2)
+              = 1+2+4 = 7, σ(3^2) = 1+3+9 = 13, so σ(36) = 7*13 = 91.'
+          - prove:
+              - goal
+              - (∑ k ∈ S, k) = 91
+            comment: Rewrite the LHS using S_eq_divs, then apply sum_divs_36.
+        comment: Identify S with the finset of divisors of 36 using the membership characterization, then
+          compute the sum of divisors of 36 (either by explicit enumeration or via multiplicativity of
+          the sum-of-divisors function).
+      meta:
+        problem: mathd_numbertheory_32
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: 'theorem algebra_apb4leq8ta4pb4 (a b : ℝ) (h₀ : 0 < a ∧ 0 < b) : (a + b) ^ 4 ≤ 8 * (a ^ 4
+      + b ^ 4) := by sorry'
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - ineq1
+              - (a + b) ^ 2 ≤ (2:ℝ) * (a ^ 2 + b ^ 2)
+            comment: Uses (a - b)^2 ≥ 0 to get 2ab ≤ a^2 + b^2, hence (a+b)^2 ≤ 2(a^2+b^2).
+          - prove:
+              - eq_lhs
+              - (a + b) ^ 4 = ((a + b) ^ 2) ^ 2
+            comment: 'By power associativity: (·)^4 = ((·)^2)^2 for real powers with natural exponents.'
+          - prove:
+              - eq_rhs
+              - ((2:ℝ) * (a ^ 2 + b ^ 2)) ^ 2 = (4:ℝ) * (a ^ 2 + b ^ 2) ^ 2
+            comment: 'Expand the square: (c·u)^2 = c^2 · u^2 with c = 2, and 2^2 = 4.'
+          - prove:
+              - pow4_le
+              - (a + b) ^ 4 ≤ (4:ℝ) * (a ^ 2 + b ^ 2) ^ 2
+            comment: From ineq1 together with eq_lhs and eq_rhs, using that 0 ≤ (a+b)^2 and 0 ≤ 2(a^2+b^2)
+              so squaring preserves ≤.
+          - prove:
+              - ineq2
+              - (a ^ 2 + b ^ 2) ^ 2 ≤ (2:ℝ) * (a ^ 4 + b ^ 4)
+            comment: Apply ineq1 with u = a^2, v = b^2.
+          - prove:
+              - final
+              - (a + b) ^ 4 ≤ (8:ℝ) * (a ^ 4 + b ^ 4)
+            comment: 'Combine pow4_le and ineq2: (a+b)^4 ≤ 4(a^2+b^2)^2 ≤ 4·2(a^4+b^4) = 8(a^4+b^4).'
+        comment: 'Strategy: use the elementary inequality (u+v)^2 ≤ 2(u^2+v^2) twice and the fact that
+          squaring preserves order on nonnegative reals. Chain the bounds to reach (a+b)^4 ≤ 8(a^4+b^4).
+          The positivity hypothesis is not needed.'
+      meta:
+        problem: algebra_apb4leq8ta4pb4
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem algebra_amgm_sumasqdivbsqgeqsumbdiva (a b c : ℝ) (h₀ : 0 < a ∧ 0 < b ∧ 0 < c) :
+        a ^ 2 / b ^ 2 + b ^ 2 / c ^ 2 + c ^ 2 / a ^ 2 ≥ b / a + c / b + a / c := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - b_ne0
+              - b ≠ 0
+            comment: 'From h₀: 0 < b implies b ≠ 0.'
+          - prove:
+              - c_ne0
+              - c ≠ 0
+            comment: 'From h₀: 0 < c implies c ≠ 0.'
+          - prove:
+              - a_ne0
+              - a ≠ 0
+            comment: 'From h₀: 0 < a implies a ≠ 0.'
+          - prove:
+              - eq_lhs
+              - a ^ 2 / b ^ 2 + b ^ 2 / c ^ 2 + c ^ 2 / a ^ 2 = (a / b) ^ 2 + (b / c) ^ 2 + (c / a) ^
+                2
+            comment: Since a,b,c ≠ 0, use (x^2)/(y^2) = (x/y)^2 in a field to rewrite each term.
+          - prove:
+              - eq_rhs
+              - b / a + c / b + a / c = (a / b) * (b / c) + (b / c) * (c / a) + (c / a) * (a / b)
+            comment: 'Just multiply and cancel: (a/b)*(b/c)=a/c, (b/c)*(c/a)=b/a, (c/a)*(a/b)=c/b.'
+          - prove:
+              - sq_sum_ge_prod_sum
+              - (a / b) ^ 2 + (b / c) ^ 2 + (c / a) ^ 2 >= (a / b) * (b / c) + (b / c) * (c / a) + (c
+                / a) * (a / b)
+            comment: From (x - y)^2 + (y - z)^2 + (z - x)^2 ≥ 0, expand to get 2*(x^2 + y^2 + z^2) - 2*(xy
+              + yz + zx) ≥ 0, hence x^2 + y^2 + z^2 ≥ xy + yz + zx, with x=a/b, y=b/c, z=c/a.
+          - prove:
+              - main
+              - a ^ 2 / b ^ 2 + b ^ 2 / c ^ 2 + c ^ 2 / a ^ 2 >= b / a + c / b + a / c
+            comment: Combine eq_lhs, eq_rhs, and sq_sum_ge_prod_sum.
+        comment: Set x=a/b, y=b/c, z=c/a (well-defined since a,b,c>0). Then the target inequality becomes
+          x^2+y^2+z^2 ≥ xy+yz+zx, which follows from the sum of squares identity.
+      meta:
+        problem: algebra_amgm_sumasqdivbsqgeqsumbdiva
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: 'theorem mathd_numbertheory_48 (b : ℕ) (h₀ : 0 < b) (h₁ : 3 * b ^ 2 + 2 * b + 1 = 57) : b
+      = 4 := by sorry'
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - cast_eq
+              - '((3 * b ^ 2 + 2 * b + 1 : ℕ) : ℤ) = (57 : ℤ)'
+            comment: Cast the given equality to ℤ.
+          - prove:
+              - int_poly
+              - '(3 : ℤ) * (b : ℤ) ^ 2 + (2 : ℤ) * (b : ℤ) + 1 = (57 : ℤ)'
+            comment: Rewrite the casted polynomial using standard cast lemmas for +, *, and ^.
+          - prove:
+              - int_eq0
+              - '(3 : ℤ) * (b : ℤ) ^ 2 + (2 : ℤ) * (b : ℤ) - (56 : ℤ) = 0'
+            comment: Move 57 to the left-hand side.
+          - prove:
+              - factored
+              - '((3 : ℤ) * (b : ℤ) + 14) * ((b : ℤ) - 4) = 0'
+            comment: 'Factor 3z^2 + 2z - 56 = (3z + 14)(z - 4) and apply it to z = (b : ℤ).'
+          - prove:
+              - pos_term
+              - '0 < (3 : ℤ) * (b : ℤ) + 14'
+            comment: 'Since (b : ℤ) ≥ 0, we have 3*(b:ℤ) ≥ 0, hence the sum with 14 is strictly positive.'
+          - prove:
+              - diff_zero
+              - '(b : ℤ) - 4 = 0'
+            comment: From factored = 0 and pos_term, use mul_eq_zero and exclude the first factor (it
+              is nonzero) to get the second factor is zero.
+          - prove:
+              - coe_eq
+              - '(b : ℤ) = 4'
+            comment: Add 4 to both sides of diff_zero.
+          - prove:
+              - result
+              - b = 4
+            comment: Apply Int.ofNat.inj to coe_eq.
+        comment: 'Cast the equation to integers, factor the quadratic 3b^2 + 2b - 56, use positivity to
+          rule out the factor 3b+14, and conclude (b : ℤ) = 4, hence b = 4.'
+      meta:
+        problem: mathd_numbertheory_48
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: 'theorem induction_divisibility_3divnto3m2n (n : ℕ) : 3 ∣ n ^ 3 + 2 * n := by sorry'
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - step_expand
+              - '∀ m : ℕ, (m + 1) ^ 3 + 2 * (m + 1) = (m ^ 3 + 2 * m) + 3 * (m ^ 2 + m + 1)'
+            comment: Binomial expansion shows the increment from m to m+1 adds a multiple of 3.
+          - prove:
+              - base
+              - 3 ∣ 0 ^ 3 + 2 * 0
+            comment: Trivial since the expression equals 0.
+          - prove:
+              - ind_step
+              - '∀ m : ℕ, (3 ∣ m ^ 3 + 2 * m) → (3 ∣ (m + 1) ^ 3 + 2 * (m + 1))'
+            comment: Use step_expand and that 3 ∣ 3 * (m^2 + m + 1) to pass divisibility to the successor.
+          - prove:
+              - goal
+              - 3 ∣ n ^ 3 + 2 * n
+            comment: Conclude by induction on n using base and ind_step.
+        comment: We prove by induction. The key algebraic identity (m+1)^3 + 2(m+1) = (m^3 + 2m) + 3(m^2
+          + m + 1) shows the expression increases by a multiple of 3, preserving divisibility from m to
+          m+1. The base case n=0 is immediate.
+      meta:
+        problem: induction_divisibility_3divnto3m2n
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem numbertheory_prmdvsneqnsqmodpeq0 (n : ℤ) (p : ℕ) (h₀ : Nat.Prime p) :
+        ↑p ∣ n ↔ n ^ 2 % p = 0 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - dvd_sq
+              - (↑p ∣ n) → (↑p ∣ n ^ 2)
+            comment: If p divides n, then it divides any multiple, in particular n * n = n^2.
+          - prove:
+              - mod_zero_of_dvd
+              - (↑p ∣ n ^ 2) → n ^ 2 % p = 0
+            comment: Divisibility by ↑p is equivalent to having remainder 0 upon division by p.
+          - prove:
+              - dir1
+              - (↑p ∣ n) → n ^ 2 % p = 0
+            comment: Combine dvd_sq and mod_zero_of_dvd.
+          - prove:
+              - dvd_of_mod_zero
+              - n ^ 2 % p = 0 → (↑p ∣ n ^ 2)
+            comment: Conversely, remainder 0 implies divisibility.
+          - prove:
+              - prime_dvd_sq
+              - (↑p ∣ n ^ 2) → (↑p ∣ n)
+            comment: Since p is prime, if p divides n^2 = n * n, then p divides n.
+          - prove:
+              - dir2
+              - n ^ 2 % p = 0 → (↑p ∣ n)
+            comment: Combine dvd_of_mod_zero and prime_dvd_sq.
+          - prove:
+              - goal
+              - ↑p ∣ n ↔ n ^ 2 % p = 0
+            comment: Iff from dir1 and dir2.
+        comment: 'Forward: p | n ⇒ p | n^2 ⇒ n^2 % p = 0. Backward: n^2 % p = 0 ⇒ p | n^2 ⇒ (by primality)
+          p | n.'
+      meta:
+        problem: numbertheory_prmdvsneqnsqmodpeq0
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem amc12b_2003_p6 (a r : ℝ) (u : ℕ → ℝ) (h₀ : ∀ k, u k = a * r ^ k) (h₁ : u 1 = 2)
+        (h₂ : u 3 = 6) : u 0 = 2 / Real.sqrt 3 ∨ u 0 = -(2 / Real.sqrt 3) := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - ar_eq2
+              - a * r = 2
+            comment: From h₀ at k = 1 and h₁, using r ^ 1 = r.
+          - prove:
+              - ar3_eq6
+              - a * r ^ 3 = 6
+            comment: From h₀ at k = 3 and h₂.
+          - prove:
+              - r2_eq3
+              - r ^ 2 = 3
+            comment: Divide ar3_eq6 by ar_eq2 (since a * r = 2 ≠ 0), simplifying r^3 / r to r^2 and 6
+              / 2 to 3.
+          - prove:
+              - u0_eq_a
+              - u 0 = a
+            comment: From h₀ at k = 0, since r ^ 0 = 1.
+          - prove:
+              - a2_eq_4div3
+              - a ^ 2 = 4 / 3
+            comment: From ar_eq2, a = 2 / r (using r ≠ 0 from r^2 = 3). Squaring gives a^2 = 4 / r^2 =
+              4 / 3 by r2_eq3.
+          - prove:
+              - sq_target
+              - (2 / Real.sqrt 3) ^ 2 = 4 / 3
+            comment: Compute (2 / √3)^2 = 4 / (√3)^2 and use (Real.sqrt 3) ^ 2 = 3.
+          - prove:
+              - u0_sq_eq
+              - (u 0) ^ 2 = (2 / Real.sqrt 3) ^ 2
+            comment: By u0_eq_a and a2_eq_4div3 together with sq_target.
+          - prove:
+              - u0_cases
+              - u 0 = 2 / Real.sqrt 3 ∨ u 0 = -(2 / Real.sqrt 3)
+            comment: 'From u0_sq_eq using mul_self_eq_mul_self_iff for reals: x^2 = y^2 implies x = y
+              ∨ x = -y.'
+        comment: 'Geometric sequence: from u 1 = 2 and u 3 = 6 with u k = a r^k, deduce r^2 = 3. Then
+          a = u 0 and a^2 = 4/3. Since (2/√3)^2 = 4/3, we get (u 0)^2 = (2/√3)^2, hence u 0 = ± 2/√3.'
+      meta:
+        problem: amc12b_2003_p6
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem numbertheory_nckeqnm1ckpnm1ckm1 (n k : ℕ) (h₀ : 0 < n ∧ 0 < k) (h₁ : k ≤ n) :
+        Nat.choose n k = Nat.choose (n - 1) k + Nat.choose (n - 1) (k - 1) := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - hn
+              - Nat.succ (n - 1) = n
+            comment: 'From Nat.succ_pred_eq_of_pos using h₀.1 : 0 < n.'
+          - prove:
+              - hk
+              - Nat.succ (k - 1) = k
+            comment: 'From Nat.succ_pred_eq_of_pos using h₀.2 : 0 < k.'
+          - prove:
+              - pascal
+              - Nat.choose (Nat.succ (n - 1)) (Nat.succ (k - 1)) = Nat.choose (n - 1) (Nat.succ (k - 1))
+                + Nat.choose (n - 1) (k - 1)
+            comment: This is Nat.choose_succ_succ applied to (n-1, k-1).
+          - prove:
+              - goal
+              - Nat.choose n k = Nat.choose (n - 1) k + Nat.choose (n - 1) (k - 1)
+            comment: Rewrite pascal using hn and hk on both sides.
+        comment: Set n' = n-1 and k' = k-1. Apply Pascal’s identity Nat.choose_succ_succ to (n', k').
+          Then use Nat.succ (n-1) = n and Nat.succ (k-1) = k (since n,k > 0) to rewrite to the desired
+          form.
+      meta:
+        problem: numbertheory_nckeqnm1ckpnm1ckm1
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: 'theorem induction_divisibility_3div2tooddnp1 (n : ℕ) : 3 ∣ 2 ^ (2 * n + 1) + 1 := by sorry'
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - two_sq_mod_one
+              - Nat.ModEq 3 ((2:ℕ) ^ 2) 1
+            comment: Since 2^2 = 4 and 4 ≡ 1 (mod 3).
+          - prove:
+              - even_pow_mod_one
+              - Nat.ModEq 3 ((2:ℕ) ^ (2 * n)) 1
+            comment: 'Use pow_mul: 2^(2*n) = (2^2)^n and raise the congruence from the previous step to
+              the n-th power.'
+          - prove:
+              - odd_pow_mod_two
+              - Nat.ModEq 3 ((2:ℕ) ^ (2 * n + 1)) 2
+            comment: 'From the previous step, multiply both sides by 2 using pow_succ: 2^(2*n+1) = 2^(2*n)
+              * 2.'
+          - prove:
+              - sum_mod_zero
+              - Nat.ModEq 3 ((2:ℕ) ^ (2 * n + 1) + 1) 0
+            comment: 'Add 1 to both sides of the congruence in the previous step: 2 + 1 ≡ 0 (mod 3).'
+          - prove:
+              - goal
+              - 3 ∣ 2 ^ (2 * n + 1) + 1
+            comment: A congruence to 0 modulo 3 implies divisibility by 3.
+        comment: Since 2 ≡ -1 (mod 3), raising to an odd power gives 2^(odd) ≡ -1 (mod 3). Hence 2^(odd)
+          + 1 ≡ 0 (mod 3), which yields the desired divisibility.
+      meta:
+        problem: induction_divisibility_3div2tooddnp1
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem mathd_numbertheory_42 (S : Set ℕ) (u v : ℕ) (h₀ : ∀ a : ℕ, a ∈ S ↔ 0 < a ∧ 27 * a % 40 = 17)
+          (h₁ : IsLeast S u) (h₂ : IsLeast (S \ {u}) v) : u + v = 62 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - mem11
+              - 11 ∈ S
+            comment: Since 0 < 11 and 27*11 % 40 = 17 (297 = 40*7+17), h₀ gives 11 ∈ S.
+          - prove:
+              - rem11_of_mem
+              - ∀ a, a ∈ S → a % 40 = 11
+            comment: From h₀, a ∈ S → (0 < a ∧ 27*a % 40 = 17). Using modular arithmetic modulo 40 and
+              that 27 has inverse 3 mod 40 (since 27*3 = 81 ≡ 1 [MOD 40]), we deduce a % 40 = 3*17 % 40
+              = 51 % 40 = 11.
+          - prove:
+              - lb_S
+              - ∀ a, a ∈ S → 11 ≤ a
+            comment: If a ∈ S then a % 40 = 11 by the previous step, so a = 40*q + 11 for some q ≥ 0,
+              hence a ≥ 11.
+          - prove:
+              - u_eq
+              - u = 11
+            comment: From IsLeast S u, we have u ∈ S and ∀ a ∈ S, u ≤ a. With mem11 and lb_S we get 11
+              ≤ u and u ≤ 11, hence u = 11.
+          - prove:
+              - mem51_in_diff
+              - 51 ∈ S \ {u}
+            comment: Since u = 11, it suffices to show 51 ∈ S and 51 ≠ 11. We have 0 < 51 and 27*51 %
+              40 = 17 (because 51 ≡ 11 [MOD 40]), hence 51 ∈ S by h₀, and clearly 51 ≠ 11, so 51 ∈ S\{u}.
+          - prove:
+              - lb_diff
+              - ∀ b, b ∈ S \ {u} → 51 ≤ b
+            comment: If b ∈ S\{u}, then b ∈ S and b ≠ u = 11. From rem11_of_mem, b % 40 = 11, so b = 40*q
+              + 11. Since b ≠ 11, we have q ≥ 1, hence b ≥ 51.
+          - prove:
+              - v_eq
+              - v = 51
+            comment: From IsLeast (S\{u}) v, we have v ∈ S\{u} and ∀ b ∈ S\{u}, v ≤ b. Using mem51_in_diff
+              and lb_diff we get 51 ≤ v and v ≤ 51, hence v = 51.
+          - prove:
+              - sum
+              - u + v = 62
+            comment: Combine u = 11 and v = 51.
+        comment: Solve 27 a ≡ 17 (mod 40) by multiplying both sides by 3 (since 27*3 ≡ 1 mod 40), giving
+          a ≡ 51 ≡ 11 (mod 40). Thus S is the set of positive integers congruent to 11 mod 40. The least
+          such is 11, and the next least (in S\{11}) is 51. Therefore u = 11, v = 51, so u+v = 62.
+      meta:
+        problem: mathd_numbertheory_42
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem amc12a_2003_p1 (u v : ℕ → ℕ) (h₀ : ∀ n, u n = 2 * n + 2) (h₁ : ∀ n, v n = 2 * n + 1) :
+          ((∑ k ∈ Finset.range 2003, u k) - ∑ k ∈ Finset.range 2003, v k) = 2003 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - pointwise
+              - ∀ n, u n = v n + 1
+            comment: 'From h₀, h₁: u n = 2*n+2 and v n = 2*n+1, hence u n = v n + 1.'
+          - prove:
+              - sum_u_rewrite
+              - ∑ k ∈ Finset.range 2003, u k = ∑ k ∈ Finset.range 2003, (v k + (1:ℕ))
+            comment: Rewrite the summand using pointwise inside the sum.
+          - prove:
+              - sum_split
+              - ∑ k ∈ Finset.range 2003, (v k + (1:ℕ)) = (∑ k ∈ Finset.range 2003, v k) + ∑ k ∈ Finset.range
+                2003, (1:ℕ)
+            comment: Use Finset.sum_add_distrib.
+          - prove:
+              - sum_ones
+              - ∑ k ∈ Finset.range 2003, (1:ℕ) = 2003
+            comment: Sum of the constant 1 over Finset.range 2003 equals its cardinality; use Finset.card_range.
+          - prove:
+              - sum_u_eq
+              - ∑ k ∈ Finset.range 2003, u k = (∑ k ∈ Finset.range 2003, v k) + 2003
+            comment: Combine sum_u_rewrite, sum_split, and sum_ones.
+          - prove:
+              - final
+              - ((∑ k ∈ Finset.range 2003, u k) - ∑ k ∈ Finset.range 2003, v k) = 2003
+            comment: Rewrite the left sum using sum_u_eq and apply Nat.add_sub_cancel.
+        comment: Pointwise u n = v n + 1, so the sum of u over range equals sum of v plus the sum of ones,
+          which is 2003. Then the natural subtraction simplifies to 2003.
+      meta:
+        problem: amc12a_2003_p1
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem mathd_algebra_140 (a b c : ℝ) (h₀ : 0 < a ∧ 0 < b ∧ 0 < c)
+        (h₁ : ∀ x, 24 * x ^ 2 - 19 * x - 35 = (a * x - 5) * (2 * (b * x) + c)) : a * b - 3 * c = -9 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - c_eq
+              - c = 7
+            comment: 'Evaluate h₁ at x = 0: -35 = (a*0 - 5)*(2*(b*0)+c) = -5*c, hence c = 7.'
+          - prove:
+              - eq1
+              - -30 = 2 * a * b + a * c - 10 * b - 5 * c
+            comment: 'Evaluate h₁ at x = 1: 24*1^2 - 19*1 - 35 = (a*1 - 5)*(2*(b*1) + c). Expand the RHS
+              with ring to get -30 = 2ab + ac - 10b - 5c.'
+          - prove:
+              - eq2
+              - 8 = 2 * a * b - a * c + 10 * b - 5 * c
+            comment: 'Evaluate h₁ at x = -1: 24*(-1)^2 - 19*(-1) - 35 = (a*(-1) - 5)*(2*(b*(-1)) + c).
+              Expand the RHS with ring to get 8 = 2ab - ac + 10b - 5c.'
+          - prove:
+              - ab_eq
+              - a * b = 12
+            comment: Add eq1 and eq2 to get 4ab - 10c = -22, i.e., 2ab - 5c = -11. Substitute c = 7 from
+              c_eq to obtain 2ab = 24, hence ab = 12.
+          - prove:
+              - goal
+              - a * b - 3 * c = -9
+            comment: 'Use ab_eq and c_eq: ab - 3c = 12 - 21 = -9.'
+        comment: Use the given polynomial identity at three points (0, 1, -1). From x = 0 get c, then
+          from x = 1 and x = -1 form two linear equations in ab, ac, b, c. Eliminating ac and b and substituting
+          c yields ab. Finally compute ab - 3c.
+      meta:
+        problem: mathd_algebra_140
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem amc12b_2002_p6 (a b : ℝ) (h₀ : a ≠ 0 ∧ b ≠ 0)
+        (h₁ : ∀ x, x ^ 2 + a * x + b = (x - a) * (x - b)) : a = 1 ∧ b = -2 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - b_eq_ab
+              - b = a * b
+            comment: 'Instantiate h₁ at x = 0 and simplify: 0^2 + a*0 + b = (-a)*(-b) = a*b.'
+          - prove:
+              - a_eq_one
+              - a = 1
+            comment: From b = a*b and h₀.right (b ≠ 0), deduce (1 - a)*b = 0, hence a = 1.
+          - prove:
+              - twoa2_add_b_eq_zero
+              - '(2: ℝ) * a ^ 2 + b = 0'
+            comment: 'Instantiate h₁ at x = a: (a - a)*(a - b) = 0 gives a^2 + a*a + b = 0, i.e. 2*a^2
+              + b = 0.'
+          - prove:
+              - b_eq_neg_two
+              - b = -2
+            comment: From (2:ℝ) * a^2 + b = 0 and a = 1, get 2*1^2 + b = 0, so b = -2.
+          - prove:
+              - result
+              - a = 1 ∧ b = -2
+            comment: Combine a_eq_one and b_eq_neg_two.
+        comment: Evaluate the identity at special points. At x = 0, obtain b = a b; with b ≠ 0, conclude
+          a = 1. At x = a, obtain 2 a^2 + b = 0; substituting a = 1 yields b = -2. Hence a = 1 and b =
+          -2.
+      meta:
+        problem: amc12b_2002_p6
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: 'theorem numbertheory_sqmod4in01d (a : ℤ) : a ^ 2 % 4 = 0 ∨ a ^ 2 % 4 = 1 := by sorry'
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - parity
+              - Even a ∨ Odd a
+            comment: Every integer is either even or odd.
+          - prove:
+              - even_sq_mod4
+              - Even a → a ^ 2 % 4 = 0
+            comment: If a = 2k, then a^2 = 4k^2, so the remainder modulo 4 is 0.
+          - prove:
+              - odd_sq_mod4
+              - Odd a → a ^ 2 % 4 = 1
+            comment: If a = 2k+1, then a^2 = 4k(k+1)+1, which is 1 modulo 4.
+          - prove:
+              - result
+              - a ^ 2 % 4 = 0 ∨ a ^ 2 % 4 = 1
+            comment: Combine the two cases using parity of a and the previous two lemmas.
+        comment: 'Proof by parity: split into even and odd cases and compute the square modulo 4 in each
+          case.'
+      meta:
+        problem: numbertheory_sqmod4in01d
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem aimeI_2000_p7 (x y z : ℝ) (m : ℚ) (h₀ : 0 < x ∧ 0 < y ∧ 0 < z) (h₁ : x * y * z = 1)
+        (h₂ : x + 1 / z = 5) (h₃ : y + 1 / x = 29) (h₄ : z + 1 / y = m) (h₅ : 0 < m) :
+        ↑m.den + m.num = 5 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - eqx
+              - 'x * (1 + y) = (5 : ℝ)'
+            comment: 'From h₂: x + 1/z = 5 and h₁: x*y*z = 1, so 1/z = x*y (since z > 0), hence x + x*y
+              = 5, i.e., x*(1+y)=5.'
+          - prove:
+              - eqy
+              - 'y * (1 + z) = (29 : ℝ)'
+            comment: 'From h₃: y + 1/x = 29 and h₁: x*y*z = 1, so 1/x = y*z (since x > 0), hence y + y*z
+              = 29, i.e., y*(1+z)=29.'
+          - prove:
+              - prod_rel
+              - '(1 + y) * (1 + z) = (145 : ℝ) * z'
+            comment: Multiply eqx and eqy to get (x*y)*(1+y)*(1+z) = 145, then use x*y = 1/z from h₁ to
+              obtain (1+y)*(1+z) = 145*z.
+          - prove:
+              - r_over
+              - '(1 + z) / z = (145 : ℝ) / (1 + y)'
+            comment: Divide prod_rel by z*(1+y) > 0 (since y,z > 0).
+          - prove:
+              - one_plus_y
+              - '1 + y = (25 : ℝ)'
+            comment: 'From r_over: (1+z)/(z) = 145/(1+y) and eqy: (1+y-1)*(1+z) = 29. Solving the system
+              r/(r-1)=145/q and (q-1)r=29 with q=1+y, r=1+z yields q=25 (using positivity to justify divisions).'
+          - prove:
+              - x_val
+              - 'x = (1 : ℝ) / 5'
+            comment: 'From eqx and one_plus_y: x*(25) = 5, hence x = 1/5.'
+          - prove:
+              - z_val
+              - 'z = (5 : ℝ) / 24'
+            comment: 'From eqy and one_plus_y: y = 24, so 24*(1+z) = 29, hence 1+z = 29/24 and z = 5/24.'
+          - prove:
+              - m_val
+              - 'm = (1 : ℚ) / 4'
+            comment: 'From h₄: (z + 1/y : ℝ) = (m : ℝ). Using z_val and y = 24 from one_plus_y gives (m
+              : ℝ) = 5/24 + 1/24 = 1/4. Injectivity of Rat.cast then yields m = 1/4.'
+          - prove:
+              - goal
+              - ↑m.den + m.num = 5
+            comment: Since m = 1/4 in lowest terms, m.den = 4 and m.num = 1, so their sum is 5.
+        comment: Set q = 1+y and r = 1+z implicitly. From x + 1/z = 5 and xyz = 1, get x(1+y) = 5; from
+          y + 1/x = 29, get y(1+z) = 29. Multiply and use xyz = 1 to derive r/(r-1) = 145/q. Together
+          with (q-1)r = 29, solve to get q = 25, hence y = 24. Then x = 1/5 and z = 5/24. Finally m =
+          z + 1/y = 1/4, so m.den + m.num = 4 + 1 = 5.
+      meta:
+        problem: aimeI_2000_p7
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem amc12a_2008_p8 (x y : ℝ) (h₀ : 0 < x ∧ 0 < y) (h₁ : y ^ 3 = 1)
+        (h₂ : 6 * x ^ 2 = 2 * (6 * y ^ 2)) : x ^ 3 = 2 * Real.sqrt 2 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - y_pos
+              - 0 < y
+            comment: From h₀.
+          - prove:
+              - x_nonneg
+              - 0 ≤ x
+            comment: 'From h₀: 0 < x implies 0 ≤ x.'
+          - prove:
+              - y_eq_one
+              - y = 1
+            comment: 'From y_pos and h₁: take logs to get 3 * Real.log y = 0, hence Real.log y = 0 and
+              y = 1.'
+          - prove:
+              - x2_eq
+              - x ^ 2 = 2 * y ^ 2
+            comment: From h₂ by dividing both sides by 6 ≠ 0.
+          - prove:
+              - x2_eq_two
+              - x ^ 2 = 2
+            comment: Substitute y = 1 in x2_eq.
+          - prove:
+              - x_eq_sqrt2
+              - x = Real.sqrt 2
+            comment: From x_nonneg and x2_eq_two using Real.sqrt_eq_iff_sq_eq.
+          - prove:
+              - goal
+              - x ^ 3 = 2 * Real.sqrt 2
+            comment: From x_eq_sqrt2 and (Real.sqrt 2)^2 = 2, compute (Real.sqrt 2)^3 = 2 * Real.sqrt
+              2.
+        comment: Use y^3 = 1 and y > 0 to deduce y = 1. From 6 x^2 = 12 y^2 get x^2 = 2 y^2, hence x^2
+          = 2. As x ≥ 0, x = √2, so x^3 = 2√2.
+      meta:
+        problem: amc12a_2008_p8
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem algebra_xmysqpymzsqpzmxsqeqxyz_xpypzp6dvdx3y3z3 (x y z : ℤ)
+        (h₀ : (x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2 = x * y * z) :
+        x + y + z + 6 ∣ x ^ 3 + y ^ 3 + z ^ 3 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - sumsq_diffs
+              - (x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2 = 2 * ((x + y + z) ^ 2 - 3 * (x * y + y * z +
+                z * x))
+            comment: Algebraic identity; expand both sides and simplify.
+          - prove:
+              - xyz_expr
+              - x * y * z = 2 * ((x + y + z) ^ 2 - 3 * (x * y + y * z + z * x))
+            comment: Rewrite h₀ using sumsq_diffs.
+          - prove:
+              - sum_cubes_id
+              - x ^ 3 + y ^ 3 + z ^ 3 = (x + y + z) ^ 3 - 3 * (x + y + z) * (x * y + y * z + z * x) +
+                3 * (x * y * z)
+            comment: Newton’s identity for sums of cubes over a commutative ring.
+          - prove:
+              - main_factor
+              - x ^ 3 + y ^ 3 + z ^ 3 = (x + y + z + 6) * ((x + y + z) ^ 2 - 3 * (x * y + y * z + z *
+                x))
+            comment: Substitute xyz_expr into sum_cubes_id (so 3*(x*y*z) = 6*((x+y+z)^2 - 3*(xy+yz+zx)))
+              and factor.
+          - prove:
+              - goal
+              - x + y + z + 6 ∣ x ^ 3 + y ^ 3 + z ^ 3
+            comment: Immediate from main_factor.
+        comment: Let p = x + y + z, q = xy + yz + zx, r = xyz. The given condition and the well-known
+          identity for sums of squared differences yield r = 2(p^2 − 3q). Using the identity x^3 + y^3
+          + z^3 = p^3 − 3pq + 3r, substitute r to get x^3 + y^3 + z^3 = (p + 6)(p^2 − 3q). Hence p + 6
+          divides the sum of cubes.
+      meta:
+        problem: algebra_xmysqpymzsqpzmxsqeqxyz_xpypzp6dvdx3y3z3
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem amc12a_2002_p1 (f : ℂ → ℂ) (h₀ : ∀ x, f x = (2 * x + 3) * (x - 4) + (2 * x + 3) * (x - 6))
+        (h₁ : Fintype (f ⁻¹' {0})) : (∑ y ∈ (f ⁻¹' {0}).toFinset, y) = 7 / 2 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - factor
+              - ∀ x, f x = (2 * x + 3) * (2 * x - 10)
+            comment: Factor out (2*x+3) from h₀ and combine (x-4)+(x-6)=2*x-10.
+          - prove:
+              - zero_iff
+              - ∀ x, f x = 0 ↔ x = -((3:ℂ) / 2) ∨ x = (5:ℂ)
+            comment: From factor and mul_eq_zero over ℂ.
+          - prove:
+              - zeros_finset
+              - '(f ⁻¹'' {0}).toFinset = ({-((3:ℂ) / 2), (5:ℂ)} : Finset ℂ)'
+            comment: Use Finset.ext and zero_iff to identify membership on both sides.
+          - prove:
+              - sum_pair
+              - '(∑ y ∈ ({-((3:ℂ) / 2), (5:ℂ)} : Finset ℂ), y) = -((3:ℂ) / 2) + (5:ℂ)'
+            comment: Sum over a two-element Finset equals the sum of its elements.
+          - prove:
+              - sum_rewrite
+              - (∑ y ∈ (f ⁻¹' {0}).toFinset, y) = -((3:ℂ) / 2) + (5:ℂ)
+            comment: Rewrite the sum using zeros_finset and apply sum_pair.
+          - prove:
+              - final
+              - -((3:ℂ) / 2) + (5:ℂ) = 7 / 2
+            comment: Arithmetic in ℂ.
+        comment: Factor f, solve f x = 0 to get the two roots −3/2 and 5, identify the finite zero set
+          with that pair Finset, sum its elements, and compute 7/2.
+      meta:
+        problem: amc12a_2002_p1
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem mathd_algebra_31 (x : NNReal) (u : ℕ → NNReal) (h₀ : ∀ n, u (n + 1) = NNReal.sqrt (x + u n))
+        (h₁ : Filter.Tendsto u Filter.atTop (nhds 9)) : 9 = NNReal.sqrt (x + 9) := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - cont
+              - 'Continuous fun t : NNReal => NNReal.sqrt (x + t)'
+            comment: Continuity follows from continuity of addition on NNReal and of NNReal.sqrt.
+          - prove:
+              - tendsto_comp
+              - Filter.Tendsto (fun n => NNReal.sqrt (x + u n)) Filter.atTop (nhds (NNReal.sqrt (x + 9)))
+            comment: Apply Continuous.tendsto to cont and h₁.
+          - prove:
+              - tendsto_tail
+              - Filter.Tendsto (fun n => u (n + 1)) Filter.atTop (nhds 9)
+            comment: 'Tail of a sequence has the same limit as the sequence: derive via Tendsto.comp using
+              Tendsto Nat.succ atTop atTop.'
+          - prove:
+              - tail_eq_comp
+              - (fun n => u (n + 1)) = fun n => NNReal.sqrt (x + u n)
+            comment: By funext from the recurrence h₀.
+          - prove:
+              - eq_lims
+              - 9 = NNReal.sqrt (x + 9)
+            comment: The same function (tail) tends to nhds 9 by tendsto_tail and, by tail_eq_comp and
+              tendsto_comp, to nhds (sqrt (x+9)); uniqueness of limits in a T1 space yields the equality.
+        comment: Pass to the limit in the recurrence u_{n+1} = sqrt(x + u_n) using continuity and the
+          fact that the tail of a convergent sequence has the same limit.
+      meta:
+        problem: mathd_algebra_31
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem mathd_algebra_149 (f : ℝ → ℝ) (h₀ : ∀ x < -5, f x = x ^ 2 + 5)
+        (h₁ : ∀ x ≥ -5, f x = 3 * x - 8) (h₂ : Fintype (f ⁻¹' {10})) :
+        (∑ k ∈ (f ⁻¹' {10}).toFinset, k) = 6 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - lt_branch_contra
+              - '∀ x, x < (-5: ℝ) → f x ≠ 10'
+            comment: On the branch x < -5 we have f x = x^2 + 5 by h₀. From x < -5 we get 25 < x^2, hence
+              30 < x^2 + 5 = f x, so f x ≠ 10.
+          - prove:
+              - ge_branch_char
+              - '∀ x, (-5: ℝ) ≤ x → (f x = 10 ↔ x = 6)'
+            comment: On the branch x ≥ -5 we have f x = 3x - 8 by h₁. Thus f x = 10 ↔ 3x - 8 = 10 ↔ 3x
+              = 18 ↔ x = 6.
+          - prove:
+              - preimage_eq_singleton
+              - '(f ⁻¹'' {10}) = ({6} : Set ℝ)'
+            comment: If x ∈ f ⁻¹' {10}, then by lt_or_ge x (-5) and lt_branch_contra, we must have -5
+              ≤ x; then ge_branch_char gives x = 6. Conversely, since -5 ≤ 6, ge_branch_char gives f 6
+              = 10, so 6 ∈ f ⁻¹' {10}.
+          - prove:
+              - sum_preimage
+              - (∑ k ∈ (f ⁻¹' {10}).toFinset, k) = 6
+            comment: 'Rewrite using preimage_eq_singleton to get a sum over the singleton ({6} : Set ℝ).toFinset,
+              which is the singleton Finset {6}. The sum of the identity over a singleton {6} is 6.'
+        comment: We split by the two branches defining f. For x < -5, f x is strictly greater than 10,
+          so there is no preimage there. For x ≥ -5, solving 3x − 8 = 10 yields x = 6 as the unique preimage.
+          Hence the preimage set is {6}, and the sum over this singleton is 6.
+      meta:
+        problem: mathd_algebra_149
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem amc12b_2020_p5 (a b : ℕ) (h₀ : (5 : ℚ) / 8 * b = 2 / 3 * a + 7)
+        (h₁ : (b : ℚ) - 5 / 8 * b = a - 2 / 3 * a + 7) : a = 42 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - h1_simp
+              - '((3 : ℚ) / 8) * (b : ℚ) = ((1 : ℚ) / 3) * (a : ℚ) + 7'
+            comment: 'From h₁ by simplifying both sides: b - (5/8)b = (3/8)b and a - (2/3)a + 7 = (1/3)a
+              + 7.'
+          - prove:
+              - eq_rel
+              - '((1 : ℚ) / 4) * (b : ℚ) = ((1 : ℚ) / 3) * (a : ℚ)'
+            comment: 'Subtract h1_simp from h₀: ((5/8) - (3/8))b = ((2/3)a + 7) - ((1/3)a + 7).'
+          - prove:
+              - eq_scaled
+              - '((5 : ℚ) / 8) * (b : ℚ) = ((5 : ℚ) / 6) * (a : ℚ)'
+            comment: Multiply eq_rel by (5:ℚ)/2 on both sides.
+          - prove:
+              - eq_main
+              - '((5 : ℚ) / 6) * (a : ℚ) = ((2 : ℚ) / 3) * (a : ℚ) + 7'
+            comment: From h₀ and eq_scaled, replace the left side (5/8)b by (5/6)a.
+          - prove:
+              - eq_lin
+              - '((1 : ℚ) / 6) * (a : ℚ) = 7'
+            comment: Subtract (2/3)a from both sides of eq_main.
+          - prove:
+              - eq_cast
+              - '(a : ℚ) = (42 : ℚ)'
+            comment: Multiply both sides of eq_lin by 6 in ℚ.
+          - prove:
+              - goal
+              - a = 42
+            comment: 'Apply injectivity of the natural-number cast into ℚ to eq_cast. '
+        comment: 'Informal reasoning: Rewrite the second equation to get (3/8)b = (1/3)a + 7. Subtracting
+          this from the first equation yields (1/4)b = (1/3)a. Scale by 5/2 to get (5/8)b = (5/6)a, and
+          compare with the first equation to deduce (5/6)a = (2/3)a + 7, hence (1/6)a = 7 and so a = 42.'
+      meta:
+        problem: amc12b_2020_p5
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: 'theorem mathd_numbertheory_156 (n : ℕ) (h₀ : 0 < n) : Nat.gcd (n + 7) (2 * n + 1) ≤ 13 :=
+      by sorry'
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - eq1
+              - 2 * (n + 7) = (2 * n + 1) + 13
+            comment: Compute the linear relation 2(n+7) = (2n+1) + 13.
+          - prove:
+              - dvd_2a
+              - Nat.gcd (n + 7) (2 * n + 1) ∣ 2 * (n + 7)
+            comment: 'From Nat.gcd_dvd_left and multiplying by 2: d ∣ a ⇒ d ∣ 2a.'
+          - prove:
+              - dvd_bplus
+              - Nat.gcd (n + 7) (2 * n + 1) ∣ (2 * n + 1) + 13
+            comment: Rewrite dvd_2a using eq1.
+          - prove:
+              - dvd_13
+              - Nat.gcd (n + 7) (2 * n + 1) ∣ 13
+            comment: 'Using Nat.dvd_add_right with d ∣ (2n+1): d ∣ (2n+1)+13 ↔ d ∣ 13.'
+          - prove:
+              - final
+              - Nat.gcd (n + 7) (2 * n + 1) ≤ 13
+            comment: From dvd_13 and Nat.le_of_dvd (0 < 13).
+        comment: Let a = n+7 and b = 2n+1. We note 2a = b + 13, so any common divisor d of a and b divides
+          13. Hence gcd(a,b) ∣ 13. Since 13 > 0, we conclude gcd(a,b) ≤ 13.
+      meta:
+        problem: mathd_numbertheory_156
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem amc12a_2011_p18 (x y : ℝ) (h₀ : abs (x + y) + abs (x - y) = 2) :
+        x ^ 2 - 6 * x + y ^ 2 ≤ 8 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - sumsq_le_4
+              - '(x + y) ^ 2 + (x - y) ^ 2 ≤ (4 : ℝ)'
+            comment: Let u = x + y and v = x - y. From h₀, (abs u + abs v)^2 = 4. Since (abs u + abs v)^2
+              ≥ (abs u)^2 + (abs v)^2 = u^2 + v^2, we get u^2 + v^2 ≤ 4.
+          - prove:
+              - sumsq_id
+              - '(x + y) ^ 2 + (x - y) ^ 2 = (2 : ℝ) * (x ^ 2 + y ^ 2)'
+            comment: Expand and simplify.
+          - prove:
+              - x2y2_le_2
+              - 'x ^ 2 + y ^ 2 ≤ (2 : ℝ)'
+            comment: From sumsq_le_4 and sumsq_id, divide both sides by 2 (> 0).
+          - prove:
+              - absx_le_one
+              - 'abs x ≤ (1 : ℝ)'
+            comment: Write x = ((x+y) + (x-y)) / 2 and use triangle inequality with h₀.
+          - prove:
+              - x_ge_neg_one
+              - '(-1 : ℝ) ≤ x'
+            comment: 'From absx_le_one using abs_le.mp: |x| ≤ 1 ⇒ -1 ≤ x ≤ 1.'
+          - prove:
+              - final
+              - 'x ^ 2 - 6 * x + y ^ 2 ≤ (8 : ℝ)'
+            comment: 'From x2y2_le_2: x^2 + y^2 ≤ 2, hence x^2 - 6x + y^2 ≤ 2 - 6x. From x_ge_neg_one,
+              2 - 6x ≤ 8. Combine.'
+        comment: Set u = x + y and v = x - y. From |u| + |v| = 2, deduce u^2 + v^2 ≤ 4. Using (x+y)^2
+          + (x-y)^2 = 2(x^2 + y^2) gives x^2 + y^2 ≤ 2. Also, x = (u+v)/2 implies |x| ≤ 1, so x ≥ -1.
+          Then x^2 - 6x + y^2 ≤ 2 - 6x ≤ 8.
+      meta:
+        problem: amc12a_2011_p18
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem mathd_algebra_422 (x : ℝ) (σ : Equiv ℝ ℝ) (h₀ : ∀ x, σ.1 x = 5 * x - 12)
+        (h₁ : σ.1 (x + 1) = σ.2 x) : x = 47 / 24 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - apply_symm
+              - σ.1 (σ.2 x) = x
+            comment: By Equiv.apply_symm_apply.
+          - prove:
+              - double_apply
+              - σ.1 (σ.1 (x + 1)) = x
+            comment: 'Rewrite apply_symm using h₁: σ.1 (x+1) = σ.2 x.'
+          - prove:
+              - inner_eval
+              - σ.1 (x + 1) = 5 * x - 7
+            comment: 'From h₀ at x+1: σ.1 (x+1) = 5*(x+1)-12, then simplify.'
+          - prove:
+              - outer_eval
+              - σ.1 (σ.1 (x + 1)) = 5 * (σ.1 (x + 1)) - 12
+            comment: From h₀ at t = σ.1 (x+1).
+          - prove:
+              - double_eval
+              - σ.1 (σ.1 (x + 1)) = 25 * x - 47
+            comment: Combine outer_eval with inner_eval and simplify.
+          - prove:
+              - lin_eq
+              - 25 * x - 47 = x
+            comment: Transitivity of equality between double_eval and double_apply.
+          - prove:
+              - solve
+              - x = (47:ℝ) / (24:ℝ)
+            comment: Solve the linear equation 25x - 47 = x in ℝ.
+        comment: Use the inverse property σ.toFun (σ.invFun x) = x. Replace σ.invFun x by σ.toFun (x+1)
+          via h₁ to get σ.toFun (σ.toFun (x+1)) = x. Expand σ.toFun twice using the affine formula h₀,
+          simplify to 25x - 47 = x, then solve for x.
+      meta:
+        problem: mathd_algebra_422
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: 'theorem mathd_algebra_59 (b : ℝ) (h₀ : (4 : ℝ) ^ b + 2 ^ 3 = 12) : b = 1 := by sorry'
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - pow_two_three
+              - '((2: ℝ) ^ 3) = 8'
+            comment: Compute 2^3.
+          - prove:
+              - rpow_eq4
+              - '(4: ℝ) ^ b = 4'
+            comment: 'From h₀ and pow_two_three: (4^b) + 8 = 12 ⇒ 4^b = 4.'
+          - prove:
+              - log_rpow_eq
+              - 'b * Real.log (4: ℝ) = Real.log (4: ℝ)'
+            comment: Take logs of rpow_eq4 and use Real.log_rpow since 0 < 4.
+          - prove:
+              - log4_pos
+              - '0 < Real.log (4: ℝ)'
+            comment: By Real.log_pos_iff since 1 < 4.
+          - prove:
+              - b_eq1
+              - b = 1
+            comment: From b * log 4 = log 4 and log 4 ≠ 0 (from log4_pos), cancel to get b = 1.
+        comment: Reduce the given equation to (4:ℝ)^b = 4 by evaluating 2^3 = 8. Apply log to both sides;
+          using log(x^y) = y*log x (for x>0) yields b*log 4 = log 4. Since log 4 > 0, cancel to conclude
+          b = 1.
+      meta:
+        problem: mathd_algebra_59
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem numbertheory_aneqprodakp4_anmsqrtanp1eq2 (a : ℕ → ℝ) (h₀ : a 0 = 1)
+        (h₁ : ∀ n, a (n + 1) = (∏ k ∈ Finset.range (n + 1), a k) + 4) :
+        ∀ n ≥ 1, a n - Real.sqrt (a (n + 1)) = 2 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - Pn_succ_eq
+              - ∀ n, (∏ k ∈ Finset.range (n + 1), a k) = a (n + 1) - 4
+            comment: 'This is just h₁ rearranged: a (n+1) = (∏ …) + 4 ⇒ (∏ …) = a (n+1) - 4.'
+          - prove:
+              - sq_rec
+              - ∀ n ≥ 1, a (n + 1) = (a n - 2) ^ 2
+            comment: 'Use Finset.prod_range_succ to write ∏_{k < n+1} a k = (∏_{k < n} a k) * a n, then
+              substitute (∏_{k < n} a k) = a n - 4 from Pn_succ_eq (with n-1) and h₁: a (n+1) = (a n -
+              4) * a n + 4 = (a n - 2)^2.'
+          - prove:
+              - an_ge4
+              - ∀ n ≥ 1, 4 ≤ a n
+            comment: 'Base: a 1 = (∏_{k<1} a k)+4 = a 0 + 4 = 5 by h₀ and h₁, so 4 ≤ a 1. Step: from sq_rec,
+              a (n+1) = (a n - 2)^2 and if 4 ≤ a n then 0 ≤ a n - 2 and (a n - 2)^2 ≥ 4.'
+          - prove:
+              - sqrt_eval
+              - ∀ n ≥ 1, Real.sqrt (a (n + 1)) = a n - 2
+            comment: From sq_rec, a (n+1) = (a n - 2)^2, hence sqrt(a (n+1)) = |a n - 2| = a n - 2 using
+              an_ge4 to get a n - 2 ≥ 0.
+          - prove:
+              - goal
+              - ∀ n ≥ 1, a n - Real.sqrt (a (n + 1)) = 2
+            comment: Subtract sqrt_eval from a n to obtain the desired 2.
+        comment: 'Idea: Turn the product recurrence into a simple quadratic recurrence. From h₁ we get
+          ∏_{k<n} a k = a n - 4 for n ≥ 1. Then using prod_range_succ, a (n+1) = (∏_{k<n} a k) * a n +
+          4 = (a n - 4) a n + 4 = (a n - 2)^2. Next, prove by induction that a n ≥ 4 for n ≥ 1. This gives
+          a n - 2 ≥ 0, so sqrt(a (n+1)) = sqrt((a n - 2)^2) = a n - 2. Rearranging yields a n - sqrt(a
+          (n+1)) = 2.'
+      meta:
+        problem: numbertheory_aneqprodakp4_anmsqrtanp1eq2
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: 'theorem mathd_algebra_22 : Real.logb (5 ^ 2) (5 ^ 4) = 2 := by sorry'
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - base_pos
+              - '0 < ((5: ℝ) ^ 2)'
+            comment: Since 0 < (5:ℝ), we have 0 < (5:ℝ)^2.
+          - prove:
+              - base_ne_one
+              - '((5: ℝ) ^ 2) ≠ 1'
+            comment: Because 1 < (5:ℝ), we have 1 < (5:ℝ)^2, hence it is not 1.
+          - prove:
+              - arg_pos
+              - '0 < ((5: ℝ) ^ 4)'
+            comment: Positivity is preserved by taking positive powers.
+          - prove:
+              - cb
+              - 'Real.logb ((5: ℝ) ^ 2) ((5: ℝ) ^ 4) = Real.log ((5: ℝ) ^ 4) / Real.log ((5: ℝ) ^ 2)'
+            comment: Change-of-base formula Real.logb_eq_log_div_log using base_pos, base_ne_one, arg_pos.
+          - prove:
+              - log_pow4
+              - 'Real.log ((5: ℝ) ^ 4) = (4: ℝ) * Real.log (5: ℝ)'
+            comment: By Real.log_pow with a = 5 and n = 4.
+          - prove:
+              - log_pow2
+              - 'Real.log ((5: ℝ) ^ 2) = (2: ℝ) * Real.log (5: ℝ)'
+            comment: By Real.log_pow with a = 5 and n = 2.
+          - prove:
+              - log5_pos
+              - '0 < Real.log (5: ℝ)'
+            comment: Since 1 < 5, Real.log_pos_iff gives log 5 > 0.
+          - prove:
+              - ratio
+              - 'Real.log ((5: ℝ) ^ 4) / Real.log ((5: ℝ) ^ 2) = (2: ℝ)'
+            comment: Substitute log_pow4 and log_pow2 and cancel the positive factor Real.log 5.
+          - prove:
+              - goal
+              - Real.logb (5 ^ 2) (5 ^ 4) = 2
+            comment: Combine cb and ratio, noting 5 here is coerced to ℝ.
+        comment: Use change-of-base to express logb as a ratio of logs, evaluate logs of powers via Real.log_pow,
+          and simplify the ratio.
+      meta:
+        problem: mathd_algebra_22
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem aimeII_2001_p3 (x : ℕ → ℤ) (h₀ : x 1 = 211) (h₂ : x 2 = 375) (h₃ : x 3 = 420)
+        (h₄ : x 4 = 523) (h₆ : ∀ n ≥ 5, x n = x (n - 1) - x (n - 2) + x (n - 3) - x (n - 4)) :
+        x 531 + x 753 + x 975 = 898 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - eq5
+              - x 5 = x 4 - x 3 + x 2 - x 1
+          - prove:
+              - base
+              - x 6 = - x 1 ∧ x 7 = - x 2 ∧ x 8 = - x 3 ∧ x 9 = - x 4
+          - prove:
+              - shift5
+              - ∀ n ≥ 1, x (n + 5) = - x n
+          - prove:
+              - iter5
+              - '∀ n ≥ 1, ∀ k : ℕ, x (n + 5 * k) = ((-1 : ℤ) ^ k) * x n'
+          - prove:
+              - vals
+              - x 531 = x 1 ∧ x 753 = x 3 ∧ x 975 = x 5
+          - prove:
+              - sum_rewrite
+              - x 531 + x 753 + x 975 = x 1 + x 3 + x 5
+          - prove:
+              - sum_simplify
+              - x 1 + x 3 + x 5 = x 2 + x 4
+          - prove:
+              - sum_value
+              - 'x 2 + x 4 = (898 : ℤ)'
+        comment: 'Use the recurrence to compute x5 and then deduce the 5-step anti-periodicity x(n+5)
+          = -x(n): first verify it for n=1..4 using the recurrence at n=6..9, then prove it for all n≥1
+          by induction using the recurrence. Iterate this to reduce 531, 753, 975 to 1, 3, 5 respectively
+          (all shifts are even, so signs are positive). Finally, simplify x1 + x3 + x5 using x5 = x4 -
+          x3 + x2 - x1 to get x2 + x4, and compute with the given initial values.'
+      meta:
+        problem: aimeII_2001_p3
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem imo_1966_p5 (x a : ℕ → ℝ) (h₀ : a 1 ≠ a 2) (h₁ : a 1 ≠ a 3) (h₂ : a 1 ≠ a 4)
+        (h₃ : a 2 ≠ a 3) (h₄ : a 2 ≠ a 4) (h₅ : a 3 ≠ a 4) (h₆ : a 1 > a 2) (h₇ : a 2 > a 3)
+        (h₈ : a 3 > a 4)
+        (h₉ : abs (a 1 - a 2) * x 2 + abs (a 1 - a 3) * x 3 + abs (a 1 - a 4) * x 4 = 1)
+        (h₁₀ : abs (a 2 - a 1) * x 1 + abs (a 2 - a 3) * x 3 + abs (a 2 - a 4) * x 4 = 1)
+        (h₁₁ : abs (a 3 - a 1) * x 1 + abs (a 3 - a 2) * x 2 + abs (a 3 - a 4) * x 4 = 1)
+        (h₁₂ : abs (a 4 - a 1) * x 1 + abs (a 4 - a 2) * x 2 + abs (a 4 - a 3) * x 3 = 1) :
+        x 2 = 0 ∧ x 3 = 0 ∧ x 1 = 1 / abs (a 1 - a 4) ∧ x 4 = 1 / abs (a 1 - a 4) := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - lin1
+              - (a 1 - a 2) * x 2 + (a 1 - a 3) * x 3 + (a 1 - a 4) * x 4 = 1
+            comment: 'Rewrite h₉ using h₆, h₇, h₈ to remove absolute values: abs (a 1 - a k) = a 1 - a
+              k for k=2,3,4.'
+          - prove:
+              - lin2
+              - (a 1 - a 2) * x 1 + (a 2 - a 3) * x 3 + (a 2 - a 4) * x 4 = 1
+            comment: 'Rewrite h₁₀: abs (a 2 - a 1) = a 1 - a 2 (since a 2 < a 1), and abs (a 2 - a k)
+              = a 2 - a k for k=3,4.'
+          - prove:
+              - lin3
+              - (a 1 - a 3) * x 1 + (a 2 - a 3) * x 2 + (a 3 - a 4) * x 4 = 1
+            comment: 'Rewrite h₁₁: abs (a 3 - a 1) = a 1 - a 3, abs (a 3 - a 2) = a 2 - a 3, abs (a 3
+              - a 4) = a 3 - a 4.'
+          - prove:
+              - lin4
+              - (a 1 - a 4) * x 1 + (a 2 - a 4) * x 2 + (a 3 - a 4) * x 3 = 1
+            comment: 'Rewrite h₁₂: abs (a 4 - a k) = a k - a 4 for k=1,2,3.'
+          - prove:
+              - core
+              - x 2 = 0 ∧ x 3 = 0 ∧ x 1 = x 4
+            comment: Subtract consecutive equations (lin1−lin2, lin2−lin3, lin3−lin4) and use h₆,h₇,h₈
+              to cancel positive factors, then solve the resulting linear system.
+          - prove:
+              - xvals
+              - x 1 = 1 / (a 1 - a 4) ∧ x 4 = 1 / (a 1 - a 4)
+            comment: From core, substitute x 2 = 0 and x 3 = 0 into lin1 (or lin4) to get (a 1 - a 4)
+              * x 4 = 1, hence x 4 = 1/(a 1 - a 4); then x 1 = x 4 by core.
+          - prove:
+              - abs14
+              - abs (a 1 - a 4) = (a 1 - a 4)
+            comment: Since a 1 > a 4 by h₆,h₇,h₈, we have a 1 - a 4 > 0, hence abs_of_pos.
+          - prove:
+              - result
+              - x 2 = 0 ∧ x 3 = 0 ∧ x 1 = 1 / abs (a 1 - a 4) ∧ x 4 = 1 / abs (a 1 - a 4)
+            comment: Combine core and xvals, and rewrite 1/(a 1 - a 4) using abs14.
+        comment: Use the strict chain a 1 > a 2 > a 3 > a 4 to remove absolute values and obtain a linear
+          system lin1–lin4. Subtract consecutive equations to deduce x 2 = x 3 = 0 and x 1 = x 4. Substitute
+          back to find x 4 = 1/(a 1 - a 4) = 1/abs (a 1 - a 4), hence the desired values.
+      meta:
+        problem: imo_1966_p5
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem amc12a_2002_p12 (f : ℝ → ℝ) (k : ℝ) (a b : ℕ) (h₀ : ∀ x, f x = x ^ 2 - 63 * x + k)
+        (h₁ : f a = 0 ∧ f b = 0) (h₂ : a ≠ b) (h₃ : Nat.Prime a ∧ Nat.Prime b) : k = 122 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - eq_a
+              - (a:ℝ) ^ 2 - (63:ℝ) * (a:ℝ) + k = 0
+            comment: From h₁.left and h₀ applied at (a:ℝ).
+          - prove:
+              - eq_b
+              - (b:ℝ) ^ 2 - (63:ℝ) * (b:ℝ) + k = 0
+            comment: From h₁.right and h₀ applied at (b:ℝ).
+          - prove:
+              - diff_factor
+              - ((a:ℝ) - (b:ℝ)) * ((a:ℝ) + (b:ℝ) - (63:ℝ)) = 0
+            comment: Subtract eq_b from eq_a and factor the difference by ring.
+          - prove:
+              - ne_cast
+              - (a:ℝ) ≠ (b:ℝ)
+            comment: 'From h₂ using injectivity of (Nat.cast : ℕ → ℝ).'
+          - prove:
+              - sum_real
+              - (a:ℝ) + (b:ℝ) = (63:ℝ)
+            comment: From diff_factor and ne_cast, since a−b ≠ 0, the second factor must be 0.
+          - prove:
+              - k_prod
+              - k = (a:ℝ) * (b:ℝ)
+            comment: 'From eq_a: k = (63:ℝ)*(a:ℝ) - (a:ℝ)^2 = (a:ℝ)*((63:ℝ)-(a:ℝ)); then use sum_real
+              to replace (63:ℝ)-(a:ℝ) with (b:ℝ).'
+          - prove:
+              - sum_nat
+              - a + b = 63
+            comment: Apply Nat.cast to both sides of sum_real and use injectivity of Nat.cast and Nat.cast_add.
+          - prove:
+              - one_is_two
+              - a = 2 ∨ b = 2
+            comment: Since a and b are primes (h₃) and a + b = 63 is odd, exactly one of a,b is the even
+              prime 2.
+          - prove:
+              - k_eq
+              - k = (122:ℝ)
+            comment: 'From k_prod, sum_nat, and one_is_two: if a = 2 then b = 61 and k = 2*61; if b =
+              2 then a = 61 and k = 2*61.'
+        comment: Let a and b (as reals) be roots of x^2 − 63x + k, so subtracting the two zero equalities
+          yields (a−b)((a+b)−63)=0. Since a≠b, deduce a+b=63. Plugging into one root equation gives k
+          = ab. Because 63 is odd and a,b are primes, one must be 2, so the other is 61. Hence k = 2·61
+          = 122.
+      meta:
+        problem: amc12a_2002_p12
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem mathd_algebra_405 (S : Finset ℕ) (h₀ : ∀ x, x ∈ S ↔ 0 < x ∧ x ^ 2 + 4 * x + 4 < 20) :
+        S.card = 2 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - complete_square
+              - '∀ x : ℕ, x ^ 2 + 4 * x + 4 = (x + 2) ^ 2'
+            comment: Rewrite the quadratic by completing the square.
+          - prove:
+              - S_spec
+              - '∀ x : ℕ, x ∈ S ↔ 0 < x ∧ (x + 2) ^ 2 < 20'
+            comment: Combine h₀ with the completed square identity.
+          - prove:
+              - mem1
+              - 1 ∈ S
+            comment: 'Check: 0 < 1 and (1 + 2)^2 = 9 < 20, so by S_spec, 1 ∈ S.'
+          - prove:
+              - mem2
+              - 2 ∈ S
+            comment: 'Check: 0 < 2 and (2 + 2)^2 = 16 < 20, so by S_spec, 2 ∈ S.'
+          - prove:
+              - sq_lt_20_bound
+              - '∀ n : ℕ, n ^ 2 < 20 → n ≤ 4'
+            comment: Since 5^2 = 25 ≥ 20, any n with n^2 < 20 must satisfy n ≤ 4.
+          - prove:
+              - bound_members
+              - '∀ x : ℕ, x ∈ S → x ≤ 2'
+            comment: From x ∈ S get (x+2)^2 < 20 via S_spec; apply sq_lt_20_bound to n = x + 2 to get
+              x + 2 ≤ 4, hence x ≤ 2.
+          - prove:
+              - members_values
+              - '∀ x : ℕ, x ∈ S → x = 1 ∨ x = 2'
+            comment: From S_spec obtain 0 < x; together with bound_members (x ≤ 2), deduce x = 1 or x
+              = 2 (since x ∈ ℕ and 0 < x ≤ 2).
+          - prove:
+              - card
+              - S.card = 2
+            comment: We have 1 ∈ S and 2 ∈ S with 1 ≠ 2, and every element of S is either 1 or 2 by members_values;
+              hence S has exactly two elements.
+        comment: Complete the square to characterize S as the positive natural numbers with (x+2)^2 <
+          20, which are precisely x = 1, 2. Then count them.
+      meta:
+        problem: mathd_algebra_405
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: 'theorem mathd_algebra_151 : Int.ceil (Real.sqrt 27) - Int.floor (Real.sqrt 26) = 1 := by
+      sorry'
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - five_lt_sqrt26
+              - 5 < Real.sqrt 26
+            comment: Since 25 < 26 and sqrt is increasing on nonnegatives, we get 5 < sqrt 26.
+          - prove:
+              - sqrt26_lt_six
+              - Real.sqrt 26 < 6
+            comment: Since 26 < 36 and 6 ≥ 0, we get sqrt 26 < 6.
+          - prove:
+              - floor_s26
+              - Int.floor (Real.sqrt 26) = 5
+            comment: From 5 < sqrt 26 and sqrt 26 < 6, we have 5 ≤ sqrt 26 ∧ sqrt 26 < 6, so floor equals
+              5.
+          - prove:
+              - five_lt_sqrt27
+              - 5 < Real.sqrt 27
+            comment: Since 25 < 27 and sqrt is increasing, 5 < sqrt 27.
+          - prove:
+              - sqrt27_lt_six
+              - Real.sqrt 27 < 6
+            comment: Since 27 < 36 and 6 ≥ 0, we get sqrt 27 < 6.
+          - prove:
+              - ceil_s27
+              - Int.ceil (Real.sqrt 27) = 6
+            comment: From 5 < sqrt 27 and sqrt 27 < 6, we have 5 < sqrt 27 ∧ sqrt 27 ≤ 6, so ceil equals
+              6.
+          - prove:
+              - result
+              - Int.ceil (Real.sqrt 27) - Int.floor (Real.sqrt 26) = 1
+            comment: 'Substitute the computed ceil and floor values: 6 - 5 = 1.'
+        comment: Bound sqrt 26 and sqrt 27 between 5 and 6 using monotonicity of sqrt and comparisons
+          25 < 26 < 27 < 36. Then identify floor(sqrt 26) = 5 and ceil(sqrt 27) = 6, and subtract.
+      meta:
+        problem: mathd_algebra_151
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem mathd_numbertheory_13 (u v : ℕ) (S : Set ℕ)
+        (h₀ : ∀ n : ℕ, n ∈ S ↔ 0 < n ∧ 14 * n % 100 = 46) (h₁ : IsLeast S u)
+        (h₂ : IsLeast (S \ {u}) v) : (u + v : ℚ) / 2 = 64 := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - S_mod50
+              - '∀ n : ℕ, n ∈ S ↔ 0 < n ∧ n % 50 = 39'
+            comment: 'From h₀ and modular arithmetic: 14 * n % 100 = 46 iff n % 50 = 39 (since 14 * (n
+              + 50) ≡ 14 * n [100], and solving 14k ≡ 46 [100] gives k ≡ 39 [50]).'
+          - prove:
+              - mem39
+              - 39 ∈ S
+            comment: By S_mod50, since 0 < 39 and 39 % 50 = 39.
+          - prove:
+              - S_repr
+              - '∀ n : ℕ, n ∈ S → ∃ k : ℕ, n = 39 + 50 * k'
+            comment: From S_mod50, write n = 50 * (n / 50) + n % 50 with n % 50 = 39.
+          - prove:
+              - u_eq
+              - u = 39
+            comment: 'From h₁.mem: u ∈ S. Use S_repr to get u = 39 + 50k so 39 ≤ u. From mem39 and minimality
+              (h₁.property), u ≤ 39. Hence u = 39.'
+          - prove:
+              - mem89
+              - 89 ∈ S
+            comment: By S_mod50, since 0 < 89 and 89 % 50 = 39.
+          - prove:
+              - next_lb
+              - '∀ n : ℕ, n ∈ S ∧ n ≠ 39 → 89 ≤ n'
+            comment: From S_repr, n = 39 + 50k; if n ≠ 39 then k ≥ 1, so n ≥ 39 + 50 = 89.
+          - prove:
+              - v_eq
+              - v = 89
+            comment: 'From h₂.mem: v ∈ S \ {u}. Using u_eq, this is S \ {39}. Then next_lb applied to
+              v gives 89 ≤ v. From mem89 and minimality of v in S \ {39}, have v ≤ 89. Hence v = 89.'
+          - prove:
+              - target
+              - '(u + v : ℚ) / 2 = 64'
+            comment: 'Using u_eq and v_eq: (u + v : ℚ) = 128, so divide by 2.'
+        comment: Reduce the condition 14 n % 100 = 46 to n % 50 = 39. This describes S as the positive
+          naturals congruent to 39 mod 50, so elements are exactly 39 + 50k. Hence the least element is
+          u = 39 and the next least is v = 39 + 50 = 89. Therefore, (u + v)/2 = (39 + 89)/2 = 64.
+      meta:
+        problem: mathd_numbertheory_13
+- query: SketchProof
+  args:
+    prefix: []
+    theorem: |-
+      theorem aime_1983_p9 (x : ℝ) (h₀ : 0 < x ∧ x < Real.pi) :
+        12 ≤ (9 * (x ^ 2 * Real.sin x ^ 2) + 4) / (x * Real.sin x) := by sorry
+  answers:
+    - answer:
+        steps:
+          - prove:
+              - sin_pos
+              - 0 < Real.sin x
+            comment: 'From h₀.left: 0 < x and h₀.right: x < Real.pi, use Real.sin_pos_of_pos_of_lt_pi.'
+          - prove:
+              - den_pos
+              - 0 < x * Real.sin x
+            comment: From h₀.left and sin_pos via mul_pos_of_pos_of_pos.
+          - prove:
+              - frac_rewrite
+              - (9 * (x ^ 2 * (Real.sin x) ^ 2) + 4) / (x * Real.sin x) = (9 * (x * Real.sin x) ^ 2 +
+                4) / (x * Real.sin x)
+            comment: 'Use mul_pow and pow_two: (x * Real.sin x) ^ 2 = x ^ 2 * (Real.sin x) ^ 2.'
+          - prove:
+              - sq_nonneg
+              - 0 ≤ (3 * (x * Real.sin x) - (2:ℝ)) ^ 2
+            comment: 'Squares are nonnegative: by exact sq_nonneg _.'
+          - prove:
+              - sq_expand
+              - (3 * (x * Real.sin x) - (2:ℝ)) ^ 2 = 9 * (x * Real.sin x) ^ 2 - 12 * (x * Real.sin x)
+                + 4
+            comment: Expand the square; can be shown by ring_nf.
+          - prove:
+              - basic_ineq
+              - (12:ℝ) * (x * Real.sin x) ≤ 9 * (x * Real.sin x) ^ 2 + 4
+            comment: 'From sq_nonneg and sq_expand: 0 ≤ 9 t^2 - 12 t + 4 with t = x * sin x, rearranged
+              to 12 t ≤ 9 t^2 + 4.'
+          - prove:
+              - ineq_div
+              - 12 ≤ (9 * (x * Real.sin x) ^ 2 + 4) / (x * Real.sin x)
+            comment: From basic_ineq and den_pos using le_div_iff (since 0 < x * Real.sin x).
+          - prove:
+              - goal
+              - 12 ≤ (9 * (x ^ 2 * (Real.sin x) ^ 2) + 4) / (x * Real.sin x)
+            comment: Rewrite the right-hand side using frac_rewrite, then apply ineq_div.
+        comment: Let t = x * sin x > 0 (since 0 < x < π implies sin x > 0). Then the expression is (9
+          t^2 + 4)/t. Completing the square gives 9 t^2 + 4 − 12 t = 9 (t − 2/3)^2 ≥ 0, hence 12 t ≤ 9
+          t^2 + 4. Dividing by t > 0 yields 12 ≤ (9 t^2 + 4)/t. Rewriting t = x sin x and (x sin x)^2
+          = x^2 sin^2 x gives the result.
+      meta:
+        problem: aime_1983_p9
