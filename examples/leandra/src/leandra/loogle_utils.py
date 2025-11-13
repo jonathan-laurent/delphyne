@@ -15,9 +15,9 @@ import requests
 @dataclass
 class ServerConfig:
     base_url: str = "https://loogle.lean-lang.org/"
-    timeout: int = 5
+    timeout: int = 30
     retry_base_delay: int = 10
-    max_retries: int = 3
+    max_retries: int = 2
     max_shown_hits: int | None = 8
 
     @staticmethod
