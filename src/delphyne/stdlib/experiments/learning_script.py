@@ -45,6 +45,7 @@ ITERATIONS_DIR = "iterations"
 FEEDBACK_FILE = "feedback.yaml"
 TRAINING_EXP_DIR = "train"
 TEST_EXP_DIR = "test"
+TEST_NO_TIPS_TEST_DIR = "test_no_tips"
 ANALYZE_EXP_DIR = "analyze"
 SUMMARIZE_EXP_DIR = "summarize"
 LEARNED_DIR = "learned"
@@ -177,7 +178,9 @@ class LearningExperiment:
         """
         return _load_feedback_entries(self.directory, iteration)
 
-    def iteration_execution_context(self, iteration: int):
+    def iteration_execution_context(
+        self, iteration: int, with_tips: bool = True
+    ):
         previous_iters = range(1, iteration)
         new_data_dirs = [
             _iteration_folder(self.directory, it) / LEARNED_DATA_DIR
@@ -187,6 +190,8 @@ class LearningExperiment:
             _iteration_folder(self.directory, it) / LEARNED_DEMOS_FILE
             for it in previous_iters
         ]
+        if not with_tips:
+            new_data_dirs = []
         return replace(
             self.context,
             global_embeddings_cache_file=self.directory
@@ -215,7 +220,7 @@ class LearningExperiment:
             export_raw_trace=True,
         )
 
-    def testing_experiment(self, iteration: int):
+    def testing_experiment(self, iteration: int, with_tips: bool = True):
         # We can have `iteration=0` here if we want to run tests before
         # any learning happened.
         assert iteration >= 0
@@ -226,9 +231,11 @@ class LearningExperiment:
             configs=configs,
             # Important: use a custom context that includes learned
             # facts and demonstrations.
-            context=self.iteration_execution_context(iteration + 1),
+            context=self.iteration_execution_context(
+                iteration + 1, with_tips=with_tips
+            ),
             output_dir=_iteration_folder(self.directory, iteration)
-            / TEST_EXP_DIR,
+            / (TEST_EXP_DIR if with_tips else TEST_NO_TIPS_TEST_DIR),
             configs_context=self.configs_context,
             config_naming=lambda c, _: c.problem,
             workers_setup=self.workers_setup,
@@ -626,6 +633,7 @@ class LearningExperimentCLI:
         self,
         *,
         iter: int,
+        tips: bool,
         max_workers: int = 1,
         retry_errors: bool = False,
         interactive: bool = False,
@@ -634,7 +642,7 @@ class LearningExperimentCLI:
         """
         Solve testing problems.
         """
-        exp = self.experiment.testing_experiment(iter)
+        exp = self.experiment.testing_experiment(iter, with_tips=tips)
         exp.load()
         if force_summary:
             exp.save_summary(ignore_missing=True)
