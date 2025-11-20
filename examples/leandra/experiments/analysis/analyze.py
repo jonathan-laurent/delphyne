@@ -6,12 +6,19 @@ Analyze Computation Scaling Curves for MiniF2F Test
 
 from pathlib import Path
 
+import matplotlib
+import matplotlib as mpl
+
+matplotlib.use("Agg")  # Use non-interactive backend
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.ticker import LogLocator, NullFormatter
 
-# Toggle display of the "no tips" curve
+# Toggle display of curves, legend, and axis labels
 SHOW_NO_TIPS = False
+SHOW_LEGEND = True
+SHOW_AXIS_LABELS = False
 STARTING_LOG_PRICE = -2
 
 # Define the data folder path
@@ -46,6 +53,24 @@ budget_thresholds = np.logspace(
     STARTING_LOG_PRICE, 0, 100
 )  # From 0.0001 to 1.0
 
+
+mpl.use("pgf")
+mpl.rcParams.update(
+    {
+        "pgf.texsystem": "pdflatex",
+        "text.usetex": True,
+        "font.family": "serif",
+        "pgf.rcfonts": False,
+        "pgf.preamble": r"\usepackage{libertine}\usepackage[libertine]{newtxmath}",
+        "font.size": 9,
+        "axes.labelsize": 9,
+        "xtick.labelsize": 8,
+        "ytick.labelsize": 8,
+        "legend.fontsize": 8,
+    }
+)
+
+
 # Compute cumulative successes for each agent
 success_init = compute_cumulative_success(df_init, budget_thresholds)
 success_post = compute_cumulative_success(df_post, budget_thresholds)
@@ -55,49 +80,64 @@ success_post_no_tips = (
     else None
 )
 
-# Create the plot
-plt.figure(figsize=(10, 6))
-plt.plot(
+# Create the plot with paper-quality formatting
+# Figure size: 2.8 inches width, 2.0 inches height (smaller, same fonts)
+fig, ax = plt.subplots(figsize=(2.4, 1.4))
+
+
+ax.plot(
     budget_thresholds,
     success_init,
-    label="Initial Agent",
-    marker="o",
-    markersize=3,
-    linewidth=2,
+    label="Before training",
+    linewidth=1.2,
 )
-plt.plot(
+ax.plot(
     budget_thresholds,
     success_post,
-    label="Post-training (with tips)",
-    marker="s",
-    markersize=3,
-    linewidth=2,
+    label="After training",
+    linewidth=1.2,
 )
 if SHOW_NO_TIPS and success_post_no_tips is not None:
-    plt.plot(
+    ax.plot(
         budget_thresholds,
         success_post_no_tips,
-        label="Post-training (no tips)",
-        marker="^",
-        markersize=3,
-        linewidth=2,
+        label="After (no tips)",
+        linewidth=1.2,
+        color="coral",
+        linestyle="dotted",
     )
 
-plt.xscale("log")
-plt.xlabel("Budget (price)", fontsize=12)
-plt.ylabel("Number of Problems Solved", fontsize=12)
-plt.title("Proving Agent Performance: Problems Solved vs Budget", fontsize=14)
-plt.legend(fontsize=10)
-plt.grid(True, alpha=0.3)
-plt.tight_layout()
+ax.set_xscale("log")
 
-# Save the plot
-output_path = Path(__file__).parent / "scaling-curve.png"
-plt.savefig(output_path, dpi=300, bbox_inches="tight")
-print(f"Plot saved to: {output_path}")
+# Add finer graduations on the log axis
+ax.xaxis.set_major_locator(LogLocator(base=10.0, numticks=10))
+minor_ticks = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+ax.xaxis.set_minor_locator(
+    LogLocator(base=10.0, subs=minor_ticks, numticks=100)
+)
+ax.xaxis.set_minor_formatter(NullFormatter())
 
-# Display the plot
-plt.show()
+if SHOW_AXIS_LABELS:
+    ax.set_xlabel(r"Budget per Problem (\$)", labelpad=8)
+    ax.set_ylabel(r"Problems Solved", labelpad=11)
+if SHOW_LEGEND:
+    ax.legend(frameon=False)
+ax.grid(True, alpha=0.3, linewidth=0.5)
+ax.grid(True, which="minor", alpha=0.1, linewidth=0.3)
+
+plt.tight_layout(pad=0.3)
+
+# Save as PDF for LaTeX
+output_path_pdf = Path(__file__).parent / "scaling-curve.pdf"
+plt.savefig(
+    output_path_pdf, format="pdf", bbox_inches="tight", pad_inches=0.02
+)
+print(f"PDF plot saved to: {output_path_pdf}")
+
+# Also save as PNG for quick viewing
+output_path_png = Path(__file__).parent / "scaling-curve.png"
+plt.savefig(output_path_png, dpi=300, bbox_inches="tight")
+print(f"PNG plot saved to: {output_path_png}")
 
 # Print summary statistics
 print("\nSummary Statistics:")
