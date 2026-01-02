@@ -7,7 +7,7 @@
   "version": "0.14.2",
   "icon": "media/logo/delphyne.png",
   "engines": {
-    "vscode": "^1.89.0"
+    "vscode": "^1.107.0"
   },
   "categories": [
     "Other"
@@ -360,17 +360,17 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.6",
-    "@types/node": "22.x",
-    "@types/vscode": "^1.89.0",
-    "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.3.9",
-    "prettier": "^3.4.2",
-    "typescript": "^5.4.5"
+    "@types/mocha": "^10.0.10",
+    "@types/node": "25.x",
+    "@types/vscode": "^1.107.0",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
+    "prettier": "^3.7.4",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@vscode/vsce": "^3.2.1",
-    "ajv": "^8.14.0",
-    "yaml": "^2.4.2"
+    "@vscode/vsce": "^3.7.1",
+    "ajv": "^8.17.1",
+    "yaml": "^2.8.2"
   }
 }
