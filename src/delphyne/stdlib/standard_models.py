@@ -15,6 +15,8 @@ from delphyne.stdlib.openai_api import OpenAICompatibleModel
 #####
 
 type OpenAIModelName = Literal[
+    "gpt-5.2",
+    "gpt-5.1",
     "gpt-5",
     "gpt-5-mini",
     "gpt-5-nano",
@@ -40,6 +42,8 @@ type StandardModelName = (
 )
 
 PRICING: dict[str, tuple[float, float, float]] = {
+    "gpt-5.2": (1.75, 0.175, 14.00),
+    "gpt-5.1": (1.25, 0.125, 10.00),
     "gpt-5": (1.25, 0.125, 10.00),  # cached input 10x less expensive!
     "gpt-5-mini": (0.250, 0.025, 2.00),
     "gpt-5-nano": (0.050, 0.005, 0.40),
