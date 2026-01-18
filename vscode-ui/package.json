@@ -4,7 +4,7 @@
   "description": "Language support for Delphyne in VSCode",
   "repository": "https://github.com/jonathan-laurent/delphyne",
   "publisher": "jonathan-laurent",
-  "version": "0.14.2",
+  "version": "0.14.3",
   "icon": "media/logo/delphyne.png",
   "engines": {
     "vscode": "^1.107.0"

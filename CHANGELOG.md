@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.14.3 (2026-01-18)
+
+- Update NPM dependencies
+- Add support for latest OpenAI models
+
 ## Version 0.14.2 (2025-11-07)
 
 - Fix bug in demonstration interpreter.
