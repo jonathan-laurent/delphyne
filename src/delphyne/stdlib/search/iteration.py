@@ -12,7 +12,7 @@ from delphyne.stdlib.nodes import Fail, fail, spawn_node
 from delphyne.stdlib.opaque import Opaque, OpaqueSpace
 from delphyne.stdlib.policies import search_policy
 from delphyne.stdlib.strategies import strategy
-from delphyne.stdlib.streams import StreamTransformer
+from delphyne.stdlib.streams import Stream, StreamTransformer
 
 
 @dataclass
@@ -52,32 +52,37 @@ def _search_iteration[P, T](
     tree: dp.Tree[Iteration | Fail, P, T],
     env: PolicyEnv,
     policy: P,
+    *,
+    stop_on_reject: bool = True,
 ) -> dp.StreamGen[T]:
-    assert isinstance(tree.node, Iteration)
     state: dp.Tracked[Any] | None = None
-    while True:
-        for msg in tree.node.next(state).stream(env, policy):
-            if isinstance(msg, dp.Solution):
-                # Here, `msg` contains the value we are interested
-                # in so it is tempting to just yield it. However, this
-                # is not allowed since the attached reference would not
-                # properly point to a success node. In our Haskell
-                # implementation, such a bug would be caught by the type
-                # system. Here, we catch it dynamically.
-                yielded_and_new_state = msg.tracked
-                state = yielded_and_new_state[1]
-                child = tree.child(yielded_and_new_state)
-                assert not isinstance(child.node, Iteration)
-                if isinstance(child.node, dp.Success):
-                    yield dp.Solution(child.node.success)
-                break
-            else:
-                yield msg
+
+    def _next_stream() -> dp.StreamGen[T]:
+        nonlocal state
+        assert isinstance(tree.node, Iteration)
+        msg = yield from tree.node.next(state).stream(env, policy).first()
+        if msg is not None:
+            # Here, `msg` contains the value we are interested
+            # in so it is tempting to just yield it. However, this
+            # is not allowed since the attached reference would not
+            # properly point to a success node. In our Haskell
+            # implementation, such a bug would be caught by the type
+            # system. Here, we catch it dynamically.
+            yielded_and_new_state = msg.tracked
+            state = yielded_and_new_state[1]
+            child = tree.child(yielded_and_new_state)
+            assert not isinstance(child.node, Iteration)
+            if isinstance(child.node, dp.Success):
+                yield dp.Solution(child.node.success)
+
+    yield from Stream(_next_stream).loop(stop_on_reject=stop_on_reject)
 
 
 def iterate[P, S, T](
     next: Callable[[S | None], Opaque[P, tuple[T | None, S]]],
     transform_stream: Callable[[P], StreamTransformer | None] | None = None,
+    *,
+    stop_on_reject: bool = True,
 ) -> Opaque[P, T]:
     """
     Iteratively call a strategy or query, repeatedly feeding back the
@@ -101,7 +106,7 @@ def iterate[P, S, T](
     """
 
     def iterate_policy(inner_policy: P):
-        policy = _search_iteration()
+        policy = _search_iteration(stop_on_reject=stop_on_reject)
         if transform_stream is not None:
             trans = transform_stream(inner_policy)
             if trans is not None:
