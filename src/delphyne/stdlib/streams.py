@@ -370,6 +370,42 @@ def loop[T](
     return iter(stream.loop(n, stop_on_reject=stop_on_reject))
 
 
+@stream_transformer
+def majority_vote[T](
+    stream: Stream[T],
+    env: PolicyEnv,
+    top_k: int = 1,
+    *,
+    are_equivalent: Callable[[T, T], bool] = lambda x, y: x == y,
+) -> dp.StreamGen[T]:
+    """
+    Stream transformer that exhausts the underlying stream and yields the
+    first occuring solution instance for each of the `top_k` most frequently
+    occuring values, ordered by decreasing frequency.
+    The equality of values is determined using the provided `are_equivalent`
+    function.
+    """
+    assert top_k >= 1
+    solutions = yield from stream.all()
+    equivalence_classes: list[tuple[dp.Solution[T], int]] = []
+
+    for sol in solutions:
+        for i, (representative, count) in enumerate(equivalence_classes):
+            if are_equivalent(sol.tracked.value, representative.tracked.value):
+                equivalence_classes[i] = (representative, count + 1)
+                break
+        else:
+            equivalence_classes.append((sol, 1))
+
+    if equivalence_classes:
+        for representative, _ in sorted(
+            equivalence_classes,
+            key=lambda pair: pair[1],
+            reverse=True,
+        )[:top_k]:
+            yield representative
+
+
 #####
 ##### Basic Operations on Streams
 #####
