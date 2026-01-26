@@ -3540,6 +3540,8 @@ solution is produced, the provided default value is used.</p>
   
       dataclass
    (delphyne.stdlib.streams.StreamTransformer)" href="../streams/#delphyne.StreamTransformer">StreamTransformer</a></span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">stop_on_reject</span><span class="p">:</span> <span class="n"><span title="bool">bool</span></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="Opaque (delphyne.stdlib.opaque.Opaque)" href="../basic/#delphyne.Opaque">Opaque</a></span><span class="p">[</span><span class="n"><span title="delphyne.stdlib.search.iteration.iterate[P]">P</span></span><span class="p">,</span> <span class="n"><span title="delphyne.stdlib.search.iteration.iterate[T]">T</span></span><span class="p">]</span>
 </code></pre></div>
 
@@ -3634,10 +3636,7 @@ generated values.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/search/iteration.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 81</span>
 <span class="normal"> 82</span>
 <span class="normal"> 83</span>
 <span class="normal"> 84</span>
@@ -3667,9 +3666,16 @@ generated values.</p>
 <span class="normal">108</span>
 <span class="normal">109</span>
 <span class="normal">110</span>
-<span class="normal">111</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">iterate</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">iterate</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">S</span><span class="p">,</span> <span class="n">T</span><span class="p">](</span>
     <span class="nb">next</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">S</span> <span class="o">|</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">T</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">S</span><span class="p">]]],</span>
     <span class="n">transform_stream</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">P</span><span class="p">],</span> <span class="n">StreamTransformer</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">stop_on_reject</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Opaque</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Iteratively call a strategy or query, repeatedly feeding back the</span>
@@ -3693,7 +3699,7 @@ generated values.</p>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">iterate_policy</span><span class="p">(</span><span class="n">inner_policy</span><span class="p">:</span> <span class="n">P</span><span class="p">):</span>
-        <span class="n">policy</span> <span class="o">=</span> <span class="n">_search_iteration</span><span class="p">()</span>
+        <span class="n">policy</span> <span class="o">=</span> <span class="n">_search_iteration</span><span class="p">(</span><span class="n">stop_on_reject</span><span class="o">=</span><span class="n">stop_on_reject</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">transform_stream</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">trans</span> <span class="o">=</span> <span class="n">transform_stream</span><span class="p">(</span><span class="n">inner_policy</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">trans</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
