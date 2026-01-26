@@ -60,15 +60,15 @@ def _search_iteration[P, T](
     def _next_stream() -> dp.StreamGen[T]:
         nonlocal state
         assert isinstance(tree.node, Iteration)
-        msg = yield from tree.node.next(state).stream(env, policy).first()
-        if msg is not None:
-            # Here, `msg` contains the value we are interested
+        sol = yield from tree.node.next(state).stream(env, policy).first()
+        if sol is not None:
+            # Here, `sol` contains the value we are interested
             # in so it is tempting to just yield it. However, this
             # is not allowed since the attached reference would not
             # properly point to a success node. In our Haskell
             # implementation, such a bug would be caught by the type
             # system. Here, we catch it dynamically.
-            yielded_and_new_state = msg.tracked
+            yielded_and_new_state = sol.tracked
             state = yielded_and_new_state[1]
             child = tree.child(yielded_and_new_state)
             assert not isinstance(child.node, Iteration)
