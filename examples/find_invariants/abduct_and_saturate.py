@@ -9,11 +9,11 @@ import itertools
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-import why3_utils as why3
-from why3_utils import File, Formula
-
 import delphyne as dp
 from delphyne import Branch, Compute, Fail, Strategy, strategy
+
+import why3_utils as why3
+from why3_utils import File, Formula
 
 # fmt: off
 

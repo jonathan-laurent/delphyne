@@ -66,7 +66,6 @@ def prove_program_interactive_policy(
     loop: bool = False,
 ):
     model = dp.standard_model(model_name)
-
     sp = dfs(max_depth=max_feedback_cycles+1)
     if loop:
         sp = dp.loop() @ sp
