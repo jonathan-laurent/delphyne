@@ -1,6 +1,3 @@
-# @config
-# modules: [find_param_value_universal]
-# @end
 
 - strategy: find_param_value
   args: {expr: "x**2 - 2*x + n"}

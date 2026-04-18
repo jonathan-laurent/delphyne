@@ -3,3 +3,5 @@
 
 # Local configurations are provided for specific command
 # and demonstration files using the `@config` directive.
+
+modules: [find_param_value_universal]
