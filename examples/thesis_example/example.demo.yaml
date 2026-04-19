@@ -3,7 +3,7 @@
   args: {expr: "x**2 - 2*x + n"}
   tests:
     - run | success
-  queries: 
+  queries:
     - query: UniversalQuery
       args:
         strategy: example.find_param_value
@@ -12,10 +12,12 @@
         locals:
           expr: x**2 - 2*x + n
       answers:
-        - answer: |
-            ```
-            1
-            ```
+      - answer: |
+          Let's find a value for n that makes the expression a square:
+
+          ```
+          1
+          ```
     - query: UniversalQuery
       args:
         strategy: example.find_param_value
