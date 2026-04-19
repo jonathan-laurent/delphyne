@@ -1355,7 +1355,7 @@ class ExampleSelector:
             ]
 
         return self.filter(select)
-
+    
     def cached(self) -> "ExampleSelector":
         """
         Return a new example selector that caches its output the first
@@ -1386,12 +1386,28 @@ def all_examples(
     env: PolicyEnv, query: dp.AbstractQuery[Any]
 ) -> Sequence[SelectedExample]:
     """
-    Select all examples relevant to a query.
+    Select all examples for a given query type.
     """
     examples = env.examples.examples_for(query.query_name())
     return [
         SelectedExample(example=e, index=i, similarity=None)
         for i, e in enumerate(examples)
+    ]
+
+
+@ExampleSelector
+def all_relevant_examples(
+    env: PolicyEnv, query: dp.AbstractQuery[Any]
+) -> Sequence[SelectedExample]:
+    """
+    Select all examples for a given query type.
+    """
+    # TODO: clean up implementation
+    examples = env.examples.examples_for(query.query_name())
+    selected = [e for e in examples if query.shares_examples_with(e.query)]
+    return [
+        SelectedExample(example=e, index=i, similarity=None)
+        for i, e in enumerate(selected)
     ]
 
 
@@ -1832,8 +1848,8 @@ def classify[T](
         env: The global policy environment.
         model: The LLM to use for answering the query.
         params: Prompt hyperparameters.
-        select_examples: Example selector. By default, `all_examples` is
-            used.
+        select_examples: Example selector. By default, `all_relevant_examples`
+            is used.
         mode: The answer mode to use for parsing the query answer.
         top_logprobs: The number of top logprobs to request from the
             LLM, putting an upper bound on the support size of the
@@ -1848,7 +1864,7 @@ def classify[T](
     """
     env.tracer.trace_query(query)
     if select_examples is None:
-        select_examples = all_examples
+        select_examples = all_relevant_examples
     examples = select_examples(env, query.query)
     mngr = env.templates
     if params is None:
@@ -1972,7 +1988,8 @@ def few_shot[T](
         model: The LLM to use for answering the query
         params: Prompt hyperparameters, which are passed to prompt
             templates as a `params` dictionary.
-        select_examples: Example selector (default: `all_examples`).
+        select_examples: Example selector
+            (default: `all_relevant_examples`).
         mode: The answer mode to use for parsing the query answer.
         temperature: The temperature parameter to use with the LLM, as a
             number from 0 to 2.
@@ -2023,7 +2040,7 @@ def few_shot[T](
         return
 
     if select_examples is None:
-        select_examples = all_examples
+        select_examples = all_relevant_examples
     examples = select_examples(env, query.query)
     mngr = env.templates
     if params is None:
