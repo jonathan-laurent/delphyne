@@ -4,7 +4,9 @@ A Simple Delphyne Example
 Problem: find an integer n that makes an expression nonnegative for all x.
 Example: for x² - 2x + n, pick n = 1 since x² - 2x + 1 = (x - 1)² >= 0.
 
-Strategy: 
+Strategy: to solve the problem reliably, first guess a value for n, and
+then rewrite the resulting expression in such a way to prove that it is
+clearly nonnegative.
 """
 
 import sympy
