@@ -51,6 +51,8 @@ from delphyne.stdlib.misc import (
 )
 from delphyne.stdlib.openai_api import (
     OpenAICompatibleModel,
+    OpenAIResponsesModel,
+    StandardModel,
 )
 from delphyne.stdlib.search.abduction import (
     Abduction,
@@ -82,6 +84,7 @@ from delphyne.stdlib.standard_models import (
     deepseek_model,
     mistral_model,
     openai_model,
+    openai_responses_model,
     gemini_model,
     standard_model,
 )

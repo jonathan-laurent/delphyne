@@ -8,7 +8,11 @@ from collections.abc import Iterable, Sequence
 from typing import Any, Literal
 
 from delphyne.stdlib import models as md
-from delphyne.stdlib.openai_api import OpenAICompatibleModel
+from delphyne.stdlib.openai_api import (
+    OpenAICompatibleModel,
+    OpenAIResponsesModel,
+    StandardModel,
+)
 
 #####
 ##### Data about standard models
@@ -29,6 +33,8 @@ type OpenAIModelName = Literal[
     "o4-mini",
 ]
 
+type OpenAIResponsesExclusiveModelName = Literal["gpt-5-pro"]
+
 type MistralModelName = Literal["mistral-small-2503", "magistral-small-2506"]
 
 type DeepSeekModelName = Literal["deepseek-chat", "deepseek-reasoner"]
@@ -38,10 +44,15 @@ type GeminiModelName = Literal[
 ]
 
 type StandardModelName = (
-    OpenAIModelName | MistralModelName | DeepSeekModelName | GeminiModelName
+    OpenAIResponsesExclusiveModelName
+    | OpenAIModelName
+    | MistralModelName
+    | DeepSeekModelName
+    | GeminiModelName
 )
 
 PRICING: dict[str, tuple[float, float, float]] = {
+    "gpt-5-pro": (15.00, 15.00, 120.00),
     "gpt-5.2": (1.75, 0.175, 14.00),
     "gpt-5.1": (1.25, 0.125, 10.00),
     "gpt-5": (1.25, 0.125, 10.00),  # cached input 10x less expensive!
@@ -73,6 +84,7 @@ def test_pricing_dict_exhaustiveness():
     literal_values = set(
         [
             *_values(OpenAIModelName),
+            *_values(OpenAIResponsesExclusiveModelName),
             *_values(MistralModelName),
             *_values(DeepSeekModelName),
             *_values(GeminiModelName),
@@ -135,7 +147,9 @@ def _openai_compatible_model(
     model_class: str | None = None,
     base_url: str,
     api_key_env_var: str,
-):
+    responses_api: bool = False,
+    send_reasoning_tokens: bool = False,
+) -> StandardModel:
     """
     Build a model accessible from an OpenAI-compatible API. See
     `standard_model` for details on all parameters.
@@ -145,6 +159,9 @@ def _openai_compatible_model(
             "https://api.openai.com/v1" for OpenAI.
         api_key_env_var: the name of the environment variable
             containing the API key, e.g., "OPENAI_API_KEY".
+        responses_api: whether the Responses API should be used.
+        send_reasoning_tokens: whether reasoning tokens should be sent to the
+            model. (Only supported via Responses API)
     """
 
     api_key = os.getenv(api_key_env_var)
@@ -160,13 +177,24 @@ def _openai_compatible_model(
     all_options: md.RequestOptions = {"model": model}
     if options is not None:
         all_options.update(options)
-    return OpenAICompatibleModel(
-        base_url=base_url,
-        api_key=api_key,
-        options=all_options,
-        model_class=model_class,
-        pricing=pricing,
-    )
+
+    if responses_api:
+        return OpenAIResponsesModel(
+            base_url=base_url,
+            api_key=api_key,
+            options=all_options,
+            model_class=model_class,
+            pricing=pricing,
+            send_reasoning_tokens=send_reasoning_tokens,
+        )
+    else:
+        return OpenAICompatibleModel(
+            base_url=base_url,
+            api_key=api_key,
+            options=all_options,
+            model_class=model_class,
+            pricing=pricing,
+        )
 
 
 def openai_model(
@@ -175,13 +203,13 @@ def openai_model(
     *,
     pricing: md.ModelPricing | None | Literal["auto"] = "auto",
     model_class: str | None = None,
-):
+) -> OpenAICompatibleModel:
     """
     Obtain a standard model from OpenAI.
 
     See `standard_model` for details.
     """
-    return _openai_compatible_model(
+    ret = _openai_compatible_model(
         model,
         options=options,
         pricing=pricing,
@@ -189,6 +217,35 @@ def openai_model(
         base_url="https://api.openai.com/v1",
         api_key_env_var="OPENAI_API_KEY",
     )
+    assert isinstance(ret, OpenAICompatibleModel)
+    return ret
+
+
+def openai_responses_model(
+    model: OpenAIModelName | OpenAIResponsesExclusiveModelName | str,
+    options: md.RequestOptions | None = None,
+    *,
+    pricing: md.ModelPricing | None | Literal["auto"] = "auto",
+    model_class: str | None = None,
+    send_reasoning_tokens: bool = True,
+) -> OpenAIResponsesModel:
+    """
+    Obtain a standard model from OpenAI using the Responses API.
+
+    See `standard_model` for details.
+    """
+    ret = _openai_compatible_model(
+        model,
+        options=options,
+        pricing=pricing,
+        model_class=model_class,
+        base_url="https://api.openai.com/v1",
+        api_key_env_var="OPENAI_API_KEY",
+        responses_api=True,
+        send_reasoning_tokens=send_reasoning_tokens,
+    )
+    assert isinstance(ret, OpenAIResponsesModel)
+    return ret
 
 
 def mistral_model(
@@ -263,7 +320,9 @@ def standard_model(
     *,
     pricing: md.ModelPricing | None | Literal["auto"] = "auto",
     model_class: str | None = None,
-) -> OpenAICompatibleModel:
+    api_type: Literal["chat_completions", "responses"] = "chat_completions",
+    send_reasoning_tokens: bool = True,
+) -> StandardModel:
     """
     Obtain a standard model from OpenAI, Mistral, DeepSeek or Gemini.
 
@@ -291,18 +350,40 @@ def standard_model(
             tracked separately for different classes of models (e.g.,
             tracking "num_requests__reasoning_large" separately from
             "num_requests__chat_small").
+        api_type: Which API to use. `"chat_completions"` (default)
+            uses the Chat Completions API. `"responses"` uses the
+            OpenAI Responses API (only supported for OpenAI models).
+        send_reasoning_tokens: Whether to send reasoning tokens to the model.
+            Only applicable when using the Responses API.
 
     Raises:
-        ValueError: The provider or pricing model could not be inferred.
+        ValueError: The provider or pricing model could not be inferred,
+            or ``api_type="responses"`` was used with a non-OpenAI model.
     """
 
     openai_models = _values(OpenAIModelName)
+    openai_responses_models = _values(OpenAIResponsesExclusiveModelName)
     mistral_models = _values(MistralModelName)
     deepseek_models = _values(DeepSeekModelName)
     gemini_models = _values(GeminiModelName)
 
     prefix = _longest_standard_model_prefix_or_self(model)
+    if api_type == "responses":
+        if prefix not in [*openai_models, *openai_responses_models]:
+            raise ValueError(
+                f"The Responses API is only supported for OpenAI models, "
+                f"but got: {model}.\n"
+                f"Use api_type='chat_completions' for non-OpenAI models."
+            )
+        return openai_responses_model(
+            model,
+            options=options,
+            pricing=pricing,
+            model_class=model_class,
+            send_reasoning_tokens=send_reasoning_tokens,
+        )
 
+    assert api_type == "chat_completions"
     if prefix in openai_models:
         make_model = openai_model
     elif prefix in mistral_models:

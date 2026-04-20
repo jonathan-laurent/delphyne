@@ -3,6 +3,7 @@ Utilities to call models through OpenAI-compatible APIs.
 """
 
 import json
+from abc import abstractmethod
 from collections.abc import AsyncIterable, Sequence
 from dataclasses import dataclass, replace
 from typing import Any, override
@@ -11,8 +12,13 @@ import openai
 import openai.types.chat as ochat
 import openai.types.chat.chat_completion as ochatc
 import openai.types.chat.completion_create_params as ochatp
-from openai import NOT_GIVEN
+import openai.types.responses as oresp
+from openai import Omit, omit
 from openai.types import CompletionUsage
+from openai.types.responses import (
+    ResponseUsage,
+)
+from openai.types.shared_params import Reasoning
 
 from delphyne.core.refs import Structured, ToolCall
 from delphyne.core.streams import Budget
@@ -45,11 +51,20 @@ class ToolCallIdGenerator:
 
 
 def translate_logprob_info(
-    info: ochatc.ChoiceLogprobs,
+    info: ochatc.ChoiceLogprobs | oresp.ResponseOutputText,
 ) -> Sequence[md.TokenInfo]:
-    assert info.content is not None
+    """
+    Translates the logprob info from OpenAI format.
+    Supports both Chat Completions and Responses APIs.
+    """
+    logprobs = (
+        info.content
+        if isinstance(info, ochatc.ChoiceLogprobs)
+        else info.logprobs
+    )
+    assert logprobs is not None
     ret: list[md.TokenInfo] = []
-    for tok in info.content:
+    for tok in logprobs:
         token = md.Token(bytes=tok.bytes, token=tok.token)
         top = [
             (md.Token(bytes=t.bytes, token=t.token), t.logprob)
@@ -63,7 +78,8 @@ def translate_chat(
     chat: md.Chat,
 ) -> Sequence[ochat.ChatCompletionMessageParam]:
     """
-    We translate the chat into the format expected by OpenAI API.
+    We translate the chat into the format expected by OpenAI's
+    Chat Completions API.
 
     Unique ids are generated for tool calls.
     """
@@ -193,12 +209,44 @@ def _base_budget(n: int, model_class: str | None = None) -> dict[str, float]:
     return budget
 
 
+def _usage_details(
+    usage: CompletionUsage | ResponseUsage, cat: md.BudgetCategory
+) -> int | None:
+    """
+    Extract the number of tokens of a given category from the usage information.
+
+    Supports both Chat Completions and Responses APIs.
+    Returns `None` if usage details are not available (for cached tokens).
+    """
+    comp_api = isinstance(usage, CompletionUsage)
+    assert comp_api or isinstance(usage, ResponseUsage)
+    match cat:
+        case "input_tokens":
+            return usage.prompt_tokens if comp_api else usage.input_tokens
+        case "output_tokens":
+            return usage.completion_tokens if comp_api else usage.output_tokens
+        case "cached_input_tokens":
+            details = (
+                usage.prompt_tokens_details
+                if comp_api
+                else usage.input_tokens_details
+            )
+            return None if details is None else (details.cached_tokens or 0)
+        case _:
+            raise ValueError(f"No details for given category: {cat}")
+
+
 def _compute_spent_budget(
     n: int,
     model_class: str | None = None,
     pricing: md.ModelPricing | None = None,
-    usage: CompletionUsage | None = None,
+    usage: CompletionUsage | ResponseUsage | None = None,
 ) -> dict[str, float]:
+    """
+    Compute the spent budget for a given usage information.
+
+    Supports both Chat Completions and Responses APIs.
+    """
     budget = _base_budget(n, model_class)
 
     def add(cat: md.BudgetCategory, value: float):
@@ -207,20 +255,24 @@ def _compute_spent_budget(
             budget[md.budget_entry(cat, model_class)] = value
 
     if usage is not None:
-        add("input_tokens", usage.prompt_tokens)
-        add("output_tokens", usage.completion_tokens)
-        if usage.prompt_tokens_details:
-            cached = usage.prompt_tokens_details.cached_tokens or 0
+        input_tokens = _usage_details(usage, "input_tokens")
+        output_tokens = _usage_details(usage, "output_tokens")
+        assert input_tokens is not None and output_tokens is not None
+        add("input_tokens", input_tokens)
+        add("output_tokens", output_tokens)
+        if (
+            cached := _usage_details(usage, "cached_input_tokens")
+        ) is not None:
             add("cached_input_tokens", cached)
         else:
             cached = 0
         if pricing is not None:
-            non_cached = usage.prompt_tokens - cached
+            non_cached = input_tokens - cached
             assert non_cached >= 0
             price = (
                 pricing.dollars_per_cached_input_token * cached
                 + pricing.dollars_per_input_token * non_cached
-                + pricing.dollars_per_output_token * usage.completion_tokens
+                + pricing.dollars_per_output_token * output_tokens
             )
             add("price", price)
 
@@ -228,15 +280,16 @@ def _compute_spent_budget(
 
 
 @dataclass(kw_only=True)
-class OpenAICompatibleModel(md.LLM):
+class StandardModel(md.LLM):
     """
-    A Model accessible via an OpenAI-compatible API.
+    Abstract base class for standard LLM models (both OpenAI
+    Chat Completions API and OpenAI Responses API).
 
     Attributes:
 
         options: the default options to use for requests.
         api_key: the API key to use for authentication.
-        base_url: the base URL of the OpenAI-compatible API.
+        base_url: the base URL of the API.
         model_class: an optional identifier for the model class (e.g.,
             "reasoning_large"). When provided, class-specific budget
             metrics are reported, so that resource consumption can be
@@ -266,6 +319,18 @@ class OpenAICompatibleModel(md.LLM):
         return Budget(_base_budget(req.num_completions, self.model_class))
 
     @override
+    @abstractmethod
+    def _send_final_request(self, req: md.LLMRequest) -> md.LLMResponse:
+        pass
+
+
+@dataclass(kw_only=True)
+class OpenAICompatibleModel(StandardModel):
+    """
+    A Model accessible via an OpenAI-compatible Chat Completions API.
+    """
+
+    @override
     def _send_final_request(self, req: md.LLMRequest) -> md.LLMResponse:
         client = openai.OpenAI(api_key=self.api_key, base_url=self.base_url)
         options = req.options
@@ -276,18 +341,18 @@ class OpenAICompatibleModel(md.LLM):
                 model=options["model"],
                 messages=translate_chat(req.chat),
                 n=req.num_completions,
-                temperature=options.get("temperature", NOT_GIVEN),
-                reasoning_effort=options.get("reasoning_effort", NOT_GIVEN),
+                temperature=options.get("temperature", omit),
+                reasoning_effort=options.get("reasoning_effort", omit),
                 max_completion_tokens=options.get(
-                    "max_completion_tokens", NOT_GIVEN
+                    "max_completion_tokens", omit
                 ),
-                logprobs=options.get("logprobs", NOT_GIVEN),
-                top_logprobs=options.get("top_logprobs", NOT_GIVEN),
-                tools=tools if tools else NOT_GIVEN,
+                logprobs=options.get("logprobs", omit),
+                top_logprobs=options.get("top_logprobs", omit),
+                tools=tools if tools else omit,
                 response_format=_chat_response_format(
                     req.structured_output, self.no_json_schema
                 ),
-                tool_choice=options.get("tool_choice", NOT_GIVEN),
+                tool_choice=options.get("tool_choice", omit),
             )
         except (openai.RateLimitError, openai.APITimeoutError) as e:
             raise md.LLMBusyException(e)
@@ -393,3 +458,358 @@ class OpenAICompatibleModel(md.LLM):
             content = chunk.choices[0].delta.content
             if content:
                 yield content
+
+
+def translate_chat_for_responses(
+    req: md.LLMRequest,
+) -> list[oresp.ResponseInputItemParam]:
+    """
+    Translate a chat into the format expected by the OpenAI Responses
+    API.
+
+    Tool calls are flattened into separate top-level items, unlike the
+    Chat Completions API where they are nested inside assistant
+    messages.
+    """
+    gen = ToolCallIdGenerator()
+    items: list[oresp.ResponseInputItemParam] = []
+
+    for msg in req.chat:
+        match msg:
+            case md.SystemMessage(content=content):
+                items.append({"role": "system", "content": content})
+            case md.UserMessage(content=content):
+                items.append({"role": "user", "content": content})
+            case md.AssistantMessage(answer=answer):
+                if isinstance(answer.content, str):
+                    content = answer.content
+                else:
+                    content = json.dumps(answer.content.structured, indent=2)
+                if answer.justification is not None:
+                    content += f"\n\n{answer.justification}"
+                items.append({"role": "assistant", "content": content})
+
+                # Append tool calls as separate items
+                for call in answer.tool_calls:
+                    call_item: oresp.ResponseFunctionToolCallParam = {
+                        "type": "function_call",
+                        "name": call.name,
+                        "arguments": json.dumps(call.args),
+                        "call_id": gen.get_id(call),
+                    }
+                    items.append(call_item)
+
+                # TODO: fetch encrypted reasoning content from cache to send as
+                # oresp.ResponseReasoningItemParam
+            case md.ToolMessage(call=call, result=result):
+                if isinstance(result, str):
+                    content = result
+                else:
+                    content = pretty_yaml(result.structured)
+                output_item: oresp.response_input_item_param.FunctionCallOutput = {
+                    "type": "function_call_output",
+                    "call_id": gen.get_id(call),
+                    "output": content,
+                }
+                items.append(output_item)
+    return items
+
+
+def _make_responses_tool(
+    tool: md.Schema,
+) -> oresp.FunctionToolParam:
+    """
+    Build a Responses API tool specification from a schema.
+    """
+    ret: oresp.FunctionToolParam = {
+        "type": "function",
+        "name": tool.name,
+        "parameters": _strict_schema(tool.schema),
+        "strict": True,
+    }
+    if tool.description is not None:
+        ret["description"] = tool.description
+    return ret
+
+
+def _responses_response_format(
+    structured_output: md.Schema | None,
+    no_json_schema: bool,  # verbosity: Literal
+) -> oresp.ResponseTextConfigParam:
+    """
+    Build the ``text`` parameter for the Responses API from a
+    structured output schema.
+    """
+    if structured_output is None:
+        return {"format": {"type": "text"}}
+    elif no_json_schema:
+        return {"format": {"type": "json_object"}}
+    fmt: oresp.ResponseFormatTextJSONSchemaConfigParam = {
+        "type": "json_schema",
+        "strict": True,
+        "name": structured_output.name,
+        "schema": _strict_schema(structured_output.schema),
+    }
+    if structured_output.description is not None:
+        fmt["description"] = structured_output.description
+    return {"format": fmt}
+
+
+def _determine_finish_reason(
+    response: oresp.Response,
+) -> tuple[md.FinishReason | None, list[md.LLMResponseLogItem]]:
+    """
+    Determines the finish reason for a response obtained from the Responses
+    API. Logs errors if the response is not completed.
+    """
+    log: list[md.LLMResponseLogItem] = []
+    match response.status:
+        case "completed":
+            if any(
+                isinstance(item, oresp.ResponseFunctionToolCall)
+                for item in response.output
+            ):
+                return "tool_calls", log
+            else:
+                return "stop", log
+        case "incomplete":
+            if response.incomplete_details is not None:
+                reason = response.incomplete_details.reason
+                if reason == "max_output_tokens":
+                    return "length", log
+                elif reason == "content_filter":
+                    return "content_filter", log
+            log.append(
+                md.LLMResponseLogItem(
+                    "error",
+                    "incomplete_response",
+                    metadata={
+                        "status": response.status,
+                        "details": (response.incomplete_details),
+                    },
+                )
+            )
+            return "stop", log
+        case "failed" | "cancelled" | "in_progress" | "queued" | None:
+            log.append(
+                md.LLMResponseLogItem(
+                    "error",
+                    "no_response",
+                    metadata={
+                        "status": response.status,
+                        "error": response.error,
+                    },
+                )
+            )
+            return None, log
+
+
+@dataclass(kw_only=True)
+class OpenAIResponsesModel(StandardModel):
+    """
+    A Model accessible via the OpenAI Responses API.
+
+    Attributes:
+        send_reasoning_tokens: if `True`, reasoning encrypted
+            content is requested from the API via the `include`
+            parameter.
+
+    If `num_completions` > 1, multiple sequential request are made,
+    as the Responses API does not support multiple completions per a
+    single request unlike the Chat Completions API.
+    """
+
+    send_reasoning_tokens: bool = True  # currently not sent
+
+    @override
+    def _send_final_request(self, req: md.LLMRequest) -> md.LLMResponse:
+        client = openai.OpenAI(api_key=self.api_key, base_url=self.base_url)
+        options = req.options
+        assert "model" in options, "No model was specified"
+        tools = [_make_responses_tool(tool) for tool in req.tools]
+
+        include: list[oresp.ResponseIncludable] = []
+        if self.send_reasoning_tokens:
+            include.append("reasoning.encrypted_content")
+        if options.get("logprobs", False):
+            include.append("message.output_text.logprobs")
+
+        text_config = _responses_response_format(
+            req.structured_output, self.no_json_schema
+        )
+
+        reasoning_effort = options.get("reasoning_effort")
+        reasoning_config: Reasoning | Omit = (
+            {"effort": reasoning_effort}
+            if reasoning_effort is not None
+            else omit
+        )
+
+        all_outputs: list[md.LLMOutput] = []
+        all_log: list[md.LLMResponseLogItem] = []
+        total_budget: Budget | None = None
+        model_name: str | None = None
+        usage_info: ResponseUsage | None = None
+
+        def _send_single_request() -> oresp.Response:
+            try:
+                response: oresp.Response = client.responses.create(
+                    model=options["model"],
+                    input=translate_chat_for_responses(req),
+                    temperature=options.get("temperature", omit),
+                    reasoning=reasoning_config,
+                    max_output_tokens=options.get(
+                        "max_completion_tokens", omit
+                    ),
+                    top_logprobs=options.get("top_logprobs", omit),
+                    tools=tools if tools else omit,
+                    text=text_config,
+                    tool_choice=options.get("tool_choice", omit),
+                    include=include if include else omit,
+                    store=False,
+                )
+            except (openai.RateLimitError, openai.APITimeoutError) as e:
+                raise md.LLMBusyException(e)
+            return response
+
+        for _ in range(req.num_completions):
+            response = _send_single_request()
+            outputs, log = self._parse_response(response, req)
+            budget = Budget(
+                _compute_spent_budget(
+                    1, self.model_class, self.pricing, response.usage
+                )
+            )
+            all_outputs.extend(outputs)
+            all_log.extend(log)
+
+            # Accumulate budget
+            total_budget = (
+                budget if total_budget is None else total_budget + budget
+            )
+            model_name = model_name or response.model
+            if response.usage is not None:
+                new_usage = response.usage
+                if usage_info is None:
+                    usage_info = new_usage
+                else:
+                    usage_info.input_tokens += new_usage.input_tokens
+                    usage_info.output_tokens += new_usage.output_tokens
+                    usage_info.input_tokens_details.cached_tokens += (
+                        new_usage.input_tokens_details.cached_tokens
+                    )
+                    usage_info.output_tokens_details.reasoning_tokens += (
+                        new_usage.output_tokens_details.reasoning_tokens
+                    )
+                    usage_info.total_tokens += new_usage.total_tokens
+
+        return md.LLMResponse(
+            all_outputs,
+            total_budget,
+            all_log,
+            model_name,
+            usage_info.to_dict() if usage_info is not None else None,
+        )
+
+    def _parse_response(
+        self,
+        response: oresp.Response,
+        req: md.LLMRequest,
+    ) -> tuple[list[md.LLMOutput], list[md.LLMResponseLogItem]]:
+        outputs: list[md.LLMOutput] = []
+        finish_reason, log = _determine_finish_reason(response)
+        if finish_reason is None:
+            # response incomplete or not processed
+            return (outputs, log)
+
+        # Collect content and tool calls from output items
+        content: str | Structured = ""
+        tool_calls: list[ToolCall] = []
+        logprobs: list[md.TokenInfo] | None = None
+        raw_text: list[str] = []
+        reasoning_content: str | None = None
+        ok = True
+
+        for item in response.output:
+            if isinstance(item, oresp.ResponseOutputMessage):
+                for part in item.content:
+                    if isinstance(part, oresp.ResponseOutputText):
+                        raw_text.append(part.text)
+                        if (
+                            self.options.get("logprobs", False)
+                            and part.logprobs is not None
+                        ):
+                            if logprobs is None:
+                                logprobs = []
+                            logprobs.extend(translate_logprob_info(part))
+                    else:
+                        assert isinstance(part, oresp.ResponseOutputRefusal)
+                        log.append(
+                            md.LLMResponseLogItem(
+                                "error",
+                                "llm_refusal",
+                                part.refusal,
+                            )
+                        )
+            elif isinstance(item, oresp.ResponseFunctionToolCall):
+                try:
+                    args = json.loads(item.arguments)
+                    tool_calls.append(ToolCall(item.name, args))
+                except Exception:
+                    ok = False  # response not valid
+                    log.append(
+                        md.LLMResponseLogItem(
+                            "error",
+                            "failed_to_parse_tool_call:",
+                            metadata={"tool_call": item},
+                        )
+                    )
+            elif isinstance(item, oresp.ResponseReasoningItem):
+                if item.content:
+                    reasoning_content = "".join(
+                        part.text for part in item.content
+                    )  # not returned by OpenAI models
+
+                    # TODO: add encrypted content to cache
+            else:
+                # not handling other content like audio or image
+                continue
+
+        if ok and raw_text:
+            full_text = "".join(raw_text)
+            if (
+                req.structured_output is not None
+                and finish_reason != "tool_calls"
+            ):
+                try:
+                    content = Structured(json.loads(full_text))
+                except Exception as e:
+                    ok = False  # response not valid
+                    log.append(
+                        md.LLMResponseLogItem(
+                            "error",
+                            "failed_to_parse_structured_output",
+                            metadata={
+                                "content": full_text,
+                                "error": str(e),
+                            },
+                        )
+                    )
+            else:
+                content = full_text
+
+        if not content and not tool_calls:
+            ok = False
+
+        if ok:
+            outputs.append(
+                md.LLMOutput(
+                    content=content,
+                    logprobs=logprobs,
+                    finish_reason=finish_reason,
+                    tool_calls=tool_calls,
+                    reasoning_content=reasoning_content,
+                )
+            )
+
+        return (outputs, log)
