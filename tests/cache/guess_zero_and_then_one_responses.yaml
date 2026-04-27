@@ -1,0 +1,100 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: Answer with a number.
+        - role: user
+          content: Start trying to answer `0`.
+      options:
+        model: gpt-5-nano
+      structured_output:
+        name: NumberOutput
+        description: 'NumberOutput(number: int)'
+        schema:
+          properties:
+            number:
+              title: Number
+              type: integer
+          required:
+            - number
+          title: NumberOutput
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content:
+          structured:
+            number: 0
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 60
+        output_tokens: 521
+        cached_input_tokens: 0
+        price: 0.0002114
+    log_items: []
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      input_tokens: 60
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 521
+      output_tokens_details:
+        reasoning_tokens: 448
+      total_tokens: 581
+- input:
+    request:
+      chat:
+        - role: system
+          content: Answer with a number.
+        - role: user
+          content: Start trying to answer `0`.
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                number: 0
+        - role: user
+          content: Now try to answer `1`.
+      options:
+        model: gpt-5-nano
+      structured_output:
+        name: NumberOutput
+        description: 'NumberOutput(number: int)'
+        schema:
+          properties:
+            number:
+              title: Number
+              type: integer
+          required:
+            - number
+          title: NumberOutput
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content:
+          structured:
+            number: 1
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 86
+        output_tokens: 389
+        cached_input_tokens: 0
+        price: 0.00015989999999999998
+    log_items: []
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      input_tokens: 86
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 389
+      output_tokens_details:
+        reasoning_tokens: 320
+      total_tokens: 475

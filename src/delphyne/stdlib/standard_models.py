@@ -51,6 +51,8 @@ type StandardModelName = (
     | GeminiModelName
 )
 
+type APIType = Literal["chat_completions", "responses"]
+
 PRICING: dict[str, tuple[float, float, float]] = {
     "gpt-5-pro": (15.00, 15.00, 120.00),
     "gpt-5.2": (1.75, 0.175, 14.00),
@@ -148,7 +150,7 @@ def _openai_compatible_model(
     base_url: str,
     api_key_env_var: str,
     responses_api: bool = False,
-    send_reasoning_tokens: bool = False,
+    reasoning_cache: md.ReasoningCache | None = None,
 ) -> StandardModel:
     """
     Build a model accessible from an OpenAI-compatible API. See
@@ -160,8 +162,8 @@ def _openai_compatible_model(
         api_key_env_var: the name of the environment variable
             containing the API key, e.g., "OPENAI_API_KEY".
         responses_api: whether the Responses API should be used.
-        send_reasoning_tokens: whether reasoning tokens should be sent to the
-            model. (Only supported via Responses API)
+        reasoning_cache: the reasoning cache to use for storing and retrieving
+            reasoning tokens. (only supported with Responses API)
     """
 
     api_key = os.getenv(api_key_env_var)
@@ -185,7 +187,7 @@ def _openai_compatible_model(
             options=all_options,
             model_class=model_class,
             pricing=pricing,
-            send_reasoning_tokens=send_reasoning_tokens,
+            reasoning_cache=reasoning_cache,
         )
     else:
         return OpenAICompatibleModel(
@@ -227,7 +229,7 @@ def openai_responses_model(
     *,
     pricing: md.ModelPricing | None | Literal["auto"] = "auto",
     model_class: str | None = None,
-    send_reasoning_tokens: bool = True,
+    reasoning_cache: md.ReasoningCache | None = None,
 ) -> OpenAIResponsesModel:
     """
     Obtain a standard model from OpenAI using the Responses API.
@@ -242,7 +244,7 @@ def openai_responses_model(
         base_url="https://api.openai.com/v1",
         api_key_env_var="OPENAI_API_KEY",
         responses_api=True,
-        send_reasoning_tokens=send_reasoning_tokens,
+        reasoning_cache=reasoning_cache,
     )
     assert isinstance(ret, OpenAIResponsesModel)
     return ret
@@ -320,8 +322,8 @@ def standard_model(
     *,
     pricing: md.ModelPricing | None | Literal["auto"] = "auto",
     model_class: str | None = None,
-    api_type: Literal["chat_completions", "responses"] = "chat_completions",
-    send_reasoning_tokens: bool = True,
+    api_type: APIType = "chat_completions",
+    reasoning_cache: md.ReasoningCache | None = None,
 ) -> StandardModel:
     """
     Obtain a standard model from OpenAI, Mistral, DeepSeek or Gemini.
@@ -353,8 +355,8 @@ def standard_model(
         api_type: Which API to use. `"chat_completions"` (default)
             uses the Chat Completions API. `"responses"` uses the
             OpenAI Responses API (only supported for OpenAI models).
-        send_reasoning_tokens: Whether to send reasoning tokens to the model.
-            Only applicable when using the Responses API.
+        reasoning_cache: The reasoning cache to use for storing and retrieving
+            reasoning tokens. Only supported with Responses API.
 
     Raises:
         ValueError: The provider or pricing model could not be inferred,
@@ -380,7 +382,7 @@ def standard_model(
             options=options,
             pricing=pricing,
             model_class=model_class,
-            send_reasoning_tokens=send_reasoning_tokens,
+            reasoning_cache=reasoning_cache,
         )
 
     assert api_type == "chat_completions"

@@ -1,0 +1,45 @@
+# Run the `make_sum` strategy, for testing purposes. 
+
+command: run_strategy
+args:
+  strategy: make_sum
+  args:
+    allowed: [9, 6, 2]
+    goal: 11
+  policy: make_sum_policy
+  policy_args:
+    api_type: responses
+  using:
+    - demo: "example_strategies.demo.yaml:make_sum_demo"
+  num_generated: 1
+  budget:
+    num_requests: 0  # all answers are taken from the demo
+  export_browsable_trace: false
+  export_raw_trace: false
+  remove_timing_info: true
+outcome:
+  diagnostics: []
+  result:
+    success: true
+    values:
+      - - 9
+        - 2
+    spent_budget: {}
+    log:
+      - message: llm_override
+        level: info
+        message_id: 0
+        metadata:
+          source: example_strategies.demo.yaml:make_sum_demo:0:0
+          query_name: MakeSum
+          query_args:
+            allowed:
+              - 9
+              - 6
+              - 2
+            goal: 11
+          answer:
+            mode: null
+            content: '[9, 2]'
+            tool_calls: []
+            justification: null

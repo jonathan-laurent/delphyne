@@ -1,0 +1,75 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: Answer with a number and nothing else.
+        - role: user
+          content: '{}'
+      options:
+        model: gpt-5-nano
+    iter: 1
+  output:
+    outputs:
+      - content: '0'
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 19
+        output_tokens: 239
+        cached_input_tokens: 0
+        price: 9.654999999999999e-05
+    log_items: []
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      input_tokens: 19
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 239
+      output_tokens_details:
+        reasoning_tokens: 192
+      total_tokens: 258
+- input:
+    request:
+      chat:
+        - role: system
+          content: Answer with a number and nothing else.
+        - role: user
+          content: '{}'
+        - role: assistant
+          answer:
+            mode: null
+            content: '0'
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Expected '83'. Please answer with 83 instead.
+            """
+      options:
+        model: gpt-5-nano
+    iter: 1
+  output:
+    outputs:
+      - content: '83'
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 49
+        output_tokens: 184
+        cached_input_tokens: 0
+        price: 7.605e-05
+    log_items: []
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      input_tokens: 49
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 184
+      output_tokens_details:
+        reasoning_tokens: 128
+      total_tokens: 233

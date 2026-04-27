@@ -1,0 +1,255 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            You are in a market and you are presented with a list of sellers.
+            Each seller offers to exchange a specific item for a list of other
+            items (or for free if the list is empty). You also possess a number
+            of items and are interested in obtaining a new one.
+
+            Find all vendors selling the item that you want and answer with a
+            list of all the things these vendors want that you do not have
+            already.
+        - role: user
+          content: |-
+            market:
+              - name: R1
+                asked_items: []
+                offered_item: A
+              - name: R2
+                asked_items: []
+                offered_item: B
+              - name: R3
+                asked_items:
+                  - A
+                  - D
+                offered_item: C
+              - name: R4
+                asked_items:
+                  - B
+                offered_item: E
+              - name: R5
+                asked_items:
+                  - A
+                  - E
+                offered_item: C
+              - name: R6
+                asked_items:
+                  - C
+                offered_item: F
+            possessed_items: []
+            item: F
+      options:
+        model: gpt-4.1-mini
+      structured_output:
+        name: ItemsToFind
+        description: 'ItemsToFind(items: Sequence[str])'
+        schema:
+          properties:
+            items:
+              items:
+                type: string
+              title: Items
+              type: array
+          required:
+            - items
+          title: ItemsToFind
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content:
+          structured:
+            items:
+              - C
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 286
+        output_tokens: 7
+        cached_input_tokens: 0
+        price: 0.0001256
+    log_items: []
+    model_name: gpt-4.1-mini-2025-04-14
+    usage_info:
+      input_tokens: 286
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 7
+      output_tokens_details:
+        reasoning_tokens: 0
+      total_tokens: 293
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            You are in a market and you are presented with a list of sellers.
+            Each seller offers to exchange a specific item for a list of other
+            items (or for free if the list is empty). You also possess a number
+            of items and are interested in obtaining a new one.
+
+            Find all vendors selling the item that you want and answer with a
+            list of all the things these vendors want that you do not have
+            already.
+        - role: user
+          content: |-
+            market:
+              - name: R1
+                asked_items: []
+                offered_item: A
+              - name: R2
+                asked_items: []
+                offered_item: B
+              - name: R3
+                asked_items:
+                  - A
+                  - D
+                offered_item: C
+              - name: R4
+                asked_items:
+                  - B
+                offered_item: E
+              - name: R5
+                asked_items:
+                  - A
+                  - E
+                offered_item: C
+              - name: R6
+                asked_items:
+                  - C
+                offered_item: F
+            possessed_items: []
+            item: C
+      options:
+        model: gpt-4.1-mini
+      structured_output:
+        name: ItemsToFind
+        description: 'ItemsToFind(items: Sequence[str])'
+        schema:
+          properties:
+            items:
+              items:
+                type: string
+              title: Items
+              type: array
+          required:
+            - items
+          title: ItemsToFind
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content:
+          structured:
+            items:
+              - A
+              - D
+              - E
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 286
+        output_tokens: 11
+        cached_input_tokens: 0
+        price: 0.00013199999999999998
+    log_items: []
+    model_name: gpt-4.1-mini-2025-04-14
+    usage_info:
+      input_tokens: 286
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 11
+      output_tokens_details:
+        reasoning_tokens: 0
+      total_tokens: 297
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            You are in a market and you are presented with a list of sellers.
+            Each seller offers to exchange a specific item for a list of other
+            items (or for free if the list is empty). You also possess a number
+            of items and are interested in obtaining a new one.
+
+            Find all vendors selling the item that you want and answer with a
+            list of all the things these vendors want that you do not have
+            already.
+        - role: user
+          content: |-
+            market:
+              - name: R1
+                asked_items: []
+                offered_item: A
+              - name: R2
+                asked_items: []
+                offered_item: B
+              - name: R3
+                asked_items:
+                  - A
+                  - D
+                offered_item: C
+              - name: R4
+                asked_items:
+                  - B
+                offered_item: E
+              - name: R5
+                asked_items:
+                  - A
+                  - E
+                offered_item: C
+              - name: R6
+                asked_items:
+                  - C
+                offered_item: F
+            possessed_items:
+              - A
+            item: E
+      options:
+        model: gpt-4.1-mini
+      structured_output:
+        name: ItemsToFind
+        description: 'ItemsToFind(items: Sequence[str])'
+        schema:
+          properties:
+            items:
+              items:
+                type: string
+              title: Items
+              type: array
+          required:
+            - items
+          title: ItemsToFind
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content:
+          structured:
+            items:
+              - B
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 289
+        output_tokens: 7
+        cached_input_tokens: 0
+        price: 0.0001268
+    log_items: []
+    model_name: gpt-4.1-mini-2025-04-14
+    usage_info:
+      input_tokens: 289
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 7
+      output_tokens_details:
+        reasoning_tokens: 0
+      total_tokens: 296
