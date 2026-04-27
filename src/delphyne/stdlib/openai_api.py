@@ -460,9 +460,18 @@ class OpenAICompatibleModel(StandardModel):
                 yield content
 
 
+class _ReasoningCacheMiss(Exception):
+    pass
+
+
+def _raise_missing(_: md.ReasoningCacheKey) -> md.ReasoningMessage:
+    raise _ReasoningCacheMiss()
+
+
 def translate_chat_for_responses(
     req: md.LLMRequest,
-) -> list[oresp.ResponseInputItemParam]:
+    reasoning_cache: md.ReasoningCache | None = None,
+) -> tuple[list[oresp.ResponseInputItemParam], list[md.LLMResponseLogItem]]:
     """
     Translate a chat into the format expected by the OpenAI Responses
     API.
@@ -473,8 +482,9 @@ def translate_chat_for_responses(
     """
     gen = ToolCallIdGenerator()
     items: list[oresp.ResponseInputItemParam] = []
+    log: list[md.LLMResponseLogItem] = []
 
-    for msg in req.chat:
+    for i, msg in enumerate(req.chat):
         match msg:
             case md.SystemMessage(content=content):
                 items.append({"role": "system", "content": content})
@@ -487,6 +497,44 @@ def translate_chat_for_responses(
                     content = json.dumps(answer.content.structured, indent=2)
                 if answer.justification is not None:
                     content += f"\n\n{answer.justification}"
+
+                if reasoning_cache is not None:
+                    prefix_req = replace(req, chat=req.chat[:i])
+                    key = md.ReasoningCacheKey(
+                        prefix=prefix_req,
+                        answer_content=answer.content,
+                        tool_calls=tuple(answer.tool_calls),
+                    )
+                    # If the key is in the cache, add encrypted reasoning
+                    # tokens to the items.
+                    try:
+                        cached = reasoning_cache.cache(_raise_missing)(key)
+                        reasoning_item: oresp.ResponseReasoningItemParam = {
+                            "type": "reasoning",
+                            "id": cached.id,
+                            "summary": [
+                                {"type": "summary_text", "text": s}
+                                for s in cached.summary
+                            ],
+                            "encrypted_content": cached.encrypted_content,
+                        }
+                        items.append(reasoning_item)
+                        log.append(
+                            md.LLMResponseLogItem(
+                                "info",
+                                "reasoning_cache_hit",
+                                metadata={"msg_index_in_chat": i},
+                            )
+                        )
+                    except _ReasoningCacheMiss:
+                        log.append(
+                            md.LLMResponseLogItem(
+                                "info",
+                                "reasoning_cache_miss",
+                                metadata={"msg_index_in_chat": i},
+                            )
+                        )
+
                 items.append({"role": "assistant", "content": content})
 
                 # Append tool calls as separate items
@@ -498,9 +546,6 @@ def translate_chat_for_responses(
                         "call_id": gen.get_id(call),
                     }
                     items.append(call_item)
-
-                # TODO: fetch encrypted reasoning content from cache to send as
-                # oresp.ResponseReasoningItemParam
             case md.ToolMessage(call=call, result=result):
                 if isinstance(result, str):
                     content = result
@@ -512,7 +557,7 @@ def translate_chat_for_responses(
                     "output": content,
                 }
                 items.append(output_item)
-    return items
+    return items, log
 
 
 def _make_responses_tool(
@@ -610,16 +655,15 @@ class OpenAIResponsesModel(StandardModel):
     A Model accessible via the OpenAI Responses API.
 
     Attributes:
-        send_reasoning_tokens: if `True`, reasoning encrypted
-            content is requested from the API via the `include`
-            parameter.
+        reasoning_cache: an optional cache for storing and retrieving
+            encrypted reasoning content to leverage prompt caching.
 
     If `num_completions` > 1, multiple sequential request are made,
     as the Responses API does not support multiple completions per a
     single request unlike the Chat Completions API.
     """
 
-    send_reasoning_tokens: bool = True  # currently not sent
+    reasoning_cache: md.ReasoningCache | None = None
 
     @override
     def _send_final_request(self, req: md.LLMRequest) -> md.LLMResponse:
@@ -629,7 +673,7 @@ class OpenAIResponsesModel(StandardModel):
         tools = [_make_responses_tool(tool) for tool in req.tools]
 
         include: list[oresp.ResponseIncludable] = []
-        if self.send_reasoning_tokens:
+        if self.reasoning_cache is not None:
             include.append("reasoning.encrypted_content")
         if options.get("logprobs", False):
             include.append("message.output_text.logprobs")
@@ -647,15 +691,16 @@ class OpenAIResponsesModel(StandardModel):
 
         all_outputs: list[md.LLMOutput] = []
         all_log: list[md.LLMResponseLogItem] = []
-        total_budget: Budget | None = None
         model_name: str | None = None
         usage_info: ResponseUsage | None = None
+        input, log = translate_chat_for_responses(req, self.reasoning_cache)
+        all_log.extend(log)
 
         def _send_single_request() -> oresp.Response:
             try:
                 response: oresp.Response = client.responses.create(
                     model=options["model"],
-                    input=translate_chat_for_responses(req),
+                    input=input,
                     temperature=options.get("temperature", omit),
                     reasoning=reasoning_config,
                     max_output_tokens=options.get(
@@ -675,18 +720,11 @@ class OpenAIResponsesModel(StandardModel):
         for _ in range(req.num_completions):
             response = _send_single_request()
             outputs, log = self._parse_response(response, req)
-            budget = Budget(
-                _compute_spent_budget(
-                    1, self.model_class, self.pricing, response.usage
-                )
-            )
+
             all_outputs.extend(outputs)
             all_log.extend(log)
 
             # Accumulate budget
-            total_budget = (
-                budget if total_budget is None else total_budget + budget
-            )
             model_name = model_name or response.model
             if response.usage is not None:
                 new_usage = response.usage
@@ -702,10 +740,18 @@ class OpenAIResponsesModel(StandardModel):
                         new_usage.output_tokens_details.reasoning_tokens
                     )
                     usage_info.total_tokens += new_usage.total_tokens
+        budget = Budget(
+            _compute_spent_budget(
+                req.num_completions,
+                self.model_class,
+                self.pricing,
+                usage_info,
+            )
+        )
 
         return md.LLMResponse(
             all_outputs,
-            total_budget,
+            budget,
             all_log,
             model_name,
             usage_info.to_dict() if usage_info is not None else None,
@@ -728,6 +774,7 @@ class OpenAIResponsesModel(StandardModel):
         logprobs: list[md.TokenInfo] | None = None
         raw_text: list[str] = []
         reasoning_content: str | None = None
+        reasoning_item: oresp.ResponseReasoningItem | None = None
         ok = True
 
         for item in response.output:
@@ -736,7 +783,7 @@ class OpenAIResponsesModel(StandardModel):
                     if isinstance(part, oresp.ResponseOutputText):
                         raw_text.append(part.text)
                         if (
-                            self.options.get("logprobs", False)
+                            req.options.get("logprobs", False)
                             and part.logprobs is not None
                         ):
                             if logprobs is None:
@@ -765,12 +812,11 @@ class OpenAIResponsesModel(StandardModel):
                         )
                     )
             elif isinstance(item, oresp.ResponseReasoningItem):
+                reasoning_item = item
                 if item.content:
                     reasoning_content = "".join(
                         part.text for part in item.content
                     )  # not returned by OpenAI models
-
-                    # TODO: add encrypted content to cache
             else:
                 # not handling other content like audio or image
                 continue
@@ -802,6 +848,28 @@ class OpenAIResponsesModel(StandardModel):
             ok = False
 
         if ok:
+            if (
+                self.reasoning_cache is not None
+                and reasoning_item is not None
+                and reasoning_item.encrypted_content is not None
+            ):
+                key = md.ReasoningCacheKey(
+                    prefix=req,
+                    answer_content=content,
+                    tool_calls=(*tool_calls,),
+                )
+                summary_texts: list[str] = []
+                for s in reasoning_item.summary:
+                    summary_texts.append(s.text)
+
+                msg = md.ReasoningMessage(
+                    id=reasoning_item.id,
+                    summary=summary_texts,
+                    encrypted_content=reasoning_item.encrypted_content,
+                )
+                # Cache the encrypted reasoning content
+                self.reasoning_cache.cache(lambda _: msg)(key)
+
             outputs.append(
                 md.LLMOutput(
                     content=content,

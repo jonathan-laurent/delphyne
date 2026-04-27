@@ -1,0 +1,163 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            Classify the user name as either "common" or "rare".
+            Just answer with one of those words and nothing else.
+        - role: user
+          content: 'user_name: ''X Æ A-Xii:'''
+      options:
+        model: gpt-4.1-mini
+        temperature: 0.0
+        logprobs: true
+        top_logprobs: 20
+    iter: 1
+  output:
+    outputs:
+      - content: rare
+        tool_calls: []
+        logprobs:
+          - token:
+              token: rare
+              bytes:
+                - 114
+                - 97
+                - 114
+                - 101
+            logprob: 0.0
+            top_logprobs:
+              - - token: rare
+                  bytes:
+                    - 114
+                    - 97
+                    - 114
+                    - 101
+                - 0.0
+              - - token: ' rare'
+                  bytes:
+                    - 32
+                    - 114
+                    - 97
+                    - 114
+                    - 101
+                - -19.75
+              - - token: rar
+                  bytes:
+                    - 114
+                    - 97
+                    - 114
+                - -20.25
+              - - token: Rare
+                  bytes:
+                    - 82
+                    - 97
+                    - 114
+                    - 101
+                - -22.0
+              - - token: common
+                  bytes:
+                    - 99
+                    - 111
+                    - 109
+                    - 109
+                    - 111
+                    - 110
+                - -22.125
+              - - token: unique
+                  bytes:
+                    - 117
+                    - 110
+                    - 105
+                    - 113
+                    - 117
+                    - 101
+                - -23.25
+              - - token: '-'
+                  bytes:
+                    - 45
+                - -23.5
+              - - token: ra
+                  bytes:
+                    - 114
+                    - 97
+                - -23.75
+              - - token: raz
+                  bytes:
+                    - 114
+                    - 97
+                    - 122
+                - -25.5
+              - - token: r
+                  bytes:
+                    - 114
+                - -25.875
+              - - token: '"'
+                  bytes:
+                    - 34
+                - -26.375
+              - - token: '**'
+                  bytes:
+                    - 42
+                    - 42
+                - -27.125
+              - - token: '1'
+                  bytes:
+                    - 49
+                - -28.25
+              - - token: a
+                  bytes:
+                    - 97
+                - -28.375
+              - - token: ' raro'
+                  bytes:
+                    - 32
+                    - 114
+                    - 97
+                    - 114
+                    - 111
+                - -28.375
+              - - token: ''''
+                  bytes:
+                    - 39
+                - -28.75
+              - - token: rear
+                  bytes:
+                    - 114
+                    - 101
+                    - 97
+                    - 114
+                - -28.875
+              - - token: '#'
+                  bytes:
+                    - 35
+                - -29.0
+              - - token: RA
+                  bytes:
+                    - 82
+                    - 65
+                - -29.125
+              - - token: raw
+                  bytes:
+                    - 114
+                    - 97
+                    - 119
+                - -29.25
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 46
+        output_tokens: 2
+        cached_input_tokens: 0
+        price: 2.16e-05
+    log_items: []
+    model_name: gpt-4.1-mini-2025-04-14
+    usage_info:
+      input_tokens: 46
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 2
+      output_tokens_details:
+        reasoning_tokens: 0
+      total_tokens: 48

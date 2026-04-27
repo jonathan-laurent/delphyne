@@ -1,0 +1,128 @@
+- input:
+    request:
+      chat:
+        - role: user
+          content: |
+            fun: expensive_computation
+            args:
+              n: 1
+      options:
+        model: __compute__
+    iter: 1
+  output:
+    outputs:
+      - content: |
+          - 1
+          - 2
+- input:
+    request:
+      chat:
+        - role: user
+          content: |
+            fun: expensive_computation
+            args:
+              n: 1
+      options:
+        model: __compute__
+    iter: 2
+  output:
+    outputs:
+      - content: |
+          - 1
+          - 2
+- input:
+    request:
+      chat:
+        - role: user
+          content: |
+            fun: expensive_computation
+            args:
+              n: 1
+      options:
+        model: __compute__
+    iter: 3
+  output:
+    outputs:
+      - content: |
+          - 1
+          - 2
+- input:
+    request:
+      chat:
+        - role: user
+          content: |
+            fun: expensive_computation
+            args:
+              n: 1
+      options:
+        model: __compute__
+    iter: 4
+  output:
+    outputs:
+      - content: |
+          - 1
+          - 2
+- input:
+    request:
+      chat:
+        - role: user
+          content: |
+            fun: expensive_computation
+            args:
+              n: 1
+      options:
+        model: __compute__
+    iter: 5
+  output:
+    outputs:
+      - content: |
+          - 1
+          - 2
+- input:
+    request:
+      chat:
+        - role: user
+          content: |
+            fun: expensive_computation
+            args:
+              n: 1
+      options:
+        model: __compute__
+    iter: 6
+  output:
+    outputs:
+      - content: |
+          - 1
+          - 2
+- input:
+    request:
+      chat:
+        - role: user
+          content: |
+            fun: expensive_computation
+            args:
+              n: 1
+      options:
+        model: __compute__
+    iter: 7
+  output:
+    outputs:
+      - content: |
+          - 1
+          - 2
+- input:
+    request:
+      chat:
+        - role: user
+          content: |
+            fun: expensive_computation
+            args:
+              n: 1
+      options:
+        model: __compute__
+    iter: 8
+  output:
+    outputs:
+      - content: |
+          - 1
+          - 2

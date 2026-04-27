@@ -19,6 +19,7 @@ from example_strategies_untyped import (
 import delphyne as dp
 from delphyne import Branch, Fail, IPDict, Strategy, strategy
 
+type APIType = Literal["responses", "chat_completions"]
 #####
 ##### MakeSum
 #####
@@ -51,8 +52,10 @@ def make_sum(
 
 
 @dp.ensure_compatible(make_sum)
-def make_sum_policy(model_name: str = "gpt-4o-mini"):
-    model = dp.openai_model(model_name)
+def make_sum_policy(
+    model_name: str = "gpt-4o-mini", api_type: APIType = "chat_completions"
+):
+    model = dp.standard_model(model_name, api_type=api_type)
     return dp.dfs() & MakeSumIP(dp.few_shot(model))
 
 
@@ -482,6 +485,55 @@ class Calculator(dp.AbstractTool[str]):
     expr: str
 
 
+# @dataclass
+# class Weather:
+#     temperature: int
+
+
+# @dataclass
+# class GetTemperature(dp.AbstractTool[int]):
+#     """
+#     Get the temperature for a city.
+#     """
+
+#     city: str
+
+
+# @dataclass
+# class MultiToolWeather(dp.Query[dp.Response[Weather, GetTemperature]]):
+#     """
+#     Ask the assistant to get the weather for 3 cities in sequence, then answer.
+#     """
+
+#     prefix: dp.AnswerPrefix = ()
+
+#     __parser__ = dp.final_tool_call.response
+
+#     __system_prompt__: ClassVar[str] = """
+#         You must call the GetTemperature tool to get the temperature for
+#         Paris, London, and Berlin, in that order.
+#         Call them sequentially one by one. Do not combine tool calls.
+#         Wait for the result of the previous tool call before making the next.
+#         Before each tool call tell about the climate of the city.
+#         """
+
+
+# @strategy
+# def multi_tool_strategy() -> Strategy[Branch, dp.PromptingPolicy, Weather]:
+#     res = yield from dp.interact(
+#         step=lambda pre, _: MultiToolWeather(pre).using(dp.ambient_pp),
+#         process=lambda x, _: dp.const_space(x),
+#         tools={GetTemperature: (lambda _: dp.const_space(20))},
+#     )
+#     return res
+
+
+# def multi_tool_policy(
+#     model: dp.LLM,
+# ) -> dp.Policy[Branch, dp.PromptingPolicy]:
+#     return dp.dfs(max_branching=1) & dp.few_shot(model)
+
+
 @dataclass
 class ProposeArticle(
     dp.Query[dp.Response[Article, GetUserFavoriteTopic | Calculator]]
@@ -545,6 +597,101 @@ def propose_article_policy(
 ) -> dp.Policy[Branch, dp.PromptingPolicy]:
     # Valid for both `propose_article` and `propose_article_structured`
     return dp.dfs(max_branching=1) & dp.few_shot(model)
+
+
+@dataclass
+class ProposeArticleMultiUser(
+    dp.Query[dp.Response[Article, GetUserFavoriteTopic]]
+):
+    user_names: list[str]
+    prefix: dp.AnswerPrefix = ()
+
+    __parser__ = dp.final_tool_call.response
+
+    __system_prompt__: ClassVar[str] = """
+        Find the users' tastes and propose a different article for each of them.
+        The users are given in the `user_names` list.
+        You will call `GetUserFavoriteTopic` tool for each user. 
+        Do not combine tool calls.
+        Wait for the result of the previous tool call before making the next.
+        Do not stop until you have the favorite topic of all the users.
+        Please carefully think before calling any tool.
+        Once you have the favorite topic of all the users, propose an 
+        article for each user.
+        """
+
+
+@dataclass
+class ProposeArticleSingleUser(
+    dp.Query[dp.Response[Article, GetUserFavoriteTopic]]
+):
+    """
+    Guess a user name that might be present in our system.
+    Then issue a tool call to get the favorite topic of that user.
+    Finally propose an article for that user. In case of an error,
+    try with another user name.
+    """
+
+    prefix: dp.AnswerPrefix = ()
+
+    __parser__ = dp.structured.response
+
+
+@strategy
+def reject[T](x: T) -> Strategy[Never, object, dp.Error | T]:
+    return dp.Error(label="Rejected", description="Try again!")
+    yield
+
+
+@strategy
+def propose_article_multi_user(
+    user_names: list[str],
+) -> Strategy[Branch, dp.PromptingPolicy, Article]:
+    article = yield from dp.interact(
+        step=lambda pre, _: ProposeArticleMultiUser(user_names, pre).using(
+            dp.ambient_pp
+        ),
+        process=lambda x, _: dp.const_space(x),
+        tools={GetUserFavoriteTopic: (lambda _: dp.const_space("Soccer"))},
+    )
+    return article
+
+
+@strategy
+def propose_article_multi_turn() -> Strategy[
+    Branch, dp.PromptingPolicy, Article
+]:
+    article = yield from dp.interact(
+        step=lambda pre, _: ProposeArticleSingleUser(pre).using(dp.ambient_pp),
+        process=lambda x, _: reject(x).using(lambda p: dp.dfs() & p),
+        tools={GetUserFavoriteTopic: (lambda _: dp.const_space("Soccer"))},
+    )
+    return article
+
+
+@dataclass
+class ProposeArticleNoTool(dp.Query[dp.Response[Article, Never]]):
+    topic_name: str
+    prefix: dp.AnswerPrefix = ()
+
+    __parser__ = dp.structured.response
+
+    __system_prompt__: ClassVar[str] = """
+        Propose an article for the given topic.
+        """
+
+
+@strategy
+def propose_article_no_tool_reject(
+    topic_name: str,
+) -> Strategy[Branch, dp.PromptingPolicy, Article]:
+    article = yield from dp.interact(
+        step=lambda pre, _: ProposeArticleNoTool(topic_name, pre).using(
+            dp.ambient_pp
+        ),
+        process=lambda x, _: reject(x).using(lambda p: dp.dfs() & p),
+    )
+    return article
 
 
 #####
@@ -955,8 +1102,12 @@ def get_magic_number_policy(model: dp.LLM, no_wrap: bool):
 
 
 @dp.ensure_compatible(get_magic_number)
-def get_magic_number_default_policy(model: str = "gpt-5-nano"):
-    return get_magic_number_policy(dp.standard_model(model), no_wrap=False)
+def get_magic_number_default_policy(
+    model: str = "gpt-5-nano", api_type: APIType = "chat_completions"
+):
+    return get_magic_number_policy(
+        dp.standard_model(model, api_type=api_type), no_wrap=False
+    )
 
 
 #####

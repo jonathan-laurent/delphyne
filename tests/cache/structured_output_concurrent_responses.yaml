@@ -1,0 +1,249 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: Generate an article on the given topic. Answer as a JSON object.
+        - role: user
+          content: 'topic: Love'
+      options:
+        model: gpt-4.1-mini
+      num_completions: 2
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content:
+          structured:
+            title: The Essence of Love
+            authors:
+              - Jane Doe
+              - John Smith
+        tool_calls: []
+      - content:
+          structured:
+            title: The Multifaceted Nature of Love
+            authors:
+              - Alexandra Reid
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 2
+        input_tokens: 174
+        output_tokens: 36
+        cached_input_tokens: 0
+        price: 0.0001272
+    log_items: []
+    model_name: gpt-4.1-mini-2025-04-14
+    usage_info:
+      input_tokens: 174
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 36
+      output_tokens_details:
+        reasoning_tokens: 0
+      total_tokens: 210
+- input:
+    request:
+      chat:
+        - role: system
+          content: Generate an article on the given topic. Answer as a JSON object.
+        - role: user
+          content: 'topic: Love'
+      options:
+        model: gpt-4.1-mini
+      num_completions: 2
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 2
+  output:
+    outputs:
+      - content:
+          structured:
+            title: 'Understanding Love: The Power and Complexity of Human Connection'
+            authors:
+              - Jane Smith
+              - David Johnson
+        tool_calls: []
+      - content:
+          structured:
+            title: The Multifaceted Nature of Love
+            authors:
+              - Alexandra Grace
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 2
+        input_tokens: 174
+        output_tokens: 42
+        cached_input_tokens: 0
+        price: 0.0001368
+    log_items: []
+    model_name: gpt-4.1-mini-2025-04-14
+    usage_info:
+      input_tokens: 174
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 42
+      output_tokens_details:
+        reasoning_tokens: 0
+      total_tokens: 216
+- input:
+    request:
+      chat:
+        - role: system
+          content: Generate an article on the given topic. Answer as a JSON object.
+        - role: user
+          content: 'topic: Love'
+      options:
+        model: gpt-4.1-mini
+      num_completions: 2
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 3
+  output:
+    outputs:
+      - content:
+          structured:
+            title: Understanding the Essence of Love
+            authors:
+              - Alex Morgan
+        tool_calls: []
+      - content:
+          structured:
+            title: The Essence of Love
+            authors:
+              - Jane Doe
+              - John Smith
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 2
+        input_tokens: 174
+        output_tokens: 34
+        cached_input_tokens: 0
+        price: 0.00012399999999999998
+    log_items: []
+    model_name: gpt-4.1-mini-2025-04-14
+    usage_info:
+      input_tokens: 174
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 34
+      output_tokens_details:
+        reasoning_tokens: 0
+      total_tokens: 208
+- input:
+    request:
+      chat:
+        - role: system
+          content: Generate an article on the given topic. Answer as a JSON object.
+        - role: user
+          content: 'topic: Love'
+      options:
+        model: gpt-4.1-mini
+      num_completions: 2
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 4
+  output:
+    outputs:
+      - content:
+          structured:
+            title: The Essence and Impact of Love
+            authors:
+              - Jane Doe
+              - John Smith
+        tool_calls: []
+      - content:
+          structured:
+            title: Exploring the Many Facets of Love
+            authors:
+              - Jane Doe
+              - John Smith
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 2
+        input_tokens: 174
+        output_tokens: 42
+        cached_input_tokens: 0
+        price: 0.0001368
+    log_items: []
+    model_name: gpt-4.1-mini-2025-04-14
+    usage_info:
+      input_tokens: 174
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 42
+      output_tokens_details:
+        reasoning_tokens: 0
+      total_tokens: 216

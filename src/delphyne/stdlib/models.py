@@ -668,3 +668,58 @@ def fetch_or_answer(
     num_seen = cache.num_seen[req]
     full_req = CachedRequest(req, num_seen)
     return cache.cache(lambda full: f(full.request))(full_req)
+
+
+@dataclass(frozen=True)
+class ReasoningCacheKey:
+    prefix: LLMRequest
+    answer_content: str | Structured
+    tool_calls: tuple[ToolCall, ...]
+
+
+@dataclass(frozen=True)
+class ReasoningMessage:
+    """
+    Mirrors `oresp.ResponseReasoningItemParam`
+    """
+
+    id: str
+    summary: Sequence[str]
+    encrypted_content: str
+
+
+@dataclass
+class ReasoningCache:
+    cache: Cache[ReasoningCacheKey, ReasoningMessage]
+
+
+@contextmanager
+def load_reasoning_cache(file: Path, *, mode: CacheMode):
+    """
+    Context manager that loads a reasoning cache from a YAML file.
+    """
+    with load_cache(
+        file,
+        mode=mode,
+        input_type=ReasoningCacheKey,
+        output_type=ReasoningMessage,
+    ) as cache:
+        yield ReasoningCache(cache)
+
+
+@contextmanager
+def load_optional_reasoning_cache(file: Path | None, *, mode: CacheMode):
+    """
+    Context manager that loads an optional reasoning cache from a YAML
+    file. If `file` is `None`, yields `None`.
+    """
+    if file is None:
+        yield None
+        return
+    with load_cache(
+        file,
+        mode=mode,
+        input_type=ReasoningCacheKey,
+        output_type=ReasoningMessage,
+    ) as cache:
+        yield ReasoningCache(cache)

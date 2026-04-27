@@ -1,0 +1,59 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: |
+            Given a list of numbers and a target number, you must find a sub-list whose elements sum up to the target.
+
+            Answer with the following and nothing else (no need for quotes or a code block):
+            A YAML object that matches the following JSON schema.
+
+            Schema:
+            ```
+            {
+              "name": "list[int]",
+              "description": null,
+              "schema": {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              }
+            }
+            ```
+        - role: user
+          content: |-
+            List: [1, 2, 3, 4]
+            Target: 5
+      options:
+        model: gpt-5-mini
+        reasoning_effort: minimal
+    iter: 1
+  output:
+    outputs:
+      - content: '[1, 4]'
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        num_requests__minimal_reasoning: 1
+        num_completions__minimal_reasoning: 1
+        input_tokens: 129
+        input_tokens__minimal_reasoning: 129
+        output_tokens: 24
+        output_tokens__minimal_reasoning: 24
+        cached_input_tokens: 0
+        cached_input_tokens__minimal_reasoning: 0
+        price: 8.025e-05
+        price__minimal_reasoning: 8.025e-05
+    log_items: []
+    model_name: gpt-5-mini-2025-08-07
+    usage_info:
+      input_tokens: 129
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 24
+      output_tokens_details:
+        reasoning_tokens: 0
+      total_tokens: 153
