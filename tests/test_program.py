@@ -5,16 +5,15 @@ Testing oracular programs in an end-to-end fashion
 from collections.abc import Callable, Sequence
 from functools import partial
 from pathlib import Path
-from typing import Any, cast
-from unittest.mock import patch
+from typing import Any, Literal, cast
 
 import example_strategies as ex
 import pytest
 
 import delphyne as dp
-from delphyne.stdlib.models import ReasoningCache, load_reasoning_cache
 from delphyne.utils.yaml import dump_yaml
 
+type APIType = Literal["responses", "chat_completions"]
 DEFAULT_TEST_MODEL = "gpt-4.1-mini"
 
 PROMPT_DIR = Path(__file__).parent / "prompts"
@@ -23,68 +22,6 @@ CACHE_DIR = Path(__file__).parent / "cache"
 STRATEGY_DIRS = (Path(__file__).parent,)
 DEMO_DIR = Path(__file__).parent
 STRATEGY_MODULES = ("example_strategies",)
-
-
-@pytest.fixture(params=["chat_completions", "responses"], autouse=True)
-def _parameterize_api_type(request: pytest.FixtureRequest):  # pyright: ignore[reportUnusedFunction]
-    """
-    Parameterizes the API type to be used for tests.
-
-    This fixture is used to inject `api_type` parameterization into
-    `_eval_strategy`, `_eval_query`, and `_eval_classifier_query`
-    when `api_type` is not already specified as an argument.
-    """
-    api_type: str = request.param
-
-    def make_wrapped_function(f: Callable[..., Any]) -> Callable[..., Any]:
-        def wrapped(*args: Any, **kwargs: Any):
-            if "api_type" in kwargs:
-                if kwargs["api_type"] != api_type:
-                    pytest.skip(
-                        f"Test explicitly requests api_type={kwargs['api_type']}, "
-                        f"skipping for parametrized {api_type}"
-                    )
-                return f(*args, **kwargs)
-
-            kwargs["api_type"] = api_type
-            try:
-                return f(*args, **kwargs)
-            except ValueError as e:
-                if (
-                    api_type == "responses"
-                    and "Responses API is only supported" in str(e)
-                ):
-                    pytest.skip(f"Skipping: {e}")
-                raise
-
-        return wrapped
-
-    with (
-        patch(
-            "test_program._eval_strategy",
-            side_effect=make_wrapped_function(_eval_strategy),
-        ),
-        patch(
-            "test_program._eval_query",
-            side_effect=make_wrapped_function(_eval_query),
-        ),
-        patch(
-            "test_program._eval_classifier_query",
-            side_effect=make_wrapped_function(_eval_classifier_query),
-        ),
-    ):
-        yield api_type
-    # def wrapped_eval_strategy(*args: Any, **kwargs: Any):
-    #     if "api_type" in kwargs:
-    #         if kwargs["api_type"] != api_type:
-    #             pytest.skip(
-    #                 f"Test explicitly requests api_type={kwargs['api_type']}, "
-    #                 f"skipping for parametrized {api_type}"
-    #             )
-    #         return original_eval_strategy(*args, **kwargs)
-
-    #     kwargs["api_type"] = api_type
-    #     return original_eval_strategy(*args, **kwargs)
 
 
 def _make_policy_env(
@@ -127,11 +64,6 @@ def _load_embeddings_cache(name: str):
     return dp.load_embeddings_cache(file, mode="read_write")
 
 
-def _load_reasoning_cache(name: str):
-    file = CACHE_DIR / (name + ".reasoning.yaml")
-    return load_reasoning_cache(file, mode="read_write")
-
-
 def test_query_properties():
     q1 = ex.StructuredOutput(topic="AI")
     assert q1.query_settings(None).structured_output
@@ -152,7 +84,7 @@ def _eval_query(
     model_name: dp.StandardModelName | str = "gpt-4.1-mini",
     model_options: dp.RequestOptions | None = None,
     model_class: str | None = None,
-    api_type: ex.APIType = "chat_completions",
+    api_type: APIType = "chat_completions",
     demo_files: Sequence[str] = (),
     select_examples: dp.ExampleSelector | None = None,
     mode: dp.AnswerMode = None,
@@ -193,7 +125,7 @@ def _eval_strategy[N: dp.Node, P, T](
     max_requests: int = 1,
     max_res: int = 1,
     model_name: dp.StandardModelName | str = DEFAULT_TEST_MODEL,
-    api_type: ex.APIType = "chat_completions",
+    api_type: APIType = "chat_completions",
 ) -> tuple[Sequence[dp.Solution[T]], Sequence[dp.ExportableLogMessage]]:
     if api_type == "responses":
         cache_name = cache_name + "_responses"
@@ -210,26 +142,22 @@ def _eval_strategy[N: dp.Node, P, T](
             return ret, log
 
 
-def test_concurrent():
+@pytest.mark.parametrize("api_type", ["chat_completions", "responses"])
+def test_concurrent(api_type: APIType):
     res, _ = _eval_query(
         ex.StructuredOutput(topic="Love"),
         "structured_output_concurrent",
         budget=4,
         num_completions=2,
+        api_type=api_type,
     )
     assert len(res) == 8  # 4 requests, 2 completions each time
 
 
-@pytest.mark.parametrize("api_type", ["chat_completions", "responses"])
-def test_basic_llm_call(api_type: ex.APIType):
-    cache_name = (
-        "basic_llm_call"
-        if api_type == "chat_completions"
-        else "basic_llm_call_responses"
-    )
-    with _load_cache(cache_name) as cache:
+def test_basic_llm_call():
+    with _load_cache("basic_llm_call") as cache:
         env = _make_policy_env(cache=cache, embeddings_cache=None)
-        model = dp.standard_model("gpt-4.1-mini", api_type=api_type)
+        model = dp.openai_model("gpt-4.1-mini")
         pp = dp.few_shot(model)
         bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
         policy = dp.take(1) @ dp.with_budget(bl) @ dp.dfs() & ex.MakeSumIP(pp)
@@ -239,38 +167,43 @@ def test_basic_llm_call(api_type: ex.APIType):
         assert res
 
 
-def test_structured_output():
-    res, _ = _eval_query(ex.StructuredOutput(topic="AI"), "structured_output")
+@pytest.mark.parametrize("api_type", ["chat_completions", "responses"])
+def test_structured_output(api_type: APIType):
+    res, _ = _eval_query(
+        ex.StructuredOutput(topic="AI"), "structured_output", api_type=api_type
+    )
     assert res
     print(res[0].tracked.value)
 
 
-def test_propose_article_initial_step():
+@pytest.mark.parametrize("api_type", ["chat_completions", "responses"])
+def test_propose_article_initial_step(api_type: APIType):
     # Interestingly, the answer content is often empty here despite us
     # explicitly asking for a additional reasoning. Is it because we
     # mandate tool calls? Probably, yes.
     label = "propose_article_initial_step"
-    res, _ = _eval_query(ex.ProposeArticle(user_name="Alice"), label)
+    res, _ = _eval_query(
+        ex.ProposeArticle(user_name="Alice"), label, api_type=api_type
+    )
     v = cast(dp.Response[Any, Any], res[0].tracked.value)
     assert isinstance(v, dp.Response)
     assert isinstance(v.parsed, dp.ToolRequests)
     assert isinstance(v.parsed.tool_calls[0], ex.GetUserFavoriteTopic)
 
 
-def test_assistant_priming():
-    res, log = _eval_query(ex.PrimingTest(style="French"), "assistant_priming")
+@pytest.mark.parametrize("api_type", ["chat_completions", "responses"])
+def test_assistant_priming(api_type: APIType):
+    res, log = _eval_query(
+        ex.PrimingTest(style="French"), "assistant_priming", api_type=api_type
+    )
     assert res
     assert len(log[0].metadata["request"]["chat"]) == 3  # type: ignore
 
 
-@pytest.mark.parametrize("api_type", ["chat_completions", "responses"])
-def test_interact(api_type: ex.APIType):
-    cache_name = (
-        "interact" if api_type == "chat_completions" else "interact_responses"
-    )
-    with _load_cache(cache_name) as cache:
+def test_interact():
+    with _load_cache("interact") as cache:
         env = _make_policy_env(cache=cache, embeddings_cache=None)
-        model = dp.standard_model("gpt-4.1-mini", api_type=api_type)
+        model = dp.openai_model("gpt-4.1-mini")
         pp = dp.few_shot(model)
         bl = dp.BudgetLimit({dp.NUM_REQUESTS: 2})
         policy = dp.take(1) @ dp.with_budget(bl) @ dp.dfs() & pp
@@ -312,13 +245,13 @@ def _eval_classifier_query(
     cache_name: str,
     temperature: float = 1.0,
     bias: tuple[str, float] | None = None,
-    api_type: ex.APIType = "chat_completions",
+    api_type: APIType = "chat_completions",
 ):
     if api_type == "responses":
         cache_name = cache_name + "_responses"
     with _load_cache(cache_name) as cache:
         env = _make_policy_env(cache=cache, embeddings_cache=None)
-        model = dp.standard_model("gpt-4.1-mini", api_type=api_type)
+        model = dp.openai_model("gpt-4.1-mini", api_type=api_type)
         bl = dp.BudgetLimit({dp.NUM_REQUESTS: 1})
         pp = dp.with_budget(bl) @ dp.classify(
             model, temperature=temperature, bias=bias
@@ -331,13 +264,17 @@ def _eval_classifier_query(
         return res[0].meta
 
 
+@pytest.mark.parametrize("api_type", ["chat_completions", "responses"])
 @pytest.mark.parametrize(
     "name, right, wrong",
     [("Jonathan", "common", "rare"), ("X Æ A-Xii:", "rare", "common")],
 )
-def test_classifiers(name: str, right: str, wrong: str):
+def test_classifiers(name: str, right: str, wrong: str, api_type: APIType):
     res = _eval_classifier_query(
-        ex.EvalNameRarity(name), f"classify_{right}", temperature=1.0
+        ex.EvalNameRarity(name),
+        f"classify_{right}",
+        temperature=1.0,
+        api_type=api_type,
     )
     assert isinstance(res, dp.ProbInfo)
     D = {k.value: v for k, v in res.distr}
@@ -519,11 +456,13 @@ def test_embedded_tree_and_transformers():
     assert res
 
 
-def test_elim_join():
+@pytest.mark.parametrize("api_type", ["chat_completions", "responses"])
+def test_elim_join(api_type: APIType):
     res, log = _eval_strategy(
         strategy=ex.recursive_joins(3),
         policy=lambda _: ex.recursive_joins_policy_using_elim_join(),
         cache_name="elim_join",
+        api_type=api_type,
     )
     print(_log_messages(log))
     assert res
@@ -566,7 +505,8 @@ def test_dual_number_generation(shared: bool):
 #####
 
 
-def test_dual_number_parallel_generation():
+@pytest.mark.parametrize("api_type", ["chat_completions", "responses"])
+def test_dual_number_parallel_generation(api_type: APIType):
     strategy = ex.dual_number_generation()
     res, _log = _eval_strategy(
         strategy,
@@ -574,6 +514,7 @@ def test_dual_number_parallel_generation():
         cache_name="dual_number_parallel_generation",
         max_requests=10,
         max_res=10,
+        api_type=api_type,
     )
     assert res
     assert len(res) == 4
@@ -735,42 +676,41 @@ def test_example_embeddings_empty():
     assert res is not None
 
 
+#####
+##### Reasoning Cache with Responses API
+#####
+
+
 def _eval_strategy_reasoning[N: dp.Node, P, T](
     strategy: dp.StrategyInstance[N, P, T],
     policy: Callable[[dp.LLM], dp.Policy[N, P]],
     cache_name: str,
     use_reasoning_cache: bool,
     num_requests: int,
-    api_type: ex.APIType,
-):
+    api_type: APIType,
+) -> tuple[
+    Sequence[dp.Solution[T]], dp.Budget, Sequence[dp.ExportableLogMessage]
+]:
     budget = dp.BudgetLimit({dp.NUM_REQUESTS: num_requests})
     if api_type == "responses":
         cache_name = cache_name + "_responses"
 
-    def make_model(reasoning_cache: ReasoningCache | None):
+    def make_model(use_reasoning_cache: bool):
         return dp.standard_model(
             "gpt-5-nano",
             options={"reasoning_effort": "high"},
             api_type=api_type,
-            reasoning_cache=reasoning_cache,
+            use_reasoning_cache=use_reasoning_cache,
         )
 
-    if use_reasoning_cache and api_type == "responses":
-        with _load_cache(cache_name) as cache:
-            env = _make_policy_env(cache=cache, embeddings_cache=None)
-            with _load_reasoning_cache(cache_name) as reasoning_cache:
-                model = make_model(reasoning_cache)
-                stream = strategy.run_toplevel(env, policy(model))
-                ret, spent = stream.collect(budget=budget, num_generated=1)
+    with _load_cache(cache_name) as cache:
+        env = _make_policy_env(cache=cache, embeddings_cache=None)
+        model = make_model(use_reasoning_cache)
+        stream = strategy.run_toplevel(env, policy(model))
+        log = list(env.tracer.export_log())
+        sol, spent = stream.collect(budget=budget, num_generated=1)
 
-    else:
-        with _load_cache(cache_name) as cache:
-            env = _make_policy_env(cache=cache, embeddings_cache=None)
-            model = make_model(None)
-            stream = strategy.run_toplevel(env, policy(model))
-            ret, spent = stream.collect(budget=budget, num_generated=1)
-
-    return ret, spent
+    return sol, spent, log
 
 
 def _test_article_strategy_reasoning_cache(
@@ -779,36 +719,39 @@ def _test_article_strategy_reasoning_cache(
 ):
     policy = ex.propose_article_policy
     print("Running with chat completions api")
-    _, spent0 = _eval_strategy_reasoning(
+    _, spent0, log0 = _eval_strategy_reasoning(
         strategy=strategy,
         policy=policy,
-        cache_name="test_no_reasoning_cache",
+        cache_name="interact_no_reasoning_cache",
         use_reasoning_cache=False,
         num_requests=num_requests,
         api_type="chat_completions",
     )
+    print("Chat Completions API: ", spent0)
 
     print("Running with responses api, no reasoning cache")
-    _, spent1 = _eval_strategy_reasoning(
+    _, spent1, log1 = _eval_strategy_reasoning(
         strategy=strategy,
         policy=policy,
-        cache_name="test_no_reasoning_cache",
+        cache_name="interact_no_reasoning_cache",
         use_reasoning_cache=False,
         num_requests=num_requests,
         api_type="responses",
     )
+    print("Responses API, no reasoning cache: ", spent1)
 
     print("Running with responses api and reasoning cache")
-    _, spent2 = _eval_strategy_reasoning(
+    _, spent2, log2 = _eval_strategy_reasoning(
         strategy=strategy,
         policy=policy,
-        cache_name="test_reasoning_cache",
+        cache_name="interact_reasoning_cache",
         use_reasoning_cache=True,
         num_requests=num_requests,
         api_type="responses",
     )
+    print("Responses with reasoning cache: ", spent2)
 
-    return spent0, spent1, spent2
+    return (spent0, log0), (spent1, log1), (spent2, log2)
 
 
 def test_reasoning_cache_multi_sequential_tool():
@@ -819,29 +762,28 @@ def test_reasoning_cache_multi_sequential_tool():
     There is usually a factor of ~5 savings in this example.
     """
     user_names = ["Alice", "Bob", "Charlie", "Dave", "Eve"]
-
     strategy = ex.propose_article_multi_user(user_names=user_names)
-
-    spent_chat, spent, spent_res = _test_article_strategy_reasoning_cache(
-        strategy
-    )
     print("Test reasoning cache multi sequential tool:")
-    print("Chat Completions: ", spent_chat)
-    print("Responses no reasoning cache: ", spent)
-    print("Responses with reasoning cache: ", spent_res)
-    assert spent["output_tokens"] > 2 * spent_res["output_tokens"]
-    assert spent["price"] > 2 * spent_res["price"]
+    _, resp, resp_cache = _test_article_strategy_reasoning_cache(strategy)
+
+    assert all(log.message != "reasoning_cache_miss" for log in resp_cache[1])
+    assert resp[0]["num_requests"] == resp_cache[0]["num_requests"]
+    assert resp[0]["output_tokens"] > 2 * resp_cache[0]["output_tokens"]
+    assert resp[0]["price"] > 2 * resp_cache[0]["price"]
 
     # Test reasoning cache multi sequential tool:
-    # Chat Completions:  Budget(values={'num_requests': 5, 'num_completions': 5,
-    #     'input_tokens': 1865, 'output_tokens': 2883, 'cached_input_tokens': 0,
-    #     'price': 0.00124645})
-    # Responses no reasoning cache:  Budget(values={'num_requests': 5, 'num_completions': 5,
-    #     'input_tokens': 1510, 'output_tokens': 5838, 'cached_input_tokens': 0,
-    #     'price': 0.0024107})
-    # Responses with reasoning cache:  Budget(values={'num_requests': 5, 'num_completions': 5,
-    #     'input_tokens': 5302, 'output_tokens': 1242, 'cached_input_tokens': 1152,
-    #     'price': 0.00071006})
+    # Chat Completions:
+    #     'num_requests': 5, 'num_completions': 5,
+    #     'input_tokens': 1865, 'output_tokens': 2883,
+    #     'cached_input_tokens': 0, 'price': 0.00124645
+    # Responses no reasoning cache:
+    #     'num_requests': 5, 'num_completions': 5,
+    #     'input_tokens': 1510, 'output_tokens': 5838,
+    #     'cached_input_tokens': 0, 'price': 0.0024107
+    # Responses with reasoning cache:
+    #     'num_requests': 5, 'num_completions': 5,
+    #     'input_tokens': 5302, 'output_tokens': 1242,
+    #     'cached_input_tokens': 1152, 'price': 0.00071006
 
 
 def test_reasoning_cache_tools_multi_turn():
@@ -852,25 +794,24 @@ def test_reasoning_cache_tools_multi_turn():
     does not benefit us in this case, as indicated by OpenAI.
     """
     strategy = ex.propose_article_multi_turn()
-
-    spent_chat, spent, spent_res = _test_article_strategy_reasoning_cache(
-        strategy
-    )
     print("Test reasoning cache tools multi turn:")
-    print("Chat Completions: ", spent_chat)
-    print("Responses no reasoning cache: ", spent)
-    print("Responses with reasoning cache: ", spent_res)
+    _, _, resp_cache = _test_article_strategy_reasoning_cache(strategy)
+
+    assert all(log.message != "reasoning_cache_miss" for log in resp_cache[1])
 
     # Test reasoning cache tools multi turn:
-    # Chat Completions:  Budget(values={'num_requests': 5, 'num_completions': 5,
-    #     'input_tokens': 1657, 'output_tokens': 5593, 'cached_input_tokens': 0,
-    #     'price': 0.0023200499999999997})
-    # Responses no reasoning cache:  Budget(values={'num_requests': 5, 'num_completions': 5,
-    #     'input_tokens': 1335, 'output_tokens': 6542, 'cached_input_tokens': 0,
-    #     'price': 0.00268355})
-    # Responses with reasoning cache:  Budget(values={'num_requests': 5, 'num_completions': 5,
-    #     'input_tokens': 3100, 'output_tokens': 5142, 'cached_input_tokens': 2048,
-    #     'price': 0.00211964})
+    # Chat Completions:
+    #     'num_requests': 5, 'num_completions': 5,
+    #     'input_tokens': 1657, 'output_tokens': 5593,
+    #     'cached_input_tokens': 0, 'price': 0.0023200499999999997
+    # Responses no reasoning cache:
+    #     'num_requests': 5, 'num_completions': 5,
+    #     'input_tokens': 1335, 'output_tokens': 6542,
+    #     'cached_input_tokens': 0, 'price': 0.00268355
+    # Responses with reasoning cache:
+    #     'num_requests': 5, 'num_completions': 5,
+    #     'input_tokens': 3100, 'output_tokens': 5142,
+    #     'cached_input_tokens': 2048, 'price': 0.00211964
 
 
 def test_reasoning_cache_no_tools_multi_turn():
@@ -879,22 +820,21 @@ def test_reasoning_cache_no_tools_multi_turn():
     Reasoning cache does not benefit us in this case, as indicated by OpenAI.
     """
     strategy = ex.propose_article_no_tool_reject(topic_name="Soccer")
-
-    spent_chat, spent, spent_res = _test_article_strategy_reasoning_cache(
-        strategy
-    )
     print("Test reasoning cache no tools multi turn:")
-    print("Chat Completions: ", spent_chat)
-    print("Responses no reasoning cache: ", spent)
-    print("Responses with reasoning cache: ", spent_res)
+    _, _, resp_cache = _test_article_strategy_reasoning_cache(strategy)
+
+    assert all(log.message != "reasoning_cache_miss" for log in resp_cache[1])
 
     # Test reasoning cache no tools multi turn:
-    # Chat Completions:  Budget(values={'num_requests': 5, 'num_completions': 5,
-    #     'input_tokens': 992, 'output_tokens': 8805, 'cached_input_tokens': 0,
-    #     'price': 0.0035716})
-    # Responses no reasoning cache:  Budget(values={'num_requests': 5, 'num_completions': 5,
-    #     'input_tokens': 1122, 'output_tokens': 8689, 'cached_input_tokens': 0,
-    #     'price': 0.0035317})
-    # Responses with reasoning cache:  Budget(values={'num_requests': 5, 'num_completions': 5,
-    #     'input_tokens': 1130, 'output_tokens': 9666, 'cached_input_tokens': 0,
-    #     'price': 0.0039229})
+    # Chat Completions:
+    #     'num_requests': 5, 'num_completions': 5,
+    #     'input_tokens': 992, 'output_tokens': 8805,
+    #     'cached_input_tokens': 0, 'price': 0.0035716
+    # Responses no reasoning cache:
+    #     'num_requests': 5, 'num_completions': 5,
+    #     'input_tokens': 1122, 'output_tokens': 8689,
+    #     'cached_input_tokens': 0, 'price': 0.0035317
+    # Responses with reasoning cache:
+    #     'num_requests': 5, 'num_completions': 5,
+    #     'input_tokens': 1130, 'output_tokens': 9666,
+    #     'cached_input_tokens': 0, 'price': 0.0039229

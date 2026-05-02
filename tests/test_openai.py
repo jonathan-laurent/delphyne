@@ -18,7 +18,7 @@ def _test_completion():
 
 
 def _test_responses_completion():
-    model = dp.openai_responses_model("gpt-4o-mini")
+    model = dp.openai_model("gpt-4o-mini", api_type="responses")
     print(
         model.send_request(
             dp.LLMRequest(chat=_TEST_PROMPT, num_completions=2, options={}),

@@ -5,6 +5,7 @@ Models from standard LLM providers
 import os
 import typing
 from collections.abc import Iterable, Sequence
+from functools import partial
 from typing import Any, Literal
 
 from delphyne.stdlib import models as md
@@ -181,20 +182,13 @@ def _openai_compatible_model(
     if api_type == "responses":
         if use_reasoning_cache is None:
             use_reasoning_cache = True
-        return OpenAIResponsesModel(
-            base_url=base_url,
-            api_key=api_key,
-            options=all_options,
-            model_class=model_class,
-            pricing=pricing,
-            use_reasoning_cache=use_reasoning_cache,
+        make_model = partial(
+            OpenAIResponsesModel, use_reasoning_cache=use_reasoning_cache
         )
+    else:
+        make_model = OpenAICompatibleModel
 
-    assert api_type == "chat_completions"
-    assert use_reasoning_cache is not True, (
-        "Reasoning cache is only supported with the Responses API."
-    )
-    return OpenAICompatibleModel(
+    return make_model(
         base_url=base_url,
         api_key=api_key,
         options=all_options,
@@ -361,33 +355,36 @@ def standard_model(
     if api_type == "responses":
         if prefix not in [*openai_models, *openai_responses_models]:
             raise ValueError(
-                "The Responses API is only supported for"
-                + f"OpenAI models, but got: {model}. \n Use"
+                "The Responses API is only supported for\n"
+                + f"OpenAI models, but got: {model}. Use\n"
                 + "api_type='chat_completions' for non-OpenAI models."
             )
-        return openai_model(
-            model,
-            options=options,
-            pricing=pricing,
-            model_class=model_class,
+        make_model = partial(
+            openai_model,
             api_type="responses",
             use_reasoning_cache=use_reasoning_cache,
         )
-
-    assert api_type == "chat_completions"
-    if prefix in openai_models:
-        make_model = openai_model
-    elif prefix in mistral_models:
-        make_model = mistral_model
-    elif prefix in deepseek_models:
-        make_model = deepseek_model
-    elif prefix in gemini_models:
-        make_model = gemini_model
     else:
-        raise ValueError(
-            f"Failed to infer provider for model: {model}.\n"
-            + "Use a more specific function such as `openai_model`."
-        )
+        assert api_type == "chat_completions"
+        if use_reasoning_cache:
+            raise ValueError(
+                "Reasoning cache is only supported for the Responses API\n"
+                + "Use api_type='responses' to use reasoning cache\n"
+                + "and make sure to use an OpenAI model."
+            )
+        if prefix in openai_models:
+            make_model = openai_model
+        elif prefix in mistral_models:
+            make_model = mistral_model
+        elif prefix in deepseek_models:
+            make_model = deepseek_model
+        elif prefix in gemini_models:
+            make_model = gemini_model
+        else:
+            raise ValueError(
+                f"Failed to infer provider for model: {model}.\n"
+                + "Use a more specific function such as `openai_model`."
+            )
     return make_model(
         model, options=options, pricing=pricing, model_class=model_class
     )
