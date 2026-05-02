@@ -149,21 +149,19 @@ def _openai_compatible_model(
     model_class: str | None = None,
     base_url: str,
     api_key_env_var: str,
-    responses_api: bool = False,
-    reasoning_cache: md.ReasoningCache | None = None,
-) -> StandardModel:
+    api_type: APIType = "chat_completions",
+    use_reasoning_cache: bool | None = None,
+) -> OpenAICompatibleModel | OpenAIResponsesModel:
     """
-    Build a model accessible from an OpenAI-compatible API. See
-    `standard_model` for details on all parameters.
+    Build a model accessible from an OpenAI-compatible API.
+    (Either Chat Completions (default) or Responses API.)
+    See `standard_model` for details on all parameters.
 
     Parameters:
         base_url: the base URL for the API, e.g.,
             "https://api.openai.com/v1" for OpenAI.
         api_key_env_var: the name of the environment variable
             containing the API key, e.g., "OPENAI_API_KEY".
-        responses_api: whether the Responses API should be used.
-        reasoning_cache: the reasoning cache to use for storing and retrieving
-            reasoning tokens. (only supported with Responses API)
     """
 
     api_key = os.getenv(api_key_env_var)
@@ -180,74 +178,56 @@ def _openai_compatible_model(
     if options is not None:
         all_options.update(options)
 
-    if responses_api:
+    if api_type == "responses":
+        if use_reasoning_cache is None:
+            use_reasoning_cache = True
         return OpenAIResponsesModel(
             base_url=base_url,
             api_key=api_key,
             options=all_options,
             model_class=model_class,
             pricing=pricing,
-            reasoning_cache=reasoning_cache,
+            use_reasoning_cache=use_reasoning_cache,
         )
-    else:
-        return OpenAICompatibleModel(
-            base_url=base_url,
-            api_key=api_key,
-            options=all_options,
-            model_class=model_class,
-            pricing=pricing,
-        )
+
+    assert api_type == "chat_completions"
+    assert use_reasoning_cache is not True, (
+        "Reasoning cache is only supported with the Responses API."
+    )
+    return OpenAICompatibleModel(
+        base_url=base_url,
+        api_key=api_key,
+        options=all_options,
+        model_class=model_class,
+        pricing=pricing,
+    )
 
 
 def openai_model(
-    model: OpenAIModelName | str,
-    options: md.RequestOptions | None = None,
-    *,
-    pricing: md.ModelPricing | None | Literal["auto"] = "auto",
-    model_class: str | None = None,
-) -> OpenAICompatibleModel:
-    """
-    Obtain a standard model from OpenAI.
-
-    See `standard_model` for details.
-    """
-    ret = _openai_compatible_model(
-        model,
-        options=options,
-        pricing=pricing,
-        model_class=model_class,
-        base_url="https://api.openai.com/v1",
-        api_key_env_var="OPENAI_API_KEY",
-    )
-    assert isinstance(ret, OpenAICompatibleModel)
-    return ret
-
-
-def openai_responses_model(
     model: OpenAIModelName | OpenAIResponsesExclusiveModelName | str,
     options: md.RequestOptions | None = None,
     *,
     pricing: md.ModelPricing | None | Literal["auto"] = "auto",
     model_class: str | None = None,
-    reasoning_cache: md.ReasoningCache | None = None,
-) -> OpenAIResponsesModel:
+    api_type: APIType = "chat_completions",
+    use_reasoning_cache: bool | None = None,
+) -> OpenAICompatibleModel | OpenAIResponsesModel:
     """
-    Obtain a standard model from OpenAI using the Responses API.
+    Obtain a standard model from OpenAI using either the
+    Chat Completions API (default) or the Responses API.
 
     See `standard_model` for details.
     """
-    ret = _openai_compatible_model(
+    return _openai_compatible_model(
         model,
         options=options,
         pricing=pricing,
         model_class=model_class,
         base_url="https://api.openai.com/v1",
         api_key_env_var="OPENAI_API_KEY",
-        responses_api=True,
-        reasoning_cache=reasoning_cache,
+        api_type=api_type,
+        use_reasoning_cache=use_reasoning_cache,
     )
-    assert isinstance(ret, OpenAIResponsesModel)
-    return ret
 
 
 def mistral_model(
@@ -323,7 +303,7 @@ def standard_model(
     pricing: md.ModelPricing | None | Literal["auto"] = "auto",
     model_class: str | None = None,
     api_type: APIType = "chat_completions",
-    reasoning_cache: md.ReasoningCache | None = None,
+    use_reasoning_cache: bool | None = None,
 ) -> StandardModel:
     """
     Obtain a standard model from OpenAI, Mistral, DeepSeek or Gemini.
@@ -352,15 +332,23 @@ def standard_model(
             tracked separately for different classes of models (e.g.,
             tracking "num_requests__reasoning_large" separately from
             "num_requests__chat_small").
-        api_type: Which API to use. `"chat_completions"` (default)
-            uses the Chat Completions API. `"responses"` uses the
-            OpenAI Responses API (only supported for OpenAI models).
-        reasoning_cache: The reasoning cache to use for storing and retrieving
-            reasoning tokens. Only supported with Responses API.
+        api_type: Which API to use. Chat Completions API is the
+            default and is supported for all providers.
+            Responses API is only supported for OpenAI models.
+            See `OpenAIResponsesModel` for details.
+        use_reasoning_cache: Whether to use a reasoning cache which
+            enables resending previously generated reasoning items
+            in later turns in multi-turn converstations to cut
+            costs in some cases. For more information, see the
+            `openai_api.ReasoningCache`. Only supported
+            with the Responses API. If `None` (default), it is set to
+            `True` when using the Responses API and `False` otherwise.
 
     Raises:
         ValueError: The provider or pricing model could not be inferred,
-            or ``api_type="responses"`` was used with a non-OpenAI model.
+            or `api_type` was set to "responses" with a non-OpenAI model,
+            or `use_reasoning_cache` was set to `True` when `api_type`
+            is not "responses".
     """
 
     openai_models = _values(OpenAIModelName)
@@ -373,16 +361,17 @@ def standard_model(
     if api_type == "responses":
         if prefix not in [*openai_models, *openai_responses_models]:
             raise ValueError(
-                f"The Responses API is only supported for OpenAI models, "
-                f"but got: {model}.\n"
-                f"Use api_type='chat_completions' for non-OpenAI models."
+                "The Responses API is only supported for"
+                + f"OpenAI models, but got: {model}. \n Use"
+                + "api_type='chat_completions' for non-OpenAI models."
             )
-        return openai_responses_model(
+        return openai_model(
             model,
             options=options,
             pricing=pricing,
             model_class=model_class,
-            reasoning_cache=reasoning_cache,
+            api_type="responses",
+            use_reasoning_cache=use_reasoning_cache,
         )
 
     assert api_type == "chat_completions"

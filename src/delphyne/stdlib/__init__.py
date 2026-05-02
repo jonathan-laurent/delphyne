@@ -84,7 +84,6 @@ from delphyne.stdlib.standard_models import (
     deepseek_model,
     mistral_model,
     openai_model,
-    openai_responses_model,
     gemini_model,
     standard_model,
 )
