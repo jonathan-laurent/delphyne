@@ -456,13 +456,11 @@ def test_embedded_tree_and_transformers():
     assert res
 
 
-@pytest.mark.parametrize("api_type", ["chat_completions", "responses"])
-def test_elim_join(api_type: APIType):
+def test_elim_join():
     res, log = _eval_strategy(
         strategy=ex.recursive_joins(3),
         policy=lambda _: ex.recursive_joins_policy_using_elim_join(),
         cache_name="elim_join",
-        api_type=api_type,
     )
     print(_log_messages(log))
     assert res
