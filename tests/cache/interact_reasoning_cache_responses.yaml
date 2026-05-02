@@ -1,0 +1,1647 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: "Find the users' tastes and propose a different article for each of them.\nThe users\
+            \ are given in the `user_names` list.\nYou will call `GetUserFavoriteTopic` tool for each\
+            \ user. \nDo not combine tool calls.\nWait for the result of the previous tool call before\
+            \ making the next.\nDo not stop until you have the favorite topic of all the users.\nPlease\
+            \ carefully think before calling any tool.\nOnce you have the favorite topic of all the users,\
+            \ propose an \narticle for each user."
+        - role: user
+          content: |-
+            user_names:
+              - Alice
+              - Bob
+              - Charlie
+              - Dave
+              - Eve
+      options:
+        model: gpt-5-nano
+        reasoning_effort: high
+        tool_choice: required
+      tools:
+        - name: GetUserFavoriteTopic
+          description: Retrieve the favorite topic of a given user.
+          schema:
+            properties:
+              user_name:
+                title: User Name
+                type: string
+            required:
+              - user_name
+            title: GetUserFavoriteTopic
+            type: object
+        - name: Article
+          description: 'Article(title: str, authors: list[str])'
+          schema:
+            properties:
+              title:
+                title: Title
+                type: string
+              authors:
+                items:
+                  type: string
+                title: Authors
+                type: array
+            required:
+              - title
+              - authors
+            title: Article
+            type: object
+    iter: 1
+  output:
+    outputs:
+      - content: ''
+        tool_calls:
+          - name: GetUserFavoriteTopic
+            args:
+              user_name: Alice
+        finish_reason: tool_calls
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 222
+        output_tokens: 996
+        cached_input_tokens: 0
+        price: 0.0004095
+    log_items: []
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      input_tokens: 222
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 996
+      output_tokens_details:
+        reasoning_tokens: 960
+      total_tokens: 1218
+- input:
+    request:
+      chat:
+        - role: system
+          content: "Find the users' tastes and propose a different article for each of them.\nThe users\
+            \ are given in the `user_names` list.\nYou will call `GetUserFavoriteTopic` tool for each\
+            \ user. \nDo not combine tool calls.\nWait for the result of the previous tool call before\
+            \ making the next.\nDo not stop until you have the favorite topic of all the users.\nPlease\
+            \ carefully think before calling any tool.\nOnce you have the favorite topic of all the users,\
+            \ propose an \narticle for each user."
+        - role: user
+          content: |-
+            user_names:
+              - Alice
+              - Bob
+              - Charlie
+              - Dave
+              - Eve
+        - role: assistant
+          answer:
+            mode: null
+            content: ''
+            tool_calls:
+              - name: GetUserFavoriteTopic
+                args:
+                  user_name: Alice
+        - role: tool
+          call:
+            name: GetUserFavoriteTopic
+            args:
+              user_name: Alice
+          result: Soccer
+      options:
+        model: gpt-5-nano
+        reasoning_effort: high
+        tool_choice: required
+      tools:
+        - name: GetUserFavoriteTopic
+          description: Retrieve the favorite topic of a given user.
+          schema:
+            properties:
+              user_name:
+                title: User Name
+                type: string
+            required:
+              - user_name
+            title: GetUserFavoriteTopic
+            type: object
+        - name: Article
+          description: 'Article(title: str, authors: list[str])'
+          schema:
+            properties:
+              title:
+                title: Title
+                type: string
+              authors:
+                items:
+                  type: string
+                title: Authors
+                type: array
+            required:
+              - title
+              - authors
+            title: Article
+            type: object
+    iter: 1
+  output:
+    outputs:
+      - content: ''
+        tool_calls:
+          - name: GetUserFavoriteTopic
+            args:
+              user_name: Bob
+        finish_reason: tool_calls
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 1237
+        output_tokens: 202
+        cached_input_tokens: 0
+        price: 0.00014265
+    log_items:
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 2
+          number_of_reasoning_items: 1
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      input_tokens: 1237
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 202
+      output_tokens_details:
+        reasoning_tokens: 128
+      total_tokens: 1439
+- input:
+    request:
+      chat:
+        - role: system
+          content: "Find the users' tastes and propose a different article for each of them.\nThe users\
+            \ are given in the `user_names` list.\nYou will call `GetUserFavoriteTopic` tool for each\
+            \ user. \nDo not combine tool calls.\nWait for the result of the previous tool call before\
+            \ making the next.\nDo not stop until you have the favorite topic of all the users.\nPlease\
+            \ carefully think before calling any tool.\nOnce you have the favorite topic of all the users,\
+            \ propose an \narticle for each user."
+        - role: user
+          content: |-
+            user_names:
+              - Alice
+              - Bob
+              - Charlie
+              - Dave
+              - Eve
+        - role: assistant
+          answer:
+            mode: null
+            content: ''
+            tool_calls:
+              - name: GetUserFavoriteTopic
+                args:
+                  user_name: Alice
+        - role: tool
+          call:
+            name: GetUserFavoriteTopic
+            args:
+              user_name: Alice
+          result: Soccer
+        - role: assistant
+          answer:
+            mode: null
+            content: ''
+            tool_calls:
+              - name: GetUserFavoriteTopic
+                args:
+                  user_name: Bob
+        - role: tool
+          call:
+            name: GetUserFavoriteTopic
+            args:
+              user_name: Bob
+          result: Soccer
+      options:
+        model: gpt-5-nano
+        reasoning_effort: high
+        tool_choice: required
+      tools:
+        - name: GetUserFavoriteTopic
+          description: Retrieve the favorite topic of a given user.
+          schema:
+            properties:
+              user_name:
+                title: User Name
+                type: string
+            required:
+              - user_name
+            title: GetUserFavoriteTopic
+            type: object
+        - name: Article
+          description: 'Article(title: str, authors: list[str])'
+          schema:
+            properties:
+              title:
+                title: Title
+                type: string
+              authors:
+                items:
+                  type: string
+                title: Authors
+                type: array
+            required:
+              - title
+              - authors
+            title: Article
+            type: object
+    iter: 1
+  output:
+    outputs:
+      - content: ''
+        tool_calls:
+          - name: GetUserFavoriteTopic
+            args:
+              user_name: Charlie
+        finish_reason: tool_calls
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 1458
+        output_tokens: 237
+        cached_input_tokens: 1024
+        price: 0.00012161999999999999
+    log_items:
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 2
+          number_of_reasoning_items: 1
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 4
+          number_of_reasoning_items: 1
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      input_tokens: 1458
+      input_tokens_details:
+        cached_tokens: 1024
+      output_tokens: 237
+      output_tokens_details:
+        reasoning_tokens: 192
+      total_tokens: 1695
+- input:
+    request:
+      chat:
+        - role: system
+          content: "Find the users' tastes and propose a different article for each of them.\nThe users\
+            \ are given in the `user_names` list.\nYou will call `GetUserFavoriteTopic` tool for each\
+            \ user. \nDo not combine tool calls.\nWait for the result of the previous tool call before\
+            \ making the next.\nDo not stop until you have the favorite topic of all the users.\nPlease\
+            \ carefully think before calling any tool.\nOnce you have the favorite topic of all the users,\
+            \ propose an \narticle for each user."
+        - role: user
+          content: |-
+            user_names:
+              - Alice
+              - Bob
+              - Charlie
+              - Dave
+              - Eve
+        - role: assistant
+          answer:
+            mode: null
+            content: ''
+            tool_calls:
+              - name: GetUserFavoriteTopic
+                args:
+                  user_name: Alice
+        - role: tool
+          call:
+            name: GetUserFavoriteTopic
+            args:
+              user_name: Alice
+          result: Soccer
+        - role: assistant
+          answer:
+            mode: null
+            content: ''
+            tool_calls:
+              - name: GetUserFavoriteTopic
+                args:
+                  user_name: Bob
+        - role: tool
+          call:
+            name: GetUserFavoriteTopic
+            args:
+              user_name: Bob
+          result: Soccer
+        - role: assistant
+          answer:
+            mode: null
+            content: ''
+            tool_calls:
+              - name: GetUserFavoriteTopic
+                args:
+                  user_name: Charlie
+        - role: tool
+          call:
+            name: GetUserFavoriteTopic
+            args:
+              user_name: Charlie
+          result: Soccer
+      options:
+        model: gpt-5-nano
+        reasoning_effort: high
+        tool_choice: required
+      tools:
+        - name: GetUserFavoriteTopic
+          description: Retrieve the favorite topic of a given user.
+          schema:
+            properties:
+              user_name:
+                title: User Name
+                type: string
+            required:
+              - user_name
+            title: GetUserFavoriteTopic
+            type: object
+        - name: Article
+          description: 'Article(title: str, authors: list[str])'
+          schema:
+            properties:
+              title:
+                title: Title
+                type: string
+              authors:
+                items:
+                  type: string
+                title: Authors
+                type: array
+            required:
+              - title
+              - authors
+            title: Article
+            type: object
+    iter: 1
+  output:
+    outputs:
+      - content: ''
+        tool_calls:
+          - name: GetUserFavoriteTopic
+            args:
+              user_name: Dave
+        finish_reason: tool_calls
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 1714
+        output_tokens: 65
+        cached_input_tokens: 1280
+        price: 5.41e-05
+    log_items:
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 2
+          number_of_reasoning_items: 1
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 4
+          number_of_reasoning_items: 1
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 6
+          number_of_reasoning_items: 1
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      input_tokens: 1714
+      input_tokens_details:
+        cached_tokens: 1280
+      output_tokens: 65
+      output_tokens_details:
+        reasoning_tokens: 0
+      total_tokens: 1779
+- input:
+    request:
+      chat:
+        - role: system
+          content: "Find the users' tastes and propose a different article for each of them.\nThe users\
+            \ are given in the `user_names` list.\nYou will call `GetUserFavoriteTopic` tool for each\
+            \ user. \nDo not combine tool calls.\nWait for the result of the previous tool call before\
+            \ making the next.\nDo not stop until you have the favorite topic of all the users.\nPlease\
+            \ carefully think before calling any tool.\nOnce you have the favorite topic of all the users,\
+            \ propose an \narticle for each user."
+        - role: user
+          content: |-
+            user_names:
+              - Alice
+              - Bob
+              - Charlie
+              - Dave
+              - Eve
+        - role: assistant
+          answer:
+            mode: null
+            content: ''
+            tool_calls:
+              - name: GetUserFavoriteTopic
+                args:
+                  user_name: Alice
+        - role: tool
+          call:
+            name: GetUserFavoriteTopic
+            args:
+              user_name: Alice
+          result: Soccer
+        - role: assistant
+          answer:
+            mode: null
+            content: ''
+            tool_calls:
+              - name: GetUserFavoriteTopic
+                args:
+                  user_name: Bob
+        - role: tool
+          call:
+            name: GetUserFavoriteTopic
+            args:
+              user_name: Bob
+          result: Soccer
+        - role: assistant
+          answer:
+            mode: null
+            content: ''
+            tool_calls:
+              - name: GetUserFavoriteTopic
+                args:
+                  user_name: Charlie
+        - role: tool
+          call:
+            name: GetUserFavoriteTopic
+            args:
+              user_name: Charlie
+          result: Soccer
+        - role: assistant
+          answer:
+            mode: null
+            content: ''
+            tool_calls:
+              - name: GetUserFavoriteTopic
+                args:
+                  user_name: Dave
+        - role: tool
+          call:
+            name: GetUserFavoriteTopic
+            args:
+              user_name: Dave
+          result: Soccer
+      options:
+        model: gpt-5-nano
+        reasoning_effort: high
+        tool_choice: required
+      tools:
+        - name: GetUserFavoriteTopic
+          description: Retrieve the favorite topic of a given user.
+          schema:
+            properties:
+              user_name:
+                title: User Name
+                type: string
+            required:
+              - user_name
+            title: GetUserFavoriteTopic
+            type: object
+        - name: Article
+          description: 'Article(title: str, authors: list[str])'
+          schema:
+            properties:
+              title:
+                title: Title
+                type: string
+              authors:
+                items:
+                  type: string
+                title: Authors
+                type: array
+            required:
+              - title
+              - authors
+            title: Article
+            type: object
+    iter: 1
+  output:
+    outputs:
+      - content: ''
+        tool_calls:
+          - name: GetUserFavoriteTopic
+            args:
+              user_name: Eve
+        finish_reason: tool_calls
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 1798
+        output_tokens: 49
+        cached_input_tokens: 1536
+        price: 4.038e-05
+    log_items:
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 2
+          number_of_reasoning_items: 1
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 4
+          number_of_reasoning_items: 1
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 6
+          number_of_reasoning_items: 1
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 8
+          number_of_reasoning_items: 1
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      input_tokens: 1798
+      input_tokens_details:
+        cached_tokens: 1536
+      output_tokens: 49
+      output_tokens_details:
+        reasoning_tokens: 0
+      total_tokens: 1847
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            Guess a user name that might be present in our system.
+            Then issue a tool call to get the favorite topic of that user.
+            Finally propose an article for that user. In case of an error,
+            try with another user name.
+        - role: user
+          content: '{}'
+      options:
+        model: gpt-5-nano
+        reasoning_effort: high
+      tools:
+        - name: GetUserFavoriteTopic
+          description: Retrieve the favorite topic of a given user.
+          schema:
+            properties:
+              user_name:
+                title: User Name
+                type: string
+            required:
+              - user_name
+            title: GetUserFavoriteTopic
+            type: object
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content: ''
+        tool_calls:
+          - name: GetUserFavoriteTopic
+            args:
+              user_name: Alice
+        finish_reason: tool_calls
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 167
+        output_tokens: 752
+        cached_input_tokens: 0
+        price: 0.00030915
+    log_items: []
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      input_tokens: 167
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 752
+      output_tokens_details:
+        reasoning_tokens: 704
+      total_tokens: 919
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            Guess a user name that might be present in our system.
+            Then issue a tool call to get the favorite topic of that user.
+            Finally propose an article for that user. In case of an error,
+            try with another user name.
+        - role: user
+          content: '{}'
+        - role: assistant
+          answer:
+            mode: null
+            content: ''
+            tool_calls:
+              - name: GetUserFavoriteTopic
+                args:
+                  user_name: Alice
+        - role: tool
+          call:
+            name: GetUserFavoriteTopic
+            args:
+              user_name: Alice
+          result: Soccer
+      options:
+        model: gpt-5-nano
+        reasoning_effort: high
+      tools:
+        - name: GetUserFavoriteTopic
+          description: Retrieve the favorite topic of a given user.
+          schema:
+            properties:
+              user_name:
+                title: User Name
+                type: string
+            required:
+              - user_name
+            title: GetUserFavoriteTopic
+            type: object
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content:
+          structured:
+            title: 'The Global Playbook: Tactics, Culture, and the Future of Soccer'
+            authors:
+              - Soccer Insight Team
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 938
+        output_tokens: 1523
+        cached_input_tokens: 0
+        price: 0.0006561
+    log_items:
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 2
+          number_of_reasoning_items: 1
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      input_tokens: 938
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 1523
+      output_tokens_details:
+        reasoning_tokens: 1472
+      total_tokens: 2461
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            Guess a user name that might be present in our system.
+            Then issue a tool call to get the favorite topic of that user.
+            Finally propose an article for that user. In case of an error,
+            try with another user name.
+        - role: user
+          content: '{}'
+        - role: assistant
+          answer:
+            mode: null
+            content: ''
+            tool_calls:
+              - name: GetUserFavoriteTopic
+                args:
+                  user_name: Alice
+        - role: tool
+          call:
+            name: GetUserFavoriteTopic
+            args:
+              user_name: Alice
+          result: Soccer
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'The Global Playbook: Tactics, Culture, and the Future of Soccer'
+                authors:
+                  - Soccer Insight Team
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+      options:
+        model: gpt-5-nano
+        reasoning_effort: high
+      tools:
+        - name: GetUserFavoriteTopic
+          description: Retrieve the favorite topic of a given user.
+          schema:
+            properties:
+              user_name:
+                title: User Name
+                type: string
+            required:
+              - user_name
+            title: GetUserFavoriteTopic
+            type: object
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content: ''
+        tool_calls:
+          - name: GetUserFavoriteTopic
+            args:
+              user_name: Bob
+        finish_reason: tool_calls
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 265
+        output_tokens: 817
+        cached_input_tokens: 0
+        price: 0.00034005
+    log_items:
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 2
+          number_of_reasoning_items: 1
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 4
+          number_of_reasoning_items: 1
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      input_tokens: 265
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 817
+      output_tokens_details:
+        reasoning_tokens: 768
+      total_tokens: 1082
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            Guess a user name that might be present in our system.
+            Then issue a tool call to get the favorite topic of that user.
+            Finally propose an article for that user. In case of an error,
+            try with another user name.
+        - role: user
+          content: '{}'
+        - role: assistant
+          answer:
+            mode: null
+            content: ''
+            tool_calls:
+              - name: GetUserFavoriteTopic
+                args:
+                  user_name: Alice
+        - role: tool
+          call:
+            name: GetUserFavoriteTopic
+            args:
+              user_name: Alice
+          result: Soccer
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'The Global Playbook: Tactics, Culture, and the Future of Soccer'
+                authors:
+                  - Soccer Insight Team
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+        - role: assistant
+          answer:
+            mode: null
+            content: ''
+            tool_calls:
+              - name: GetUserFavoriteTopic
+                args:
+                  user_name: Bob
+        - role: tool
+          call:
+            name: GetUserFavoriteTopic
+            args:
+              user_name: Bob
+          result: Soccer
+      options:
+        model: gpt-5-nano
+        reasoning_effort: high
+      tools:
+        - name: GetUserFavoriteTopic
+          description: Retrieve the favorite topic of a given user.
+          schema:
+            properties:
+              user_name:
+                title: User Name
+                type: string
+            required:
+              - user_name
+            title: GetUserFavoriteTopic
+            type: object
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content:
+          structured:
+            title: 'From Local Pitches to Global Arenas: The Next Chapter in Soccer Tactics and Culture'
+            authors:
+              - Soccer Insight Team
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 1101
+        output_tokens: 2287
+        cached_input_tokens: 0
+        price: 0.00096985
+    log_items:
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 2
+          number_of_reasoning_items: 1
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 4
+          number_of_reasoning_items: 1
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 6
+          number_of_reasoning_items: 1
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      input_tokens: 1101
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 2287
+      output_tokens_details:
+        reasoning_tokens: 2240
+      total_tokens: 3388
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            Guess a user name that might be present in our system.
+            Then issue a tool call to get the favorite topic of that user.
+            Finally propose an article for that user. In case of an error,
+            try with another user name.
+        - role: user
+          content: '{}'
+        - role: assistant
+          answer:
+            mode: null
+            content: ''
+            tool_calls:
+              - name: GetUserFavoriteTopic
+                args:
+                  user_name: Alice
+        - role: tool
+          call:
+            name: GetUserFavoriteTopic
+            args:
+              user_name: Alice
+          result: Soccer
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'The Global Playbook: Tactics, Culture, and the Future of Soccer'
+                authors:
+                  - Soccer Insight Team
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+        - role: assistant
+          answer:
+            mode: null
+            content: ''
+            tool_calls:
+              - name: GetUserFavoriteTopic
+                args:
+                  user_name: Bob
+        - role: tool
+          call:
+            name: GetUserFavoriteTopic
+            args:
+              user_name: Bob
+          result: Soccer
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'From Local Pitches to Global Arenas: The Next Chapter in Soccer Tactics and Culture'
+                authors:
+                  - Soccer Insight Team
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+      options:
+        model: gpt-5-nano
+        reasoning_effort: high
+      tools:
+        - name: GetUserFavoriteTopic
+          description: Retrieve the favorite topic of a given user.
+          schema:
+            properties:
+              user_name:
+                title: User Name
+                type: string
+            required:
+              - user_name
+            title: GetUserFavoriteTopic
+            type: object
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content: ''
+        tool_calls:
+          - name: GetUserFavoriteTopic
+            args:
+              user_name: Charlie
+        finish_reason: tool_calls
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 366
+        output_tokens: 682
+        cached_input_tokens: 0
+        price: 0.0002911
+    log_items:
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 2
+          number_of_reasoning_items: 1
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 4
+          number_of_reasoning_items: 1
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 6
+          number_of_reasoning_items: 1
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 8
+          number_of_reasoning_items: 1
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      input_tokens: 366
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 682
+      output_tokens_details:
+        reasoning_tokens: 640
+      total_tokens: 1048
+- input:
+    request:
+      chat:
+        - role: system
+          content: Propose an article for the given topic.
+        - role: user
+          content: 'topic_name: Soccer'
+      options:
+        model: gpt-5-nano
+        reasoning_effort: high
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content:
+          structured:
+            title: 'From Catenaccio to Gegenpress: The Evolution of Soccer Tactics in the Digital Age'
+            authors:
+              - Jordan Lee
+              - Mia Patel
+              - Luca Romano
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 81
+        output_tokens: 1465
+        cached_input_tokens: 0
+        price: 0.00059005
+    log_items: []
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      input_tokens: 81
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 1465
+      output_tokens_details:
+        reasoning_tokens: 1408
+      total_tokens: 1546
+- input:
+    request:
+      chat:
+        - role: system
+          content: Propose an article for the given topic.
+        - role: user
+          content: 'topic_name: Soccer'
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'From Catenaccio to Gegenpress: The Evolution of Soccer Tactics in the Digital
+                  Age'
+                authors:
+                  - Jordan Lee
+                  - Mia Patel
+                  - Luca Romano
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+      options:
+        model: gpt-5-nano
+        reasoning_effort: high
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content:
+          structured:
+            title: 'From Grassroots to Global Giants: The Digital Transformation of Soccer Talent, Tactics,
+              and Trade'
+            authors:
+              - Alex Navarro
+              - Priya Kapoor
+              - Eduardo Silva
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 152
+        output_tokens: 1957
+        cached_input_tokens: 0
+        price: 0.0007903999999999999
+    log_items:
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 2
+          number_of_reasoning_items: 1
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      input_tokens: 152
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 1957
+      output_tokens_details:
+        reasoning_tokens: 1856
+      total_tokens: 2109
+- input:
+    request:
+      chat:
+        - role: system
+          content: Propose an article for the given topic.
+        - role: user
+          content: 'topic_name: Soccer'
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'From Catenaccio to Gegenpress: The Evolution of Soccer Tactics in the Digital
+                  Age'
+                authors:
+                  - Jordan Lee
+                  - Mia Patel
+                  - Luca Romano
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'From Grassroots to Global Giants: The Digital Transformation of Soccer Talent,
+                  Tactics, and Trade'
+                authors:
+                  - Alex Navarro
+                  - Priya Kapoor
+                  - Eduardo Silva
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+      options:
+        model: gpt-5-nano
+        reasoning_effort: high
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content:
+          structured:
+            title: 'The Global Game from Local Pitches: How Grassroots Clubs Drive Talent, Tech, and Trade'
+            authors:
+              - Ravi Sharma
+              - Anaïs Dupont
+              - Carlos Mendes
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 224
+        output_tokens: 2743
+        cached_input_tokens: 0
+        price: 0.0011084
+    log_items:
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 2
+          number_of_reasoning_items: 1
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 4
+          number_of_reasoning_items: 1
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      input_tokens: 224
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 2743
+      output_tokens_details:
+        reasoning_tokens: 2624
+      total_tokens: 2967
+- input:
+    request:
+      chat:
+        - role: system
+          content: Propose an article for the given topic.
+        - role: user
+          content: 'topic_name: Soccer'
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'From Catenaccio to Gegenpress: The Evolution of Soccer Tactics in the Digital
+                  Age'
+                authors:
+                  - Jordan Lee
+                  - Mia Patel
+                  - Luca Romano
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'From Grassroots to Global Giants: The Digital Transformation of Soccer Talent,
+                  Tactics, and Trade'
+                authors:
+                  - Alex Navarro
+                  - Priya Kapoor
+                  - Eduardo Silva
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'The Global Game from Local Pitches: How Grassroots Clubs Drive Talent, Tech, and
+                  Trade'
+                authors:
+                  - Ravi Sharma
+                  - Anaïs Dupont
+                  - Carlos Mendes
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+      options:
+        model: gpt-5-nano
+        reasoning_effort: high
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content:
+          structured:
+            title: 'Chasing the Next Generation: Data-Driven Talent Scouting, Youth Development, and the
+              Global Soccer Market'
+            authors:
+              - Mason Reed
+              - Isabella Rossi
+              - Ahmed Al-Masri
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 299
+        output_tokens: 1715
+        cached_input_tokens: 0
+        price: 0.00070095
+    log_items:
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 2
+          number_of_reasoning_items: 1
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 4
+          number_of_reasoning_items: 1
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 6
+          number_of_reasoning_items: 1
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      input_tokens: 299
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 1715
+      output_tokens_details:
+        reasoning_tokens: 1664
+      total_tokens: 2014
+- input:
+    request:
+      chat:
+        - role: system
+          content: Propose an article for the given topic.
+        - role: user
+          content: 'topic_name: Soccer'
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'From Catenaccio to Gegenpress: The Evolution of Soccer Tactics in the Digital
+                  Age'
+                authors:
+                  - Jordan Lee
+                  - Mia Patel
+                  - Luca Romano
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'From Grassroots to Global Giants: The Digital Transformation of Soccer Talent,
+                  Tactics, and Trade'
+                authors:
+                  - Alex Navarro
+                  - Priya Kapoor
+                  - Eduardo Silva
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'The Global Game from Local Pitches: How Grassroots Clubs Drive Talent, Tech, and
+                  Trade'
+                authors:
+                  - Ravi Sharma
+                  - Anaïs Dupont
+                  - Carlos Mendes
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'Chasing the Next Generation: Data-Driven Talent Scouting, Youth Development, and
+                  the Global Soccer Market'
+                authors:
+                  - Mason Reed
+                  - Isabella Rossi
+                  - Ahmed Al-Masri
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+      options:
+        model: gpt-5-nano
+        reasoning_effort: high
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content:
+          structured:
+            title: 'Beyond the Final Whistle: The Convergence of Data, Development, and Global Markets
+              in Modern Soccer'
+            authors:
+              - Maria Chen
+              - Daniel Okafor
+              - Rafael Costa
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 376
+        output_tokens: 1696
+        cached_input_tokens: 0
+        price: 0.0006972
+    log_items:
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 2
+          number_of_reasoning_items: 1
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 4
+          number_of_reasoning_items: 1
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 6
+          number_of_reasoning_items: 1
+      - level: info
+        message: reasoning_cache_hit
+        metadata:
+          msg_index_in_chat: 8
+          number_of_reasoning_items: 1
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      input_tokens: 376
+      input_tokens_details:
+        cached_tokens: 0
+      output_tokens: 1696
+      output_tokens_details:
+        reasoning_tokens: 1600
+      total_tokens: 2072

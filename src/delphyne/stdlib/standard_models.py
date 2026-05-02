@@ -5,10 +5,15 @@ Models from standard LLM providers
 import os
 import typing
 from collections.abc import Iterable, Sequence
+from functools import partial
 from typing import Any, Literal
 
 from delphyne.stdlib import models as md
-from delphyne.stdlib.openai_api import OpenAICompatibleModel
+from delphyne.stdlib.openai_api import (
+    OpenAICompatibleModel,
+    OpenAIResponsesModel,
+    StandardModel,
+)
 
 #####
 ##### Data about standard models
@@ -29,6 +34,8 @@ type OpenAIModelName = Literal[
     "o4-mini",
 ]
 
+type OpenAIResponsesExclusiveModelName = Literal["gpt-5-pro"]
+
 type MistralModelName = Literal["mistral-small-2503", "magistral-small-2506"]
 
 type DeepSeekModelName = Literal["deepseek-chat", "deepseek-reasoner"]
@@ -38,10 +45,17 @@ type GeminiModelName = Literal[
 ]
 
 type StandardModelName = (
-    OpenAIModelName | MistralModelName | DeepSeekModelName | GeminiModelName
+    OpenAIResponsesExclusiveModelName
+    | OpenAIModelName
+    | MistralModelName
+    | DeepSeekModelName
+    | GeminiModelName
 )
 
+type APIType = Literal["chat_completions", "responses"]
+
 PRICING: dict[str, tuple[float, float, float]] = {
+    "gpt-5-pro": (15.00, 15.00, 120.00),
     "gpt-5.2": (1.75, 0.175, 14.00),
     "gpt-5.1": (1.25, 0.125, 10.00),
     "gpt-5": (1.25, 0.125, 10.00),  # cached input 10x less expensive!
@@ -73,6 +87,7 @@ def test_pricing_dict_exhaustiveness():
     literal_values = set(
         [
             *_values(OpenAIModelName),
+            *_values(OpenAIResponsesExclusiveModelName),
             *_values(MistralModelName),
             *_values(DeepSeekModelName),
             *_values(GeminiModelName),
@@ -135,10 +150,13 @@ def _openai_compatible_model(
     model_class: str | None = None,
     base_url: str,
     api_key_env_var: str,
-):
+    api_type: APIType = "chat_completions",
+    use_reasoning_cache: bool | None = None,
+) -> OpenAICompatibleModel | OpenAIResponsesModel:
     """
-    Build a model accessible from an OpenAI-compatible API. See
-    `standard_model` for details on all parameters.
+    Build a model accessible from an OpenAI-compatible API.
+    (Either Chat Completions (default) or Responses API.)
+    See `standard_model` for details on all parameters.
 
     Parameters:
         base_url: the base URL for the API, e.g.,
@@ -160,7 +178,17 @@ def _openai_compatible_model(
     all_options: md.RequestOptions = {"model": model}
     if options is not None:
         all_options.update(options)
-    return OpenAICompatibleModel(
+
+    if api_type == "responses":
+        if use_reasoning_cache is None:
+            use_reasoning_cache = True
+        make_model = partial(
+            OpenAIResponsesModel, use_reasoning_cache=use_reasoning_cache
+        )
+    else:
+        make_model = OpenAICompatibleModel
+
+    return make_model(
         base_url=base_url,
         api_key=api_key,
         options=all_options,
@@ -170,14 +198,17 @@ def _openai_compatible_model(
 
 
 def openai_model(
-    model: OpenAIModelName | str,
+    model: OpenAIModelName | OpenAIResponsesExclusiveModelName | str,
     options: md.RequestOptions | None = None,
     *,
     pricing: md.ModelPricing | None | Literal["auto"] = "auto",
     model_class: str | None = None,
-):
+    api_type: APIType = "chat_completions",
+    use_reasoning_cache: bool | None = None,
+) -> OpenAICompatibleModel | OpenAIResponsesModel:
     """
-    Obtain a standard model from OpenAI.
+    Obtain a standard model from OpenAI using either the
+    Chat Completions API (default) or the Responses API.
 
     See `standard_model` for details.
     """
@@ -188,6 +219,8 @@ def openai_model(
         model_class=model_class,
         base_url="https://api.openai.com/v1",
         api_key_env_var="OPENAI_API_KEY",
+        api_type=api_type,
+        use_reasoning_cache=use_reasoning_cache,
     )
 
 
@@ -263,7 +296,9 @@ def standard_model(
     *,
     pricing: md.ModelPricing | None | Literal["auto"] = "auto",
     model_class: str | None = None,
-) -> OpenAICompatibleModel:
+    api_type: APIType = "chat_completions",
+    use_reasoning_cache: bool | None = None,
+) -> StandardModel:
     """
     Obtain a standard model from OpenAI, Mistral, DeepSeek or Gemini.
 
@@ -291,31 +326,65 @@ def standard_model(
             tracked separately for different classes of models (e.g.,
             tracking "num_requests__reasoning_large" separately from
             "num_requests__chat_small").
+        api_type: Which API to use. Chat Completions API is the
+            default and is supported for all providers.
+            Responses API is only supported for OpenAI models.
+            See `OpenAIResponsesModel` for details.
+        use_reasoning_cache: Whether to use a reasoning cache which
+            enables resending previously generated reasoning items
+            in later turns in multi-turn converstations to cut
+            costs in some cases. For more information, see the
+            `openai_api.ReasoningCache`. Only supported
+            with the Responses API. If `None` (default), it is set to
+            `True` when using the Responses API and `False` otherwise.
 
     Raises:
-        ValueError: The provider or pricing model could not be inferred.
+        ValueError: The provider or pricing model could not be inferred,
+            or `api_type` was set to "responses" with a non-OpenAI model,
+            or `use_reasoning_cache` was set to `True` when `api_type`
+            is not "responses".
     """
 
     openai_models = _values(OpenAIModelName)
+    openai_responses_models = _values(OpenAIResponsesExclusiveModelName)
     mistral_models = _values(MistralModelName)
     deepseek_models = _values(DeepSeekModelName)
     gemini_models = _values(GeminiModelName)
 
     prefix = _longest_standard_model_prefix_or_self(model)
-
-    if prefix in openai_models:
-        make_model = openai_model
-    elif prefix in mistral_models:
-        make_model = mistral_model
-    elif prefix in deepseek_models:
-        make_model = deepseek_model
-    elif prefix in gemini_models:
-        make_model = gemini_model
-    else:
-        raise ValueError(
-            f"Failed to infer provider for model: {model}.\n"
-            + "Use a more specific function such as `openai_model`."
+    if api_type == "responses":
+        if prefix not in [*openai_models, *openai_responses_models]:
+            raise ValueError(
+                "The Responses API is only supported for\n"
+                + f"OpenAI models, but got: {model}. Use\n"
+                + "api_type='chat_completions' for non-OpenAI models."
+            )
+        make_model = partial(
+            openai_model,
+            api_type="responses",
+            use_reasoning_cache=use_reasoning_cache,
         )
+    else:
+        assert api_type == "chat_completions"
+        if use_reasoning_cache:
+            raise ValueError(
+                "Reasoning cache is only supported for the Responses API\n"
+                + "Use api_type='responses' to use reasoning cache\n"
+                + "and make sure to use an OpenAI model."
+            )
+        if prefix in openai_models:
+            make_model = openai_model
+        elif prefix in mistral_models:
+            make_model = mistral_model
+        elif prefix in deepseek_models:
+            make_model = deepseek_model
+        elif prefix in gemini_models:
+            make_model = gemini_model
+        else:
+            raise ValueError(
+                f"Failed to infer provider for model: {model}.\n"
+                + "Use a more specific function such as `openai_model`."
+            )
     return make_model(
         model, options=options, pricing=pricing, model_class=model_class
     )

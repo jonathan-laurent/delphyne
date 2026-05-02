@@ -51,6 +51,8 @@ from delphyne.stdlib.misc import (
 )
 from delphyne.stdlib.openai_api import (
     OpenAICompatibleModel,
+    OpenAIResponsesModel,
+    StandardModel,
 )
 from delphyne.stdlib.search.abduction import (
     Abduction,
