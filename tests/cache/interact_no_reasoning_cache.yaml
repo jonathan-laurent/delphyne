@@ -63,19 +63,19 @@
         num_requests: 1
         num_completions: 1
         input_tokens: 303
-        output_tokens: 538
+        output_tokens: 1050
         cached_input_tokens: 0
-        price: 0.00023035
+        price: 0.00043515
     log_items: []
     model_name: gpt-5-nano-2025-08-07
     usage_info:
-      completion_tokens: 538
+      completion_tokens: 1050
       prompt_tokens: 303
-      total_tokens: 841
+      total_tokens: 1353
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
-        reasoning_tokens: 512
+        reasoning_tokens: 1024
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0
@@ -159,19 +159,19 @@
         num_requests: 1
         num_completions: 1
         input_tokens: 338
-        output_tokens: 538
+        output_tokens: 794
         cached_input_tokens: 0
-        price: 0.0002321
+        price: 0.00033449999999999994
     log_items: []
     model_name: gpt-5-nano-2025-08-07
     usage_info:
-      completion_tokens: 538
+      completion_tokens: 794
       prompt_tokens: 338
-      total_tokens: 876
+      total_tokens: 1132
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
-        reasoning_tokens: 512
+        reasoning_tokens: 768
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0
@@ -269,19 +269,19 @@
         num_requests: 1
         num_completions: 1
         input_tokens: 373
-        output_tokens: 858
+        output_tokens: 538
         cached_input_tokens: 0
-        price: 0.00036185
+        price: 0.00023385
     log_items: []
     model_name: gpt-5-nano-2025-08-07
     usage_info:
-      completion_tokens: 858
+      completion_tokens: 538
       prompt_tokens: 373
-      total_tokens: 1231
+      total_tokens: 911
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
-        reasoning_tokens: 832
+        reasoning_tokens: 512
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0
@@ -393,19 +393,19 @@
         num_requests: 1
         num_completions: 1
         input_tokens: 408
-        output_tokens: 474
+        output_tokens: 1242
         cached_input_tokens: 0
-        price: 0.00021
+        price: 0.0005171999999999999
     log_items: []
     model_name: gpt-5-nano-2025-08-07
     usage_info:
-      completion_tokens: 474
+      completion_tokens: 1242
       prompt_tokens: 408
-      total_tokens: 882
+      total_tokens: 1650
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
-        reasoning_tokens: 448
+        reasoning_tokens: 1216
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0
@@ -531,19 +531,19 @@
         num_requests: 1
         num_completions: 1
         input_tokens: 443
-        output_tokens: 475
+        output_tokens: 603
         cached_input_tokens: 0
-        price: 0.00021214999999999998
+        price: 0.00026335
     log_items: []
     model_name: gpt-5-nano-2025-08-07
     usage_info:
-      completion_tokens: 475
+      completion_tokens: 603
       prompt_tokens: 443
-      total_tokens: 918
+      total_tokens: 1046
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
-        reasoning_tokens: 448
+        reasoning_tokens: 576
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0
@@ -599,26 +599,26 @@
         tool_calls:
           - name: GetUserFavoriteTopic
             args:
-              user_name: alex
+              user_name: Alex
         finish_reason: tool_calls
     budget:
       values:
         num_requests: 1
         num_completions: 1
         input_tokens: 248
-        output_tokens: 1050
+        output_tokens: 410
         cached_input_tokens: 0
-        price: 0.00043239999999999994
+        price: 0.0001764
     log_items: []
     model_name: gpt-5-nano-2025-08-07
     usage_info:
-      completion_tokens: 1050
+      completion_tokens: 410
       prompt_tokens: 248
-      total_tokens: 1298
+      total_tokens: 658
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
-        reasoning_tokens: 1024
+        reasoning_tokens: 384
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0
@@ -641,12 +641,12 @@
             tool_calls:
               - name: GetUserFavoriteTopic
                 args:
-                  user_name: alex
+                  user_name: Alex
         - role: tool
           call:
             name: GetUserFavoriteTopic
             args:
-              user_name: alex
+              user_name: Alex
           result: Soccer
       options:
         model: gpt-5-nano
@@ -686,25 +686,25 @@
     outputs:
       - content:
           structured:
-            title: 'The Science of Soccer: How Physics, Physiology, and Practice Elevate Your Game'
+            title: 'The Evolution of Tactics in Modern Soccer: Space, Press, and Possession'
             authors:
-              - Dr. Elena Rossi
-              - Coach Malik Ahmed
+              - Jordan Lee
+              - Priya Kapoor
         tool_calls: []
     budget:
       values:
         num_requests: 1
         num_completions: 1
         input_tokens: 283
-        output_tokens: 1774
+        output_tokens: 1770
         cached_input_tokens: 0
-        price: 0.00072375
+        price: 0.00072215
     log_items: []
     model_name: gpt-5-nano-2025-08-07
     usage_info:
-      completion_tokens: 1774
+      completion_tokens: 1770
       prompt_tokens: 283
-      total_tokens: 2057
+      total_tokens: 2053
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
@@ -731,22 +731,22 @@
             tool_calls:
               - name: GetUserFavoriteTopic
                 args:
-                  user_name: alex
+                  user_name: Alex
         - role: tool
           call:
             name: GetUserFavoriteTopic
             args:
-              user_name: alex
+              user_name: Alex
           result: Soccer
         - role: assistant
           answer:
             mode: null
             content:
               structured:
-                title: 'The Science of Soccer: How Physics, Physiology, and Practice Elevate Your Game'
+                title: 'The Evolution of Tactics in Modern Soccer: Space, Press, and Possession'
                 authors:
-                  - Dr. Elena Rossi
-                  - Coach Malik Ahmed
+                  - Jordan Lee
+                  - Priya Kapoor
         - role: user
           content: |
             Error. Please try again.
@@ -794,26 +794,26 @@
         tool_calls:
           - name: GetUserFavoriteTopic
             args:
-              user_name: sam
+              user_name: Taylor
         finish_reason: tool_calls
     budget:
       values:
         num_requests: 1
         num_completions: 1
-        input_tokens: 340
-        output_tokens: 794
+        input_tokens: 337
+        output_tokens: 922
         cached_input_tokens: 0
-        price: 0.00033459999999999995
+        price: 0.00038564999999999997
     log_items: []
     model_name: gpt-5-nano-2025-08-07
     usage_info:
-      completion_tokens: 794
-      prompt_tokens: 340
-      total_tokens: 1134
+      completion_tokens: 922
+      prompt_tokens: 337
+      total_tokens: 1259
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
-        reasoning_tokens: 768
+        reasoning_tokens: 896
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0
@@ -836,22 +836,22 @@
             tool_calls:
               - name: GetUserFavoriteTopic
                 args:
-                  user_name: alex
+                  user_name: Alex
         - role: tool
           call:
             name: GetUserFavoriteTopic
             args:
-              user_name: alex
+              user_name: Alex
           result: Soccer
         - role: assistant
           answer:
             mode: null
             content:
               structured:
-                title: 'The Science of Soccer: How Physics, Physiology, and Practice Elevate Your Game'
+                title: 'The Evolution of Tactics in Modern Soccer: Space, Press, and Possession'
                 authors:
-                  - Dr. Elena Rossi
-                  - Coach Malik Ahmed
+                  - Jordan Lee
+                  - Priya Kapoor
         - role: user
           content: |
             Error. Please try again.
@@ -866,12 +866,12 @@
             tool_calls:
               - name: GetUserFavoriteTopic
                 args:
-                  user_name: sam
+                  user_name: Taylor
         - role: tool
           call:
             name: GetUserFavoriteTopic
             args:
-              user_name: sam
+              user_name: Taylor
           result: Soccer
       options:
         model: gpt-5-nano
@@ -913,26 +913,26 @@
         tool_calls:
           - name: GetUserFavoriteTopic
             args:
-              user_name: maria
+              user_name: Jordan
         finish_reason: tool_calls
     budget:
       values:
         num_requests: 1
         num_completions: 1
-        input_tokens: 375
-        output_tokens: 476
+        input_tokens: 372
+        output_tokens: 538
         cached_input_tokens: 0
-        price: 0.00020915
+        price: 0.0002338
     log_items: []
     model_name: gpt-5-nano-2025-08-07
     usage_info:
-      completion_tokens: 476
-      prompt_tokens: 375
-      total_tokens: 851
+      completion_tokens: 538
+      prompt_tokens: 372
+      total_tokens: 910
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
-        reasoning_tokens: 448
+        reasoning_tokens: 512
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0
@@ -955,22 +955,22 @@
             tool_calls:
               - name: GetUserFavoriteTopic
                 args:
-                  user_name: alex
+                  user_name: Alex
         - role: tool
           call:
             name: GetUserFavoriteTopic
             args:
-              user_name: alex
+              user_name: Alex
           result: Soccer
         - role: assistant
           answer:
             mode: null
             content:
               structured:
-                title: 'The Science of Soccer: How Physics, Physiology, and Practice Elevate Your Game'
+                title: 'The Evolution of Tactics in Modern Soccer: Space, Press, and Possession'
                 authors:
-                  - Dr. Elena Rossi
-                  - Coach Malik Ahmed
+                  - Jordan Lee
+                  - Priya Kapoor
         - role: user
           content: |
             Error. Please try again.
@@ -985,12 +985,12 @@
             tool_calls:
               - name: GetUserFavoriteTopic
                 args:
-                  user_name: sam
+                  user_name: Taylor
         - role: tool
           call:
             name: GetUserFavoriteTopic
             args:
-              user_name: sam
+              user_name: Taylor
           result: Soccer
         - role: assistant
           answer:
@@ -999,12 +999,12 @@
             tool_calls:
               - name: GetUserFavoriteTopic
                 args:
-                  user_name: maria
+                  user_name: Jordan
         - role: tool
           call:
             name: GetUserFavoriteTopic
             args:
-              user_name: maria
+              user_name: Jordan
           result: Soccer
       options:
         model: gpt-5-nano
@@ -1046,26 +1046,26 @@
         tool_calls:
           - name: GetUserFavoriteTopic
             args:
-              user_name: emily
+              user_name: Riley
         finish_reason: tool_calls
     budget:
       values:
         num_requests: 1
         num_completions: 1
-        input_tokens: 411
-        output_tokens: 1499
+        input_tokens: 407
+        output_tokens: 731
         cached_input_tokens: 0
-        price: 0.00062015
+        price: 0.00031275
     log_items: []
     model_name: gpt-5-nano-2025-08-07
     usage_info:
-      completion_tokens: 1499
-      prompt_tokens: 411
-      total_tokens: 1910
+      completion_tokens: 731
+      prompt_tokens: 407
+      total_tokens: 1138
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
-        reasoning_tokens: 1472
+        reasoning_tokens: 704
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0
@@ -1103,30 +1103,31 @@
     outputs:
       - content:
           structured:
-            title: 'Soccer Transformed: Tactics, Tech, and Global Culture'
+            title: 'Soccer in the Global Era: Tactics, Talent, and Technology Transforming the Beautiful
+              Game'
             authors:
-              - Alex Kim
-              - Lena Martínez
-              - Jonah Carter
+              - Alex Rivera
+              - Maya Singh
+              - Jonas Weber
         tool_calls: []
     budget:
       values:
         num_requests: 1
         num_completions: 1
         input_tokens: 84
-        output_tokens: 1451
+        output_tokens: 1393
         cached_input_tokens: 0
-        price: 0.0005846
+        price: 0.0005614
     log_items: []
     model_name: gpt-5-nano-2025-08-07
     usage_info:
-      completion_tokens: 1451
+      completion_tokens: 1393
       prompt_tokens: 84
-      total_tokens: 1535
+      total_tokens: 1477
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
-        reasoning_tokens: 1408
+        reasoning_tokens: 1344
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0
@@ -1143,218 +1144,12 @@
             mode: null
             content:
               structured:
-                title: 'Soccer Transformed: Tactics, Tech, and Global Culture'
-                authors:
-                  - Alex Kim
-                  - Lena Martínez
-                  - Jonah Carter
-        - role: user
-          content: |
-            Error. Please try again.
-
-            """
-            Try again!
-            """
-      options:
-        model: gpt-5-nano
-        reasoning_effort: high
-      structured_output:
-        name: Article
-        description: 'Article(title: str, authors: list[str])'
-        schema:
-          properties:
-            title:
-              title: Title
-              type: string
-            authors:
-              items:
-                type: string
-              title: Authors
-              type: array
-          required:
-            - title
-            - authors
-          title: Article
-          type: object
-    iter: 1
-  output:
-    outputs:
-      - content:
-          structured:
-            title: 'Soccer in the Digital Era: Data Analytics, Global Markets, and The Beautiful Game'
-            authors:
-              - Isabella Rossi
-              - Kai Nakamura
-              - Maya Patel
-        tool_calls: []
-    budget:
-      values:
-        num_requests: 1
-        num_completions: 1
-        input_tokens: 139
-        output_tokens: 1200
-        cached_input_tokens: 0
-        price: 0.00048694999999999994
-    log_items: []
-    model_name: gpt-5-nano-2025-08-07
-    usage_info:
-      completion_tokens: 1200
-      prompt_tokens: 139
-      total_tokens: 1339
-      completion_tokens_details:
-        accepted_prediction_tokens: 0
-        audio_tokens: 0
-        reasoning_tokens: 1152
-        rejected_prediction_tokens: 0
-      prompt_tokens_details:
-        audio_tokens: 0
-        cached_tokens: 0
-- input:
-    request:
-      chat:
-        - role: system
-          content: Propose an article for the given topic.
-        - role: user
-          content: 'topic_name: Soccer'
-        - role: assistant
-          answer:
-            mode: null
-            content:
-              structured:
-                title: 'Soccer Transformed: Tactics, Tech, and Global Culture'
-                authors:
-                  - Alex Kim
-                  - Lena Martínez
-                  - Jonah Carter
-        - role: user
-          content: |
-            Error. Please try again.
-
-            """
-            Try again!
-            """
-        - role: assistant
-          answer:
-            mode: null
-            content:
-              structured:
-                title: 'Soccer in the Digital Era: Data Analytics, Global Markets, and The Beautiful Game'
-                authors:
-                  - Isabella Rossi
-                  - Kai Nakamura
-                  - Maya Patel
-        - role: user
-          content: |
-            Error. Please try again.
-
-            """
-            Try again!
-            """
-      options:
-        model: gpt-5-nano
-        reasoning_effort: high
-      structured_output:
-        name: Article
-        description: 'Article(title: str, authors: list[str])'
-        schema:
-          properties:
-            title:
-              title: Title
-              type: string
-            authors:
-              items:
-                type: string
-              title: Authors
-              type: array
-          required:
-            - title
-            - authors
-          title: Article
-          type: object
-    iter: 1
-  output:
-    outputs:
-      - content:
-          structured:
-            title: 'The Tactical Renaissance: How Modern Soccer Combines Strategy, Space, and Speed'
-            authors:
-              - Alex Rivera
-              - Zoey Chen
-              - Samir Naidu
-        tool_calls: []
-    budget:
-      values:
-        num_requests: 1
-        num_completions: 1
-        input_tokens: 199
-        output_tokens: 1518
-        cached_input_tokens: 0
-        price: 0.00061715
-    log_items: []
-    model_name: gpt-5-nano-2025-08-07
-    usage_info:
-      completion_tokens: 1518
-      prompt_tokens: 199
-      total_tokens: 1717
-      completion_tokens_details:
-        accepted_prediction_tokens: 0
-        audio_tokens: 0
-        reasoning_tokens: 1472
-        rejected_prediction_tokens: 0
-      prompt_tokens_details:
-        audio_tokens: 0
-        cached_tokens: 0
-- input:
-    request:
-      chat:
-        - role: system
-          content: Propose an article for the given topic.
-        - role: user
-          content: 'topic_name: Soccer'
-        - role: assistant
-          answer:
-            mode: null
-            content:
-              structured:
-                title: 'Soccer Transformed: Tactics, Tech, and Global Culture'
-                authors:
-                  - Alex Kim
-                  - Lena Martínez
-                  - Jonah Carter
-        - role: user
-          content: |
-            Error. Please try again.
-
-            """
-            Try again!
-            """
-        - role: assistant
-          answer:
-            mode: null
-            content:
-              structured:
-                title: 'Soccer in the Digital Era: Data Analytics, Global Markets, and The Beautiful Game'
-                authors:
-                  - Isabella Rossi
-                  - Kai Nakamura
-                  - Maya Patel
-        - role: user
-          content: |
-            Error. Please try again.
-
-            """
-            Try again!
-            """
-        - role: assistant
-          answer:
-            mode: null
-            content:
-              structured:
-                title: 'The Tactical Renaissance: How Modern Soccer Combines Strategy, Space, and Speed'
+                title: 'Soccer in the Global Era: Tactics, Talent, and Technology Transforming the Beautiful
+                  Game'
                 authors:
                   - Alex Rivera
-                  - Zoey Chen
-                  - Samir Naidu
+                  - Maya Singh
+                  - Jonas Weber
         - role: user
           content: |
             Error. Please try again.
@@ -1388,30 +1183,30 @@
     outputs:
       - content:
           structured:
-            title: 'The Global Game: How Soccer Bridges Local Pride and Global Brands'
+            title: 'Globalization and the Beautiful Game: Tactics, Talent, and Sustainability in Soccer'
             authors:
-              - Sophie Chen
-              - Ravi Menon
-              - Elena García
+              - Alex Kim
+              - Fatima Al-Sayed
+              - Jonas Muller
         tool_calls: []
     budget:
       values:
         num_requests: 1
         num_completions: 1
-        input_tokens: 257
-        output_tokens: 3179
+        input_tokens: 145
+        output_tokens: 2673
         cached_input_tokens: 0
-        price: 0.00128445
+        price: 0.00107645
     log_items: []
     model_name: gpt-5-nano-2025-08-07
     usage_info:
-      completion_tokens: 3179
-      prompt_tokens: 257
-      total_tokens: 3436
+      completion_tokens: 2673
+      prompt_tokens: 145
+      total_tokens: 2818
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
-        reasoning_tokens: 3136
+        reasoning_tokens: 2624
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0
@@ -1428,45 +1223,12 @@
             mode: null
             content:
               structured:
-                title: 'Soccer Transformed: Tactics, Tech, and Global Culture'
-                authors:
-                  - Alex Kim
-                  - Lena Martínez
-                  - Jonah Carter
-        - role: user
-          content: |
-            Error. Please try again.
-
-            """
-            Try again!
-            """
-        - role: assistant
-          answer:
-            mode: null
-            content:
-              structured:
-                title: 'Soccer in the Digital Era: Data Analytics, Global Markets, and The Beautiful Game'
-                authors:
-                  - Isabella Rossi
-                  - Kai Nakamura
-                  - Maya Patel
-        - role: user
-          content: |
-            Error. Please try again.
-
-            """
-            Try again!
-            """
-        - role: assistant
-          answer:
-            mode: null
-            content:
-              structured:
-                title: 'The Tactical Renaissance: How Modern Soccer Combines Strategy, Space, and Speed'
+                title: 'Soccer in the Global Era: Tactics, Talent, and Technology Transforming the Beautiful
+                  Game'
                 authors:
                   - Alex Rivera
-                  - Zoey Chen
-                  - Samir Naidu
+                  - Maya Singh
+                  - Jonas Weber
         - role: user
           content: |
             Error. Please try again.
@@ -1479,11 +1241,11 @@
             mode: null
             content:
               structured:
-                title: 'The Global Game: How Soccer Bridges Local Pride and Global Brands'
+                title: 'Globalization and the Beautiful Game: Tactics, Talent, and Sustainability in Soccer'
                 authors:
-                  - Sophie Chen
-                  - Ravi Menon
-                  - Elena García
+                  - Alex Kim
+                  - Fatima Al-Sayed
+                  - Jonas Muller
         - role: user
           content: |
             Error. Please try again.
@@ -1517,30 +1279,274 @@
     outputs:
       - content:
           structured:
-            title: 'Soccer in the Digital Field: Analytics, Innovation, and Global Fandom'
+            title: 'Soccer Beyond the Pitch: Globalization, Innovation, and the Next Wave of Talent'
+            authors:
+              - Amina Patel
+              - Lucas Ferreira
+              - Hiroshi Nakamura
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 205
+        output_tokens: 1265
+        cached_input_tokens: 0
+        price: 0.0005162499999999999
+    log_items: []
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      completion_tokens: 1265
+      prompt_tokens: 205
+      total_tokens: 1470
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 1216
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+- input:
+    request:
+      chat:
+        - role: system
+          content: Propose an article for the given topic.
+        - role: user
+          content: 'topic_name: Soccer'
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'Soccer in the Global Era: Tactics, Talent, and Technology Transforming the Beautiful
+                  Game'
+                authors:
+                  - Alex Rivera
+                  - Maya Singh
+                  - Jonas Weber
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'Globalization and the Beautiful Game: Tactics, Talent, and Sustainability in Soccer'
+                authors:
+                  - Alex Kim
+                  - Fatima Al-Sayed
+                  - Jonas Muller
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'Soccer Beyond the Pitch: Globalization, Innovation, and the Next Wave of Talent'
+                authors:
+                  - Amina Patel
+                  - Lucas Ferreira
+                  - Hiroshi Nakamura
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+      options:
+        model: gpt-5-nano
+        reasoning_effort: high
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content:
+          structured:
+            title: 'Grassroots to Global Glory: Building a Sustainable Soccer Pipeline for the 21st Century'
+            authors:
+              - Aditi Sharma
+              - Javier Ortega
+              - Keiko Nakamura
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 266
+        output_tokens: 1969
+        cached_input_tokens: 0
+        price: 0.0008009
+    log_items: []
+    model_name: gpt-5-nano-2025-08-07
+    usage_info:
+      completion_tokens: 1969
+      prompt_tokens: 266
+      total_tokens: 2235
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 1920
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+- input:
+    request:
+      chat:
+        - role: system
+          content: Propose an article for the given topic.
+        - role: user
+          content: 'topic_name: Soccer'
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'Soccer in the Global Era: Tactics, Talent, and Technology Transforming the Beautiful
+                  Game'
+                authors:
+                  - Alex Rivera
+                  - Maya Singh
+                  - Jonas Weber
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'Globalization and the Beautiful Game: Tactics, Talent, and Sustainability in Soccer'
+                authors:
+                  - Alex Kim
+                  - Fatima Al-Sayed
+                  - Jonas Muller
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'Soccer Beyond the Pitch: Globalization, Innovation, and the Next Wave of Talent'
+                authors:
+                  - Amina Patel
+                  - Lucas Ferreira
+                  - Hiroshi Nakamura
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+        - role: assistant
+          answer:
+            mode: null
+            content:
+              structured:
+                title: 'Grassroots to Global Glory: Building a Sustainable Soccer Pipeline for the 21st
+                  Century'
+                authors:
+                  - Aditi Sharma
+                  - Javier Ortega
+                  - Keiko Nakamura
+        - role: user
+          content: |
+            Error. Please try again.
+
+            """
+            Try again!
+            """
+      options:
+        model: gpt-5-nano
+        reasoning_effort: high
+      structured_output:
+        name: Article
+        description: 'Article(title: str, authors: list[str])'
+        schema:
+          properties:
+            title:
+              title: Title
+              type: string
+            authors:
+              items:
+                type: string
+              title: Authors
+              type: array
+          required:
+            - title
+            - authors
+          title: Article
+          type: object
+    iter: 1
+  output:
+    outputs:
+      - content:
+          structured:
+            title: 'The Global Playbook: Data, Development, and the Next Era of Soccer'
             authors:
               - Liam O'Connor
-              - Mei Lin
-              - Fatima Zahra
+              - Nia Williams
+              - Takumi Tanaka
         tool_calls: []
     budget:
       values:
         num_requests: 1
         num_completions: 1
-        input_tokens: 313
-        output_tokens: 1457
+        input_tokens: 327
+        output_tokens: 1585
         cached_input_tokens: 0
-        price: 0.0005984499999999999
+        price: 0.0006503500000000001
     log_items: []
     model_name: gpt-5-nano-2025-08-07
     usage_info:
-      completion_tokens: 1457
-      prompt_tokens: 313
-      total_tokens: 1770
+      completion_tokens: 1585
+      prompt_tokens: 327
+      total_tokens: 1912
       completion_tokens_details:
         accepted_prediction_tokens: 0
         audio_tokens: 0
-        reasoning_tokens: 1408
+        reasoning_tokens: 1536
         rejected_prediction_tokens: 0
       prompt_tokens_details:
         audio_tokens: 0

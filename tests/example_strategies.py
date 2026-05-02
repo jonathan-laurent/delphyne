@@ -19,7 +19,6 @@ from example_strategies_untyped import (
 import delphyne as dp
 from delphyne import Branch, Fail, IPDict, Strategy, strategy
 
-type APIType = Literal["responses", "chat_completions"]
 #####
 ##### MakeSum
 #####
@@ -52,10 +51,8 @@ def make_sum(
 
 
 @dp.ensure_compatible(make_sum)
-def make_sum_policy(
-    model_name: str = "gpt-4o-mini", api_type: APIType = "chat_completions"
-):
-    model = dp.standard_model(model_name, api_type=api_type)
+def make_sum_policy(model_name: str = "gpt-4o-mini"):
+    model = dp.openai_model(model_name)
     return dp.dfs() & MakeSumIP(dp.few_shot(model))
 
 
@@ -483,55 +480,6 @@ class Calculator(dp.AbstractTool[str]):
     """
 
     expr: str
-
-
-# @dataclass
-# class Weather:
-#     temperature: int
-
-
-# @dataclass
-# class GetTemperature(dp.AbstractTool[int]):
-#     """
-#     Get the temperature for a city.
-#     """
-
-#     city: str
-
-
-# @dataclass
-# class MultiToolWeather(dp.Query[dp.Response[Weather, GetTemperature]]):
-#     """
-#     Ask the assistant to get the weather for 3 cities in sequence, then answer.
-#     """
-
-#     prefix: dp.AnswerPrefix = ()
-
-#     __parser__ = dp.final_tool_call.response
-
-#     __system_prompt__: ClassVar[str] = """
-#         You must call the GetTemperature tool to get the temperature for
-#         Paris, London, and Berlin, in that order.
-#         Call them sequentially one by one. Do not combine tool calls.
-#         Wait for the result of the previous tool call before making the next.
-#         Before each tool call tell about the climate of the city.
-#         """
-
-
-# @strategy
-# def multi_tool_strategy() -> Strategy[Branch, dp.PromptingPolicy, Weather]:
-#     res = yield from dp.interact(
-#         step=lambda pre, _: MultiToolWeather(pre).using(dp.ambient_pp),
-#         process=lambda x, _: dp.const_space(x),
-#         tools={GetTemperature: (lambda _: dp.const_space(20))},
-#     )
-#     return res
-
-
-# def multi_tool_policy(
-#     model: dp.LLM,
-# ) -> dp.Policy[Branch, dp.PromptingPolicy]:
-#     return dp.dfs(max_branching=1) & dp.few_shot(model)
 
 
 @dataclass
@@ -1102,12 +1050,8 @@ def get_magic_number_policy(model: dp.LLM, no_wrap: bool):
 
 
 @dp.ensure_compatible(get_magic_number)
-def get_magic_number_default_policy(
-    model: str = "gpt-5-nano", api_type: APIType = "chat_completions"
-):
-    return get_magic_number_policy(
-        dp.standard_model(model, api_type=api_type), no_wrap=False
-    )
+def get_magic_number_default_policy(model: str = "gpt-5-nano"):
+    return get_magic_number_policy(dp.standard_model(model), no_wrap=False)
 
 
 #####

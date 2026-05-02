@@ -83,10 +83,10 @@
             max_val: 100
       options:
         model: gpt-4.1-mini
-    iter: 2
+    iter: 1
   output:
     outputs:
-      - content: '76'
+      - content: '78'
         tool_calls: []
     budget:
       values:
@@ -119,10 +119,10 @@
             max_val: 100
       options:
         model: gpt-4.1-mini
-    iter: 1
+    iter: 2
   output:
     outputs:
-      - content: '94'
+      - content: '74'
         tool_calls: []
     budget:
       values:
@@ -158,7 +158,7 @@
     iter: 3
   output:
     outputs:
-      - content: '86'
+      - content: '76'
         tool_calls: []
     budget:
       values:
@@ -194,7 +194,7 @@
     iter: 4
   output:
     outputs:
-      - content: '87'
+      - content: '73'
         tool_calls: []
     budget:
       values:

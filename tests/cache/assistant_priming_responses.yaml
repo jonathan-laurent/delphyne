@@ -18,24 +18,33 @@
     iter: 1
   output:
     outputs:
-      - content: "1. Étienne  \n2. Lucien  \n3. Théo  \n4. Olivier  \n\n```yaml\n- Étienne\n- Lucien\n\
-          - Théo\n- Olivier\n```"
+      - content: |-
+          ```yaml
+          - Étienne
+          - Lucien
+          - Gabriel
+          - Olivier
+          ```
         tool_calls: []
     budget:
       values:
         num_requests: 1
         num_completions: 1
         input_tokens: 70
-        output_tokens: 39
+        output_tokens: 19
         cached_input_tokens: 0
-        price: 9.04e-05
-    log_items: []
+        price: 5.8399999999999997e-05
+    log_items:
+      - level: info
+        message: reasoning_cache_miss
+        metadata:
+          msg_index_in_chat: 2
     model_name: gpt-4.1-mini-2025-04-14
     usage_info:
       input_tokens: 70
       input_tokens_details:
         cached_tokens: 0
-      output_tokens: 39
+      output_tokens: 19
       output_tokens_details:
         reasoning_tokens: 0
-      total_tokens: 109
+      total_tokens: 89
