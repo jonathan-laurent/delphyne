@@ -34,7 +34,7 @@ def find_param_value(expr: str):
 
 
 def serial_policy():
-    model = dp.standard_model("gpt-5-mini")
+    model = dp.standard_model("mistral-medium-2508")
     return dp.dfs() & {
         "n_val": dp.few_shot(model),
         "equiv": dp.take(2) @ dp.few_shot(model),
@@ -42,7 +42,7 @@ def serial_policy():
 
 
 def parallel_policy():
-    model = dp.standard_model("gpt-5-mini")
+    model = dp.standard_model("mistral-medium-2508")
     return dp.loop() @ dp.par_dfs() & {
         "n_val": dp.few_shot(model, max_requests=1, num_completions=3),
         "equiv": dp.few_shot(model, max_requests=1, num_completions=2),
