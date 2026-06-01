@@ -705,8 +705,8 @@ def _eval_strategy_reasoning[N: dp.Node, P, T](
         env = _make_policy_env(cache=cache, embeddings_cache=None)
         model = make_model(use_reasoning_cache)
         stream = strategy.run_toplevel(env, policy(model))
-        log = list(env.tracer.export_log())
         sol, spent = stream.collect(budget=budget, num_generated=1)
+        log = list(env.tracer.export_log())
 
     return sol, spent, log
 
