@@ -681,30 +681,43 @@ def test_example_embeddings_empty():
 
 def _eval_strategy_reasoning[N: dp.Node, P, T](
     strategy: dp.StrategyInstance[N, P, T],
-    policy: Callable[[dp.LLM], dp.Policy[N, P]],
+    policy: Callable[..., dp.Policy[N, P]],
     cache_name: str,
     use_reasoning_cache: bool,
     num_requests: int,
     api_type: APIType,
+    model_name: str,
+    reasoning_effort: dp.ReasoningEffort,
+    convert_user_feedback_to_tool: bool,
+    demo_files: Sequence[str] = ("reasoning_cache",),
 ) -> tuple[
     Sequence[dp.Solution[T]], dp.Budget, Sequence[dp.ExportableLogMessage]
 ]:
+    if api_type == "chat_completions":
+        convert_user_feedback_to_tool = False
     budget = dp.BudgetLimit({dp.NUM_REQUESTS: num_requests})
     if api_type == "responses":
         cache_name = cache_name + "_responses"
+    if convert_user_feedback_to_tool:
+        cache_name = cache_name + "_user_as_tool"
 
     def make_model(use_reasoning_cache: bool):
         return dp.standard_model(
-            "gpt-5-nano",
-            options={"reasoning_effort": "high"},
+            model_name,
+            options={"reasoning_effort": reasoning_effort},
             api_type=api_type,
             use_reasoning_cache=use_reasoning_cache,
+            convert_user_feedback_to_tool=convert_user_feedback_to_tool,
         )
 
     with _load_cache(cache_name) as cache:
-        env = _make_policy_env(cache=cache, embeddings_cache=None)
+        env = _make_policy_env(
+            cache=cache, embeddings_cache=None, demo_files=demo_files
+        )
         model = make_model(use_reasoning_cache)
-        stream = strategy.run_toplevel(env, policy(model))
+        stream = strategy.run_toplevel(
+            env, policy(model, tag_user_feedback_messages=True)
+        )
         sol, spent = stream.collect(budget=budget, num_generated=1)
         log = list(env.tracer.export_log())
 
@@ -712,127 +725,279 @@ def _eval_strategy_reasoning[N: dp.Node, P, T](
 
 
 def _test_article_strategy_reasoning_cache(
-    strategy: dp.StrategyInstance[dp.Branch, dp.PromptingPolicy, ex.Article],
+    strategy: dp.StrategyInstance[dp.Branch, dp.PromptingPolicy, Any],
     num_requests: int = 5,
+    convert_user_feedback_to_tool: bool = False,
+    configuration: Sequence[str] = (
+        "chat_completions",
+        "responses_no_cache",
+        "responses_with_cache",
+    ),
+    model_name: str = "gpt-5-nano",
+    reasoning_effort: dp.ReasoningEffort = "high",
 ):
     policy = ex.propose_article_policy
-    print("Running with chat completions api")
-    _, spent0, log0 = _eval_strategy_reasoning(
-        strategy=strategy,
-        policy=policy,
-        cache_name="interact_no_reasoning_cache",
-        use_reasoning_cache=False,
-        num_requests=num_requests,
-        api_type="chat_completions",
-    )
-    print("Chat Completions API: ", spent0)
+    if "chat_completions" in configuration:
+        print("Running with chat completions api")
+        _, spent0, log0 = _eval_strategy_reasoning(
+            strategy=strategy,
+            policy=policy,
+            cache_name="interact_no_reasoning_cache",
+            use_reasoning_cache=False,
+            num_requests=num_requests,
+            api_type="chat_completions",
+            convert_user_feedback_to_tool=convert_user_feedback_to_tool,
+            model_name=model_name,
+            reasoning_effort=reasoning_effort,
+        )
+        print("Chat Completions API: ", spent0)
+    else:
+        spent0, log0 = None, None
 
-    print("Running with responses api, no reasoning cache")
-    _, spent1, log1 = _eval_strategy_reasoning(
-        strategy=strategy,
-        policy=policy,
-        cache_name="interact_no_reasoning_cache",
-        use_reasoning_cache=False,
-        num_requests=num_requests,
-        api_type="responses",
-    )
-    print("Responses API, no reasoning cache: ", spent1)
+    if "responses_no_cache" in configuration:
+        print("Running with responses api, no reasoning cache")
+        _, spent1, log1 = _eval_strategy_reasoning(
+            strategy=strategy,
+            policy=policy,
+            cache_name="interact_no_reasoning_cache",
+            use_reasoning_cache=False,
+            num_requests=num_requests,
+            api_type="responses",
+            convert_user_feedback_to_tool=convert_user_feedback_to_tool,
+            model_name=model_name,
+            reasoning_effort=reasoning_effort,
+        )
+        print("Responses API, no reasoning cache: ", spent1)
+    else:
+        spent1, log1 = None, None
 
-    print("Running with responses api and reasoning cache")
-    _, spent2, log2 = _eval_strategy_reasoning(
-        strategy=strategy,
-        policy=policy,
-        cache_name="interact_reasoning_cache",
-        use_reasoning_cache=True,
-        num_requests=num_requests,
-        api_type="responses",
-    )
-    print("Responses with reasoning cache: ", spent2)
+    if "responses_with_cache" in configuration:
+        print("Running with responses api and reasoning cache")
+        _, spent2, log2 = _eval_strategy_reasoning(
+            strategy=strategy,
+            policy=policy,
+            cache_name="interact_reasoning_cache",
+            use_reasoning_cache=True,
+            num_requests=num_requests,
+            api_type="responses",
+            convert_user_feedback_to_tool=convert_user_feedback_to_tool,
+            model_name=model_name,
+            reasoning_effort=reasoning_effort,
+        )
+        print("Responses API, with reasoning cache: ", spent2)
+    else:
+        spent2, log2 = None, None
 
     return (spent0, log0), (spent1, log1), (spent2, log2)
 
 
-def test_reasoning_cache_multi_sequential_tool():
+@pytest.mark.parametrize(
+    ["convert_user_feedback_to_tool", "configuration"],
+    [
+        (
+            False,
+            ("chat_completions", "responses_no_cache", "responses_with_cache"),
+        ),
+        (True, ("responses_no_cache", "responses_with_cache")),
+    ],
+)
+def test_reasoning_cache_multi_sequential_tool(
+    convert_user_feedback_to_tool: bool, configuration: Sequence[str]
+):
     """
     Instruct LLM to issue tool calls for every user one by one.
     Reasoning can be persisted across multiple tool requests, so we expect
     less output tokens produced when reasoning cache is on.
-    There is usually a factor of ~5 savings in this example.
+    There is usually a factor of ~3 savings in this example.
+
+    There should be no difference between `convert_user_feedback_to_tool`
+    being on or off, as we have no user feedback messages in this example.
     """
     user_names = ["Alice", "Bob", "Charlie", "Dave", "Eve"]
     strategy = ex.propose_article_multi_user(user_names=user_names)
     print("Test reasoning cache multi sequential tool:")
-    _, resp, resp_cache = _test_article_strategy_reasoning_cache(strategy)
+    _, resp, resp_cache = _test_article_strategy_reasoning_cache(
+        strategy,
+        convert_user_feedback_to_tool=convert_user_feedback_to_tool,
+        configuration=configuration,
+    )
+    assert resp[0] is not None and resp[1] is not None
+    assert resp_cache[0] is not None and resp_cache[1] is not None
 
     assert all(log.message != "reasoning_cache_miss" for log in resp_cache[1])
     assert resp[0]["num_requests"] == resp_cache[0]["num_requests"]
     assert resp[0]["output_tokens"] > 2 * resp_cache[0]["output_tokens"]
     assert resp[0]["price"] > 2 * resp_cache[0]["price"]
 
-    # Test reasoning cache multi sequential tool:
-    # Chat Completions:
-    #     'num_requests': 5, 'num_completions': 5,
-    #     'input_tokens': 1865, 'output_tokens': 2883,
-    #     'cached_input_tokens': 0, 'price': 0.00124645
-    # Responses no reasoning cache:
-    #     'num_requests': 5, 'num_completions': 5,
-    #     'input_tokens': 1510, 'output_tokens': 5838,
-    #     'cached_input_tokens': 0, 'price': 0.0024107
-    # Responses with reasoning cache:
-    #     'num_requests': 5, 'num_completions': 5,
-    #     'input_tokens': 5302, 'output_tokens': 1242,
-    #     'cached_input_tokens': 1152, 'price': 0.00071006
+    # Chat Completions API:
+    #   'num_requests': 5, 'num_completions': 5,
+    #   'input_tokens': 1865, 'output_tokens': 5699,
+    #   'cached_input_tokens': 0, 'price': 0.0023728499999999997
+    # Responses API, no reasoning cache:
+    #   'num_requests': 5, 'num_completions': 5,
+    #   'input_tokens': 1510, 'output_tokens': 5344,
+    #   'cached_input_tokens': 0, 'price': 0.0022131
+    # Responses API, with reasoning cache:
+    #   'num_requests': 5, 'num_completions': 5,
+    #   'input_tokens': 6318, 'output_tokens': 1534,
+    #   'cached_input_tokens': 2688, 'price': 0.0008085400000000001
 
 
-def test_reasoning_cache_tools_multi_turn():
+@pytest.mark.parametrize(
+    ["convert_user_feedback_to_tool", "configuration"],
+    [
+        (
+            False,
+            ("chat_completions", "responses_no_cache", "responses_with_cache"),
+        ),
+        (True, ("responses_no_cache", "responses_with_cache")),
+    ],
+)
+def test_reasoning_cache_tools_multi_turn(
+    convert_user_feedback_to_tool: bool, configuration: Sequence[str]
+):
     """
     Instruct LLM to issue a tool call. When the tool output is processed by
     the LLM, reject the answer and make LLM issue another tool call.
-    That means tool calls are interleaved by user messages. Reasoning cache
-    does not benefit us in this case, as indicated by OpenAI.
+    That means tool calls are interleaved by user feedback messages.
+    If we do not do any conversion, reasoning cache does not benefit us
+    in this case.
+
+    However, if we convert user feedback messages to tool call outputs,
+    then we can indeed slightly benefit from reasoning cache.
     """
     strategy = ex.propose_article_multi_turn()
     print("Test reasoning cache tools multi turn:")
-    _, _, resp_cache = _test_article_strategy_reasoning_cache(strategy)
-
+    _, _, resp_cache = _test_article_strategy_reasoning_cache(
+        strategy,
+        convert_user_feedback_to_tool=convert_user_feedback_to_tool,
+        configuration=configuration,
+    )
+    assert resp_cache[0] is not None and resp_cache[1] is not None
     assert all(log.message != "reasoning_cache_miss" for log in resp_cache[1])
+    if convert_user_feedback_to_tool:
+        assert any(
+            log.message == "user_message_sent_as_tool_call_output"
+            for log in resp_cache[1]
+        )
 
-    # Test reasoning cache tools multi turn:
-    # Chat Completions:
-    #     'num_requests': 5, 'num_completions': 5,
-    #     'input_tokens': 1657, 'output_tokens': 5593,
-    #     'cached_input_tokens': 0, 'price': 0.0023200499999999997
-    # Responses no reasoning cache:
-    #     'num_requests': 5, 'num_completions': 5,
-    #     'input_tokens': 1335, 'output_tokens': 6542,
-    #     'cached_input_tokens': 0, 'price': 0.00268355
-    # Responses with reasoning cache:
-    #     'num_requests': 5, 'num_completions': 5,
-    #     'input_tokens': 3100, 'output_tokens': 5142,
-    #     'cached_input_tokens': 2048, 'price': 0.00211964
+    # convert_user_feedback_to_tool=False
+    # Chat Completions API:
+    #   'num_requests': 5, 'num_completions': 5,
+    #   'input_tokens': 1746, 'output_tokens': 6180,
+    #   'cached_input_tokens': 0, 'price': 0.0025593
+    # Responses API, no reasoning cache:
+    #   'num_requests': 5, 'num_completions': 5,
+    #   'input_tokens': 1396, 'output_tokens': 5692,
+    #   'cached_input_tokens': 0, 'price': 0.0023466
+    # Responses API, with reasoning cache:
+    #   'num_requests': 5, 'num_completions': 5,
+    #   'input_tokens': 3058, 'output_tokens': 5338,
+    #   'cached_input_tokens': 1024, 'price': 0.00224202
+
+    # convert_user_feedback_to_tool=True
+    # Responses API, no reasoning cache:
+    #   'num_requests': 5, 'num_completions': 5,
+    #   'input_tokens': 1613, 'output_tokens': 4966,
+    #   'cached_input_tokens': 0, 'price': 0.00206705
+    # Responses API, with reasoning cache:
+    #   'num_requests': 5, 'num_completions': 5,
+    #   'input_tokens': 11265, 'output_tokens': 3532,
+    #   'cached_input_tokens': 8576, 'price': 0.00159013
 
 
-def test_reasoning_cache_no_tools_multi_turn():
+@pytest.mark.parametrize(
+    ["convert_user_feedback_to_tool", "configuration"],
+    [
+        (
+            False,
+            ("chat_completions", "responses_no_cache", "responses_with_cache"),
+        ),
+        (True, ("responses_no_cache", "responses_with_cache")),
+    ],
+)
+def test_reasoning_cache_no_tools_multi_turn(
+    convert_user_feedback_to_tool: bool,
+    configuration: Sequence[str],
+    structured_output: bool = True,
+):
     """
     Now, there are no tool calls, just a multi-turn conversation.
-    Reasoning cache does not benefit us in this case, as indicated by OpenAI.
+    If we do not do any conversion, reasoning cache does not benefit us.
+    But Responses API is slightly better than Chat Completions API in terms
+    of cost in that case as well.
+
+    If we convert user feedback messages to tool call outputs, then we can
+    benefit from reasoning cache. In that case, by sending reasoning id's
+    back, we hit the prompt cache for the whole chat history in every request
+    as can be seen from `cached_input_tokens` in the budget.
+    We also prevent the model from redoing the reasoning for the chat
+    history again and hence the created output tokens are significantly
+    reduced. There is usually a factor of ~2 savings in this example.
+
+    We also have a demonstration example in this case, which we do not
+    convert to tool call output. The demonstration example also causes
+    the first request to be a reasoning cache miss, which is expected.
     """
-    strategy = ex.propose_article_no_tool_reject(topic_name="Soccer")
+    if structured_output:
+        strategy = ex.propose_article_no_tool_reject(topic_name="Soccer")
+    else:
+        strategy = ex.propose_article_no_tool_str_reject(topic_name="Soccer")
+
     print("Test reasoning cache no tools multi turn:")
-    _, _, resp_cache = _test_article_strategy_reasoning_cache(strategy)
+    _, resp, resp_cache = _test_article_strategy_reasoning_cache(
+        strategy,
+        convert_user_feedback_to_tool=convert_user_feedback_to_tool,
+        configuration=configuration,
+    )
+    assert resp[0] is not None and resp[1] is not None
+    assert resp_cache[0] is not None and resp_cache[1] is not None
+    logs_all = [log.message for log in resp_cache[1]]
 
-    assert all(log.message != "reasoning_cache_miss" for log in resp_cache[1])
+    # take everything after the last `llm_response`, which should
+    # contain reasoning_cache logs for all steps
+    for i in range(len(logs_all) - 1, 0, -1):
+        if logs_all[i] == "llm_response":
+            logs = logs_all[i + 1 :]
+            break
+    else:
+        assert False
 
-    # Test reasoning cache no tools multi turn:
-    # Chat Completions:
-    #     'num_requests': 5, 'num_completions': 5,
-    #     'input_tokens': 992, 'output_tokens': 8805,
-    #     'cached_input_tokens': 0, 'price': 0.0035716
-    # Responses no reasoning cache:
-    #     'num_requests': 5, 'num_completions': 5,
-    #     'input_tokens': 1122, 'output_tokens': 8689,
-    #     'cached_input_tokens': 0, 'price': 0.0035317
-    # Responses with reasoning cache:
-    #     'num_requests': 5, 'num_completions': 5,
-    #     'input_tokens': 1130, 'output_tokens': 9666,
-    #     'cached_input_tokens': 0, 'price': 0.0039229
+    # the first is a reasoning cache miss because it is a demo
+    assert logs[0] == "reasoning_cache_miss"
+    assert all(log != "reasoning_cache_miss" for log in logs[1:])
+
+    if convert_user_feedback_to_tool:
+        user_as_tool = [
+            log
+            for log in logs
+            if log == "user_message_sent_as_tool_call_output"
+        ]
+        # demo is not sent as tool call output
+        assert len(user_as_tool) == 4
+        assert resp[0]["output_tokens"] > 1.5 * resp_cache[0]["output_tokens"]
+        assert resp[0]["price"] > 1.5 * resp_cache[0]["price"]
+
+    # convert_user_feedback_to_tool=False
+    # Chat Completions API:
+    #   'num_requests': 5, 'num_completions': 5,
+    #   'input_tokens': 8623, 'output_tokens': 8784,
+    #   'cached_input_tokens': 3200, 'price': 0.0038007500000000003
+    # Responses API, no reasoning cache:
+    #   'num_requests': 5, 'num_completions': 5,
+    #   'input_tokens': 8677, 'output_tokens': 6563,
+    #   'cached_input_tokens': 4736, 'price': 0.00284593
+    # Responses API, with reasoning cache:
+    #   'num_requests': 5, 'num_completions': 5,
+    #   'input_tokens': 8647, 'output_tokens': 6676,
+    #   'cached_input_tokens': 6272, 'price': 0.00282051
+
+    # convert_user_feedback_to_tool=True
+    # Responses API, no reasoning cache:
+    #   'num_requests': 5, 'num_completions': 5,
+    #   'input_tokens': 9234, 'output_tokens': 8242,
+    #   'cached_input_tokens': 4992, 'price': 0.0035338599999999998
+    # Responses API, with reasoning cache:
+    #   'num_requests': 5, 'num_completions': 5,
+    #   'input_tokens': 18840, 'output_tokens': 3220,
+    #   'cached_input_tokens': 15360, 'price': 0.0015387999999999999

@@ -1,0 +1,8 @@
+- demonstration: reasoning_cache
+  query: ProposeArticleNoTool
+  args:
+    topic_name: "Music"
+  answers:
+    - answer:
+        title: "Understanding Bach"
+        authors: ["Brigitte Mouterde"]
