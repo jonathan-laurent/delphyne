@@ -92,10 +92,16 @@ class SystemMessage:
 class UserMessage:
     role: Literal["user"]
     content: str
+    is_feedback: bool = False
+    # For differentiating between demo non-feedback user messages
+    # (few-shot examples/initial user queries) and user feedback messages
+    # that occur e.g. in `interact` rounds. The default value is `False`
+    # for backward compatibility with existing `LLMCache`s.
 
-    def __init__(self, content: str):
+    def __init__(self, content: str, is_feedback: bool = False):
         object.__setattr__(self, "role", "user")
         object.__setattr__(self, "content", content)
+        object.__setattr__(self, "is_feedback", is_feedback)
 
 
 @dataclass(frozen=True)

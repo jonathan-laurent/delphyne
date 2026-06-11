@@ -94,12 +94,14 @@ def test_standard_model_with_responses_api():
     assert isinstance(model, dp.OpenAIResponsesModel)
     assert model.use_reasoning_cache is True
     assert model.reasoning_cache is not None
+    assert model.convert_user_feedback_to_tool is True
 
     model_no_cache = dp.standard_model(
         "gpt-5-nano", api_type="responses", use_reasoning_cache=False
     )
     assert isinstance(model_no_cache, dp.OpenAIResponsesModel)
     assert model_no_cache.reasoning_cache is None
+    assert model_no_cache.convert_user_feedback_to_tool is False
 
 
 def test_standard_model_with_chat_completions_api_and_reasoning_cache():

@@ -541,10 +541,12 @@ def propose_article_structured(
 
 
 def propose_article_policy(
-    model: dp.LLM,
+    model: dp.LLM, tag_user_feedback_messages: bool = False
 ) -> dp.Policy[Branch, dp.PromptingPolicy]:
     # Valid for both `propose_article` and `propose_article_structured`
-    return dp.dfs(max_branching=1) & dp.few_shot(model)
+    return dp.dfs(max_branching=1) & dp.few_shot(
+        model, tag_user_feedback_messages=tag_user_feedback_messages
+    )
 
 
 @dataclass
@@ -577,7 +579,7 @@ class ProposeArticleSingleUser(
     Guess a user name that might be present in our system.
     Then issue a tool call to get the favorite topic of that user.
     Finally propose an article for that user. In case of an error,
-    try with another user name.
+    you have to guess another user name and issue a new tool call.
     """
 
     prefix: dp.AnswerPrefix = ()
@@ -586,8 +588,8 @@ class ProposeArticleSingleUser(
 
 
 @strategy
-def reject[T](x: T) -> Strategy[Never, object, dp.Error | T]:
-    return dp.Error(label="Rejected", description="Try again!")
+def reject[T](x: T, description: str) -> Strategy[Never, object, dp.Error | T]:
+    return dp.Error(label="Rejected", description=description)
     yield
 
 
@@ -611,10 +613,20 @@ def propose_article_multi_turn() -> Strategy[
 ]:
     article = yield from dp.interact(
         step=lambda pre, _: ProposeArticleSingleUser(pre).using(dp.ambient_pp),
-        process=lambda x, _: reject(x).using(lambda p: dp.dfs() & p),
+        process=lambda x, _: reject(
+            x,
+            "Okay. Guess another user name and issue a new tool call.",
+        ).using(lambda p: dp.dfs() & p),
         tools={GetUserFavoriteTopic: (lambda _: dp.const_space("Soccer"))},
     )
     return article
+
+
+def _filler_prompt() -> str:
+    """
+    Filler prompt to exceed prompt caching threshold (1024 tokens) of OpenAI
+    """
+    return "You are a helpful assistant. " * 250
 
 
 @dataclass
@@ -624,9 +636,12 @@ class ProposeArticleNoTool(dp.Query[dp.Response[Article, Never]]):
 
     __parser__ = dp.structured.response
 
-    __system_prompt__: ClassVar[str] = """
+    __system_prompt__: ClassVar[str] = (
+        _filler_prompt()
+        + """
         Propose an article for the given topic.
         """
+    )
 
 
 @strategy
@@ -637,7 +652,39 @@ def propose_article_no_tool_reject(
         step=lambda pre, _: ProposeArticleNoTool(topic_name, pre).using(
             dp.ambient_pp
         ),
-        process=lambda x, _: reject(x).using(lambda p: dp.dfs() & p),
+        process=lambda x, _: reject(
+            x,
+            "Try again!",
+        ).using(lambda p: dp.dfs() & p),
+    )
+    return article
+
+
+@dataclass
+class ProposeArticleNoToolStr(dp.Query[dp.Response[str, Never]]):
+    topic_name: str
+    prefix: dp.AnswerPrefix = ()
+
+    __parser__ = dp.get_text.response
+
+    __system_prompt__: ClassVar[str] = """
+        Propose an article for the given topic.
+        """
+
+
+@strategy
+def propose_article_no_tool_str_reject(
+    topic_name: str,
+) -> Strategy[Branch, dp.PromptingPolicy, str]:
+    article = yield from dp.interact(
+        step=lambda pre, _: ProposeArticleNoToolStr(topic_name, pre).using(
+            dp.ambient_pp
+        ),
+        process=lambda x, _: reject(
+            x,
+            f"Your proposed article {x} is not acceptable. "
+            + "You have to propose a different one.",
+        ).using(lambda p: dp.dfs() & p),
     )
     return article
 

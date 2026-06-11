@@ -24,6 +24,11 @@ from delphyne.core.streams import Budget
 from delphyne.stdlib import models as md
 from delphyne.utils.yaml import pretty_yaml
 
+TOOL_CALL_NAME_FOR_USER_FEEDBACK = "__fetch_user_feedback__"
+"""
+Tool call name for converting user feedback messages to tool call outputs
+"""
+
 
 class ToolCallIdGenerator:
     """
@@ -532,12 +537,13 @@ class ReasoningCache:
     response, that is why we have `Sequence[ReasoningMessage]`.
 
     Currently, the internal reasoning state of the LLM can only be persisted
-    across multiple tool calls that follow the same user message and not across
-    multiple conversation turns between user and assistant. See
-    [OpenAI documentation][1] for more information. Nevertheless, we cache
-    and send reasoning items for all kinds of chat histories, as there is no
-    harm in doing so even if the cache is not hit, and future OpenAI caching
-    behavior might change.
+    across multiple tool calls that follow the same assistant message and not
+    across multiple conversation turns between user and assistant. See
+    [OpenAI documentation][1] for more information. Therefore, in order
+    to benefit from reasoning cache in all multi-turn conversations, we
+    convert user feedback messages to tool call outputs. In this way, we
+    achieve cost savings for all kinds of converstaional agents. For more
+    information see `OpenAIResponsesModel` and `convert_user_feedback_to_tool`.
 
     Building a cache instead of adding reasoning items directly to the chat
     history prevents reasoning items from polluting the conversation.
@@ -556,25 +562,91 @@ def _raise_missing(_: ReasoningCacheKey) -> Sequence[ReasoningMessage]:
     raise _ReasoningCacheMiss()
 
 
+def _convert_user_feedback_to_tool(chat: md.Chat) -> md.Chat:
+    """
+    Transform the chat so that user feedback messages are replaced with tool
+    result messages, and add artificial tool calls to assistant messages that
+    precede them with the name specified by `TOOL_CALL_NAME_FOR_USER_FEEDBACK`.
+    A `UserMessage` from chat history is counted as a feedback if its
+    `is_feedback` attribute is `True`. This tagging is done in order
+    to prevent from accidentally converting user messages in few-shot examples.
+
+    An important thing to note is that we prepend a warning prompt to the
+    content of the newly created tool result messages to inform the model
+    that these tool result messages are actually user feedback messages,
+    so that the model can treat them as such. If this is not done, and the
+    original feedback was not so detailed, then the model usually ignores
+    the artificially created tool result message and thus does not respond
+    to user feedback appropriately.
+    """
+    ret: list[md.ChatMessage] = []
+    i = 0
+    while i < len(chat):
+        msg = chat[i]
+        if (
+            i + 1 < len(chat)
+            and isinstance(user_msg := chat[i + 1], md.UserMessage)
+            and user_msg.is_feedback
+        ):
+            assert isinstance(msg, md.AssistantMessage)
+            assert not msg.answer.tool_calls
+            call = ToolCall(
+                name=TOOL_CALL_NAME_FOR_USER_FEEDBACK,
+                args={"message_index": i + 1},
+                # index as arg so a new call id is generated for each feedback
+            )
+            answer = replace(msg.answer, tool_calls=(call,))
+            ret.append(md.AssistantMessage(answer))
+            ret.append(
+                md.ToolMessage(
+                    call,
+                    "The user has provided the following feedback to your "
+                    + "last message. Regard the following as a user message "
+                    + "and respond to it accordingly!\n\n"
+                    + user_msg.content,
+                )
+            )
+            i += 2
+        else:
+            ret.append(msg)
+            i += 1
+
+    return tuple(ret)
+
+
 def translate_chat_for_responses(
     req: md.LLMRequest,
-    reasoning_cache: ReasoningCache | None = None,
+    reasoning_cache: ReasoningCache | None,
+    convert_user_feedback_to_tool: bool,
 ) -> tuple[list[oresp.ResponseInputItemParam], list[md.LLMResponseLogItem]]:
     """
     Translate a chat into the format expected by the OpenAI Responses API.
 
     Tool calls are flattened into separate top-level items, unlike the
-    Chat Completions API where they are nested inside assistant
-    messages. If there is a cache hit for a chat history prefix
-    together with a following assistant message, we add reasoning
-    items from the cache as separate top-level items as well, just
-    like the API expects. See `ReasoningCache` for more details.
+    Chat Completions API where they are nested inside assistant messages.
+    While processing the chat history, if `reasoning_cache` is provided
+    and there is a cache hit for a chat history prefix together with the
+    following assistant message, we add reasoning items from the cache
+    as separate top-level items as well, just like the API expects.
+    See `ReasoningCache` for more details.
+
+    If `convert_user_feedback_to_tool` is `True`, then user feedback messages
+    are converted to tool call outputs to be able to utilize reasoning cache
+    in all cases, for general information see `OpenAIResponesModel` and for
+    more details see `_convert_user_feedback_to_tool`. One thing to note is
+    that the conversion does not affect the `ReasongingCacheKey` that is
+    created, because only original messages are included in the key.
     """
     gen = ToolCallIdGenerator()
     input_items: list[oresp.ResponseInputItemParam] = []
     log: list[md.LLMResponseLogItem] = []
+    chat = (
+        _convert_user_feedback_to_tool(req.chat)
+        if convert_user_feedback_to_tool
+        else req.chat
+    )
 
-    for i, msg in enumerate(req.chat):
+    for i, msg in enumerate(chat):
         match msg:
             case md.SystemMessage(content=content):
                 input_items.append({"role": "system", "content": content})
@@ -590,10 +662,15 @@ def translate_chat_for_responses(
 
                 if reasoning_cache is not None:
                     prefix_req = replace(req, chat=req.chat[:i])
+                    actual_tool_calls = [
+                        tool_call
+                        for tool_call in answer.tool_calls
+                        if (tool_call.name != TOOL_CALL_NAME_FOR_USER_FEEDBACK)
+                    ]
                     key = ReasoningCacheKey(
-                        prefix=prefix_req,
+                        prefix=prefix_req,  # unconverted chat
                         answer_content=answer.content,
-                        tool_calls=tuple(answer.tool_calls),
+                        tool_calls=tuple(actual_tool_calls),
                     )
                     try:
                         # Query the cache for reasoning items
@@ -627,8 +704,9 @@ def translate_chat_for_responses(
                         # At this point, we are sure that that there is an
                         # assistant message in the chat history and there is
                         # no reasoning items in the cache for this message,
-                        # so we can log a cache miss without worrying about
-                        # false positives.
+                        # so we can log a cache miss. However, if the chat
+                        # history until this point was just few-shot examples,
+                        # then a cache miss is the expected outcome.
                         log.append(
                             md.LLMResponseLogItem(
                                 "info",
@@ -657,6 +735,16 @@ def translate_chat_for_responses(
                     "output": content,
                 }
                 input_items.append(output_item)
+                if call.name == TOOL_CALL_NAME_FOR_USER_FEEDBACK:
+                    log.append(
+                        md.LLMResponseLogItem(
+                            "info",
+                            "user_message_sent_as_tool_call_output",
+                            metadata={
+                                "user_msg_index": call.args["message_index"]
+                            },
+                        )
+                    )
     return input_items, log
 
 
@@ -756,14 +844,38 @@ class OpenAIResponsesModel(StandardModel):
 
     Attributes:
         use_reasoning_cache: Whether to use a reasoning cache to store and
-            resend reasoning items. See `ReasoningCache` for more details.
+            resend reasoning items. This allows us to persist LLM state
+            in interaction rounds and save costs by hitting the cache for
+            chat history and preventing the LLM from redoing the same
+            reasoning multiple times. See `ReasoningCache`
+            and `translate_chat_for_responses` for more details.
+        convert_user_feedback_to_tool: Whether to convert user feedback
+            messages appearing in the chat history (e.g. created by `interact`
+            strategy) to tool result messages, and add artificial tool calls
+            to assistant messages that precede user feedback. This is necessary
+            to benefit from reasoning cache across multiple conversation turns,
+            because OpenAI allows LLM state to only be persisted across
+            multiple tool calls that follow the same assistant message and not
+            across multiple conversation turns between user and assistant.
+            This way, we achieve cost savings for all kinds of conversational
+            agents. The artificial tool calls have a special name specified by
+            `TOOL_CALL_NAME_FOR_USER_FEEDBACK`. This tool is not registered
+            in the tool list sent to the API, so the LLM will not accidentally
+            be able to call it. Initial user queries or user messages included
+            in few-shot examples are not user feedback messages and so are not
+            converted. Another thing to note is that we do the conversion at
+            the last moment before sending a request to the API. So it does
+            not affect the original `LLMRequest` or the `LLMCache` associated
+            with it. See `translate_chat_for_responses` and
+            `_convert_user_feedback_to_tool` for more details.
 
     If `num_completions` > 1, multiple sequential request are made,
     as the Responses API does not support multiple completions per a
     single request unlike the Chat Completions API.
     """
 
-    use_reasoning_cache: bool = True
+    use_reasoning_cache: bool
+    convert_user_feedback_to_tool: bool
     reasoning_cache: ReasoningCache | None = field(init=False, default=None)
 
     def __post_init__(self):
@@ -795,7 +907,9 @@ class OpenAIResponsesModel(StandardModel):
         all_log: list[md.LLMResponseLogItem] = []
         model_name: str | None = None
         usage_info: ResponseUsage | None = None
-        input, log = translate_chat_for_responses(req, self.reasoning_cache)
+        input, log = translate_chat_for_responses(
+            req, self.reasoning_cache, self.convert_user_feedback_to_tool
+        )
         all_log.extend(log)
 
         def _send_single_request() -> oresp.Response:

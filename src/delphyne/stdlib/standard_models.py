@@ -152,6 +152,7 @@ def _openai_compatible_model(
     api_key_env_var: str,
     api_type: APIType = "chat_completions",
     use_reasoning_cache: bool | None = None,
+    convert_user_feedback_to_tool: bool | None = None,
 ) -> OpenAICompatibleModel | OpenAIResponsesModel:
     """
     Build a model accessible from an OpenAI-compatible API.
@@ -182,8 +183,14 @@ def _openai_compatible_model(
     if api_type == "responses":
         if use_reasoning_cache is None:
             use_reasoning_cache = True
+        if use_reasoning_cache and convert_user_feedback_to_tool is None:
+            convert_user_feedback_to_tool = True
+        elif convert_user_feedback_to_tool is None:
+            convert_user_feedback_to_tool = False
         make_model = partial(
-            OpenAIResponsesModel, use_reasoning_cache=use_reasoning_cache
+            OpenAIResponsesModel,
+            use_reasoning_cache=use_reasoning_cache,
+            convert_user_feedback_to_tool=convert_user_feedback_to_tool,
         )
     else:
         make_model = OpenAICompatibleModel
@@ -205,6 +212,7 @@ def openai_model(
     model_class: str | None = None,
     api_type: APIType = "chat_completions",
     use_reasoning_cache: bool | None = None,
+    convert_user_feedback_to_tool: bool | None = None,
 ) -> OpenAICompatibleModel | OpenAIResponsesModel:
     """
     Obtain a standard model from OpenAI using either the
@@ -221,6 +229,7 @@ def openai_model(
         api_key_env_var="OPENAI_API_KEY",
         api_type=api_type,
         use_reasoning_cache=use_reasoning_cache,
+        convert_user_feedback_to_tool=convert_user_feedback_to_tool,
     )
 
 
@@ -298,6 +307,7 @@ def standard_model(
     model_class: str | None = None,
     api_type: APIType = "chat_completions",
     use_reasoning_cache: bool | None = None,
+    convert_user_feedback_to_tool: bool | None = None,
 ) -> StandardModel:
     """
     Obtain a standard model from OpenAI, Mistral, DeepSeek or Gemini.
@@ -332,17 +342,33 @@ def standard_model(
             See `OpenAIResponsesModel` for details.
         use_reasoning_cache: Whether to use a reasoning cache which
             enables resending previously generated reasoning items
-            in later turns in multi-turn converstations to cut
-            costs in some cases. For more information, see the
-            `openai_api.ReasoningCache`. Only supported
-            with the Responses API. If `None` (default), it is set to
-            `True` when using the Responses API and `False` otherwise.
+            in later turns in multi-turn converstations to enable
+            cost savings. For more information, see the
+            `openai_api.ReasoningCache`. This is only supported with
+            the OpenAI Responses API. If `None` (default), it is set
+            to `True` when using the Responses API and `False` otherwise.
+        convert_user_feedback_to_tool: Whether to convert user feedback
+            messages (that occur e.g. in `interact` strategy) into tool
+            call outputs before sending a request to the model. In that
+            way, the reasoning cache can be utilized for all multi-turn
+            conversations and we can achieve better token usage efficiency.
+            For more information, see `openai_api.OpenAIResponsesModel`.
+            This is only supported with the Responses API. If `None`
+            (default), it is set to `True` when using the Responses API
+            and `False` otherwise.
+
+    !!! note: In order to use `convert_user_feedback_to_tool` feature,
+        in `few_shot` prompting policy `tag_user_feedback_messages`
+        should be set to `True` to tag user feedback messages as such,
+        so that they can be converted to tool call outputs.
 
     Raises:
         ValueError: The provider or pricing model could not be inferred,
             or `api_type` was set to "responses" with a non-OpenAI model,
             or `use_reasoning_cache` was set to `True` when `api_type`
-            is not "responses".
+            is not "responses",
+            or `convert_user_feedback_to_tool` was set to `True` when
+            `api_type` is not "responses".
     """
 
     openai_models = _values(OpenAIModelName)
@@ -363,12 +389,16 @@ def standard_model(
             openai_model,
             api_type="responses",
             use_reasoning_cache=use_reasoning_cache,
+            convert_user_feedback_to_tool=convert_user_feedback_to_tool,
         )
     else:
         assert api_type == "chat_completions"
-        if use_reasoning_cache:
+        if use_reasoning_cache or convert_user_feedback_to_tool:
             raise ValueError(
-                "Reasoning cache is only supported for the Responses API\n"
+                "Reasoning cache or user-to-tool conversion (whose only"
+                + "purpose is to enable the use of reasoning cache in\n"
+                + "multi-turn conversations) is only\n"
+                + "supported for the Responses API\n"
                 + "Use api_type='responses' to use reasoning cache\n"
                 + "and make sure to use an OpenAI model."
             )
