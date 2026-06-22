@@ -503,10 +503,10 @@ class ReasoningMessage:
     It has no human-readable content, apart from a summary.
 
     It mirrors `oresp.ResponseReasoningItemParam`. Currently, only the `id`
-    field is sufficient for resending reasoning items to the API and
-    recovering the LLM state, because we are setting `store=True`, when we
-    send a request to the API in `OpenAIResponsesModel._send_final_request`.
-    The `encrypted_content` field will be `None` unless we explicitly add a
+    field is sufficient for resending reasoning items to the API, because
+    we are setting `store=True`, when we send a request to the API in
+    `OpenAIResponsesModel._send_final_request`. The `encrypted_content`
+    field will be `None` unless we explicitly add a
     "reasoning.encrypted_content" option to the `include` parameter,
     when we send a request to the API.
 
@@ -523,16 +523,16 @@ class ReasoningCache:
     """
     A cache mapping a `ReasoningCacheKey` to a sequence of `ReasoningMessage`s,
     which are the reasoning items returned by an LLM model (accessed through
-    Responses API), together with an assistant message in response to a
-    request. The assistant message and the request are captured in the
+    Responses API) in response to a request. The assistant message that
+    accompanies the said reasoning items and the request are captured in the
     `ReasoningCacheKey`. Also see that class for details.
 
     Unlike the Chat Completions API, the Responses API returns reasoning items
     (not human-readable) alongside assistant messages. This allows resending
-    these reasoning items to recover the LLM state, which saves costs because
-    the LLM can reuse its previous state instead of redoing the reasoning
+    these reasoning items to recover the reasoning state of the LLM, which
+    saves costs because it does not have to redo the reasoning
     for the whole chat history. Although in practice it is almost always one
-    reasoning item per per response, there is nothing that prevents the
+    reasoning item per response, there is nothing that prevents the
     case that multiple reasoning items are returned by the LLM in a single
     response, that is why we have `Sequence[ReasoningMessage]`.
 

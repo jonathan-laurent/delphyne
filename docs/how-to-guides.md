@@ -87,3 +87,39 @@ A common pattern for interacting with LLMs is to have multi-message exchanges wh
 ## Performing Expensive Computations in Strategies {#compute}
 
 For efficiency and replicability reasons, strategies must not directly perform expensive and possibly nondeterministic computations (e.g. a call to an external SMT solver with a wall clock timeout). In such cases, the [`Compute`][delphyne.Compute] effect should be used. See the [reference page][delphyne.Compute] for details and explanations. For example usage, see `examples/find_invariants/abduct_and_branch.py` and the associated demonstration file.
+
+## Maximizing input token caching
+
+In multi-turn conversations with reasoning models, the Chat Completions API
+that is the default API in 
+[`standard_model`][delphyne.stdlib.standard_models.standard_model]
+cannot fully take the advantage of input token caching because it does not 
+return reasoning items that can be resent in later requests for the same chat. 
+
+The Responses API returns these opaque reasoning items alongside model answers. 
+Delphyne's reasoning cache stores and resends them in later rounds of a conversation
+(e.g. when using [`interact`][delphyne.stdlib.search.interactive.interact]). This 
+enables input token caching for the whole chat history and the model can preserve 
+its previous reasoning state instead of recomputing it, reducing token usage and cost.
+
+To benefit from this in multi-turn conversations, create a
+[`standard_model`][delphyne.stdlib.standard_models.standard_model] using the
+Responses API and also do not forget to enable tagging of user feedback 
+messages in [`few_shot`][delphyne.stdlib.queries.few_shot] prompting policy:
+
+```python
+model = dp.standard_model("gpt-5", api_type="responses")
+pp = dp.few_shot(model, tag_user_feedback_messages=True)
+```
+
+The above configuration automatically enables the reasoning cache feature and 
+also the conversion of user feedback messages to tool call outputs.
+The rationale behind the latter is that OpenAI currently supports persisting 
+the reasoning state across tool calls following an assistant message, but 
+not across ordinary user feedback messages. To work around this limitation, 
+Delphyne converts user feedback messages into an artificial tool call output 
+immediately before sending the request. The model is instructed to treat that 
+as user feedback.
+
+The Responses API, and therefore these Delphyne features for reasoning cache, 
+is only supported for OpenAI models.
