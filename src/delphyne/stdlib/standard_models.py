@@ -339,7 +339,7 @@ def standard_model(
         api_type: Which API to use. Chat Completions API is the
             default and is supported for all providers.
             Responses API is only supported for OpenAI models.
-            See `OpenAIResponsesModel` for details.
+            See `openai_api.OpenAIResponsesModel` for details.
         use_reasoning_cache: Whether to use a reasoning cache which
             enables resending previously generated reasoning items
             in later turns in multi-turn converstations to enable
@@ -357,7 +357,8 @@ def standard_model(
             (default), it is set to `True` when using the Responses API
             and `False` otherwise.
 
-    !!! note: In order to use `convert_user_feedback_to_tool` feature,
+    !!! info
+        In order to use `convert_user_feedback_to_tool` feature,
         in `few_shot` prompting policy `tag_user_feedback_messages`
         should be set to `True` to tag user feedback messages as such,
         so that they can be converted to tool call outputs.
