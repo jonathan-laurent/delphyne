@@ -348,14 +348,13 @@ def standard_model(
             the OpenAI Responses API. If `None` (default), it is set
             to `True` when using the Responses API and `False` otherwise.
         convert_user_feedback_to_tool: Whether to convert user feedback
-            messages (that occur e.g. in `interact` strategy) into tool
-            call outputs before sending a request to the model. In that
-            way, the reasoning cache can be utilized for all multi-turn
-            conversations and we can achieve better token usage efficiency.
-            For more information, see `openai_api.OpenAIResponsesModel`.
-            This is only supported with the Responses API. If `None`
-            (default), it is set to `True` when using the Responses API
-            and `False` otherwise.
+            messages (that occur e.g. in the `interact` strategy) into
+            tool call outputs before sending a request to the model,
+            leading to better input token caching behaviour. For more
+            information, see `openai_api.OpenAIResponsesModel`. This is
+            only supported with the Responses API. If `None` (default),
+            it is set to `True` when using the Responses API and `False`
+            otherwise.
 
     !!! info
         In order to use `convert_user_feedback_to_tool` feature,

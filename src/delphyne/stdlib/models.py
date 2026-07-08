@@ -93,8 +93,9 @@ class UserMessage:
     role: Literal["user"]
     content: str
     is_feedback: bool = False
-    # For differentiating between demo non-feedback user messages
-    # (few-shot examples/initial user queries) and user feedback messages
+    # For differentiating between non-feedback user messages
+    # (e.g., initial message formulating a query or message introducing
+    # a few-shot example) and user feedback messages
     # that occur e.g. in `interact` rounds. The default value is `False`
     # for backward compatibility with existing `LLMCache`s.
 
