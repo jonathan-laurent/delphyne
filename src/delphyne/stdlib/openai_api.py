@@ -3,7 +3,6 @@ Utilities to call models through OpenAI-compatible APIs.
 """
 
 import json
-from abc import abstractmethod
 from collections.abc import AsyncIterable, Sequence
 from dataclasses import dataclass, field, replace
 from typing import Any, override
@@ -324,11 +323,6 @@ class StandardModel(md.LLM):
     def estimate_budget(self, req: md.LLMRequest) -> Budget:
         return Budget(_base_budget(req.num_completions, self.model_class))
 
-    @override
-    @abstractmethod
-    def _send_final_request(self, req: md.LLMRequest) -> md.LLMResponse:
-        pass
-
 
 @dataclass(kw_only=True)
 class OpenAICompatibleModel(StandardModel):
@@ -536,17 +530,18 @@ class ReasoningCache:
     case that multiple reasoning items are returned by the LLM in a single
     response, that is why we have `Sequence[ReasoningMessage]`.
 
-    Currently, the internal reasoning state of the LLM can only be persisted
-    across multiple tool calls that follow the same assistant message and not
-    across multiple conversation turns between user and assistant. See
-    [OpenAI documentation][1] for more information. Therefore, in order
-    to benefit from reasoning cache in all multi-turn conversations, we
-    convert user feedback messages to tool call outputs. In this way, we
-    achieve cost savings for all kinds of converstaional agents. For more
-    information see `OpenAIResponsesModel` and `convert_user_feedback_to_tool`.
+    !!! note
 
-    Building a cache instead of adding reasoning items directly to the chat
-    history prevents reasoning items from polluting the conversation.
+        Currently, the internal reasoning state of the LLM can only be
+        persisted across multiple tool calls that follow the same assistant
+        message and not across multiple conversation turns between user and
+        assistant. See [OpenAI documentation][1] for more information.
+        Therefore, in order to benefit from reasoning cache in all multi-turn
+        conversations, we convert user feedback messages to tool call outputs.
+        In this way, we achieve cost savings for all kinds of conversational
+        agents. For more information see `OpenAIResponsesModel` and
+        `convert_user_feedback_to_tool`.
+
 
     [1]:https://developers.openai.com/cookbook/examples/responses_api/reasoning_items#caching
     """
@@ -853,17 +848,17 @@ class OpenAIResponsesModel(StandardModel):
             messages appearing in the chat history (e.g. created by `interact`
             strategy) to tool result messages, and add artificial tool calls
             to assistant messages that precede user feedback. This is necessary
-            to benefit from reasoning cache across multiple conversation turns,
-            because OpenAI allows LLM state to only be persisted across
+            to benefit from LV caching across multiple conversation turns,
+            because OpenAI only allows the KV cache to be persisted across
             multiple tool calls that follow the same assistant message and not
             across multiple conversation turns between user and assistant.
-            This way, we achieve cost savings for all kinds of conversational
+            This way, cost savings are achieved for all kinds of conversational
             agents. The artificial tool calls have a special name specified by
             `TOOL_CALL_NAME_FOR_USER_FEEDBACK`. This tool is not registered
             in the tool list sent to the API, so the LLM will not accidentally
             be able to call it. Initial user queries or user messages included
             in few-shot examples are not user feedback messages and so are not
-            converted. Another thing to note is that we do the conversion at
+            converted. Another thing to note is that the conversion happens at
             the last moment before sending a request to the API. So it does
             not affect the original `LLMRequest` or the `LLMCache` associated
             with it. See `translate_chat_for_responses` and

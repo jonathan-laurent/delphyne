@@ -2022,16 +2022,14 @@ def few_shot[T](
             implementing more advanced conversational agents, see
             the standard `interact` strategy.
         tag_user_feedback_messages: If set to `True`, user messages that
-            are meant as feedback to previous assistant answers are tagged
-            as such. This allows us, when using a model accessed through
-            OpenAI Responses API, to convert these feedback messages into
-            tool call outputs before sending them to the model in order to
-            utilize reasoning cache and achieve better token usage efficiency.
-            The default value is `False` for backward compatibility with
-            existing `LLMCache` files that were created using OpenAI Chat
-            Completions API. When using a model with OpenAI Responses API,
-            it is necessary to set this to `True` in order to benefit from
-            reasoning cache for all kinds of conversational agents. See
+            are meant as feedback to previous assistant answers are
+            tagged as such. This allows, when using a model accessed
+            through OpenAI Responses API, to convert these feedback
+            messages into tool call outputs before sending them to the
+            model in order to better utilize the KV cache and achieve better
+            token usage efficiency. The default value is `False` for
+            backward compatibility with existing `LLMCache` files that
+            were created using OpenAI Chat Completions API. See
             `openai_api.OpenAIResponsesModel` for more details.
     """
     assert not iterative_mode or num_completions == 1
