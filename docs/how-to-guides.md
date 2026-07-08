@@ -88,7 +88,7 @@ A common pattern for interacting with LLMs is to have multi-message exchanges wh
 
 For efficiency and replicability reasons, strategies must not directly perform expensive and possibly nondeterministic computations (e.g. a call to an external SMT solver with a wall clock timeout). In such cases, the [`Compute`][delphyne.Compute] effect should be used. See the [reference page][delphyne.Compute] for details and explanations. For example usage, see `examples/find_invariants/abduct_and_branch.py` and the associated demonstration file.
 
-## Maximizing input token caching and preserving reasoning state {#resend-reasoning}
+## Maximizing Input Token Caching and Preserving Reasoning State {#resend-reasoning}
 
 In multi-turn conversations with reasoning models, the _Chat Completions_ API used by default by 
 [`standard_model`][delphyne.stdlib.standard_models.standard_model]
