@@ -314,3 +314,14 @@ class AbstractQuery(Generic[T], ABC):
         This is sometimes useful for hindsight feedback.
         """
         return None
+    
+        ### Example Selection
+
+    def shares_examples_with(self, other: "AbstractQuery[Any]") -> bool:
+        """
+        Whether or not two queries should use the same examples.
+        """
+
+        return self.query_name() == other.query_name()
+
+    

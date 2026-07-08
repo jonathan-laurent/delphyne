@@ -62,6 +62,11 @@ class UniversalQuery(Query[object]):
         strategy_obj = _load_from_qualified_name(self.strategy)
         assert callable(strategy_obj)
         return _source_code(strategy_obj)
+    
+    @override
+    def shares_examples_with(self, other: dp.AbstractQuery[Any]) -> bool:
+        return isinstance(other, UniversalQuery) and (
+            self.strategy ==  other.strategy and self.tags == other.tags)
 
 
 @overload
