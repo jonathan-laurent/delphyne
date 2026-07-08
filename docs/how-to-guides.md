@@ -88,51 +88,33 @@ A common pattern for interacting with LLMs is to have multi-message exchanges wh
 
 For efficiency and replicability reasons, strategies must not directly perform expensive and possibly nondeterministic computations (e.g. a call to an external SMT solver with a wall clock timeout). In such cases, the [`Compute`][delphyne.Compute] effect should be used. See the [reference page][delphyne.Compute] for details and explanations. For example usage, see `examples/find_invariants/abduct_and_branch.py` and the associated demonstration file.
 
-## Maximizing input token caching and preserving reasoning state
+## Maximizing input token caching and preserving reasoning state {#resend-reasoning}
 
-In multi-turn conversations with reasoning models, the Chat Completions API
-that is the default API in 
+In multi-turn conversations with reasoning models, the _Chat Completions_ API used by default by 
 [`standard_model`][delphyne.stdlib.standard_models.standard_model]
 cannot fully take advantage of input token caching because it does not 
-return reasoning items that can be resent in later requests for the same chat. 
+return reasoning items that can be resent in later requests within the same conversation, thereby repeatedly invalidating the cache. 
 
-The Responses API returns these opaque reasoning items alongside model answers. 
-Delphyne's reasoning cache stores and resends them in later rounds of a conversation
-(e.g. when using [`interact`][delphyne.stdlib.search.interactive.interact]). This 
-enables input token caching for the whole chat history. Furthermore, the model can preserve 
-its previous reasoning state instead of recomputing it, reducing the number of newly 
-produced reasoning tokens and cost.
+In contrast, the _OpenAI Responses_ API returns encrypted reasoning items alongside model answers, which can be resent. In addition to improving caching behavior, resending reasoning tokens can save output tokens or even improve performance in some cases.
 
-To benefit from reasoning cache, create a 
-[`standard_model`][delphyne.stdlib.standard_models.standard_model] using the
-Responses API:
+To leverage the Responses API and resend reasoning tokens, you can pass the following additional arguments to  
+[`standard_model`][delphyne.stdlib.standard_models.standard_model]:
 
 ```python
-model = dp.standard_model("gpt-5", api_type="responses", 
-                    use_reasoning_cache=True, convert_user_feedback_to_tool=False)
+model = dp.standard_model("gpt-5",
+    api_type="responses", 
+    use_reasoning_cache=True,
+    convert_user_feedback_to_tool=False)
 ```
 
-However, OpenAI currently supports persisting the reasoning state only across tool calls 
-following an assistant message, but not across ordinary user feedback messages.
-So, under the above configuration there are only ever benefits in case the interaction
-consists of many subsequent tool calls without interleaving user feedback messages.
+The `use_reasoning_cache` argument enables a cache that associates each conversation prefix with the hidden reasoning tokens returned for that prefix by the Responses API. Because of this implementation choice, reasoning tokens are a policy detail that never appear in demonstrations or even in replay caches (`LLMCache`).
 
-To work around this limitation, there is the `convert_user_feedback_to_tool` option 
-to convert user feedback messages into artificial tool call outputs immediately before 
-sending the request. In that case the original prompt of the request is prepended with 
-a warning that instructs the model to treat the artificial tool call ouputs as user 
-feedback, as otherwise there is a high probability that they will be ignored.
+The `convert_user_feedback_to_tool` argument is provided to work around a current limitation of the OpenAI Responses API, which only supports persisting the KV cache across tool calls following an assistant message, and **not** across ordinary user feedback messages.
 
-To use this feature, also enable the tagging of user feedback messages in 
-[`few_shot`][delphyne.stdlib.queries.few_shot] prompting policy, since to be able to 
-differentiate user feedback messages from others (e.g. few-shot examples) tagging them 
-is neccessary. The configuration below automatically enables the reasoning cache feature 
-**and** also the conversion of user feedback messages to tool call outputs.
+When `convert_user_feedback_to_tool` is set to `True`, feedback messages are not presented to the API as user messages but are converted into pairs of tool-call and tool-result messages. For this conversion to be possible, feedback messages must be tagged, as enabled by setting the `tag_user_feedback_messages` flag when calling the [`few_shot`][delphyne.stdlib.queries.few_shot] prompting policy:
 
 ```python
-model = dp.standard_model("gpt-5", api_type="responses")
 pp = dp.few_shot(model, tag_user_feedback_messages=True)
 ```
 
-The Responses API, and therefore these features for reasoning cache 
-is only supported for OpenAI models.
+All the features described in this section are currently only supported for OpenAI models.
