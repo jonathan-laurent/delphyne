@@ -93,7 +93,7 @@ For efficiency and replicability reasons, strategies must not directly perform e
 In multi-turn conversations with reasoning models, the Chat Completions API
 that is the default API in 
 [`standard_model`][delphyne.stdlib.standard_models.standard_model]
-cannot fully take the advantage of input token caching because it does not 
+cannot fully take advantage of input token caching because it does not 
 return reasoning items that can be resent in later requests for the same chat. 
 
 The Responses API returns these opaque reasoning items alongside model answers. 
