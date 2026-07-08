@@ -31,11 +31,11 @@ def pydantic_dump[T](
     type: TypeAnnot[T] | NoTypeInfo, x: T, *, exclude_defaults: bool = True
 ) -> object:
     if isinstance(type, NoTypeInfo):
-        assert valid_json_object(object), (
+        assert valid_json_object(x), (
             "Unable to serialize a non-JSON object "
-            + f"without a type annotation: {object}"
+            + f"without a type annotation: {x}"
         )
-        return object
+        return x
     adapter = pydantic.TypeAdapter[T](type)
     return adapter.dump_python(
         x, exclude_defaults=exclude_defaults, warnings="error"
