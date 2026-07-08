@@ -36,7 +36,13 @@ type OpenAIModelName = Literal[
 
 type OpenAIResponsesExclusiveModelName = Literal["gpt-5-pro"]
 
-type MistralModelName = Literal["mistral-small-2503", "magistral-small-2506"]
+type MistralModelName = Literal[
+    "mistral-small-2503",
+    "magistral-small-2506",
+    "mistral-medium-2508",
+    "mistral-medium-3-5",
+    "mistral-small-2603",
+]
 
 type DeepSeekModelName = Literal["deepseek-chat", "deepseek-reasoner"]
 
@@ -70,6 +76,9 @@ PRICING: dict[str, tuple[float, float, float]] = {
     "o4-mini": (1.10, 0.275, 4.40),
     "mistral-small-2503": (0.10, 0.10, 0.30),
     "magistral-small-2506": (0.5, 0.5, 1.5),
+    "mistral-medium-2508": (0.4, 0.4, 2),
+    "mistral-medium-3-5": (1.5, 1.5, 7.5),
+    "mistral-small-2603": (0.15, 0.15, 0.6),
     "deepseek-chat": (0.27, 0.07, 1.10),
     "deepseek-reasoner": (0.55, 0.14, 2.19),
     # Costs are higher above 200k tokens for Gemini.
