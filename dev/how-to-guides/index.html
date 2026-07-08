@@ -596,6 +596,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#resend-reasoning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maximizing input token caching and preserving reasoning state
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1528,6 +1539,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#resend-reasoning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maximizing input token caching and preserving reasoning state
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1645,6 +1667,25 @@ debug-python<span class="w"> </span>experiment_cli.py<span class="w"> </span>rep
   
       dataclass
   " href="../reference/stdlib/effects/#delphyne.stdlib.computations.Compute">reference page</a> for details and explanations. For example usage, see <code>examples/find_invariants/abduct_and_branch.py</code> and the associated demonstration file.</p>
+<h2 id="resend-reasoning">Maximizing input token caching and preserving reasoning state</h2>
+<p>In multi-turn conversations with reasoning models, the <em>Chat Completions</em> API used by default by 
+<a class="autorefs autorefs-internal" title="standard_model" href="../reference/stdlib/queries/#delphyne.standard_model"><code>standard_model</code></a>
+cannot fully take advantage of input token caching because it does not 
+return reasoning items that can be resent in later requests within the same conversation, thereby repeatedly invalidating the cache. </p>
+<p>In contrast, the <em>OpenAI Responses</em> API returns encrypted reasoning items alongside model answers, which can be resent. In addition to improving caching behavior, resending reasoning tokens can save output tokens or even improve performance in some cases.</p>
+<p>To leverage the Responses API and resend reasoning tokens, you can pass the following additional arguments to<br />
+<a class="autorefs autorefs-internal" title="standard_model" href="../reference/stdlib/queries/#delphyne.standard_model"><code>standard_model</code></a>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">standard_model</span><span class="p">(</span><span class="s2">&quot;gpt-5&quot;</span><span class="p">,</span>
+    <span class="n">api_type</span><span class="o">=</span><span class="s2">&quot;responses&quot;</span><span class="p">,</span> 
+    <span class="n">use_reasoning_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">convert_user_feedback_to_tool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</code></pre></div>
+<p>The <code>use_reasoning_cache</code> argument enables a cache that associates each conversation prefix with the hidden reasoning tokens returned for that prefix by the Responses API. Because of this implementation choice, reasoning tokens are a policy detail that never appear in demonstrations or even in replay caches (<code>LLMCache</code>).</p>
+<p>The <code>convert_user_feedback_to_tool</code> argument is provided to work around a current limitation of the OpenAI Responses API, which only supports persisting the KV cache across tool calls following an assistant message, and <strong>not</strong> across ordinary user feedback messages.</p>
+<p>When <code>convert_user_feedback_to_tool</code> is set to <code>True</code>, feedback messages are not presented to the API as user messages but are converted into pairs of tool-call and tool-result messages. For this conversion to be possible, feedback messages must be tagged, as enabled by setting the <code>tag_user_feedback_messages</code> flag when calling the <a class="autorefs autorefs-internal" title="few_shot" href="../reference/stdlib/queries/#delphyne.few_shot"><code>few_shot</code></a> prompting policy:</p>
+<div class="highlight"><pre><span></span><code><span class="n">pp</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">few_shot</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">tag_user_feedback_messages</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div>
+<p>All the features described in this section are currently only supported for OpenAI models.</p>
 
 
 
