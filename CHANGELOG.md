@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.15.0 (2026-07-08)
+
+- Add support for the OpenAI Responses API and for automatically resending reasoning tokens in multi-turn conversations. This can result in better input token caching behaviour, decreased output token consumption, and improved performance (with contributions from Oguz Mutlu).
+- Generalize the default mechanism for selecting examples by adding `AbstractQuery.shares_examples_with`.
+- Fix serialization bug.
+
 ## Version 0.14.3 (2026-01-18)
 
 - Update NPM dependencies

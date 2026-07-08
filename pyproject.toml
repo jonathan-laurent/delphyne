@@ -1,6 +1,6 @@
 [project]
 name = "delphyne"
-version = "0.14.3"
+version = "0.15.0"
 description = ""
 authors = [{name="Jonathan Laurent", email="jonathan.laurent@cs.cmu.edu"}]
 readme = "README.md"
@@ -68,7 +68,7 @@ where = ["src"]
 line-length = 79
 ignore = ["E731"]  # allow inline lambdas
 
-# Currently tested with pyright==1.1.406
+# Currently tested with pyright==1.1.411
 [tool.pyright]
 typeCheckingMode = "strict"
 include = ["src/**", "tests/**"]
