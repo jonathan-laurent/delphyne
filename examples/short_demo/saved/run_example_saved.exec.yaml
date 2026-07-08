@@ -1,0 +1,462 @@
+command: run_strategy
+args:
+  strategy: find_param_value
+  args:
+    expr: "2*x**2 - 4*x + n"
+  policy: serial_policy
+  policy_args: {}
+  budget:
+    num_requests: 10
+    price: 1e-2
+outcome:
+  status: completed
+  diagnostics: []
+  result:
+    success: true
+    values: [2]
+    spent_budget:
+      num_requests: 2
+      num_completions: 2
+      input_tokens: 1493
+      output_tokens: 931
+      cached_input_tokens: 0
+      price: 0.00223525
+    success_nodes: [3]
+    raw_trace:
+      nodes:
+        "1": nested($0)
+        "2": child(%1, $1{@1})
+        "3": child(%2, $2{@2})
+      spaces:
+        "0": main
+        "1": local(%1, cands)
+        "2": local(%2, cands)
+      answers:
+        "1":
+          space: 1
+          answer:
+            mode: null
+            content: |-
+              ```
+              2
+              ```
+            tool_calls: []
+            justification: null
+        "2":
+          space: 2
+          answer:
+            mode: null
+            content: |-
+              ```
+              2*(x - 1)**2
+              ```
+            tool_calls: []
+            justification: null
+    log:
+      - message: llm_request
+        level: info
+        message_id: 0
+        related: []
+        time: 2026-04-19T16:13:51.001542
+        node: null
+        space: 1
+        metadata:
+          query: UniversalQuery
+          request:
+            chat:
+              - role: system
+                content: |-
+                  I am executing a program that contains nondeterministic assignments along with assertions (e.g., in the form of `ensure` and `fail` statements). I am stuck at one of these nondeterministic assignments and your goal is to generate an assigned value, in such a way that the program can go on and not fail any assertion.
+
+                  More specifically, I'll give you three pieces of information:
+
+                  - A nondeterministic program.
+                  - The name of the variable that is being assigned at the program location where I am currently stuck.
+                  - Some values for a number of local variables.
+
+                  Your job is to generate a correct value to assign. The expected type of this value is indicated inside the nondeterministic assignment operator.
+
+                  Terminate your answer with a code block (delimited by triple backquotes) that contains a YAML object of the requested type. Do not wrap this YAML value into an object with a field named like the assigned variable.
+              - role: user
+                content: |-
+                  Program:
+
+                  ```
+                  @dp.strategy
+                  def find_param_value(expr: str):
+                      """
+                      Find an integer `n` that provably makes `expr` nonnegative.
+                      """
+                      x, n = sympy.Symbol("x", real=True), sympy.Symbol("n")
+                      symbs = {"x": x, "n": n}
+                      try:
+                          n_val = yield from dp.guess(int, using=[expr])
+                          expr_sp = sympy.parse_expr(expr, symbs).subs({n: n_val})
+                          equiv = yield from dp.guess(str, using=[str(expr_sp)])
+                          equiv_sp = sympy.parse_expr(equiv, symbs)
+                          equivalent = (expr_sp - equiv_sp).simplify() == 0
+                          yield from dp.ensure(equivalent, "not_equivalent")
+                          yield from dp.ensure(equiv_sp.is_nonnegative, "not_nonneg")
+                          return n_val
+                      except Exception as e:
+                          yield from dp.ensure(False, "sympy_error", message=str(e))
+                  ```
+
+                  Variable being currently assigned: n_val
+
+                  Selected local variables:
+
+                  ```yaml
+                  expr: x**2 - 2*x + n
+                  ```
+
+                  Type of value to generate (as a YAML object): <class 'int'>
+              - role: assistant
+                answer:
+                  mode: null
+                  content: |
+                    Let's find a value for n that makes the expression a square:
+
+                    ```
+                    1
+                    ```
+              - role: user
+                content: |-
+                  Program:
+
+                  ```
+                  @dp.strategy
+                  def find_param_value(expr: str):
+                      """
+                      Find an integer `n` that provably makes `expr` nonnegative.
+                      """
+                      x, n = sympy.Symbol("x", real=True), sympy.Symbol("n")
+                      symbs = {"x": x, "n": n}
+                      try:
+                          n_val = yield from dp.guess(int, using=[expr])
+                          expr_sp = sympy.parse_expr(expr, symbs).subs({n: n_val})
+                          equiv = yield from dp.guess(str, using=[str(expr_sp)])
+                          equiv_sp = sympy.parse_expr(equiv, symbs)
+                          equivalent = (expr_sp - equiv_sp).simplify() == 0
+                          yield from dp.ensure(equivalent, "not_equivalent")
+                          yield from dp.ensure(equiv_sp.is_nonnegative, "not_nonneg")
+                          return n_val
+                      except Exception as e:
+                          yield from dp.ensure(False, "sympy_error", message=str(e))
+                  ```
+
+                  Variable being currently assigned: n_val
+
+                  Selected local variables:
+
+                  ```yaml
+                  expr: 2*x**2 - 4*x + n
+                  ```
+
+                  Type of value to generate (as a YAML object): <class 'int'>
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 1
+        related: [0]
+        time: 2026-04-19T16:14:00.348697
+        node: null
+        space: 1
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  ```
+                  2
+                  ```
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 749
+                output_tokens: 526
+                cached_input_tokens: 0
+                price: 0.00123925
+            log_items: []
+            model_name: gpt-5-mini-2025-08-07
+            usage_info:
+              completion_tokens: 526
+              prompt_tokens: 749
+              total_tokens: 1275
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 512
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-5-mini-2025-08-07
+            usage:
+              completion_tokens: 526
+              prompt_tokens: 749
+              total_tokens: 1275
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 512
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+      - message: llm_request
+        level: info
+        message_id: 2
+        related: []
+        time: 2026-04-19T16:14:00.361511
+        node: null
+        space: 2
+        metadata:
+          query: UniversalQuery
+          request:
+            chat:
+              - role: system
+                content: |-
+                  I am executing a program that contains nondeterministic assignments along with assertions (e.g., in the form of `ensure` and `fail` statements). I am stuck at one of these nondeterministic assignments and your goal is to generate an assigned value, in such a way that the program can go on and not fail any assertion.
+
+                  More specifically, I'll give you three pieces of information:
+
+                  - A nondeterministic program.
+                  - The name of the variable that is being assigned at the program location where I am currently stuck.
+                  - Some values for a number of local variables.
+
+                  Your job is to generate a correct value to assign. The expected type of this value is indicated inside the nondeterministic assignment operator.
+
+                  Terminate your answer with a code block (delimited by triple backquotes) that contains a YAML object of the requested type. Do not wrap this YAML value into an object with a field named like the assigned variable.
+              - role: user
+                content: |-
+                  Program:
+
+                  ```
+                  @dp.strategy
+                  def find_param_value(expr: str):
+                      """
+                      Find an integer `n` that provably makes `expr` nonnegative.
+                      """
+                      x, n = sympy.Symbol("x", real=True), sympy.Symbol("n")
+                      symbs = {"x": x, "n": n}
+                      try:
+                          n_val = yield from dp.guess(int, using=[expr])
+                          expr_sp = sympy.parse_expr(expr, symbs).subs({n: n_val})
+                          equiv = yield from dp.guess(str, using=[str(expr_sp)])
+                          equiv_sp = sympy.parse_expr(equiv, symbs)
+                          equivalent = (expr_sp - equiv_sp).simplify() == 0
+                          yield from dp.ensure(equivalent, "not_equivalent")
+                          yield from dp.ensure(equiv_sp.is_nonnegative, "not_nonneg")
+                          return n_val
+                      except Exception as e:
+                          yield from dp.ensure(False, "sympy_error", message=str(e))
+                  ```
+
+                  Variable being currently assigned: equiv
+
+                  Selected local variables:
+
+                  ```yaml
+                  str(expr_sp): x**2 - 2*x + 1
+                  ```
+
+                  Type of value to generate (as a YAML object): <class 'str'>
+              - role: assistant
+                answer:
+                  mode: null
+                  content: |-
+                    ```
+                    (x - 1)**2
+                    ```
+              - role: user
+                content: |-
+                  Program:
+
+                  ```
+                  @dp.strategy
+                  def find_param_value(expr: str):
+                      """
+                      Find an integer `n` that provably makes `expr` nonnegative.
+                      """
+                      x, n = sympy.Symbol("x", real=True), sympy.Symbol("n")
+                      symbs = {"x": x, "n": n}
+                      try:
+                          n_val = yield from dp.guess(int, using=[expr])
+                          expr_sp = sympy.parse_expr(expr, symbs).subs({n: n_val})
+                          equiv = yield from dp.guess(str, using=[str(expr_sp)])
+                          equiv_sp = sympy.parse_expr(equiv, symbs)
+                          equivalent = (expr_sp - equiv_sp).simplify() == 0
+                          yield from dp.ensure(equivalent, "not_equivalent")
+                          yield from dp.ensure(equiv_sp.is_nonnegative, "not_nonneg")
+                          return n_val
+                      except Exception as e:
+                          yield from dp.ensure(False, "sympy_error", message=str(e))
+                  ```
+
+                  Variable being currently assigned: equiv
+
+                  Selected local variables:
+
+                  ```yaml
+                  str(expr_sp): 2*x**2 - 4*x + 2
+                  ```
+
+                  Type of value to generate (as a YAML object): <class 'str'>
+            options: {}
+      - message: llm_response
+        level: info
+        message_id: 3
+        related: [2]
+        time: 2026-04-19T16:14:06.570883
+        node: null
+        space: 2
+        metadata:
+          response:
+            outputs:
+              - content: |-
+                  ```
+                  2*(x - 1)**2
+                  ```
+                tool_calls: []
+            budget:
+              values:
+                num_requests: 1
+                num_completions: 1
+                input_tokens: 744
+                output_tokens: 405
+                cached_input_tokens: 0
+                price: 0.000996
+            log_items: []
+            model_name: gpt-5-mini-2025-08-07
+            usage_info:
+              completion_tokens: 405
+              prompt_tokens: 744
+              total_tokens: 1149
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 384
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+          usage:
+            model: gpt-5-mini-2025-08-07
+            usage:
+              completion_tokens: 405
+              prompt_tokens: 744
+              total_tokens: 1149
+              completion_tokens_details:
+                accepted_prediction_tokens: 0
+                audio_tokens: 0
+                reasoning_tokens: 384
+                rejected_prediction_tokens: 0
+              prompt_tokens_details:
+                audio_tokens: 0
+                cached_tokens: 0
+    browsable_trace:
+      nodes:
+        "1":
+          kind: Branch
+          success_value: null
+          summary_message: null
+          leaf_node: false
+          label: n_val
+          tags: [n_val]
+          properties:
+            - - with_ids: cands
+                with_hints: null
+              - 1
+              - kind: query
+                name: UniversalQuery
+                args:
+                  strategy: example.find_param_value
+                  expected_type: <class 'int'>
+                  tags: [n_val]
+                  locals:
+                    expr: 2*x**2 - 4*x + n
+                tags: [n_val]
+                answers:
+                  - id: 1
+                    hint: null
+                    value:
+                      short: "2"
+                      long: "2"
+                      json_provided: true
+                      json: 2
+          actions:
+            - ref:
+                with_ids: $1{@1}
+                with_hints: null
+              hints: null
+              related_success_nodes: []
+              related_answers: [1]
+              value:
+                short: "2"
+                long: "2"
+                json_provided: true
+                json: 2
+              destination: 2
+          origin: root
+        "2":
+          kind: Branch
+          success_value: null
+          summary_message: null
+          leaf_node: false
+          label: equiv
+          tags: [equiv]
+          properties:
+            - - with_ids: cands
+                with_hints: null
+              - 2
+              - kind: query
+                name: UniversalQuery
+                args:
+                  strategy: example.find_param_value
+                  expected_type: <class 'str'>
+                  tags: [equiv]
+                  locals:
+                    str(expr_sp): 2*x**2 - 4*x + 2
+                tags: [equiv]
+                answers:
+                  - id: 2
+                    hint: null
+                    value:
+                      short: 2*(x - 1)**2
+                      long: "'2*(x - 1)**2'"
+                      json_provided: true
+                      json: 2*(x - 1)**2
+          actions:
+            - ref:
+                with_ids: $2{@2}
+                with_hints: null
+              hints: null
+              related_success_nodes: []
+              related_answers: [2]
+              value:
+                short: 2*(x - 1)**2
+                long: "'2*(x - 1)**2'"
+                json_provided: true
+                json: 2*(x - 1)**2
+              destination: 3
+          origin: [child, 1, 0]
+        "3":
+          kind: Success
+          success_value:
+            short: "2"
+            long: "2"
+            json_provided: false
+            json: null
+          summary_message: null
+          leaf_node: true
+          label: null
+          tags: []
+          properties: []
+          actions: []
+          origin: [child, 2, 0]
+      spaces:
+        "1": [1, 0]
+        "2": [2, 0]
