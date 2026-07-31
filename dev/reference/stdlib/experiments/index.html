@@ -2446,8 +2446,7 @@ dumped, regardless of other settings.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">183</span>
-<span class="normal">184</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">184</span>
 <span class="normal">185</span>
 <span class="normal">186</span>
 <span class="normal">187</span>
@@ -3023,7 +3022,13 @@ dumped, regardless of other settings.</p>
 <span class="normal">757</span>
 <span class="normal">758</span>
 <span class="normal">759</span>
-<span class="normal">760</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="normal">760</span>
+<span class="normal">761</span>
+<span class="normal">762</span>
+<span class="normal">763</span>
+<span class="normal">764</span>
+<span class="normal">765</span>
+<span class="normal">766</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Experiment</span><span class="p">[</span><span class="n">C</span><span class="p">:</span> <span class="n">ExperimentConfig</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An experiment that consists in running an oracular program on a set of</span>
@@ -3422,15 +3427,18 @@ dumped, regardless of other settings.</p>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;State saved.&quot;</span><span class="p">)</span>
             <span class="n">worker_send</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;done&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">replay_config_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">replay_config_by_name</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">config_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cache_mode</span><span class="p">:</span> <span class="n">CacheMode</span> <span class="o">=</span> <span class="s2">&quot;replay&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Replay a configuration with a given name, reusing the cache if</span>
-<span class="sd">        it exists.</span>
+<span class="sd">        Replay a configuration with a given name, using the requested</span>
+<span class="sd">        cache mode.</span>
 
-<span class="sd">        This way, one can debug the execution of an experiment after the</span>
-<span class="sd">        fact, without any LLMs being called. Note that one can also</span>
-<span class="sd">        replay a configuration that failed with an exception within a</span>
-<span class="sd">        debugger to investigate it.</span>
+<span class="sd">        The default `replay` mode guarantees that all requests hit the</span>
+<span class="sd">        cache and does not modify it. This way, one can debug the</span>
+<span class="sd">        execution of an experiment after the fact without any LLMs</span>
+<span class="sd">        being called. Note that one can also replay a configuration that</span>
+<span class="sd">        failed with an exception within a debugger to investigate it.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_state</span><span class="p">()</span>
         <span class="k">assert</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -3441,7 +3449,7 @@ dumped, regardless of other settings.</p>
         <span class="n">cmdargs</span><span class="o">.</span><span class="n">embeddings_cache_file</span> <span class="o">=</span> <span class="n">_relative_embeddings_cache_path</span><span class="p">(</span>
             <span class="n">config_name</span>
         <span class="p">)</span>
-        <span class="n">cmdargs</span><span class="o">.</span><span class="n">cache_mode</span> <span class="o">=</span> <span class="s2">&quot;replay&quot;</span>
+        <span class="n">cmdargs</span><span class="o">.</span><span class="n">cache_mode</span> <span class="o">=</span> <span class="n">cache_mode</span>
         <span class="n">run_command</span><span class="p">(</span>
             <span class="n">command</span><span class="o">=</span><span class="n">cmd</span><span class="o">.</span><span class="n">run_strategy</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="n">cmdargs</span><span class="p">,</span>
@@ -3451,15 +3459,17 @@ dumped, regardless of other settings.</p>
             <span class="n">dump_log</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">replay_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">C</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">replay_config</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">C</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cache_mode</span><span class="p">:</span> <span class="n">CacheMode</span> <span class="o">=</span> <span class="s2">&quot;replay&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replay a configuration. See `replay_config_by_name` for details.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">config_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_existing_config_name</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">config_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">replay_config_by_name</span><span class="p">(</span><span class="n">config_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">replay_config_by_name</span><span class="p">(</span><span class="n">config_name</span><span class="p">,</span> <span class="n">cache_mode</span><span class="o">=</span><span class="n">cache_mode</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">replay_all_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">replay_all_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cache_mode</span><span class="p">:</span> <span class="n">CacheMode</span> <span class="o">=</span> <span class="s2">&quot;replay&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replay all configurations, replicating the experiment.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -3467,7 +3477,7 @@ dumped, regardless of other settings.</p>
         <span class="k">assert</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">config_name</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">configs</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Replaying configuration: </span><span class="si">{</span><span class="n">config_name</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">replay_config_by_name</span><span class="p">(</span><span class="n">config_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">replay_config_by_name</span><span class="p">(</span><span class="n">config_name</span><span class="p">,</span> <span class="n">cache_mode</span><span class="o">=</span><span class="n">cache_mode</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">config_success_values_by_name</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">config_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="n">Any</span>
@@ -3670,8 +3680,7 @@ configurations from the persistent state.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">293</span>
-<span class="normal">294</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">294</span>
 <span class="normal">295</span>
 <span class="normal">296</span>
 <span class="normal">297</span>
@@ -3704,7 +3713,8 @@ configurations from the persistent state.</p>
 <span class="normal">324</span>
 <span class="normal">325</span>
 <span class="normal">326</span>
-<span class="normal">327</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="normal">327</span>
+<span class="normal">328</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load the experiment.</span>
 
@@ -3764,14 +3774,14 @@ marked as "done".</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">329</span>
-<span class="normal">330</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">330</span>
 <span class="normal">331</span>
 <span class="normal">332</span>
 <span class="normal">333</span>
 <span class="normal">334</span>
 <span class="normal">335</span>
-<span class="normal">336</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_done</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="normal">336</span>
+<span class="normal">337</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">is_done</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the experiment is done, i.e., all configurations are</span>
 <span class="sd">    marked as &quot;done&quot;.</span>
@@ -3804,8 +3814,7 @@ are not mentioned in <code>self.configs</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">338</span>
-<span class="normal">339</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">339</span>
 <span class="normal">340</span>
 <span class="normal">341</span>
 <span class="normal">342</span>
@@ -3821,7 +3830,8 @@ are not mentioned in <code>self.configs</code>.</p>
 <span class="normal">352</span>
 <span class="normal">353</span>
 <span class="normal">354</span>
-<span class="normal">355</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clean_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">355</span>
+<span class="normal">356</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clean_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Remove from the persistent state file all configurations that</span>
 <span class="sd">    are not mentioned in `self.configs`.</span>
@@ -3865,8 +3875,7 @@ status "failed" as "todo". They will be retried when the
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">357</span>
-<span class="normal">358</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">358</span>
 <span class="normal">359</span>
 <span class="normal">360</span>
 <span class="normal">361</span>
@@ -3876,7 +3885,8 @@ status "failed" as "todo". They will be retried when the
 <span class="normal">365</span>
 <span class="normal">366</span>
 <span class="normal">367</span>
-<span class="normal">368</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">mark_errors_as_todos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">368</span>
+<span class="normal">369</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">mark_errors_as_todos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Update the persistent state to mark all configurations with</span>
 <span class="sd">    status &quot;failed&quot; as &quot;todo&quot;. They will be retried when the</span>
@@ -3969,8 +3979,7 @@ useful to investigate seemingly stuck tasks.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">370</span>
-<span class="normal">371</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">371</span>
 <span class="normal">372</span>
 <span class="normal">373</span>
 <span class="normal">374</span>
@@ -4004,7 +4013,8 @@ useful to investigate seemingly stuck tasks.</p>
 <span class="normal">402</span>
 <span class="normal">403</span>
 <span class="normal">404</span>
-<span class="normal">405</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">resume</span><span class="p">(</span>
+<span class="normal">405</span>
+<span class="normal">406</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">resume</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">log_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -4054,23 +4064,23 @@ useful to investigate seemingly stuck tasks.</p>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">replay_config_by_name</span><span class="p">(</span><span class="n">config_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">replay_config_by_name</span><span class="p">(</span><span class="n">config_name</span><span class="p">:</span> <span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cache_mode</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="CacheMode (delphyne.utils.caching.CacheMode)" href="../queries/#delphyne.utils.caching.CacheMode">CacheMode</a></span> <span class="o">=</span> <span class="s1">&#39;replay&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
 
-        <p>Replay a configuration with a given name, reusing the cache if
-it exists.</p>
-<p>This way, one can debug the execution of an experiment after the
-fact, without any LLMs being called. Note that one can also
-replay a configuration that failed with an exception within a
-debugger to investigate it.</p>
+        <p>Replay a configuration with a given name, using the requested
+cache mode.</p>
+<p>The default <code>replay</code> mode guarantees that all requests hit the
+cache and does not modify it. This way, one can debug the
+execution of an experiment after the fact without any LLMs
+being called. Note that one can also replay a configuration that
+failed with an exception within a debugger to investigate it.</p>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">582</span>
-<span class="normal">583</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">583</span>
 <span class="normal">584</span>
 <span class="normal">585</span>
 <span class="normal">586</span>
@@ -4096,15 +4106,22 @@ debugger to investigate it.</p>
 <span class="normal">606</span>
 <span class="normal">607</span>
 <span class="normal">608</span>
-<span class="normal">609</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">replay_config_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">609</span>
+<span class="normal">610</span>
+<span class="normal">611</span>
+<span class="normal">612</span>
+<span class="normal">613</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">replay_config_by_name</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">config_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cache_mode</span><span class="p">:</span> <span class="n">CacheMode</span> <span class="o">=</span> <span class="s2">&quot;replay&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Replay a configuration with a given name, reusing the cache if</span>
-<span class="sd">    it exists.</span>
+<span class="sd">    Replay a configuration with a given name, using the requested</span>
+<span class="sd">    cache mode.</span>
 
-<span class="sd">    This way, one can debug the execution of an experiment after the</span>
-<span class="sd">    fact, without any LLMs being called. Note that one can also</span>
-<span class="sd">    replay a configuration that failed with an exception within a</span>
-<span class="sd">    debugger to investigate it.</span>
+<span class="sd">    The default `replay` mode guarantees that all requests hit the</span>
+<span class="sd">    cache and does not modify it. This way, one can debug the</span>
+<span class="sd">    execution of an experiment after the fact without any LLMs</span>
+<span class="sd">    being called. Note that one can also replay a configuration that</span>
+<span class="sd">    failed with an exception within a debugger to investigate it.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_state</span><span class="p">()</span>
     <span class="k">assert</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -4115,7 +4132,7 @@ debugger to investigate it.</p>
     <span class="n">cmdargs</span><span class="o">.</span><span class="n">embeddings_cache_file</span> <span class="o">=</span> <span class="n">_relative_embeddings_cache_path</span><span class="p">(</span>
         <span class="n">config_name</span>
     <span class="p">)</span>
-    <span class="n">cmdargs</span><span class="o">.</span><span class="n">cache_mode</span> <span class="o">=</span> <span class="s2">&quot;replay&quot;</span>
+    <span class="n">cmdargs</span><span class="o">.</span><span class="n">cache_mode</span> <span class="o">=</span> <span class="n">cache_mode</span>
     <span class="n">run_command</span><span class="p">(</span>
         <span class="n">command</span><span class="o">=</span><span class="n">cmd</span><span class="o">.</span><span class="n">run_strategy</span><span class="p">,</span>
         <span class="n">args</span><span class="o">=</span><span class="n">cmdargs</span><span class="p">,</span>
@@ -4138,7 +4155,7 @@ debugger to investigate it.</p>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">replay_config</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.experiments.experiment_launcher.Experiment[C]">C</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">replay_config</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="delphyne.stdlib.experiments.experiment_launcher.Experiment[C]">C</span></span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cache_mode</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="CacheMode (delphyne.utils.caching.CacheMode)" href="../queries/#delphyne.utils.caching.CacheMode">CacheMode</a></span> <span class="o">=</span> <span class="s1">&#39;replay&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4148,19 +4165,23 @@ debugger to investigate it.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">611</span>
-<span class="normal">612</span>
-<span class="normal">613</span>
-<span class="normal">614</span>
-<span class="normal">615</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">615</span>
 <span class="normal">616</span>
-<span class="normal">617</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">replay_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">C</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">617</span>
+<span class="normal">618</span>
+<span class="normal">619</span>
+<span class="normal">620</span>
+<span class="normal">621</span>
+<span class="normal">622</span>
+<span class="normal">623</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">replay_config</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">C</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cache_mode</span><span class="p">:</span> <span class="n">CacheMode</span> <span class="o">=</span> <span class="s2">&quot;replay&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replay a configuration. See `replay_config_by_name` for details.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">config_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_existing_config_name</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">config_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">replay_config_by_name</span><span class="p">(</span><span class="n">config_name</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">replay_config_by_name</span><span class="p">(</span><span class="n">config_name</span><span class="p">,</span> <span class="n">cache_mode</span><span class="o">=</span><span class="n">cache_mode</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4175,7 +4196,7 @@ debugger to investigate it.</p>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">replay_all_configs</span><span class="p">()</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">replay_all_configs</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">cache_mode</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="CacheMode (delphyne.utils.caching.CacheMode)" href="../queries/#delphyne.utils.caching.CacheMode">CacheMode</a></span> <span class="o">=</span> <span class="s1">&#39;replay&#39;</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -4185,15 +4206,15 @@ debugger to investigate it.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">619</span>
-<span class="normal">620</span>
-<span class="normal">621</span>
-<span class="normal">622</span>
-<span class="normal">623</span>
-<span class="normal">624</span>
-<span class="normal">625</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">625</span>
 <span class="normal">626</span>
-<span class="normal">627</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">replay_all_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">627</span>
+<span class="normal">628</span>
+<span class="normal">629</span>
+<span class="normal">630</span>
+<span class="normal">631</span>
+<span class="normal">632</span>
+<span class="normal">633</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">replay_all_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cache_mode</span><span class="p">:</span> <span class="n">CacheMode</span> <span class="o">=</span> <span class="s2">&quot;replay&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replay all configurations, replicating the experiment.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -4201,7 +4222,7 @@ debugger to investigate it.</p>
     <span class="k">assert</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">config_name</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">configs</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Replaying configuration: </span><span class="si">{</span><span class="n">config_name</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">replay_config_by_name</span><span class="p">(</span><span class="n">config_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">replay_config_by_name</span><span class="p">(</span><span class="n">config_name</span><span class="p">,</span> <span class="n">cache_mode</span><span class="o">=</span><span class="n">cache_mode</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4227,18 +4248,18 @@ identified by name.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">629</span>
-<span class="normal">630</span>
-<span class="normal">631</span>
-<span class="normal">632</span>
-<span class="normal">633</span>
-<span class="normal">634</span>
-<span class="normal">635</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">635</span>
 <span class="normal">636</span>
 <span class="normal">637</span>
 <span class="normal">638</span>
 <span class="normal">639</span>
-<span class="normal">640</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">config_success_values_by_name</span><span class="p">(</span>
+<span class="normal">640</span>
+<span class="normal">641</span>
+<span class="normal">642</span>
+<span class="normal">643</span>
+<span class="normal">644</span>
+<span class="normal">645</span>
+<span class="normal">646</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">config_success_values_by_name</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">config_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4274,13 +4295,13 @@ identified by name.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">642</span>
-<span class="normal">643</span>
-<span class="normal">644</span>
-<span class="normal">645</span>
-<span class="normal">646</span>
-<span class="normal">647</span>
-<span class="normal">648</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">config_success_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">C</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">648</span>
+<span class="normal">649</span>
+<span class="normal">650</span>
+<span class="normal">651</span>
+<span class="normal">652</span>
+<span class="normal">653</span>
+<span class="normal">654</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">config_success_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">C</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load the success values associated with a given configuration.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -4362,13 +4383,7 @@ each configuration.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">650</span>
-<span class="normal">651</span>
-<span class="normal">652</span>
-<span class="normal">653</span>
-<span class="normal">654</span>
-<span class="normal">655</span>
-<span class="normal">656</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">656</span>
 <span class="normal">657</span>
 <span class="normal">658</span>
 <span class="normal">659</span>
@@ -4385,7 +4400,13 @@ each configuration.</p>
 <span class="normal">670</span>
 <span class="normal">671</span>
 <span class="normal">672</span>
-<span class="normal">673</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_summary</span><span class="p">(</span>
+<span class="normal">673</span>
+<span class="normal">674</span>
+<span class="normal">675</span>
+<span class="normal">676</span>
+<span class="normal">677</span>
+<span class="normal">678</span>
+<span class="normal">679</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">save_summary</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">ignore_missing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">add_timing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -4435,18 +4456,18 @@ each configuration.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">675</span>
-<span class="normal">676</span>
-<span class="normal">677</span>
-<span class="normal">678</span>
-<span class="normal">679</span>
-<span class="normal">680</span>
-<span class="normal">681</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">681</span>
 <span class="normal">682</span>
 <span class="normal">683</span>
 <span class="normal">684</span>
 <span class="normal">685</span>
-<span class="normal">686</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">686</span>
+<span class="normal">687</span>
+<span class="normal">688</span>
+<span class="normal">689</span>
+<span class="normal">690</span>
+<span class="normal">691</span>
+<span class="normal">692</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">load_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Load the summary file into a DataFrame.</span>
 
@@ -4515,13 +4536,7 @@ each configuration.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">688</span>
-<span class="normal">689</span>
-<span class="normal">690</span>
-<span class="normal">691</span>
-<span class="normal">692</span>
-<span class="normal">693</span>
-<span class="normal">694</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">694</span>
 <span class="normal">695</span>
 <span class="normal">696</span>
 <span class="normal">697</span>
@@ -4529,7 +4544,13 @@ each configuration.</p>
 <span class="normal">699</span>
 <span class="normal">700</span>
 <span class="normal">701</span>
-<span class="normal">702</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="normal">702</span>
+<span class="normal">703</span>
+<span class="normal">704</span>
+<span class="normal">705</span>
+<span class="normal">706</span>
+<span class="normal">707</span>
+<span class="normal">708</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the status of the experiment configurations.</span>
 
@@ -4569,12 +4590,12 @@ from the shell. See <code>ExperimentCLI</code> for details.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">704</span>
-<span class="normal">705</span>
-<span class="normal">706</span>
-<span class="normal">707</span>
-<span class="normal">708</span>
-<span class="normal">709</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_cli</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">710</span>
+<span class="normal">711</span>
+<span class="normal">712</span>
+<span class="normal">713</span>
+<span class="normal">714</span>
+<span class="normal">715</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_cli</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run a CLI application that allows controlling the experiment</span>
 <span class="sd">    from the shell. See `ExperimentCLI` for details.</span>
@@ -4652,8 +4673,7 @@ offers options to override them.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 74</span>
-<span class="normal"> 75</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 75</span>
 <span class="normal"> 76</span>
 <span class="normal"> 77</span>
 <span class="normal"> 78</span>
@@ -4685,7 +4705,8 @@ offers options to override them.</p>
 <span class="normal">104</span>
 <span class="normal">105</span>
 <span class="normal">106</span>
-<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentConfig</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="normal">107</span>
+<span class="normal">108</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentConfig</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A configuration is a dataclass that holds a set of hyperparameters,</span>
 <span class="sd">    which induce a `run_strategy` call.</span>
@@ -4787,8 +4808,7 @@ experiments just pass <code>None</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 97</span>
-<span class="normal"> 98</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
 <span class="normal"> 99</span>
 <span class="normal">100</span>
 <span class="normal">101</span>
@@ -4797,7 +4817,8 @@ experiments just pass <code>None</code>.</p>
 <span class="normal">104</span>
 <span class="normal">105</span>
 <span class="normal">106</span>
-<span class="normal">107</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">instantiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">cmd</span><span class="o">.</span><span class="n">RunStrategyArgs</span><span class="p">:</span>
+<span class="normal">107</span>
+<span class="normal">108</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">instantiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">cmd</span><span class="o">.</span><span class="n">RunStrategyArgs</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Instantiate the configuration into a `run_strategy` command</span>
 <span class="sd">    instance.</span>
@@ -4852,8 +4873,7 @@ experiments just pass <code>None</code>.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">133</span>
-<span class="normal">134</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">134</span>
 <span class="normal">135</span>
 <span class="normal">136</span>
 <span class="normal">137</span>
@@ -4874,7 +4894,8 @@ experiments just pass <code>None</code>.</p>
 <span class="normal">152</span>
 <span class="normal">153</span>
 <span class="normal">154</span>
-<span class="normal">155</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">155</span>
+<span class="normal">156</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExperimentState</span><span class="p">[</span><span class="n">C</span><span class="p">:</span> <span class="n">ExperimentConfig</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Persistent state of an experiment, stored on disk as a YAML file.</span>
@@ -4932,8 +4953,7 @@ unique names (or None if not in the state).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">143</span>
-<span class="normal">144</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">144</span>
 <span class="normal">145</span>
 <span class="normal">146</span>
 <span class="normal">147</span>
@@ -4944,7 +4964,8 @@ unique names (or None if not in the state).</p>
 <span class="normal">152</span>
 <span class="normal">153</span>
 <span class="normal">154</span>
-<span class="normal">155</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">inverse_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">C</span><span class="p">],</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="normal">155</span>
+<span class="normal">156</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">inverse_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">C</span><span class="p">],</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute an inverse function mapping configurations to their</span>
 <span class="sd">    unique names (or None if not in the state).</span>
@@ -5073,8 +5094,7 @@ must then be <code>todo</code>).</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">110</span>
-<span class="normal">111</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">111</span>
 <span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
@@ -5093,7 +5113,8 @@ must then be <code>todo</code>).</p>
 <span class="normal">127</span>
 <span class="normal">128</span>
 <span class="normal">129</span>
-<span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">130</span>
+<span class="normal">131</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ConfigInfo</span><span class="p">[</span><span class="n">C</span><span class="p">:</span> <span class="n">ExperimentConfig</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Information stored in the persistent configuration state for each</span>
@@ -5216,8 +5237,7 @@ some access information (e.g. a port number), and then have
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">158</span>
-<span class="normal">159</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">159</span>
 <span class="normal">160</span>
 <span class="normal">161</span>
 <span class="normal">162</span>
@@ -5238,7 +5258,8 @@ some access information (e.g. a port number), and then have
 <span class="normal">177</span>
 <span class="normal">178</span>
 <span class="normal">179</span>
-<span class="normal">180</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="normal">180</span>
+<span class="normal">181</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">WorkersSetup</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Specification for the setup work that must be performed on all</span>
@@ -5311,13 +5332,7 @@ some access information (e.g. a port number), and then have
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 964</span>
-<span class="normal"> 965</span>
-<span class="normal"> 966</span>
-<span class="normal"> 967</span>
-<span class="normal"> 968</span>
-<span class="normal"> 969</span>
-<span class="normal"> 970</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 970</span>
 <span class="normal"> 971</span>
 <span class="normal"> 972</span>
 <span class="normal"> 973</span>
@@ -5419,7 +5434,20 @@ some access information (e.g. a port number), and then have
 <span class="normal">1069</span>
 <span class="normal">1070</span>
 <span class="normal">1071</span>
-<span class="normal">1072</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentCLI</span><span class="p">:</span>
+<span class="normal">1072</span>
+<span class="normal">1073</span>
+<span class="normal">1074</span>
+<span class="normal">1075</span>
+<span class="normal">1076</span>
+<span class="normal">1077</span>
+<span class="normal">1078</span>
+<span class="normal">1079</span>
+<span class="normal">1080</span>
+<span class="normal">1081</span>
+<span class="normal">1082</span>
+<span class="normal">1083</span>
+<span class="normal">1084</span>
+<span class="normal">1085</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExperimentCLI</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A CLI application for controlling an experiment from the shell.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -5499,19 +5527,26 @@ some access information (e.g. a port number), and then have
             <span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">status_counts</span><span class="p">[</span><span class="s1">&#39;failed&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> configurations failed&quot;</span>
         <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">replay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">replay</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">config</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cache_mode</span><span class="p">:</span> <span class="n">CacheMode</span> <span class="o">=</span> <span class="s2">&quot;replay&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replay one or all configurations.</span>
 
 <span class="sd">        Arguments:</span>
 <span class="sd">            config: The name of the configuration to replay. If not</span>
 <span class="sd">                provided, all configurations are replayed.</span>
+<span class="sd">            cache_mode: Cache mode to use while replaying.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">replay_all_configs</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">replay_all_configs</span><span class="p">(</span><span class="n">cache_mode</span><span class="o">=</span><span class="n">cache_mode</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">replay_config_by_name</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">replay_config_by_name</span><span class="p">(</span>
+                <span class="n">config</span><span class="p">,</span> <span class="n">cache_mode</span><span class="o">=</span><span class="n">cache_mode</span>
+            <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">clean_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5696,13 +5731,7 @@ setting of the experiment.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 972</span>
-<span class="normal"> 973</span>
-<span class="normal"> 974</span>
-<span class="normal"> 975</span>
-<span class="normal"> 976</span>
-<span class="normal"> 977</span>
-<span class="normal"> 978</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 978</span>
 <span class="normal"> 979</span>
 <span class="normal"> 980</span>
 <span class="normal"> 981</span>
@@ -5754,7 +5783,13 @@ setting of the experiment.</p>
 <span class="normal">1027</span>
 <span class="normal">1028</span>
 <span class="normal">1029</span>
-<span class="normal">1030</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
+<span class="normal">1030</span>
+<span class="normal">1031</span>
+<span class="normal">1032</span>
+<span class="normal">1033</span>
+<span class="normal">1034</span>
+<span class="normal">1035</span>
+<span class="normal">1036</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
@@ -5837,17 +5872,17 @@ setting of the experiment.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1032</span>
-<span class="normal">1033</span>
-<span class="normal">1034</span>
-<span class="normal">1035</span>
-<span class="normal">1036</span>
-<span class="normal">1037</span>
-<span class="normal">1038</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1038</span>
 <span class="normal">1039</span>
 <span class="normal">1040</span>
 <span class="normal">1041</span>
-<span class="normal">1042</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="normal">1042</span>
+<span class="normal">1043</span>
+<span class="normal">1044</span>
+<span class="normal">1045</span>
+<span class="normal">1046</span>
+<span class="normal">1047</span>
+<span class="normal">1048</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Print the status of the experiment.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -5872,7 +5907,7 @@ setting of the experiment.</p>
 
 
 </h4>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nf">replay</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nf">replay</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n"><span title="str">str</span></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">cache_mode</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="CacheMode (delphyne.utils.caching.CacheMode)" href="../queries/#delphyne.utils.caching.CacheMode">CacheMode</a></span> <span class="o">=</span> <span class="s1">&#39;replay&#39;</span><span class="p">)</span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -5908,37 +5943,67 @@ provided, all configurations are replayed.</p>
                   <code>None</code>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>cache_mode</code>
+            </td>
+            <td>
+                  <code><a class="autorefs autorefs-internal" title="CacheMode (delphyne.utils.caching.CacheMode)" href="../queries/#delphyne.utils.caching.CacheMode">CacheMode</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Cache mode to use while replaying.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;replay&#39;</code>
+            </td>
+          </tr>
       </tbody>
     </table>
 
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1044</span>
-<span class="normal">1045</span>
-<span class="normal">1046</span>
-<span class="normal">1047</span>
-<span class="normal">1048</span>
-<span class="normal">1049</span>
-<span class="normal">1050</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1050</span>
 <span class="normal">1051</span>
 <span class="normal">1052</span>
 <span class="normal">1053</span>
 <span class="normal">1054</span>
 <span class="normal">1055</span>
-<span class="normal">1056</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">replay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="normal">1056</span>
+<span class="normal">1057</span>
+<span class="normal">1058</span>
+<span class="normal">1059</span>
+<span class="normal">1060</span>
+<span class="normal">1061</span>
+<span class="normal">1062</span>
+<span class="normal">1063</span>
+<span class="normal">1064</span>
+<span class="normal">1065</span>
+<span class="normal">1066</span>
+<span class="normal">1067</span>
+<span class="normal">1068</span>
+<span class="normal">1069</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">replay</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">config</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">cache_mode</span><span class="p">:</span> <span class="n">CacheMode</span> <span class="o">=</span> <span class="s2">&quot;replay&quot;</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replay one or all configurations.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        config: The name of the configuration to replay. If not</span>
 <span class="sd">            provided, all configurations are replayed.</span>
+<span class="sd">        cache_mode: Cache mode to use while replaying.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">replay_all_configs</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">replay_all_configs</span><span class="p">(</span><span class="n">cache_mode</span><span class="o">=</span><span class="n">cache_mode</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">replay_config_by_name</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">replay_config_by_name</span><span class="p">(</span>
+            <span class="n">config</span><span class="p">,</span> <span class="n">cache_mode</span><span class="o">=</span><span class="n">cache_mode</span>
+        <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -5964,12 +6029,12 @@ file.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1058</span>
-<span class="normal">1059</span>
-<span class="normal">1060</span>
-<span class="normal">1061</span>
-<span class="normal">1062</span>
-<span class="normal">1063</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clean_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1071</span>
+<span class="normal">1072</span>
+<span class="normal">1073</span>
+<span class="normal">1074</span>
+<span class="normal">1075</span>
+<span class="normal">1076</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">clean_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Clean unregistered configurations from the persistent state</span>
 <span class="sd">    file.</span>
@@ -6000,14 +6065,14 @@ configurations were successfully run.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/delphyne/stdlib/experiments/experiment_launcher.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1065</span>
-<span class="normal">1066</span>
-<span class="normal">1067</span>
-<span class="normal">1068</span>
-<span class="normal">1069</span>
-<span class="normal">1070</span>
-<span class="normal">1071</span>
-<span class="normal">1072</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">force_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">add_timing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1078</span>
+<span class="normal">1079</span>
+<span class="normal">1080</span>
+<span class="normal">1081</span>
+<span class="normal">1082</span>
+<span class="normal">1083</span>
+<span class="normal">1084</span>
+<span class="normal">1085</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">force_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">add_timing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Force the generation of a summary file, even if not all</span>
 <span class="sd">    configurations were successfully run.</span>

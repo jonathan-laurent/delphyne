@@ -13356,7 +13356,7 @@ context manager.</p>
 
 
 </h3>
-<div class="doc-signature highlight"><pre><span></span><code><span class="nc">CacheMode</span> <span class="o">=</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;read_write&#39;</span><span class="p">,</span> <span class="s1">&#39;off&#39;</span><span class="p">,</span> <span class="s1">&#39;create&#39;</span><span class="p">,</span> <span class="s1">&#39;replay&#39;</span><span class="p">]</span>
+<div class="doc-signature highlight"><pre><span></span><code><span class="nc">CacheMode</span> <span class="o">=</span> <span class="n"><span title="typing.Literal">Literal</span></span><span class="p">[</span><span class="s1">&#39;read_write&#39;</span><span class="p">,</span> <span class="s1">&#39;read_only&#39;</span><span class="p">,</span> <span class="s1">&#39;off&#39;</span><span class="p">,</span> <span class="s1">&#39;create&#39;</span><span class="p">,</span> <span class="s1">&#39;replay&#39;</span><span class="p">]</span>
 </code></pre></div>
 
     <div class="doc doc-contents first">
@@ -13366,6 +13366,8 @@ context manager.</p>
 <li><code>off</code>: the cache is disabled.</li>
 <li><code>read_write</code>: values can be read and written to the cache (no extra
       check is made).</li>
+<li><code>read_only</code>: cached values are returned when available; missing values
+      are computed but are not stored.</li>
 <li><code>create</code>: the cache is used in write-only mode, and an exception is
       raised if a cached value already exists.</li>
 <li><code>replay</code>: all requests must hit the cache or an exception is raised.</li>
