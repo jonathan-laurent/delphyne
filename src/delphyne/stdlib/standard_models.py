@@ -3,6 +3,7 @@ Models from standard LLM providers
 """
 
 import os
+import re
 import typing
 from collections.abc import Iterable, Sequence
 from functools import partial
@@ -20,6 +21,13 @@ from delphyne.stdlib.openai_api import (
 #####
 
 type OpenAIModelName = Literal[
+    "gpt-5.6-sol",
+    "gpt-5.6-terra",
+    "gpt-5.6-luna",
+    "gpt-5.5",
+    "gpt-5.4",
+    "gpt-5.4-mini",
+    "gpt-5.4-nano",
     "gpt-5.2",
     "gpt-5.1",
     "gpt-5",
@@ -34,7 +42,12 @@ type OpenAIModelName = Literal[
     "o4-mini",
 ]
 
-type OpenAIResponsesExclusiveModelName = Literal["gpt-5-pro"]
+type OpenAIResponsesExclusiveModelName = Literal[
+    "gpt-5.5-pro",
+    "gpt-5.4-pro",
+    "gpt-5.2-pro",
+    "gpt-5-pro",
+]
 
 type MistralModelName = Literal[
     "mistral-small-2503",
@@ -61,12 +74,24 @@ type StandardModelName = (
 type APIType = Literal["chat_completions", "responses"]
 
 PRICING: dict[str, tuple[float, float, float]] = {
-    "gpt-5-pro": (15.00, 15.00, 120.00),
+    # OpenAI: https://developers.openai.com/api/docs/pricing
+    # "Pro" models do not benefit from a cached input discount.
+    "gpt-5.6-sol": (5.00, 0.50, 30.00),
+    "gpt-5.6-terra": (2.50, 0.25, 15.00),
+    "gpt-5.6-luna": (1.00, 0.10, 6.00),
+    "gpt-5.5": (5.00, 0.50, 30.00),
+    "gpt-5.5-pro": (30.00, 30.00, 180.00),
+    "gpt-5.4": (2.50, 0.25, 15.00),
+    "gpt-5.4-mini": (0.75, 0.075, 4.50),
+    "gpt-5.4-nano": (0.20, 0.02, 1.25),
+    "gpt-5.4-pro": (30.00, 30.00, 180.00),
     "gpt-5.2": (1.75, 0.175, 14.00),
+    "gpt-5.2-pro": (21.00, 21.00, 168.00),
     "gpt-5.1": (1.25, 0.125, 10.00),
     "gpt-5": (1.25, 0.125, 10.00),  # cached input 10x less expensive!
     "gpt-5-mini": (0.250, 0.025, 2.00),
     "gpt-5-nano": (0.050, 0.005, 0.40),
+    "gpt-5-pro": (15.00, 15.00, 120.00),
     "gpt-4.1": (2.00, 0.50, 8.00),
     "gpt-4.1-mini": (0.40, 0.10, 1.60),
     "gpt-4.1-nano": (0.10, 0.025, 0.40),
@@ -136,13 +161,71 @@ def _longest_standard_model_prefix_or_self(model_name: str) -> str:
 #####
 
 
+# A snapshot pins a model to one of its releases and is priced like the
+# model itself. Each provider has its own convention for naming one, and
+# we only accept the exact shapes they document. Nothing may sit between
+# the model name and the date: a qualifier there denotes a *variant*,
+# not a snapshot, and variants routinely have their own rates
+# ("o3-pro-2025-06-10" costs 10x "o3", and the audio tokens of
+# "gpt-4o-audio-preview-2024-12-17" cost 16x "gpt-4o" text tokens).
+# Such models must therefore be listed in `PRICING` explicitly.
+_MONTH = r"(?:0[1-9]|1[0-2])"
+_DAY = r"(?:0[1-9]|[12][0-9]|3[01])"
+
+# OpenAI: "gpt-4o-2024-08-06", "o3-2025-04-16".
+_OPENAI_SNAPSHOT = re.compile(rf"-20\d\d-{_MONTH}-{_DAY}")
+
+# Gemini: "gemini-2.5-pro-preview-05-06". Stable releases carry no
+# suffix, and experimental ones ("-exp-03-25") are not priced.
+_GEMINI_SNAPSHOT = re.compile(rf"-preview-{_MONTH}-{_DAY}")
+
+
+def _snapshot_pattern(model_name: str) -> re.Pattern[str] | None:
+    """
+    Return how the provider of a known model names its snapshots, or
+    `None` when it publishes none. Mistral makes the release date part
+    of the model name itself ("mistral-small-2503"), so such a name is a
+    `PRICING` key already, and DeepSeek has no dated releases.
+    """
+    if model_name in (
+        *_values(OpenAIModelName),
+        *_values(OpenAIResponsesExclusiveModelName),
+    ):
+        return _OPENAI_SNAPSHOT
+    if model_name in _values(GeminiModelName):
+        return _GEMINI_SNAPSHOT
+    return None
+
+
+def _pricing_key(model_name: str) -> str | None:
+    """
+    Return the `PRICING` entry that determines the price of a model, or
+    `None` if the model has no known pricing.
+
+    A dated snapshot is priced like the model it is a snapshot of. No
+    other form of approximate matching is allowed: in particular, a
+    model whose name merely *starts* with the name of a known model is
+    not assumed to share its pricing, since successive versions of a
+    model family are named this way (e.g., "gpt-5.6-sol" is not a
+    snapshot of "gpt-5" and is 4x more expensive on input).
+    """
+    if model_name in PRICING:
+        return model_name
+    cands = [m for m in _standard_model_names() if model_name.startswith(m)]
+    for base in sorted(cands, key=len, reverse=True):
+        pattern = _snapshot_pattern(base)
+        if pattern is not None and pattern.fullmatch(model_name[len(base) :]):
+            return base
+    return None
+
+
 def _get_pricing(model_name: str) -> md.ModelPricing | None:
     """
     Get the pricing for a model by its name.
     Returns None if the model is not found.
     """
-    if model_name in PRICING:
-        inp, cached_inp, out = PRICING[model_name]
+    if (key := _pricing_key(model_name)) is not None:
+        inp, cached_inp, out = PRICING[key]
         return md.ModelPricing(
             dollars_per_input_token=inp * md.PER_MILLION,
             dollars_per_cached_input_token=cached_inp * md.PER_MILLION,
@@ -180,10 +263,13 @@ def _openai_compatible_model(
         f"Please set environment variable {api_key_env_var}."
     )
     if pricing == "auto":
-        pricing = _get_pricing(_longest_standard_model_prefix_or_self(model))
+        pricing = _get_pricing(model)
         if pricing is None:
             raise ValueError(
-                f"Pricing information could not be inferred for {model}."
+                f"Pricing information could not be inferred for {model}. "
+                + "Add an entry to `standard_models.PRICING`, or pass an "
+                + "explicit `pricing` argument (`pricing=None` disables "
+                + "cost tracking)."
             )
     all_options: md.RequestOptions = {"model": model}
     if options is not None:
@@ -336,9 +422,15 @@ def standard_model(
             be overriden.
         pricing: Pricing model to use. If `"auto"` is provided
             (default), it is inferred from the model's name (or
-            `ValueError` is raised). If `None` is provided, no pricing
-            information is used and so the associated budget metrics
-            won't be computed.
+            `ValueError` is raised). Inference only succeeds for a model
+            listed in `PRICING`, or for a snapshot of such a model named
+            after its provider's convention (e.g.,
+            "gpt-4o-2024-08-06"). Pricing is never guessed from a
+            similar model name, so that a new release or a variant of a
+            known model is rejected loudly instead of being silently
+            billed at somebody else's rates. If `None` is provided, no
+            pricing information is used and so the associated budget
+            metrics won't be computed.
         model_class: An optional identifier for the model class (e.g.,
             "reasoning_large"). When provided, class-specific budget
             metrics are reported, so that resource consumption can be

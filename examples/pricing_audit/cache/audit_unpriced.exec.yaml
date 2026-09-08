@@ -1,0 +1,2332 @@
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            I am executing a program that contains nondeterministic assignments along with assertions (e.g., in the form of `ensure` and `fail` statements). I am stuck at one of these nondeterministic assignments and your goal is to generate an assigned value, in such a way that the program can go on and not fail any assertion.
+
+            More specifically, I'll give you three pieces of information:
+
+            - A nondeterministic program.
+            - The name of the variable that is being assigned at the program location where I am currently stuck.
+            - Some values for a number of local variables.
+
+            Your job is to generate a correct value to assign. The expected type of this value is indicated inside the nondeterministic assignment operator.
+
+            Terminate your answer with a code block (delimited by triple backquotes) that contains a YAML object of the requested type. Do not wrap this YAML value into an object with a field named like the assigned variable.
+        - role: user
+          content: |-
+            Program:
+
+            ```
+            @dp.strategy
+            def audit_model_name(name: str) -> Strategy[Branch | Fail, IPDict, Finding]:
+                """
+                Compare what `pricing="auto"` does to `name` with what it should do.
+                """
+                resolved = _pricing_key(name)
+                if name in PRICING:
+                    # Nothing to audit: an exactly listed name is priced by its own
+                    # entry. Never spend an oracle call on a decidable question.
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=name,
+                        verdict="agrees",
+                        suggested_entry=None,
+                        justification="Listed in the pricing table.",
+                    )
+                assessment = yield from dp.guess(Assessment, using=[name, PRICING])
+                yield from dp.ensure(
+                    assessment.priced_like is None or assessment.priced_like in PRICING,
+                    "unlisted_reference",
+                    message="`priced_like` must name a model from the table.",
+                )
+                yield from dp.ensure(
+                    assessment.released or assessment.priced_like is None,
+                    "unreleased_but_priced",
+                )
+                if resolved == assessment.priced_like:
+                    verdict = "agrees"
+                elif resolved is None:
+                    verdict = "missing_entry"
+                elif assessment.priced_like is None:
+                    verdict = "unconfirmed"
+                else:
+                    verdict = "mispriced"
+                if verdict != "missing_entry":
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=assessment.priced_like,
+                        verdict=verdict,
+                        suggested_entry=None,
+                        justification=assessment.justification,
+                    )
+                # The rule refuses a name whose rates are known. Ask which entry
+                # would close the gap, then check the answer by running the rule.
+                entry = yield from dp.guess(str, using=[name, assessment.priced_like])
+                yield from dp.ensure(entry not in PRICING, "already_listed")
+                yield from dp.ensure(
+                    _resolves_with(name, entry),
+                    "entry_does_not_apply",
+                    message=f"Adding {entry} would not make {name} resolve to it.",
+                )
+                return Finding(
+                    model_name=name,
+                    resolved_as=None,
+                    priced_like=assessment.priced_like,
+                    verdict="missing_entry",
+                    suggested_entry=entry,
+                    justification=assessment.justification,
+                )
+            ```
+
+            Variable being currently assigned: assessment
+
+            Selected local variables:
+
+            ```yaml
+            name: gpt-4o-mini-2024-07-18
+            PRICING:
+              gpt-5.6-sol:
+                - 5.0
+                - 0.5
+                - 30.0
+              gpt-5.6-terra:
+                - 2.5
+                - 0.25
+                - 15.0
+              gpt-5.6-luna:
+                - 1.0
+                - 0.1
+                - 6.0
+              gpt-5.5:
+                - 5.0
+                - 0.5
+                - 30.0
+              gpt-5.5-pro:
+                - 30.0
+                - 30.0
+                - 180.0
+              gpt-5.4:
+                - 2.5
+                - 0.25
+                - 15.0
+              gpt-5.4-mini:
+                - 0.75
+                - 0.075
+                - 4.5
+              gpt-5.4-nano:
+                - 0.2
+                - 0.02
+                - 1.25
+              gpt-5.4-pro:
+                - 30.0
+                - 30.0
+                - 180.0
+              gpt-5.2:
+                - 1.75
+                - 0.175
+                - 14.0
+              gpt-5.2-pro:
+                - 21.0
+                - 21.0
+                - 168.0
+              gpt-5.1:
+                - 1.25
+                - 0.125
+                - 10.0
+              gpt-5:
+                - 1.25
+                - 0.125
+                - 10.0
+              gpt-5-mini:
+                - 0.25
+                - 0.025
+                - 2.0
+              gpt-5-nano:
+                - 0.05
+                - 0.005
+                - 0.4
+              gpt-5-pro:
+                - 15.0
+                - 15.0
+                - 120.0
+              gpt-4.1:
+                - 2.0
+                - 0.5
+                - 8.0
+              gpt-4.1-mini:
+                - 0.4
+                - 0.1
+                - 1.6
+              gpt-4.1-nano:
+                - 0.1
+                - 0.025
+                - 0.4
+              gpt-4o:
+                - 2.5
+                - 1.25
+                - 10.0
+              gpt-4o-mini:
+                - 0.15
+                - 0.075
+                - 0.6
+              o3:
+                - 2.0
+                - 0.5
+                - 8.0
+              o4-mini:
+                - 1.1
+                - 0.275
+                - 4.4
+              mistral-small-2503:
+                - 0.1
+                - 0.1
+                - 0.3
+              magistral-small-2506:
+                - 0.5
+                - 0.5
+                - 1.5
+              mistral-medium-2508:
+                - 0.4
+                - 0.4
+                - 2
+              mistral-medium-3-5:
+                - 1.5
+                - 1.5
+                - 7.5
+              mistral-small-2603:
+                - 0.15
+                - 0.15
+                - 0.6
+              deepseek-chat:
+                - 0.27
+                - 0.07
+                - 1.1
+              deepseek-reasoner:
+                - 0.55
+                - 0.14
+                - 2.19
+              gemini-2.5-pro:
+                - 1.25
+                - 0.31
+                - 10.0
+              gemini-2.5-flash:
+                - 0.3
+                - 0.075
+                - 2.5
+              gemini-2.5-flash-lite:
+                - 0.1
+                - 0.025
+                - 0.4
+            ```
+
+            Type of value to generate (as a YAML object): <class 'pricing_audit.Assessment'>
+      options:
+        model: gpt-5.6-luna
+    iter: 1
+  output:
+    outputs:
+      - content: |-
+          ```yaml
+          priced_like: gpt-4o-mini
+          released: true
+          justification: The dated model name resolves to the listed gpt-4o-mini pricing entry.
+          ```
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 1710
+        output_tokens: 228
+        cached_input_tokens: 0
+    log_items: []
+    model_name: gpt-5.6-luna
+    usage_info:
+      completion_tokens: 228
+      prompt_tokens: 1710
+      total_tokens: 1938
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 181
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+        cache_write_tokens: 1707
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            I am executing a program that contains nondeterministic assignments along with assertions (e.g., in the form of `ensure` and `fail` statements). I am stuck at one of these nondeterministic assignments and your goal is to generate an assigned value, in such a way that the program can go on and not fail any assertion.
+
+            More specifically, I'll give you three pieces of information:
+
+            - A nondeterministic program.
+            - The name of the variable that is being assigned at the program location where I am currently stuck.
+            - Some values for a number of local variables.
+
+            Your job is to generate a correct value to assign. The expected type of this value is indicated inside the nondeterministic assignment operator.
+
+            Terminate your answer with a code block (delimited by triple backquotes) that contains a YAML object of the requested type. Do not wrap this YAML value into an object with a field named like the assigned variable.
+        - role: user
+          content: |-
+            Program:
+
+            ```
+            @dp.strategy
+            def audit_model_name(name: str) -> Strategy[Branch | Fail, IPDict, Finding]:
+                """
+                Compare what `pricing="auto"` does to `name` with what it should do.
+                """
+                resolved = _pricing_key(name)
+                if name in PRICING:
+                    # Nothing to audit: an exactly listed name is priced by its own
+                    # entry. Never spend an oracle call on a decidable question.
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=name,
+                        verdict="agrees",
+                        suggested_entry=None,
+                        justification="Listed in the pricing table.",
+                    )
+                assessment = yield from dp.guess(Assessment, using=[name, PRICING])
+                yield from dp.ensure(
+                    assessment.priced_like is None or assessment.priced_like in PRICING,
+                    "unlisted_reference",
+                    message="`priced_like` must name a model from the table.",
+                )
+                yield from dp.ensure(
+                    assessment.released or assessment.priced_like is None,
+                    "unreleased_but_priced",
+                )
+                if resolved == assessment.priced_like:
+                    verdict = "agrees"
+                elif resolved is None:
+                    verdict = "missing_entry"
+                elif assessment.priced_like is None:
+                    verdict = "unconfirmed"
+                else:
+                    verdict = "mispriced"
+                if verdict != "missing_entry":
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=assessment.priced_like,
+                        verdict=verdict,
+                        suggested_entry=None,
+                        justification=assessment.justification,
+                    )
+                # The rule refuses a name whose rates are known. Ask which entry
+                # would close the gap, then check the answer by running the rule.
+                entry = yield from dp.guess(str, using=[name, assessment.priced_like])
+                yield from dp.ensure(entry not in PRICING, "already_listed")
+                yield from dp.ensure(
+                    _resolves_with(name, entry),
+                    "entry_does_not_apply",
+                    message=f"Adding {entry} would not make {name} resolve to it.",
+                )
+                return Finding(
+                    model_name=name,
+                    resolved_as=None,
+                    priced_like=assessment.priced_like,
+                    verdict="missing_entry",
+                    suggested_entry=entry,
+                    justification=assessment.justification,
+                )
+            ```
+
+            Variable being currently assigned: assessment
+
+            Selected local variables:
+
+            ```yaml
+            name: o3-2025-04-16
+            PRICING:
+              gpt-5.6-sol:
+                - 5.0
+                - 0.5
+                - 30.0
+              gpt-5.6-terra:
+                - 2.5
+                - 0.25
+                - 15.0
+              gpt-5.6-luna:
+                - 1.0
+                - 0.1
+                - 6.0
+              gpt-5.5:
+                - 5.0
+                - 0.5
+                - 30.0
+              gpt-5.5-pro:
+                - 30.0
+                - 30.0
+                - 180.0
+              gpt-5.4:
+                - 2.5
+                - 0.25
+                - 15.0
+              gpt-5.4-mini:
+                - 0.75
+                - 0.075
+                - 4.5
+              gpt-5.4-nano:
+                - 0.2
+                - 0.02
+                - 1.25
+              gpt-5.4-pro:
+                - 30.0
+                - 30.0
+                - 180.0
+              gpt-5.2:
+                - 1.75
+                - 0.175
+                - 14.0
+              gpt-5.2-pro:
+                - 21.0
+                - 21.0
+                - 168.0
+              gpt-5.1:
+                - 1.25
+                - 0.125
+                - 10.0
+              gpt-5:
+                - 1.25
+                - 0.125
+                - 10.0
+              gpt-5-mini:
+                - 0.25
+                - 0.025
+                - 2.0
+              gpt-5-nano:
+                - 0.05
+                - 0.005
+                - 0.4
+              gpt-5-pro:
+                - 15.0
+                - 15.0
+                - 120.0
+              gpt-4.1:
+                - 2.0
+                - 0.5
+                - 8.0
+              gpt-4.1-mini:
+                - 0.4
+                - 0.1
+                - 1.6
+              gpt-4.1-nano:
+                - 0.1
+                - 0.025
+                - 0.4
+              gpt-4o:
+                - 2.5
+                - 1.25
+                - 10.0
+              gpt-4o-mini:
+                - 0.15
+                - 0.075
+                - 0.6
+              o3:
+                - 2.0
+                - 0.5
+                - 8.0
+              o4-mini:
+                - 1.1
+                - 0.275
+                - 4.4
+              mistral-small-2503:
+                - 0.1
+                - 0.1
+                - 0.3
+              magistral-small-2506:
+                - 0.5
+                - 0.5
+                - 1.5
+              mistral-medium-2508:
+                - 0.4
+                - 0.4
+                - 2
+              mistral-medium-3-5:
+                - 1.5
+                - 1.5
+                - 7.5
+              mistral-small-2603:
+                - 0.15
+                - 0.15
+                - 0.6
+              deepseek-chat:
+                - 0.27
+                - 0.07
+                - 1.1
+              deepseek-reasoner:
+                - 0.55
+                - 0.14
+                - 2.19
+              gemini-2.5-pro:
+                - 1.25
+                - 0.31
+                - 10.0
+              gemini-2.5-flash:
+                - 0.3
+                - 0.075
+                - 2.5
+              gemini-2.5-flash-lite:
+                - 0.1
+                - 0.025
+                - 0.4
+            ```
+
+            Type of value to generate (as a YAML object): <class 'pricing_audit.Assessment'>
+      options:
+        model: gpt-5.6-luna
+    iter: 1
+  output:
+    outputs:
+      - content: |-
+          ```yaml
+          priced_like: o3
+          released: true
+          justification: "The o3-2025-04-16 model is priced like o3."
+          ```
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 1706
+        output_tokens: 166
+        cached_input_tokens: 0
+    log_items: []
+    model_name: gpt-5.6-luna
+    usage_info:
+      completion_tokens: 166
+      prompt_tokens: 1706
+      total_tokens: 1872
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 122
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+        cache_write_tokens: 1703
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            I am executing a program that contains nondeterministic assignments along with assertions (e.g., in the form of `ensure` and `fail` statements). I am stuck at one of these nondeterministic assignments and your goal is to generate an assigned value, in such a way that the program can go on and not fail any assertion.
+
+            More specifically, I'll give you three pieces of information:
+
+            - A nondeterministic program.
+            - The name of the variable that is being assigned at the program location where I am currently stuck.
+            - Some values for a number of local variables.
+
+            Your job is to generate a correct value to assign. The expected type of this value is indicated inside the nondeterministic assignment operator.
+
+            Terminate your answer with a code block (delimited by triple backquotes) that contains a YAML object of the requested type. Do not wrap this YAML value into an object with a field named like the assigned variable.
+        - role: user
+          content: |-
+            Program:
+
+            ```
+            @dp.strategy
+            def audit_model_name(name: str) -> Strategy[Branch | Fail, IPDict, Finding]:
+                """
+                Compare what `pricing="auto"` does to `name` with what it should do.
+                """
+                resolved = _pricing_key(name)
+                if name in PRICING:
+                    # Nothing to audit: an exactly listed name is priced by its own
+                    # entry. Never spend an oracle call on a decidable question.
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=name,
+                        verdict="agrees",
+                        suggested_entry=None,
+                        justification="Listed in the pricing table.",
+                    )
+                assessment = yield from dp.guess(Assessment, using=[name, PRICING])
+                yield from dp.ensure(
+                    assessment.priced_like is None or assessment.priced_like in PRICING,
+                    "unlisted_reference",
+                    message="`priced_like` must name a model from the table.",
+                )
+                yield from dp.ensure(
+                    assessment.released or assessment.priced_like is None,
+                    "unreleased_but_priced",
+                )
+                if resolved == assessment.priced_like:
+                    verdict = "agrees"
+                elif resolved is None:
+                    verdict = "missing_entry"
+                elif assessment.priced_like is None:
+                    verdict = "unconfirmed"
+                else:
+                    verdict = "mispriced"
+                if verdict != "missing_entry":
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=assessment.priced_like,
+                        verdict=verdict,
+                        suggested_entry=None,
+                        justification=assessment.justification,
+                    )
+                # The rule refuses a name whose rates are known. Ask which entry
+                # would close the gap, then check the answer by running the rule.
+                entry = yield from dp.guess(str, using=[name, assessment.priced_like])
+                yield from dp.ensure(entry not in PRICING, "already_listed")
+                yield from dp.ensure(
+                    _resolves_with(name, entry),
+                    "entry_does_not_apply",
+                    message=f"Adding {entry} would not make {name} resolve to it.",
+                )
+                return Finding(
+                    model_name=name,
+                    resolved_as=None,
+                    priced_like=assessment.priced_like,
+                    verdict="missing_entry",
+                    suggested_entry=entry,
+                    justification=assessment.justification,
+                )
+            ```
+
+            Variable being currently assigned: assessment
+
+            Selected local variables:
+
+            ```yaml
+            name: gpt-5.6-terra-2026-07-09
+            PRICING:
+              gpt-5.6-sol:
+                - 5.0
+                - 0.5
+                - 30.0
+              gpt-5.6-terra:
+                - 2.5
+                - 0.25
+                - 15.0
+              gpt-5.6-luna:
+                - 1.0
+                - 0.1
+                - 6.0
+              gpt-5.5:
+                - 5.0
+                - 0.5
+                - 30.0
+              gpt-5.5-pro:
+                - 30.0
+                - 30.0
+                - 180.0
+              gpt-5.4:
+                - 2.5
+                - 0.25
+                - 15.0
+              gpt-5.4-mini:
+                - 0.75
+                - 0.075
+                - 4.5
+              gpt-5.4-nano:
+                - 0.2
+                - 0.02
+                - 1.25
+              gpt-5.4-pro:
+                - 30.0
+                - 30.0
+                - 180.0
+              gpt-5.2:
+                - 1.75
+                - 0.175
+                - 14.0
+              gpt-5.2-pro:
+                - 21.0
+                - 21.0
+                - 168.0
+              gpt-5.1:
+                - 1.25
+                - 0.125
+                - 10.0
+              gpt-5:
+                - 1.25
+                - 0.125
+                - 10.0
+              gpt-5-mini:
+                - 0.25
+                - 0.025
+                - 2.0
+              gpt-5-nano:
+                - 0.05
+                - 0.005
+                - 0.4
+              gpt-5-pro:
+                - 15.0
+                - 15.0
+                - 120.0
+              gpt-4.1:
+                - 2.0
+                - 0.5
+                - 8.0
+              gpt-4.1-mini:
+                - 0.4
+                - 0.1
+                - 1.6
+              gpt-4.1-nano:
+                - 0.1
+                - 0.025
+                - 0.4
+              gpt-4o:
+                - 2.5
+                - 1.25
+                - 10.0
+              gpt-4o-mini:
+                - 0.15
+                - 0.075
+                - 0.6
+              o3:
+                - 2.0
+                - 0.5
+                - 8.0
+              o4-mini:
+                - 1.1
+                - 0.275
+                - 4.4
+              mistral-small-2503:
+                - 0.1
+                - 0.1
+                - 0.3
+              magistral-small-2506:
+                - 0.5
+                - 0.5
+                - 1.5
+              mistral-medium-2508:
+                - 0.4
+                - 0.4
+                - 2
+              mistral-medium-3-5:
+                - 1.5
+                - 1.5
+                - 7.5
+              mistral-small-2603:
+                - 0.15
+                - 0.15
+                - 0.6
+              deepseek-chat:
+                - 0.27
+                - 0.07
+                - 1.1
+              deepseek-reasoner:
+                - 0.55
+                - 0.14
+                - 2.19
+              gemini-2.5-pro:
+                - 1.25
+                - 0.31
+                - 10.0
+              gemini-2.5-flash:
+                - 0.3
+                - 0.075
+                - 2.5
+              gemini-2.5-flash-lite:
+                - 0.1
+                - 0.025
+                - 0.4
+            ```
+
+            Type of value to generate (as a YAML object): <class 'pricing_audit.Assessment'>
+      options:
+        model: gpt-5.6-luna
+    iter: 1
+  output:
+    outputs:
+      - content: |-
+          ```yaml
+          priced_like: gpt-5.6-terra
+          released: true
+          justification: The dated model name resolves to the listed gpt-5.6-terra pricing entry.
+          ```
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 1712
+        output_tokens: 305
+        cached_input_tokens: 0
+    log_items: []
+    model_name: gpt-5.6-luna
+    usage_info:
+      completion_tokens: 305
+      prompt_tokens: 1712
+      total_tokens: 2017
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 254
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+        cache_write_tokens: 1709
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            I am executing a program that contains nondeterministic assignments along with assertions (e.g., in the form of `ensure` and `fail` statements). I am stuck at one of these nondeterministic assignments and your goal is to generate an assigned value, in such a way that the program can go on and not fail any assertion.
+
+            More specifically, I'll give you three pieces of information:
+
+            - A nondeterministic program.
+            - The name of the variable that is being assigned at the program location where I am currently stuck.
+            - Some values for a number of local variables.
+
+            Your job is to generate a correct value to assign. The expected type of this value is indicated inside the nondeterministic assignment operator.
+
+            Terminate your answer with a code block (delimited by triple backquotes) that contains a YAML object of the requested type. Do not wrap this YAML value into an object with a field named like the assigned variable.
+        - role: user
+          content: |-
+            Program:
+
+            ```
+            @dp.strategy
+            def audit_model_name(name: str) -> Strategy[Branch | Fail, IPDict, Finding]:
+                """
+                Compare what `pricing="auto"` does to `name` with what it should do.
+                """
+                resolved = _pricing_key(name)
+                if name in PRICING:
+                    # Nothing to audit: an exactly listed name is priced by its own
+                    # entry. Never spend an oracle call on a decidable question.
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=name,
+                        verdict="agrees",
+                        suggested_entry=None,
+                        justification="Listed in the pricing table.",
+                    )
+                assessment = yield from dp.guess(Assessment, using=[name, PRICING])
+                yield from dp.ensure(
+                    assessment.priced_like is None or assessment.priced_like in PRICING,
+                    "unlisted_reference",
+                    message="`priced_like` must name a model from the table.",
+                )
+                yield from dp.ensure(
+                    assessment.released or assessment.priced_like is None,
+                    "unreleased_but_priced",
+                )
+                if resolved == assessment.priced_like:
+                    verdict = "agrees"
+                elif resolved is None:
+                    verdict = "missing_entry"
+                elif assessment.priced_like is None:
+                    verdict = "unconfirmed"
+                else:
+                    verdict = "mispriced"
+                if verdict != "missing_entry":
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=assessment.priced_like,
+                        verdict=verdict,
+                        suggested_entry=None,
+                        justification=assessment.justification,
+                    )
+                # The rule refuses a name whose rates are known. Ask which entry
+                # would close the gap, then check the answer by running the rule.
+                entry = yield from dp.guess(str, using=[name, assessment.priced_like])
+                yield from dp.ensure(entry not in PRICING, "already_listed")
+                yield from dp.ensure(
+                    _resolves_with(name, entry),
+                    "entry_does_not_apply",
+                    message=f"Adding {entry} would not make {name} resolve to it.",
+                )
+                return Finding(
+                    model_name=name,
+                    resolved_as=None,
+                    priced_like=assessment.priced_like,
+                    verdict="missing_entry",
+                    suggested_entry=entry,
+                    justification=assessment.justification,
+                )
+            ```
+
+            Variable being currently assigned: assessment
+
+            Selected local variables:
+
+            ```yaml
+            name: gemini-2.5-flash-lite-preview-06-17
+            PRICING:
+              gpt-5.6-sol:
+                - 5.0
+                - 0.5
+                - 30.0
+              gpt-5.6-terra:
+                - 2.5
+                - 0.25
+                - 15.0
+              gpt-5.6-luna:
+                - 1.0
+                - 0.1
+                - 6.0
+              gpt-5.5:
+                - 5.0
+                - 0.5
+                - 30.0
+              gpt-5.5-pro:
+                - 30.0
+                - 30.0
+                - 180.0
+              gpt-5.4:
+                - 2.5
+                - 0.25
+                - 15.0
+              gpt-5.4-mini:
+                - 0.75
+                - 0.075
+                - 4.5
+              gpt-5.4-nano:
+                - 0.2
+                - 0.02
+                - 1.25
+              gpt-5.4-pro:
+                - 30.0
+                - 30.0
+                - 180.0
+              gpt-5.2:
+                - 1.75
+                - 0.175
+                - 14.0
+              gpt-5.2-pro:
+                - 21.0
+                - 21.0
+                - 168.0
+              gpt-5.1:
+                - 1.25
+                - 0.125
+                - 10.0
+              gpt-5:
+                - 1.25
+                - 0.125
+                - 10.0
+              gpt-5-mini:
+                - 0.25
+                - 0.025
+                - 2.0
+              gpt-5-nano:
+                - 0.05
+                - 0.005
+                - 0.4
+              gpt-5-pro:
+                - 15.0
+                - 15.0
+                - 120.0
+              gpt-4.1:
+                - 2.0
+                - 0.5
+                - 8.0
+              gpt-4.1-mini:
+                - 0.4
+                - 0.1
+                - 1.6
+              gpt-4.1-nano:
+                - 0.1
+                - 0.025
+                - 0.4
+              gpt-4o:
+                - 2.5
+                - 1.25
+                - 10.0
+              gpt-4o-mini:
+                - 0.15
+                - 0.075
+                - 0.6
+              o3:
+                - 2.0
+                - 0.5
+                - 8.0
+              o4-mini:
+                - 1.1
+                - 0.275
+                - 4.4
+              mistral-small-2503:
+                - 0.1
+                - 0.1
+                - 0.3
+              magistral-small-2506:
+                - 0.5
+                - 0.5
+                - 1.5
+              mistral-medium-2508:
+                - 0.4
+                - 0.4
+                - 2
+              mistral-medium-3-5:
+                - 1.5
+                - 1.5
+                - 7.5
+              mistral-small-2603:
+                - 0.15
+                - 0.15
+                - 0.6
+              deepseek-chat:
+                - 0.27
+                - 0.07
+                - 1.1
+              deepseek-reasoner:
+                - 0.55
+                - 0.14
+                - 2.19
+              gemini-2.5-pro:
+                - 1.25
+                - 0.31
+                - 10.0
+              gemini-2.5-flash:
+                - 0.3
+                - 0.075
+                - 2.5
+              gemini-2.5-flash-lite:
+                - 0.1
+                - 0.025
+                - 0.4
+            ```
+
+            Type of value to generate (as a YAML object): <class 'pricing_audit.Assessment'>
+      options:
+        model: gpt-5.6-luna
+    iter: 1
+  output:
+    outputs:
+      - content: |-
+          ```yaml
+          priced_like: null
+          released: false
+          justification: "The preview model has no separately listed pricing entry."
+          ```
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 1711
+        output_tokens: 332
+        cached_input_tokens: 0
+    log_items: []
+    model_name: gpt-5.6-luna
+    usage_info:
+      completion_tokens: 332
+      prompt_tokens: 1711
+      total_tokens: 2043
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 296
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+        cache_write_tokens: 1708
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            I am executing a program that contains nondeterministic assignments along with assertions (e.g., in the form of `ensure` and `fail` statements). I am stuck at one of these nondeterministic assignments and your goal is to generate an assigned value, in such a way that the program can go on and not fail any assertion.
+
+            More specifically, I'll give you three pieces of information:
+
+            - A nondeterministic program.
+            - The name of the variable that is being assigned at the program location where I am currently stuck.
+            - Some values for a number of local variables.
+
+            Your job is to generate a correct value to assign. The expected type of this value is indicated inside the nondeterministic assignment operator.
+
+            Terminate your answer with a code block (delimited by triple backquotes) that contains a YAML object of the requested type. Do not wrap this YAML value into an object with a field named like the assigned variable.
+        - role: user
+          content: |-
+            Program:
+
+            ```
+            @dp.strategy
+            def audit_model_name(name: str) -> Strategy[Branch | Fail, IPDict, Finding]:
+                """
+                Compare what `pricing="auto"` does to `name` with what it should do.
+                """
+                resolved = _pricing_key(name)
+                if name in PRICING:
+                    # Nothing to audit: an exactly listed name is priced by its own
+                    # entry. Never spend an oracle call on a decidable question.
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=name,
+                        verdict="agrees",
+                        suggested_entry=None,
+                        justification="Listed in the pricing table.",
+                    )
+                assessment = yield from dp.guess(Assessment, using=[name, PRICING])
+                yield from dp.ensure(
+                    assessment.priced_like is None or assessment.priced_like in PRICING,
+                    "unlisted_reference",
+                    message="`priced_like` must name a model from the table.",
+                )
+                yield from dp.ensure(
+                    assessment.released or assessment.priced_like is None,
+                    "unreleased_but_priced",
+                )
+                if resolved == assessment.priced_like:
+                    verdict = "agrees"
+                elif resolved is None:
+                    verdict = "missing_entry"
+                elif assessment.priced_like is None:
+                    verdict = "unconfirmed"
+                else:
+                    verdict = "mispriced"
+                if verdict != "missing_entry":
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=assessment.priced_like,
+                        verdict=verdict,
+                        suggested_entry=None,
+                        justification=assessment.justification,
+                    )
+                # The rule refuses a name whose rates are known. Ask which entry
+                # would close the gap, then check the answer by running the rule.
+                entry = yield from dp.guess(str, using=[name, assessment.priced_like])
+                yield from dp.ensure(entry not in PRICING, "already_listed")
+                yield from dp.ensure(
+                    _resolves_with(name, entry),
+                    "entry_does_not_apply",
+                    message=f"Adding {entry} would not make {name} resolve to it.",
+                )
+                return Finding(
+                    model_name=name,
+                    resolved_as=None,
+                    priced_like=assessment.priced_like,
+                    verdict="missing_entry",
+                    suggested_entry=entry,
+                    justification=assessment.justification,
+                )
+            ```
+
+            Variable being currently assigned: assessment
+
+            Selected local variables:
+
+            ```yaml
+            name: gpt-5-chat-latest
+            PRICING:
+              gpt-5.6-sol:
+                - 5.0
+                - 0.5
+                - 30.0
+              gpt-5.6-terra:
+                - 2.5
+                - 0.25
+                - 15.0
+              gpt-5.6-luna:
+                - 1.0
+                - 0.1
+                - 6.0
+              gpt-5.5:
+                - 5.0
+                - 0.5
+                - 30.0
+              gpt-5.5-pro:
+                - 30.0
+                - 30.0
+                - 180.0
+              gpt-5.4:
+                - 2.5
+                - 0.25
+                - 15.0
+              gpt-5.4-mini:
+                - 0.75
+                - 0.075
+                - 4.5
+              gpt-5.4-nano:
+                - 0.2
+                - 0.02
+                - 1.25
+              gpt-5.4-pro:
+                - 30.0
+                - 30.0
+                - 180.0
+              gpt-5.2:
+                - 1.75
+                - 0.175
+                - 14.0
+              gpt-5.2-pro:
+                - 21.0
+                - 21.0
+                - 168.0
+              gpt-5.1:
+                - 1.25
+                - 0.125
+                - 10.0
+              gpt-5:
+                - 1.25
+                - 0.125
+                - 10.0
+              gpt-5-mini:
+                - 0.25
+                - 0.025
+                - 2.0
+              gpt-5-nano:
+                - 0.05
+                - 0.005
+                - 0.4
+              gpt-5-pro:
+                - 15.0
+                - 15.0
+                - 120.0
+              gpt-4.1:
+                - 2.0
+                - 0.5
+                - 8.0
+              gpt-4.1-mini:
+                - 0.4
+                - 0.1
+                - 1.6
+              gpt-4.1-nano:
+                - 0.1
+                - 0.025
+                - 0.4
+              gpt-4o:
+                - 2.5
+                - 1.25
+                - 10.0
+              gpt-4o-mini:
+                - 0.15
+                - 0.075
+                - 0.6
+              o3:
+                - 2.0
+                - 0.5
+                - 8.0
+              o4-mini:
+                - 1.1
+                - 0.275
+                - 4.4
+              mistral-small-2503:
+                - 0.1
+                - 0.1
+                - 0.3
+              magistral-small-2506:
+                - 0.5
+                - 0.5
+                - 1.5
+              mistral-medium-2508:
+                - 0.4
+                - 0.4
+                - 2
+              mistral-medium-3-5:
+                - 1.5
+                - 1.5
+                - 7.5
+              mistral-small-2603:
+                - 0.15
+                - 0.15
+                - 0.6
+              deepseek-chat:
+                - 0.27
+                - 0.07
+                - 1.1
+              deepseek-reasoner:
+                - 0.55
+                - 0.14
+                - 2.19
+              gemini-2.5-pro:
+                - 1.25
+                - 0.31
+                - 10.0
+              gemini-2.5-flash:
+                - 0.3
+                - 0.075
+                - 2.5
+              gemini-2.5-flash-lite:
+                - 0.1
+                - 0.025
+                - 0.4
+            ```
+
+            Type of value to generate (as a YAML object): <class 'pricing_audit.Assessment'>
+      options:
+        model: gpt-5.6-luna
+    iter: 1
+  output:
+    outputs:
+      - content: |-
+          ```yaml
+          priced_like: gpt-5
+          released: true
+          justification: "gpt-5-chat-latest is priced like the released gpt-5 model."
+          ```
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 1704
+        output_tokens: 477
+        cached_input_tokens: 0
+    log_items: []
+    model_name: gpt-5.6-luna
+    usage_info:
+      completion_tokens: 477
+      prompt_tokens: 1704
+      total_tokens: 2181
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 430
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+        cache_write_tokens: 1701
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            I am executing a program that contains nondeterministic assignments along with assertions (e.g., in the form of `ensure` and `fail` statements). I am stuck at one of these nondeterministic assignments and your goal is to generate an assigned value, in such a way that the program can go on and not fail any assertion.
+
+            More specifically, I'll give you three pieces of information:
+
+            - A nondeterministic program.
+            - The name of the variable that is being assigned at the program location where I am currently stuck.
+            - Some values for a number of local variables.
+
+            Your job is to generate a correct value to assign. The expected type of this value is indicated inside the nondeterministic assignment operator.
+
+            Terminate your answer with a code block (delimited by triple backquotes) that contains a YAML object of the requested type. Do not wrap this YAML value into an object with a field named like the assigned variable.
+        - role: user
+          content: |-
+            Program:
+
+            ```
+            @dp.strategy
+            def audit_model_name(name: str) -> Strategy[Branch | Fail, IPDict, Finding]:
+                """
+                Compare what `pricing="auto"` does to `name` with what it should do.
+                """
+                resolved = _pricing_key(name)
+                if name in PRICING:
+                    # Nothing to audit: an exactly listed name is priced by its own
+                    # entry. Never spend an oracle call on a decidable question.
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=name,
+                        verdict="agrees",
+                        suggested_entry=None,
+                        justification="Listed in the pricing table.",
+                    )
+                assessment = yield from dp.guess(Assessment, using=[name, PRICING])
+                yield from dp.ensure(
+                    assessment.priced_like is None or assessment.priced_like in PRICING,
+                    "unlisted_reference",
+                    message="`priced_like` must name a model from the table.",
+                )
+                yield from dp.ensure(
+                    assessment.released or assessment.priced_like is None,
+                    "unreleased_but_priced",
+                )
+                if resolved == assessment.priced_like:
+                    verdict = "agrees"
+                elif resolved is None:
+                    verdict = "missing_entry"
+                elif assessment.priced_like is None:
+                    verdict = "unconfirmed"
+                else:
+                    verdict = "mispriced"
+                if verdict != "missing_entry":
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=assessment.priced_like,
+                        verdict=verdict,
+                        suggested_entry=None,
+                        justification=assessment.justification,
+                    )
+                # The rule refuses a name whose rates are known. Ask which entry
+                # would close the gap, then check the answer by running the rule.
+                entry = yield from dp.guess(str, using=[name, assessment.priced_like])
+                yield from dp.ensure(entry not in PRICING, "already_listed")
+                yield from dp.ensure(
+                    _resolves_with(name, entry),
+                    "entry_does_not_apply",
+                    message=f"Adding {entry} would not make {name} resolve to it.",
+                )
+                return Finding(
+                    model_name=name,
+                    resolved_as=None,
+                    priced_like=assessment.priced_like,
+                    verdict="missing_entry",
+                    suggested_entry=entry,
+                    justification=assessment.justification,
+                )
+            ```
+
+            Variable being currently assigned: entry
+
+            Selected local variables:
+
+            ```yaml
+            name: gpt-5-chat-latest
+            assessment.priced_like: gpt-5
+            ```
+
+            Type of value to generate (as a YAML object): <class 'str'>
+      options:
+        model: gpt-5.6-luna
+    iter: 1
+  output:
+    outputs:
+      - content: |-
+          ```yaml
+          gpt-5-chat-latest
+          ```
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 746
+        output_tokens: 316
+        cached_input_tokens: 0
+    log_items: []
+    model_name: gpt-5.6-luna
+    usage_info:
+      completion_tokens: 316
+      prompt_tokens: 746
+      total_tokens: 1062
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 295
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+        cache_write_tokens: 0
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            I am executing a program that contains nondeterministic assignments along with assertions (e.g., in the form of `ensure` and `fail` statements). I am stuck at one of these nondeterministic assignments and your goal is to generate an assigned value, in such a way that the program can go on and not fail any assertion.
+
+            More specifically, I'll give you three pieces of information:
+
+            - A nondeterministic program.
+            - The name of the variable that is being assigned at the program location where I am currently stuck.
+            - Some values for a number of local variables.
+
+            Your job is to generate a correct value to assign. The expected type of this value is indicated inside the nondeterministic assignment operator.
+
+            Terminate your answer with a code block (delimited by triple backquotes) that contains a YAML object of the requested type. Do not wrap this YAML value into an object with a field named like the assigned variable.
+        - role: user
+          content: |-
+            Program:
+
+            ```
+            @dp.strategy
+            def audit_model_name(name: str) -> Strategy[Branch | Fail, IPDict, Finding]:
+                """
+                Compare what `pricing="auto"` does to `name` with what it should do.
+                """
+                resolved = _pricing_key(name)
+                if name in PRICING:
+                    # Nothing to audit: an exactly listed name is priced by its own
+                    # entry. Never spend an oracle call on a decidable question.
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=name,
+                        verdict="agrees",
+                        suggested_entry=None,
+                        justification="Listed in the pricing table.",
+                    )
+                assessment = yield from dp.guess(Assessment, using=[name, PRICING])
+                yield from dp.ensure(
+                    assessment.priced_like is None or assessment.priced_like in PRICING,
+                    "unlisted_reference",
+                    message="`priced_like` must name a model from the table.",
+                )
+                yield from dp.ensure(
+                    assessment.released or assessment.priced_like is None,
+                    "unreleased_but_priced",
+                )
+                if resolved == assessment.priced_like:
+                    verdict = "agrees"
+                elif resolved is None:
+                    verdict = "missing_entry"
+                elif assessment.priced_like is None:
+                    verdict = "unconfirmed"
+                else:
+                    verdict = "mispriced"
+                if verdict != "missing_entry":
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=assessment.priced_like,
+                        verdict=verdict,
+                        suggested_entry=None,
+                        justification=assessment.justification,
+                    )
+                # The rule refuses a name whose rates are known. Ask which entry
+                # would close the gap, then check the answer by running the rule.
+                entry = yield from dp.guess(str, using=[name, assessment.priced_like])
+                yield from dp.ensure(entry not in PRICING, "already_listed")
+                yield from dp.ensure(
+                    _resolves_with(name, entry),
+                    "entry_does_not_apply",
+                    message=f"Adding {entry} would not make {name} resolve to it.",
+                )
+                return Finding(
+                    model_name=name,
+                    resolved_as=None,
+                    priced_like=assessment.priced_like,
+                    verdict="missing_entry",
+                    suggested_entry=entry,
+                    justification=assessment.justification,
+                )
+            ```
+
+            Variable being currently assigned: assessment
+
+            Selected local variables:
+
+            ```yaml
+            name: gpt-5.2-codex
+            PRICING:
+              gpt-5.6-sol:
+                - 5.0
+                - 0.5
+                - 30.0
+              gpt-5.6-terra:
+                - 2.5
+                - 0.25
+                - 15.0
+              gpt-5.6-luna:
+                - 1.0
+                - 0.1
+                - 6.0
+              gpt-5.5:
+                - 5.0
+                - 0.5
+                - 30.0
+              gpt-5.5-pro:
+                - 30.0
+                - 30.0
+                - 180.0
+              gpt-5.4:
+                - 2.5
+                - 0.25
+                - 15.0
+              gpt-5.4-mini:
+                - 0.75
+                - 0.075
+                - 4.5
+              gpt-5.4-nano:
+                - 0.2
+                - 0.02
+                - 1.25
+              gpt-5.4-pro:
+                - 30.0
+                - 30.0
+                - 180.0
+              gpt-5.2:
+                - 1.75
+                - 0.175
+                - 14.0
+              gpt-5.2-pro:
+                - 21.0
+                - 21.0
+                - 168.0
+              gpt-5.1:
+                - 1.25
+                - 0.125
+                - 10.0
+              gpt-5:
+                - 1.25
+                - 0.125
+                - 10.0
+              gpt-5-mini:
+                - 0.25
+                - 0.025
+                - 2.0
+              gpt-5-nano:
+                - 0.05
+                - 0.005
+                - 0.4
+              gpt-5-pro:
+                - 15.0
+                - 15.0
+                - 120.0
+              gpt-4.1:
+                - 2.0
+                - 0.5
+                - 8.0
+              gpt-4.1-mini:
+                - 0.4
+                - 0.1
+                - 1.6
+              gpt-4.1-nano:
+                - 0.1
+                - 0.025
+                - 0.4
+              gpt-4o:
+                - 2.5
+                - 1.25
+                - 10.0
+              gpt-4o-mini:
+                - 0.15
+                - 0.075
+                - 0.6
+              o3:
+                - 2.0
+                - 0.5
+                - 8.0
+              o4-mini:
+                - 1.1
+                - 0.275
+                - 4.4
+              mistral-small-2503:
+                - 0.1
+                - 0.1
+                - 0.3
+              magistral-small-2506:
+                - 0.5
+                - 0.5
+                - 1.5
+              mistral-medium-2508:
+                - 0.4
+                - 0.4
+                - 2
+              mistral-medium-3-5:
+                - 1.5
+                - 1.5
+                - 7.5
+              mistral-small-2603:
+                - 0.15
+                - 0.15
+                - 0.6
+              deepseek-chat:
+                - 0.27
+                - 0.07
+                - 1.1
+              deepseek-reasoner:
+                - 0.55
+                - 0.14
+                - 2.19
+              gemini-2.5-pro:
+                - 1.25
+                - 0.31
+                - 10.0
+              gemini-2.5-flash:
+                - 0.3
+                - 0.075
+                - 2.5
+              gemini-2.5-flash-lite:
+                - 0.1
+                - 0.025
+                - 0.4
+            ```
+
+            Type of value to generate (as a YAML object): <class 'pricing_audit.Assessment'>
+      options:
+        model: gpt-5.6-luna
+    iter: 1
+  output:
+    outputs:
+      - content: |-
+          ```yaml
+          priced_like: gpt-5.2
+          released: true
+          justification: "gpt-5.2-codex is priced like the listed gpt-5.2 model."
+          ```
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 1706
+        output_tokens: 313
+        cached_input_tokens: 0
+    log_items: []
+    model_name: gpt-5.6-luna
+    usage_info:
+      completion_tokens: 313
+      prompt_tokens: 1706
+      total_tokens: 2019
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 260
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+        cache_write_tokens: 1703
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            I am executing a program that contains nondeterministic assignments along with assertions (e.g., in the form of `ensure` and `fail` statements). I am stuck at one of these nondeterministic assignments and your goal is to generate an assigned value, in such a way that the program can go on and not fail any assertion.
+
+            More specifically, I'll give you three pieces of information:
+
+            - A nondeterministic program.
+            - The name of the variable that is being assigned at the program location where I am currently stuck.
+            - Some values for a number of local variables.
+
+            Your job is to generate a correct value to assign. The expected type of this value is indicated inside the nondeterministic assignment operator.
+
+            Terminate your answer with a code block (delimited by triple backquotes) that contains a YAML object of the requested type. Do not wrap this YAML value into an object with a field named like the assigned variable.
+        - role: user
+          content: |-
+            Program:
+
+            ```
+            @dp.strategy
+            def audit_model_name(name: str) -> Strategy[Branch | Fail, IPDict, Finding]:
+                """
+                Compare what `pricing="auto"` does to `name` with what it should do.
+                """
+                resolved = _pricing_key(name)
+                if name in PRICING:
+                    # Nothing to audit: an exactly listed name is priced by its own
+                    # entry. Never spend an oracle call on a decidable question.
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=name,
+                        verdict="agrees",
+                        suggested_entry=None,
+                        justification="Listed in the pricing table.",
+                    )
+                assessment = yield from dp.guess(Assessment, using=[name, PRICING])
+                yield from dp.ensure(
+                    assessment.priced_like is None or assessment.priced_like in PRICING,
+                    "unlisted_reference",
+                    message="`priced_like` must name a model from the table.",
+                )
+                yield from dp.ensure(
+                    assessment.released or assessment.priced_like is None,
+                    "unreleased_but_priced",
+                )
+                if resolved == assessment.priced_like:
+                    verdict = "agrees"
+                elif resolved is None:
+                    verdict = "missing_entry"
+                elif assessment.priced_like is None:
+                    verdict = "unconfirmed"
+                else:
+                    verdict = "mispriced"
+                if verdict != "missing_entry":
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=assessment.priced_like,
+                        verdict=verdict,
+                        suggested_entry=None,
+                        justification=assessment.justification,
+                    )
+                # The rule refuses a name whose rates are known. Ask which entry
+                # would close the gap, then check the answer by running the rule.
+                entry = yield from dp.guess(str, using=[name, assessment.priced_like])
+                yield from dp.ensure(entry not in PRICING, "already_listed")
+                yield from dp.ensure(
+                    _resolves_with(name, entry),
+                    "entry_does_not_apply",
+                    message=f"Adding {entry} would not make {name} resolve to it.",
+                )
+                return Finding(
+                    model_name=name,
+                    resolved_as=None,
+                    priced_like=assessment.priced_like,
+                    verdict="missing_entry",
+                    suggested_entry=entry,
+                    justification=assessment.justification,
+                )
+            ```
+
+            Variable being currently assigned: entry
+
+            Selected local variables:
+
+            ```yaml
+            name: gpt-5.2-codex
+            assessment.priced_like: gpt-5.2
+            ```
+
+            Type of value to generate (as a YAML object): <class 'str'>
+      options:
+        model: gpt-5.6-luna
+    iter: 1
+  output:
+    outputs:
+      - content: |-
+          ```yaml
+          gpt-5.2-codex
+          ```
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 750
+        output_tokens: 240
+        cached_input_tokens: 0
+    log_items: []
+    model_name: gpt-5.6-luna
+    usage_info:
+      completion_tokens: 240
+      prompt_tokens: 750
+      total_tokens: 990
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 217
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+        cache_write_tokens: 0
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            I am executing a program that contains nondeterministic assignments along with assertions (e.g., in the form of `ensure` and `fail` statements). I am stuck at one of these nondeterministic assignments and your goal is to generate an assigned value, in such a way that the program can go on and not fail any assertion.
+
+            More specifically, I'll give you three pieces of information:
+
+            - A nondeterministic program.
+            - The name of the variable that is being assigned at the program location where I am currently stuck.
+            - Some values for a number of local variables.
+
+            Your job is to generate a correct value to assign. The expected type of this value is indicated inside the nondeterministic assignment operator.
+
+            Terminate your answer with a code block (delimited by triple backquotes) that contains a YAML object of the requested type. Do not wrap this YAML value into an object with a field named like the assigned variable.
+        - role: user
+          content: |-
+            Program:
+
+            ```
+            @dp.strategy
+            def audit_model_name(name: str) -> Strategy[Branch | Fail, IPDict, Finding]:
+                """
+                Compare what `pricing="auto"` does to `name` with what it should do.
+                """
+                resolved = _pricing_key(name)
+                if name in PRICING:
+                    # Nothing to audit: an exactly listed name is priced by its own
+                    # entry. Never spend an oracle call on a decidable question.
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=name,
+                        verdict="agrees",
+                        suggested_entry=None,
+                        justification="Listed in the pricing table.",
+                    )
+                assessment = yield from dp.guess(Assessment, using=[name, PRICING])
+                yield from dp.ensure(
+                    assessment.priced_like is None or assessment.priced_like in PRICING,
+                    "unlisted_reference",
+                    message="`priced_like` must name a model from the table.",
+                )
+                yield from dp.ensure(
+                    assessment.released or assessment.priced_like is None,
+                    "unreleased_but_priced",
+                )
+                if resolved == assessment.priced_like:
+                    verdict = "agrees"
+                elif resolved is None:
+                    verdict = "missing_entry"
+                elif assessment.priced_like is None:
+                    verdict = "unconfirmed"
+                else:
+                    verdict = "mispriced"
+                if verdict != "missing_entry":
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=assessment.priced_like,
+                        verdict=verdict,
+                        suggested_entry=None,
+                        justification=assessment.justification,
+                    )
+                # The rule refuses a name whose rates are known. Ask which entry
+                # would close the gap, then check the answer by running the rule.
+                entry = yield from dp.guess(str, using=[name, assessment.priced_like])
+                yield from dp.ensure(entry not in PRICING, "already_listed")
+                yield from dp.ensure(
+                    _resolves_with(name, entry),
+                    "entry_does_not_apply",
+                    message=f"Adding {entry} would not make {name} resolve to it.",
+                )
+                return Finding(
+                    model_name=name,
+                    resolved_as=None,
+                    priced_like=assessment.priced_like,
+                    verdict="missing_entry",
+                    suggested_entry=entry,
+                    justification=assessment.justification,
+                )
+            ```
+
+            Variable being currently assigned: assessment
+
+            Selected local variables:
+
+            ```yaml
+            name: o3-pro
+            PRICING:
+              gpt-5.6-sol:
+                - 5.0
+                - 0.5
+                - 30.0
+              gpt-5.6-terra:
+                - 2.5
+                - 0.25
+                - 15.0
+              gpt-5.6-luna:
+                - 1.0
+                - 0.1
+                - 6.0
+              gpt-5.5:
+                - 5.0
+                - 0.5
+                - 30.0
+              gpt-5.5-pro:
+                - 30.0
+                - 30.0
+                - 180.0
+              gpt-5.4:
+                - 2.5
+                - 0.25
+                - 15.0
+              gpt-5.4-mini:
+                - 0.75
+                - 0.075
+                - 4.5
+              gpt-5.4-nano:
+                - 0.2
+                - 0.02
+                - 1.25
+              gpt-5.4-pro:
+                - 30.0
+                - 30.0
+                - 180.0
+              gpt-5.2:
+                - 1.75
+                - 0.175
+                - 14.0
+              gpt-5.2-pro:
+                - 21.0
+                - 21.0
+                - 168.0
+              gpt-5.1:
+                - 1.25
+                - 0.125
+                - 10.0
+              gpt-5:
+                - 1.25
+                - 0.125
+                - 10.0
+              gpt-5-mini:
+                - 0.25
+                - 0.025
+                - 2.0
+              gpt-5-nano:
+                - 0.05
+                - 0.005
+                - 0.4
+              gpt-5-pro:
+                - 15.0
+                - 15.0
+                - 120.0
+              gpt-4.1:
+                - 2.0
+                - 0.5
+                - 8.0
+              gpt-4.1-mini:
+                - 0.4
+                - 0.1
+                - 1.6
+              gpt-4.1-nano:
+                - 0.1
+                - 0.025
+                - 0.4
+              gpt-4o:
+                - 2.5
+                - 1.25
+                - 10.0
+              gpt-4o-mini:
+                - 0.15
+                - 0.075
+                - 0.6
+              o3:
+                - 2.0
+                - 0.5
+                - 8.0
+              o4-mini:
+                - 1.1
+                - 0.275
+                - 4.4
+              mistral-small-2503:
+                - 0.1
+                - 0.1
+                - 0.3
+              magistral-small-2506:
+                - 0.5
+                - 0.5
+                - 1.5
+              mistral-medium-2508:
+                - 0.4
+                - 0.4
+                - 2
+              mistral-medium-3-5:
+                - 1.5
+                - 1.5
+                - 7.5
+              mistral-small-2603:
+                - 0.15
+                - 0.15
+                - 0.6
+              deepseek-chat:
+                - 0.27
+                - 0.07
+                - 1.1
+              deepseek-reasoner:
+                - 0.55
+                - 0.14
+                - 2.19
+              gemini-2.5-pro:
+                - 1.25
+                - 0.31
+                - 10.0
+              gemini-2.5-flash:
+                - 0.3
+                - 0.075
+                - 2.5
+              gemini-2.5-flash-lite:
+                - 0.1
+                - 0.025
+                - 0.4
+            ```
+
+            Type of value to generate (as a YAML object): <class 'pricing_audit.Assessment'>
+      options:
+        model: gpt-5.6-luna
+    iter: 1
+  output:
+    outputs:
+      - content: |-
+          ```yaml
+          priced_like: null
+          released: false
+          justification: "No released pricing reference is known."
+          ```
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 1700
+        output_tokens: 545
+        cached_input_tokens: 0
+    log_items: []
+    model_name: gpt-5.6-luna
+    usage_info:
+      completion_tokens: 545
+      prompt_tokens: 1700
+      total_tokens: 2245
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 512
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+        cache_write_tokens: 1697
+- input:
+    request:
+      chat:
+        - role: system
+          content: |-
+            I am executing a program that contains nondeterministic assignments along with assertions (e.g., in the form of `ensure` and `fail` statements). I am stuck at one of these nondeterministic assignments and your goal is to generate an assigned value, in such a way that the program can go on and not fail any assertion.
+
+            More specifically, I'll give you three pieces of information:
+
+            - A nondeterministic program.
+            - The name of the variable that is being assigned at the program location where I am currently stuck.
+            - Some values for a number of local variables.
+
+            Your job is to generate a correct value to assign. The expected type of this value is indicated inside the nondeterministic assignment operator.
+
+            Terminate your answer with a code block (delimited by triple backquotes) that contains a YAML object of the requested type. Do not wrap this YAML value into an object with a field named like the assigned variable.
+        - role: user
+          content: |-
+            Program:
+
+            ```
+            @dp.strategy
+            def audit_model_name(name: str) -> Strategy[Branch | Fail, IPDict, Finding]:
+                """
+                Compare what `pricing="auto"` does to `name` with what it should do.
+                """
+                resolved = _pricing_key(name)
+                if name in PRICING:
+                    # Nothing to audit: an exactly listed name is priced by its own
+                    # entry. Never spend an oracle call on a decidable question.
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=name,
+                        verdict="agrees",
+                        suggested_entry=None,
+                        justification="Listed in the pricing table.",
+                    )
+                assessment = yield from dp.guess(Assessment, using=[name, PRICING])
+                yield from dp.ensure(
+                    assessment.priced_like is None or assessment.priced_like in PRICING,
+                    "unlisted_reference",
+                    message="`priced_like` must name a model from the table.",
+                )
+                yield from dp.ensure(
+                    assessment.released or assessment.priced_like is None,
+                    "unreleased_but_priced",
+                )
+                if resolved == assessment.priced_like:
+                    verdict = "agrees"
+                elif resolved is None:
+                    verdict = "missing_entry"
+                elif assessment.priced_like is None:
+                    verdict = "unconfirmed"
+                else:
+                    verdict = "mispriced"
+                if verdict != "missing_entry":
+                    return Finding(
+                        model_name=name,
+                        resolved_as=resolved,
+                        priced_like=assessment.priced_like,
+                        verdict=verdict,
+                        suggested_entry=None,
+                        justification=assessment.justification,
+                    )
+                # The rule refuses a name whose rates are known. Ask which entry
+                # would close the gap, then check the answer by running the rule.
+                entry = yield from dp.guess(str, using=[name, assessment.priced_like])
+                yield from dp.ensure(entry not in PRICING, "already_listed")
+                yield from dp.ensure(
+                    _resolves_with(name, entry),
+                    "entry_does_not_apply",
+                    message=f"Adding {entry} would not make {name} resolve to it.",
+                )
+                return Finding(
+                    model_name=name,
+                    resolved_as=None,
+                    priced_like=assessment.priced_like,
+                    verdict="missing_entry",
+                    suggested_entry=entry,
+                    justification=assessment.justification,
+                )
+            ```
+
+            Variable being currently assigned: assessment
+
+            Selected local variables:
+
+            ```yaml
+            name: gpt-5.7-vega
+            PRICING:
+              gpt-5.6-sol:
+                - 5.0
+                - 0.5
+                - 30.0
+              gpt-5.6-terra:
+                - 2.5
+                - 0.25
+                - 15.0
+              gpt-5.6-luna:
+                - 1.0
+                - 0.1
+                - 6.0
+              gpt-5.5:
+                - 5.0
+                - 0.5
+                - 30.0
+              gpt-5.5-pro:
+                - 30.0
+                - 30.0
+                - 180.0
+              gpt-5.4:
+                - 2.5
+                - 0.25
+                - 15.0
+              gpt-5.4-mini:
+                - 0.75
+                - 0.075
+                - 4.5
+              gpt-5.4-nano:
+                - 0.2
+                - 0.02
+                - 1.25
+              gpt-5.4-pro:
+                - 30.0
+                - 30.0
+                - 180.0
+              gpt-5.2:
+                - 1.75
+                - 0.175
+                - 14.0
+              gpt-5.2-pro:
+                - 21.0
+                - 21.0
+                - 168.0
+              gpt-5.1:
+                - 1.25
+                - 0.125
+                - 10.0
+              gpt-5:
+                - 1.25
+                - 0.125
+                - 10.0
+              gpt-5-mini:
+                - 0.25
+                - 0.025
+                - 2.0
+              gpt-5-nano:
+                - 0.05
+                - 0.005
+                - 0.4
+              gpt-5-pro:
+                - 15.0
+                - 15.0
+                - 120.0
+              gpt-4.1:
+                - 2.0
+                - 0.5
+                - 8.0
+              gpt-4.1-mini:
+                - 0.4
+                - 0.1
+                - 1.6
+              gpt-4.1-nano:
+                - 0.1
+                - 0.025
+                - 0.4
+              gpt-4o:
+                - 2.5
+                - 1.25
+                - 10.0
+              gpt-4o-mini:
+                - 0.15
+                - 0.075
+                - 0.6
+              o3:
+                - 2.0
+                - 0.5
+                - 8.0
+              o4-mini:
+                - 1.1
+                - 0.275
+                - 4.4
+              mistral-small-2503:
+                - 0.1
+                - 0.1
+                - 0.3
+              magistral-small-2506:
+                - 0.5
+                - 0.5
+                - 1.5
+              mistral-medium-2508:
+                - 0.4
+                - 0.4
+                - 2
+              mistral-medium-3-5:
+                - 1.5
+                - 1.5
+                - 7.5
+              mistral-small-2603:
+                - 0.15
+                - 0.15
+                - 0.6
+              deepseek-chat:
+                - 0.27
+                - 0.07
+                - 1.1
+              deepseek-reasoner:
+                - 0.55
+                - 0.14
+                - 2.19
+              gemini-2.5-pro:
+                - 1.25
+                - 0.31
+                - 10.0
+              gemini-2.5-flash:
+                - 0.3
+                - 0.075
+                - 2.5
+              gemini-2.5-flash-lite:
+                - 0.1
+                - 0.025
+                - 0.4
+            ```
+
+            Type of value to generate (as a YAML object): <class 'pricing_audit.Assessment'>
+      options:
+        model: gpt-5.6-luna
+    iter: 1
+  output:
+    outputs:
+      - content: |-
+          ```yaml
+          priced_like: null
+          released: false
+          justification: "No released pricing-table entry is known for this model name."
+          ```
+        tool_calls: []
+    budget:
+      values:
+        num_requests: 1
+        num_completions: 1
+        input_tokens: 1705
+        output_tokens: 292
+        cached_input_tokens: 0
+    log_items: []
+    model_name: gpt-5.6-luna
+    usage_info:
+      completion_tokens: 292
+      prompt_tokens: 1705
+      total_tokens: 1997
+      completion_tokens_details:
+        accepted_prediction_tokens: 0
+        audio_tokens: 0
+        reasoning_tokens: 254
+        rejected_prediction_tokens: 0
+      prompt_tokens_details:
+        audio_tokens: 0
+        cached_tokens: 0
+        cache_write_tokens: 1702

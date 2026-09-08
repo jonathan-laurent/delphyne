@@ -1,0 +1,7 @@
+# Demonstrations for `pricing_audit.py`.
+#
+# Empty for now: the oracle is guided by the docstrings of `Assessment`
+# and `audit_model_name`, which the universal query embeds in its
+# prompt. Add examples here (or through the VSCode extension) to pin
+# down cases the oracle keeps getting wrong.
+[]

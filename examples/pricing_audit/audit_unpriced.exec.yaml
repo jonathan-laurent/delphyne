@@ -1,0 +1,13 @@
+# The same audit, driven by an oracle built with `pricing=None`.
+#
+# The budget has no `price` entry: with cost tracking disabled there is
+# nothing to bound in dollars, so the run is bounded by request count.
+
+command: run_strategy
+args:
+  strategy: audit_pricing_table
+  args: {}
+  policy: audit_policy_unpriced
+  policy_args: {}
+  budget:
+    num_requests: 60

@@ -1,0 +1,9 @@
+command: run_strategy
+args:
+  strategy: audit_pricing_table
+  args: {}
+  policy: audit_policy
+  policy_args: {}
+  budget:
+    num_requests: 60
+    price: 0.3
